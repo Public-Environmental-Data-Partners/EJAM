@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating the Package as a New Release">
 <meta name="description" content="Steps for preparing package and GitHub releases">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -96,7 +97,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Updating the Package as a New Release</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-update-package.Rmd" class="external-link"><code>vignettes/dev-update-package.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/vignettes/dev-update-package.Rmd" class="external-link"><code>vignettes/dev-update-package.Rmd</code></a></small>
       <div class="d-none name"><code>dev-update-package.Rmd</code></div>
     </div>
 
@@ -255,7 +256,7 @@ attached, the name as potentially modified via
 <ul>
 <li><p>Update the EJAM version number in the <code>Version</code> field
 of the <code>DESCRIPTION</code> file in the release/development branch
-(currently 2.5.0). Tie it to EJScreen version numbers if relevant.
+(currently 3.2022.0). Tie it to EJScreen version numbers if relevant.
 Search globally too, because there may still be files where the version
 number is not read from <code>DESCRIPTION</code>, such as
 <code>_pkgdown.yml</code>, <code>golem-config.yml</code>,
@@ -292,7 +293,7 @@ the DESCRIPTION version fields, such as <code>Version</code>,
 <code>VersionCensus</code>.</p></li>
 <li><p>Update <code>NEWS.md</code> in the release/development branch
 listing changes made. Use the same version number that was put in
-<code>DESCRIPTION</code>, such as <code>v2.5.0</code>.</p></li>
+<code>DESCRIPTION</code>, such as <code>v3</code>.</p></li>
 <li><p>Run release checks, including
 <code>devtools::check(vignettes = FALSE)</code> if traditional vignette
 builds are not needed, targeted pipeline validation, and the relevant
@@ -301,7 +302,7 @@ builds are not needed, targeted pipeline validation, and the relevant
 according to the current repository workflow.</p></li>
 <li><p>Create a new EJAM release on GitHub, using <code>NEWS.md</code>
 as the changelog and a tag matching the <code>DESCRIPTION</code>
-version, such as <code>v2.5.0</code>.</p></li>
+version, such as <code>v3</code>.</p></li>
 </ul>
 <div class="section level3">
 <h3 id="update-and-run-the-test-installation-script">Update and run the test installation script<a class="anchor" aria-label="anchor" href="#update-and-run-the-test-installation-script"></a>
@@ -326,8 +327,8 @@ change:</p>
 <li><p><strong>R version</strong>: latest release and some prior
 versions</p></li>
 <li><p><strong>Using install_url() or install_github()</strong>:
-<code><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">remotes::install_url()</a></code> and
-<code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code> or maybe the newer
+<code>remotes::install_url()</code> and
+<code>remotes::install_github()</code> or maybe the newer
 <code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code></p></li>
 </ol>
 <p>Also note that users may need to set up a personal access token (PAT)
@@ -342,11 +343,11 @@ up a PAT.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>May 2026</p>
+  <p>June 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.5.0</p>
+  <p>EJAM Version 3.2022.0</p>
 </div>
 
     </footer>

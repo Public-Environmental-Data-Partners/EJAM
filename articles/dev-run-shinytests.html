@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Testing EJAM App with shinytest2">
 <meta name="description" content="How to run {shinytest2} suite for app-based functionality testing.">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -96,7 +97,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Testing EJAM App with shinytest2</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-run-shinytests.Rmd" class="external-link"><code>vignettes/dev-run-shinytests.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/vignettes/dev-run-shinytests.Rmd" class="external-link"><code>vignettes/dev-run-shinytests.Rmd</code></a></small>
       <div class="d-none name"><code>dev-run-shinytests.Rmd</code></div>
     </div>
 
@@ -106,7 +107,7 @@
 <div class="section level2">
 <h2 id="note-on-work-in-progress-how-to-run-the-webapp-tests">NOTE on work in progress / how to run the webapp tests<a class="anchor" aria-label="anchor" href="#note-on-work-in-progress-how-to-run-the-webapp-tests"></a>
 </h2>
-<p>This package can use <code><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">shinytest2::test_app()</a></code>.</p>
+<p>This package can use <code>shinytest2::test_app()</code>.</p>
 <p><code>EJAM:::test_ejam()</code> instead uses an approach that first
 sources <code>testthat/setup.R</code> which does setup needed and also
 sources <code>testthat/setup-shinytest2.R</code> which defines
@@ -132,7 +133,7 @@ that is a wrapper that calls Pandoc to convert docs to HTML, PDF,
 etc.</p></li>
 <li><p><strong>PhantomJS</strong> maybe – This used to be needed for
 downloads (and was installed with
-<code><a href="http://wch.github.io/webshot/reference/install_phantomjs.html" class="external-link">webshot::install_phantomjs()</a></code>). But note this newer
+<code>webshot::install_phantomjs()</code>). But note this newer
 info:</p></li>
 </ul>
 <p>NOTE FROM <a href="https://rstudio.github.io/shinytest2/articles/z-migration.html" class="external-link uri">https://rstudio.github.io/shinytest2/articles/z-migration.html</a>:
@@ -240,7 +241,7 @@ would update that file by coding new UI interactions directly.</p>
 code<a class="anchor" aria-label="anchor" href="#using-shinytest2record_test-to-generate-testing-code"></a>
 </h3>
 <p>If you’re not sure how to code new UI interactions directly, run
-<code><a href="https://rstudio.github.io/shinytest2/reference/record_test.html" class="external-link">shinytest2::record_test()</a></code> to test the app interactively and
+<code>shinytest2::record_test()</code> to test the app interactively and
 record your actions, which can then be copied into test scripts.</p>
 </div>
 <div class="section level3">
@@ -273,7 +274,7 @@ useful for debugging one category at a time.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/local_install.html" class="external-link">local_install</a></span><span class="op">(</span><span class="st">'.'</span>, dependencies <span class="op">=</span> <span class="cn">T</span>, upgrade <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="co"># once</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span> <span class="co"># once</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span> <span class="co"># once. gets done automatically though, by things like testthat::test_file()</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu">test_path</span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span> <span class="co"># once. gets done automatically though, by things like testthat::test_file()</span></span>
 <span></span>
 <span><span class="co"># run a single test:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_SHINYTEST2_INDIVIDUAL <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span>
@@ -299,14 +300,14 @@ set:</p>
 shinytest2)</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># first, source `setup.R`, from the tests/testthat/ folder.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_path.html" class="external-link">test_path</a></span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu">testthat</span><span class="fu">::</span><span class="fu">test_path</span><span class="op">(</span><span class="st">"setup.R"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># then for one subset of tests, like just the latlon analysis features:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_SHINYTEST2_INDIVIDUAL <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span>
-<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"latlon-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu">test_app</span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"latlon-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># for all the webapp functionality tests</span></span>
-<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"all-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu">test_app</span><span class="op">(</span><span class="st">"."</span>, filter<span class="op">=</span><span class="st">"all-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="github-actions-integration">GitHub Actions Integration<a class="anchor" aria-label="anchor" href="#github-actions-integration"></a>
@@ -353,7 +354,7 @@ and can slow the app tests.</li>
 <div class="section level2">
 <h2 id="updating-expected-behavior-checks">Updating Expected Behavior Checks<a class="anchor" aria-label="anchor" href="#updating-expected-behavior-checks"></a>
 </h2>
-<p>Do not use <code><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">testthat::snapshot_accept()</a></code> for these
+<p>Do not use <code>testthat::snapshot_accept()</code> for these
 shinytest2 tests. If a test fails, inspect whether the app behavior
 changed in a meaningful way. If the behavior is still correct, update
 the explicit assertion in <code>setup-shinytest2.R</code> so it checks a
@@ -431,11 +432,11 @@ shinytest2 Documentation</a></p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>May 2026</p>
+  <p>June 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.5.0</p>
+  <p>EJAM Version 3.2022.0</p>
 </div>
 
     </footer>

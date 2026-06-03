@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating EJScreen Datasets Annually (via the Pipeline)">
 <meta name="description" content="Annual staged workflow for updating EJScreen/EJAM demographic, environmental, and related datasets">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
-    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v2.5.0</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -97,7 +97,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Updating EJScreen Datasets Annually (via the Pipeline)</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-update-ejscreen-datasets-yearly.Rmd" class="external-link"><code>vignettes/dev-update-ejscreen-datasets-yearly.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/vignettes/dev-update-ejscreen-datasets-yearly.Rmd" class="external-link"><code>vignettes/dev-update-ejscreen-datasets-yearly.Rmd</code></a></small>
       <div class="d-none name"><code>dev-update-ejscreen-datasets-yearly.Rmd</code></div>
     </div>
 
@@ -288,9 +288,9 @@ may need review or regeneration, such as <code>map_headernames</code>,
 <code>high_pctiles_tied_with_min</code>, and <code>testoutput*</code>.
 In practice, <code><a href="../reference/dataload_dynamic.html">dataload_dynamic()</a></code> uses the
 <code>ejamdata_required_tag</code> field in DESCRIPTION to find the
-required <code>ejamdata</code> release tag, such as <code>v2.5.0</code>,
-for Arrow assets. This tag usually matches the EJAM package version for
-an annual data release, but can differ for patch releases.
+required <code>ejamdata</code> release tag, such as <code>v3</code>, for
+Arrow assets. This tag usually matches the EJAM package version for an
+annual data release, but can differ for patch releases.
 <code>bgej.arrow</code> is part of this annual release bundle and is
 additionally checked against the installed <code>blockgroupstats</code>
 blockgroup universe.</p></li>
@@ -305,9 +305,9 @@ change. <code>bg_cenpop2020</code> requires special care because it is
 tied to Census 2020 geography. Related state/place geography objects
 such as <code>states_shapefile</code>, <code>stateinfo2</code>, and
 <code>censusplaces</code> should also be checked when their FIPS or
-boundaries change. For the v2.5.0 Island Area decision and live EJSCREEN
+boundaries change. For the v3 Island Area decision and live EJSCREEN
 layer availability notes, see <a href="island-areas.html">Island Areas
-in EJAM v2.5.0</a>.</p></li>
+in EJAM v3</a>.</p></li>
 <li><p><strong>Block Geography Updates</strong> include block-level
 geometry/index files such as <code>blockpoints</code>,
 <code>quaddata</code>, and <code>blockid2fips</code>. These change only
@@ -703,8 +703,8 @@ checkpoints:</p>
 pipeline. Review those settings carefully, especially the year, storage
 backend, stage formats, force flags, Island Areas settings,
 provisional-input flags, and prior validation target.</p>
-<p>For ACS2024/v2.5.0 and later annual/release runs, AS/GU/MP/VI rows
-are added by default at the blockgroup dataset, EJSCREEN export, and
+<p>For ACS2024/v3 and later annual/release runs, AS/GU/MP/VI rows are
+added by default at the blockgroup dataset, EJSCREEN export, and
 map-data visibility level, in the same general style as the legacy
 EPA/EJScreen export. The default source for Island Areas row IDs, area
 fields, and available environmental fields is the archived EPA EJScreen
@@ -925,7 +925,7 @@ non-missing, nonnegative <code>arealand</code> and
 include <code>PCTILE</code>, <code>REGION</code>, <code>0</code>,
 <code>100</code>, <code>mean</code>, and <code>std</code>, with EJScreen
 field names rather than EJAM <code>rname</code> columns.</li>
-<li>for ACS2024/v2.5.0, Island Areas AS/GU/MP/VI are present in
+<li>for ACS2024/v3, Island Areas AS/GU/MP/VI are present in
 <code>bg_acsdata</code>, <code>blockgroupstats</code>,
 <code>bgej</code>, <code>ejscreen_export</code>, and
 <code>ejscreen_export_statepct</code> unless
@@ -1097,9 +1097,10 @@ provisional reuse notes. <code>bgej</code> should be checked and saved
 through the pipeline stage files, then published as
 <code>bgej.arrow</code> in the <code>ejamdata</code> release tag
 recorded in DESCRIPTION as <code>ejamdata_required_tag</code>, such as
-<code>v2.5.0</code> for EJAM 2.5.0. A local <code>data/bgej.arrow</code>
-copy can be useful for testing from source, but it is ignored for
-package builds and should not be treated as normal package data.</p>
+<code>v3.2024.0</code> for the matching EJAM v3 release. A local
+<code>data/bgej.arrow</code> copy can be useful for testing from source,
+but it is ignored for package builds and should not be treated as normal
+package data.</p>
 <p>After those key datasets are updated, rerun the scripts that create
 and save <code>testoutput_*</code> files and datasets, especially
 <code>datacreate_testpoints_testoutputs.R</code> and
@@ -1113,6 +1114,48 @@ datasets do not need metadata attributes.</p>
 <p>After package data are updated, reinstall the package and rerun
 release-critical tests. Also regenerate any Arrow-format files used
 outside the package build, if needed.</p>
+</div>
+<div class="section level2">
+<h2 id="comparing-two-vintages-side-by-side">Comparing Two Vintages Side by Side<a class="anchor" aria-label="anchor" href="#comparing-two-vintages-side-by-side"></a>
+</h2>
+<p>While testing an annual update it is useful to run two
+vintages/releases at once (for example the new <code>ACS2024</code> /
+<code>v3.2024.0</code> build and the prior <code>ACS2023</code> /
+<code>v3.2023.0</code> build) and compare the same sites in each. Each
+EJAM release pins its own <code>ejamdata_required_tag</code> in
+DESCRIPTION, so each pulls the matching vintage of the large Arrow
+datasets (<code>bgej</code>, etc.) from its tagged <code>ejamdata</code>
+release.</p>
+<p>The cleanest approach is one <strong>git worktree per
+vintage</strong>, so each checkout has its own <code>data/</code> folder
+and Arrow cache and there is no cross-vintage collision:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># from the main checkout, create a worktree per release branch/tag:</span></span>
+<span><span class="co"># (run in a terminal)</span></span>
+<span><span class="co"># git worktree add ../EJAM-2024 ACS2024</span></span>
+<span><span class="co"># git worktree add ../EJAM-2023 ACS2023</span></span>
+<span></span>
+<span><span class="co"># then, in a SEPARATE R session per folder:</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>             <span class="co"># first load downloads this vintage's bgej (~90 MB)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span>      <span class="co"># confirm: "v3.2024.0" (or v3.2023.0, ...)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">blockgroupstats</span>, <span class="st">"acs_version"</span><span class="op">)</span><span class="co"># confirm: "2020-2024" (or "2019-2023", ...)</span></span>
+<span><span class="va">out_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span><span class="va">testpoints_10</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>   <span class="co"># run the SAME input in each session</span></span>
+<span><span class="co"># compare out_new$results_overall across the two sessions / vintages</span></span></code></pre></div>
+<p>If instead you stay in <strong>one checkout and switch
+branches</strong>, the downloaded <code>data/bgej.arrow</code> is
+gitignored and persists across <code>git switch</code>, while the
+version marker <code>data/ejamdata_version.txt</code> is tracked and
+changes with the branch. To be sure you are testing the right vintage’s
+EJ indexes, remove the cached file so it is re-downloaded for the new
+vintage:</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># after: git switch ACS2023</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"data/bgej.arrow"</span><span class="op">)</span>   <span class="co"># force re-download of the v3.2023.0 bgej</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
+<p>As a safeguard, <code>dataload_dynamic_validate_bgej()</code>
+compares the loaded <code>bgej</code> to the package’s
+<code>blockgroupstats</code> and drops it if they do not match, so a
+stale <code>bgej</code> is rejected rather than silently used.</p>
 </div>
 <div class="section level2">
 <h2 id="release-checklist">Release Checklist<a class="anchor" aria-label="anchor" href="#release-checklist"></a>
@@ -1151,11 +1194,11 @@ Package as a New Release</a>.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>May 2026</p>
+  <p>June 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.5.0</p>
+  <p>EJAM Version 3.2022.0</p>
 </div>
 
     </footer>

@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating and Managing the Datasets Used by EJAM">
 <meta name="description" content="Managing datasets used by EJAM, including Arrow files">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -96,7 +97,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Updating and Managing the Datasets Used by EJAM</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-update-datasets.Rmd" class="external-link"><code>vignettes/dev-update-datasets.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/vignettes/dev-update-datasets.Rmd" class="external-link"><code>vignettes/dev-update-datasets.Rmd</code></a></small>
       <div class="d-none name"><code>dev-update-datasets.Rmd</code></div>
     </div>
 
@@ -216,10 +217,18 @@ Datasets Annually (via the Pipeline)</a>. That pipeline covers
 checkpoints, <code>bg_envirodata</code>,
 <code>bg_extra_indicators</code>, <code>bg_geodata</code>,
 <code>blockgroupstats</code>, <code>bgej</code>, <code>usastats</code>,
-<code>statestats</code>, <code>ejscreen_export</code>, and the optional
+<code>statestats</code>, <code>ejscreen_export</code>,
+<code>ejscreen_export_statepct</code>, optional EJScreen-style lookup
+exports (<code>ejscreen_us_pctile_lookup</code> and
+<code>ejscreen_state_pctile_lookup</code>), and the optional
 <code>ejscreen_dataset_creator_input</code> stage. This more general
 vignette focuses on the other datasets and storage/release mechanics
-used by EJAM.</p></li>
+used by EJAM. For EJAM v3, AS/GU/MP/VI are included at the blockgroup
+dataset, EJSCREEN export, and map-data visibility level with demographic
+fields kept as <code>NA</code> and partial EPA environmental fields
+where available. See <a href="island-areas.html">Island Areas in EJAM
+v3</a> for the user-facing coverage notes and live EJSCREEN layer
+inventory observed in May 2026.</p></li>
 <li><p><strong><em>Block Datasets</em></strong>: The <em>block</em> (not
 blockgroup) tables might be updated less often, but Census FIPS codes do
 change yearly so the <code><a href="../reference/blockwts.html">?blockwts</a></code>, <code><a href="../reference/blockpoints.html">?blockpoints</a></code>,
@@ -305,10 +314,10 @@ digits to use in rounding, units, long and short indicator names, EJAM
 and EJScreen field names, the type or category of indicator, sort order
 to use in reports, and the method of calculating aggregations of the
 indicator over blockgroups. The editable source is now
-<code>data-raw/map_headernames.csv</code>. If metadata rows or values need
-to change, edit that CSV directly, then source
-<code>data-raw/datacreate_map_headernames.R</code> to validate the CSV and
-save <code>data/map_headernames.rda</code>. Older <code>.xlsx</code>
+<code>data-raw/map_headernames.csv</code>. If metadata rows or values
+need to change, edit that CSV directly, then source
+<code>data-raw/datacreate_map_headernames.R</code> to validate the CSV
+and save <code>data/map_headernames.rda</code>. Older <code>.xlsx</code>
 workflows are obsolete and should not be used to regenerate this
 object.</p></li>
 <li><p><a href="testdata.Rmd">Test data (inputs) and examples of
@@ -415,6 +424,11 @@ points, or blockgroup-to-block relationships change.</p></li>
 <code>blockid2fips</code>. These need regeneration only when block-level
 FIPS or block internal-point geography changes.</p></li>
 </ol>
+<p>For EJAM v3, the block and blockgroup helper files are intentionally
+carried forward without Island Area blocks. They should not be used to
+promise point-buffer/radius or block-weighted polygon analysis for
+AS/GU/MP/VI; those analyses should return no-data results rather than
+block-weighted estimates.</p>
 <p>Use <code>EJAM:::dynamic_geography_arrow_report()</code> to check
 whether the current blockgroup and block geography Arrow files are
 compatible with the installed <code>blockgroupstats</code> blockgroup
@@ -576,7 +590,9 @@ block or blockgroup helper Arrow files such as
 <code>blockid2fips.arrow</code>, <code>bgid2fips.arrow</code>, or
 <code>quaddata.arrow</code> are intentionally regenerated in a future
 geography update, publish those files with the same helper after a
-dry-run review.</p>
+dry-run review. For v3, Island Areas are handled only at the blockgroup
+dataset/export/map-data level; Island Area blocks are not added to the
+block-helper universe for this release path.</p>
 <p>Example dry-run for a manual publish: (also see
 run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step)</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -647,11 +663,11 @@ into a data.table/data.frame.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>May 2026</p>
+  <p>June 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.5.0</p>
+  <p>EJAM Version 3.2022.0</p>
 </div>
 
     </footer>

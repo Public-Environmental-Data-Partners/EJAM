@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Installing the EJAM R package">
 <meta name="description" content="1. Installing the EJAM R package">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -94,14 +95,14 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Installing the EJAM R package</h1>
-
-
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/installing.Rmd" class="external-link"><code>vignettes/installing.Rmd</code></a></small>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/vignettes/installing.Rmd" class="external-link"><code>vignettes/installing.Rmd</code></a></small>
       <div class="d-none name"><code>installing.Rmd</code></div>
     </div>
 
-
-
+    
+    
 <p>EJAM is not only a web app, it is also an R package you can install.
 This is useful if you want to use the full set of EJAM R functions, many
 of which do things not available in the web app, to do customized
@@ -188,26 +189,27 @@ build tools in RStudio</a>.</p>
 <p>Alternatively, you could do the following. This installs the packages
 needed to load and use EJAM, without forcing every optional package used
 for development, testing, or less-common workflows.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode R">if (!requireNamespace("pak", quietly = TRUE)) {
-  install.packages("pak")
-}
-
-# To install, you have to say where the cloned package was saved:
-# ejamroot = the root directory into which you cloned!
-
-## If you used the RStudio default, this may be where you cloned to:
-parentfolder &lt;- rstudioapi::readRStudioPreference(
-  "default_open_project_location", ".")
-ejamroot &lt;- file.path(parentfolder, "EJAM")
-# or maybe ejamroot &lt;- "."
-if (!(basename(ejamroot) == "EJAM" &amp;&amp;
-      file.exists(file.path(ejamroot, "DESCRIPTION")))) {
-  stop("must set ejamroot to root folder of EJAM source package")}
-
-pak::pkg_install(pkg = ejamroot,
-                 dependencies = NA, upgrade = FALSE)
-
-library(EJAM)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"pak"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># To install, you have to say where the cloned package was saved:</span></span>
+<span><span class="co"># ejamroot = the root directory into which you cloned!</span></span>
+<span></span>
+<span><span class="co">## If you used the RStudio default, this may be where you cloned to:</span></span>
+<span><span class="va">parentfolder</span> <span class="op">&lt;-</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/readRStudioPreference.html" class="external-link">readRStudioPreference</a></span><span class="op">(</span></span>
+<span>  <span class="st">"default_open_project_location"</span>, <span class="st">"."</span><span class="op">)</span></span>
+<span><span class="va">ejamroot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">parentfolder</span>, <span class="st">"EJAM"</span><span class="op">)</span></span>
+<span><span class="co"># or maybe ejamroot &lt;- "." </span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">ejamroot</span><span class="op">)</span> <span class="op">==</span> <span class="st">"EJAM"</span> <span class="op">&amp;&amp;</span> </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">ejamroot</span>, <span class="st">"DESCRIPTION"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"must set ejamroot to root folder of EJAM source package"</span><span class="op">)</span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span>pkg <span class="op">=</span> <span class="va">ejamroot</span>, </span>
+<span>                 dependencies <span class="op">=</span> <span class="cn">NA</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -222,38 +224,39 @@ development).</p>
 <div class="section level3">
 <h3 id="installing-from-github">Installing from github<a class="anchor" aria-label="anchor" href="#installing-from-github"></a>
 </h3>
-<p>You can use
-<code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code> to install from GitHub. A valid GitHub PAT is
-recommended to avoid low unauthenticated rate limits. If you have an
-invalid PAT configured, fix or remove it first; invalid credentials can
-fail even when the public repository would otherwise be accessible. For
-help on PAT setup, see the last section of this article.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode R">options(timeout = 600)
-if (!requireNamespace("pak", quietly = TRUE)) {
-  install.packages("pak")
-}
-
-# Choose one install target.
-
-# latest release:
-pkg &lt;- "Public-Environmental-Data-Partners/EJAM@*release"
-
-# main branch, sometimes slightly ahead of latest release:
-# pkg &lt;- "Public-Environmental-Data-Partners/EJAM"
-
-# development branch, often well ahead of latest release:
-# pkg &lt;- "Public-Environmental-Data-Partners/EJAM@development"
-
-# ACS2024 branch:
-# pkg &lt;- "Public-Environmental-Data-Partners/EJAM@ACS2024"
-
-# a specific release (version):
-# pkg &lt;- "Public-Environmental-Data-Partners/EJAM@v2.32.8.001"
-
-pak::pkg_install(pkg = pkg,
-                 dependencies = NA, upgrade = FALSE)
-
-library(EJAM)</code></pre></div>
+<p>You can use <code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code> to install from GitHub. A
+valid GitHub PAT is recommended to avoid low unauthenticated rate
+limits. If you have an invalid PAT configured, fix or remove it first;
+invalid credentials can fail even when the public repository would
+otherwise be accessible. For help on PAT setup, see the last section of
+this article.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout <span class="op">=</span> <span class="fl">600</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"pak"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Choose one install target.</span></span>
+<span></span>
+<span><span class="co"># latest release:</span></span>
+<span><span class="va">pkg</span> <span class="op">&lt;-</span> <span class="st">"Public-Environmental-Data-Partners/EJAM@*release"</span></span>
+<span></span>
+<span><span class="co"># main branch, sometimes slightly ahead of latest release:</span></span>
+<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM"</span></span>
+<span></span>
+<span><span class="co"># development branch, often well ahead of latest release:</span></span>
+<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@development"</span></span>
+<span></span>
+<span><span class="co"># ACS2024 branch:</span></span>
+<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@ACS2024"</span></span>
+<span></span>
+<span><span class="co"># a specific release (version):</span></span>
+<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@v2.32.8.001"</span></span>
+<span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span>pkg <span class="op">=</span> <span class="va">pkg</span>,</span>
+<span>                 dependencies <span class="op">=</span> <span class="cn">NA</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="installing-from-local-source">Installing from local source<a class="anchor" aria-label="anchor" href="#installing-from-local-source"></a>
@@ -266,7 +269,8 @@ the github repository for the latest release</a>.</p>
 assets, and try to install it using
 <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">utils::install.packages()</a></code>, but this will not work if you
 have a newer version of R than the .zip was built on. Installing source
-packages with <code>pak::pkg_install()</code> is usually more reliable.</p>
+packages with <code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code> is usually more
+reliable.</p>
 <hr>
 </div>
 </div>
@@ -300,21 +304,21 @@ token</a> (PAT) for authentication to work reliably when using
 repositories on GitHub.com. Public repositories can often be installed
 without a PAT, but GitHub applies lower rate limits. A bad or expired
 PAT can cause errors such as “Bad GitHub credentials” or HTTP 401, so
-update or remove invalid credentials before retrying. See more
-<a href="https://usethis.r-lib.org/articles/git-credentials.html#git-credential-helpers-and-the-credential-store" class="external-link">about git credentials and the credential store</a>. Note Windows
-takes care of most of this now, in conjunction with GitHub.</p>
+update or remove invalid credentials before retrying. See more <a href="https://usethis.r-lib.org/articles/git-credentials.html#git-credential-helpers-and-the-credential-store" class="external-link">about
+git credentials and the credential store</a>. Note Windows takes care of
+most of this now, in conjunction with GitHub.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##  To check for existing PATs:</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">gh_token_help</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">gh_token_help</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/git_sitrep.html" class="external-link">git_sitrep</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># git situation report</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">git_sitrep</span><span class="op">(</span><span class="op">)</span>  <span class="co"># git situation report</span></span>
 <span></span>
 <span><span class="co">#  To make a new PAT:</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">create_github_token</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">create_github_token</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#  To register a PAT:</span></span>
-<span><span class="fu">credentials</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/credentials/reference/set_github_pat.html" class="external-link">set_github_pat</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co"># or </span></span>
+<span><span class="fu">credentials</span><span class="fu">::</span><span class="fu">set_github_pat</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># or</span></span>
 <span><span class="fu">gitcreds</span><span class="fu">::</span><span class="fu"><a href="https://gitcreds.r-lib.org/reference/gitcreds_get.html" class="external-link">gitcreds_set</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -366,11 +370,11 @@ files. Each time the package is attached via library() or require(),
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>May 2026</p>
+  <p>June 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.5.0</p>
+  <p>EJAM Version 3.2022.0</p>
 </div>
 
     </footer>

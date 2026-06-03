@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="What is EJAM?">
 <meta name="description" content="What is EJAM?">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -96,7 +97,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>What is EJAM?</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/whatis.Rmd" class="external-link"><code>vignettes/whatis.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/vignettes/whatis.Rmd" class="external-link"><code>vignettes/whatis.Rmd</code></a></small>
       <div class="d-none name"><code>whatis.Rmd</code></div>
     </div>
 
@@ -216,6 +217,15 @@ The only more accurate approaches are: 1) using areal apportionment of
 blocks (not blockgroups), which is very slow, or 2) using very
 high-resolution grids (for example, 30x30 meter grids), which require
 large amounts of storage and compute time.</p>
+<p>For EJAM v3, American Samoa, Guam, the Northern Mariana Islands, and
+the U.S. Virgin Islands can appear in blockgroup datasets, EJSCREEN
+export files, and map-facing blockgroup data with demographic fields
+kept as missing and partial EPA environmental fields where available.
+Point-buffer/radius analysis in those Island Areas should return no-data
+results because EJAM does not add Island Area blocks to the Census block
+helper files. See <a href="island-areas.html">Island Areas in EJAM
+v3</a> for coverage notes and a summary of Island Area layers observed
+in the live EJSCREEN app in May 2026.</p>
 <p>EJAM calculations also take note of which residences are near which
 sites, to avoid double-counting people in the summary statistics but
 still allow a user to view results for one site at a time. This is
@@ -241,15 +251,17 @@ offline in January 2025, with no plans for any further development or
 updates. The same underlying dataset was used in EJAM version 2.32.0 and
 EJSCREEN version 2.32 released in late 2024. Non-EPA development of EJAM
 through version 2.32.8 (April 2026) still used that same dataset, based
-on American Community Survey (ACS) data for 2018-2022. In 2026, EJAM
-version 2.5.0 incorporated the 2020-2024 ACS data, providing EJSCREEN
-with demographic data two years newer than was in the last version EPA
-released.</p>
-<p>EJAM version 2.5.0 (released May 2026) is based on American Community
-Survey (ACS) data representing the five-year period of 2020-2024
-(released by the Census Bureau 2026-01-29). The ACS data are the basis
-for blockgroup resolution estimates of demographic and other data on
-residential populations and households.</p>
+on American Community Survey (ACS) data for 2018-2022. In 2026, the EJAM
+v3 release line (versions v3.YYYY.0) introduced an annual ACS-vintage
+update — 2018-2022, 2019-2023, and 2020-2024 — so EJAM/EJSCREEN
+demographics can be up to two years newer than the last version EPA
+released. Each EJAM release uses one ACS vintage (see its
+<code>VersionACS</code>).</p>
+<p>EJAM version 3.2022.0 (released June 2026) is based on American
+Community Survey (ACS) data representing the five-year period of
+2018-2022 (released by the Census Bureau 2023-12-07). The ACS data are
+the basis for blockgroup resolution estimates of demographic and other
+data on residential populations and households.</p>
 <p>Census 2020 block population counts are used for the approximate
 distribution of residents within a given blockgroup.</p>
 </div>
@@ -261,11 +273,11 @@ distribution of residents within a given blockgroup.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>May 2026</p>
+  <p>June 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.5.0</p>
+  <p>EJAM Version 3.2022.0</p>
 </div>
 
     </footer>

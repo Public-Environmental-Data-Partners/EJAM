@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Updating Documentation">
 <meta name="description" content="Steps for updating package documentation and the pkgdown site">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">2.5.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -96,7 +97,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Updating Documentation</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-update-documentation.Rmd" class="external-link"><code>vignettes/dev-update-documentation.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/vignettes/dev-update-documentation.Rmd" class="external-link"><code>vignettes/dev-update-documentation.Rmd</code></a></small>
       <div class="d-none name"><code>dev-update-documentation.Rmd</code></div>
     </div>
 
@@ -171,7 +172,7 @@ files prefixed with <code>utils_</code>, such as
 named that way).</p></li>
 <li><p>It can be useful to check generated help files with
 <code>tools::checkDocFiles(".")</code> after running
-<code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code>.</p></li>
+<code>roxygen2::roxygenise()</code>.</p></li>
 </ul>
 </div>
 <div class="section level3">
@@ -200,11 +201,21 @@ editing the <code>.R</code> file directly.</p></li>
 </h3>
 <ul>
 <li><p>Articles (called vignettes here) are written and edited as
-<code>.Rmd</code> files in the <code>vignettes</code> folder. You can
-test one using <code><a href="https://pkgdown.r-lib.org/reference/build_articles.html" class="external-link">pkgdown::build_article()</a></code> before rebuilding
-the whole pkgdown site.</p></li>
-<li><p>New articles or renamed files also require edits to
-<code>_pkgdown.yml</code>.</p></li>
+<code>.Rmd</code> files in the <code>vignettes</code> folder. Edit the
+<code>.Rmd</code> source file, not the generated HTML article.</p></li>
+<li><p>Preview one article after editing it, before rebuilding the whole
+site:</p></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/pkgdown_preview_article.html">pkgdown_preview_article</a></span><span class="op">(</span><span class="st">"installing"</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/pkgdown_preview_article.html">pkgdown_preview_article</a></span><span class="op">(</span><span class="st">"vignettes/dev-update-documentation.Rmd"</span><span class="op">)</span></span></code></pre></div>
+<p>These preview helpers build into a temporary folder by default, so
+they do not publish anything and do not require committing generated
+HTML. They also try to use the Pandoc bundled with RStudio if a terminal
+R session cannot find Pandoc on its own.</p>
+<ul>
+<li>New articles or renamed files also require edits to
+<code>_pkgdown.yml</code>.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -223,8 +234,8 @@ as a PDF document built from a Word document.</li>
 <li>To run a spell check and review terms flagged as possible
 problems:</li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">spelling</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/spelling//reference/spell_check_package.html" class="external-link">spell_check_package</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">spelling</span><span class="fu">::</span><span class="fu">spell_check_package</span><span class="op">(</span><span class="op">)</span></span>
 <span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>      frq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">found</span>, <span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span>, </span>
 <span>      word <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">word</span><span class="op">)</span></span>
@@ -237,7 +248,7 @@ check whether it is actually a problem.</p></li>
 <li><p>To update <code>inst/WORDLIST</code>, the list of words ignored
 by spell checking:</p></li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>    <span class="co"># 1. Add obvious dataset names documented to the WORDLIST</span></span>
 <span>    <span class="va">datanames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">'\\.R$'</span>, <span class="st">''</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">'^data_'</span>, <span class="st">''</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="st">'./R'</span>, pattern <span class="op">=</span> <span class="st">'^data_.*R'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="va">datanames</span> <span class="op">=</span> <span class="va">datanames</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'aaaaaaaaaaaaa|xxxxxxxxxx'</span>, <span class="va">datanames</span><span class="op">)</span><span class="op">]</span></span>
@@ -251,50 +262,100 @@ by spell checking:</p></li>
 <div class="section level3">
 <h3 id="website-web-pages-providing-all-of-the-above-in-html-format">Website: web pages providing all of the above in HTML format<a class="anchor" aria-label="anchor" href="#website-web-pages-providing-all-of-the-above-in-html-format"></a>
 </h3>
-<p>The web-based documentation pages should be updated right after any
-of the above are edited or created. These pkgdown-based web pages should
-be updated by someone who is managing the package, as follows:</p>
+<p>The web-based documentation pages are built from source files by
+<a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> and published by GitHub Actions. The public site
+should be served from the root of the <code>gh-pages</code> branch.
+Source branches such as <code>main</code>, <code>development</code>, and
+release branches should not publish from <code>main/docs</code> and
+should not commit generated <code>docs/</code> HTML.</p>
+<p>In normal documentation work, edit and commit source files such as
+<code>.R</code>, <code>.Rmd</code>, <code>README.Rmd</code>,
+<code>NEWS.md</code>, <code>DESCRIPTION</code>, <code>man/*.Rd</code>
+inputs generated from roxygen comments, and <code>_pkgdown.yml</code>.
+Do not edit <code>docs/</code> or the <code>gh-pages</code> branch by
+hand; those are generated deployment outputs.</p>
+<div class="section level4">
+<h4 id="normal-workflow-for-a-vignette-edit">Normal workflow for a vignette edit<a class="anchor" aria-label="anchor" href="#normal-workflow-for-a-vignette-edit"></a>
+</h4>
+<ol style="list-style-type: decimal">
+<li><p>Edit the relevant <code>.Rmd</code> file in
+<code>vignettes/</code>.</p></li>
+<li><p>Preview just that article:</p></li>
+</ol>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/pkgdown_preview_article.html">pkgdown_preview_article</a></span><span class="op">(</span><span class="st">"installing"</span><span class="op">)</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li><p>If the article is new, renamed, removed, or moved in the
+navigation, update <code>_pkgdown.yml</code>.</p></li>
+<li><p>Commit and push the source files only. Do not add generated
+<code>docs/</code> files.</p></li>
+<li><p>Let GitHub Actions build and publish the public site after the
+source branch is pushed or merged into the branch that controls the
+desired documentation version.</p></li>
+</ol>
 <ul>
 <li><p>The first step in updating those web pages is updating the YAML
 file. The web-based documentation pages are organized by a file called
 <code>_pkgdown.yml</code> – see
-<code><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">usethis::edit_pkgdown_config()</a></code> – which specifies the
+<code>usethis::edit_pkgdown_config()</code> – which specifies the
 contents of the documentation web pages, such as the names of any
 vignette files to be shown in the list of articles, which functions are
 included in the reference pages index, and related settings. Any new,
 removed, or renamed functions, vignettes, datasets, or changes in what
 is exported may require edits to <code>_pkgdown.yml</code>.</p></li>
-<li><p>The pkgdown-based web pages should be updated by someone who is
-managing the package, and they should use the
-<code>EJAM:::pkgdown_update()</code> function. Use
-<code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code> so that the pages get rebuilt by the
-<a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> R package, based on the above files and all other
-documentation from <code>.R</code> and <code>.md</code> files. For more
-information about using the <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> package to create
-documentation in the form of web pages, see <a href="https://pkgdown.r-lib.org/articles/pkgdown.html" class="external-link">pkgdown
-articles</a>. The documentation is created and updated using the
+<li><p>For local checks, <code>EJAM:::pkgdown_update()</code> is still
+available as a maintainer utility. Treat it as a local preview/check
+workflow, not the publishing workflow. It can still be useful when you
+want broader local checks around roxygen documentation, README
+rendering, pkgdown site structure, or stale <code>.Rd</code>
+files.</p></li>
+<li><p>For a faster local site preview without publishing:</p></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/pkgdown_preview_site.html">pkgdown_preview_site</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/pkgdown_preview_site.html">pkgdown_preview_site</a></span><span class="op">(</span>pkgdown_dev_mode <span class="op">=</span> <span class="st">"devel"</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li><p>Public publishing is handled by
+<code>.github/workflows/pkgdown.yaml</code>. GitHub Pages should be
+configured to publish from the root of the <code>gh-pages</code> branch.
+The workflow builds the site in a runner and deploys generated HTML to
+<code>gh-pages</code>.</p></li>
+<li>
+<p>The normal publishing paths are:</p>
+<ul>
+<li>
+<code>main</code> builds the current release documentation at the
+site root.</li>
+<li>
+<code>development</code> builds development documentation under
+<code>dev/</code>.</li>
+<li>version tags and GitHub releases build historical documentation
+under the tag name, such as <code>v3/</code>.</li>
+<li>manual workflow dispatch can build a chosen ref into a chosen
+folder.</li>
+</ul>
+</li>
+<li><p>The workflow file must exist on the branch that GitHub Actions
+uses for the event being triggered. For normal public updates, make sure
+the workflow change has reached the default branch before expecting
+future <code>main</code> pushes to rebuild the root documentation
+site.</p></li>
+<li><p>To publish historical docs for an older release, use a tag or
+release such as <code>v3</code> and deploy it to the same folder name.
+The resulting URLs should look like:</p></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span>dev<span class="sc">/</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span>v3<span class="sc">/</span></span></code></pre></div>
+<ul>
+<li><p>The documentation is created and updated using the
 <a href="https://roxygen2.r-lib.org/" class="external-link">roxygen2</a> and <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> R packages, which
 read information from the <code>.R</code> files in the R folder, from
-<code>.Rmd</code> file vignettes (also called articles) in the vignettes
-folder, and from the <code>_pkgdown.yml</code> file in the root folder
-of the source package. The <a href="https://roxygen2.r-lib.org/" class="external-link">roxygen2</a> package reads the
-<code>.R</code> files to create the <code>.Rd</code> files in the
-<code>man/</code> directory. The <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> package uses all
-those files as well as <code>DESCRIPTION</code> and others, to generate
-a website for the package, first created as files in the
-<code>docs/</code> folder, which are then published via GitHub Actions
-and the GitHub repository settings to be hosted on GitHub Pages. The
-packages <a href="https://devtools.r-lib.org/" class="external-link">devtools</a> and <a href="https://usethis.r-lib.org" class="external-link">usethis</a> are also
-relevant.</p></li>
-<li><p>The package’s GitHub repository settings define which branch and
-folder hold the HTML files for deployment. See the GitHub Pages and
-pkgdown documentation for details.</p></li>
-<li><p>The package’s GitHub Actions can be used to deploy the web pages
-when triggered by an event such as a push to the main branch.</p></li>
-<li><p>Depending on which folder you publish/deploy from, you might have
-to remove that folder from <code>.gitignore</code> in case it was listed
-there via some <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> or <a href="https://usethis.r-lib.org" class="external-link">usethis</a>
-function.</p></li>
+<code>.Rmd</code> file vignettes (also called articles) in the
+<code>vignettes</code> folder, and from <code>_pkgdown.yml</code>.
+<a href="https://roxygen2.r-lib.org/" class="external-link">roxygen2</a> creates <code>.Rd</code> files in
+<code>man/</code>; <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> creates HTML files for GitHub
+Pages.</p></li>
 <li><p>The URL where documentation is published at any given time should
 be recorded in the <code>URL</code> field of the
 <code>DESCRIPTION</code> file in the source package root. That URL can
@@ -307,6 +368,7 @@ archived, unpublished, or otherwise obsolete.</p></li>
 </ul>
 </div>
 </div>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
@@ -314,11 +376,11 @@ archived, unpublished, or otherwise obsolete.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>May 2026</p>
+  <p>June 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 2.5.0</p>
+  <p>EJAM Version 3.2022.0</p>
 </div>
 
     </footer>
