@@ -427,7 +427,7 @@ Example dry-run for a manual publish:
 
 ```{r, eval=FALSE}
 release_number <- EJAM:::ejamdata_required_tag()
-new_datasets_folder <- "~/Downloads"
+new_datasets_folder <- "path/to/folder/of/new/arrow/files"
 filepaths_arrow <- file.path(new_datasets_folder, "bgej.arrow")
 
 EJAM:::datasets_arrow_publish(
