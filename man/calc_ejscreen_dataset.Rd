@@ -344,7 +344,10 @@ variables:
 \item EJAM_TRACT_WEIGHT_SOURCE: decennial2020 or acs. decennial2020 matches
 legacy EJSCREEN tract-to-blockgroup apportionment.
 \item AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
-\item CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
+\item CENSUS_API_KEY: REQUIRED. Used by functions that download ACS data or ACS table
+metadata (and that download boundaries/shapefiles for FIPS from some sources).
+tidycensus (>= 1.8) now errors without a key, even for metadata via load_variables().
+Set it once with \code{tidycensus::census_api_key("YOUR KEY", install = TRUE)}, then restart R.
 \item EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
 \item EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
 \item EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.

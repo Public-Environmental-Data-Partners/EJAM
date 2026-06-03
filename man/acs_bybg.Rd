@@ -78,8 +78,10 @@ See newer ACSdownload::get_acs_new() as used in calc_blockgroupstats_acs() etc.,
 which will download ACS nationwide data by table
 instead of using acs_bybg(), which queried the API state-by-state.
 
-acs_bybg() probably requires \href{https://api.census.gov/data/key_signup.html}{getting and specifying an API key for Census Bureau} ! (at least if query is large).
-see \href{https://walker-data.com/tidycensus/}{tidycensus package help}  envt var CENSUS_API_KEY
+acs_bybg() requires a \href{https://api.census.gov/data/key_signup.html}{Census Bureau API key}:
+tidycensus (>= 1.8) now errors (no longer just warns) without one. Set it once with
+\code{tidycensus::census_api_key("YOUR KEY", install = TRUE)} (stores envt var CENSUS_API_KEY),
+then restart R. See \href{https://walker-data.com/tidycensus/}{tidycensus package help} and ?tidycensus::census_api_key.
 
 NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 
