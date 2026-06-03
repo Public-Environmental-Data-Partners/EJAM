@@ -203,7 +203,7 @@ these update groups to decide what must be rebuilt, validated, or only checked.
    `formulas_ejscreen_acs_disability`, `formulas_ejscreen_demog_index`,
    `avg.in.us`, `high_pctiles_tied_with_min`, and `testoutput*`.
    In practice, `dataload_dynamic()` uses the `ejamdata_required_tag` field in
-   DESCRIPTION to find the required `ejamdata` release tag, such as `v2.5.0`,
+   DESCRIPTION to find the required `ejamdata` release tag, such as `v3`,
    for Arrow assets. This tag usually matches the EJAM package version for an
    annual data release, but can differ for patch releases. `bgej.arrow` is part
    of this annual release bundle and is additionally checked against the
@@ -218,8 +218,8 @@ these update groups to decide what must be rebuilt, validated, or only checked.
    care because it is tied to Census 2020 geography. Related state/place
    geography objects such as `states_shapefile`, `stateinfo2`, and
    `censusplaces` should also be checked when their FIPS or boundaries change.
-   For the v2.5.0 Island Area decision and live EJSCREEN layer availability
-   notes, see [Island Areas in EJAM v2.5.0](island-areas.html).
+   For the v3 Island Area decision and live EJSCREEN layer availability
+   notes, see [Island Areas in EJAM v3](island-areas.html).
 
 4. **Block Geography Updates** include block-level geometry/index files such as
    `blockpoints`, `quaddata`, and `blockid2fips`. These change only when block
@@ -460,7 +460,7 @@ those settings carefully, especially the year, storage backend, stage formats,
 force flags, Island Areas settings, provisional-input flags, and prior
 validation target.
 
-For ACS2024/v2.5.0 and later annual/release runs, AS/GU/MP/VI rows are added by
+For ACS2024/v3 and later annual/release runs, AS/GU/MP/VI rows are added by
 default at the blockgroup dataset, EJSCREEN export, and map-data visibility
 level, in the same general style as the legacy EPA/EJScreen export. The default
 source for Island Areas row IDs, area fields, and available environmental
@@ -684,7 +684,7 @@ Useful checks include:
 - if optional EJScreen-style lookup exports were requested, they include
   `PCTILE`, `REGION`, `0`, `100`, `mean`, and `std`, with EJScreen field names
   rather than EJAM `rname` columns.
-- for ACS2024/v2.5.0, Island Areas AS/GU/MP/VI are present in `bg_acsdata`,
+- for ACS2024/v3, Island Areas AS/GU/MP/VI are present in `bg_acsdata`,
   `blockgroupstats`, `bgej`, `ejscreen_export`, and `ejscreen_export_statepct`
   unless `EJAM_INCLUDE_ISLANDAREAS_DATA = "FALSE"`.
 
@@ -853,7 +853,7 @@ Confirm the exact metadata values before saving, especially ACS vintage,
 Census vintage, EJSCREEN/EJAM version, data source notes, and provisional reuse
 notes. `bgej` should be checked and saved through the pipeline stage files, then
 published as `bgej.arrow` in the `ejamdata` release tag recorded in
-DESCRIPTION as `ejamdata_required_tag`, such as `v2.5.0` for EJAM 2.5.0. A
+DESCRIPTION as `ejamdata_required_tag`, such as `v3.2024.0` for the matching EJAM v3 release. A
 local `data/bgej.arrow` copy can be useful for testing from source, but it is
 ignored for package builds and should not be treated as normal package data.
 

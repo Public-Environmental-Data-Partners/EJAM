@@ -1,11 +1,11 @@
 ---
-title: "Island Areas in EJAM v2.5.0"
-description: "How EJAM v2.5.0 treats American Samoa, Guam, Northern Mariana Islands, and the U.S. Virgin Islands"
+title: "Island Areas in EJAM v3"
+description: "How EJAM v3 treats American Samoa, Guam, Northern Mariana Islands, and the U.S. Virgin Islands"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Island Areas in EJAM v2.5.0}
+  %\VignetteIndexEntry{Island Areas in EJAM v3}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -23,14 +23,14 @@ knitr::opts_chunk$set(
 
 # Scope
 
-For EJAM v2.5.0, "Island Areas" means American Samoa (AS), Guam
+For EJAM v3, "Island Areas" means American Samoa (AS), Guam
 (GU), the Commonwealth of the Northern Mariana Islands (MP), and the
 U.S. Virgin Islands (VI). Puerto Rico is not treated as an Island Area
 for this purpose because Puerto Rico is included in both Census 2020 and ACS
 data used by EJAM. The U.S. Minor Outlying Islands (UM) are not included in
 EJSCREEN/EJAM.
 
-EJAM v2.5.0 includes AS/GU/MP/VI at the blockgroup dataset, EJSCREEN export,
+EJAM v3 includes AS/GU/MP/VI at the blockgroup dataset, EJSCREEN export,
 and map-data visibility level. Demographic fields are kept as missing where
 ACS data are not available, and partial EPA environmental fields may be present
 where EPA provided them.
@@ -42,7 +42,7 @@ blockgroup counts are 77 for AS, 58 for GU, 135 for MP, and 416 for VI
 (686 total). By default, 2020 Island Areas Census DHC demographic values are
 not used in `bg_acsdata` or downstream EJSCREEN-compatible outputs.
 
-EJAM v2.5.0 does not add Island Area Census blocks to the block helper files
+EJAM v3 does not add Island Area Census blocks to the block helper files
 used for point-buffer/radius analysis. A report or radius analysis in an Island
 Area should not crash, but should normally return no-data results when no
 block centroids are available in the area analyzed.
@@ -87,7 +87,7 @@ non-null score in every Island Area.
 | Colonias | No | HUD Colonias Communities, Texas State Colonias, and New Mexico State Colonias were not available. |
 | Designated Disadvantaged Communities | Yes, all checked layers | Justice40/CEJST and EPA IRA Disadvantaged Communities. |
 
-# Practical Meaning for EJAM v2.5.0
+# Practical Meaning for EJAM v3
 
 EJAM should allow Island Area blockgroups to appear in datasets, exports, and
 maps where blockgroup-level data are available. EJAM should not imply that the

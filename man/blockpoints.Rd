@@ -16,7 +16,7 @@ internal point, like a centroid, of each block.
 It also has a column
 called blockid that can join it to other block datasets.
 
-For EJAM v2.5.0, AS/GU/MP/VI can appear in \link{blockgroupstats}, EJSCREEN
+For EJAM v3, AS/GU/MP/VI can appear in \link{blockgroupstats}, EJSCREEN
 export files, and map-facing blockgroup datasets, but this block helper
 file intentionally does not include Island Area blocks. Point-buffer/radius
 or block-weighted polygon analysis for AS/GU/MP/VI should return no-data

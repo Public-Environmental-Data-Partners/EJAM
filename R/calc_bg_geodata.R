@@ -19,7 +19,7 @@
 #' for calculations. Island Areas AS/GU/MP/VI may keep missing
 #' `arealand`/`areawater` when the archived EPA reference does not provide those
 #' values; that exception is limited to Island Area visibility rows because they
-#' are not used for block-weighted radius analysis in v2.5.0.
+#' are not used for block-weighted radius analysis in v3.
 #'
 #' @param yr ACS/TIGER vintage year.
 #' @param bgfips optional vector of blockgroup FIPS codes that define the

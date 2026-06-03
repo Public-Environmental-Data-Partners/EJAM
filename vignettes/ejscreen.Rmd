@@ -57,7 +57,7 @@ EJAM-related repositories.
         Also [at
         archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
 
-    -   [Island Areas in EJAM v2.5.0](island-areas.html){target="_blank"}:
+    -   [Island Areas in EJAM v3](island-areas.html){target="_blank"}:
         notes on AS/GU/MP/VI dataset visibility, missing ACS demographics,
         block/radius limits, and live EJSCREEN layer availability observed in
         May 2026.

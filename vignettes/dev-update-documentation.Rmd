@@ -233,7 +233,7 @@ EJAM:::pkgdown_preview_site(pkgdown_dev_mode = "devel")
     - `main` builds the current release documentation at the site root.
     - `development` builds development documentation under `dev/`.
     - version tags and GitHub releases build historical documentation under the
-      tag name, such as `v2.5.0/`.
+      tag name, such as `v3/`.
     - manual workflow dispatch can build a chosen ref into a chosen folder.
 
 -   The workflow file must exist on the branch that GitHub Actions uses for the
@@ -242,13 +242,13 @@ EJAM:::pkgdown_preview_site(pkgdown_dev_mode = "devel")
     to rebuild the root documentation site.
 
 -   To publish historical docs for an older release, use a tag or release such
-    as `v2.5.0` and deploy it to the same folder name. The resulting URLs should
+    as `v3` and deploy it to the same folder name. The resulting URLs should
     look like:
 
 ```{r, eval=FALSE}
 https://public-environmental-data-partners.github.io/EJAM/
 https://public-environmental-data-partners.github.io/EJAM/dev/
-https://public-environmental-data-partners.github.io/EJAM/v2.5.0/
+https://public-environmental-data-partners.github.io/EJAM/v3/
 ```
 
 -   The documentation is created and updated using the `{roxygen2}` and

@@ -33,19 +33,21 @@ source had no valid drinking-water score for that blockgroup, while
 \itemize{
 \item Each year this should be re-created as for the latest version.
 \item See \code{attributes(blockgroupstats)} to confirm vintage of each dataset
-\item EJAM v2.5.0 used indicators derived from 2020-2024 ACS data.
+\item EJAM v3 (the v3.YYYY.0 annual-vintage line) uses indicators derived
+from the ACS 5-year vintage of each release; see
+\code{attributes(blockgroupstats)$acs_version} (e.g. 2018-2022, 2019-2023, or 2020-2024).
 \item EJAM v2.32.x starting in August 2024 and through 2025 to early 2026, used demographic indicators derived from 2018-2022 ACS data.
 \item Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
 }
 \item GEOGRAPHIC SCOPE:
 \itemize{
 \item Data here includes States, DC, Puerto Rico (PR), and, for EJAM
-v2.5.0, the Island Areas AS/GU/MP/VI at the blockgroup dataset,
+v3, the Island Areas AS/GU/MP/VI at the blockgroup dataset,
 EJSCREEN export, and map-data visibility level.
 \item Puerto Rico is included in both Census 2020 and ACS survey data, so it
 has ACS-derived demographics in the \code{blockgroupstats} dataset.
 \item The American Community Survey (ACS) does not include AS/GU/MP/VI. For
-EJAM v2.5.0, the default EJSCREEN-compatible pipeline appends AS/GU/MP/VI
+EJAM v3, the default EJSCREEN-compatible pipeline appends AS/GU/MP/VI
 rows with demographic fields, population, and demographic indexes kept as
 \code{NA}, while using the archived EPA EJScreen ACS2022 reference for row
 IDs, area fields, and partial EPA environmental fields where available.
