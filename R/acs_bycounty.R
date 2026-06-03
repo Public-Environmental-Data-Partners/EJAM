@@ -58,7 +58,7 @@ acs_bycounty <- function(myvars = "B03002_001", myst = "DE", yr = NULL) {
 
   # >>> check if census api key available *** ####
   if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
-    warning("envt var CENSUS_API_KEY not found - tidycensus::get_acs() may require having set up a census api key - see ?tidycensus::census_api_key  ")
+    warning("envt var CENSUS_API_KEY not found - tidycensus (>= 1.8) now requires a Census API key and tidycensus::get_acs() will error without one. Set it with tidycensus::census_api_key(\"YOUR KEY\", install = TRUE) - see ?tidycensus::census_api_key  ")
   }
 
   data_county <- tidycensus::get_acs(

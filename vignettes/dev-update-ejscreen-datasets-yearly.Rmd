@@ -324,7 +324,7 @@ RStudio/source-based workflows and GitHub Actions. The main settings are:
 | `EJAM_REFRESH_DECENNIAL_BGWTS` | `"TRUE"` to ignore and overwrite the cached decennial blockgroup weights. |
 | `EJAM_TIGER_BG_CACHE_DIR` | Optional local folder for downloaded Census TIGER/Line block group zip files. If unset, EJAM uses a durable user cache folder. |
 | `AWS_PROFILE`, `AWS_REGION` | Used by the AWS CLI for S3-backed runs. |
-| `CENSUS_API_KEY` | Used by ACS/Census download helpers where needed. |
+| `CENSUS_API_KEY` | **Required.** Used by ACS/Census helpers for data *and metadata*. tidycensus (>= 1.8) errors without a key, even for `load_variables()`. Set once with `tidycensus::census_api_key("YOUR KEY", install = TRUE)`, then restart R. See `?tidycensus::census_api_key`. |
 | `EJAM_FORCE_ACS` | `"TRUE"` to redownload raw ACS and rebuild ACS stages. |
 | `EJAM_FORCE_BG_ACSDATA` | `"TRUE"` to rebuild `bg_acsdata` from saved raw ACS. |
 | `EJAM_FORCE_BG_GEODATA` | `"TRUE"` to redownload/rebuild the Census/TIGER `bg_geodata` stage. |
@@ -413,6 +413,14 @@ changes. The script in `data-raw/datacreate_names_of_indicators.R` uses
 
 
 ## Run a Fresh ACS Update
+
+> **Prerequisite: a Census API key.** As of tidycensus (>= 1.8) the Census Bureau
+> requires an API key for all requests, including the `load_variables()` metadata lookup
+> EJAM uses to resolve ACS table geography. tidycensus now *errors* (no longer warns)
+> without one. Get a free key at <https://api.census.gov/data/key_signup.html> and set it
+> once with `tidycensus::census_api_key("YOUR KEY", install = TRUE)`, then restart R.
+> (The bulk ACS download via `ACSdownload::get_acs_new()` reads Census summary files, but
+> the metadata step still needs the key.)
 
 Start from a clean branch. For ACS 2020-2024 using local checkpoints:
 

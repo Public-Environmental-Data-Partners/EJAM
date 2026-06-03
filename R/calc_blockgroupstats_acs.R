@@ -13,6 +13,14 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 
   if (missing(tables_acs)) {tables_acs <- as.vector(tables_ejscreen_acs)}
   if (missing(yr)) {yr <- acs_endyear(guess_census_has_published = T)}
+  # Census API key is now mandatory: tidycensus (>= 1.8) errors (no longer warns) without
+  # a key, INCLUDING for metadata via load_variables(). Fail fast with an actionable message.
+  if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
+    stop("A Census API key is required: tidycensus (>= 1.8) now errors without one, ",
+         "including for metadata via tidycensus::load_variables(). Set one once with ",
+         'tidycensus::census_api_key("YOUR KEY", install = TRUE), then restart R. ',
+         "See ?tidycensus::census_api_key")
+  }
   x = tidycensus::load_variables(yr, dataset = dataset, cache = T)
   x$table = gsub("^(.*)_.*$", "\\1", x$name)
   x = x[x$table %in% tables_acs, ]
@@ -66,6 +74,16 @@ calc_blockgroupstats_acs <- function(yr,
   if (!requireNamespace("ACSdownload", quietly = TRUE)) {
     stop("requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload and documented at https://ejanalysis.github.io/ACSdownload/")
   }
+  # Fail fast on a missing Census API key: tidycensus (>= 1.8) errors without one, even for
+  # the load_variables() metadata lookup used by acs_table_info() below. Checking here (before
+  # the prior-year fallback ladder) means any later acs_table_info() error is about data
+  # availability, not the key, so the ladder can safely treat it as "try a prior year".
+  if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
+    stop("A Census API key is required to build ACS data: tidycensus (>= 1.8) now errors ",
+         "without one. Set it once with ",
+         'tidycensus::census_api_key("YOUR KEY", install = TRUE), then restart R. ',
+         "See ?tidycensus::census_api_key")
+  }
   # library(EJAM); library(dplyr); library(data.table)
 
   if (missing(yr)) {
@@ -76,15 +94,27 @@ calc_blockgroupstats_acs <- function(yr,
     ## BLOCK GROUP SURVEY DATA HANDLED DIFFERENTLY/ SEPARATELY FROM
     ## Tract resolution survey data that has to be allocated to blockgroups.
     ## Check available resolution of each table here.
-    x <- acs_table_info(yr = yr, tables_acs = tables, dataset = "acs5")
-    if (all(is.na(x$geography))) {
-      # tidycensus package has not yet updated the geo table, perhaps, as was the case as of April 27, 2026 for the ACS 2020-2024 data released in Jan 2026.
-      # assume geo resolution of each table number is same as prior year, for which it is already in the tidycensus pkg,
-      # and will hope the table numbers are still the same which is not always true
-      x <- acs_table_info(yr = as.numeric(yr) - 1, tables_acs = tables, dataset = "acs5")
-      if (all(is.na(x$geography))) {
-        # still a problem?? know it is available for 2023 dataset, and will hope the table numbers are still the same which is not always true
-        x <- acs_table_info(yr = 2023, tables_acs = tables, dataset = "acs5")
+    # Get table geography metadata, falling back to a prior year if the newest vintage is
+    # not yet served by tidycensus. tidycensus (>= 1.8) may *error* (not just return NA
+    # geography) for a year it does not support, so catch errors here too and treat them
+    # the same as all-NA geography. (A missing key already stopped us above, so an error
+    # here is about data availability, not the key.) We assume table numbers + geography
+    # resolution are unchanged from the prior year, which is usually but not always true.
+    geo_info <- function(year) {
+      tryCatch(acs_table_info(yr = year, tables_acs = tables, dataset = "acs5"),
+               error = function(e) {
+                 message("tidycensus could not return ACS table metadata for ", year,
+                         " (", conditionMessage(e), "); will try a prior year.")
+                 NULL
+               })
+    }
+    needs_fallback <- function(x) is.null(x) || all(is.na(x$geography))
+    x <- geo_info(yr)
+    if (needs_fallback(x)) {
+      x <- geo_info(as.numeric(yr) - 1)
+      if (needs_fallback(x)) {
+        # known available for the 2023 dataset
+        x <- geo_info(2023)
       }
     }
     tables_resolution = x$geography[ match(tables, x$table)] # geo res of first hit in x info, per table

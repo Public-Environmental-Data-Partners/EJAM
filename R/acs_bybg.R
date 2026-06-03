@@ -21,8 +21,10 @@
 #' which will download ACS nationwide data by table
 #' instead of using acs_bybg(), which queried the API state-by-state.
 #'
-#' acs_bybg() probably requires [getting and specifying an API key for Census Bureau](https://api.census.gov/data/key_signup.html) ! (at least if query is large).
-#'   see [tidycensus package help](https://walker-data.com/tidycensus/)  envt var CENSUS_API_KEY
+#' acs_bybg() requires a [Census Bureau API key](https://api.census.gov/data/key_signup.html):
+#'   tidycensus (>= 1.8) now errors (no longer just warns) without one. Set it once with
+#'   `tidycensus::census_api_key("YOUR KEY", install = TRUE)` (stores envt var CENSUS_API_KEY),
+#'   then restart R. See [tidycensus package help](https://walker-data.com/tidycensus/) and ?tidycensus::census_api_key.
 #'
 #' NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 #' ```
@@ -203,7 +205,7 @@ acs_bybg <- function(
   # NEED API KEY POSSIBLY, FOR LARGE QUERIES AT LEAST
 
   if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
-    warning("envt var CENSUS_API_KEY not found - tidycensus::get_acs() may require having set up a census api key - see ?tidycensus::census_api_key  ")
+    warning("envt var CENSUS_API_KEY not found - tidycensus (>= 1.8) now requires a Census API key and tidycensus::get_acs() will error without one. Set it with tidycensus::census_api_key(\"YOUR KEY\", install = TRUE) - see ?tidycensus::census_api_key  ")
   }
 
   # if (!exists("get_acs")) {  # now in Imports of DESCRIPTION file
