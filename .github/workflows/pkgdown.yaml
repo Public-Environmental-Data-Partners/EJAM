@@ -149,7 +149,12 @@ jobs:
           pkgdown::init_site(pkg)
           pkgdown::build_favicons(pkg)
           pkgdown::build_home(pkg)
-          pkgdown::build_reference(pkg)
+          # examples = FALSE: don't execute every function's @examples during the
+          # docs deploy. EJAM examples download the large ejamdata arrow data and
+          # run analyses, making the build extremely slow and fragile in CI. The
+          # reference pages still show the example code; example correctness is
+          # covered by R CMD check, not the docs deploy.
+          pkgdown::build_reference(pkg, examples = FALSE)
           pkgdown::build_articles(pkg)
           pkgdown::build_tutorials(pkg)
           pkgdown::build_news(pkg)
