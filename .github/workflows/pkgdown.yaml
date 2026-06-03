@@ -120,6 +120,12 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::pkgdown, local::.
+          # Install only hard deps (+ pkgdown) for the docs build. Avoids building
+          # optional Suggests like the GitHub-only `AOI` package, which fails to
+          # build in CI ("lazy loading failed for package 'AOI' / object '%>%' not
+          # found") and was breaking every pkgdown deploy. The docs don't need
+          # Suggests (EJAM vignettes are eval=FALSE; AOI examples are \dontrun).
+          dependencies: '"hard"'
           needs: website
 
       - name: Build site
@@ -143,7 +149,12 @@ jobs:
           pkgdown::init_site(pkg)
           pkgdown::build_favicons(pkg)
           pkgdown::build_home(pkg)
-          pkgdown::build_reference(pkg)
+          # examples = FALSE: don't execute every function's @examples during the
+          # docs deploy. EJAM examples download the large ejamdata arrow data and
+          # run analyses, making the build extremely slow and fragile in CI. The
+          # reference pages still show the example code; example correctness is
+          # covered by R CMD check, not the docs deploy.
+          pkgdown::build_reference(pkg, examples = FALSE)
           pkgdown::build_articles(pkg)
           pkgdown::build_tutorials(pkg)
           pkgdown::build_news(pkg)
