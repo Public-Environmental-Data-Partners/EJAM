@@ -36,7 +36,7 @@ frs_make_programid_lookup <- function(x) {
 
   setkey(x, pgm_sys_id, program, REGISTRY_ID)
   attr(x, 'released') <- Sys.Date()
-  # print('To use in package,  usethis::use_data(frs_by_programid, overwrite=TRUE)  ')
+  # Obsolete: publish frs_by_programid.arrow; do not save as package .rda data.
 
   invisible(x)
   return(x) #

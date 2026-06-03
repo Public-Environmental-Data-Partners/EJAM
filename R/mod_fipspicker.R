@@ -152,11 +152,11 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
   ns <- NS(id)
 
   # accept user specified or global_defaults-specified vector of city FIPS codes to show initially
-  default_cities_picked <- EJAM:::global_or_param("default_cities_picked")
+  default_cities_picked <- global_or_param("default_cities_picked")
   default_cities_picked <- as.numeric(default_cities_picked) # remove the leading zeroes since they are matched here without those but user probably passed it WITH leading zeroes as from  name2fips(c("akutan,ak", "brooklyn,ny"), usegrep = T)
-  default_cities_picked[is.na(default_cities_picked)] <- "" # convert NA back to "" as needed here, in case it was just "" which is the global_defaults setting of EJAM:::global_or_param("default_cities_picked")
+  default_cities_picked[is.na(default_cities_picked)] <- "" # convert NA back to "" as needed here, in case it was just "" which is the global_defaults setting of global_or_param("default_cities_picked")
 
-  fipspicker_fips_type2pick_choices_default <- EJAM:::global_or_param("fipspicker_fips_type2pick_choices_default")
+  fipspicker_fips_type2pick_choices_default <- global_or_param("fipspicker_fips_type2pick_choices_default")
   if (is.null(fipspicker_fips_type2pick_choices_default)) {
     warning("unable to read global default or parameter for 'fipspicker_fips_type2pick_choices_default' in fipspicker module")
     ### radioButtons() gives error in testing if choices is NULL because global defaults weren't loaded
@@ -172,30 +172,30 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
 
   pickers <- tagList(
     radioButtons(inputId = ns("fips_type2pick"), label = "What kinds of areas do you want to use?", #  compare or download
-                 selected = EJAM:::global_or_param("fipspicker_fips_type2pick_default"),
+                 selected = global_or_param("fipspicker_fips_type2pick_default"),
                  inline = TRUE,
-                 choices = fipspicker_fips_type2pick_choices_default # EJAM:::global_or_param("fipspicker_fips_type2pick_choices_default")
+                 choices = fipspicker_fips_type2pick_choices_default # global_or_param("fipspicker_fips_type2pick_choices_default")
     ),
     actionButton(inputId = ns("reset_button"), label = "Clear all selections/ Reset"),
 
-    checkboxInput(inputId = ns("all_regions_button"), "All EPA Regions?", value = EJAM:::global_or_param("fipspicker_all_regions_button_defaultchecked")),
+    checkboxInput(inputId = ns("all_regions_button"), "All EPA Regions?", value = global_or_param("fipspicker_all_regions_button_defaultchecked")),
     checkboxGroupInput(inputId = ns("regions_picked"), label = "EPA Region", width = '100%',
                        selected = NULL, # set in server
                        choices = 1:10,  # regions_table is available in server not in UI function # all_regions_choices, # sort(unique(cities_table$eparegion)),
                        inline = TRUE),
 
-    checkboxInput(inputId = ns("all_states_button"), "All States?", value = EJAM:::global_or_param("fipspicker_all_states_button_defaultchecked")),
+    checkboxInput(inputId = ns("all_states_button"), "All States?", value = global_or_param("fipspicker_all_states_button_defaultchecked")),
     selectizeInput(inputId = ns("states_picked"), label = "Select State",
-                   selected = EJAM:::global_or_param("default_states_picked"),
+                   selected = global_or_param("default_states_picked"),
                    choices = NULL, # unique(cities_table$ST),
-                   options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE),
+                   options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE),
                    multiple = T),
 
-    checkboxInput(inputId = ns("all_counties_button"), "All Counties?", value = EJAM:::global_or_param("fipspicker_all_counties_button_defaultchecked")),
+    checkboxInput(inputId = ns("all_counties_button"), "All Counties?", value = global_or_param("fipspicker_all_counties_button_defaultchecked")),
     selectizeInput(inputId = ns("counties_picked"), label = "Select Counties",
-                   selected = EJAM:::global_or_param("default_counties_picked"),
+                   selected = global_or_param("default_counties_picked"),
                    # options = list(maxOptions = 254, closeAfterSelect = TRUE), # no limit by default. TX has the most of any 1 state, 254 Counties. But all in US >3k.
-                   options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_counties_picked")), # to avoid displaying so many counties if you click "all in state" just to be able to query all places in state by name typed
+                   options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_counties_picked")), # to avoid displaying so many counties if you click "all in state" just to be able to query all places in state by name typed
                    choices = NULL, # unique(cities_table$countyname_ST),
                    multiple = T),
 
@@ -203,7 +203,7 @@ fipspicker_module_ui <- function(id, showtable = FALSE) {
     selectizeInput(inputId = ns("cities_picked"), label = "Select Cities/Places",
                    selected = default_cities_picked,
                    choices = NULL,       ## (40,000 PLACES !)# loads faster if NULL and then update it via server  . to cities_table$placename,
-                   options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE),
+                   options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE),
                    multiple = T)
   )
   #################################### #
@@ -279,9 +279,9 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
       # DATA TABLES SETUP - Tables of places, counties, states, regions info ####
 
       # accept user specified or global_defaults-specified vector of city FIPS codes to show initially
-      default_cities_picked <- EJAM:::global_or_param("default_cities_picked")
+      default_cities_picked <- global_or_param("default_cities_picked")
       default_cities_picked <- as.numeric(default_cities_picked) # remove the leading zeroes since they are matched here without those but user probably passed it WITH leading zeroes as from  name2fips(c("akutan,ak", "brooklyn,ny"), usegrep = T)
-      default_cities_picked[is.na(default_cities_picked)] <- "" # convert NA back to "" as needed here, in case it was just "" which is the global_defaults setting of EJAM:::global_or_param("default_cities_picked")
+      default_cities_picked[is.na(default_cities_picked)] <- "" # convert NA back to "" as needed here, in case it was just "" which is the global_defaults setting of global_or_param("default_cities_picked")
 
       states_table <- stateinfo2[stateinfo2$ST != "US", c("statename", "FIPS.ST", "ST", "REGION", "is.usa.plus.pr",
                                                           "is.state", "is.contiguous.us", "is.island.areas")] # etc. etc.
@@ -338,7 +338,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
       #
       ## these get reset by the reset button (which triggers at launch?), but ok to have them here to start with also
 
-      if (EJAM:::global_or_param("fipspicker_all_regions_button_defaultchecked")) {
+      if (global_or_param("fipspicker_all_regions_button_defaultchecked")) {
         regions_reset = all_regions_choices
       } else {
         regions_reset = NULL # or this could be some set of initial default selections but not needed
@@ -374,15 +374,15 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         ## ---------- REGIONS RESET ####
 
         # show and check/uncheck the "ANY/ALL regions" button
-        if (EJAM:::global_or_param("fipspicker_all_regions_button_defaultshow")) {
+        if (global_or_param("fipspicker_all_regions_button_defaultshow")) {
           shinyjs::show(("all_regions_button"))
         } else {
           shinyjs::hide(("all_regions_button")) #
         }
         updateCheckboxInput(session = session, inputId = ("all_regions_button"),
-                            value = EJAM:::global_or_param("fipspicker_all_regions_button_defaultchecked"))
+                            value = global_or_param("fipspicker_all_regions_button_defaultchecked"))
         # reset which regions are available (all_regions_choices) and selected
-        if (EJAM:::global_or_param("fipspicker_all_regions_button_defaultchecked")) {
+        if (global_or_param("fipspicker_all_regions_button_defaultchecked")) {
           regions_reset = all_regions_choices
         } else {
           regions_reset = NULL
@@ -391,10 +391,10 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
                                  choices = all_regions_choices,
                                  selected = regions_reset,
                                  inline = TRUE)
-        if (EJAM:::global_or_param("fipspicker_all_regions_button_defaultchecked")) {
+        if (global_or_param("fipspicker_all_regions_button_defaultchecked")) {
           shinyjs::hide(("regions_picked"))
         } else {
-          if (EJAM:::global_or_param("fipspicker_fips_type2pick_default") == "EPA Regions") {
+          if (global_or_param("fipspicker_fips_type2pick_default") == "EPA Regions") {
             shinyjs::show(("regions_picked"))
           } else {
             shinyjs::hide(("regions_picked"))
@@ -403,7 +403,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         ## ---------- STATES RESET ####
 
         # show and check/uncheck the "ANY/ALL states" box
-        if (EJAM:::global_or_param("fipspicker_all_states_button_defaultshow")) {
+        if (global_or_param("fipspicker_all_states_button_defaultshow")) {
           shinyjs::show("all_states_button")
         } else {
           shinyjs::hide("all_states_button")
@@ -416,8 +416,8 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
           states_choices <- all_states_choices[inregions]
         }
         updateCheckboxInput(session = session, inputId = ("all_states_button"),
-                            value = EJAM:::global_or_param("fipspicker_all_states_button_defaultchecked"))
-        if (EJAM:::global_or_param("fipspicker_all_states_button_defaultchecked")) {
+                            value = global_or_param("fipspicker_all_states_button_defaultchecked"))
+        if (global_or_param("fipspicker_all_states_button_defaultchecked")) {
           states_reset = as.vector(states_choices) # all available in regions
         } else {
           states_reset = "" # none at all
@@ -425,11 +425,11 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         updateSelectizeInput(session = session, inputId = ("states_picked"),  server = TRUE,
                              choices = states_choices,
                              selected = states_reset,
-                             options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE)) #
-        if (EJAM:::global_or_param("fipspicker_all_states_button_defaultchecked")) {
+                             options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE)) #
+        if (global_or_param("fipspicker_all_states_button_defaultchecked")) {
           shinyjs::hide(("states_picked"))
         } else {
-          if (EJAM:::global_or_param("fipspicker_fips_type2pick_default") == "States") {
+          if (global_or_param("fipspicker_fips_type2pick_default") == "States") {
             shinyjs::show(("states_picked"))
           } else {
             shinyjs::hide(("states_picked"))
@@ -438,13 +438,13 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         ## ---------- COUNTIES RESET ####
 
         # show and check/uncheck the "ANY/ALL counties" box
-        if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultshow")) {
+        if (global_or_param("fipspicker_all_counties_button_defaultshow")) {
           shinyjs::show("all_counties_button")
         } else {
           shinyjs::hide("all_counties_button")
         }
         updateCheckboxInput(session = session, inputId = ("all_counties_button"),
-                            value = EJAM:::global_or_param("fipspicker_all_counties_button_defaultchecked"))
+                            value = global_or_param("fipspicker_all_counties_button_defaultchecked"))
         # reset which counties are available (counties_choices) and selected
 
         instates  <- counties_table$ST %in% states_reset
@@ -452,20 +452,20 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         # names(counties_choices) <- counties_table$countyname_ST[instates]
 
         counties_choices <- all_counties_choices[instates]
-        if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultchecked")) {
+        if (global_or_param("fipspicker_all_counties_button_defaultchecked")) {
           counties_reset = as.vector(counties_choices) # all available
         } else {
-          counties_reset = EJAM:::global_or_param("default_counties_picked")# ""
+          counties_reset = global_or_param("default_counties_picked")# ""
         }
         updateSelectizeInput(session = session, inputId = ("counties_picked"), server = TRUE,
                              choices = counties_choices, # probably all
                              selected = counties_reset,  # probably none
-                             options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_counties_picked"), closeAfterSelect = TRUE)
+                             options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_counties_picked"), closeAfterSelect = TRUE)
         )
-        if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultchecked")) {
+        if (global_or_param("fipspicker_all_counties_button_defaultchecked")) {
           shinyjs::hide(("counties_picked"))
         } else {
-          if (EJAM:::global_or_param("fipspicker_fips_type2pick_default") == "Counties") {
+          if (global_or_param("fipspicker_fips_type2pick_default") == "Counties") {
             shinyjs::show(("counties_picked"))
           } else {
             shinyjs::hide(("counties_picked"))
@@ -483,8 +483,8 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         updateSelectizeInput(session = session, inputId = ("cities_picked"), server = TRUE,
                              choices = all_cities_withcountyname_choices,
                              selected =  default_cities_picked,
-                             options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE) )
-        if (EJAM:::global_or_param("fipspicker_fips_type2pick_default") == "Cities or Places") {
+                             options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE) )
+        if (global_or_param("fipspicker_fips_type2pick_default") == "Cities or Places") {
           shinyjs::show(("cities_picked"))
         } else {
           shinyjs::hide(("cities_picked"))
@@ -530,33 +530,33 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
 
         ########################################## #
         # regions
-        if (EJAM:::global_or_param("fipspicker_all_regions_button_defaultshow")) {
+        if (global_or_param("fipspicker_all_regions_button_defaultshow")) {
           shinyjs::show(("all_regions_button"))
         } else {
           shinyjs::hide(("all_regions_button"))
         }
-        updateCheckboxInput(session, inputId = "all_regions_button", value = EJAM:::global_or_param("fipspicker_all_regions_button_defaultchecked"))
+        updateCheckboxInput(session, inputId = "all_regions_button", value = global_or_param("fipspicker_all_regions_button_defaultchecked"))
         updateCheckboxGroupInput(session, inputId = "regions_picked", choices = 1:10, selected = all_regions_choices) # ALL
         shinyjs::hide(("regions_picked"))
         ########################################## #
         # states
-        if (EJAM:::global_or_param("fipspicker_all_states_button_defaultshow")) {
+        if (global_or_param("fipspicker_all_states_button_defaultshow")) {
           shinyjs::show(("all_states_button"))
         } else {
           shinyjs::hide(("all_states_button"))
         }
-        updateCheckboxInput(session, inputId = ("all_states_button"), value = EJAM:::global_or_param("fipspicker_all_states_button_defaultchecked"))
+        updateCheckboxInput(session, inputId = ("all_states_button"), value = global_or_param("fipspicker_all_states_button_defaultchecked"))
         updateSelectizeInput(session, inputId = "states_picked", server = TRUE,
                              choices = all_states_choices, selected = as.vector(all_states_choices)) # ALL
         shinyjs::hide(("states_picked"))
         ########################################## #
         # counties
-        if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultshow")) {
+        if (global_or_param("fipspicker_all_counties_button_defaultshow")) {
           shinyjs::show(("all_counties_button"))
         } else {
           shinyjs::hide(("all_counties_button"))
         }
-        updateCheckboxInput(session, inputId = ("all_counties_button"), value = EJAM:::global_or_param("fipspicker_all_counties_button_defaultchecked"))
+        updateCheckboxInput(session, inputId = ("all_counties_button"), value = global_or_param("fipspicker_all_counties_button_defaultchecked"))
         updateSelectizeInput(session, inputId = "counties_picked", choices = all_counties_choices,
                              selected = "", server = TRUE) # MIGHT NOT AGREE WITH DEFAULT ABOVE
         shinyjs::hide(("counties_picked"))
@@ -670,7 +670,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
           updateSelectizeInput(session, inputId = "counties_picked", choices = all_counties_choices, selected = "", server = TRUE)
 
           # show/hide these units
-          if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultshow")) {
+          if (global_or_param("fipspicker_all_counties_button_defaultshow")) {
             shinyjs::show(("all_counties_button")) ## or DISABLE - UNREALISTIC ?
           } else {
             shinyjs::hide(("all_counties_button"))
@@ -783,7 +783,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
                                choices = all_states_choices)
 
           if (input$fips_type2pick == "States") {
-            if (EJAM:::global_or_param("fipspicker_all_states_button_defaultshow")) {
+            if (global_or_param("fipspicker_all_states_button_defaultshow")) {
               shinyjs::show("all_states_button")
               shinyjs::hide("states_picked") #
             } else {
@@ -813,7 +813,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
                                choices = all_counties_choices,
                                selected = "") # clears them
           if (input$fips_type2pick == "Counties") {
-            if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultshow")) {
+            if (global_or_param("fipspicker_all_counties_button_defaultshow")) {
               shinyjs::show("all_counties_button")
             } else {
               shinyjs::hide("all_counties_button")
@@ -830,7 +830,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
                                choices = all_counties_choices,
                                selected = as.vector(all_counties_choices))  # BUT THIS WOULD PICK ALL WITHOUT FILTERING BY STATES/REGIONS PICKED EARLIER ***
           if (input$fips_type2pick == "Counties") {
-            if (EJAM:::global_or_param("fipspicker_all_counties_button_defaultshow")) {
+            if (global_or_param("fipspicker_all_counties_button_defaultshow")) {
               shinyjs::show("all_counties_button")
             } else {
               shinyjs::hide("counties_picked") # ALL will not be shown? even if you want all within 1 state? do not need to see in the selectize window
@@ -872,7 +872,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         updateSelectizeInput(session, inputId = ("states_picked"), server = TRUE,
                              selected = new_states_picked,
                              choices = states_choices,
-                             options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE)
+                             options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE)
         )
         # updateCheckboxInput(session, inputId = ("all_states_button"),
         #                     value = ifelse(all(as.vector(all_states_choices) %in% new_states_picked), TRUE, FALSE)
@@ -912,7 +912,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         updateSelectizeInput(session, inputId = ("counties_picked"), server = TRUE,
                              selected = new_counties_picked,
                              choices = counties_choices,
-                             options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE)
+                             options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_states_picked"), closeAfterSelect = TRUE)
         )
         updateCheckboxInput(session, inputId = ("all_counties_button"),
                             value = ifelse(all(as.vector(all_counties_choices) %in% new_counties_picked), TRUE, FALSE)
@@ -955,7 +955,7 @@ fipspicker_module_server <- function(id, testing_this_module = FALSE, reactdat, 
         updateSelectizeInput(session, inputId = ("cities_picked"), server = TRUE, # much faster if server = TRUE for such a long list
                              selected = new_cities_picked,
                              choices = cities_choices,
-                             options = list(maxOptions = EJAM:::global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE)
+                             options = list(maxOptions = global_or_param("fipspicker_maxOptions_default_cities_picked"), closeAfterSelect = TRUE)
         )
         updateCheckboxInput(session, inputId = ("all_cities_button"),
                             value = FALSE # NEVER ALLOW ALL CITIES - TOO MANY AND NOT USEFUL # ifelse(all(as.vector(all_cities_withcountyname_choices) %in% new_cities_picked), TRUE, FALSE)

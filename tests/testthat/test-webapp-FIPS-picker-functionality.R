@@ -1,2 +1,1 @@
-
-shinytest2_webapp_functionality("FIPS-picker")
+shinytest2_webapp_functionality_individual("FIPS-picker")

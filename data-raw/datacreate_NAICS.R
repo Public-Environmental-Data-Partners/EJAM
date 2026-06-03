@@ -1,11 +1,12 @@
 
 # This script can check for a newer version of NAICS data
 # only relevant every 5 years, such as in 2027 expected changes in naics codes
-# but vintage of codes must match what is used in FRS data as used in package
+# but vintage of codes must match what is used in FRS data as used in package,
+# and EPA data about NAICS of each facility in FRS may not update on same schedule!
 
 cat("NAICS and FRS-related datasets must be updated in an integrated way. \n")
 cat("Must check which version of NAICS codes are recorded in EPA FRS data \n ")
-cat("As of 10/2025, the 2017 NAICS codes were being used in EJAM because
+cat("As of 5/2026, the 2017 NAICS codes were being used in EJAM because
 the copy of EPA FRS being used by EJAM is somewhat outdated but the NAICS codes in it
 were clearly be 2017-style NAICS not 2022-style codes.\n")
 
@@ -41,10 +42,10 @@ cat("See data-raw/datacreate_naicstable.R etc. \n")
 
 cat("See ?naics_download() for examples of comparing versions \n")
 
+vintage_naics_codes_to_get = 2017
+NAICS <- naics_download(year = vintage_naics_codes_to_get)
 
-NAICS <- naics_download()
-
-metadata_add_and_use_this(NAICS)
+metadata_add_and_use_this("NAICS")
 
 dataset_documenter(varname = "NAICS",
                    title = "NAICS (DATA) named vector of all NAICS code numbers and industry name for each",
@@ -53,8 +54,10 @@ dataset_documenter(varname = "NAICS",
 like '22132 - Sewage Treatment Facilities' or '22 - Utilities'
 Revised codes have been published every five years, such as in 2017 and 2022.
 
+", paste0("This dataset is based on the NAICS codes released in", vintage_naics_codes_to_get, ".)","
+
 The version used should match the version used in assigning codes to the EPA FRS facilities.
-As of 10/2025, the 2017 NAICS codes were being used in EJAM because
+As of 5/2026, the 2017 NAICS codes were being used in EJAM because
 the copy of EPA FRS being used by EJAM is somewhat outdated but the NAICS codes in it
 were clearly be 2017-style NAICS not 2022-style codes.
 

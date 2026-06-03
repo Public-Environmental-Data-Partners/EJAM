@@ -14,7 +14,7 @@
 #' @keywords internal
 #'
 create_interactive_table <- function(out,
-                                     reports = EJAM:::global_or_param("default_reports"),
+                                     reports = global_or_param("default_reports"),
                                      sitereport_download_buttons_colname = "Download EJAM Report",
                                      sitereport_download_buttons_show = TRUE,
                                      # can limit columns to just some important subset:

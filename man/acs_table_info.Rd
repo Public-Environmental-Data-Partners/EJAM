@@ -20,3 +20,6 @@ and also prints to console the first variable of each table
 \description{
 utility to download and print some info about each variable in each ACS 5yr table
 }
+\seealso{
+\code{\link[=url_acs_table_info]{url_acs_table_info()}}
+}

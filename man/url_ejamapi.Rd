@@ -17,6 +17,7 @@ url_ejamapi(
   ifna = "https://ejanalysis.com",
   baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?",
   sitenumber = "each",
+  version = NULL,
   ...
 )
 }
@@ -62,6 +63,10 @@ overall summary report (assuming >1 sites were provided).
 
 Specifying sitenumber as a number like 3 means a report based on the third site
 found in the inputs (third point or third fips or third polygon).}
+
+\item{version}{optional EJAM version tag (e.g. "3.2024.0") sent to the API as
+version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
+resolves to the installed package Version (from DESCRIPTION).}
 
 \item{...}{a named list of other query parameters passed to the API,
 to allow for expansion of allowed parameters}
@@ -129,8 +134,7 @@ Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejam
  browseURL(z[1])
 }
 
-
 }
 \seealso{
-\code{\link[=ejamapi]{ejamapi()}}
+\code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}}
 }

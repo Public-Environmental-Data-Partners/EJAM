@@ -47,7 +47,7 @@ Most of what you might want to do is shown in documentation showing examples of 
 
 ## HOW SETTINGS GET PASSED TO THE WEB APP
 
-Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `ejamapp()` aka `run_app()` as parameters, to override those global default settings for the duration of the app. Using `ejamapp()` parameters allows experienced analysts to customize how the web app works without having to edit any files. It can be used on a laptop, for example interactively with custom settings. For example, one can change the radius, the type of sites to analyze, default name of the analysis, report title/logo, etc., or to override caps such as limits on file upload size or number of points:
+Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `ejamapp()` as parameters, to override those global default settings for the duration of the app. Using `ejamapp()` parameters allows experienced analysts to customize how the web app works without having to edit any files. It can be used on a laptop, for example interactively with custom settings. For example, one can change the radius, the type of sites to analyze, default name of the analysis, report title/logo, etc., or to override caps such as limits on file upload size or number of points:
 
 ```{r run-app1, eval=FALSE}
 ejamapp(

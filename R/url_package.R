@@ -19,6 +19,13 @@
 #'   - https://ejanalysis.org/data
 #'   - https://ejanalysis.org/docs
 #'
+#' @param docs_version optional, only used when type = "docs". A docs subpath such as
+#'   "dev", "v3.2024.0", "v3.2023.0", or "v3.2022.0" to append to the canonical root
+#'   docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
+#'   `EJAM_DOCS_BASE_URL` is set (as the pkgdown CI workflow does while building a
+#'   given version), that value overrides everything so rendered Rd/Rmd links stay
+#'   within the version being built. `desc_or_alias = "alias"` shortcuts always point
+#'   to the root docs site only.
 #' @param domain obsolete parameter - do not use
 #' @details
 #' See https://ejanalysis.com/ejam-code   for a list of URLs
@@ -31,10 +38,10 @@
 #'  url_package("docs")
 #'
 #'  url_package("code")
-#'  url_package("code", get_full_url=T)
+#'  url_package("code", get_full_url = TRUE)
 #'
 #'  url_package("data")
-#'  url_package("data", get_full_url=T)
+#'  url_package("data", get_full_url = TRUE)
 #'
 #'  url_package("docs", desc_or_alias="alias")
 #'  url_package("code", desc_or_alias="alias")
@@ -49,6 +56,7 @@ url_package <- function(
     type = c('code', 'data', 'docs')[1],
     get_full_url = FALSE,
     desc_or_alias = c("desc", "alias")[1],
+    docs_version = NULL,
     domain = NULL
 ) {
 
@@ -115,6 +123,22 @@ url_package <- function(
       both_urls <- as.vector(unlist(strsplit(gsub(" |\n", "", both_urls), ",")))
       one_url <- grep(domain, both_urls, value = T)
     }
+  }
+
+  # Versioned docs support (type = "docs", desc path only). Within a pkgdown CI build,
+  # EJAM_DOCS_BASE_URL overrides the docs base so rendered Rd/Rmd links stay inside the
+  # version being built. Otherwise docs_version (e.g. "dev", "v3.2024.0") appends a
+  # subpath to the canonical root docs URL. Alias shortcuts always point to root only.
+  if (type == "docs" && desc_or_alias == "desc") {
+    env_base <- Sys.getenv("EJAM_DOCS_BASE_URL")
+    if (nzchar(env_base)) {
+      return(sub("/+$", "", env_base))
+    }
+    base <- sub("/+$", "", one_url[1])
+    if (!is.null(docs_version) && nzchar(docs_version)) {
+      base <- paste0(base, "/", sub("^/+|/+$", "", docs_version))
+    }
+    return(base)
   }
 
   if (get_full_url) {

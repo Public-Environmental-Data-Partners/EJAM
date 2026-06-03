@@ -11,8 +11,9 @@
 #'      - blockid
 #'      - BLOCK_X, BLOCK_Y, BLOCK_Z  (not lat, lon)
 #'
-#'     localtree is the index made from quaddata
-#'     (QuadTree class, via SearchTrees pkg), not a data.table
+#'     `indexblocks()` creates a quadtree index from `quaddata` and stores it
+#'     in the package cache. The index is a QuadTree object from the SearchTrees
+#'     package, not a data.table.
 #'
 #' @seealso [indexblocks()] [EJAM]
 NULL

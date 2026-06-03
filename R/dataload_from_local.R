@@ -17,7 +17,7 @@
 #' @param folder_local_source Your local folder path. see [dataload_dynamic()]
 #' @param justchecking  use defaults. DEPRECATED
 #' @param testing  use defaults
-#' @param silent set to TRUE to stop cat() printing to console like when running tests
+#' @param silent set to TRUE to stop message() printing to console like when running tests
 #' @param return_data_table whether the [read_ipc_file()] should return a table in [data.table](https://r-datatable.com) format (T, the default), or arrow (F)
 #' @return vector of paths to files (as derived from varnames) that were
 #'   actually found in folder_local_source,
@@ -42,7 +42,7 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
     varnames <- .arrow_ds_names
   }
 
-  fnames     <- paste0(sub("_arrow","", varnames), ".arrow") # varnames are like bgid2fips, ext is .rda, fnames are like bgid2fips.rda
+  fnames     <- paste0(sub("_arrow","", varnames), ".arrow") # dynamic datasets are stored as .arrow files, not package .rda data
 
   localpaths  <- paste0(folder_local_source, '/', fnames)
   localpaths_found <- NULL
@@ -60,7 +60,7 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
       # NOT in memory  ################################################################ #
 
       if (justchecking) {
-        if (!silent) {cat(varnames_i, spacing_i,
+        if (!silent) {message(varnames_i, spacing_i,
             'NOT already in memory. ')}
       }
 
@@ -71,11 +71,11 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
         localpaths_found <- c(localpaths_found, localpaths[i])
 
         if (justchecking) {
-          if (!silent) {cat(varnames_i, spacing_i,
+          if (!silent) {message(varnames_i, spacing_i,
               'is available locally on disk at', localpaths[i], '\n')}
         } else {
           # not justchecking
-          if (!silent) {cat(varnames_i, spacing_i,
+          if (!silent) {message(varnames_i, spacing_i,
                             'is loading from local folder', '...')}
           # load it into the environment
           suppressWarnings(
@@ -88,21 +88,23 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
               envir = envir
             )
           )
-          suppressWarnings(
-            eval(parse(text = paste0(varnames_i,'$metadata <- NULL')))
-          )
+          loaded_object <- get(varnames_i, envir = envir, inherits = FALSE)
+          if ("metadata" %in% names(loaded_object)) {
+            loaded_object$metadata <- NULL
+            assign(varnames_i, loaded_object, envir = envir)
+          }
           if (!exists(varnames_i, envir = envir)) {
-            if (!silent) {cat(    "Problem - file found but failed to assign to memory/ envir: ", varnames_i, "\n")}
+            if (!silent) {message(    "Problem - file found but failed to assign to memory/ envir: ", varnames_i, "\n")}
             warning("Problem - file found but failed to assign to memory/ envir: ", varnames_i)
           } else {
-            if (!silent) {cat("done.\n")}
+            if (!silent) {message("done.\n")}
           }
         }
       } else {
         ##################### #
         # ...NOT on local disk ##################### #
 
-        if (!silent) {cat(varnames_i, spacing_i,
+        if (!silent) {message(varnames_i, spacing_i,
             'is NOT found locally on disk at', localpaths[i], '\n')}
         next
       }
@@ -118,7 +120,7 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
         if (file.exists(localpaths[i] )) {
           # in memory, AND on local disk ##################### #
 
-          if (!silent) {cat(varnames_i, spacing_i,
+          if (!silent) {message(varnames_i, spacing_i,
               'was available locally on disk at', localpaths[i], '\n')}
         } else {
           # in memory, NOT on local disk ##################### #
@@ -128,7 +130,7 @@ dataload_from_local <- function(varnames = .arrow_ds_names[1:3],
         }
         next
       } else {
-        if (!silent) {cat(varnames_i, spacing_i,
+        if (!silent) {message(varnames_i, spacing_i,
             'was already in memory\n')}
       }
 

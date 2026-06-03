@@ -20,7 +20,8 @@
 #' @param ylab_people label on y axis for this type of plot
 #'
 #' @examples
-#' ejam2histogram(testoutput_ejamit_1000pts_1miles, 'Demog.Index', distn_type='Sites', data_type='raw')
+#' ejam2histogram(testoutput_ejamit_1000pts_1miles, 'Demog.Index',
+#'   distn_type = 'Sites', data_type = 'raw')
 #'
 #' @export
 #'

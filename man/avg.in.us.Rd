@@ -5,7 +5,7 @@
 \alias{avg.in.us}
 \title{avg.in.us (DATA) national averages of key indicators, for convenience}
 \format{
-An object of class \code{data.frame} with 1 rows and 37 columns.
+An object of class \code{data.frame} with 1 rows and 55 columns.
 }
 \usage{
 avg.in.us

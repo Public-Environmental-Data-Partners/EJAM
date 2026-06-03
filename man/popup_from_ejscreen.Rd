@@ -6,7 +6,7 @@
 \usage{
 popup_from_ejscreen(
   out,
-  linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header),
+  linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header),
   verbose = FALSE,
   site_method = NULL
 )

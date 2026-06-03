@@ -18,7 +18,7 @@ table_xls_from_ejam(
   radius_or_buffer_in_miles = NULL,
   radius_or_buffer_description = NULL,
   buffer_desc = "Selected Locations",
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   ok2plot = TRUE,
   report_plot = NULL,
   plot_distance_by_group = FALSE,
@@ -33,7 +33,7 @@ table_xls_from_ejam(
   heatmap_cuts = c(80, 90, 95),
   heatmap_colors = c("yellow", "orange", "red"),
   heatmap2_colnames = NULL,
-  heatmap2_cuts = c(1.009, 2, 3),
+  heatmap2_cuts = c(1.05, 2, 3),
   heatmap2_colors = c("yellow", "orange", "red"),
   graycolnames = NULL,
   graycolor = "gray",
@@ -156,8 +156,9 @@ or returns just the full path/file name of where it was saved if save_now = TRUE
 Almost identical to \code{\link[=ejam2excel]{ejam2excel()}}
 }
 \examples{
-\donttest{
-  EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles, fname = tempfile(fileext = ".xlsx"))
+\dontrun{
+  EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles,
+    fname = tempfile(fileext = ".xlsx"))
   }
 }
 \keyword{internal}

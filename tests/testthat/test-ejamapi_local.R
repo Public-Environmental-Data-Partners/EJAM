@@ -15,8 +15,14 @@
 
 # testthat::skip("skip API tests until ready")
 
-# start the API in background - takes a few seconds to be ready
-ejamapi_local()
+testthat::skip_if_not(
+  identical(tolower(Sys.getenv("EJAM_TEST_LOCAL_API")), "true"),
+  "local draft Plumber API tests require EJAM_TEST_LOCAL_API=true and port 3035"
+)
+
+# Start the API in the background only when these draft-local tests are
+# explicitly requested. The public API tests live in test-ejamapi.R.
+EJAM:::ejamapi_local()
 pause(10)
 test_that("/echo endpoint", {
   endpt <- "echo?msg=heyo"

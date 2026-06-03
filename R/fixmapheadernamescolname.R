@@ -12,15 +12,7 @@
 #' @keywords internal
 #'
 fixmapheadernamescolname <- function(x,
-                                     alias_list = list(
-                                       rname = c("r", "rnames"), #  "friendly" was PHASED OUT as an alias - was CONFUSING TO USE friendly for long elsewhere but rname here
-                                       longname = c("long", "longnames", "full", "description"),
-                                       shortlabel = c("short", "shortname", "shortnames", "shortlabels", "labels", "label"),
-                                       acsname = c('acs', 'acsnames'),
-                                       apiname = c('api', "apinames"),
-                                       csvname = c("csv", "csvnames"),
-                                       oldname = c("original", "old", "oldnames")
-                                     )) {
+                                     alias_list = map_headernames_alias_list()) {
 
   # By default, fixnames_aliases() would convert "long" to "lon" for longitudes in a column. but here we are just finding an alias for a colname of map_headernames, so "long" is converted to "longname", which is what we want.
 
@@ -29,7 +21,7 @@ fixmapheadernamescolname <- function(x,
                         alias_list = alias_list
   )
 
-  # akas <- list(api = 'apiname',
+  # akas <- list(api = 'ejscreen_apinames_old',
   #              csv = 'csvname',
   #              acs = 'acsname',
   #              r =   'rname',

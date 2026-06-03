@@ -33,7 +33,7 @@ a ggplot() object
 Map - points - ggplot2 map of points in the USA - very basic map
 }
 \examples{
-\donttest{
+\dontrun{
   mapfast_gg(testpoints_10)
 
   pts <- read.table(textConnection(

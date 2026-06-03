@@ -38,7 +38,8 @@
 #' }
 #' @return NA
 #'
-#' @export
+#'
+#' @keywords internal
 #'
 ejamapi_local <- function(
 
@@ -57,7 +58,7 @@ ejamapi_local <- function(
                            quiet = FALSE
   ) {
 
-    library(plumber) # was not in DESCRIPTION of EJAM package as of 10/2025
+    # library(plumber) # was in Suggests not Imports of DESCRIPTION of EJAM package as of 5/2025
 
     ## this would be slow to redo - is it really needed?
     ## now the plumber.R file says library(EJAM)
@@ -86,9 +87,9 @@ ejamapi_local <- function(
   }
   ############################# #
 
-  # run the API in the background using callr package
+  # To run the API in the background use callr package by doing the following:
 
-  library(callr)
+  # library(callr)
   x <- callr::r_bg(
     ejamapi_local_here,
     args = list(

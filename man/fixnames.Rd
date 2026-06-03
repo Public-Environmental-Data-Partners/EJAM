@@ -25,7 +25,8 @@ Changes column names to R variable names from original API names in FTP site fil
 \details{
 YOU CAN SPECIFY A TYPE USING AN ALIAS LIKE
 "api" or "long" UNLIKE IN \code{\link[=fixnames_to_type]{fixnames_to_type()}} where
-you had to specify the actual colnames of map_headernames, like "apiname"
+you had to specify the actual colnames of map_headernames, like
+"ejscreen_apinames_old"
 
 NOTE: If you happen to pass the entire data.frame or data.table to this function,
 instead of passing just the colnames, this function will see that and still

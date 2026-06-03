@@ -15,8 +15,14 @@ blockid2fips is a table of all census blocks, with the FIPS codes.
 It also has a column
 called \code{blockid} that can join it to other block datasets.
 
+For EJAM v3, AS/GU/MP/VI can appear in \link{blockgroupstats}, EJSCREEN
+export files, and map-facing blockgroup datasets, but this block helper
+file intentionally does not include Island Area blocks. Point-buffer/radius
+or block-weighted polygon analysis for AS/GU/MP/VI should return no-data
+results rather than block-weighted estimates.
+
 \if{html}{\out{<div class="sourceCode">}}\preformatted{  dataload_dynamic('blockid2fips')
-  
+
   names(blockid2fips)
   dim(blockid2fips)
 }\if{html}{\out{</div>}}

@@ -14,7 +14,7 @@
 ################################################### #################################################### #
 ## NOTES ON URL LINKS/ SITES / REPORTS:
 
-# > reportinfo = EJAM:::global_or_param("default_reports")
+# > reportinfo = global_or_param("default_reports")
 # data.frame(header = sapply(reportinfo, function(x) x$header), text = sapply(reportinfo, function(x) x$text))
 #                header         text
 # 1         EJAM Report       Report
@@ -163,7 +163,8 @@ url_frs_facility <- function(regid = NULL,
                              as_html = FALSE,
                              linktext = "FRS",
                              ifna = "https://www.epa.gov/frs",
-                             baseurl = "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=",
+                             baseurl = paste0("https://frs-public.epa.gov/ords/frs_public2/",
+                             "fii_query_detail.disp_program_facility?p_registry_id="),
                              ...) {
   if (is.null(linktext)) {linktext <- paste0("FRS")}
 
@@ -215,8 +216,10 @@ url_frs_facility <- function(regid = NULL,
 #'
 #' @return data.frame of info about the nearby facilities
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'   # find the one NPL site that is within half a mile of this point
+#'   # Calls a live EJScreen ArcGIS API, so it can fail if that service is
+#'   # unavailable.
 #' frompoints = data.frame(lat = 39.65, lon = -75.73)
 #' radius = 0.5
 #' sitecategory = "npl"
@@ -586,7 +589,7 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #' @param ... unused
 #'
 #' @return URL(s)
-#' @seealso  [url_ejamapi()]  [url_ejscreenmap()]
+#' @seealso [url_ejamapp] [url_ejamapi()]  [url_ejscreenmap()]
 #'   [url_echo_facility()] [url_frs_facility()]  [url_enviromapper()]
 #' @examples
 #' # browseURL(url_ejscreenmap(fips = '10001'))
@@ -666,7 +669,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
 
   ## if new API is down, return general links to info page ### #
   if (TRUE) { # was checking old epa api now obsolete
-    if (EJAM:::global_or_param("ejamapi_is_down")) {
+    if (isTRUE(global_or_param("ejamapi_is_down"))) {
       urlx <- rep('https://ejanalysis.org', length(urlx))
       if (as_html) {
         urlx <- URLencode(urlx)
@@ -965,7 +968,7 @@ url_county_health <- function(fips = NULL, year = 2025,
     })
     countyname <- trimws(gsub(" county", "", countyname))
     countyname <- gsub(" ", "-", countyname)
-    # https://www.countyhealthrankings.org/health-data/maryland/montgomery?year=2023
+    # https://www.countyhealthrankings.org/health-data/maryland/montgomery?year=
     urlx <- paste0(baseurl, statename, "/", countyname, "?year=", year)
     urlx[is.na(fips) | is.na(countyname)] <- NA
     return(urlx)
@@ -1132,8 +1135,8 @@ url_county_equityatlas <- function(fips = NULL, # year = 2025,
   #    county fips (or NA if state was input), if want county report
   #    state fips (or NA if invalid ), if want state report
   # is.state <- fipstype(fips) %in% "state" # not needed actually since they are all one or other depending on statereport param
-
-  ## handle NA or length 0 ####
+## or could be a mix of types was input, and state ones become NA via fips2countyfips(fips)
+  ## handle NULL or length 0 ####
   if (is.null(fips) || length(fips) == 0) {
     urlx <- ifna
     return(urlx) # length is 0   # or # return(NULL)  ??
@@ -1578,7 +1581,7 @@ url_county_equityatlas <- function(fips = NULL, # year = 2025,
       )
     }
     # available_county_fips <- fips_counties_from_countynamefull()
-    fips_countyname_full <- fips2countyname(fips, includestate = "ST")
+   suppressWarnings({ fips_countyname_full <- fips2countyname(fips, includestate = "ST")})
     fips_countyname_without_word_county = gsub(" County", "", fips_countyname_full)
     ok_counties <- fips_countyname_without_word_county %in% available_county_names
     if (any(!ok_counties)) {message("Note some of the fips provided specify counties not found in the nationalequityatlas.org data")}
@@ -1749,9 +1752,9 @@ url_naics.com <- function(query = "",
 #' @return URL
 #' @examples
 #' url_github_preview(fold = "docs",
-#'   launch_browser = F, file = "index.html")
+#'   launch_browser = FALSE, file = "index.html")
 #' url_github_preview(fold = "docs/reference",
-#'   launch_browser = F, file = "ejam2excel.html")
+#'   launch_browser = FALSE, file = "ejam2excel.html")
 #'
 #' \dontrun{
 #' #   Compare versions of the HTML summary report:
@@ -1761,17 +1764,18 @@ url_naics.com <- function(query = "",
 #' # in latest main branch on GH (but map does not render using this tool)
 #' url_github_preview(file = myfile)
 #'
-#' # from a specific prior release on GH (but map does not render using this tool)
-#' url_github_preview(file = myfile,
-#'   ver = "v2.32.5", fold = "inst/testdata/examples_of_output")
+#' # from a specific release on GH (but map does not render using this tool)
+#' vernum = paste0("v", desc::desc_get(
+#'   "Version", file = system.file("DESCRIPTION", package="EJAM")))
+#' url_github_preview(ver = vernum, fold = "inst/testdata/examples_of_output", file = myfile)
 #'
 #' # local installed version
-#' browseURL(testdata(myfile, quiet = T))
+#' browseURL(testdata(myfile, quiet = TRUE))
 #' browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )
 #'
 #' # local source package version in checked out branch
-#' browseURL(testdata(myfile, quiet = T, installed = F))
-#' browseURL( file.path(testdatafolder(installed = F), "examples_of_output", myfile) )
+#' browseURL(testdata(myfile, quiet = TRUE, installed = FALSE))
+#' browseURL( file.path(testdatafolder(installed = FALSE), "examples_of_output", myfile) )
 #' }
 #'
 #' @keywords internal
@@ -1818,3 +1822,4 @@ url_ejscreentechdoc = function() {
 
   # could relocate it at some point to serve as normal pdf doc from a web server
 }
+######################################################################### #

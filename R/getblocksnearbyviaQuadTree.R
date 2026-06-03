@@ -62,7 +62,9 @@
 #' @param updateProgress, optional function to update Shiny progress bar
 #'
 #' @examples
-#'   # indexblocks() # if localtree not available yet, quadtree = localtree
+#'   # getblocksnearby() usually creates/reuses the quadtree index for you.
+#'   # To call this lower-level function directly, use:
+#'   # quadtree <- indexblocks()
 #'   x = getblocksnearby(testpoints_1000, radius = 3)
 #' @seealso [ejamit()] [getblocksnearby()]
 #' @import data.table

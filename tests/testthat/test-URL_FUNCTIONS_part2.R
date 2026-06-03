@@ -223,10 +223,13 @@ test_that("url_facilities_nearby uses correct layer number per sitecategory", {
 
 test_that("get_ejscreen_facilities_nearby returns a data.frame (live API)", {
   skip_if_offline()
-  result <- get_ejscreen_facilities_nearby(
-    frompoints = data.frame(lat = 39.65, lon = -75.73),
-    radius = 0.5,
-    sitecategory = "npl"
+  result <- tryCatch(
+    get_ejscreen_facilities_nearby(
+      frompoints = data.frame(lat = 39.65, lon = -75.73),
+      radius = 0.5,
+      sitecategory = "npl"
+    ),
+    httr2_http = function(e) skip(paste("live EJScreen facility API unavailable:", conditionMessage(e)))
   )
   expect_true(is.data.frame(result))
   if (NROW(result) > 0) {
@@ -240,10 +243,13 @@ test_that("get_ejscreen_facilities_nearby returns a data.frame (live API)", {
 test_that("get_ejscreen_facilities_nearby returns empty data.frame when no facilities found (live API)", {
   skip_if_offline()
   # Use a remote location (middle of the ocean) where no TSDF facilities should exist
-  result <- get_ejscreen_facilities_nearby(
-    frompoints = data.frame(lat = 0.0, lon = -150.0),
-    radius = 0.1,
-    sitecategory = "npl"
+  result <- tryCatch(
+    get_ejscreen_facilities_nearby(
+      frompoints = data.frame(lat = 0.0, lon = -150.0),
+      radius = 0.1,
+      sitecategory = "npl"
+    ),
+    httr2_http = function(e) skip(paste("live EJScreen facility API unavailable:", conditionMessage(e)))
   )
   expect_true(is.data.frame(result))
   expect_equal(NROW(result), 0)

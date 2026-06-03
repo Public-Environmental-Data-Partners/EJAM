@@ -21,7 +21,8 @@ url_ejamapi2arglist = function(xurl, add_others = FALSE) {
     # sitepoints = "sitepoints",
     # shapefile = "shape",
     fips = "fips",
-    radius = "buffer"
+    radius = "buffer",
+    version = "version"
 
   )
   params = list() # alist(names(param_info))

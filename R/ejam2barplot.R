@@ -1,7 +1,6 @@
 
 #' Barplot of ratios of residential population (or other) scores to averages - simpler syntax
 #'
-#' @aliases plot_barplot_ratios_ez
 #' @param ejamitout like from [ejamit()]
 #' @param sitenumber default is all sites from ejamitout$results_overall, and
 #'   if an integer, it is the row number to show from ejamitout$results_bysite.

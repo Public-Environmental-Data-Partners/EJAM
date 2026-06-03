@@ -44,7 +44,7 @@ shapefile2blockpoints <- function(polys, addedbuffermiles = 0, blocksnearby = NU
 #' @param oldway whether to use older method that works but may be slower vs newer/draft
 #' @return Block points table for those blocks whose internal point is inside the buffer
 #'   which is just a circular buffer of specified radius if polys are just points.
-#'   This is like the output of  [getblocksnearby()], or [getblocksnearby_from_fips()] if return_shp=F.
+#'   This is like the output of  [getblocksnearby()], or [getblocksnearby_from_fips()] if return_shp = FALSE.
 #'
 #'   The ejam_uniq_id represents which of the input sites is being referred to, and the table
 #'   will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8

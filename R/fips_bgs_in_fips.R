@@ -40,6 +40,7 @@
 #'    "010010201001003", "010010201001004", "010010201001005")
 #'   fips_bgs_in_fips(x)
 #'
+#' \dontrun{
 #' testfipslist <- list(
 #'   blockgroup = testinput_fips_blockgroups,
 #'   tract = testinput_fips_tracts,
@@ -52,13 +53,17 @@
 #'           "53023",
 #'           56) # name2fips('WY')
 #' )
-#' testfipslist = lapply(testfipslist, function(z) {attributes(z) <- NULL; z}) # drop distracting metadata
+#' testfipslist = lapply(testfipslist, function(z) {
+#'   attributes(z) <- NULL
+#'   z
+#' }) # drop distracting metadata
 #'
 #' x  = sapply(testfipslist, function(v) sapply(v, fips_bgs_in_fips ))
 #' x1 = sapply(testfipslist, function(v) sapply(v, EJAM:::fips_bgs_in_fips1))
 #' all.equal(x, x1)
 #' x['tract']
 #' x['county']
+#' }
 #'
 #' @export
 #' @keywords internal

@@ -2,22 +2,51 @@
 % Please edit documentation in R/calc_blockgroupstats_acs.R
 \name{calc_blockgroupstats_acs}
 \alias{calc_blockgroupstats_acs}
-\title{utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs}
+\title{Calculate the ACS-derived blockgroup stage for EJSCREEN annual updates}
 \usage{
 calc_blockgroupstats_acs(
   yr,
   formulas = EJAM::formulas_ejscreen_acs$formula,
   tables = as.vector(EJAM::tables_ejscreen_acs),
-  dropMOE = TRUE
+  dropMOE = TRUE,
+  acs_raw = NULL
 )
 }
 \arguments{
-\item{yr}{end year of 5-year ACS dataset, guesses if not specified}
+\item{yr}{end year of 5-year ACS dataset, guessed if not specified}
+
+\item{formulas}{default is formulas used by EJAM/EJScreen.
+A vector of string formulas such as
+c("pop = B01001_001", "hisp = B03002_012", "pcthisp <- ifelse(pop==0, 0, as.numeric(hisp ) / pop)")}
+
+\item{tables}{default is the key ACS tables needed by EJAM/EJScreen.
+A vector of ACS table numbers, such as c("B01001", "B03002")}
+
+\item{dropMOE}{logical, whether to drop and not retain the margin of error information on every ACS variable}
+
+\item{acs_raw}{optional raw ACS table list or \code{bg_acs_raw} pipeline object
+previously created by \code{\link[=download_bg_acs_raw]{download_bg_acs_raw()}}. If supplied, no ACS download
+is performed for blockgroup-resolution tables.}
 }
 \value{
 data.table, one row per blockgroup, columns bgfips, etc.
 }
 \description{
-utility to calculate annually for EJSCREEN the updated blockgroupstats dataset, by 1st creating blockgroupstats_acs
+Calculate the ACS-derived blockgroup stage for EJSCREEN annual updates
+}
+\details{
+This lower-level helper calculates ACS-derived blockgroup indicators from
+the Census Bureau American Community Survey (ACS) 5-year summary file. In the
+current annual pipeline it is called through \code{\link[=calc_bg_acsdata]{calc_bg_acsdata()}}, which is in
+turn orchestrated by \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} and the staged pipeline
+recipe/config helpers documented in \code{data-raw/run_ejscreen_pipeline_*.R}.
+
+Requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload
+which is documented at https://ejanalysis.github.io/ACSdownload
+}
+\seealso{
+\code{\link[=calc_bg_acsdata]{calc_bg_acsdata()}} \code{\link[=calc_blockgroupstats_from_tract_data]{calc_blockgroupstats_from_tract_data()}}
+\code{\link[=calc_bgej]{calc_bgej()}} \link{formulas_ejscreen_acs}
+\link{formulas_ejscreen_acs_disability} \link{formulas_ejscreen_demog_index}
 }
 \keyword{internal}

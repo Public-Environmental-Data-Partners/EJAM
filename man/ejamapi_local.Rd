@@ -53,3 +53,4 @@ Run API in background to test/develop it
 \seealso{
 \code{\link[=ejamapi]{ejamapi()}} and \code{\link[=url_ejamapi]{url_ejamapi()}}
 }
+\keyword{internal}

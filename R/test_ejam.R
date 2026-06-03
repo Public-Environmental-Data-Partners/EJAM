@@ -5,7 +5,7 @@
 #' @details
 #'  Note these require installing the package [testthat](https://testthat.r-lib.org) first:
 #'
-#'     [EJAM:::test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
+#'     [test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
 #'
 #'     [devtools::test()]           is just a shortcut for [testthat::test_dir()], to run all tests in package.
 #'
@@ -18,32 +18,34 @@
 #' @param ask logical, whether it should ask in RStudio what parameter values to use
 #' @param noquestions logical, whether to avoid questions later on about where to save shapefiles
 #' @param useloadall logical, TRUE means use [pkgload::load_all()], FALSE means use [library()].
-#'   But useloadall=T is essential actually, for unexported functions to be found when they are tested!
+#'   But useloadall = TRUE is essential actually, for unexported functions to be found when they are tested!
 #' @param y_skipbasic logical, if FALSE, runs some basic [ejamit()] functions, but NOT any unit tests.
-#' @param y_latlon logical, if y_skipbasic=F, whether to run the basic [ejamit()] using points
-#' @param y_shp logical, if y_skipbasic=F, whether to run the basic [ejamit()] using shapefile
-#' @param y_fips logical, if y_skipbasic=F, whether to run the basic [ejamit()] using FIPS
+#' @param y_latlon logical, if y_skipbasic = FALSE, whether to run the basic [ejamit()] using points
+#' @param y_shp logical, if y_skipbasic = FALSE, whether to run the basic [ejamit()] using shapefile
+#' @param y_fips logical, if y_skipbasic = FALSE, whether to run the basic [ejamit()] using FIPS
 #' @param y_coverage_check logical, whether to show simple lists of
 #'   which functions might not have unit tests, just based on matching source file and test file names.
 #' @param y_runall logical, whether to run all tests instead of only some groups
 #'   (so y_runsome is FALSE)
 #' @param y_runsome logical, whether to run only some groups of tests (so y_runall is FALSE)
-#' @param run_these if y_runsome = T, a vector of group names to test, like 'fips', 'naics', etc.
-#'   see source code for list
-#' @param skip_these if y_runall = T, a vector of group names to skip, like 'fips', 'naics', etc.
+#' @param run_these if y_runsome = TRUE, a vector of group names to test, like
+#'   'fips', 'naics', 'webapp', etc. The 'webapp' group runs the combined
+#'   shinytest2 functionality suite; use 'webapp_individual' only when debugging
+#'   one-category web app test files.
+#' @param skip_these if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.
 #' @param y_seeresults logical, whether to show results in console
 #' @param y_save logical, whether to save files of results
 #' @param y_tempdir logical, whether to save in tempdir
 #' @param mydir optional folder
 #' @examples
 #' \dontrun{
-#' biglist <- EJAM:::test_ejam()
+#' biglist <- test_ejam()
 #'
-#' biglist <- EJAM:::test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
+#' biglist <- test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
 # uses defaults, except it asks you what folder to save in
 
-#' biglist <- EJAM:::test_ejam(ask = F,
-#'       y_runsome = T, run_these = c('test', 'maps'),
+#' biglist <- test_ejam(ask = FALSE,
+#'       y_runsome = TRUE, run_these = c('test', 'maps'),
 #'       mydir = "~/../Downloads/unit testing") # for example
 #'
 #'   }
@@ -79,7 +81,7 @@ test_ejam <- function(ask = TRUE,
 
   # prevent warning/error in R CMD check about supposedly undefined global variables in data.table code
   total <- passed <- testgroup <- flagged <- flagged_byfile <- failed_bygroup <- seconds_bygroup <- seconds_byfile <- seconds_bygroup_predicted <- untested_cant <- untested_skipped <- warned <- NULL
-  # If done via globalVariables() would throw an error when doing EJAM:::test_ejam(),
+  # If done via globalVariables() would throw an error when doing test_ejam(),
   ## Error in registerNames(names, package, ".__global__", add) :
   ##   The namespace for package "EJAM" is locked; no changes in the global variables list may be made.
   # utils::globalVariables(c(
@@ -100,16 +102,16 @@ test_ejam <- function(ask = TRUE,
 
 # Examples of using it ####
 
-?EJAM:::test_ejam
+?test_ejam
 
-x <- EJAM:::test_ejam()   # it will ask about each parameter, by default
+x <- test_ejam()   # it will ask about each parameter, by default
 
-x <- EJAM:::test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
+x <- test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
 # uses defaults, except it asks you what folder to save in
 
-x <- EJAM:::test_ejam(F)  # no questions, just defaults, i.e. these:
+x <- test_ejam(F)  # no questions, just defaults, i.e. these:
 
-x <- EJAM:::test_ejam(
+x <- test_ejam(
   ask = TRUE,
   noquestions = TRUE, # just for shapefile folder selections
 
@@ -171,13 +173,13 @@ x <- EJAM:::test_ejam(
     # require(data.table) # used in functions here
 
     # Note testthat package is in Suggests not Imports, in DESCRIPTION file
-    try({suppressWarnings(suppressMessages({testthat_available <- require(testthat)}))}, silent = TRUE)
+    testthat_available <- requireNamespace("testthat", quietly = TRUE)
     if (!testthat_available) {stop("this requires installing the package testthat first, e.g., \n  install.packages('testthat')")}
 
     # Note beepr is in suggests not imports, in DESCRIPTION file
     # to make a sound when an error is hit and when it finishes - using beepr::beep(10) since utils::alarm() may not work.
     if (interactive()) {
-      try({suppressWarnings(suppressMessages({beepr_available <- require(beepr)}))}, silent = TRUE)
+      beepr_available <- requireNamespace("beepr", quietly = TRUE)
       if (!beepr_available) {
         cat("install the beepr package if you want to have this function make a noise when it hits an error and when it is finished with all testing\n")
       }
@@ -286,7 +288,7 @@ x <- EJAM:::test_ejam(
         "test-calc_pctile_columns.R",
         "test-calc_avg_columns.R",
         "test-calc_ratio_columns.R",
-        "test-calc_byformula.R"
+        "test-utils_speedtest.R"
       ),
       test_ejamit = c(
         "test-ejamit.R",
@@ -301,7 +303,31 @@ x <- EJAM:::test_ejam(
         "test-ejam2barplot_indicators.R",
         "test-ejam2histogram.R"
       ),
+
+      test_data_pipeline = c(
+        "test-calc_byformula.R",
+        "test-pctiles_lookup_create.R",
+
+        "test-ejscreen-pipeline-io.R",
+        "test-acs_bybg.R",
+        "test-acs_endyear.R",
+        "test-calc_bg_acsdata.R",
+        "test-calc_bg_geodata.R",
+        "test-calc_bg_extra_indicators.R",
+        "test-calc_ejscreen_dataset.R",
+        "test-calc_ejscreen_pctile_lookup_export.R",
+        "test-ejscreen-reference-adjustments.R",
+        "test-datasets_arrow_publish.R",
+        "test-download_latest_arrow_data.R",
+        "test-ejscreen-stats.R",
+        "test-map-headernames-review-artifacts.R",
+        "test-ejscreen-pipeline-config.R",
+        "test-ejscreen-pipeline-validate-vs-prior.R",
+        "test-ejscreen-export.R"
+      ),
+
       test_misc = c(
+        "test-sites_from_input.R",
 
         "test-url_ejamapi.R",
         "test-ejamapi.R",
@@ -311,14 +337,17 @@ x <- EJAM:::test_ejam(
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
 
-        "test-sites_from_input.R",
-        "test-acs_bybg.R",
         "test-is.numericish.R",
         "test-create_filename.R",
         "test-grepn.R",
+        "test-utils_PACKAGE_DEV.R",
         "test-url_package.R",
         "test-pctile_x_is_hit_by_score.R",
-        "test-create_interactive_table.R"
+        "test-plot_vs_us.R",
+
+        "test-create_interactive_table.R",
+        "test-shinytest2-app-dir.R",
+        "test-map_headernames-report-ratio-metadata.R"
       ),
       test_mod = c(
         "test-mod_save_report.R",
@@ -327,8 +356,11 @@ x <- EJAM:::test_ejam(
       ),
       test_webapp = c(
         "test-webapp-ui_and_server.R",
+        "test-webapp-all-functionality.R"
+      ),
+      test_webapp_individual = c(
         "test-webapp-FIPS-functionality.R",
-        "test-webapp-FIPS-picker-functionality.R",  # placeholder for when finished/ready
+        "test-webapp-FIPS-picker-functionality.R",
         "test-webapp-FRS-functionality.R",
         "test-webapp-latlon-functionality.R",
         "test-webapp-NAICS-functionality.R",
@@ -338,7 +370,7 @@ x <- EJAM:::test_ejam(
         "test-webapp-shp-zip-functionality.R"
       ),
       test_test = c(
-        # "test-test.R", #   fast way to check this script via  biglist <- EJAM:::test_ejam(ask = FALSE, y_runsome = T, run_these = 'test')
+        # "test-test.R", #   fast way to check this script via  biglist <- test_ejam(ask = FALSE, y_runsome = T, run_these = 'test')
         "test-test2.R",  #   fast way to check this script
         "test-test1.R"
       ),
@@ -419,22 +451,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     cat("\n")
     {
       #          groupnames shortgroupnames filecount
-      # 1         test_fips            fips         8
-      # 2        test_naics           naics         8
-      # 3          test_frs             frs         7
-      # 4       test_latlon          latlon        10
-      # 5         test_maps            maps         2
-      # 6        test_shape           shape         6
-      # 7    test_getblocks       getblocks         9
-      # 8  test_fixcolnames     fixcolnames         6
-      # 9         test_doag            doag         5
-      # 10      test_ejamit          ejamit         8
-      # 11        test_misc            misc         7
-      #
-      # 13         test_mod             mod         3
-      # 14         test_webapp       webapp         8
-      # 15        test_test            test         2
-      # 16       test_golem           golem         2
+
       # fnames = unlist(testlist)
     }
 
@@ -444,7 +461,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     ## note overly long test names ####
     # report on test names that seem too long to be useful
 
-    xx = EJAM:::find_in_files(pattern = "_that[^,]*,", path = "./tests/testthat", ignorecomments = T, whole_line = FALSE, quiet = T)
+    xx = find_in_files(pattern = "_that[^,]*,", path = "./tests/testthat", ignorecomments = T, whole_line = FALSE, quiet = T)
     xx = lapply(xx, function(y) gsub("t_that\\(", "", y))
     z = (lapply(xx, function(y) cbind(y[nchar(y) > 80])))
     z = z[sapply(z, length) > 0]  ## use sapply for cleaner code
@@ -467,89 +484,73 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ## can copy paste this table here after it is updated
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
-
       timebyfile <- data.table(
-        structure(list(
-          file =
-            c("test-URL_FUNCTIONS_part2.R", "test-url_columns_bysite.R",
-              "test-acs_bybg.R", "test-grepn.R",
-              "test-ejamapi.R",
-              "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R",
-              "test-ejamapi_local.R", "test-create_filename.R", "test-is.numericish.R",
-              "test-sites_from_input.R", "test-report_residents_within_xyz.R",
-              "test-get_blockpoints_in_shape.R", "test-proxistat.R", "test-bgid_from_blockid.R",
-              "test-distances.all.R", "test-getblocks_summarize_blocks_per_site.R",
-              "test-getblocksnearby.R", "test-getblocksnearby_from_fips.R",
-              "test-getblocksnearbyviaQuadTree.R", "test-radius_inferred.R",
-              "test-sitetype2text.R", "test-utils_indexpoints.R", "test-MAP_FUNCTIONS.R",
-              "test-ejam2map.R", "test-calc_byformula.R", "test-doaggregate.R",
-              "test-area_sqmi.R", "test-batch.summarize.R", "test-calc_avg_columns.R",
-              "test-calc_pctile_columns.R", "test-calc_ratio_columns.R", "test-pctile_from_raw_lookup.R",
-              "test-utils_flagged_FUNCTIONS.R", "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R",
-              "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R",
-              "test-is.numerictext.R", "test-latlon_from_fips.R", "test-state_from_fips_bybg.R",
-              "test-state_from_latlon.R", "test-latlon_from_anything.R", "test-address_xyz.R",
-              "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_address.R",
-              "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
-              "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
-              "test-ejam2barplot_sites.R", "test-ejam2excel.R", "test-ejam2histogram.R",
-              "test-ejamit.R", "test-ejamit_compare_distances.R", "test-ejamit_compare_types_of_places.R",
-              "test-ejamit_sitetype_from_input.R", "test-ejamit_sitetype_from_output.R",
-              "test-fixcolnames.R", "test-fixcolnames_infer.R", "test-fixnames.R",
-              "test-fixnames_to_type.R", "test-utils_metadata_add.R", "test-varinfo.R",
-              "test-frs_from_naics.R", "test-frs_from_programid.R", "test-frs_from_regid.R",
-              "test-frs_from_sic.R", "test-frs_is_valid.R", "test-regid_from_input.R",
-              "test-regid_from_naics.R", "test-golem_utils_server.R", "test-golem_utils_ui.R",
-              "test-mod_save_report.R", "test-mod_specify_sites.R", "test-mod_view_results.R",
-              "test-naics2children.R", "test-naics_categories.R", "test-naics_findwebscrape.R",
-              "test-naics_from_any.R", "test-naics_from_code.R", "test-naics_from_name.R",
-              "test-naics_subcodes_from_code.R", "test-naics_is.valid.R",
-              "test-ejam2shapefile.R", "test-latlon_from_shapefile.R", "test-shape2geojson.R",
-              "test-shape2zip.R", "test-shapefile_xyz.R", "test-shapes_from_fips.R",
-              "test-test1.R", "test-test2.R", "test-url_package.R", "test-pctile_x_is_hit_by_score.R"),
-          seconds_byfile =
-            c(25, 4,
-              2, 0,
-              33,
-              193, 0, 20, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 28, 1, 1, 0, 0,
-              13, 5, 2, 11, 1, 5, 0, 1, 1, 0, 4, 10, 0, 6, 5, 1, 0, 5, 0, 3,
-              0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 5, 9, 0, 18, 15, 2, 0, 2, 0, 0,
-              0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0,
-              0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 0, 15, 1)),
-            class = "data.frame")
-      )
-      ############################ #      ############################ #      ############################ #
-      addthesenotrun = data.table(
-        file = c(
-          "test-webapp-FRS-functionality.R",
-          "test-webapp-FIPS-functionality.R",
-          "test-webapp-FIPS-picker-functionality.R",
-          "test-webapp-ui_and_server.R",
-          "test-webapp-NAICS-functionality.R",
-          "test-webapp-latlon-functionality.R",
-          "test-webapp-shp-gdb-zip-functionality.R",
-          "test-webapp-shp-json-functionality.R",
-          "test-webapp-shp-unzip-functionality.R",
-          "test-webapp-shp-zip-functionality.R"
-        ),
+        file =
+          c("test-latlon_from_address.R", "test-address_xyz.R",
+            "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_anything.R",
+            "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
+            "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
+            "test-mod_save_report.R", "test-mod_specify_sites.R", "test-mod_view_results.R",
+            "test-MAP_FUNCTIONS.R", "test-ejam2map.R", "test-create_interactive_table.R",
+            "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R",
+            "test-create_filename.R", "test-ejamapi.R", "test-ejamapi_local.R",
+            "test-grepn.R", "test-is.numericish.R", "test-pctile_x_is_hit_by_score.R",
+            "test-plot_vs_us.R", "test-shinytest2-app-dir.R", "test-sites_from_input.R",
+            "test-url_columns_bysite.R", "test-url_package.R", "test-utils_PACKAGE_DEV.R",
+            "test-proxistat.R", "test-bgid_from_blockid.R", "test-distances.all.R",
+            "test-get_blockpoints_in_shape.R", "test-getblocks_summarize_blocks_per_site.R",
+            "test-getblocksnearby.R", "test-getblocksnearby_from_fips.R",
+            "test-getblocksnearbyviaQuadTree.R", "test-radius_inferred.R",
+            "test-report_residents_within_xyz.R", "test-sitetype2text.R",
+            "test-utils_indexpoints.R", "test-webapp-ui_and_server.R", "test-webapp-all-functionality.R",
+            "test-acs_bybg.R", "test-acs_endyear.R", "test-calc_bg_acsdata.R",
+            "test-calc_bg_extra_indicators.R", "test-calc_bg_geodata.R",
+            "test-calc_byformula.R", "test-calc_ejscreen_dataset.R",
+            "test-calc_ejscreen_pctile_lookup_export.R", "test-ejscreen-export.R",
+            "test-ejscreen-pipeline-io.R", "test-ejscreen-pipeline-config.R",
+            "test-ejscreen-pipeline-validate-vs-prior.R",
+            "test-ejscreen-stats.R", "test-datasets_arrow_publish.R",
+            "test-download_latest_arrow_data.R", "test-map-headernames-review-artifacts.R",
+            "test-pctiles_lookup_create.R", "test-area_sqmi.R",
+            "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
+            "test-calc_ratio_columns.R", "test-doaggregate.R", "test-pctile_from_raw_lookup.R",
+            "test-utils_flagged_FUNCTIONS.R", "test-utils_speedtest.R", "test-ejam2barplot_indicators.R",
+            "test-ejam2barplot_sites.R", "test-ejam2excel.R", "test-ejam2histogram.R",
+            "test-ejam2report.R", "test-ejamit.R", "test-ejamit_compare_distances.R",
+            "test-ejamit_compare_types_of_places.R", "test-ejamit_sitetype_from_input.R",
+            "test-ejamit_sitetype_from_output.R", "test-FIPS_FUNCTIONS.R",
+            "test-fips2countyfips.R", "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R",
+            "test-fips_bgs_in_fips.R", "test-is.numerictext.R", "test-latlon_from_fips.R",
+            "test-state_from_fips_bybg.R", "test-state_from_latlon.R", "test-fixcolnames.R",
+            "test-fixcolnames_infer.R", "test-fixnames.R", "test-fixnames_to_type.R",
+            "test-utils_metadata_add.R", "test-varinfo.R", "test-frs_from_naics.R",
+            "test-frs_from_programid.R", "test-frs_from_regid.R", "test-frs_from_sic.R",
+            "test-frs_is_valid.R", "test-regid_from_input.R", "test-regid_from_naics.R",
+            "test-golem_utils_server.R", "test-golem_utils_ui.R", "test-naics2children.R",
+            "test-naics_categories.R", "test-naics_findwebscrape.R", "test-naics_from_any.R",
+            "test-naics_from_code.R", "test-naics_from_name.R", "test-naics_is.valid.R",
+            "test-naics_subcodes_from_code.R", "test-ejam2shapefile.R", "test-latlon_from_shapefile.R",
+            "test-shape2geojson.R", "test-shape2zip.R", "test-shapefile_xyz.R",
+            "test-shapes_from_fips.R", "test-test1.R", "test-test2.R"),
         seconds_byfile =
-          c(25, 25,
-            40,
-            1, 25, 55, 25, 25, 25, 25)
+          c(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 16, 5, 0, 393, 0,
+            17, 0, 28, 0, 0, 0, 1, 0, 0, 0, 4, 3, 0, 0, 0, 0, 1, 0,
+            3, 34, 2, 1, 0, 0, 0, 1, 104, 1, 0, 0, 0, 0, 2, 0, 0, 0,
+            4, 0, 0, 1, 7, 0, 2, 2, 17, 0, 5, 0, 0, 0, 0, 6, 9, 0, 0, 0, 0, 24,
+            19, 4, 0, 4, 11, 0, 4, 8, 1, 0, 8, 0, 3, 0, 0, 0, 0, 1,
+            0, 3, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 6, 0, 0)
       )
-      addthesenotrun = addthesenotrun[!(file %in% timebyfile$file), ]
-      timebyfile <- rbind(timebyfile, addthesenotrun)
 
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
       timebyfile$seconds_byfile <- round(timebyfile$seconds_byfile, 0)
 
       # sort like testlist is sorted
-      sorted = as.vector(unlist(testlist)) # 101
+      sorted = as.vector(unlist(testlist))
       sorted = sorted[sorted %in% timebyfile$file] # if some are in full test list but not in timing list, don't try to sort by them
- ## e.g.  lacked timing info at one point:  "test-distances.all.R"  "test-calc_byformula.R" "test-grepn.R"
 
-       timebyfile = timebyfile[(match(sorted, file)), ] # 98
+       timebyfile = timebyfile[(match(sorted, file)), ]
 
       testgroup_from_fname <- function(fname) {names(testlist)[as.vector(sapply(testlist, function(z) fname %in% z))]}
       timebyfile$testgroup <-  as.vector(unlist( sapply(timebyfile$file, testgroup_from_fname) ))
@@ -557,18 +558,6 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # timebyfile
       #                                          file seconds_byfile        testgroup
       #                                        <char>          <num>           <char>
-      # 1:                    test-fips_bgs_in_city.R              4        test_fips
-      # 2:                    test-fips_bgs_in_fips.R              5        test_fips
-      # 3:                      test-FIPS_FUNCTIONS.R             23        test_fips
-      # 4:                test-state_from_fips_bybg.R              0        test_fips
-      # 5:                   test-state_from_latlon.R             11        test_fips
-      # 6:                     test-is.numerictext.R              0        test_fips
-      # 7:                     test-fips2countyfips.R              0        test_fips
-      # 8:                 test-fips_bg_from_latlon.R              6        test_fips
-      # 9:                    test-latlon_from_fips.R              7        test_fips
-      # 10:                    test-naics_categories.R              0       test_naics
-      # 11:                 test-naics_findwebscrape.R              3       test_naics
-      #    etc.
 
       ################# #
 
@@ -585,22 +574,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       # > timebygroup
       #            testgroup    seconds_bygroup     minutes_bygroup
       #               <char>           <num>           <num>
-      #  1:        test_test               4             0.1
-      #  2:       test_golem               6             0.1
-      #  3:         test_mod               6             0.1
-      #  4: test_fixcolnames              23             0.4
-      #  5:       test_naics              27             0.4
-      #  6:         test_frs              37             0.6
-      #  7:      test_latlon              49             0.8
-      #  8:       test_shape              51             0.8
-      #  9:        test_maps              87             1.4
-      # 10:
-      # 11:        test_fips             111             1.9
-      # 12:        test_doag             144             2.4
-      # 13:        test_misc             156             2.6
-      # 14:      test_ejamit             209             3.5
-      # 15:   test_getblocks             328             5.5
-      # 16:         test_webapp            1008            16.8  # web app functionality
+
 
       ########################### #  ########################################## #
 
@@ -610,11 +584,21 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
       if (y_runsome || y_runall) {
         timing_needed <- FALSE
-        missingtime_tests <- setdiff(as.vector(unlist(testlist)), timebyfile$file)
+        timing_testlist <- testlist
+        if (isTRUE(y_runsome) && !is.null(run_these)) {
+          timing_run_these <- paste0("test_", unlist(strsplit(gsub(" ", "", run_these), ",")))
+          timing_testlist <- testlist[names(testlist) %in% timing_run_these]
+        }
+        if (isTRUE(y_runall) && !isTRUE(y_runsome)) {
+          # The individual webapp files are kept for focused debugging but are
+          # intentionally omitted from the default full suite.
+          timing_testlist <- timing_testlist[names(timing_testlist) != "test_webapp_individual"]
+        }
+        missingtime_tests <- setdiff(as.vector(unlist(timing_testlist)), timebyfile$file)
         if (length(missingtime_tests) > 0) {
           cat("Missing time estimates for these test FILES:", paste0(missingtime_tests, collapse = ","), '\n')
         }
-        missingtime_groups <- setdiff(names(testlist), timebygroup$testgroup)
+        missingtime_groups <- setdiff(names(timing_testlist), timebygroup$testgroup)
         if (length(missingtime_groups) > 0) {
           cat("Missing time estimates for these GROUPS:", paste0(missingtime_groups, collapse = ","), '\n')
         }
@@ -771,9 +755,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     if (y_runall) {
       skip_these <- unlist(strsplit(gsub(" ", "", skip_these), ","))
       skip_these = paste0("test_", skip_these)
-      partial_testlist <-  testlist
+      partial_testlist <-  testlist[names(testlist) != "test_webapp_individual"]
       if (length(skip_these) > 0 && !is.null(skip_these)) {
-        partial_testlist <-  testlist[!(names(testlist) %in% skip_these)]
+        partial_testlist <-  partial_testlist[!(names(partial_testlist) %in% skip_these)]
       }
     }
     ################################### #  ################################### #
@@ -793,10 +777,14 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       #     # noquestions  was given as a parameter
       #   }}
     }
-    if ("test_webapp" %in% names(partial_testlist)) {
+    if (any(c("test_webapp", "test_webapp_individual") %in% names(partial_testlist))) {
       old_not_cran <- Sys.getenv("NOT_CRAN", unset = NA)
       old_shinytest2_app_driver_test_on_cran <- Sys.getenv(
         "SHINYTEST2_APP_DRIVER_TEST_ON_CRAN",
+        unset = NA
+      )
+      old_ejam_shinytest2_individual <- Sys.getenv(
+        "EJAM_SHINYTEST2_INDIVIDUAL",
         unset = NA
       )
       on.exit({
@@ -813,11 +801,19 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               old_shinytest2_app_driver_test_on_cran
           )
         }
+        if (is.na(old_ejam_shinytest2_individual)) {
+          Sys.unsetenv("EJAM_SHINYTEST2_INDIVIDUAL")
+        } else {
+          Sys.setenv(EJAM_SHINYTEST2_INDIVIDUAL = old_ejam_shinytest2_individual)
+        }
       }, add = TRUE)
       Sys.setenv(
         NOT_CRAN = "true",
         SHINYTEST2_APP_DRIVER_TEST_ON_CRAN = "1"
       )
+      if ("test_webapp_individual" %in% names(partial_testlist)) {
+        Sys.setenv(EJAM_SHINYTEST2_INDIVIDUAL = "true")
+      }
     }
   } # end if not just basic
   # finished asking what to do and setting up
@@ -846,7 +842,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
   if (y_coverage_check) {
     cat("Also see the covr package at https://covr.r-lib.org/ \n")
-    source("tests/test_coverage_check.R")
+    test_coverage_check <- NULL
+    source("tests/test_coverage_check.R", local = TRUE)
     test_coverage_info <- test_coverage_check()
     # test_coverage_info table is not used. the function prints info.
   }
@@ -1010,7 +1007,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     junk <- capture.output({
       suppressPackageStartupMessages(    devtools::load_all()   )
 
-      ### ANOTHER OPTION IS TO DO        devtools::install_local()
+      ### ANOTHER OPTION IS TO DO       pak::local_install(".", dependencies = TRUE, upgrade = FALSE)
 
     })}
   } else {
@@ -1350,6 +1347,54 @@ and all filenames listed there actually exist as in that folder called `test`.\n
     }) # end loggable
   } # end of big if - viewing results
   ########################### #  ########################################## #
+
+  # Build the same summary objects even when y_seeresults = FALSE.
+  if (!exists("passcount")) {
+    passcount = colSums(x[, .(total, passed, flagged, untested_cant, untested_skipped, warned, failed)])
+  }
+  if (!exists("passpercent")) {
+    passpercent = round(
+      100 * colSums(x[, .(total, passed, flagged, untested_cant, untested_skipped, warned, failed)]) /
+        sum(x$total),
+      1
+    )
+  }
+  if (!exists("bygroup")) {
+    bygroup <- x[ , .(total = sum(total), passed = sum(passed), flagged = sum(flagged),
+                      untested_cant = sum(untested_cant), untested_skipped = sum(untested_skipped),
+                      warned = sum(warned), failed = sum(failed),
+                      seconds_bygroup = seconds_bygroup[1],
+                      seconds_bygroup_predicted = seconds_bygroup_predicted[1]),
+                  by = "testgroup"]
+    bygroup[ , seconds_extra := seconds_bygroup - seconds_bygroup_predicted]
+  }
+  if (!exists("byfile")) {
+    byfile <- x[ , .(
+      flagged_byfile = flagged_byfile[1],
+      flagged_bygroup = flagged_bygroup[1],
+      failed_byfile = failed_byfile[1],
+      failed_bygroup = failed_bygroup[1],
+      testgroup = testgroup[1],
+      seconds_byfile_predicted = seconds_byfile_predicted[1],
+      seconds_byfile_actual = round(seconds_byfile[1], 1)
+    ),
+    by = "file"]
+    byfile$seconds_extra <- round(byfile$seconds_byfile_actual - byfile$seconds_byfile_predicted, 0)
+    setorder(byfile, -failed_bygroup, -flagged_bygroup, testgroup, failed_byfile, -flagged_byfile, file)
+    setcolorder(byfile, neworder = c("testgroup", "failed_bygroup", "flagged_bygroup", "file", "failed_byfile", "flagged_byfile"))
+  }
+  if (!exists("bytest_key")) {
+    bytest_key = x[order(-x$failed, -x$warned, -x$flagged), ]
+    these = bytest_key$flagged > 0
+    if (any(these)) {
+      bytest_key <- bytest_key[these, ]
+      bytest_key_niceview <- as.data.frame(bytest_key)[ , !grepl("_byfile|_bygroup|total|passed|flagged", names(bytest_key))]
+      bytest_key_niceview <- bytest_key_niceview[, c('testgroup', 'file', 'test', 'failed', 'warned', 'untested_cant', 'untested_skipped')]
+    } else {
+      bytest_key = NA
+      bytest_key_niceview = NA
+    }
+  }
 
   # COMPILE ALL RESULTS IN A LIST
 

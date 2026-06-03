@@ -4,8 +4,8 @@ test_that("getblocks_summarize_blocks_per_site does not crash", {
   expect_no_error({
     junk <- capture_output({
 
-      x = getblocks_summarize_blocks_per_site(testoutput_getblocksnearby_1000pts_1miles)
-      y = getblocks_summarize_blocks_per_site(testoutput_getblocksnearby_1000pts_1miles,
+      x = EJAM:::getblocks_summarize_blocks_per_site(testoutput_getblocksnearby_1000pts_1miles)
+      y = EJAM:::getblocks_summarize_blocks_per_site(testoutput_getblocksnearby_1000pts_1miles,
                                               varname = "blockid" )
     })
   })

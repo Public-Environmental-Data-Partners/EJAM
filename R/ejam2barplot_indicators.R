@@ -32,6 +32,12 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
                                     ## was only using average in this version of EJAM
 ) {
 
+  finite_plot_ratio <- function(value, baseline) {
+    ratio <- value / baseline
+    ratio[!is.finite(ratio)] <- 0
+    ratio
+  }
+
   ## set indicator group column names
   mybarvars <- switch(indicator_type,
                       'Demographic'   = c(names_d, names_d_subgroups),
@@ -201,7 +207,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
         barplot_usa_avg
       ) %>%
         ## divide to get ratios
-        dplyr::mutate(ratio = .data$value / .data$usa_value) %>%
+        dplyr::mutate(ratio = finite_plot_ratio(.data$value, .data$usa_value)) %>%
         ## add row of all 1s to represent US average ratio being constant at 1
         dplyr::bind_rows(
           data.frame(Summary = 'Average person in US', indicator = mybarvars, value = 1, usa_value = 1, ratio = 1)
@@ -245,7 +251,7 @@ ejam2barplot_indicators <- function(ejamitout, indicator_type = 'Demographic', d
         dplyr::left_join(barplot_usa_med, by = c('usa_summary' = 'Summary', 'indicator')) %>%
         dplyr::select(-usa_summary) %>%
         ## calc ratio
-        dplyr::mutate(ratio = .data$value / .data$usa_value) %>%
+        dplyr::mutate(ratio = finite_plot_ratio(.data$value, .data$usa_value)) %>%
         dplyr::bind_rows(
           data.frame(Summary = 'Median person in US', indicator = mybarvars, value = 1, usa_value = 1, ratio = 1)
         )

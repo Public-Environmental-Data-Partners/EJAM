@@ -1,7 +1,7 @@
 
 
 #' Get URL(s) of HTML summary reports for use with EJAM-API
-#' @seealso [ejamapi()]
+#' @seealso [ejamapi()] [url_ejamapp()]
 #' @details
 #' - This is work in progress to some extent -- this and the API may be add features in later releases.
 #'
@@ -100,6 +100,9 @@
 #'  browseURL(z[1])
 #' }
 #'
+#' @param version optional EJAM version tag (e.g. "3.2024.0") sent to the API as
+#'   version=<ver> so the API can serve the matching data vintage. Default NULL
+#'   resolves to the installed package Version (from DESCRIPTION).
 #'
 #' @export
 #'
@@ -156,6 +159,8 @@ url_ejamapi = function(
 
   sitenumber = "each",
 
+  version = NULL,
+
   ...
 ) {
 
@@ -202,6 +207,12 @@ url_ejamapi = function(
   #   ... args  ####
   and_other_query_terms = urls_from_keylists(keylist_bysite = ..., baseurl = "")
   if (length(and_other_query_terms) > 0 && !(all(and_other_query_terms %in% ""))) {and_other_query_terms <- paste0("&", and_other_query_terms)}
+  # EJAM version tag, so the API can serve the matching data vintage. Default = package Version.
+  if (is.null(version)) {version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)}
+  if (!is.null(version) && length(version) == 1 && nzchar(version)) {
+    if (length(and_other_query_terms) == 0) {and_other_query_terms <- ""}
+    and_other_query_terms <- paste0(and_other_query_terms, "&version=", version)
+  }
   ################################################## #  ################################################## #
   if (is.null(baseurl)) {
     baseurl <- "https://ejamapi-84652557241.us-central1.run.app/report?"

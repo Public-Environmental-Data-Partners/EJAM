@@ -21,18 +21,12 @@ utility to check formulas and extract variable names they calculate values for
 \item \code{\link[=calc_ejam]{calc_ejam()}} uses \code{\link[=calc_byformula]{calc_byformula()}}
 \item \code{\link[=calc_byformula]{calc_byformula()}} uses \code{\link[=calc_varname_from_formula]{calc_varname_from_formula()}} and maybe source_this_codetext()
 }
-
-\itemize{
-\item \code{\link[=custom_doaggregate]{custom_doaggregate()}} may use \code{\link[=calc_ejam]{calc_ejam()}}
-\item \code{\link[=calc_ejam]{calc_ejam()}} uses \code{\link[=calc_byformula]{calc_byformula()}}
-\item \code{\link[=calc_byformula]{calc_byformula()}} uses \code{\link[=formula_varname]{formula_varname()}} and maybe source_this_codetext()
-}
 }
 \examples{
 EJAM:::calc_varname_from_formula(c("z=10", "b<- 1", "c <- 34", " h = 1+1", "   q=2+2"))
 head(cbind(
   EJAM:::calc_varname_from_formula(formulas_ejscreen_acs$formula),
-  formulas_ejscreen_acs$formula$formula)
+  formulas_ejscreen_acs$formula)
   )
 
 }

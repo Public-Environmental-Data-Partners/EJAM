@@ -25,7 +25,7 @@
 #' @return table in [data.table](https://r-datatable.com) format with lat  lon  REGISTRY_ID  program -- but not pgm_sys_id
 #'   since there could be duplicates where same REGISTRY_ID has 2 different pgm_sys_id values
 #'   in the same program, so results were sometimes longer than if using [frs_from_program()]
-#' @examples \donttest{
+#' @examples \dontrun{
 #'  x = latlon_from_program("CAMDBS")
 #'   mapfast(x)
 #'  program <- c("EIS", "UST")
@@ -64,31 +64,5 @@ latlon_from_program <- function(query) {
     data.table::as.data.table()
 
   return(res)
-  # old way:
-  # frs_by_programid[program %in% query, ] # order does not matter since more than one match likely per input code
-  # THAT VERSION RETURNED DUPLICATED REGIDS WHEN SAME SITE HAS TWO OR MORE PROGRAM IDS FOR SAME PROGRAM
 
-  # none seems much faster than the others:
-  # system.time( frs_by_programid[program ==     "RCRAINFO", ]  )
-  # system.time( frs_by_programid[program %chin% "RCRAINFO", ]  )
-  # system.time( frs_by_programid[program  %in%  "RCRAINFO", ]  )
-  # user  system elapsed
-  # 0.03    0.00    0.03
-  # user  system elapsed
-  # 0.03    0.00    0.03
-  # user  system elapsed
-  # 0.03    0.00    0.03
-  #
-  # BUT
-  # system.time(frs[grepl("RCRAINFO", PGM_SYS_ACRNMS), ] )
-  # user  system elapsed
-  # 1.02    0.00    1.02
-
-  # > system.time( frs[REGISTRY_ID %chin% frs_by_programid[program %chin% "RCRAINFO",REGISTRY_ID ]  ,])
-  # user  system elapsed
-  # 3.83    0.21    3.86
-  # > system.time( frs[grepl("RCRAINFO", PGM_SYS_ACRNMS), ]  )
-  # user  system elapsed
-  # 1.03    0.00    1.03
 }
-

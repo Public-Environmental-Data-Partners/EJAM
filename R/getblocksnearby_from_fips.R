@@ -23,10 +23,10 @@
 #'   Use 999 to signal FIPS analysis mode without a buffer (same as 0 for buffering purposes).
 #'
 #' @return
-#' - if return_shp=F, returns just a sites2blocks table in [data.table](https://r-datatable.com) format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
+#' - if return_shp = FALSE, returns just a sites2blocks table in [data.table](https://r-datatable.com) format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
 #'  This is like the [getblocksnearby()] and [get_blockpoints_in_shape()] outputs.
 #'
-#' - if return_shp=T, returns a named list where pts is the table in [data.table](https://r-datatable.com) format of sites2blocks,
+#' - if return_shp = TRUE, returns a named list where pts is the table in [data.table](https://r-datatable.com) format of sites2blocks,
 #'   and polys is the spatial data.frame with one row per input fips (including invalid ones).
 #'
 #'   The ejam_uniq_id represents which of the input sites is being referred to, and the table
@@ -34,12 +34,14 @@
 #'   were valid and had blocks identified, then the data.table here will only include ejam_uniq_id values of 5 and 8.
 #'
 #' @examples
+#' \dontrun{
 #'   x <- getblocksnearby_from_fips(fips_counties_from_state_abbrev("DE"))
 #'   y <- doaggregate(x)
 #'   z <- ejamit(fips = fips_counties_from_statename("Delaware"))
 #'
 #'   # x2 <- getblocksnearby_from_fips("482011000011") # one blockgroup only
 #'   # y2 <- doaggregate(x2)
+#' }
 #' @seealso [getblocksnearby()] [fips_bgs_in_fips()] [fips_lead_zero()] [getblocksnearby_from_fips()] [fips_from_table()]
 #'
 #' @export
@@ -66,7 +68,7 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
 
     empty_pts <- data.table(ejam_uniq_id = integer(0), blockid = character(0),
                             distance = numeric(0), blockwt = numeric(0),
-                            bgid = character(0), fips = character(0))
+                            bgid = numeric(0), fips = character(0))
 
     if (NROW(shp_valid) == 0) {
       if (return_shp) {
@@ -189,7 +191,7 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
     ##  2. combine city & noncity ####
     if (is.null(output_city) && is.null(output_noncity)) {
       pts = data.table(ejam_uniq_id = integer(0), blockid = character(0),
-                       distance = numeric(0), blockwt = numeric(0), bgid = character(0), fips = character(0))
+                       distance = numeric(0), blockwt = numeric(0), bgid = numeric(0), fips = character(0))
       polys = sf::st_as_sf(data.frame(FIPS = original_order$fips, fipstype=fipstype(original_order$fips),
                                       NAME=NA, STATE_ABBR=NA, STATE_NAME=NA,  pop= NA,   SQMI=NA, POP_SQMI=NA, n = 1:length(original_order$fips),
                                       ejam_uniq_id = original_order$ejam_uniq_id,
@@ -238,7 +240,7 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
     ##  2. combine city & noncity ####
     if (is.null(output_city) && is.null(output_noncity)) {
       output <- data.table(ejam_uniq_id = integer(0), blockid = character(0),
-                           distance = numeric(0), blockwt = numeric(0), bgid = character(0), fips = character(0))
+                           distance = numeric(0), blockwt = numeric(0), bgid = numeric(0), fips = character(0))
     } else {
       ##    use rbindlist() to combine spatial data.frames that do not all have the same columns:
       output <- data.table::rbindlist(list(output_city, output_noncity), fill = TRUE,
@@ -410,7 +412,9 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
                                            ## create 12-digit column inline (original table not altered)
                                            ## do not actually need blockfips here except to join on its first 12 chars *** try to remove need for large blockid2fips file (and/or store fips as integer?)
                                            blockid2fips[, .(blockid, blockfips, blockfips12 = substr(blockfips,1,12))],
-                                           by = c('bgfips' = 'blockfips12'), multiple = 'all') |>
+                                           by = c('bgfips' = 'blockfips12'),
+                                           multiple = 'all',
+                                           relationship = 'many-to-many') |>
         dplyr::left_join(blockpoints) |>
         dplyr::mutate(distance = 0) |>     # or do I want distance to be null, or missing or NA or 0.001, or what? note approximated block_radius_miles is sometimes zero, in blockwts
         data.table::as.data.table()        # makes it a data.table

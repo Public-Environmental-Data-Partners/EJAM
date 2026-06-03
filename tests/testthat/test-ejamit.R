@@ -6,6 +6,9 @@
 # save setting and restore it on exit since some functions alter it
 old <- getOption("width")
 on.exit(options(width = old), add = TRUE)
+fips_bgs_in_fips1 <- EJAM:::fips_bgs_in_fips1
+fips2state_abbrev <- EJAM:::fips2state_abbrev
+pctile_from_raw_lookup <- EJAM:::pctile_from_raw_lookup
 ########################################################## #
 
 test_that('ejamit() returns a list with no error, for very simple example', {
@@ -19,6 +22,153 @@ test_that('ejamit() returns a list with no error, for very simple example', {
     })
   })
   expect_true('list' %in% class(v10))
+})
+########################################################## #
+
+test_that("dynamic bgej validation rejects stale bgej", {
+  e <- new.env(parent = emptyenv())
+  e$bgej <- data.frame(
+    bgfips = blockgroupstats$bgfips,
+    pop = blockgroupstats$pop + c(1, rep(0, nrow(blockgroupstats) - 1))
+  )
+  suppressWarnings({
+    ok <- EJAM:::dataload_dynamic_validate_bgej(envir = e, silent = TRUE)
+  })
+  expect_false(ok)
+  expect_false(exists("bgej", envir = e, inherits = FALSE))
+})
+########################################################## #
+
+test_that("bgej is classified as EJSCREEN annual update data", {
+  expect_equal(
+    EJAM:::dynamic_data_group(c("bgej", "frs", "bgid2fips", "blockpoints")),
+    c(
+      bgej = "ejscreen_annual_update",
+      frs = "facility_data_update",
+      bgid2fips = "blockgroup_geography_update",
+      blockpoints = "block_geography_update"
+    )
+  )
+})
+########################################################## #
+
+test_that("Arrow datasets use the DESCRIPTION-required ejamdata tag by default", {
+  # Derive from DESCRIPTION rather than hardcoding, so this stays correct across
+  # the annual-vintage release branches (v3.2024.0 / v3.2023.0 / v3.2022.0).
+  expected_tag <- EJAM:::ejamdata_required_tag()
+  expect_match(expected_tag, "^v[0-9]")
+
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag(EJAM:::.arrow_ds_names)),
+    rep(expected_tag, length(EJAM:::.arrow_ds_names))
+  )
+})
+########################################################## #
+
+test_that("required ejamdata tag fallback handles missing package version", {
+  expect_equal(
+    EJAM:::ejamdata_required_tag(
+      package = "EJAMdefinitelyNotInstalled",
+      default = "v-test"
+    ),
+    "v-test"
+  )
+
+  expect_error(
+    EJAM:::ejamdata_required_tag(package = "EJAMdefinitelyNotInstalled"),
+    "Could not determine required ejamdata release tag"
+  )
+})
+########################################################## #
+
+test_that("Arrow release tag can be decoupled from the package version", {
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag(
+      c("bgej", "frs"),
+      required_tag = "v2.32.8.001"
+    )),
+    c("v2.32.8.001", "v2.32.8.001")
+  )
+})
+########################################################## #
+
+test_that("explicit Arrow release tags override the package default", {
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag(c("bgej", "frs"), piggybacktag = "v2.32.8.1")),
+    c("v2.32.8.001", "v2.32.8.001")
+  )
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag(c("bgej", "frs"), piggybacktag = "v2.32.8.001")),
+    c("v2.32.8.001", "v2.32.8.001")
+  )
+  expect_equal(
+    unname(EJAM:::dynamic_data_release_tag(c("bgej", "frs"), piggybacktag = "v2.5.0")),
+    c("v2.5.0", "v2.5.0")
+  )
+})
+########################################################## #
+
+test_that("EPA program dropdown choices are available", {
+  expect_type(epa_programs, "character")
+  expect_gt(length(epa_programs), 0)
+  expect_false(anyNA(epa_programs))
+  expect_false(anyNA(names(epa_programs)))
+  expect_true("CAMDBS" %in% unname(epa_programs))
+
+  expect_s3_class(epa_programs_defined, "data.frame")
+  expect_gt(nrow(epa_programs_defined), 0)
+  expect_false(anyNA(epa_programs_defined$PGM_SYS_ACRNM))
+  expect_false(anyNA(epa_programs_defined$PGM_SYS_NAME))
+})
+########################################################## #
+
+test_that("local Arrow release marker reader treats blank markers as missing", {
+  marker <- tempfile("ejamdata_version-", fileext = ".txt")
+
+  expect_null(EJAM:::ejamdata_local_arrow_tag_read(marker))
+
+  writeLines(character(0), marker)
+  expect_null(EJAM:::ejamdata_local_arrow_tag_read(marker))
+
+  writeLines(c("   ", "\t"), marker)
+  expect_null(EJAM:::ejamdata_local_arrow_tag_read(marker))
+
+  writeLines(c("  v2.5.0  ", "v2.32.8.001"), marker)
+  expect_equal(EJAM:::ejamdata_local_arrow_tag_read(marker), "v2.5.0")
+
+  writeLines("v2.32.8.1", marker)
+  expect_equal(EJAM:::ejamdata_local_arrow_tag_read(marker), "v2.32.8.001")
+})
+########################################################## #
+
+test_that("ejamit no-block-centroid invalid messages distinguish site types", {
+  expect_equal(
+    EJAM:::ejamit_no_block_centroids_message("fips"),
+    "no block centroids (fips boundaries not obtained)"
+  )
+  expect_equal(
+    EJAM:::ejamit_no_block_centroids_message("shp"),
+    "no block centroids (polygon too small for low pop density)"
+  )
+  expect_equal(
+    EJAM:::ejamit_no_block_centroids_message("latlon"),
+    "no block centroids (radius too small for low pop density)"
+  )
+})
+########################################################## #
+
+test_that("ejamit() returns no result rather than crashing when Island Area sites have no block helpers", {
+  guam_point <- data.table::data.table(lat = 13.45, lon = 144.75)
+  out <- NULL
+
+  expect_no_error({
+    capture.output({
+      out <- suppressWarnings(suppressMessages(
+        ejamit(guam_point, radius = 3, quiet = TRUE, silentinteractive = TRUE)
+      ))
+    })
+  })
+  expect_null(out)
 })
 ########################################################## #
 

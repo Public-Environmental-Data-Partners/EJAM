@@ -21,3 +21,4 @@ html widget like from leaflet::leafletProxy()
 \description{
 Map - polygons - Update leaflet map by adding shapefile data, in shiny app
 }
+\keyword{internal}

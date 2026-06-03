@@ -5,24 +5,17 @@
 #'  See also read_builtin() function from the readr package!
 #'
 #'  Default is to load some but not all the datasets into memory immediately.
-#'   [blockgroupstats], [usastats], [statestats], and some others are always essential to EJAM, but
-#'   [frs] and [frs_by_programid] are huge datasets (and [frs_by_sic] and [frs_by_naics])
-#'    and not always used - only to find regulated facilities by ID, etc.
-#'    The frs-related datasets here can be roughly 1.5 GB in RAM, perhaps.
+#'   [blockgroupstats], [usastats], [statestats], and some others are always essential to EJAM.
+#'   The FRS-related datasets are huge and are loaded separately as `.arrow`
+#'   files with [dataload_dynamic()] only when needed.
 #' @param olist vector of strings giving names of objects to load using data().
-#'   This could also include other large datasets that are slow to lazyload but not always needed:
-#'   "frs", "frs_by_programid ", "frs_by_naics", etc.
+#'   This should be limited to package `.rda` datasets. FRS-related datasets
+#'   are no longer `.rda` package data.
 #' @param envir the environment into which they should be loaded
 #' @return Nothing
 #' @seealso [pkg_data()] [dataload_dynamic()] [dataload_from_local()] [indexblocks()] [.onAttach()]
-#' @examples
-#'   x <- EJAM:::pkg_data("EJAM")
-#'   subset(x, x$size >= 0.1) # at least 100 KB
-#'   grep("names_", x$Item, value = T, ignore.case = T, invert = T) # most were like names_d, etc.
-#'   ls()
-#'   data("avg.in.us", package="EJAM") # lazy load an object into memory and make it visible to user
-#'   ls()
-#'   rm(avg.in.us, x)
+#'
+#' @inherit pkg_functions_and_data examples
 #'
 #' @keywords internal
 #'
@@ -34,7 +27,8 @@ dataload_from_package <- function(olist = c("blockgroupstats", "usastats", "stat
        envir = envir
   )
 
-  # data(list=c("frs", "frs_by_programid ", "frs_by_naics"), package="EJAM") # would be to preload some very large ones not always needed.
+  # Obsolete: FRS tables are .arrow dynamic datasets loaded with
+  # dataload_dynamic(), not package .rda data loaded with data().
 
   # get full path and name for data file in locally installed package?
   # system.file("/data/blockgroupstats.rda", package="EJAM")

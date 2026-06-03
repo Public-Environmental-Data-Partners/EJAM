@@ -49,7 +49,7 @@ lat must be between 17.5 and 71.5, and
 lon must be ( between -180 and -64) OR (between 172 and 180)
 }
 \examples{
- \donttest{
+ \dontrun{
  # this would only work using the EJAM package datasets frs and blockpoints:
    if (!exists("frs")) dataload_dynamic("frs")
  table(EJAM:::latlon_is.valid(lat =  frs$lat, lon =  frs$lon))

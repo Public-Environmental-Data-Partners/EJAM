@@ -84,11 +84,21 @@ fips_valid <- function(fips) {
 
     fips_block_arrow <- arrow::Array$create(fips[kind %in% "block"])
 
-    matched_fips <- blockid2fips_arrow %>%
-      filter(.data$blockfips %in% fips_block_arrow) %>%
-      select(blockfips) %>%
-      collect() %>%
-      pull(blockfips)
+    matched_fips <- withCallingHandlers(
+      {
+        blockid2fips_arrow %>%
+          filter(.data$blockfips %in% fips_block_arrow) %>%
+          select(blockfips) %>%
+          collect() %>%
+          pull(blockfips)
+      },
+      warning = function(w) {
+        msg <- conditionMessage(w)
+        if (grepl("R metadata", msg, fixed = TRUE) && grepl("externalptr", msg, fixed = TRUE)) {
+          invokeRestart("muffleWarning")
+        }
+      }
+    )
 
     ok[kind %in% "block"] <- fips[kind %in% "block"] %in% matched_fips
   }
@@ -490,38 +500,38 @@ fips_lead_zero <- function(fips, quiet = TRUE) {
 #'   all pairs of county fips - bgid, and ejam_uniq_id (1 through N) assigned to each county
 #'   but missing blockid and distance so not ready for doaggregate().
 #' @examples
+#' \dontrun{
+#' # compare counties within a state:
+#' fipsRI = fips_counties_from_state_abbrev("RI")
+#' x = counties_as_sites(fipsRI)
+#' out = doaggregate(x) # similar to ejamit()
+#' ejam2barplot_sites(out, "pop", names.arg = fipsRI)
 #'
-#'  # compare counties within a state:
-#'  fipsRI = fips_counties_from_state_abbrev("RI")
-#'  x = counties_as_sites(fipsRI)
-#'  out = doaggregate(x) # similar to ejamit()
-#'  ejam2barplot_sites(out, "pop", names.arg = fipsRI)
+#' # compare two specific counties:
+#' counties_as_sites(c("01001", "72153"))
 #'
-#'  # compare two specific counties:
-#'  counties_as_sites(c('01001','72153'))
+#' # Largest US Counties by ACS Population Totals:
+#' topcounties = blockgroupstats[ , .(ST = ST[1], countypop = sum(pop)),
+#'  by = .(FIPS = substr(bgfips,1,5))][order(-countypop),][1:20, .(
+#'    CountyPopulation = prettyNum(countypop, big.mark = ","), FIPS, ST)]
 #'
-#'  # Largest US Counties by ACS Population Totals:
-#'  topcounties = blockgroupstats[ , .(ST = ST[1], countypop = sum(pop)),
-#'   by = .(FIPS = substr(bgfips,1,5))][order(-countypop),][1:20, .(
-#'     CountyPopulation = prettyNum(countypop, big.mark = ","), FIPS, ST)]
+#' myfips = topcounties$FIPS
 #'
-#'  myfips = topcounties$FIPS
+#' # simplest map of top counties
+#' map_shapes_leaflet(shapes = EJAM:::shapes_counties_from_countyfips(myfips))
 #'
-#'  # simplest map of top counties
-#'  map_shapes_leaflet(shapes = EJAM:::shapes_counties_from_countyfips(myfips))
+#' # simplest way to get and map results county by county
+#' out_c1 = ejamit(fips = myfips)
+#' mapfastej_counties(out_c1$results_bysite)
 #'
-#'  # simplest way to get and map results county by county
-#'  out_c1 = ejamit(fips = myfips)
-#'  mapfastej_counties(out_c1$results_bysite)
-#'
-#'  # another way to get and map results county by county
-#'  s2b = counties_as_sites(myfips)
-#'  out_c2 = doaggregate(s2b)
-#'  # but without URLs/links to reports
-#'  bysite = out_c2$results_bysite
-#'  bysite$ejam_uniq_id <- myfips
-#'  mapfastej_counties(bysite)
-#'
+#' # another way to get and map results county by county
+#' s2b = counties_as_sites(myfips)
+#' out_c2 = doaggregate(s2b)
+#' # but without URLs/links to reports
+#' bysite = out_c2$results_bysite
+#' bysite$ejam_uniq_id <- myfips
+#' mapfastej_counties(bysite)
+#' }
 #' @export
 #'
 counties_as_sites <- function(fips) {
@@ -665,13 +675,13 @@ is.island <- function(ST=NULL, statename=NULL, fips=NULL) {
 #' name2fips("rhode island")
 #' name2fips(c("delaware", "NY"))
 #' name2fips(c("Magnolia town, DE", "Delaware City city, DE"))
-#' name2fips(c('denver',  "new york" ), exact = F)
+#' name2fips(c('denver',  "new york" ), exact = FALSE)
 #' name2fips('denver,co')
 #'
 #' # Can see unexpected results depending on parameters if multiple matches exist:
-#' x1= name2fips("rochester,ny", exact = T)
-#' x2= name2fips("rochester,ny", exact = F)
-#' x3= name2fips("rochester,ny", usegrep = T)
+#' x1= name2fips("rochester,ny", exact = TRUE)
+#' x2= name2fips("rochester,ny", exact = FALSE)
+#' x3= name2fips("rochester,ny", usegrep = TRUE)
 #' x1; x2; x3 # 3 different answers
 #'
 #' @export
@@ -860,7 +870,7 @@ fips_place2placename = function(fips, append_st = TRUE) {
 #' @param place_st vector of place names in format like "yonkers, ny" or "Chelsea city, MA"
 #' @param geocoding set to TRUE to use a geocoding service to try to find hits
 #' @param exact  FALSE is to allow partial matching
-#' @param usegrep DRAFT PARAM if exact=T, usegrep if TRUE will use the helper function fips_place_from_placename_grep()
+#' @param usegrep DRAFT PARAM if exact = TRUE, usegrep if TRUE will use the helper function fips_place_from_placename_grep()
 #' @param verbose prints more to console about possible hits for each queried place name
 #' @return prints a table of possible hits but returns just the vector of fips
 #'
@@ -964,14 +974,14 @@ fips_place_from_placename = function(place_st, geocoding = FALSE, exact = FALSE,
   ######################################################################################## #
 
   if (geocoding) {
-    if (!exists("geocode")) {
-      warning("Need to load the AOI package for geocoding to work. Using geocoding=FALSE instead, here.")
+    if (!requireNamespace("AOI", quietly = TRUE)) {
+      warning("Need to install the AOI package for geocoding to work. Using geocoding=FALSE instead, here.")
     } else {
       # geocoding fails sometimes when CDP is part of the name (but it is unlikely query would use that here)
       # place_st_dont_say_cdp     <- gsub(" CDP,", ",", place_st)
       off <- offline_warning()
       if (!off) {
-        arcgis_address_xy <- geocode(place_st_dont_say_cdp)  # or _or_city ?
+        arcgis_address_xy <- AOI::geocode(place_st_dont_say_cdp)  # or _or_city ?
         setDT(arcgis_address_xy)
         place_st <- arcgis_address_xy[ , .(best = arcgis_address[1]), by = "request"]$best
         # now place_st are the best guesses via geocoding, ready to look for matches in table of fips and place names
@@ -2003,7 +2013,7 @@ fips2ftypename <- function(fips, ftype = c('block', 'blockgroup', 'tract', 'city
 #' name2fips("Minneapolis, MN")
 #'
 #' name2fips("Anchorage, AK") # not found
-#' name2fips("Anchorage, AK", usegrep = T) # finds the city
+#' name2fips("Anchorage, AK", usegrep = TRUE) # finds the city
 #' name2fips("Anchorage municipality, AK") # finds the county of same name, not city
 #'
 #' @export

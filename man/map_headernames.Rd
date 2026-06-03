@@ -5,7 +5,7 @@
 \alias{map_headernames}
 \title{map_headernames provides metadata about all indicators in EJSCREEN / EJAM}
 \format{
-An object of class \code{data.frame} with 634 rows and 76 columns.
+An object of class \code{data.frame} with 952 rows and 47 columns.
 }
 \usage{
 map_headernames
@@ -14,30 +14,43 @@ map_headernames
 map_headernames provides metadata about all indicators in EJSCREEN / EJAM
 }
 \details{
-This is an IMPORTANT TABLE that provides information about each variable (indicator), such as the following:
+This is an IMPORTANT TABLE and many functions rely on it.
+
+It provides metadata or information about each variable (indicator), such as the following:
 \itemize{
-\item names as used in geodatabase files (original data source)
-\item names as used in the outputs of the EJSCREEN API
-\item names as used in the R code
+\item names as used in the R code ("rname"), which is the "canonical" name for each variable, and is used in the R code and in the EJAM API
 \item names as used in short labels of graphics
 \item names as used in table headers (long versions to provide full descriptions of the variables)
-\item category of variable, for purposes of grouping similar ones like those in names_d or names_d_pctile
+\item names as used in EJSCREEN-specific files/code/app (\code{ejscreen_indicator})
+\item row-type flags that indicate if a variable is in various categories or types
+\item main category of variable or "varlist" for purposes of grouping similar ones like those in names_e, names_d, or names_d_pctile
 \item info about rounding decimal places, significant digits, percentage format, etc.
 \item method for aggregating the value across blockgroups (sum, weighted mean, what is the weight, etc.)
-\item etc.
+\item other information like sort order for certain purposes, etc.
 }
 
-It was created from a spreadsheet of the same name, that is in a data-raw folder. Several helper functions are used to query it such as \code{\link[=fixcolnames]{fixcolnames()}} and many functions rely on it. You can see examples of what it contains like this, for example:
+It was originally created from a spreadsheet of the same name in the
+\code{data-raw} folder. The current editable source is
+\code{data-raw/map_headernames.csv}; the rebuild script should read that CSV,
+validate it, and save this package data object without adding or changing
+metadata rows in code.
+
+Several helper functions are used to query it, such as
+\code{\link[=fixcolnames]{fixcolnames()}} and \code{\link[=varinfo]{varinfo()}}.
+
+You can see examples of what it contains below.
 
 \code{data.frame(t(map_headernames[1:2, ]))}
 }
 \examples{
   #   See how many variables are on each list, for example:
   \donttest{
-  data.table::setDT(copy(map_headernames))[, .(
+  data.table::setDT(data.table::copy(map_headernames))[, .(
     variables = .N,
-    has_apiname = sum(apiname != ""),
     has_csvname = sum(csvname != ""),
+    has_ejscreen_indicator = sum(ejscreen_indicator != ""),
+    has_ejscreen_apinames_old = sum(ejscreen_apinames_old != ""),
+    has_ejam_apinames = sum(ejam_apinames != ""),
     has_acsname = sum(acsname != "")
     ),
  keyby = c("raw_pctile_avg", "DEJ", "ratio.to", "pctile.", "avg.",  "varlist" )]
@@ -48,10 +61,10 @@ It was created from a spreadsheet of the same name, that is in a data-raw folder
    & map_headernames$varlist != "x_anyother"])
 
  info <- cbind(
-   varinfo(some, info = c('api', 'csv', 'acs', 'varlist')),
+   varinfo(some, info = c('ejscreen_apinames_old', 'csv', 'acs', 'varlist')),
    usastats = some \%in\% names(usastats),
    statestats = some \%in\% names(statestats))
- info <- info[nchar(paste0(info$api, info$csv, info$acs)) > 0, ]
+ info <- info[nchar(paste0(info$ejscreen_apinames_old, info$csv, info$acs)) > 0, ]
  info
 
  # any others
@@ -60,10 +73,10 @@ It was created from a spreadsheet of the same name, that is in a data-raw folder
    & map_headernames$varlist == "x_anyother"])
 
  info <- cbind(
-   varinfo(some, info = c('api', 'csv', 'acs', 'varlist')),
+   varinfo(some, info = c('ejscreen_apinames_old', 'csv', 'acs', 'varlist')),
    usastats = some \%in\% names(usastats),
    statestats = some \%in\% names(statestats))
- info <- info[nchar(paste0(info$api, info$csv, info$acs)) > 0, ]
+ info <- info[nchar(paste0(info$ejscreen_apinames_old, info$csv, info$acs)) > 0, ]
  info
   }
 

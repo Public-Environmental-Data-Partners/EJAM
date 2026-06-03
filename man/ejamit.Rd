@@ -29,7 +29,7 @@ ejamit(
   threshnames = list(c(names_ej_pctile, names_ej_state_pctile), c(names_ej_supp_pctile,
     names_ej_supp_state_pctile)),
   threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"),
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   updateProgress = NULL,
   updateProgress_getblocks = NULL,
   progress_all = NULL,
@@ -68,7 +68,7 @@ It can be automatically created when the package is attached via the .onAttach()
 such as a list of US Counties or tracts. Passed to \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}}}
 
 \item{shapefile}{optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
-e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)}
+e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)}
 If in RStudio you want it to interactively prompt you to pick a file,
 use shapefile=1 (otherwise it assumes you want to pick a latlon file).}
 
@@ -134,7 +134,7 @@ which is relevant only if a user saved the output of this function.}
 passed to \code{\link[=doaggregate]{doaggregate()}} also. app server sets this to TRUE when calling \code{\link[=doaggregate]{doaggregate()}} but
 \code{\link[=ejamit]{ejamit()}} default is to set this to FALSE when calling \code{\link[=doaggregate]{doaggregate()}}.}
 
-\item{called_by_ejamit}{passed to doaggregate(). Set to TRUE by \code{\link[=ejamit]{ejamit()}} to suppress some outputs even if ejamit(silentinteractive=F)}
+\item{called_by_ejamit}{passed to doaggregate(). Set to TRUE by \code{\link[=ejamit]{ejamit()}} to suppress some outputs even if ejamit(silentinteractive = FALSE)}
 
 \item{testing}{used while testing this function, passed to \code{\link[=doaggregate]{doaggregate()}}}
 
@@ -228,7 +228,7 @@ See examples in vignettes/ articles at https://public-environmental-data-partner
 
   # Shapefile examples
   out2 = ejamit(shapefile = testshapes_2, radius = 0)
-  out3 = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)
+  out3 = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)
 
   # FIPS examples
   out4 = ejamit(fips = testinput_fips_cities)
