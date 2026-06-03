@@ -474,7 +474,12 @@ zip files. If unset, EJAM uses a durable user cache folder.</td>
 </tr>
 <tr class="even">
 <td><code>CENSUS_API_KEY</code></td>
-<td>Used by ACS/Census download helpers where needed.</td>
+<td>
+<strong>Required.</strong> Used by ACS/Census helpers for data
+<em>and metadata</em>. tidycensus (&gt;= 1.8) errors without a key, even
+for <code>load_variables()</code>. Set once with
+<code>tidycensus::census_api_key("YOUR KEY", install = TRUE)</code>,
+then restart R. See <code><a href="https://walker-data.com/tidycensus/reference/census_api_key.html" class="external-link">?tidycensus::census_api_key</a></code>.</td>
 </tr>
 <tr class="odd">
 <td><code>EJAM_FORCE_ACS</code></td>
@@ -664,6 +669,18 @@ object.</p>
 <div class="section level2">
 <h2 id="run-a-fresh-acs-update">Run a Fresh ACS Update<a class="anchor" aria-label="anchor" href="#run-a-fresh-acs-update"></a>
 </h2>
+<blockquote>
+<p><strong>Prerequisite: a Census API key.</strong> As of tidycensus
+(&gt;= 1.8) the Census Bureau requires an API key for all requests,
+including the <code>load_variables()</code> metadata lookup EJAM uses to
+resolve ACS table geography. tidycensus now <em>errors</em> (no longer
+warns) without one. Get a free key at <a href="https://api.census.gov/data/key_signup.html" class="external-link uri">https://api.census.gov/data/key_signup.html</a> and set it
+once with
+<code>tidycensus::census_api_key("YOUR KEY", install = TRUE)</code>,
+then restart R. (The bulk ACS download via
+<code>ACSdownload::get_acs_new()</code> reads Census summary files, but
+the metadata step still needs the key.)</p>
+</blockquote>
 <p>Start from a clean branch. For ACS 2020-2024 using local
 checkpoints:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
