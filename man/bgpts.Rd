@@ -16,7 +16,7 @@ This is just a list of US blockgroups and how many blocks are in each. It also h
 \details{
 The point used for each blockgroup is the Census 2020 population weighted mean of the internal points of the blocks in the blockgroup. It gives an approximation of where people live and where each bg is, which is useful for some situations. Has all US States, DC, PR, but not  "AS" "GU" "MP" "VI" (and not U.S. Minor Outlying Islands FIPS 74 UM).
 
-For EJAM v2.5.0, AS/GU/MP/VI can appear in \link{blockgroupstats}, EJSCREEN
+For EJAM v3, AS/GU/MP/VI can appear in \link{blockgroupstats}, EJSCREEN
 export files, and map-facing blockgroup datasets, but this \code{bgpts} helper
 intentionally does not include Island Areas. Point-buffer/radius or
 block-weighted analysis for AS/GU/MP/VI should return no-data results

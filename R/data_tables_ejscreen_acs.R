@@ -7,8 +7,11 @@
 #' @title tables_ejscreen_acs dataset
 #' @details See
 #'
+#'  The same ACS tables are used for every vintage; the survey end year `yr`
+#'  depends on the installed EJAM release (see `attributes(blockgroupstats)$acs_version`
+#'  or DESCRIPTION `VersionACS`), e.g. 2022, 2023, or 2024.
 #'  ```
-#'  yr = 2024
+#'  yr = acs_endyear()  # ACS 5-year end year of the installed vintage
 #'  urls = paste0('https://data.census.gov/table/ACSDT5Y', yr, '.', tables_ejscreen_acs)
 #'  sapply(urls, browseURL)
 #'  acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), 'acs5')

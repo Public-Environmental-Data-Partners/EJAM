@@ -28,7 +28,7 @@
 #'  stopifnot(all(file.exists(fpaths)))
 #'  EJAM:::datasets_arrow_publish(
 #'    files = fpaths,
-#'    tag = "v2.5.0",
+#'    tag = "v3.2024.0",
 #'    mark_latest = FALSE,
 #'    dry_run = TRUE,
 #'    overwrite = FALSE

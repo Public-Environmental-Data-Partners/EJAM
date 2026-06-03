@@ -45,7 +45,7 @@
 #'
 #' `bg_envirodata` must include `pctpre1960`. That column may be produced by an
 #' upstream environmental-data step that reads the saved `bg_acsdata` stage.
-#' For EJAM v2.5.0, Island Areas are supported at the blockgroup dataset,
+#' For EJAM v3, Island Areas are supported at the blockgroup dataset,
 #' EJSCREEN export, and map-data visibility level when
 #' `include_islandareas_data = TRUE`. The default path keeps AS/GU/MP/VI
 #' demographic fields as `NA`, uses archived EPA EJScreen reference rows for
@@ -55,8 +55,8 @@
 #'
 #' The annual pipeline creates the `bgej` stage, and the package-level dynamic
 #' Arrow loader obtains `bgej.arrow` from the `ejamdata` release tag recorded in
-#' DESCRIPTION as `ejamdata_required_tag`. For EJAM 2.5.0 this is currently
-#' `v2.5.0`, but the package version and required data tag can differ for patch
+#' DESCRIPTION as `ejamdata_required_tag`. For an EJAM v3.YYYY.0 release this is
+#' the matching `v3.YYYY.0` tag, but the package version and required data tag can differ for patch
 #' releases. [dataload_dynamic()] and [download_latest_arrow_data()] do not use
 #' whichever data-repository release GitHub currently marks as latest.
 #'

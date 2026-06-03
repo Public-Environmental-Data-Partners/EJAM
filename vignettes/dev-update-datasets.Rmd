@@ -104,10 +104,10 @@ covers `bg_acs_raw`, `bg_acsdata`, optional Island Areas checkpoints,
 (`ejscreen_us_pctile_lookup` and `ejscreen_state_pctile_lookup`), and the
 optional `ejscreen_dataset_creator_input` stage. This more general vignette
 focuses on the other datasets and storage/release mechanics used by EJAM. For EJAM
-v2.5.0, AS/GU/MP/VI are included at the blockgroup dataset, EJSCREEN export,
+v3, AS/GU/MP/VI are included at the blockgroup dataset, EJSCREEN export,
 and map-data visibility level with demographic fields kept as `NA` and partial
 EPA environmental fields where available. See
-[Island Areas in EJAM v2.5.0](island-areas.html) for the user-facing coverage
+[Island Areas in EJAM v3](island-areas.html) for the user-facing coverage
 notes and live EJSCREEN layer inventory observed in May 2026.
 
 -   ***Block Datasets***: The *block* (not blockgroup) tables might be updated
@@ -289,7 +289,7 @@ planning updates:
    `blockid2fips`. These need regeneration only when block-level FIPS or block
    internal-point geography changes.
 
-For EJAM v2.5.0, the block and blockgroup helper files are intentionally
+For EJAM v3, the block and blockgroup helper files are intentionally
 carried forward without Island Area blocks. They should not be used to promise
 point-buffer/radius or block-weighted polygon analysis for AS/GU/MP/VI; those
 analyses should return no-data results rather than block-weighted estimates.
@@ -418,7 +418,7 @@ files may be carried forward unchanged if they are still compatible. If block or
 blockgroup helper Arrow files such as `blockwts.arrow`, `blockpoints.arrow`,
 `blockid2fips.arrow`, `bgid2fips.arrow`, or `quaddata.arrow` are intentionally
 regenerated in a future geography update, publish those files with the same
-helper after a dry-run review. For v2.5.0, Island Areas are handled only at the
+helper after a dry-run review. For v3, Island Areas are handled only at the
 blockgroup dataset/export/map-data level; Island Area blocks are not added to
 the block-helper universe for this release path.
 

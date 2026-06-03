@@ -62,7 +62,7 @@ only, do not overwrite existing assets, and do not mark the release as latest.
  stopifnot(all(file.exists(fpaths)))
  EJAM:::datasets_arrow_publish(
    files = fpaths,
-   tag = "v2.5.0",
+   tag = "v3.2024.0",
    mark_latest = FALSE,
    dry_run = TRUE,
    overwrite = FALSE

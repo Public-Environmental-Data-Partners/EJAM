@@ -17,7 +17,7 @@ for all the blockgroups in that zone (e.g., blockgroups in \link{blockgroupstats
 for a set of indicators such as percent low income.
 Each column is one indicator (or specifies the percentile).
 
-For EJAM v2.5.0, \link{blockgroupstats} may include AS/GU/MP/VI at the
+For EJAM v3, \link{blockgroupstats} may include AS/GU/MP/VI at the
 blockgroup dataset, EJSCREEN export, and map-data visibility level.
 Demographic values for those Island Areas are normally \code{NA} because ACS
 does not cover them. Environmental lookup values may be present where EPA

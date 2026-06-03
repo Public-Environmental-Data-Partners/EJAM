@@ -204,7 +204,7 @@ name as potentially modified via `global_defaults_package.R` or parameters to
 
 -   Update `NEWS.md` in the release/development branch listing changes made.
     Use the same version number that was put in `DESCRIPTION`, such as
-    `v2.5.0`.
+    `v3`.
 
 -   Run release checks, including `devtools::check(vignettes = FALSE)` if
     traditional vignette builds are not needed, targeted pipeline validation,
@@ -214,7 +214,7 @@ name as potentially modified via `global_defaults_package.R` or parameters to
     current repository workflow.
 
 -   Create a new EJAM release on GitHub, using `NEWS.md` as the changelog and a
-    tag matching the `DESCRIPTION` version, such as `v2.5.0`.
+    tag matching the `DESCRIPTION` version, such as `v3`.
 
 ### Update and run the test installation script
 
