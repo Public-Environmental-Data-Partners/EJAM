@@ -100,3 +100,7 @@ inst/plumber/log_api_usage*.txt
 
 # Ignore scratch report render artifact created during report rendering
 inst/report/community_report/junk.html
+
+# Claude Code / agent local files (untracked tooling state)
+.claude/
+.claude-code-memory-import/
