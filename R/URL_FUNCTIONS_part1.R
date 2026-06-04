@@ -59,8 +59,9 @@ url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fi
 #'
 url_online <- function(url = "https://ejam.publicenvirodata.org") {
 
-  if (missing(url)) {stop("must specify a URL")}
-  if (length(url) > 1) {stop("can only check one URL at a time using url_online()")}
+  if (length(url) > 1) {stop("can only check one URL at a time using url_online()")} 
+  url <- trimws(unname(as.character(url[1])))
+  if (!nzchar(url)) {stop("must specify a URL")}
   if (offline()) {
     warning("Cannot check URL when offline -- internet connection does not seem to be available")
     return(NA)
