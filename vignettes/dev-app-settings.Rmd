@@ -312,7 +312,7 @@ browseURL(urlx)
 Using a custom URL to go to a web app with custom settings
 
 ```{r browseURL, eval=FALSE}
-urlbase <- "https://ejam.policyinnovation.info/?_inputs_&"
+urlbase <- "https://ejam.publicenvirodata.org/?_inputs_&"
 
 myparams <- c(
   standard_analysis_title="Custom NAICS Analysis",
