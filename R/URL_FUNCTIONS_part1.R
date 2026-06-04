@@ -57,7 +57,7 @@ url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fi
 #'
 #' @keywords internal
 #'
-url_online <- function(url = "https://ejam.policyinnovation.info") {
+url_online <- function(url = "https://ejam.publicenvirodata.org") {
 
   if (missing(url)) {stop("must specify a URL")}
   if (length(url) > 1) {stop("can only check one URL at a time using url_online()")}
