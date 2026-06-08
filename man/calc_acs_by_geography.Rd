@@ -8,7 +8,7 @@ calc_acs_by_geography(
   bg = blockgroupstats,
   id_col = "bgfips",
   levels = c("blockgroup", "tract", "county", "state"),
-  mapping = map_headernames,
+  pop_fallback = TRUE,
   out_dir = NULL
 )
 }
@@ -20,8 +20,9 @@ to \link{blockgroupstats}.}
 
 \item{levels}{Any of \code{"blockgroup"}, \code{"tract"}, \code{"county"}, \code{"state"}.}
 
-\item{mapping}{Metadata table with \code{rname}, \code{calculation_type}, and
-\code{denominator} columns. Defaults to \link{map_headernames}.}
+\item{pop_fallback}{If \code{TRUE} (default), weighted-mean indicators whose weight
+column is missing from the data fall back to population weighting, as in
+\code{\link[=doaggregate]{doaggregate()}}. If \code{FALSE}, such indicators are dropped.}
 
 \item{out_dir}{Optional directory; if set, each level is written there as
 \verb{acs_by_<level>.csv}.}
@@ -34,26 +35,32 @@ indicator columns.
 \description{
 Part (c) of issue #395: roll block-group ACS demographic values up to tract,
 county, and state for the EJSCREEN web app's "additional demographics" (and
-side-by-side) layers.
+side-by-side) layers, using the same per-indicator aggregation rules as
+\code{\link[=doaggregate]{doaggregate()}}.
 }
 \details{
-Aggregation follows the same metadata that \code{\link[=doaggregate]{doaggregate()}} uses, stored in
-\code{map_headernames}:
+Each indicator is aggregated by the method EJAM stores for it, looked up with
+the same accessors \code{\link[=doaggregate]{doaggregate()}} uses:
 \itemize{
-\item \code{calculation_type == "sum of counts"} columns are summed within each
-geography (population counts, the ACS universes/denominators, etc.).
-\item \code{calculation_type == "wtdmean"} columns are recomputed as a
-denominator-weighted mean, \code{sum(value * denominator) / sum(denominator)},
-where each indicator's weight is its \code{map_headernames$denominator} count
-column. A block group is left out of a given indicator's weight where its
-value is \code{NA}, so the weighted mean is taken only over block groups that
-have that indicator.
+\item \code{\link[=calctype]{calctype()}} \verb{== "sum of counts"} -> the column is \strong{summed} within
+each geography (population, households, the ACS universes/denominators, raw
+counts, etc.).
+\item \code{\link[=calctype]{calctype()}} \verb{== "wtdmean"} -> the column is a \strong{weighted mean}, where
+the weight is the indicator's own denominator from \code{\link[=calcweight]{calcweight()}} (for
+example \code{pop} for population fractions, \code{hhlds} / \code{occupiedunits} /
+\code{builtunits} for household-based indicators, \code{povknownratio} for the
+low-income fraction, \code{age25up} for educational attainment, and so on). The
+mean is \code{sum(value * weight) / sum(weight)}, taken only over block groups
+that have the indicator.
 }
+Following \code{\link[=doaggregate]{doaggregate()}}, if an indicator's weight column is not present in
+the data, the population weight \code{pop} is used as a fallback (with a message).
 Percentile (\code{lookedup}), \verb{ratio to avg}, and map bin/text columns are \strong{not}
 recomputed here -- those need geography-level distributions / lookups and are a
 separate step (see issue #395). The geography id is the leading FIPS digits of
 \code{bgfips}: 12 = block group, 11 = tract, 5 = county, 2 = state.
 }
 \seealso{
-\code{\link[=doaggregate]{doaggregate()}} \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}} \code{\link[=calc_ejscreen_threshold_layers]{calc_ejscreen_threshold_layers()}}
+\code{\link[=doaggregate]{doaggregate()}} \code{\link[=calctype]{calctype()}} \code{\link[=calcweight]{calcweight()}} \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}}
+\code{\link[=calc_ejscreen_threshold_layers]{calc_ejscreen_threshold_layers()}}
 }
