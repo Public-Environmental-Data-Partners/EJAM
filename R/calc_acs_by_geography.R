@@ -4,21 +4,26 @@
 #'
 #' Part (c) of issue #395: roll block-group ACS demographic values up to tract,
 #' county, and state for the EJSCREEN web app's "additional demographics" (and
-#' side-by-side) layers.
+#' side-by-side) layers, using the same per-indicator aggregation rules as
+#' [doaggregate()].
 #'
 #' @details
-#' Aggregation follows the same metadata that [doaggregate()] uses, stored in
-#' `map_headernames`:
+#' Each indicator is aggregated by the method EJAM stores for it, looked up with
+#' the same accessors [doaggregate()] uses:
 #' \itemize{
-#'   \item `calculation_type == "sum of counts"` columns are summed within each
-#'     geography (population counts, the ACS universes/denominators, etc.).
-#'   \item `calculation_type == "wtdmean"` columns are recomputed as a
-#'     denominator-weighted mean, `sum(value * denominator) / sum(denominator)`,
-#'     where each indicator's weight is its `map_headernames$denominator` count
-#'     column. A block group is left out of a given indicator's weight where its
-#'     value is `NA`, so the weighted mean is taken only over block groups that
-#'     have that indicator.
+#'   \item [calctype()] `== "sum of counts"` -> the column is **summed** within
+#'     each geography (population, households, the ACS universes/denominators, raw
+#'     counts, etc.).
+#'   \item [calctype()] `== "wtdmean"` -> the column is a **weighted mean**, where
+#'     the weight is the indicator's own denominator from [calcweight()] (for
+#'     example `pop` for population fractions, `hhlds` / `occupiedunits` /
+#'     `builtunits` for household-based indicators, `povknownratio` for the
+#'     low-income fraction, `age25up` for educational attainment, and so on). The
+#'     mean is `sum(value * weight) / sum(weight)`, taken only over block groups
+#'     that have the indicator.
 #' }
+#' Following [doaggregate()], if an indicator's weight column is not present in
+#' the data, the population weight `pop` is used as a fallback (with a message).
 #' Percentile (`lookedup`), `ratio to avg`, and map bin/text columns are **not**
 #' recomputed here -- those need geography-level distributions / lookups and are a
 #' separate step (see issue #395). The geography id is the leading FIPS digits of
@@ -28,48 +33,58 @@
 #'   to [blockgroupstats].
 #' @param id_col Block-group FIPS column name. Default `"bgfips"`.
 #' @param levels Any of `"blockgroup"`, `"tract"`, `"county"`, `"state"`.
-#' @param mapping Metadata table with `rname`, `calculation_type`, and
-#'   `denominator` columns. Defaults to [map_headernames].
+#' @param pop_fallback If `TRUE` (default), weighted-mean indicators whose weight
+#'   column is missing from the data fall back to population weighting, as in
+#'   [doaggregate()]. If `FALSE`, such indicators are dropped.
 #' @param out_dir Optional directory; if set, each level is written there as
 #'   `acs_by_<level>.csv`.
 #' @return A named list of data.frames, one per requested level: the geography
 #'   FIPS id column, the summed count columns, and the recomputed weighted-mean
 #'   indicator columns.
-#' @seealso [doaggregate()] [calc_ejscreen_export()] [calc_ejscreen_threshold_layers()]
+#' @seealso [doaggregate()] [calctype()] [calcweight()] [calc_ejscreen_export()]
+#'   [calc_ejscreen_threshold_layers()]
 #' @export
 #'
 calc_acs_by_geography <- function(
     bg = blockgroupstats,
     id_col = "bgfips",
     levels = c("blockgroup", "tract", "county", "state"),
-    mapping = map_headernames,
+    pop_fallback = TRUE,
     out_dir = NULL) {
 
-  levels  <- match.arg(levels, several.ok = TRUE)
+  levels <- match.arg(levels, several.ok = TRUE)
   stopifnot(id_col %in% names(bg))
-  mapping <- as.data.frame(mapping)
 
-  DT   <- data.table::as.data.table(bg)
-  fips <- as.character(DT[[id_col]])
+  DT      <- data.table::as.data.table(bg)
+  fips    <- as.character(DT[[id_col]])
+  allcols <- names(DT)
 
-  # Which columns to sum vs weighted-mean, from the same metadata doaggregate uses.
-  sumcols <- intersect(unique(mapping$rname[mapping$calculation_type == "sum of counts"]),
-                       names(DT))
-  wsel <- mapping$calculation_type == "wtdmean" &
-          mapping$rname %in% names(DT) &
-          mapping$denominator %in% names(DT) &
-          nzchar(mapping$denominator)
-  wmap <- unique(mapping[wsel, c("rname", "denominator")])
+  # Per-indicator aggregation method + weight, via the same accessors doaggregate() uses.
+  ctype   <- calctype(allcols)
+  sumcols <- allcols[!is.na(ctype) & ctype == "sum of counts"]
+  wtdcols <- allcols[!is.na(ctype) & ctype == "wtdmean"]
+  wts     <- calcweight(wtdcols)   # each indicator's own denominator/weight column
 
-  # Per weighted-mean indicator: numerator product (value * denominator) and an
-  # effective weight (the denominator, but only where the value is present).
-  # Summed per geography, then divided, this yields sum(v*d)/sum(d) over the
-  # block groups that actually have the indicator.
-  numnames <- paste0("..num..", wmap$rname)
-  wgtnames <- paste0("..wgt..", wmap$rname)
-  for (i in seq_len(nrow(wmap))) {
-    cc <- as.numeric(DT[[wmap$rname[i]]])
-    dd <- as.numeric(DT[[wmap$denominator[i]]])
+  # Population-weight fallback for any weight column not present in the data (matches doaggregate()).
+  missing_w <- is.na(wts) | !(wts %in% allcols)
+  if (any(missing_w)) {
+    if (isTRUE(pop_fallback)) {
+      message("calc_acs_by_geography: weight column not in data; using population ",
+              "weight for: ", paste(wtdcols[missing_w], collapse = ", "))
+      wts[missing_w] <- "pop"
+    }
+  }
+  keep    <- wts %in% allcols
+  wtdcols <- wtdcols[keep]
+  wts     <- wts[keep]
+
+  # Per weighted-mean indicator: numerator product (value * weight) and an
+  # effective weight (the weight, but only where the value is present).
+  numnames <- paste0("..num..", wtdcols)
+  wgtnames <- paste0("..wgt..", wtdcols)
+  for (i in seq_along(wtdcols)) {
+    cc <- as.numeric(DT[[wtdcols[i]]])
+    dd <- as.numeric(DT[[wts[i]]])
     data.table::set(DT, j = numnames[i], value = cc * dd)
     data.table::set(DT, j = wgtnames[i],
                     value = data.table::fifelse(is.na(cc), NA_real_, dd))
@@ -84,9 +99,9 @@ calc_acs_by_geography <- function(
   for (lv in levels) {
     DT[, ".geoid" := substr(fips, 1L, nchars[[lv]])]
     agg <- DT[, lapply(.SD, sum, na.rm = TRUE), by = ".geoid", .SDcols = aggcols]
-    for (i in seq_len(nrow(wmap))) {
+    for (i in seq_along(wtdcols)) {
       w <- agg[[wgtnames[i]]]
-      data.table::set(agg, j = wmap$rname[i],
+      data.table::set(agg, j = wtdcols[i],
                       value = data.table::fifelse(!is.na(w) & w > 0,
                                                   agg[[numnames[i]]] / w, NA_real_))
     }
