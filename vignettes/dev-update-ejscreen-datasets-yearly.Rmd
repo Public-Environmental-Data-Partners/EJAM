@@ -787,6 +787,17 @@ be current.
 
 ## Reviewing the EJScreen Export Schema
 
+> **EJSCREEN web-app layers (issue #395).** The two block-group export files here
+> *are* the web app's main percentile layers: `ejscreen_export.csv` is the **US
+> percentiles** block-group layer and `ejscreen_export_statepct.csv` is the
+> **State percentiles** layer. Their columns match the ~328-field EJSCREEN
+> FeatureServer schema (`OBJECTID` and `Shape__*` are added by ArcGIS on upload),
+> and `ejscreen_export_schema_report.csv` validates that match. The other web-app
+> outputs are produced separately: the four threshold layers (per-block-group
+> EJ-index/supplemental percentile ranks plus the `P1`..`P100` hit counts) by
+> [calc_ejscreen_threshold_layers()], and the block-group/tract/county/state
+> "additional demographics" ACS tables by [calc_acs_by_geography()].
+
 If `EJAM_INCLUDE_EJSCREEN_EXPORT` is true, the runner writes the export stage
 and its schema report. With the default stage format, those files are:
 
