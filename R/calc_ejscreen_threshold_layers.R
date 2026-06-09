@@ -117,3 +117,60 @@ calc_ejscreen_threshold_layers <- function(
   result
 }
 ################################################# ################################### #
+
+#' Build the four EJSCREEN threshold layers from the national + state exports
+#'
+#' Convenience wrapper used by the pipeline's `ejscreen_export` stage: it builds
+#' the four web-app threshold layers (issue #395 part b) directly from the
+#' per-block-group EJ-index percentile-rank columns that [calc_ejscreen_export()]
+#' already placed in the national export (`ejscreen_export`) and the
+#' state-percentile export (`ejscreen_export_statepct`).
+#'
+#' @details
+#' The EJ-index percentile ranks are the `P_D2_*` columns (national/state EJ
+#' indexes) and the `P_D5_*` columns (supplemental). The national export supplies
+#' the US layers and the state-percentile export supplies the State layers (its
+#' `P_D2_*`/`P_D5_*` fields hold state percentiles). Each layer is passed through
+#' [calc_ejscreen_threshold_layers()] to add the `P1`..`P100` hit-count columns.
+#'
+#' @param national The `ejscreen_export` (national-percentile) data.frame.
+#' @param statepct The `ejscreen_export_statepct` (state-percentile) data.frame.
+#'   If `NULL`, only the US layers are built.
+#' @param id_col Optional id column name; auto-detected from `c("ID","bgfips","bgid")`.
+#' @return A named list with the available members of `us_ejindexes`,
+#'   `us_supplemental`, `state_ejindexes`, `state_supplemental`.
+#' @seealso [calc_ejscreen_threshold_layers()] [calc_ejscreen_export()]
+#' @export
+#'
+calc_ejscreen_threshold_layers_from_exports <- function(national = NULL,
+                                                        statepct = NULL,
+                                                        id_col = NULL) {
+  pick_id <- function(df) {
+    if (!is.null(id_col) && id_col %in% names(df)) return(id_col)
+    for (cand in c("ID", "bgfips", "bgid")) if (cand %in% names(df)) return(cand)
+    names(df)[1]
+  }
+  result <- list()
+  if (!is.null(national) && is.data.frame(national) && nrow(national) > 0) {
+    idc <- pick_id(national)
+    result <- c(result, calc_ejscreen_threshold_layers(
+      pctiles = national, id_col = idc,
+      layers = c("us_ejindexes", "us_supplemental"),
+      cols_us_ej   = grep("^P_D2_", names(national), value = TRUE),
+      cols_us_supp = grep("^P_D5_", names(national), value = TRUE),
+      cols_state_ej = character(0), cols_state_supp = character(0)
+    ))
+  }
+  if (!is.null(statepct) && is.data.frame(statepct) && nrow(statepct) > 0) {
+    idc <- pick_id(statepct)
+    result <- c(result, calc_ejscreen_threshold_layers(
+      pctiles = statepct, id_col = idc,
+      layers = c("state_ejindexes", "state_supplemental"),
+      cols_state_ej   = grep("^P_D2_", names(statepct), value = TRUE),
+      cols_state_supp = grep("^P_D5_", names(statepct), value = TRUE),
+      cols_us_ej = character(0), cols_us_supp = character(0)
+    ))
+  }
+  result
+}
+################################################# ################################### #

@@ -779,6 +779,38 @@ calc_ejscreen_dataset <- function(yr,
     }
   }
   # ~ ----------------------------------------- ####
+  # EJSCREEN WEB-APP EXTRA LAYERS (issue #395) ####
+  # * Produced alongside the EJSCREEN export (gated by include_ejscreen_export):
+  #   (c) ACS demographics aggregated to block group / tract / county / state, and
+  #   (b) US/State EJ-index percentile-rank "threshold" layers (the per-block-group
+  #   EJ-index/supplemental percentile ranks plus the P1..P100 hit-count columns).
+  # ~ ----------------------------------------- ####
+  if (isTRUE(include_ejscreen_export)) {
+
+    ## (c) ACS demographics by geography (sum-of-counts + denominator-weighted means) ####
+    acs_geo <- calc_acs_by_geography(
+      bg = blockgroupstats,
+      levels = c("blockgroup", "tract", "county", "state")
+    )
+    for (lv in names(acs_geo)) {
+      stg <- paste0("acs_by_", lv)
+      out[[stg]] <- acs_geo[[lv]]
+      if (isTRUE(save_stages)) {save_stage(out[[stg]], stg)}
+    }
+
+    ## (b) US & State EJ-index percentile-rank "threshold" layers (P1..P100) ####
+    ## Built from the per-block-group P_D2_*/P_D5_* ranks already in the exports.
+    ej_layers <- calc_ejscreen_threshold_layers_from_exports(
+      national = out$ejscreen_export,
+      statepct = out$ejscreen_export_statepct
+    )
+    for (nm in names(ej_layers)) {
+      stg <- paste0("ejscreen_threshold_", nm)
+      out[[stg]] <- ej_layers[[nm]]
+      if (isTRUE(save_stages)) {save_stage(out[[stg]], stg)}
+    }
+  }
+  # ~ ----------------------------------------- ####
   ## set attributes & return list of tables ####
   attr(out, "pipeline_dir") <- pipeline_dir
   attr(out, "pipeline_storage") <- ejscreen_pipeline_storage_backend(pipeline_dir, storage = pipeline_storage)
