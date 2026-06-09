@@ -718,7 +718,9 @@ table_xls_format <- function(overall,
   ## ROW1 FREEZE PANES AND LEFTMOST COLUMNS ####
 
   # openxlsx::freezePane(wb, sheet = 'Each Site', firstRow = TRUE) #, firstCol = TRUE)  ## freeze first row and column
-  openxlsx::freezePane(wb, sheet = 'Each Site', firstActiveCol = 4, firstActiveRow = 2)
+first_active_col_eachsite <- match("valid", headers_eachsite)
+if (is.na(first_active_col_eachsite)) first_active_col_eachsite <- 1
+openxlsx::freezePane(wb, sheet = 'Each Site', firstActiveCol = first_active_col_eachsite, firstActiveRow = 2)
   # openxlsx::freezePane(wb, sheet = 'Overall',   firstActiveCol = 1)
   openxlsx::freezePane(wb, sheet = 'Overall',   firstActiveCol = 1, firstActiveRow = 2)
   openxlsx::freezePane(wb, sheet = 'Overall 2', firstActiveCol = 1, firstActiveRow = 2)
