@@ -55,7 +55,7 @@ calc_acs_by_geography <- function(
   levels <- match.arg(levels, several.ok = TRUE)
   stopifnot(id_col %in% names(bg))
 
-  DT      <- data.table::as.data.table(bg)
+  DT      <- data.table::as.data.table(data.table::copy(bg))
   fips    <- as.character(DT[[id_col]])
   allcols <- names(DT)
 
