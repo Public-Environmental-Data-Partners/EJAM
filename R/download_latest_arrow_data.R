@@ -16,6 +16,12 @@ ejamdata_local_arrow_tag_read <- function(path) {
   ejamdata_tag_canonical(tag[1])
 }
 
+ejamdata_local_arrow_tag_write <- function(tag, path) {
+  tag <- ejamdata_tag_canonical(tag)
+  writeLines(tag, con = path, sep = "\n", useBytes = TRUE)
+  invisible(path)
+}
+
 #' Download package-compatible Arrow datasets if user does not have them already
 #'
 #' Used when EJAM package is attached
@@ -213,7 +219,7 @@ download_latest_arrow_data <- function(
   # update user's arrowversion
   message("Writing updated info about what versions of arrow datasets are saved locally...")
   tried <- tryCatch({
-    writeLines(target_arrow_tag, ejamdata_version_fpath)},
+    ejamdata_local_arrow_tag_write(target_arrow_tag, ejamdata_version_fpath)},
     error = function(e) {
       message(paste0("\u274C Failed to write (updated info about what versions of arrow datasets are saved locally) to file ", ejamdata_version_fpath, " -- check permissions..."))
       FALSE
