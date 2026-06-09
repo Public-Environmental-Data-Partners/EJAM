@@ -833,7 +833,7 @@ full GEOID, and reports correlation + median difference per indicator). This
 verified an **exact** match for the ACS indicators EJAM carries.
 
 ```{r, eval=FALSE}
-# EPA tract reference (live feature server; no S3 archive). STCNTR = full GEOID.
+# EPA tract reference (live feature server; no S3 archive; paginated, often max ~2000 rows per request). STCNTR = full GEOID.
 fs <- paste0("https://services.arcgis.com/EXyRv0dqed53BmG2/arcgis/rest/services/",
              "EJScreen_Census/FeatureServer/5/query",
              "?where=1%3D1&outFields=STCNTR,TOTALPOP,LOWINC,PCT_LOWINC,PCT_MINORITY",
