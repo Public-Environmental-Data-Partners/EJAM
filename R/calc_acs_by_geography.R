@@ -117,6 +117,7 @@ calc_acs_by_geography <- function(
                        row.names = FALSE)
     }
   }
+  if (length(numnames)) DT[, c(numnames, wgtnames) := NULL]
   DT[, ".geoid" := NULL]
   result
 }
