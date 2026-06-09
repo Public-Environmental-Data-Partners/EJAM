@@ -9,20 +9,27 @@ calc_acs_by_geography(
   id_col = "bgfips",
   levels = c("blockgroup", "tract", "county", "state"),
   pop_fallback = TRUE,
+  exclude_islandareas = TRUE,
   out_dir = NULL
 )
 }
 \arguments{
 \item{bg}{Block-group table with \code{id_col} and ACS indicator columns. Defaults
-to \link{blockgroupstats}.}
+to \link{blockgroupstats}. Not modified (a copy is made internally).}
 
-\item{id_col}{Block-group FIPS column name. Default \code{"bgfips"}.}
+\item{id_col}{Block-group FIPS column name. Default \code{"bgfips"}; also used as the
+id column name in the block-group-level output.}
 
 \item{levels}{Any of \code{"blockgroup"}, \code{"tract"}, \code{"county"}, \code{"state"}.}
 
 \item{pop_fallback}{If \code{TRUE} (default), weighted-mean indicators whose weight
 column is missing from the data fall back to population weighting, as in
 \code{\link[=doaggregate]{doaggregate()}}. If \code{FALSE}, such indicators are dropped.}
+
+\item{exclude_islandareas}{If \code{TRUE} (default), drop Island Area block groups
+(AS/GU/MP/VI/UM) before aggregating -- identified by the \code{ST} column via
+\code{\link[=is.island]{is.island()}} when present (their FIPS are non-standard length). Set \code{FALSE}
+to keep them (they will have \code{0}/\code{NA} demographics).}
 
 \item{out_dir}{Optional directory; if set, each level is written there as
 \verb{acs_by_<level>.csv}.}
@@ -59,8 +66,16 @@ Percentile (\code{lookedup}), \verb{ratio to avg}, and map bin/text columns are 
 recomputed here -- those need geography-level distributions / lookups and are a
 separate step (see issue #395). The geography id is the leading FIPS digits of
 \code{bgfips}: 12 = block group, 11 = tract, 5 = county, 2 = state.
+
+Island Areas (American Samoa, Guam, the Northern Mariana Islands, the U.S.
+Virgin Islands) have no standard ACS demographics, so by default
+(\code{exclude_islandareas = TRUE}) their block groups are dropped before
+aggregating. This matches EJAM's v3 decision that Island Area demographics are
+unavailable by default (rather than emitting them with \code{na.rm} sums of \code{0}), and
+matches EPA's ACS layer, which omits them. Puerto Rico is not an Island Area for
+this purpose (it has standard ACS demographics) and is retained.
 }
 \seealso{
-\code{\link[=doaggregate]{doaggregate()}} \code{\link[=calctype]{calctype()}} \code{\link[=calcweight]{calcweight()}} \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}}
-\code{\link[=calc_ejscreen_threshold_layers]{calc_ejscreen_threshold_layers()}}
+\code{\link[=doaggregate]{doaggregate()}} \code{\link[=calctype]{calctype()}} \code{\link[=calcweight]{calcweight()}} \code{\link[=is.island]{is.island()}}
+\code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}} \code{\link[=calc_ejscreen_threshold_layers]{calc_ejscreen_threshold_layers()}}
 }

@@ -64,14 +64,15 @@ The four layers differ only in which set of percentile columns they tabulate:
 \item \code{state_supplemental} -> \link{names_ej_supp_state_pctile}
 }
 
-To wire this into the annual pipeline as a stage: register stage names in
-\code{ejscreen_pipeline_stage_names()}, gate it with an env var such as
-\code{EJAM_INCLUDE_WEB_THRESHOLD_LAYERS}, and call this from
-\code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} after the export stages, saving each returned layer
-with the pipeline IO helper. Parts (a) and (c) of issue #395 are out of scope
-here (the US/State percentile CSVs largely reuse the existing
-\code{ejscreen_us_pctile_lookup} / \code{ejscreen_state_pctile_lookup} exports; the
-tract/county/state ACS layers need new aggregation of \code{blockgroupstats}).
+In the annual pipeline these layers are produced by the \code{ejscreen_export} stage
+of \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}} when \code{include_ejscreen_export} is \code{TRUE}: it calls
+\code{\link[=calc_ejscreen_threshold_layers_from_exports]{calc_ejscreen_threshold_layers_from_exports()}} on the national and state
+exports and saves them under the registered stage names
+\code{ejscreen_threshold_us_ejindexes}, \code{ejscreen_threshold_us_supplemental},
+\code{ejscreen_threshold_state_ejindexes}, and
+\code{ejscreen_threshold_state_supplemental}. (Issue #395 part (a) — the US/State
+percentile CSVs — is the existing \code{ejscreen_export} / \code{ejscreen_export_statepct};
+part (c) — the ACS-by-geography layers — is \code{\link[=calc_acs_by_geography]{calc_acs_by_geography()}}.)
 }
 \seealso{
 \code{\link[=colcounter]{colcounter()}} \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}} \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}}

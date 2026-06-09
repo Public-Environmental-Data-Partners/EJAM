@@ -832,13 +832,27 @@ so the replication fetches the reference live and uses
 full GEOID, and reports correlation + median difference per indicator). This
 verified an **exact** match for the ACS indicators EJAM carries.
 
+The feature server returns at most ~2000 features per query (`maxRecordCount`), so a
+single call validates only the first page. For a full national check, **paginate**
+with `resultOffset` until fewer than the page size come back (or loop over states via
+`where=STATE='01'` etc.). The single-page call below is illustrative only.
+
 ```{r, eval=FALSE}
-# EPA tract reference (live feature server; no S3 archive; paginated, often max ~2000 rows per request). STCNTR = full GEOID.
-fs <- paste0("https://services.arcgis.com/EXyRv0dqed53BmG2/arcgis/rest/services/",
-             "EJScreen_Census/FeatureServer/5/query",
-             "?where=1%3D1&outFields=STCNTR,TOTALPOP,LOWINC,PCT_LOWINC,PCT_MINORITY",
-             "&returnGeometry=false&resultRecordCount=2000&f=json")
-epa_tracts <- jsonlite::fromJSON(fs)$features$attributes
+# EPA tract reference (live feature server; no S3 archive). STCNTR = full GEOID.
+base <- paste0("https://services.arcgis.com/EXyRv0dqed53BmG2/arcgis/rest/services/",
+               "EJScreen_Census/FeatureServer/5/query",
+               "?where=1%3D1&outFields=STCNTR,TOTALPOP,LOWINC,PCT_LOWINC,PCT_MINORITY",
+               "&returnGeometry=false&f=json")
+# paginate: fetch all pages (2000 rows each) and bind
+epa_tracts <- list(); off <- 0L
+repeat {
+  page <- jsonlite::fromJSON(paste0(base, "&resultRecordCount=2000&resultOffset=", off))$features$attributes
+  if (is.null(page) || !length(page) || nrow(page) == 0) break
+  epa_tracts[[length(epa_tracts) + 1L]] <- page
+  if (nrow(page) < 2000) break
+  off <- off + 2000L
+}
+epa_tracts <- do.call(rbind, epa_tracts)
 acs_tract  <- outputs$acs_by_tract   # the pipeline stage output
 
 EJAM:::ejscreen_compare_geography_to_epa(
