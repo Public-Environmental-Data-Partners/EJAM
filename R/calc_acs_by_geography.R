@@ -29,20 +29,33 @@
 #' separate step (see issue #395). The geography id is the leading FIPS digits of
 #' `bgfips`: 12 = block group, 11 = tract, 5 = county, 2 = state.
 #'
+#' Island Areas (American Samoa, Guam, the Northern Mariana Islands, the U.S.
+#' Virgin Islands) have no standard ACS demographics, so by default
+#' (`exclude_islandareas = TRUE`) their block groups are dropped before
+#' aggregating. This matches EJAM's v3 decision that Island Area demographics are
+#' unavailable by default (rather than emitting them with `na.rm` sums of `0`), and
+#' matches EPA's ACS layer, which omits them. Puerto Rico is not an Island Area for
+#' this purpose (it has standard ACS demographics) and is retained.
+#'
 #' @param bg Block-group table with `id_col` and ACS indicator columns. Defaults
-#'   to [blockgroupstats].
-#' @param id_col Block-group FIPS column name. Default `"bgfips"`.
+#'   to [blockgroupstats]. Not modified (a copy is made internally).
+#' @param id_col Block-group FIPS column name. Default `"bgfips"`; also used as the
+#'   id column name in the block-group-level output.
 #' @param levels Any of `"blockgroup"`, `"tract"`, `"county"`, `"state"`.
 #' @param pop_fallback If `TRUE` (default), weighted-mean indicators whose weight
 #'   column is missing from the data fall back to population weighting, as in
 #'   [doaggregate()]. If `FALSE`, such indicators are dropped.
+#' @param exclude_islandareas If `TRUE` (default), drop Island Area block groups
+#'   (AS/GU/MP/VI/UM) before aggregating -- identified by the `ST` column via
+#'   [is.island()] when present (their FIPS are non-standard length). Set `FALSE`
+#'   to keep them (they will have `0`/`NA` demographics).
 #' @param out_dir Optional directory; if set, each level is written there as
 #'   `acs_by_<level>.csv`.
 #' @return A named list of data.frames, one per requested level: the geography
 #'   FIPS id column, the summed count columns, and the recomputed weighted-mean
 #'   indicator columns.
-#' @seealso [doaggregate()] [calctype()] [calcweight()] [calc_ejscreen_export()]
-#'   [calc_ejscreen_threshold_layers()]
+#' @seealso [doaggregate()] [calctype()] [calcweight()] [is.island()]
+#'   [calc_ejscreen_export()] [calc_ejscreen_threshold_layers()]
 #' @export
 #'
 calc_acs_by_geography <- function(
@@ -50,22 +63,41 @@ calc_acs_by_geography <- function(
     id_col = "bgfips",
     levels = c("blockgroup", "tract", "county", "state"),
     pop_fallback = TRUE,
+    exclude_islandareas = TRUE,
     out_dir = NULL) {
 
   levels <- match.arg(levels, several.ok = TRUE)
   stopifnot(id_col %in% names(bg))
 
-  DT      <- data.table::as.data.table(data.table::copy(bg))
-  fips    <- as.character(DT[[id_col]])
-  allcols <- names(DT)
+  # Defensive copy so we never mutate a caller's data.table by reference (the
+  # pipeline passes one). Block-group FIPS are character with leading zeros; do NOT
+  # run fips_lead_zero() here -- Island Area FIPS are intentionally non-standard
+  # (7-10 char) and it would turn them into NA.
+  DT   <- data.table::copy(data.table::as.data.table(bg))
+  fips <- as.character(DT[[id_col]])
 
-  # Per-indicator aggregation method + weight, via the same accessors doaggregate() uses.
+  # Exclude Island Areas (AS/GU/MP/VI/UM): non-standard FIPS, no standard ACS
+  # demographics. Identify by the ST column when present (robust -- catches all of
+  # them regardless of FIPS length), else by the 2-digit FIPS prefix.
+  if (isTRUE(exclude_islandareas)) {
+    isl <- if ("ST" %in% names(DT)) {
+      is.island(ST = DT[["ST"]]) %in% TRUE
+    } else {
+      suppressWarnings(is.island(fips = substr(fips, 1L, 2L))) %in% TRUE
+    }
+    if (any(isl)) {
+      DT   <- DT[!isl]
+      fips <- fips[!isl]
+    }
+  }
+
+  allcols <- names(DT)
   ctype   <- calctype(allcols)
   sumcols <- allcols[!is.na(ctype) & ctype == "sum of counts"]
   wtdcols <- allcols[!is.na(ctype) & ctype == "wtdmean"]
   wts     <- calcweight(wtdcols)   # each indicator's own denominator/weight column
 
-  # Population-weight fallback for any weight column not present in the data (matches doaggregate()).
+  # Population-weight fallback for any weight column not present (matches doaggregate()).
   missing_w <- is.na(wts) | !(wts %in% allcols)
   if (any(missing_w)) {
     if (isTRUE(pop_fallback)) {
@@ -90,10 +122,11 @@ calc_acs_by_geography <- function(
                     value = data.table::fifelse(is.na(cc), NA_real_, dd))
   }
 
-  id_names <- c(blockgroup = "bgfips", tract = "tractfips",
+  # Block-group output keeps the caller's id_col name; coarser levels get standard names.
+  id_names <- c(blockgroup = id_col, tract = "tractfips",
                 county = "countyfips", state = "statefips")
   nchars   <- c(blockgroup = 12L, tract = 11L, county = 5L, state = 2L)
-  aggcols  <- c(sumcols, numnames, wgtnames)
+  aggcols  <- intersect(c(sumcols, numnames, wgtnames), names(DT))
 
   result <- list()
   for (lv in levels) {
@@ -105,7 +138,8 @@ calc_acs_by_geography <- function(
                       value = data.table::fifelse(!is.na(w) & w > 0,
                                                   agg[[numnames[i]]] / w, NA_real_))
     }
-    if (length(numnames)) agg[, c(numnames, wgtnames) := NULL]
+    drop_helpers <- intersect(c(numnames, wgtnames), names(agg))
+    if (length(drop_helpers)) agg[, (drop_helpers) := NULL]
     data.table::setnames(agg, ".geoid", id_names[[lv]])
     df <- as.data.frame(agg)
     result[[lv]] <- df
@@ -117,8 +151,10 @@ calc_acs_by_geography <- function(
                        row.names = FALSE)
     }
   }
-  if (length(numnames)) DT[, c(numnames, wgtnames) := NULL]
-  DT[, ".geoid" := NULL]
+  # Drop helper/working columns from the internal copy before returning.
+  if (".geoid" %in% names(DT)) DT[, ".geoid" := NULL]
+  drop_helpers <- intersect(c(numnames, wgtnames), names(DT))
+  if (length(drop_helpers)) DT[, (drop_helpers) := NULL]
   result
 }
 ################################################# ################################### #

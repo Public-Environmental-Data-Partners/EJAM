@@ -49,17 +49,28 @@ ejscreen_compare_geography_to_epa <- function(ejam_table,
   ej$.key <- fips_lead_zero(as.character(ej[[ejam_fips_col]]))
   ep$.key <- fips_lead_zero(as.character(ep[[reference_fips_col]]))
   if (is.null(reference_cols)) {
-    reference_cols <- setdiff(names(reference), c(reference_fips_col, ".key"))
+    # Use the coerced data.frame's names (reference may be a list from JSON).
+    reference_cols <- setdiff(names(ep), c(reference_fips_col, ".key"))
   }
   rn <- fixcolnames(reference_cols, "acs", "r")  # EPA ACS names -> EJAM rnames
+  # Prefer a direct name match: if a reference column's own name is already an EJAM
+  # column (e.g. threshold-layer `P_D2_*` / `P_D5_*` fields), compare under that name
+  # rather than relying on (or being misled by) the acs->r mapping.
+  direct <- reference_cols %in% names(ej)
+  rn[direct] <- reference_cols[direct]
 
-  m <- merge(ej, ep, by = ".key")
+  # Align by key via index rather than merge(), so a reference column whose name
+  # equals an EJAM column name (e.g. P_D2_*) is not lost to a .x/.y collision.
+  common <- intersect(ej$.key, ep$.key)
+  ej_idx <- match(common, ej$.key)
+  ep_idx <- match(common, ep$.key)
+
   rows <- list()
   for (i in seq_along(reference_cols)) {
     rname <- rn[i]
     if (is.na(rname) || !(rname %in% names(ej))) next
-    e <- suppressWarnings(as.numeric(m[[reference_cols[i]]]))
-    g <- suppressWarnings(as.numeric(m[[rname]]))
+    e <- suppressWarnings(as.numeric(ep[[reference_cols[i]]][ep_idx]))
+    g <- suppressWarnings(as.numeric(ej[[rname]][ej_idx]))
     is_pct <- grepl("PCT", reference_cols[i], ignore.case = TRUE) ||
               grepl("^pct", rname)
     if (isTRUE(is_pct)) g <- g * pct_scale
@@ -76,7 +87,7 @@ ejscreen_compare_geography_to_epa <- function(ejam_table,
     data.frame(reference = character(), rname = character(), n = integer(),
                cor = numeric(), median_absdiff = numeric())
   out <- out[order(out$cor), , drop = FALSE]
-  attr(out, "n_joined") <- nrow(m)
+  attr(out, "n_joined") <- length(common)
   out
 }
 ################################################# ################################### #
