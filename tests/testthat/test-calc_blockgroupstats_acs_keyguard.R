@@ -11,7 +11,7 @@ test_that("keyless calc_blockgroupstats_acs errors about the key ONLY when it mu
 
   # download path: fail fast with the actionable key message
   expect_error(
-    calc_blockgroupstats_acs(yr = 2022, acs_raw = NULL),
+    EJAM:::calc_blockgroupstats_acs(yr = 2022, acs_raw = NULL),
     regexp = "Census API key"
   )
 
@@ -19,7 +19,7 @@ test_that("keyless calc_blockgroupstats_acs errors about the key ONLY when it mu
   # acs_raw will fail later for structural reasons; assert only that whatever
   # error (if any) arises is NOT the key guard.
   err <- tryCatch({
-    calc_blockgroupstats_acs(yr = 2022, acs_raw = list(blockgroup = list()))
+    EJAM:::calc_blockgroupstats_acs(yr = 2022, acs_raw = list(blockgroup = list()))
     ""
   }, error = function(e) conditionMessage(e))
   expect_false(grepl("Census API key", err, fixed = TRUE))
