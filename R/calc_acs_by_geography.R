@@ -40,7 +40,8 @@
 #' @param bg Block-group table with `id_col` and ACS indicator columns. Defaults
 #'   to [blockgroupstats]. Not modified (a copy is made internally).
 #' @param id_col Block-group FIPS column name. Default `"bgfips"`; also used as the
-#'   id column name in the block-group-level output.
+#'   id column name in the block-group-level output. If the column is numeric, its
+#'   leading zero is restored before parent GEOIDs are derived from it.
 #' @param levels Any of `"blockgroup"`, `"tract"`, `"county"`, `"state"`.
 #' @param pop_fallback If `TRUE` (default), weighted-mean indicators whose weight
 #'   column is missing from the data fall back to population weighting, as in
@@ -73,8 +74,19 @@ calc_acs_by_geography <- function(
   # pipeline passes one). Block-group FIPS are character with leading zeros; do NOT
   # run fips_lead_zero() here -- Island Area FIPS are intentionally non-standard
   # (7-10 char) and it would turn them into NA.
-  DT   <- data.table::copy(data.table::as.data.table(bg))
-  fips <- as.character(DT[[id_col]])
+  DT <- data.table::copy(data.table::as.data.table(bg))
+  if (is.numeric(DT[[id_col]])) {
+    # A numeric FIPS column has lost any leading zero (and as.character() can
+    # yield scientific notation), so rebuild it: standard block-group FIPS are
+    # 12 digits, meaning an 11-digit value is missing its leading zero. Island
+    # Area FIPS are shorter (7-10 digits) and never start with 0, so unchanged.
+    fips <- sprintf("%.0f", DT[[id_col]])
+    fips[is.na(DT[[id_col]])] <- NA_character_
+    fips <- data.table::fifelse(!is.na(fips) & nchar(fips) == 11L,
+                                paste0("0", fips), fips)
+  } else {
+    fips <- as.character(DT[[id_col]])
+  }
 
   # Exclude Island Areas (AS/GU/MP/VI/UM): non-standard FIPS, no standard ACS
   # demographics. Identify by the ST column when present (robust -- catches all of
