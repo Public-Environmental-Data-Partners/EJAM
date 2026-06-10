@@ -3,7 +3,7 @@
     "generated": "2026-06-10",
     "source": "Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)",
     "repository": "Public-Environmental-Data-Partners/EJAM",
-    "open_issue_count": 137,
+    "open_issue_count": 136,
     "cost_median": 4,
     "benefit_median": 7,
     "rank_labels": {
@@ -14,32 +14,15 @@
     },
     "report_path": "inst/issues/ejam_issues_scored_by_risk_and_value.MD",
     "run_changes": {
-      "previous_run": "2026-06-01",
-      "opened_count": 8,
-      "closed_count": 7,
-      "quadrant_changed_count": 1,
-      "opened_issue_numbers": [
-        385,
-        386,
-        387,
-        391,
-        395,
-        396,
-        399,
-        400
-      ],
+      "previous_run": "2026-06-10",
+      "opened_count": 0,
+      "closed_count": 1,
+      "quadrant_changed_count": 0,
+      "opened_issue_numbers": [],
       "closed_issue_numbers": [
-        130,
-        140,
-        155,
-        164,
-        240,
-        241,
-        320
+        20
       ],
-      "quadrant_changed_issue_numbers": [
-        361
-      ]
+      "quadrant_changed_issue_numbers": []
     }
   },
   "issues": [
@@ -3053,27 +3036,6 @@
         "rank:D-defer"
       ],
       "rank_comment": "Last ranked: 2026-06-10\nCost score: 3\nBenefit score: 16\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 20,
-      "title": "Need to update to using latest demographic data (from Census ACS5)",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/20",
-      "existing_labels": [
-        "enhancement",
-        "PRIORITY HIGH-ish but not a bug",
-        "datasets-related",
-        "rank:B-high-value-high-cost"
-      ],
-      "cost": 5,
-      "benefit": 12,
-      "quadrant": "B",
-      "rank_label": "rank:B-high-value-high-cost",
-      "rank_labels_to_remove": [
-        "rank:A-high-value-low-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-06-10\nCost score: 5\nBenefit score: 12\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 19,

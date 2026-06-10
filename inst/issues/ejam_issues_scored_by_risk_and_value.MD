@@ -1,6 +1,6 @@
 # EJAM Open Issues — Scored by Cost & Benefit
 
-**Total open issues:** 137  |  **Generated:** 2026-06-10  |  **Source:** Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)
+**Total open issues:** 136  |  **Generated:** 2026-06-10  |  **Source:** Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)
 
 **Score payload:** `inst/issues/ejam_issues_scored_by_risk_and_value.json`
 
@@ -28,10 +28,10 @@ Issues at or above the median are **High**; below are **Low** for that dimension
 
 | Metric | Value |
 |--------|-------|
-| Previous run | 2026-06-01 |
-| Issues opened since previous run | 8 |
-| Issues closed since previous run | 7 |
-| Issues whose quadrant changed | 1 |
+| Previous run | 2026-06-10 |
+| Issues opened since previous run | 0 |
+| Issues closed since previous run | 1 |
+| Issues whose quadrant changed | 0 |
 
 ### GitHub rank labels for a later update task
 
@@ -56,7 +56,7 @@ This scoring script writes the labels below into the JSON payload, but it does n
  (cost < med.)  │  29 issues                │  37 issues
 ────────────────┼───────────────────────┼───────────────────────
  HIGH Cost      │  D — WORST CANDIDATES │  B — OK Candidates
- (cost ≥ med.)  │  38 issues                │  33 issues
+ (cost ≥ med.)  │  38 issues                │  32 issues
 ```
 
 ---
@@ -199,7 +199,7 @@ This scoring script writes the labels below into the JSON payload, but it does n
 ## Quadrant B — OK Candidates — High Cost, High Benefit
 *Worth doing but require more effort or expertise. Plan carefully before starting.*
 
-**33 issues**
+**32 issues**
 
 - [#293](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/293) | Cost 5 / Benefit 19 | PRIORITY HIGH-ish but not a bug 🐛 — API takes too long to create a community report from when user clicks
 - [#52](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/52) | Cost 8 / Benefit 17 | PRIORITY HIGH-ish but not a bug 🐛 — Create density score /proximity score/ count-nearby functions, then provide via web app, and API
@@ -211,7 +211,6 @@ This scoring script writes the labels below into the JSON payload, but it does n
 - [#193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) | Cost 5 / Benefit 15 | PRIORITY HIGH-ish but not a bug 🐛 — Create Executive Summary helper functions - summarizer / Methods for Identifying and Focusing on Key Findings
 - [#68](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68) | Cost 4 / Benefit 13 | PRIORITY HIGH-ish but not a bug 🐛 — allow user to type in radius not only use slider
 - [#46](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46) | Cost 8 / Benefit 13 | PRIORITY HIGH-ish but not a bug 🐛 — Long Report text needed
-- [#20](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/20) | Cost 5 / Benefit 12 | PRIORITY HIGH-ish but not a bug 🐛 — Need to update to using latest demographic data (from Census ACS5)
 - [#135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) | Cost 4 / Benefit 11 | PRIORITY MEDIUM 🐛 — finish work in progress on default_ss_choose_method  vs input$ ?
 - [#126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) | Cost 4 / Benefit 11 | PRIORITY MEDIUM — enable 1-site report on Polygons / Shapefile, via links/buttons in shiny map popups and table of sites (but NOT outside shiny like in URL-based/link in Excel table)
 - [#48](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/48) | Cost 8 / Benefit 11 | PRIORITY MEDIUM 🐛 — URLs / links to EJScreen reports for shapefile analysis
@@ -247,7 +246,6 @@ This scoring script writes the labels below into the JSON payload, but it does n
 | [193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) | Create Executive Summary helper functions - summarizer / Methods for I… | 5 (🟡 Medium) | 15 (🟩🟩 Very High) | PRIORITY HIGH-ish but not a bug | LongReport_output, Affects Web App, future plan list, rank:B-high-value-high-cost |
 | [68](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68) | allow user to type in radius not only use slider | 4 (🟡 Medium) | 13 (🟩🟩 Very High) | PRIORITY HIGH-ish but not a bug | rank:B-high-value-high-cost |
 | [46](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46) | Long Report text needed | 8 (🟠 High) | 13 (🟩🟩 Very High) | PRIORITY HIGH-ish but not a bug | LongReport_output, future plan list, rank:B-high-value-high-cost |
-| [20](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/20) | Need to update to using latest demographic data (from Census ACS5) | 5 (🟡 Medium) | 12 (🟩🟦 High) | PRIORITY HIGH-ish but not a bug | datasets-related, rank:B-high-value-high-cost |
 | [135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) | finish work in progress on default_ss_choose_method  vs input$ ? | 4 (🟡 Medium) | 11 (🟩🟦 High) | PRIORITY MEDIUM | BUG, Affects R users only - NOT web app users, rank:B-high-value-high-cost |
 | [126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) | enable 1-site report on Polygons / Shapefile, via links/buttons in shi… | 4 (🟡 Medium) | 11 (🟩🟦 High) | PRIORITY MEDIUM | Affects Web App, API, rank:B-high-value-high-cost |
 | [48](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/48) | URLs / links to EJScreen reports for shapefile analysis | 8 (🟠 High) | 11 (🟩🟦 High) | PRIORITY MEDIUM | BUG, shapefile-related, refactor, URL-related |
@@ -429,7 +427,7 @@ This scoring script writes the labels below into the JSON payload, but it does n
 
 ---
 
-## Full Table — All 137 Issues
+## Full Table — All 136 Issues
 
 Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 
@@ -482,7 +480,6 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 | B | [193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) | 5 | 15 | PRIORITY HIGH-ish but not a bug | Create Executive Summary helper functions - summarizer / Methods for Ide… |
 | B | [68](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68) | 4 | 13 | PRIORITY HIGH-ish but not a bug | allow user to type in radius not only use slider |
 | B | [46](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46) | 8 | 13 | PRIORITY HIGH-ish but not a bug | Long Report text needed |
-| B | [20](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/20) | 5 | 12 | PRIORITY HIGH-ish but not a bug | Need to update to using latest demographic data (from Census ACS5) |
 | B | [135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) | 4 | 11 | PRIORITY MEDIUM | finish work in progress on default_ss_choose_method  vs input$ ? |
 | B | [126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) | 4 | 11 | PRIORITY MEDIUM | enable 1-site report on Polygons / Shapefile, via links/buttons in shiny… |
 | B | [48](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/48) | 8 | 11 | PRIORITY MEDIUM | URLs / links to EJScreen reports for shapefile analysis |
