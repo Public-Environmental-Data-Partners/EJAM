@@ -50,6 +50,19 @@ test_that("calc_acs_by_geography does not mutate a data.table input and honors i
   expect_equal(names(r)[1], "ID")  # block-group output id uses id_col
 })
 
+test_that("calc_acs_by_geography repairs a numeric FIPS column before deriving parent GEOIDs", {
+  # 10010201001 is "010010201001" with its leading zero lost (Alabama, ST=01).
+  bg <- data.frame(
+    bgfips = c(10010201001, 10010201002), ST = c("AL", "AL"),
+    pop = c(100, 300), pctlowinc = c(0.25, 0.30), povknownratio = c(100, 100),
+    stringsAsFactors = FALSE
+  )
+  r <- suppressMessages(calc_acs_by_geography(bg, levels = c("blockgroup", "tract", "state")))
+  expect_equal(sort(r$blockgroup$bgfips), c("010010201001", "010010201002"))
+  expect_equal(r$tract$tractfips, "01001020100")
+  expect_equal(r$state$statefips, "01")
+})
+
 test_that("calc_ejscreen_threshold_layers computes P1..P100 hit counts (NA-aware, rounded)", {
   df <- data.frame(bgfips = c("A", "B"),
                    P_D2_PM25 = c(4, 10), P_D2_OZONE = c(90.4, 10), P_D2_X = c(90, NA))
@@ -62,6 +75,33 @@ test_that("calc_ejscreen_threshold_layers computes P1..P100 hit counts (NA-aware
   expect_equal(sum(L[1, paste0("P", 1:100)]), 3)    # 3 non-NA indexes
   expect_equal(L$P10[2], 2)                         # B: PM25 = 10, OZONE = 10 (X is NA)
   expect_equal(sum(L[2, paste0("P", 1:100)]), 2)    # NA ignored
+})
+
+test_that("calc_ejscreen_threshold_layers clamps out-of-range rounded ranks into P1/P100", {
+  # 0.4 rounds to 0 -> P1; 100.6 rounds to 101 -> P100; every non-NA rank counted once.
+  df <- data.frame(bgfips = "A", P_D2_A = 0.4, P_D2_B = 100.6, P_D2_C = 55)
+  L <- calc_ejscreen_threshold_layers(
+    df, id_col = "bgfips", layers = "us_ejindexes",
+    cols_us_ej = c("P_D2_A", "P_D2_B", "P_D2_C"))$us_ejindexes
+  expect_equal(L$P1, 1)
+  expect_equal(L$P100, 1)
+  expect_equal(L$P55, 1)
+  expect_equal(sum(L[1, paste0("P", 1:100)]), 3)
+})
+
+test_that("calc_ejscreen_threshold_layers matches the colcounter identity for in-range ranks", {
+  set.seed(395)
+  m <- matrix(sample(c(1:100, NA), 8 * 5, replace = TRUE), nrow = 8)
+  colnames(m) <- paste0("P_D2_", LETTERS[1:5])
+  df <- data.frame(bgfips = paste0("bg", 1:8), m)
+  L <- calc_ejscreen_threshold_layers(
+    df, id_col = "bgfips", layers = "us_ejindexes",
+    cols_us_ej = colnames(m))$us_ejindexes
+  for (k in c(1, 17, 50, 99, 100)) {
+    expected <- colcounter(m, threshold = k, or.tied = TRUE, na.rm = TRUE) -
+      colcounter(m, threshold = k + 1, or.tied = TRUE, na.rm = TRUE)
+    expect_equal(L[[paste0("P", k)]], unname(expected))
+  }
 })
 
 test_that("calc_ejscreen_threshold_layers_from_exports builds the four layers", {

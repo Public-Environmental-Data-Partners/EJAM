@@ -18,7 +18,8 @@ calc_acs_by_geography(
 to \link{blockgroupstats}. Not modified (a copy is made internally).}
 
 \item{id_col}{Block-group FIPS column name. Default \code{"bgfips"}; also used as the
-id column name in the block-group-level output.}
+id column name in the block-group-level output. If the column is numeric, its
+leading zero is restored before parent GEOIDs are derived from it.}
 
 \item{levels}{Any of \code{"blockgroup"}, \code{"tract"}, \code{"county"}, \code{"state"}.}
 

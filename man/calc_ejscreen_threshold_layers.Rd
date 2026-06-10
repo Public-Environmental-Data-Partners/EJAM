@@ -49,11 +49,13 @@ percentile (e.g. if a block group is at the 4th percentile for \code{P_D2_OZONE}
 and no other D2 index rank is 4, then \code{P4 = 1}).
 }
 \details{
-The \code{P1}..\code{P100} counts reuse the package's existing column-counting helper
-\code{\link[=colcounter]{colcounter()}}: for each integer percentile \code{k}, the per-block-group number of
-indexes \emph{equal to} \code{k} is the count at-or-above \code{k} minus the count at-or-above
-\code{k + 1}, i.e. \code{colcounter(x, k) - colcounter(x, k + 1)} (percentile ranks are
-rounded to integers first). This is the per-block-group analogue of the
+Percentile ranks are rounded to integers and clamped into \verb{1..100} (a rank
+that rounds to 0 is counted in \code{P1}, anything above 100 in \code{P100}, and \code{NA}
+ranks are not counted), then the number of indexes at each integer percentile
+is tallied per block group in a single pass over the data. For ranks already
+in \verb{1..100} this equals the \code{\link[=colcounter]{colcounter()}} identity
+\code{colcounter(x, k) - colcounter(x, k + 1)} (count at-or-above \code{k} minus count
+at-or-above \code{k + 1}), i.e. it is the per-block-group analogue of the
 \verb{EXCEED_COUNT_*} fields in \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}}.
 
 The four layers differ only in which set of percentile columns they tabulate:
