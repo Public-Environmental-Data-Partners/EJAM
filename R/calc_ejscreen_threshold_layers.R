@@ -11,11 +11,13 @@
 #' and no other D2 index rank is 4, then `P4 = 1`).
 #'
 #' @details
-#' The `P1`..`P100` counts reuse the package's existing column-counting helper
-#' [colcounter()]: for each integer percentile `k`, the per-block-group number of
-#' indexes *equal to* `k` is the count at-or-above `k` minus the count at-or-above
-#' `k + 1`, i.e. `colcounter(x, k) - colcounter(x, k + 1)` (percentile ranks are
-#' rounded to integers first). This is the per-block-group analogue of the
+#' Percentile ranks are rounded to integers and clamped into `1..100` (a rank
+#' that rounds to 0 is counted in `P1`, anything above 100 in `P100`, and `NA`
+#' ranks are not counted), then the number of indexes at each integer percentile
+#' is tallied per block group in a single pass over the data. For ranks already
+#' in `1..100` this equals the [colcounter()] identity
+#' `colcounter(x, k) - colcounter(x, k + 1)` (count at-or-above `k` minus count
+#' at-or-above `k + 1`), i.e. it is the per-block-group analogue of the
 #' `EXCEED_COUNT_*` fields in [calc_ejscreen_export()].
 #'
 #' The four layers differ only in which set of percentile columns they tabulate:
@@ -92,17 +94,22 @@ calc_ejscreen_threshold_layers <- function(
               "layer '", ly, "'; skipping.")
       next
     }
-    # Per-block-group count AT each integer percentile k, derived from the
-    # existing colcounter(): (# indexes >= k) - (# indexes >= k + 1).
-    x  <- round(as.matrix(pctiles[, have, drop = FALSE]))
-    ge <- vapply(
-      1:101,
-      function(k) colcounter(x, threshold = k, or.tied = TRUE, na.rm = TRUE),
-      numeric(nrow(x))
-    )
-    if (is.null(dim(ge))) ge <- matrix(ge, nrow = nrow(x))  # 1-row edge case
-    pcount <- ge[, 1:100, drop = FALSE] - ge[, 2:101, drop = FALSE]
-    colnames(pcount) <- paste0("P", 1:100)
+    # Round to integer percentiles and clamp into 1..100 so every non-missing
+    # rank lands in exactly one P column (a rank that rounds to 0 counts in P1;
+    # a defensive > 100 counts in P100); NA ranks are not counted. Tally the
+    # per-(block group, percentile) counts in one pass over the matrix -- for
+    # in-range ranks this equals colcounter(x, k) - colcounter(x, k + 1) but
+    # avoids 101 full-matrix sweeps on the ~240k-row full-US data.
+    x <- round(as.matrix(pctiles[, have, drop = FALSE]))
+    x <- pmax(pmin(x, 100), 1)
+    pcount <- matrix(0L, nrow = nrow(x), ncol = 100,
+                     dimnames = list(NULL, paste0("P", 1:100)))
+    hit <- which(!is.na(x), arr.ind = TRUE)
+    if (nrow(hit) > 0) {
+      tally <- data.table::data.table(row = hit[, 1L], p = as.integer(x[hit]))
+      tally <- tally[, list(N = .N), by = c("row", "p")]
+      pcount[cbind(tally$row, tally$p)] <- tally$N
+    }
 
     layer_df <- cbind(pctiles[, c(id_col, have), drop = FALSE],
                       as.data.frame(pcount))
