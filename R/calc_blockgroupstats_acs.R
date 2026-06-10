@@ -74,22 +74,25 @@ calc_blockgroupstats_acs <- function(yr,
   if (!requireNamespace("ACSdownload", quietly = TRUE)) {
     stop("requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload and documented at https://ejanalysis.github.io/ACSdownload/")
   }
-  # Fail fast on a missing Census API key: tidycensus (>= 1.8) errors without one, even for
-  # the load_variables() metadata lookup used by acs_table_info() below. Checking here (before
-  # the prior-year fallback ladder) means any later acs_table_info() error is about data
-  # availability, not the key, so the ladder can safely treat it as "try a prior year".
-  if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
-    stop("A Census API key is required to build ACS data: tidycensus (>= 1.8) now errors ",
-         "without one. Set it once with ",
-         'tidycensus::census_api_key("YOUR KEY", install = TRUE), then restart R. ',
-         "See ?tidycensus::census_api_key")
-  }
   # library(EJAM); library(dplyr); library(data.table)
 
   if (missing(yr)) {
     yr <- acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)
   }
   if (is.null(acs_raw)) {
+    # Fail fast on a missing Census API key: tidycensus (>= 1.8) errors without one, even
+    # for the load_variables() metadata lookup used by acs_table_info() below. Checking
+    # here (before the prior-year fallback ladder) means any later acs_table_info() error
+    # is about data availability, not the key, so the ladder can safely treat it as "try a
+    # prior year". The check belongs INSIDE this is.null(acs_raw) branch: when acs_raw is
+    # supplied (e.g. the pipeline rebuilding bg_acsdata from the saved raw-ACS stage), no
+    # tidycensus/Census-API call happens here, so a keyless environment must not be blocked.
+    if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
+      stop("A Census API key is required to build ACS data: tidycensus (>= 1.8) now errors ",
+           "without one. Set it once with ",
+           'tidycensus::census_api_key("YOUR KEY", install = TRUE), then restart R. ',
+           "See ?tidycensus::census_api_key")
+    }
     ################################################### #
     ## BLOCK GROUP SURVEY DATA HANDLED DIFFERENTLY/ SEPARATELY FROM
     ## Tract resolution survey data that has to be allocated to blockgroups.
