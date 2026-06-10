@@ -787,6 +787,80 @@ be current.
 
 ## Reviewing the EJScreen Export Schema
 
+> **EJSCREEN web-app layers (issue #395).** The two block-group export files here
+> *are* the web app's main percentile layers: `ejscreen_export.csv` is the **US
+> percentiles** block-group layer and `ejscreen_export_statepct.csv` is the
+> **State percentiles** layer. Their columns match the **235-field** EJSCREEN
+> FeatureServer schema exactly (verified via `ejscreen_feature_server_fields()`;
+> `OBJECTID`/`Shape__*` are added by ArcGIS on upload), and
+> `ejscreen_export_schema_report.csv` validates each run.
+
+### EJSCREEN web-app extra layers produced by the ejscreen_export stage
+
+When `EJAM_INCLUDE_EJSCREEN_EXPORT` is true, the `ejscreen_export` stage now also
+writes the remaining web-app outputs (issue #395), as CSV stage files:
+
+- **ACS "additional demographics" by geography** — `acs_by_blockgroup`,
+  `acs_by_tract`, `acs_by_county`, `acs_by_state`, built by
+  [calc_acs_by_geography()] (count columns summed; percentage columns recomputed
+  as denominator-weighted means via [calctype()]/[calcweight()], the same rules
+  [doaggregate()] uses). Zero-denominator block groups (no demographic basis) get
+  `NA`, which is expected. The block-group level matches the ACS values already in
+  `blockgroupstats`/`ejscreen_export`.
+- **Four threshold layers** — `ejscreen_threshold_us_ejindexes`,
+  `ejscreen_threshold_us_supplemental`, `ejscreen_threshold_state_ejindexes`,
+  `ejscreen_threshold_state_supplemental`, built by
+  [calc_ejscreen_threshold_layers_from_exports()] from the per-block-group
+  `P_D2_*`/`P_D5_*` percentile ranks already in the national and state exports.
+  Each adds the `P1`..`P100` hit-count columns.
+
+This does **not** include the full EPA "extensive ACS" (~951 extra demographic
+breakdowns); only the indicators EJAM already computes are aggregated. A future
+enhancement can have this stage emit an EJSCREEN-formatted "extensive ACS" table
+built from extra indicators **supplied as an input in the S3 folder**, rather than
+newly calculated here.
+
+### Replication of the web-app layers against EPA
+
+For an **ACS 2018-2022** build, compare these new outputs to EPA's published
+EJScreen values. EPA exposes them as ArcGIS **FeatureServers** (the
+`EJScreen_Census` service's `by_Tract`/`by_County`/`by_State` layers, and the
+EJ-index threshold layers), **not** as archived CSVs in the S3 pipeline folders —
+so the replication fetches the reference live and uses
+[ejscreen_compare_geography_to_epa()] (which repairs FIPS leading zeros with
+[fips_lead_zero()], maps EPA names with `fixcolnames(., "acs", "r")`, joins on the
+full GEOID, and reports correlation + median difference per indicator). This
+verified an **exact** match for the ACS indicators EJAM carries.
+
+The feature server returns at most ~2000 features per query (`maxRecordCount`), so a
+single call validates only the first page. For a full national check, **paginate**
+with `resultOffset` until fewer than the page size come back (or loop over states via
+`where=STATE='01'` etc.). The single-page call below is illustrative only.
+
+```{r, eval=FALSE}
+# EPA tract reference (live feature server; no S3 archive). STCNTR = full GEOID.
+base <- paste0("https://services.arcgis.com/EXyRv0dqed53BmG2/arcgis/rest/services/",
+               "EJScreen_Census/FeatureServer/5/query",
+               "?where=1%3D1&outFields=STCNTR,TOTALPOP,LOWINC,PCT_LOWINC,PCT_MINORITY",
+               "&returnGeometry=false&f=json")
+# paginate: fetch all pages (2000 rows each) and bind
+epa_tracts <- list(); off <- 0L
+repeat {
+  page <- jsonlite::fromJSON(paste0(base, "&resultRecordCount=2000&resultOffset=", off))$features$attributes
+  if (is.null(page) || !length(page) || nrow(page) == 0) break
+  epa_tracts[[length(epa_tracts) + 1L]] <- page
+  if (nrow(page) < 2000) break
+  off <- off + 2000L
+}
+epa_tracts <- do.call(rbind, epa_tracts)
+acs_tract  <- outputs$acs_by_tract   # the pipeline stage output
+
+EJAM:::ejscreen_compare_geography_to_epa(
+  ejam_table = acs_tract, reference = epa_tracts,
+  ejam_fips_col = "tractfips", reference_fips_col = "STCNTR"
+)
+```
+
 If `EJAM_INCLUDE_EJSCREEN_EXPORT` is true, the runner writes the export stage
 and its schema report. With the default stage format, those files are:
 

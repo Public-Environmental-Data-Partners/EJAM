@@ -45,6 +45,11 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
     }
   } else {
     numcols <- dim(x)[2]
+    # Coerce to a numeric matrix once. For numeric input this is identical to the
+    # element-wise comparison below but faster, and it makes the function robust to
+    # data.table / tibble inputs (e.g. bg[, ..names_ej_pctile]) rather than relying
+    # on data.frame comparison/recycling behavior.
+    if (!is.matrix(x)) x <- as.matrix(x)
   }
   if (missing(threshold)) {
     if (one.cut.per.col) {
