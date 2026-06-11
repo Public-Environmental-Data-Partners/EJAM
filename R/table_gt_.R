@@ -95,7 +95,7 @@ table_validated_ejamit_row <- function(ejamit_results_1row = NULL) {
     ejamit_results_1row <- testoutput_ejamit_10pts_1miles$results_overall # used as a template here, but will be filled with NA values
     ejamit_results_1row[ , ] <- NA
     if (!data.table::is.data.table(ejamit_results_1row)) {data.table::setDT(ejamit_results_1row)}
-    return(x)
+    return(ejamit_results_1row)
   } else {
     if (!data.table::is.data.table(ejamit_results_1row)) {data.table::setDT(ejamit_results_1row)}
     if (!setequal(names(ejamit_results_1row), colnames(testoutput_ejamit_10pts_1miles$results_overall))) {
