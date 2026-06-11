@@ -16,5 +16,6 @@ from something like ejamit(testpoints_100, radius = 1)$results_overall}
 Reshapes a few columns of a 1 row data.table into a tall multirow data.frame.
 }
 \seealso{
-\code{\link[=table_gt_from_ejamit]{table_gt_from_ejamit()}} \code{\link[=table_gt_from_ejamit_overall]{table_gt_from_ejamit_overall()}} \code{\link[=table_gt_from_ejamit_1site]{table_gt_from_ejamit_1site()}} \code{\link[=table_validated_ejamit_row]{table_validated_ejamit_row()}} \code{\link[=table_gt_format_step1]{table_gt_format_step1()}} \code{\link[=table_gt_format_step2]{table_gt_format_step2()}}
+\code{\link[=table_gt_from_ejamit]{table_gt_from_ejamit()}} \code{\link[=table_gt_from_ejamit_overall]{table_gt_from_ejamit_overall()}} \code{\link[=table_gt_from_ejamit_1site]{table_gt_from_ejamit_1site()}} \code{\link[=table_validated_ejamit_row]{table_validated_ejamit_row()}}
 }
+\keyword{internal}

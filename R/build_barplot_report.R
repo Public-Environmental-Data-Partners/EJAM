@@ -22,7 +22,6 @@
 #' @return can return HTML if filename not specified, but otherwise NULL
 #'
 #' @keywords internal
-#' @export
 #'
 build_barplot_report <- function(analysis_title, totalpop, locationstr,
                                    in_shiny = FALSE, filename = NULL,

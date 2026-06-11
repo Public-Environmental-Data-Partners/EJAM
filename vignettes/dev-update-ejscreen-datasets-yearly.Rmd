@@ -802,7 +802,7 @@ writes the remaining web-app outputs (issue #395), as CSV stage files:
 
 - **ACS "additional demographics" by geography** — `acs_by_blockgroup`,
   `acs_by_tract`, `acs_by_county`, `acs_by_state`, built by
-  [calc_acs_by_geography()] (count columns summed; percentage columns recomputed
+  [EJAM:::calc_acs_by_geography()] (count columns summed; percentage columns recomputed
   as denominator-weighted means via [calctype()]/[calcweight()], the same rules
   [doaggregate()] uses). Zero-denominator block groups (no demographic basis) get
   `NA`, which is expected. The block-group level matches the ACS values already in
@@ -810,7 +810,7 @@ writes the remaining web-app outputs (issue #395), as CSV stage files:
 - **Four threshold layers** — `ejscreen_threshold_us_ejindexes`,
   `ejscreen_threshold_us_supplemental`, `ejscreen_threshold_state_ejindexes`,
   `ejscreen_threshold_state_supplemental`, built by
-  [calc_ejscreen_threshold_layers_from_exports()] from the per-block-group
+  [EJAM:::calc_ejscreen_threshold_layers_from_exports()] from the per-block-group
   `P_D2_*`/`P_D5_*` percentile ranks already in the national and state exports.
   Each adds the `P1`..`P100` hit-count columns.
 
@@ -827,7 +827,7 @@ EJScreen values. EPA exposes them as ArcGIS **FeatureServers** (the
 `EJScreen_Census` service's `by_Tract`/`by_County`/`by_State` layers, and the
 EJ-index threshold layers), **not** as archived CSVs in the S3 pipeline folders —
 so the replication fetches the reference live and uses
-[ejscreen_compare_geography_to_epa()] (which repairs FIPS leading zeros with
+[EJAM:::ejscreen_compare_geography_to_epa()] (which repairs FIPS leading zeros with
 [fips_lead_zero()], maps EPA names with `fixcolnames(., "acs", "r")`, joins on the
 full GEOID, and reports correlation + median difference per indicator). This
 verified an **exact** match for the ACS indicators EJAM carries.
