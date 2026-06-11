@@ -458,6 +458,10 @@ reference:
   - map_headernames
 - title: internal
   contents:
+  - calc_acs_by_geography
+  - calc_ejscreen_threshold_layers
+  - calc_ejscreen_threshold_layers_from_exports
+  - ejscreen_compare_geography_to_epa
   - ejamdata_version
   - calc_avg_columns
   - acs_table_info
@@ -569,6 +573,10 @@ reference:
   - table_validated_ejamit_row
   - table_xls_from_ejam
   - table4gt_from_scorevectors
+  - build_barplot_report
+  - build_community_report
+  - latloncsv2nexus
+  - latlon2nexus
   - table_gt_format_step1
   - table_gt_format_step2
   - x_anyother

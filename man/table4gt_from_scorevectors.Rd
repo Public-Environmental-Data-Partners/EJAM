@@ -39,13 +39,13 @@ table4gt_from_scorevectors(
 \item{ST}{State abbreviation like "NY"}
 }
 \value{
-data.frame ready for table_gt_format_step2 ???
+data.frame ready for the internal gt table formatter.
 }
 \description{
 Based on just indicator names and a value for each, it tries to fill in the rest of a summary table's data.
 and formats this as a data.frame ready for the next step
 }
 \seealso{
-\code{\link[=table_gt_from_ejamit]{table_gt_from_ejamit()}} \code{\link[=table_gt_from_ejamit_overall]{table_gt_from_ejamit_overall()}} \code{\link[=table_gt_from_ejamit_1site]{table_gt_from_ejamit_1site()}} \code{\link[=table_validated_ejamit_row]{table_validated_ejamit_row()}} \code{\link[=table_gt_format_step1]{table_gt_format_step1()}} \code{\link[=table_gt_format_step2]{table_gt_format_step2()}}
+\code{\link[=table_gt_from_ejamit]{table_gt_from_ejamit()}} \code{\link[=table_gt_from_ejamit_overall]{table_gt_from_ejamit_overall()}} \code{\link[=table_gt_from_ejamit_1site]{table_gt_from_ejamit_1site()}} \code{\link[=table_validated_ejamit_row]{table_validated_ejamit_row()}}
 }
 \keyword{internal}
