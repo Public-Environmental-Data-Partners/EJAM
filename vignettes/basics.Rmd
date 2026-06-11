@@ -242,6 +242,8 @@ ejam2barplot(testoutput_ejamit_100pts_1miles,
 # see more examples at ?ejam2barplot
 ```
 
+To see the underlying US or State average values these barplots compare against, use `usastats_means()` / `statestats_means()` (or `usastats_query()` / `statestats_query()` for percentiles too) -- see the "Using EJAM for Analysis in R" article.
+
 ## View Results Spreadsheet via `ejam2excel()` (to Launch Excel)
 
 ```{r table_xls_from_ejam-launchexcel, eval=FALSE}

@@ -310,10 +310,11 @@ test_that("replicate US AVG", {
 test_that("replicate STATE AVG", {
 
   x_calculated_here =  as.vector(unlist(statestats[statestats$PCTILE %in% "mean" & statestats$REGION  %in% "AL", gsub("state.avg.", "", stavgcols)]))
-  # x_calculated_here_approx =  as.numeric(as.vector(EJAM::statestats_means(ST = bysite$ST, gsub("state.avg.", "", stavgcols))[gsub("state.avg.", "", stavgcols),] ))
+  statevarnames = gsub("state.avg.", "", stavgcols)
+  x_calculated_here_means =  as.numeric(as.vector(EJAM::statestats_means(ST = bysite$ST, varnames = statevarnames)[statevarnames, ]))
   x_doag = as.vector(unlist(bysite[, ..stavgcols]))
   expect_equal(round(x_calculated_here, 3), round(x_doag, 3))
-  # expect_equal(round(x_calculated_here_approx, 2), round(x_doag, 2))
+  expect_equal(round(x_calculated_here_means, 2), round(x_doag, 2))
 })
 ################### #
 othercols = setdiff(othercols, c(pctilecols, avg.or.ratio.cols))
