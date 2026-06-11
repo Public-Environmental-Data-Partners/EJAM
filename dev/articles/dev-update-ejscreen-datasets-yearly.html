@@ -1044,14 +1044,108 @@ outputs are known to be current.</p>
 <div class="section level2">
 <h2 id="reviewing-the-ejscreen-export-schema">Reviewing the EJScreen Export Schema<a class="anchor" aria-label="anchor" href="#reviewing-the-ejscreen-export-schema"></a>
 </h2>
+<blockquote>
+<p><strong>EJSCREEN web-app layers (issue #395).</strong> The two
+block-group export files here <em>are</em> the web app’s main percentile
+layers: <code>ejscreen_export.csv</code> is the <strong>US
+percentiles</strong> block-group layer and
+<code>ejscreen_export_statepct.csv</code> is the <strong>State
+percentiles</strong> layer. Their columns match the
+<strong>235-field</strong> EJSCREEN FeatureServer schema exactly
+(verified via <code>ejscreen_feature_server_fields()</code>;
+<code>OBJECTID</code>/<code>Shape__*</code> are added by ArcGIS on
+upload), and <code>ejscreen_export_schema_report.csv</code> validates
+each run.</p>
+</blockquote>
+<div class="section level3">
+<h3 id="ejscreen-web-app-extra-layers-produced-by-the-ejscreen_export-stage">EJSCREEN web-app extra layers produced by the ejscreen_export
+stage<a class="anchor" aria-label="anchor" href="#ejscreen-web-app-extra-layers-produced-by-the-ejscreen_export-stage"></a>
+</h3>
+<p>When <code>EJAM_INCLUDE_EJSCREEN_EXPORT</code> is true, the
+<code>ejscreen_export</code> stage now also writes the remaining web-app
+outputs (issue #395), as CSV stage files:</p>
+<ul>
+<li>
+<strong>ACS “additional demographics” by geography</strong> —
+<code>acs_by_blockgroup</code>, <code>acs_by_tract</code>,
+<code>acs_by_county</code>, <code>acs_by_state</code>, built by
+[EJAM:::calc_acs_by_geography()] (count columns summed; percentage
+columns recomputed as denominator-weighted means via
+[calctype()]/[calcweight()], the same rules [doaggregate()] uses).
+Zero-denominator block groups (no demographic basis) get
+<code>NA</code>, which is expected. The block-group level matches the
+ACS values already in
+<code>blockgroupstats</code>/<code>ejscreen_export</code>.</li>
+<li>
+<strong>Four threshold layers</strong> —
+<code>ejscreen_threshold_us_ejindexes</code>,
+<code>ejscreen_threshold_us_supplemental</code>,
+<code>ejscreen_threshold_state_ejindexes</code>,
+<code>ejscreen_threshold_state_supplemental</code>, built by
+[EJAM:::calc_ejscreen_threshold_layers_from_exports()] from the
+per-block-group <code>P_D2_*</code>/<code>P_D5_*</code> percentile ranks
+already in the national and state exports. Each adds the
+<code>P1</code>..<code>P100</code> hit-count columns.</li>
+</ul>
+<p>This does <strong>not</strong> include the full EPA “extensive ACS”
+(~951 extra demographic breakdowns); only the indicators EJAM already
+computes are aggregated. A future enhancement can have this stage emit
+an EJSCREEN-formatted “extensive ACS” table built from extra indicators
+<strong>supplied as an input in the S3 folder</strong>, rather than
+newly calculated here.</p>
+</div>
+<div class="section level3">
+<h3 id="replication-of-the-web-app-layers-against-epa">Replication of the web-app layers against EPA<a class="anchor" aria-label="anchor" href="#replication-of-the-web-app-layers-against-epa"></a>
+</h3>
+<p>For an <strong>ACS 2018-2022</strong> build, compare these new
+outputs to EPA’s published EJScreen values. EPA exposes them as ArcGIS
+<strong>FeatureServers</strong> (the <code>EJScreen_Census</code>
+service’s
+<code>by_Tract</code>/<code>by_County</code>/<code>by_State</code>
+layers, and the EJ-index threshold layers), <strong>not</strong> as
+archived CSVs in the S3 pipeline folders — so the replication fetches
+the reference live and uses [EJAM:::ejscreen_compare_geography_to_epa()]
+(which repairs FIPS leading zeros with [fips_lead_zero()], maps EPA
+names with <code>fixcolnames(., "acs", "r")</code>, joins on the full
+GEOID, and reports correlation + median difference per indicator). This
+verified an <strong>exact</strong> match for the ACS indicators EJAM
+carries.</p>
+<p>The feature server returns at most ~2000 features per query
+(<code>maxRecordCount</code>), so a single call validates only the first
+page. For a full national check, <strong>paginate</strong> with
+<code>resultOffset</code> until fewer than the page size come back (or
+loop over states via <code>where=STATE='01'</code> etc.). The
+single-page call below is illustrative only.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># EPA tract reference (live feature server; no S3 archive). STCNTR = full GEOID.</span></span>
+<span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/EXyRv0dqed53BmG2/arcgis/rest/services/"</span>,</span>
+<span>               <span class="st">"EJScreen_Census/FeatureServer/5/query"</span>,</span>
+<span>               <span class="st">"?where=1%3D1&amp;outFields=STCNTR,TOTALPOP,LOWINC,PCT_LOWINC,PCT_MINORITY"</span>,</span>
+<span>               <span class="st">"&amp;returnGeometry=false&amp;f=json"</span><span class="op">)</span></span>
+<span><span class="co"># paginate: fetch all pages (2000 rows each) and bind</span></span>
+<span><span class="va">epa_tracts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>; <span class="va">off</span> <span class="op">&lt;-</span> <span class="fl">0L</span></span>
+<span><span class="kw">repeat</span> <span class="op">{</span></span>
+<span>  <span class="va">page</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"&amp;resultRecordCount=2000&amp;resultOffset="</span>, <span class="va">off</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">features</span><span class="op">$</span><span class="va">attributes</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">page</span><span class="op">)</span> <span class="op">||</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">page</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">page</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="kw">break</span></span>
+<span>  <span class="va">epa_tracts</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">epa_tracts</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">page</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">page</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">2000</span><span class="op">)</span> <span class="kw">break</span></span>
+<span>  <span class="va">off</span> <span class="op">&lt;-</span> <span class="va">off</span> <span class="op">+</span> <span class="fl">2000L</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">epa_tracts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">epa_tracts</span><span class="op">)</span></span>
+<span><span class="va">acs_tract</span>  <span class="op">&lt;-</span> <span class="va">outputs</span><span class="op">$</span><span class="va">acs_by_tract</span>   <span class="co"># the pipeline stage output</span></span>
+<span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/ejscreen_compare_geography_to_epa.html">ejscreen_compare_geography_to_epa</a></span><span class="op">(</span></span>
+<span>  ejam_table <span class="op">=</span> <span class="va">acs_tract</span>, reference <span class="op">=</span> <span class="va">epa_tracts</span>,</span>
+<span>  ejam_fips_col <span class="op">=</span> <span class="st">"tractfips"</span>, reference_fips_col <span class="op">=</span> <span class="st">"STCNTR"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>If <code>EJAM_INCLUDE_EJSCREEN_EXPORT</code> is true, the runner
 writes the export stage and its schema report. With the default stage
 format, those files are:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ejscreen_export.csv</span></span>
 <span><span class="va">ejscreen_export_schema_report.csv</span></span></code></pre></div>
 <p>Use the schema report as a field-by-field checklist:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">schema</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"ejscreen_export_schema_report.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">schema</span><span class="op">[</span>, <span class="va">.N</span>, by <span class="op">=</span> <span class="va">status</span><span class="op">]</span></span>
@@ -1070,7 +1164,7 @@ export.</li>
 by the EJScreen app.</p>
 <p>For 2022 replication checks, also review the EPA-reference comparison
 reports when they are present:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prior_validation_ejscreen_export_vs_epa_2024_acs2022.csv</span></span>
 <span><span class="va">prior_validation_ejscreen_export_vs_epa_2024_acs2022_summary.csv</span></span>
 <span><span class="va">prior_validation_ejscreen_export_vs_epa_2024_acs2022_summary.txt</span></span></code></pre></div>
@@ -1080,6 +1174,7 @@ differences between EJAM’s current export and the EPA-style reference
 export, not to force EJAM to replicate legacy behavior where the new
 pipeline has intentionally corrected a formula or missing-value
 rule.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="replacing-package-data">Replacing Package Data<a class="anchor" aria-label="anchor" href="#replacing-package-data"></a>
@@ -1155,7 +1250,7 @@ the Datasets Used by EJAM</a>). Always use
 <p>Use the established EJAM metadata helpers before saving package
 <code>.rda</code> data. When reviewing CSV stages manually, a typical
 pattern is:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/" class="external-link">arrow</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># blockgroupstats: coerce character bgid -&gt; double, then stamp + save data/blockgroupstats.rda</span></span>
@@ -1202,7 +1297,7 @@ datasets<a class="anchor" aria-label="anchor" href="#convert-bgid-to-double-in-t
 <code>quaddata</code>, <code>blockid2fips</code>, and the
 <code>frs*</code> files have no <code>bgid</code>, so they carry over
 unchanged.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># bgej from the accepted stage file, bgid -&gt; double</span></span>
 <span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">new.env</a></span><span class="op">(</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_dir</span>, <span class="st">"bgej.rda"</span><span class="op">)</span>, envir <span class="op">=</span> <span class="va">e</span><span class="op">)</span></span>
 <span><span class="va">bgej</span> <span class="op">&lt;-</span> <span class="va">e</span><span class="op">$</span><span class="va">bgej</span>; <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">bgej</span><span class="op">)</span><span class="op">[</span>, <span class="va">bgid</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">bgid</span><span class="op">)</span><span class="op">]</span></span>
@@ -1236,7 +1331,7 @@ vintage. The driver
 <code>pkg_update_testpoints_testoutputs()</code> and then auto-calls it
 with heavy defaults, so define the function only and call it with
 conservative flags:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># define the function without the script's heavy trailing auto-call</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">ex</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/parse.html" class="external-link">parse</a></span><span class="op">(</span><span class="st">"data-raw/datacreate_testpoints_testoutputs.R"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/call.html" class="external-link">is.call</a></span><span class="op">(</span><span class="va">ex</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ex</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">3</span> <span class="op">&amp;&amp;</span></span>
@@ -1274,7 +1369,7 @@ datasets do not need metadata attributes.</p>
 metadata-bearing <code>.rda</code>
 (FRS/geography/reference/<code>names_*</code>); atomic name vectors are
 skipped automatically.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mc</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/metadata_check.html">metadata_check</a></span><span class="op">(</span>which <span class="op">=</span> <span class="st">"ejam_package_version"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">stale</span> <span class="op">&lt;-</span> <span class="va">mc</span><span class="op">$</span><span class="va">item</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">mc</span><span class="op">$</span><span class="va">ejam_package_version</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">mc</span><span class="op">$</span><span class="va">ejam_package_version</span> <span class="op">!=</span> <span class="st">"3.YYYY.0"</span><span class="op">]</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/metadata_update_attr.html">metadata_update_attr</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">stale</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^testoutput"</span>, <span class="va">stale</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -1283,7 +1378,7 @@ skipped automatically.</p>
 <code>ejamdata_required_tag</code> to the new tag, reinstall the
 package, and rerun release-critical tests and
 <code>R CMD check</code>:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">blockgroupstats</span><span class="op">$</span><span class="va">bgid</span><span class="op">)</span>                 <span class="co"># "numeric"</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span>              <span class="co"># the new tag, after you restore it</span></span>
 <span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span><span class="va">testpoints_10</span>, radius <span class="op">=</span> <span class="fl">1</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># no "Incompatible join types" error</span></span></code></pre></div>
@@ -1331,7 +1426,7 @@ release.</p>
 <p>The cleanest approach is one <strong>git worktree per
 vintage</strong>, so each checkout has its own <code>data/</code> folder
 and Arrow cache and there is no cross-vintage collision:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># from the main checkout, create a worktree per release branch/tag:</span></span>
 <span><span class="co"># (run in a terminal)</span></span>
 <span><span class="co"># git worktree add ../EJAM-2024 ACS2024</span></span>
@@ -1350,7 +1445,7 @@ version marker <code>data/ejamdata_version.txt</code> is tracked and
 changes with the branch. To be sure you are testing the right vintage’s
 EJ indexes, remove the cached file so it is re-downloaded for the new
 vintage:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># after: git switch ACS2023</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"data/bgej.arrow"</span><span class="op">)</span>   <span class="co"># force re-download of the v3.2023.0 bgej</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
