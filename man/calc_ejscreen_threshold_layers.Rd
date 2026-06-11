@@ -79,3 +79,4 @@ part (c) — the ACS-by-geography layers — is \code{\link[=calc_acs_by_geograp
 \seealso{
 \code{\link[=colcounter]{colcounter()}} \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}} \code{\link[=calc_ejscreen_dataset]{calc_ejscreen_dataset()}}
 }
+\keyword{internal}

@@ -39,3 +39,4 @@ the US layers and the state-percentile export supplies the State layers (its
 \seealso{
 \code{\link[=calc_ejscreen_threshold_layers]{calc_ejscreen_threshold_layers()}} \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}}
 }
+\keyword{internal}

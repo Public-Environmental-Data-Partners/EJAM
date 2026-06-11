@@ -80,3 +80,4 @@ this purpose (it has standard ACS demographics) and is retained.
 \code{\link[=doaggregate]{doaggregate()}} \code{\link[=calctype]{calctype()}} \code{\link[=calcweight]{calcweight()}} \code{\link[=is.island]{is.island()}}
 \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}} \code{\link[=calc_ejscreen_threshold_layers]{calc_ejscreen_threshold_layers()}}
 }
+\keyword{internal}

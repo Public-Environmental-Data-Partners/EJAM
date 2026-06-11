@@ -20,7 +20,7 @@ into a format you can paste into NEXUS tool lat/lon site selection box
 }
 \examples{
  latloncsv_example = c("30.01,-90.61", "30.26,-90.95", "30.51,-91.23")
- latloncsv2nexus(latloncsv_example)
+ EJAM:::latloncsv2nexus(latloncsv_example)
 
 }
 \keyword{internal}
