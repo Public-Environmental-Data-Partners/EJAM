@@ -527,7 +527,7 @@ EJAM:::args2(ejamit)
 
 # updateProgress           NULL      ** shiny default NOT specified here
 # updateProgress_getblocks NULL      ** shiny default NOT specified here
-# in_shiny                 FALSE     for ejamit(), build_community_report(), and related functions
+# in_shiny                 FALSE     for ejamit(), internal report builders, and related functions
 # quiet                    TRUE      for getblocksnearby() and batch.summarize(), na
 
 # testing                  FALSE    for doaggregate(), shiny default is set in global

@@ -34,7 +34,8 @@
 #'   `cor`, `median_absdiff` (sorted worst-agreement first), with attribute
 #'   `"n_joined"`.
 #' @seealso [calc_acs_by_geography()] [fixcolnames()] [fips_lead_zero()]
-#' @export
+#'
+#' @keywords internal
 #'
 ejscreen_compare_geography_to_epa <- function(ejam_table,
                                               reference,

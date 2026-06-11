@@ -116,10 +116,9 @@ latlon2csv <- function(lat, lon, sep=",") {
 #'   "30.01,-90.61;30.26,-90.95;30.51,-91.23"
 #' @examples
 #'  latloncsv_example = c("30.01,-90.61", "30.26,-90.95", "30.51,-91.23")
-#'  latloncsv2nexus(latloncsv_example)
+#'  EJAM:::latloncsv2nexus(latloncsv_example)
 #'
 #' @keywords internal
-#' @export
 #'
 latloncsv2nexus <- function(latloncsv) {
 
@@ -156,10 +155,9 @@ latloncsv2nexus <- function(latloncsv) {
 #' @examples
 #'   lat_example = c(30.01,30.26,30.51)
 #'   lon_example = c(-90.61,-90.95,-91.23)
-#'   latlon2nexus(lat=lat_example, lon=lon_example)
+#'   EJAM:::latlon2nexus(lat=lat_example, lon=lon_example)
 #'
 #' @keywords internal
-#' @export
 #'
 latlon2nexus <- function(lat, lon) {
 
