@@ -674,6 +674,25 @@ cbind(overall = as.list( out$results_overall[ , ..names_d_pctile])); cat("\n")
 # cbind(overall = as.list( out$results_overall[ , ..names_ej_pctile])); cat("\n")
 ```
 
+#### See the US or State reference averages and percentiles
+
+These lookup tables hold the benchmark values that site results get compared against (for example in the "Compared to US/State Averages" barplots below).
+
+```{r refstats, eval = TRUE}
+# US mean plus key percentiles, for environmental and demographic indicators
+usastats_query(varnames = names_e)
+
+# US means only, as a tidy 1-column matrix (indicators as rownames)
+usastats_means(names_d)
+
+# the same for one state: mean plus key percentiles
+statestats_query("MD", varnames = names_e)
+
+# state means as a matrix with indicators as rows and one column per state
+# (ST may repeat, e.g. one entry per site)
+statestats_means(ST = c("MD", "VA"), varnames = names_e[1:3])
+```
+
 # VISUALIZATION OF FINDINGS (PLOTS) {#visualization-of-findings-plots}
 
 See examples below, and the [list of plot-related functions](../reference/index.html#viewing-results).
