@@ -56,3 +56,4 @@ EPA reference are the same ACS vintage (e.g. both ACS 2018-2022).
 \seealso{
 \code{\link[=calc_acs_by_geography]{calc_acs_by_geography()}} \code{\link[=fixcolnames]{fixcolnames()}} \code{\link[=fips_lead_zero]{fips_lead_zero()}}
 }
+\keyword{internal}

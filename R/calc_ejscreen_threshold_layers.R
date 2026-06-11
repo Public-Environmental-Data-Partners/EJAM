@@ -55,7 +55,8 @@
 #' @return A named list of data.frames, one per requested layer (the id column +
 #'   the percentile-rank columns + `P1`..`P100`).
 #' @seealso [colcounter()] [calc_ejscreen_export()] [calc_ejscreen_dataset()]
-#' @export
+#'
+#' @keywords internal
 #'
 calc_ejscreen_threshold_layers <- function(
     pctiles,
@@ -148,7 +149,8 @@ calc_ejscreen_threshold_layers <- function(
 #' @return A named list with the available members of `us_ejindexes`,
 #'   `us_supplemental`, `state_ejindexes`, `state_supplemental`.
 #' @seealso [calc_ejscreen_threshold_layers()] [calc_ejscreen_export()]
-#' @export
+#'
+#' @keywords internal
 #'
 calc_ejscreen_threshold_layers_from_exports <- function(national = NULL,
                                                         statepct = NULL,

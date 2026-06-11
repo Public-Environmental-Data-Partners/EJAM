@@ -57,7 +57,8 @@
 #'   indicator columns.
 #' @seealso [doaggregate()] [calctype()] [calcweight()] [is.island()]
 #'   [calc_ejscreen_export()] [calc_ejscreen_threshold_layers()]
-#' @export
+#'
+#' @keywords internal
 #'
 calc_acs_by_geography <- function(
     bg = blockgroupstats,
