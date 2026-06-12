@@ -18,7 +18,12 @@ Changes since v3.YYYY.0:
   supplied (for example, the pipeline rebuilding block-group data from a saved
   stage), no Census API call is made, so a keyless environment is no longer
   blocked.
-- `url_online()`: corrected default behavior.
+- `url_online()`: corrected default behavior, and now gives the intended
+  "must specify a URL" error on empty, `NA`, or `NULL` input instead of a cryptic
+  "missing value where TRUE/FALSE needed".
+- `calc_blockgroupstats_acs()`: when ACS table-geography metadata cannot be
+  retrieved for any candidate year (e.g. the Census API is unreachable), it now
+  stops with a clear, actionable message instead of failing obscurely later.
 - Fixed the release-install workflow and updated the EJAM web-app URLs.
 - `table_validated_ejamit_row()`: fixed for use by `table_gt_from_ejamit()`.
 - `statestats_means()` and `statestats_means_bystates()`: fixed, improved, and
@@ -57,13 +62,14 @@ full set of EJScreen-ready outputs:
 
 ## Internal / Packaging
 
-- Unexported ten internal helper/report functions (`build_community_report()`,
+- Unexported internal helper/report functions (`build_community_report()`,
   `build_barplot_report()`, `calc_acs_by_geography()`,
   `calc_ejscreen_threshold_layers()`,
   `calc_ejscreen_threshold_layers_from_exports()`,
   `ejscreen_compare_geography_to_epa()`, `table_gt_format_step1()`,
-  `table_gt_format_step2()`, `latlon2nexus()`, `latloncsv2nexus()`). Their help
-  topics remain available under the pkgdown internal reference section.
+  `table_gt_format_step2()`, `latlon2nexus()`, `latloncsv2nexus()`, and
+  `calc_bgej()`). Their help topics remain available under the pkgdown internal
+  reference section.
 - pkgdown CI: build the reference without running examples, and install only
   hard dependencies, so the docs site builds reliably.
 - Ensured the final byte of `data/ejamdata_version.txt` is always a newline.
