@@ -29,7 +29,6 @@
 #'
 #' @return data.table like [bgej]
 #'
-#' @export
 #' @keywords internal
 #'
 calc_bgej <- function(bgstats,
