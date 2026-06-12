@@ -10,6 +10,20 @@
 #'
 #' @return data.frame of state averages for those, one row per ST provided (can have repeats) and colnames are varnames.
 #'
+#' @examples \donttest{
+#' # one row per state requested, columns are the indicators
+#' statestats_means_bystates(ST = c("MD", "VA"), varnames = EJAM::names_e[1:3])
+#'
+#' # ST may contain repeats (e.g. one entry per site) - rows are kept, not collapsed
+#' statestats_means_bystates(ST = c("MD", "MD", "VA"), varnames = EJAM::names_e[1:3])
+#'
+#' # all "USA" gives duplicate rows of US averages, like ejamit()$results_bysite[, names_d_avg]
+#' statestats_means_bystates(ST = c("USA", "USA"), varnames = EJAM::names_d[1:3])
+#'
+#' # a single indicator still returns a 1-column data.frame
+#' statestats_means_bystates(ST = c("MD", "VA"), varnames = "pm")
+#' }
+#'
 #' @keywords internal
 #' @export
 #'
@@ -29,8 +43,8 @@ statestats_means_bystates <- function(ST = unique(EJAM::statestats$REGION), varn
   if (all(ST %in% "USA")) {
 
     meansby  = usastats[usastats$PCTILE == PCTILES, c("REGION", varnames)]
-    x = meansby[match(ST, meansby$REGION), varnames] # drop = F ?
-    rownames(x) <- NULL
+    x = meansby[match(ST, meansby$REGION), varnames, drop = FALSE]
+    rownames(x) <- make.unique(ST) # ST can have repeats (e.g., all "USA"), so dedupe to keep row.names valid
     return(x)
 
   } else {
@@ -39,12 +53,13 @@ statestats_means_bystates <- function(ST = unique(EJAM::statestats$REGION), varn
       warning('all of ST values must be in statestats$REGION - returning no averages for any, even matching states')
       x = data.frame(matrix(NA, nrow = length(ST), ncol = length(varnames)))
       colnames(x) <- varnames
+      rownames(x) <- make.unique(ST)
       return(x)
     }
 
     meansbystate  = statestats[statestats$PCTILE == PCTILES, c("REGION", varnames)]
-    x = meansbystate[match(ST, meansbystate$REGION), varnames] # drop = F ?
-    rownames(x) <- NULL
+    x = meansbystate[match(ST, meansbystate$REGION), varnames, drop = FALSE]
+    rownames(x) <- make.unique(ST) # ST can have repeats, so dedupe to keep row.names valid
     return(x)
   }
 }
@@ -56,14 +71,27 @@ statestats_means_bystates <- function(ST = unique(EJAM::statestats$REGION), varn
 #'
 #' @inheritParams statestats_query
 #'
+#' @return numeric matrix with one row per indicator in varnames and one column per state in ST
+#'   (ST may contain repeats; columns follow the order of ST).
+#'
+#' @examples \donttest{
+#' # indicators as rows, one column per state
+#' statestats_means(ST = c("MD", "VA"), varnames = EJAM::names_e[1:3])
+#'
+#' # ST may repeat (e.g. one entry per site) - one column per element, values stay numeric
+#' m <- statestats_means(ST = c("MD", "MD", "VA"), varnames = EJAM::names_e[1:3])
+#' m[EJAM::names_e[1:3], ]
+#' }
+#'
 #' @export
 #'
 statestats_means <- function(ST=unique(EJAM::statestats$REGION), varnames=c(EJAM::names_e, EJAM::names_d, EJAM::names_d_subgroups_nh), PCTILES="mean", dig=4) {
-  x = statestats_query(ST = ST, varnames = varnames, PCTILES = PCTILES,  dig = dig)
-  # x$REGION = NULL;
-  x$PCTILE = NULL # so t(x) wont make everything into character class
-  x = t(x)
-  colnames(x) = "st.avg"
+  # Returns a numeric matrix: one row per indicator in varnames, one column per state in ST.
+  # ST may contain repeats (e.g. one entry per site); columns follow the order of ST.
+  # Built on statestats_means_bystates() so repeated/"USA" states are handled and values stay numeric
+  # (transposing a data.frame that still held the character REGION/PCTILE columns coerced everything to character).
+  x = statestats_means_bystates(ST = ST, varnames = varnames, PCTILES = PCTILES)
+  x = t(round(x, dig))
   return(x)
 }
 ################################################################ #

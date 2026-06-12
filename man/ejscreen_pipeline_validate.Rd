@@ -11,7 +11,7 @@ ejscreen_pipeline_validate(x, stage, strict = TRUE)
 
 \item{stage}{pipeline stage name, must be among known stages or aliases
 as found in \code{ejscreen_pipeline_stage_names()} with canonical names such as
-bg_acs_raw, bg_islandareas_raw, bg_islandareas_demographics, bg_acsdata, bg_envirodata, bg_geodata, bg_extra_indicators, blockgroupstats, usastats_acs, statestats_acs, usastats_envirodata, statestats_envirodata, usastats_ej, statestats_ej, usastats, statestats, bgej, ejscreen_export, ejscreen_export_statepct, ejscreen_us_pctile_lookup, ejscreen_state_pctile_lookup, ejscreen_dataset_creator_input}
+bg_acs_raw, bg_islandareas_raw, bg_islandareas_demographics, bg_acsdata, bg_envirodata, bg_geodata, bg_extra_indicators, blockgroupstats, usastats_acs, statestats_acs, usastats_envirodata, statestats_envirodata, usastats_ej, statestats_ej, usastats, statestats, bgej, ejscreen_export, ejscreen_export_statepct, ejscreen_us_pctile_lookup, ejscreen_state_pctile_lookup, acs_by_blockgroup, acs_by_tract, acs_by_county, acs_by_state, ejscreen_threshold_us_ejindexes, ejscreen_threshold_us_supplemental, ejscreen_threshold_state_ejindexes, ejscreen_threshold_state_supplemental, ejscreen_dataset_creator_input}
 
 \item{strict}{logical. If TRUE, errors stop execution. Warnings are still
 emitted as warnings.}

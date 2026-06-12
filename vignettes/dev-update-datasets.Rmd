@@ -427,7 +427,7 @@ Example dry-run for a manual publish:
 
 ```{r, eval=FALSE}
 release_number <- EJAM:::ejamdata_required_tag()
-new_datasets_folder <- "~/Downloads"
+new_datasets_folder <- "path/to/folder/of/new/arrow/files"
 filepaths_arrow <- file.path(new_datasets_folder, "bgej.arrow")
 
 EJAM:::datasets_arrow_publish(
@@ -464,6 +464,45 @@ dataload_dynamic("all", return_data_table = FALSE)
 # or read into memory as data.table/data.frame objects:
 dataload_dynamic("all", return_data_table = TRUE)
 ```
+
+### Every release must contain all 11 Arrow files
+
+A release's assets are self-contained: `dataload_dynamic()` (via
+`piggyback::pb_download()`) pulls each Arrow file from the single release tagged in
+`ejamdata_required_tag`, so a missing asset breaks loading. Upload **all 11** files
+to **every** `v3.YYYY.0` release, even when most are unchanged:
+
+- vintage-specific: `bgej.arrow`;
+- geography (Census 2020, unchanged between ACS vintages): `blockwts.arrow`,
+  `blockpoints.arrow`, `quaddata.arrow`, `bgid2fips.arrow`, `blockid2fips.arrow`;
+- facilities (FRS): `frs.arrow`, `frs_by_programid.arrow`, `frs_by_naics.arrow`,
+  `frs_by_sic.arrow`, `frs_by_mact.arrow`.
+
+FRS is intentionally **not refreshed** for an ACS-vintage release; its files carry
+over unchanged (only their `ejam_package_version` metadata is bumped) and are
+re-published under the new tag. Confirm the file names match
+`paste0(EJAM:::.arrow_ds_names, ".arrow")` before publishing.
+
+Three of these carry the `bgid` join key — `bgej`, `blockwts`, and `bgid2fips` —
+which must be stored as `double` (see
+[Annual EJScreen/ACS dataset updates](dev-update-ejscreen-datasets-yearly.html),
+"the `bgid` type must be `double`"); the other eight have no `bgid`.
+
+### Keep the four identifiers in sync
+
+After publishing, set the local version marker and confirm all four identifiers
+match (all `v3.YYYY.0`):
+
+```{r, eval=FALSE}
+writeLines("v3.YYYY.0", "data/ejamdata_version.txt")   # tracked marker
+EJAM:::ejamdata_required_tag()                          # from DESCRIPTION; must equal the marker
+```
+
+git release tag = `ejamdata` release tag = DESCRIPTION `ejamdata_required_tag` =
+`data/ejamdata_version.txt`. A code-only **patch** release (for example
+`v3.2022.1`) is the exception: it keeps `ejamdata_required_tag` and the marker at
+the existing `v3.2022.0`, because the data did not change and the patch reuses the
+already-published `ejamdata` release.
 
 This previously had been handled with a GitHub Actions workflow that tried to
 use Git LFS. That automatic workflow is no longer used and should not be

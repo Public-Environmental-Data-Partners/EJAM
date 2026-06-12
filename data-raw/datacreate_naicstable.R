@@ -38,7 +38,7 @@ EJAM:::dataset_documenter("naicstable",
 #'
 #' This is similar to the data file EJAM::NAICS but in a more useful format and newer functions work with it.
 #' see [NAICS.com](https://naics.com)",
-                   seealso = "[EJAM::naics_from_any()] [EJAM::NAICS]  [EJAM::naics_categories()]  [EJAM::naics_findwebscrape()]"
+                   seealso = "[naics_from_any()] [NAICS]  [naics_categories()]  [naics_findwebscrape()]"
                     )
 
 # table(nchar(naicstable$code))

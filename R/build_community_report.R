@@ -109,7 +109,6 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #' @seealso [ejam2report()]
 #'
 #' @keywords internal
-#' @export
 #'
 build_community_report <- function(
 

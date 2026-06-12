@@ -20,6 +20,21 @@ statestats_means(
 
 \item{dig}{digits to round to}
 }
+\value{
+numeric matrix with one row per indicator in varnames and one column per state in ST
+(ST may contain repeats; columns follow the order of ST).
+}
 \description{
 statestats_means - convenient way to see STATE MEANS of ENVIRONMENTAL and RESIDENTIAL POPULATION indicators
+}
+\examples{
+\donttest{
+# indicators as rows, one column per state
+statestats_means(ST = c("MD", "VA"), varnames = EJAM::names_e[1:3])
+
+# ST may repeat (e.g. one entry per site) - one column per element, values stay numeric
+m <- statestats_means(ST = c("MD", "MD", "VA"), varnames = EJAM::names_e[1:3])
+m[EJAM::names_e[1:3], ]
+}
+
 }

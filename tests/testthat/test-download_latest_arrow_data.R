@@ -74,10 +74,10 @@ test_that("download_latest_arrow_data downloads release asset filenames from req
   expect_identical(calls$gh$args$owner, "Public-Environmental-Data-Partners")
   expect_identical(calls$gh$args$repo, "ejamdata")
   expect_identical(calls$gh$token, "test-token")
-  expect_identical(
-    readLines(file.path(installed_data_folder, "ejamdata_version.txt")),
-    required_tag
-  )
+  marker_path <- file.path(installed_data_folder, "ejamdata_version.txt")
+  expect_identical(readLines(marker_path), required_tag)
+  marker_bytes <- readBin(marker_path, what = "raw", n = file.info(marker_path)$size)
+  expect_identical(tail(marker_bytes, 1), charToRaw("\n"))
 })
 
 test_that("dynamic_data_release_tag canonicalizes the historical v2.32.8.1 ejamdata alias", {

@@ -74,7 +74,10 @@
 #'  - EJAM_TRACT_WEIGHT_SOURCE: decennial2020 or acs. decennial2020 matches
 #'    legacy EJSCREEN tract-to-blockgroup apportionment.
 #'  - AWS_PROFILE and AWS_REGION: used when pipeline_storage is s3
-#'  - CENSUS_API_KEY: used by functions that download ACS data (or that download boundaries/shapefiles for FIPS from some sources)
+#'  - CENSUS_API_KEY: REQUIRED. Used by functions that download ACS data or ACS table
+#'    metadata (and that download boundaries/shapefiles for FIPS from some sources).
+#'    tidycensus (>= 1.8) now errors without a key, even for metadata via load_variables().
+#'    Set it once with `tidycensus::census_api_key("YOUR KEY", install = TRUE)`, then restart R.
 #'  - EJAM_FORCE_ACS: TRUE to redownload/recalculate raw ACS and bg_acsdata.
 #'  - EJAM_FORCE_BG_ACSDATA: TRUE to rebuild bg_acsdata from saved raw ACS.
 #'  - EJAM_FORCE_BG_GEODATA: TRUE to redownload/recalculate Census/TIGER blockgroup geodata.
@@ -773,6 +776,38 @@ calc_ejscreen_dataset <- function(yr,
     if (isTRUE(save_stages)) {
       save_stage(out$ejscreen_us_pctile_lookup, "ejscreen_us_pctile_lookup")
       save_stage(out$ejscreen_state_pctile_lookup, "ejscreen_state_pctile_lookup")
+    }
+  }
+  # ~ ----------------------------------------- ####
+  # EJSCREEN WEB-APP EXTRA LAYERS (issue #395) ####
+  # * Produced alongside the EJSCREEN export (gated by include_ejscreen_export):
+  #   (c) ACS demographics aggregated to block group / tract / county / state, and
+  #   (b) US/State EJ-index percentile-rank "threshold" layers (the per-block-group
+  #   EJ-index/supplemental percentile ranks plus the P1..P100 hit-count columns).
+  # ~ ----------------------------------------- ####
+  if (isTRUE(include_ejscreen_export)) {
+
+    ## (c) ACS demographics by geography (sum-of-counts + denominator-weighted means) ####
+    acs_geo <- calc_acs_by_geography(
+      bg = blockgroupstats,
+      levels = c("blockgroup", "tract", "county", "state")
+    )
+    for (lv in names(acs_geo)) {
+      stg <- paste0("acs_by_", lv)
+      out[[stg]] <- acs_geo[[lv]]
+      if (isTRUE(save_stages)) {save_stage(out[[stg]], stg)}
+    }
+
+    ## (b) US & State EJ-index percentile-rank "threshold" layers (P1..P100) ####
+    ## Built from the per-block-group P_D2_*/P_D5_* ranks already in the exports.
+    ej_layers <- calc_ejscreen_threshold_layers_from_exports(
+      national = out$ejscreen_export,
+      statepct = out$ejscreen_export_statepct
+    )
+    for (nm in names(ej_layers)) {
+      stg <- paste0("ejscreen_threshold_", nm)
+      out[[stg]] <- ej_layers[[nm]]
+      if (isTRUE(save_stages)) {save_stage(out[[stg]], stg)}
     }
   }
   # ~ ----------------------------------------- ####

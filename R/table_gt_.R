@@ -95,7 +95,7 @@ table_validated_ejamit_row <- function(ejamit_results_1row = NULL) {
     ejamit_results_1row <- testoutput_ejamit_10pts_1miles$results_overall # used as a template here, but will be filled with NA values
     ejamit_results_1row[ , ] <- NA
     if (!data.table::is.data.table(ejamit_results_1row)) {data.table::setDT(ejamit_results_1row)}
-    return(x)
+    return(ejamit_results_1row)
   } else {
     if (!data.table::is.data.table(ejamit_results_1row)) {data.table::setDT(ejamit_results_1row)}
     if (!setequal(names(ejamit_results_1row), colnames(testoutput_ejamit_10pts_1miles$results_overall))) {
@@ -121,9 +121,9 @@ table_validated_ejamit_row <- function(ejamit_results_1row = NULL) {
 #' @param ejamit_results_1row table in [data.table](https://r-datatable.com) format (or data.frame) like testoutput_ejamit_100pts_1miles$results_overall
 #'    from something like ejamit(testpoints_100, radius = 1)$results_overall
 #' @param type demog or envt to specify which type of table
-#' @seealso [table_gt_from_ejamit()] [table_gt_from_ejamit_overall()] [table_gt_from_ejamit_1site()] [table_validated_ejamit_row()] [table_gt_format_step1()] [table_gt_format_step2()]
+#' @seealso [table_gt_from_ejamit()] [table_gt_from_ejamit_overall()] [table_gt_from_ejamit_1site()] [table_validated_ejamit_row()]
 #'
-#' @export
+#' @keywords internal
 #'
 table_gt_format_step1 <- function(ejamit_results_1row = NULL, type = "demog") {
 
@@ -191,7 +191,7 @@ table_gt_format_step1 <- function(ejamit_results_1row = NULL, type = "demog") {
 
 #' Format a table of demog or envt scores, percentiles, etc. to look similar to EJSCREEN report tables
 #'
-#' @param df A data frame from table_gt_format_step1
+#' @param df A data frame from the internal first-stage gt formatter.
 #'
 #'   which is just a specific format of key EJAM results.
 #'
@@ -216,7 +216,7 @@ table_gt_format_step1 <- function(ejamit_results_1row = NULL, type = "demog") {
 #' @seealso [table_gt_from_ejamit()]
 #' @return a gt-style table with formatting to closely match EJSCREEN standard report formatting
 #'
-#' @export
+#' @keywords internal
 #'
 table_gt_format_step2 <- function(df, type = c("demog", "envt")[1], my_cell_color =  '#dce6f0', my_border_color = '#aaaaaa',
                                   digits_default = 2) {
@@ -522,8 +522,8 @@ table_gt_format_step2 <- function(df, type = c("demog", "envt")[1], my_cell_colo
 #' @param state_ratio indicator values as ratio to State average
 #' @param usa_ratio indicator values as ratio to US average
 #' @param ST State abbreviation like "NY"
-#' @seealso [table_gt_from_ejamit()] [table_gt_from_ejamit_overall()] [table_gt_from_ejamit_1site()] [table_validated_ejamit_row()] [table_gt_format_step1()] [table_gt_format_step2()]
-#' @return data.frame ready for table_gt_format_step2 ???
+#' @seealso [table_gt_from_ejamit()] [table_gt_from_ejamit_overall()] [table_gt_from_ejamit_1site()] [table_validated_ejamit_row()]
+#' @return data.frame ready for the internal gt table formatter.
 #' @keywords internal
 #'
 table4gt_from_scorevectors <- function(varnames_r = names_e,

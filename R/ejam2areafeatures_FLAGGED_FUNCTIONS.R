@@ -104,6 +104,11 @@ ejam2areafeatures <- function(ejamitout) {
 ################## #
 # same as ejam2areafeatures - just a more consistent but less easy-to-type/recall name, used by other internal functions
 
+#' get flagged areas summary table from ejamit() output
+#' @param ejamitout output from ejamit()
+#' @return data.frame, same as [ejam2areafeatures()]
+#' @keywords internal
+#' @noRd
 flagged_areas_from_ejam <- function(ejamitout) {
   ejamitout$results_summarized$flagged_areas
 }
@@ -133,6 +138,13 @@ flagged_areas_from_ejam <- function(ejamitout) {
 
 ######################################################### #
 
+#' count sites flagged for each feature/flag indicator
+#' @param bysite data.table like ejamit()$results_bysite
+#' @param flagvarnames names of indicator columns to summarize
+#' @return 1-row table of counts of sites with each indicator > 0
+#'   (sums, for the percentage indicators)
+#' @keywords internal
+#' @noRd
 flagged_count_sites <- function(bysite = testoutput_ejamit_1000pts_1miles$results_bysite, flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice)) {
 
   if (!is.data.table(bysite)) {
@@ -159,6 +171,13 @@ flagged_count_sites <- function(bysite = testoutput_ejamit_1000pts_1miles$result
 }
 ######################################################### #
 
+#' percent of sites flagged for each feature/flag indicator
+#' @param bysite data.table like ejamit()$results_bysite
+#' @param flagvarnames names of indicator columns to summarize
+#' @param digits rounding digits
+#' @return 1-row table of percentages of sites with each indicator > 0
+#' @keywords internal
+#' @noRd
 flagged_pct_sites <- function(bysite = testoutput_ejamit_1000pts_1miles$results_bysite, flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice), digits = 1) {
 
   if (!is.data.table(bysite)) {
@@ -180,6 +199,13 @@ flagged_pct_sites <- function(bysite = testoutput_ejamit_1000pts_1miles$results_
 }
 ######################################################### #
 
+#' count analyzed population in blockgroups flagged for each indicator
+#' @param bybg_people data.table like ejamit()$results_bybg_people
+#' @param flagvarnames names of indicator columns to summarize
+#' @return 1-row table of population counts (population-weighted sums,
+#'   for the percentage indicators)
+#' @keywords internal
+#' @noRd
 flagged_count_pop <- function(bybg_people = testoutput_ejamit_1000pts_1miles$results_bybg_people, flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice)) {
 
   if (!is.data.table(bybg_people)) {
@@ -207,6 +233,13 @@ flagged_count_pop <- function(bybg_people = testoutput_ejamit_1000pts_1miles$res
 }
 ######################################################### #
 
+#' percent of analyzed population in blockgroups flagged for each indicator
+#' @param bybg_people data.table like ejamit()$results_bybg_people
+#' @param flagvarnames names of indicator columns to summarize
+#' @param digits rounding digits
+#' @return 1-row table of percentages of analyzed population
+#' @keywords internal
+#' @noRd
 flagged_pct_pop <- function(bybg_people = testoutput_ejamit_1000pts_1miles$results_bybg_people, flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice), digits = 1) {
 
   if (!is.data.table(bybg_people)) {
@@ -230,6 +263,13 @@ flagged_pct_pop <- function(bybg_people = testoutput_ejamit_1000pts_1miles$resul
 ######################################################### #
 ######################################################### #
 
+#' count US population in blockgroups flagged for each indicator
+#' @param bybg_us data.table of US blockgroups, like blockgroupstats
+#' @param flagvarnames names of indicator columns to summarize
+#' @return 1-row table of US population counts (population-weighted sums,
+#'   for the percentage indicators)
+#' @keywords internal
+#' @noRd
 flagged_count_pop_us <- function(bybg_us = blockgroupstats, flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice)) {
 
   neededvars = c("pop", flagvarnames)
@@ -248,6 +288,13 @@ flagged_count_pop_us <- function(bybg_us = blockgroupstats, flagvarnames = c(nam
 }
 ######################################################### #
 
+#' percent of US population in blockgroups flagged for each indicator
+#' @param bybg_us data.table of US blockgroups, like blockgroupstats
+#' @param flagvarnames names of indicator columns to summarize
+#' @param digits rounding digits
+#' @return 1-row table of percentages of US population
+#' @keywords internal
+#' @noRd
 flagged_pct_pop_us <- function(bybg_us = blockgroupstats, flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice), digits = 1) {
 
   neededvars = c("pop", flagvarnames)
@@ -262,6 +309,13 @@ flagged_pct_pop_us <- function(bybg_us = blockgroupstats, flagvarnames = c(names
 }
 ######################################################### #
 
+#' count state population in blockgroups flagged for each indicator
+#' @param ST state abbreviation(s), e.g., c("pr", "dc")
+#' @param bybg_st data.table of blockgroups with ST column, like blockgroupstats
+#' @param flagvarnames names of indicator columns to summarize
+#' @return 1-row table of population counts in the given state(s)
+#' @keywords internal
+#' @noRd
 flagged_count_pop_st <- function(ST = stateinfo$ST, bybg_st = blockgroupstats, flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice)) {
 
   # e.g.,
@@ -298,6 +352,14 @@ flagged_count_pop_st <- function(ST = stateinfo$ST, bybg_st = blockgroupstats, f
 }
 ######################################################### #
 
+#' percent of state population in blockgroups flagged for each indicator
+#' @param ST state abbreviation(s), e.g., c("pr", "dc")
+#' @param bybg_st data.table of blockgroups with ST column, like blockgroupstats
+#' @param flagvarnames names of indicator columns to summarize
+#' @param digits rounding digits
+#' @return 1-row table of percentages of population in the given state(s)
+#' @keywords internal
+#' @noRd
 flagged_pct_pop_st <- function(ST = stateinfo$ST, bybg_st = blockgroupstats, flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice), digits = 1) {
 
   neededvars = c("pop", "ST", flagvarnames)
@@ -315,6 +377,11 @@ flagged_pct_pop_st <- function(ST = stateinfo$ST, bybg_st = blockgroupstats, fla
 
 # helpers to format these summary stats for barplot ####
 
+#' reshape flagged areas table into a named vector of ratios
+#' @param flagged_areas data.frame like ejamit()$results_summarized$flagged_areas
+#' @return named vector of ratios, ready for plot_barplot_ratios()
+#' @keywords internal
+#' @noRd
 flagged_areas_ratiosvector_from_flagged_areas <- function(flagged_areas) {
   # reformat the table  ejamit()$results_summarized$flagged_areas
   unlist(as.vector(
@@ -329,6 +396,11 @@ flagged_areas_ratiosvector_from_flagged_areas <- function(flagged_areas) {
 
 # this is mostly to make the barplot easier
 
+#' get named vector of flagged areas ratios from ejamit() output
+#' @param ejamitout output from ejamit()
+#' @return named vector of ratios, ready for plot_barplot_ratios()
+#' @keywords internal
+#' @noRd
 flagged_areas_ratios_from_ejam <- function(ejamitout) {
   # after ejamitout <- ejamit()
   # reformat the table   ejamitout$results_summarized$flagged_areas
@@ -341,6 +413,13 @@ flagged_areas_ratios_from_ejam <- function(ejamitout) {
 ################## #
 # these "shortlabels" functions are not much better than just letting it use the defaults
 
+#' make short plot-friendly labels from indicator variable names
+#' @param rnames indicator variable names, e.g., "yesno_tribal"
+#' @param n maximum label length in characters
+#' @param do_gsub whether to also abbreviate some words
+#' @return character vector of shortened labels
+#' @keywords internal
+#' @noRd
 flagged_areas_shrinklabels <- function(rnames, n = 30, do_gsub = TRUE) {
   longlabels <- fixcolnames(rnames, 'r', 'short')
   if (do_gsub) {
@@ -367,6 +446,13 @@ flagged_areas_shrinklabels <- function(rnames, n = 30, do_gsub = TRUE) {
 #           )
 ################## #
 
+#' get short plot-friendly labels for flagged areas indicators from ejamit() output
+#' @param ejamitout output from ejamit()
+#' @param n maximum label length in characters
+#' @param do_gsub whether to also abbreviate some words
+#' @return character vector of shortened labels
+#' @keywords internal
+#' @noRd
 flagged_areas_shortlabels_from_ejam <- function(ejamitout, n = 30, do_gsub = TRUE) {
   # after ejamitout <- ejamit()
   # get graph-friendy short labels for the indicators in ejamit()$results_summarized$flagged_areas

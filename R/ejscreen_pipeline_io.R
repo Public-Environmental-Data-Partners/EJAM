@@ -452,6 +452,16 @@ ejscreen_pipeline_stage_names <- function(canonical_only = FALSE) {
     ejscreen_us_pctile_lookup =    "ejscreen_us_pctile_lookup", # canonical
     ejscreen_state_pctile_lookup = "ejscreen_state_pctile_lookup", # canonical
 
+    # EJSCREEN web-app extra layers (issue #395), produced by the ejscreen_export stage:
+    acs_by_blockgroup = "acs_by_blockgroup", # canonical
+    acs_by_tract =      "acs_by_tract",      # canonical
+    acs_by_county =     "acs_by_county",     # canonical
+    acs_by_state =      "acs_by_state",      # canonical
+    ejscreen_threshold_us_ejindexes =       "ejscreen_threshold_us_ejindexes",       # canonical
+    ejscreen_threshold_us_supplemental =    "ejscreen_threshold_us_supplemental",    # canonical
+    ejscreen_threshold_state_ejindexes =    "ejscreen_threshold_state_ejindexes",    # canonical
+    ejscreen_threshold_state_supplemental = "ejscreen_threshold_state_supplemental", # canonical
+
     ejscreen_dataset_creator_input = "ejscreen_dataset_creator_input", # canonical
     dataset_creator_input =          "dataset_creator_input",
     ejscreen_python_input =          "ejscreen_python_input"

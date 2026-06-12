@@ -57,10 +57,14 @@ url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fi
 #'
 #' @keywords internal
 #'
-url_online <- function(url = "https://ejam.policyinnovation.info") {
+url_online <- function(url = "https://ejam.publicenvirodata.org") {
 
-  if (missing(url)) {stop("must specify a URL")}
   if (length(url) > 1) {stop("can only check one URL at a time using url_online()")}
+  url <- trimws(unname(as.character(url[1])))
+  # Guard NULL / character(0) / NA before nzchar(): those would otherwise make the nzchar()
+  # test return logical(0) or TRUE and trigger a cryptic "missing value where TRUE/FALSE
+  # needed" error instead of the intended "must specify a URL".
+  if (length(url) == 0 || is.na(url) || !nzchar(url)) {stop("must specify a URL")}
   if (offline()) {
     warning("Cannot check URL when offline -- internet connection does not seem to be available")
     return(NA)

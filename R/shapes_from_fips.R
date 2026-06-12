@@ -394,7 +394,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
   # >>> check if census api key available *** ####
   if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
     tidycensus_ok <- FALSE
-    warning("envt var CENSUS_API_KEY not found - tidycensus::get_acs() may require having set up a census api key - see ?tidycensus::census_api_key  ")
+    warning("envt var CENSUS_API_KEY not found - tidycensus (>= 1.8) now requires a Census API key and tidycensus::get_acs() will error without one. Set it with tidycensus::census_api_key(\"YOUR KEY\", install = TRUE) - see ?tidycensus::census_api_key  ")
   }
   if (myservice[1] %in% c("cartographic", "tiger") && tidycensus_ok) {
     ## > tidycensus ok ####
@@ -875,7 +875,7 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = 2024)
 
   # >>> check if census api key available *** ####
   if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
-    warning("envt var CENSUS_API_KEY not found - tigris::places() may require having set up a census api key - see ?tidycensus::census_api_key  ")
+    warning("envt var CENSUS_API_KEY not found - tigris/Census now require a Census API key and tigris::places() will error without one. Set it with tidycensus::census_api_key(\"YOUR KEY\", install = TRUE) - see ?tidycensus::census_api_key  ")
   }
 
   # Downloads ALL places in relevant STATES...  and last step will drop unrequested places
