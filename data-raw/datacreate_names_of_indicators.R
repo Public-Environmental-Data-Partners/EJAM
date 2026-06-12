@@ -1,4 +1,4 @@
-#
+# Some of these notes may be obsolete since v2.5.0 work started
 
 #  EJAM/data-raw/datacreate_names_of_indicators.R
 
@@ -11,13 +11,13 @@ library(usethis)
 #  the varlist column of  map_headernames
 #  in multiple objects like names_d
 #
-#  But could recode later to use namez$d instead of names_d etc.
+#  But via a major refactoring, we could recode later to use namez$d instead of names_d etc.
 
-#  and/or could recode later to use 1 big table, like A MERGED VERSION OF THESE:
+#  and/or could refacctor/recode later to use 1 big table, like A MERGED VERSION OF THESE:
 #
-#  map_headernames (which is created from .xlsx using the script in /data-raw folder)
-#  namez
-#  formulas_all as a possible approach using calc_ejam()
+#  map_headernames (which was created from .xlsx but now will be from the csv, using the script in /data-raw folder)
+#  namez (info that really is almost all in map_headernames$varlist but some names_xyz overlap with other names_abc so a single varlist column does not work with that situation)
+#  formulas_ejscreen_acs$formula as a possible approach using calc_ejam()
 
 # In the short term, before some mapping file is used to track all variable names, we could simplify a bit by
 # recoding all functions to use namez$d  instead of names_d, etc.,
@@ -58,6 +58,7 @@ datacreate_names_of_indicators <- function(redohelp = FALSE) {
   # setdiff(unique(map_headernames$varlist),   (unique(varinfo(names(testoutput_ejamit_10pts_1miles$results_overall) , 'varlist')$varlist))   )
 
   vlists <- unique(map_headernames$varlist)
+  vlists <- vlists[!is.na(vlists) & nzchar(vlists)]
   # file.exists(paste0('R/data_', vlists, '.R'))
 
   # assign all the lists of variable names to the global environment
@@ -124,7 +125,7 @@ datacreate_names_of_indicators <- function(redohelp = FALSE) {
   ## see https://roxygen2.r-lib.org/reference/tags-reuse.html
   for (i in seq_along(vlists)) {
     fname <- paste0("./R/data_", vlists[i], ".R")
-    if ((redohelp & file.exists(fname)) | !file.exists(fname)) {
+    if (isTRUE(redohelp) && ((redohelp & file.exists(fname)) | !file.exists(fname))) {
       # if (file.exists(fname)) {file.remove(fname)} # trying to reset problem with git tracking it as binary before dataset_documenter() was fixed to handle that
       cat(paste0("Creating basic documentation: data_", vlists[i], ".R \n"))
       keepinTOC <-  c('names_d', 'names_e')
@@ -136,7 +137,7 @@ datacreate_names_of_indicators <- function(redohelp = FALSE) {
                          seealso = " [varinfo()]  [map_headernames]  [names_d] [names_e]")
     }
   }
-  rm(vns, i, codetosource, vlists)
+  rm(vns, i, codetosource)
 
   # setdiff(unique(map_headernames$varlist), unique(varinfo(names_all_r, 'varlist')$varlist))
 
@@ -188,8 +189,8 @@ datacreate_names_of_indicators <- function(redohelp = FALSE) {
   # try putting these all in one list instead of multiple objects? could recode later to use namez$d instead of names_d  etc.
   # and/or    just store them in a big table
 
-  namesoflistsofnames = c('names_all_r', sort(unique(map_headernames$varlist)))
-  namez <- lapply(namesoflistsofnames, get)
+  namesoflistsofnames = c('names_all_r', sort(vlists))
+  namez <- mget(namesoflistsofnames, envir = environment(), inherits = TRUE)
   names(namez) <- gsub("^names_","", namesoflistsofnames)
   #  metadata_add & USE_DATA #
   namez <- metadata_add(namez)
@@ -209,19 +210,21 @@ datacreate_names_of_indicators <- function(redohelp = FALSE) {
   # check what was not created
 
   namesoflistsofnames <- c('names_all', namesoflistsofnames)
-  for (vl in unique(map_headernames$varlist)) {
+  for (vl in vlists) {
     if (nchar(vl) > 0 && !exists(vl)) {warning(paste0(vl, " was not created as a data object."))}
   }
   ############################################################################## #
 
   # create other missing documentation ####
 
-  vlists =  sapply(ls(pattern = "^names_"), c)
+  if (isTRUE(redohelp)) {
+    vlists_docs =  sapply(ls(pattern = "^names_"), c)
 
-  for (i in seq_along(vlists)) {
-    if (!file.exists(paste0("./R/data_", vlists[i], ".R"))) {
-      cat(paste0("Creating documentation placeholder: data_", vlists[i], ".R \n"))
-      dataset_documenter(vlists[i], title = "a list of variable names for internal use in EJAM")
+    for (i in seq_along(vlists_docs)) {
+      if (!file.exists(paste0("./R/data_", vlists_docs[i], ".R"))) {
+        cat(paste0("Creating documentation placeholder: data_", vlists_docs[i], ".R \n"))
+        dataset_documenter(vlists_docs[i], title = "a list of variable names for internal use in EJAM")
+      }
     }
   }
   ############################################################################## #

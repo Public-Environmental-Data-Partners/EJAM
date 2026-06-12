@@ -44,10 +44,10 @@ global_or_param = function(vname) {
   ## 1st check if param was defined upon shiny app launch
   ## either via being passed to ejamapp() or  stored as golem global options upon app launch after having been defined by global_default_*.R file
 
-  param_passed_to_run_app_or_global_defaults <- golem::get_golem_options(vname)
+  param_passed_to_ejamapp_or_global_defaults <- golem::get_golem_options(vname)
 
-  if (!is.null(param_passed_to_run_app_or_global_defaults)) {
-    return(param_passed_to_run_app_or_global_defaults)
+  if (!is.null(param_passed_to_ejamapp_or_global_defaults)) {
+    return(param_passed_to_ejamapp_or_global_defaults)
   } else {
 
     ################################ #

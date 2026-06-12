@@ -15,7 +15,7 @@ offline_warning()
 testthat::test_that("latlon_from_address_table works on testinput_address_table", {
 
   testthat::skip_if_offline()
-  skip_if_not_installed("AOI")
+  skip_if_aoi_unavailable()
   testthat::expect_no_error({
     x <- latlon_from_address_table(testinput_address_table)
   })
@@ -53,7 +53,7 @@ testthat::test_that("latlon_from_address_table if address col conflicts with str
   # latlon_from_address_table(data.frame(address="xxxxxxxx xxxxxxxx xxxx", street="5 Park Ave", city="NY",       state="NY")) # returns address in NY    (NY works)
 
   testthat::skip_if_offline()
-  skip_if_not_installed("AOI")
+  skip_if_aoi_unavailable()
   testthat::expect_message({
     test1 = testinput_address_table_withfull
     test1$city[2] <- "New York"
@@ -104,10 +104,9 @@ testthat::test_that("latlon_from_address_table if address col conflicts with str
 testthat::test_that("latlon_from_address works", {
 
   testthat::skip_if_offline()
-  skip_if_not_installed("AOI")
+  skip_if_aoi_unavailable()
   if (!exists("geocode")) {
-    library(AOI)
-    cat("MUST LOAD AOI PKG FOR THIS geocode to work \n\n")
+    suppressPackageStartupMessages(library(AOI))
   }
   addresses_example_temp = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20044",
                              "5 Park Ave, New York, New York, 10016")
@@ -152,7 +151,7 @@ testthat::test_that("latlon_from_address err if too many addresses", {
 test_that("latlon_from_address( xy=TRUE) works", {
 
   testthat::skip_if_offline()
-  testthat::skip_if_not_installed("AOI")
+  skip_if_aoi_unavailable()
 
   if (!exists("geocode") || !is.function(geocode)) {
     expect_warning(
@@ -165,7 +164,7 @@ test_that("latlon_from_address( xy=TRUE) works", {
   }
 
   ## test should work if installed as long as we load/attach the package, if it is not already in Imports of DESCRIPTION of EJAM pkg.
-  require("AOI")
+  suppressPackageStartupMessages(require("AOI"))
 
   a1 <- "1200 Pennsylvania Ave NW, Washington DC"
   a2 <- "4930 Old Page Road Durham NC 27703"
@@ -193,8 +192,8 @@ test_that("latlon_from_address( xy=TRUE) works", {
 testthat::test_that("latlon_from_address( xy=FALSE) works", {
 
   testthat::skip_if_offline()
-  testthat::skip_if_not_installed("AOI")
-  require("AOI")
+  skip_if_aoi_unavailable()
+  suppressPackageStartupMessages(require("AOI"))
 
   a1 <- "1200 Pennsylvania Ave NW, Washington DC"
   a2 <- "4930 Old Page Road Durham NC 27703"
@@ -234,8 +233,8 @@ testthat::test_that("latlon_from_address( xy=FALSE) works", {
 testthat::test_that("latlon_from_address( aoimap=T) works", {
 
   testthat::skip_if_offline()
-  testthat::skip_if_not_installed("AOI")
-  require("AOI")
+  skip_if_aoi_unavailable()
+  suppressPackageStartupMessages(require("AOI"))
 
   testthat::expect_no_error({
     x <- latlon_from_address("ames iowa", aoimap = T)

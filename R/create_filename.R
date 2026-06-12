@@ -39,7 +39,7 @@ time_plus_x_seconds = function(seconds = 60, start_time = Sys.time()) {
 #'   buffer_dist = c(0, 3.2),
 #'   site_method = c("", "latlon"),
 #'   ext = c(NULL, ".html"),
-#'   stringsAsFactors = F
+#'   stringsAsFactors = FALSE
 #' )
 #' cbind(output_filename =
 #'   cbind(
@@ -70,7 +70,7 @@ if (FALSE) {
     buffer_dist = c(0, 3.2),
     site_method = c("", "latlon"),
     ext = c(NULL, ".html"),
-    stringsAsFactors = F)
+    stringsAsFactors = FALSE)
 
   cbind(output_filename =
           cbind(purrr::pmap(parameters_table, create_filename)),
@@ -157,4 +157,3 @@ if (FALSE) {
 
   return(fname)
 }
-

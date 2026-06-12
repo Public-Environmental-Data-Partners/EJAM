@@ -19,6 +19,9 @@
 if (!exists("setnames")) {stop("data.table package needs to be loaded, via library(data.table) or by attaching the EJAM package ")}
 
 myurl <- "https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt"
+# As checked in May 2026, this Census PLACElist source does not include
+# AS/GU/MP/VI city, town, or CDP rows. Keep fips compact as integer below;
+# multiple FIPS helpers intentionally cast inputs before matching this table.
 censusplaces <- data.table::fread(myurl, sep = "|", header = TRUE, colClasses = list(character = 1:7))
 # censusplaces
 # STATE|STATEFP|PLACEFP|PLACENAME|TYPE|FUNCSTAT|COUNTY
@@ -43,6 +46,9 @@ z = table(unlist(y))
 ### z
 ### IBM420_ltr ISO-8859-1 ISO-8859-2 ISO-8859-9   UTF-16BE      UTF-8
 ###          1      39401       1758         35          8        211
+#
+# There are 78 places where encoding is an issue.
+# Converting from what appears to be ISO-8859-1
 bestguess = names(which.max(z)) # bestguess =  "ISO-8859-1"
 cat("There are", length(which(censusplaces$COUNTY !=  stringi::stri_enc_toascii(censusplaces$COUNTY))), "places where encoding is an issue.
     Converting from what appears to be", bestguess,"\n")
@@ -58,6 +64,14 @@ censusplaces$PLACENAME <- NULL
 # None of these places are Counties - they are all cities, towns, etc.
 # sum(censusplaces$fips %in% substr(blockgroupstats$bgfips,1,5))
 cbind(TYPE = table(censusplaces$TYPE))
+
+## 2025
+#                          TYPE
+# Census Designated Place  9974
+# County Subdivision      11900
+# Incorporated Place      19540
+
+# 2026
 #                          TYPE
 # Census Designated Place  9974
 # County Subdivision      11900
@@ -66,6 +80,7 @@ cbind(TYPE = table(censusplaces$TYPE))
 # 3,219 PLACE ARE LISTED TWICE, where TYPE "Incorporated Place" vs another type is the only way to distinguish them:
 ## 3/4 are in PA, WI, MN
 # sum(duplicated(censusplaces[,c(1:3,5:6)]))
+# 73
 
 #      STATE stfips               PLACENAME                    TYPE                            COUNTY    fips                   PLACE
 #
@@ -135,18 +150,22 @@ print(head(censusplaces,20))
 
 setDF(censusplaces)
 ############################ ############################# #
-# metadata ####
-attr(censusplaces, "date_created") <- Sys.Date()
-censusplaces <- metadata_add(censusplaces)
+# compare to already/previously-installed version:
+all.equal(EJAM::censusplaces, censusplaces, check.attributes=F)
 ############################ ############################# #
+# metadata ####
+# attr(censusplaces, "date_created") <- Sys.Date()
+# censusplaces <- metadata_add(censusplaces)
 # use_data ####
-usethis::use_data(censusplaces, overwrite = TRUE)
+# usethis::use_data(censusplaces, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("censusplaces")
 ############################ ############################# #
 # documentation ####
 dataset_documenter('censusplaces',
                    title = "censusplaces (DATA) Census FIPS and other basic info on roughly 40,000 cities/towns/places",
                    description = "Table of US cities and other Census Designated Places, Incorporated Places, and County Subdivisions",
                    details = paste0("from [https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt](https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt)
+#' As checked in May 2026, this Census PLACElist source did not include AS/GU/MP/VI city, town, or CDP rows. This is a source coverage note only; it does not change how `censusplaces$fips` is stored or matched by EJAM helpers.
 #' Column names: ", paste0(colnames(censusplaces), collapse = ", "))
 )
 ############################ # ############################ # ############################ # ############################ #

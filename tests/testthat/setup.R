@@ -4,7 +4,7 @@
 ############################### #
 if (!isTRUE(getOption("EJAM.test_setup_banner_shown"))) {
   options(EJAM.test_setup_banner_shown = TRUE)
-  cat("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!!!!! \n\n\n")
+  message("\n\n\n               !!!!!!!!!!!!!! Starting setup.R for testing !!!!!!!!!!!!!! \n\n\n")
 }
 
 # # This script SHOULD get run before tests, so fixtures created here will be available to all the tests.
@@ -18,16 +18,16 @@ if (!"package:EJAM" %in% search()) {
 ############################### #
 
 
-# do not address install_local() or load_all() in setup.R since setup.R also is used for check() /  R CMD check
+# do not address pak::local_install('.', dependencies = T, upgrade = F) or load_all() in setup.R since setup.R also is used for check() /  R CMD check
 # and you assume it is assuming installed package in that case.
 #
-# Instead handle whether to do install_local() or at least load_all() when interactively starting tests, like via test_ejam()
-
+# Instead handle whether to do pak::local_install('.', dependencies = T, upgrade = F)
+# or at least load_all() when interactively starting tests, like via test_ejam()
 
 # >>  load_all() ??? ####
 
-# message("Consider whether you want to use remotes::install_local() or devtools::load_all() before running the set of tests...
-#  It is recommended during development to use `remotes::install_local()` or `devtools::load_all()`
+# message("Consider whether you want to use `pak::local_install('.', dependencies = T, upgrade = F)`  or `devtools::load_all()` before running the set of tests...
+#  It is recommended during development to use `pak::local_install('.', dependencies = T, upgrade = F)`  or  `devtools::load_all()`
 #  to ensure your development code is the one tested.
 #  This is because test_file(), which is used by test_ejam(), uses the installed version of a package.
 #  Likewise, shinytest2 automatically references the installed version of a package.
@@ -51,7 +51,7 @@ if (!"package:EJAM" %in% search()) {
 # if (interactive()) {
 #   install_now = FALSE
 #   # cat("THIS WILL TEST THE LAST-INSTALLED VERSION - IF YOU WANT TO TEST THE LOCAL SOURCE VERSION, DO
-#   #     remotes::install_local('.', force = T, upgrade = 'never', build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#   #     pak::local_install('.', dependencies = T, upgrade = F)
 #   #     FIRST ! \n")
 # } else {
 #   install_now = FALSE
@@ -59,12 +59,12 @@ if (!"package:EJAM" %in% search()) {
 #
 # if (install_now) {
 #   if (file.exists("DESCRIPTION")) {
-#     remotes::install_local('.', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#     pak::local_install('.', dependencies = T, upgrade = F)
 #   } else {
 #     if (file.exists("../DESCRIPTION")) {
-#       remotes::install_local('..', force = T, upgrade = "never", build = F, build_vignettes = F, build_manual = F, dependencies = F)
+#       pak::local_install('.', dependencies = T, upgrade = F)
 #     } else {
-#       stop("cannot do remotes::install_local() since cannot find source directory")
+#       stop("cannot do pak::local_install('.', dependencies = T, upgrade = F) since cannot find source directory")
 #     }
 #   }
 # }
@@ -78,19 +78,53 @@ if (!"package:EJAM" %in% search()) {
 # If you start from clean R session and  just did load_all() only, then it would not do all these,
 # and would not do the .onAttach() global_defaults* etc.??
 
-# Maybe the safest in test_ejam() is to do install_local(), library(EJAM) just to be sure, and then ALSO do load_all() so ::: not needed.
+# Maybe the safest in test_ejam() is to do pak::local_install('.', dependencies = T, upgrade = F) , library(EJAM) just to be sure, and then ALSO do load_all() so ::: not needed.
 
 # # If you installed EJAM   that should have already checked all these
 # If you did library(EJAM) that should have access to these pkgs but would NOT actually do library() or require() on   all these.
-# If you did install_local() same.
+# If you did pak::local_install('.', dependencies = T, upgrade = F)  same.
 
-if (!require(testthat))   {cat("Need testthat package for unit tests to work \n\n")}
-if (!require(mapview))    {cat("Need mapview package for some tests of mapping to work \n\n")}
-if (!require(AOI))        {cat("Need AOI package for tests of street address handling to work \n\n")}
-if (!require(golem))        {cat("Need golem package for some tests to work \n\n")}
-if (!require(rmarkdown))        {cat("Need rmarkdown  package for some tests to work \n\n")}
-if (!require(data.table))       {cat("Need data.table package for some tests to work \n\n")}
-if (!require(magrittr))         {cat("Need magrittr   package for some tests to work \n\n")}
+require_for_tests <- function(pkg, why, attach = TRUE) {
+  err <- NULL
+  ok <- suppressWarnings(suppressPackageStartupMessages(tryCatch({
+    if (attach) {
+      require(pkg, character.only = TRUE, quietly = TRUE)
+    } else {
+      requireNamespace(pkg, quietly = TRUE)
+    }
+  }, error = function(e) {
+    err <<- e
+    FALSE
+  })))
+
+  if (!ok) {
+    msg <- paste0("Need ", pkg, " package ", why)
+    if (!is.null(err)) {
+      msg <- paste0(msg, " (", conditionMessage(err), ")")
+    }
+    message(msg, "\n")
+  }
+  ok
+}
+
+require_for_tests("testthat", "for unit tests to work")
+require_for_tests("mapview", "for some tests of mapping to work")
+options(EJAM.AOI_available_for_tests = require_for_tests(
+  "AOI",
+  "for tests of street address handling to work",
+  attach = FALSE
+))
+require_for_tests("golem", "for some tests to work")
+require_for_tests("rmarkdown", "for some tests to work")
+require_for_tests("data.table", "for some tests to work")
+require_for_tests("magrittr", "for some tests to work")
+
+skip_if_aoi_unavailable <- function() {
+  testthat::skip_if_not(
+    isTRUE(getOption("EJAM.AOI_available_for_tests")),
+    "AOI package cannot be loaded"
+  )
+}
 ############################### #
 
 # anything that runs tests, such as testthat::test_file() done by test_ejam_bygroup()
@@ -259,8 +293,33 @@ bad_numbers <- list(
 
 map2popups <- # popups_from_leaflet <-
   function(mymap) {
-    popup_data_where = which(sapply((mymap$x$calls[[2]])$args, function(z) (is.atomic(z) & is.character(z))) )
-    ((mymap$x$calls[[2]])$args)[[popup_data_where]]
+    calls <- mymap$x$calls
+    for (call in rev(calls)) {
+      if (identical(call$method, "addTiles")) {
+        next
+      }
+      args <- call$args
+      popup_arg <- names(args)[grepl("popup", names(args), ignore.case = TRUE)]
+      if (length(popup_arg) > 0) {
+        return(args[[popup_arg[1]]])
+      }
+      if (call$method %in% c("addPolygons", "addCircles", "addCircleMarkers") &&
+          length(args) >= 5 &&
+          is.atomic(args[[5]]) &&
+          is.character(args[[5]])) {
+        return(args[[5]])
+      }
+      popup_data_where <- which(vapply(args, function(z) {
+        is.atomic(z) &&
+          is.character(z) &&
+          length(z) > 0 &&
+          !all(grepl("^(https?://|#?[[:xdigit:]]{6}$|green$|red$|blue$)$", z))
+      }, logical(1)))
+      if (length(popup_data_where) > 0) {
+        return(args[[popup_data_where[1]]])
+      }
+    }
+    stop("cannot find popup text in leaflet map")
   }
 
 # For polygon maps (addPolygons), which put addPolygons at calls[[1]].
@@ -355,12 +414,50 @@ if (FALSE) {
 }
 ################################# # ################################# #
 
-# >>> cleanup after testing?? ####
-# # Run after all tests
-# # Setup code is typically best used to create external resources that are needed by many tests. It’s best kept to a minimum because you will have to manually run it before interactively debugging tests.
-# # But, is this right?  it is from the help example but what is cleanup() ?? ***
-# # Needs to be fixed:
-#
-# withr::defer(cleanup(), teardown_env())
+# >>> cleanup after testing ####
+
+close_test_pdf_devices <- function() {
+  devs <- grDevices::dev.list()
+  if (is.null(devs)) {
+    return(invisible(NULL))
+  }
+  pdf_devs <- rev(devs[names(devs) == "pdf"])
+  for (dev in pdf_devs) {
+    try({
+      grDevices::dev.set(dev)
+      grDevices::dev.off()
+    }, silent = TRUE)
+  }
+  invisible(NULL)
+}
+
+cleanup_rplots_pdf <- function() {
+  close_test_pdf_devices()
+  possible_dirs <- unique(c(
+    getwd(),
+    file.path(getwd(), "tests", "testthat"),
+    file.path(getwd(), ".."),
+    file.path(getwd(), "..", ".."),
+    file.path(getwd(), "..", "..", "tests", "testthat")
+  ))
+  possible_files <- file.path(
+    normalizePath(possible_dirs, mustWork = FALSE),
+    "Rplots.pdf"
+  )
+  invisible(unlink(unique(possible_files), force = TRUE))
+}
+
+cleanup_rplots_pdf()
+test_graphics_pdf <- tempfile("ejam-test-graphics-", fileext = ".pdf")
+grDevices::pdf(file = test_graphics_pdf)
+cleanup_env <- tryCatch(
+  testthat::teardown_env(),
+  error = function(e) globalenv()
+)
+withr::defer({
+  close_test_pdf_devices()
+  unlink(test_graphics_pdf, force = TRUE)
+  cleanup_rplots_pdf()
+}, cleanup_env)
 
 ################################# # ################################# #

@@ -63,14 +63,14 @@
 #'
 #' @seealso [ejam2excel()] and related functions like [table_xls_from_ejam()]
 #' @return a workbook, ready to be saved in spreadsheet format, with tabs like "Overall" and "Each Site"
-#' @examples \donttest{
+#' @examples \dontrun{
 #'   EJAM:::table_xls_format(
-#'     testoutput_ejamit_100pts_1miles$results_overall,
-#'     testoutput_ejamit_100pts_1miles$results_bysite,
-#'     saveas =  "out1.xlsx")
+#'     overall = testoutput_ejamit_100pts_1miles$results_overall,
+#'     eachsite = testoutput_ejamit_100pts_1miles$results_bysite,
+#'     saveas = tempfile(fileext = ".xlsx"))
 #'  # can just pass the whole results of ejamit(), for convenience
 #'  wb <- EJAM:::table_xls_format(testoutput_ejamit_100pts_1miles)
-#'  openxlsx::saveWorkbook(wb, file = "out2.xlsx", overwrite = T)
+#'  openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"), overwrite = TRUE)
 #' }
 #'
 #' @keywords internal
@@ -95,7 +95,7 @@ table_xls_format <- function(overall,
                              buffer_desc = "Selected Locations",
 
                              # specify columns with URLs/links to 1-site reports, etc.
-                             reports = EJAM:::global_or_param("default_reports"),
+                             reports = global_or_param("default_reports"),
 
                              # plot
                              ok2plot = TRUE,
@@ -117,7 +117,7 @@ table_xls_format <- function(overall,
 
                              # column formatting
                              heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
-                             heatmap2_colnames = NULL, heatmap2_cuts = c(1.009, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
+                             heatmap2_colnames = NULL, heatmap2_cuts = c(1.05, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
                              graycolnames = NULL, graycolor = 'gray',
                              narrowcolnames = NULL, narrow6 = 6,
 
@@ -129,14 +129,21 @@ table_xls_format <- function(overall,
                              ...) {
 
   if (is.null(ejscreen_ejam_caveat)) {
-    ejscreen_ejam_caveat <- "Some numbers as shown on pre-2025 EPA EJSCREEN reports using ACS 2018-2022 in some cases were very slightly different than estimates in 2025 EJSCREEN reports (as calculations were transitioned from EPA to non-EPA software based on EJAM). All numbers shown in both types of reports are estimates, and any differences are well within the range of uncertainty inherent in the American Community Survey data as used in EJSCREEN. Slight differences are inherent in very quickly calculating results for multiple locations."
+    ejscreen_ejam_caveat <- "Numbers shown in EJSCREEN reports are estimates, and there is uncertainty inherent in the data sources and methods, such as the American Community Survey data as used in EJSCREEN to estimate statistics for residents in a certain area."
   }
 
+  shp_ejam_report_fallback_url <- "https://ejanalysis.com/ejamapp"
+  shp_ejam_report_note <- paste0(
+    "This analysis used shapefile polygons, so site-level EJAM report links in this workbook open the EJAM app (",
+    shp_ejam_report_fallback_url,
+    "). To run a one-site report, provide the original shapefile polygon again in the app."
+  )
+
   if (isTRUE(all.equal(heatmap_cuts,  c(80, 90, 95)))  && isTRUE(all.equal(heatmap_colors,  c("yellow", "orange", "red"))) &&
-      isTRUE(all.equal(heatmap2_cuts, c(1.009, 2, 3))) && isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
+      isTRUE(all.equal(heatmap2_cuts, c(1.05, 2, 3))) && isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
     color_legend <- paste0(
       "PERCENTILES \n  Red: at least 95th, Orange: 90-95th, Yellow: 80-90th \n",
-      "RATIOS      \n  Red: at least 3x average, Orange: 2-3x average, Yellow: 1-2x average"
+      "RATIOS      \n  Red: at least 3x average, Orange: 2-3x average, Yellow: above 1.0 to 2x average"
     )
   } else {
     if (missing(heatmap_colnames))  {h1names <- "PERCENTILES "} else {h1names <- paste0("Group 1 columns ", paste0("(", fixcolnames(heatmap_colnames[1], 'r', 'long'), ", etc.)"))}
@@ -167,7 +174,7 @@ table_xls_format <- function(overall,
     } else {
       eachsite <- overall$results_bysite
     }
-    if (is.null(sitetype)) {sitetype <- EJAM:::sitetype_from_dt(eachsite)}
+    if (is.null(sitetype)) {sitetype <- sitetype_from_dt(eachsite)}
 
     if (!("results_overall" %in% names(overall))) {
       overall <- NULL # unusual situation we will try to accommodate
@@ -307,9 +314,22 @@ table_xls_format <- function(overall,
           warning('cannot create plot_barplot_ratios() output')
           cat('cannot create plot_barplot_ratios() output\n')
         } else {
-          print(report_plot)
           openxlsx::addWorksheet(wb, sheetName = "plot_ratios",  gridLines = FALSE)
-          openxlsx::insertPlot(wb, "plot_ratios", width = 9, height = 7) # The current plot is saved to a temporary image file using dev.copy. This file is then written to the workbook using insertImage.
+          report_plot_file <- file.path(tempdir(), paste0("report_plot_", Sys.getpid(), ".png"))
+          ggplot2::ggsave(
+            filename = report_plot_file,
+            plot = report_plot,
+            width = 9,
+            height = 7,
+            units = "in"
+          )
+          openxlsx::insertImage(
+            wb,
+            sheet = "plot_ratios",
+            file = report_plot_file,
+            width = 9,
+            height = 7
+          )
         }
       } else {
         cat('cannot create plot_barplot_ratios() output because not all ratio columns are present - probably because calculate_ratios = FALSE \n')
@@ -454,6 +474,7 @@ table_xls_format <- function(overall,
     "Population at x% of sites" =  popshare_p_lives_at_what_pct(eachsite$pop, p = 0.50, astext = TRUE),
     "Population at N sites" = popshare_at_top_n(eachsite$pop, c(1, 5, 10), astext = TRUE),
     "Note on site-specific estimates" = ejscreen_ejam_caveat,
+    "Note on shapefile-based site links" = if ("shp" %in% sitetype) shp_ejam_report_note else "",
     "Color Legend for highlighted cells" = color_legend,
 
     check.names = FALSE
@@ -491,6 +512,13 @@ table_xls_format <- function(overall,
   if (is.function(updateProgress)) {
     boldtext <- 'Writing data to sheets'
     updateProgress(message_main = boldtext, value = 0.4)
+  }
+
+  if ("shp" %in% sitetype && "EJAM Report" %in% names(eachsite)) {
+    eachsite[["EJAM Report"]] <- rep(shp_ejam_report_fallback_url, NROW(eachsite))
+    if ("EJAM Report" %in% names(overall)) {
+      overall[["EJAM Report"]] <- rep(shp_ejam_report_fallback_url, NROW(overall))
+    }
   }
 
   openxlsx::writeData(wb,
@@ -596,10 +624,18 @@ table_xls_format <- function(overall,
     for (i in 1:length(hyperlink_colnames)) {
       namedvector <- as.vector(eachsite[ , hyperlink_colnames[i]]) # vector of length NROW()
       namedvector_overall <- as.vector(overall[ , hyperlink_colnames[i]]) # vector of length 1
+      this_hyperlink_text <- hyperlink_text[i]
+      this_hyperlink_text_overall <- hyperlink_colnames[i]
+
+      if ("shp" %in% sitetype && hyperlink_colnames[i] %in% "EJAM Report") {
+        this_hyperlink_text <- "Open EJAM App"
+        this_hyperlink_text_overall <- "Open EJAM App"
+      }
+
       # add "hyperlink" class and names as text  # not NROW + 1 here !
       # url_xl_style() ALSO CONVERTS HTML TAG URLS BACK TO JUST PLAIN URLS FIRST:
-      namedvector <- url_xl_style(namedvector, urltext = rep(  hyperlink_text[i], length(namedvector)))  # , 1:(NROW(eachsite)))) # to number them to use e.g., "EJSCREEN Report 1"
-      namedvector_overall <- url_xl_style(namedvector_overall, urltext = hyperlink_colnames[i]) ## use hyperlink_colnames not text here since it is the overall summary not just 1 site
+      namedvector <- url_xl_style(namedvector, urltext = rep(this_hyperlink_text, length(namedvector)))  # , 1:(NROW(eachsite)))) # to number them to use e.g., "EJSCREEN Report 1"
+      namedvector_overall <- url_xl_style(namedvector_overall, urltext = this_hyperlink_text_overall) ## use hyperlink_colnames not text here since it is the overall summary not just 1 site
       ## write to the worksheet the revised URL
       openxlsx::writeData(wb, sheet = 'Each Site',
                           x = namedvector,
@@ -682,7 +718,9 @@ table_xls_format <- function(overall,
   ## ROW1 FREEZE PANES AND LEFTMOST COLUMNS ####
 
   # openxlsx::freezePane(wb, sheet = 'Each Site', firstRow = TRUE) #, firstCol = TRUE)  ## freeze first row and column
-  openxlsx::freezePane(wb, sheet = 'Each Site', firstActiveCol = 5, firstActiveRow = 2)
+  first_active_col_eachsite <- match("valid", headers_eachsite)
+  if (is.na(first_active_col_eachsite)) first_active_col_eachsite <- 1
+  openxlsx::freezePane(wb, sheet = 'Each Site', firstActiveCol = first_active_col_eachsite, firstActiveRow = 2)
   # openxlsx::freezePane(wb, sheet = 'Overall',   firstActiveCol = 1)
   openxlsx::freezePane(wb, sheet = 'Overall',   firstActiveCol = 1, firstActiveRow = 2)
   openxlsx::freezePane(wb, sheet = 'Overall 2', firstActiveCol = 1, firstActiveRow = 2)
@@ -822,7 +860,7 @@ table_xls_format <- function(overall,
   # Also see the internal helper function  round2nearest_n()  which lets you explicitly round to nearest 100, e.g.
 
   # sigfigs_table <-  map_headernames[ "" != (map_headernames$sigfigs), c("sigfigs", "decimals", "rname", "acsname",	"csvname")]
-  digitstable <- map_headernames[ "" != (map_headernames$decimals) | "" != (map_headernames$sigfigs), c("sigfigs", "decimals", "rname", "acsname",	"csvname", "apiname")]
+  digitstable <- map_headernames[ "" != (map_headernames$decimals) | "" != (map_headernames$sigfigs), c("sigfigs", "decimals", "rname", "acsname", "csvname", "ejscreen_apinames_old")]
   decimals_cols <- names(eachsite)[names(eachsite) %in% digitstable$rname[digitstable$decimals != ""]]
   decimals_colnum <- match(decimals_cols, names(eachsite)) # and overall has same exact names and sort order of names
   decimals_tosee <- digitstable$decimals[match(decimals_cols, digitstable$rname)]
@@ -988,7 +1026,6 @@ table_xls_format <- function(overall,
 #'   as from dput(unique(map_headernames$varcategory))
 #' @return vector of colors like c('lightblue', 'gray') matching length of vartype
 #' @seealso [varinfo()] [varname2vartype_ejam()]  [varname2varcategory_ejam()] [varname2color_ejam()]
-#' @export
 #' @keywords internal
 #'
 vartype_cat2color_ejam <- function(vartype=raw, varcategory="other") {
@@ -1140,7 +1177,6 @@ vartype_cat2color_ejam <- function(vartype=raw, varcategory="other") {
 #' @param varnameinfo must be left as default currently
 #' @return vector of colors
 #' @seealso [varinfo()] [varname2vartype_ejam()] [varname2varcategory_ejam()] [vartype_cat2color_ejam()]
-#' @export
 #' @keywords internal
 #'
 varname2color_ejam <- function(varname, varnameinfo) {
@@ -1168,7 +1204,6 @@ varname2color_ejam <- function(varname, varnameinfo) {
 #'
 #' @return vector same size as varname
 #' @seealso [varinfo()] [vartype_cat2color_ejam()] [varname2color_ejam()]
-#' @export
 #' @keywords internal
 #'
 varname2vartype_ejam <- function(varname, varnameinfo) {
@@ -1210,7 +1245,6 @@ varname2vartype_ejam <- function(varname, varnameinfo) {
 #'
 #' @return vector same size as varname
 #' @seealso [varinfo()] [vartype_cat2color_ejam()] [varname2color_ejam()]
-#' @export
 #' @keywords internal
 #'
 varname2varcategory_ejam <- function(varname, varnameinfo) {

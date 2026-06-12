@@ -81,7 +81,46 @@ junk2 <- function() {
 rm(junk1, junk2)
 ############################################# #  ############################################# #
 
+test_that("ejamit(shapefile=) handles valid polygons with no blockpoints", {
+  no_block_fixture <- data.frame(
+    site_name = c("new_york_city", "los_angeles", "pacific_ocean"),
+    lat = c(40.7128, 34.0522, 38),
+    lon = c(-74.0060, -118.2437, -145)
+  )
+
+  shp <- shape_buffered_from_shapefile_points(
+    shapefile_from_sitepoints(no_block_fixture),
+    radius.miles = 1
+  )
+
+  expect_no_error({
+    suppressWarnings({
+      out <- ejamit(
+        shapefile = shp,
+        quiet = TRUE,
+        silentinteractive = TRUE,
+        include_ejindexes = FALSE
+      )
+    })
+  })
+
+  expect_equal(NROW(out$results_bysite), NROW(shp))
+  expect_equal(sum(!out$results_bysite$valid), 1)
+  expect_true(any(
+    grepl("no block centroids", out$results_bysite$invalid_msg, fixed = TRUE)
+  ))
+  expect_true("area_sqmi" %in% names(out$results_bysite))
+})
+############################################# #
+
 ## to be finished possibly... ***
+
+area_sqmi_from_table <- EJAM:::area_sqmi_from_table
+area_sqmi_from_pts <- EJAM:::area_sqmi_from_pts
+area_sqmi_from_shp <- EJAM:::area_sqmi_from_shp
+area_sqmi_from_fips <- EJAM:::area_sqmi_from_fips
+area_sqmi_from_fips_made_of_bgs <- EJAM:::area_sqmi_from_fips_made_of_bgs
+fips_bgs_in_fips1 <- EJAM:::fips_bgs_in_fips1
 
 # test_that("area_sqmi ok within ejamit", {
 #   expect_no_error({
@@ -281,3 +320,11 @@ test_that("area_sqmi now handles 2+ types of fips", {
   expect_true(length(x) == 2)
 })
 ########################## #
+rm(
+  area_sqmi_from_table ,
+  area_sqmi_from_pts,
+  area_sqmi_from_shp ,
+  area_sqmi_from_fips ,
+  area_sqmi_from_fips_made_of_bgs,
+  fips_bgs_in_fips1
+)

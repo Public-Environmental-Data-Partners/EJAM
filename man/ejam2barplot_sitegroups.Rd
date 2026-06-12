@@ -54,7 +54,7 @@ see \code{\link[=ejamit_compare_types_of_places]{ejamit_compare_types_of_places(
    typeofsite <- c("A", "B", "B", "C"))
    cbind(Rows_or_length = sapply(out, NROW))
 
- ejam2barplot_sitegroups(out, "sitecount_unique", topn=3, sortby = F)
+ ejam2barplot_sitegroups(out, "sitecount_unique", topn = 3, sortby = FALSE)
 
 }
 \seealso{

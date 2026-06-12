@@ -48,7 +48,7 @@ test_that(desc = 'fixcolnames() output is char vector of right length, for a sim
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   all.long     <- map_headernames$longname[!is.na(map_headernames$longname) & nchar(map_headernames$longname) > 0]
   all.rname    <- map_headernames$rname[!is.na(map_headernames$rname) & nchar(map_headernames$rname) > 0]
 
@@ -73,7 +73,7 @@ test_that(desc = 'fixcolnames renames totalPop to pop for correct element', {
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   all.long     <- map_headernames$longname[!is.na(map_headernames$longname) & nchar(map_headernames$longname) > 0]
   all.rname    <- map_headernames$rname[!is.na(map_headernames$rname) & nchar(map_headernames$rname) > 0]
 
@@ -96,7 +96,7 @@ test_that('fixcolnames() returns 1 for 1, NA for NA even if all are NA', {
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   all.long     <- map_headernames$longname[!is.na(map_headernames$longname) & nchar(map_headernames$longname) > 0]
   all.rname    <- map_headernames$rname[!is.na(map_headernames$rname) & nchar(map_headernames$rname) > 0]
 
@@ -122,7 +122,7 @@ testthat::test_that('fixcolnames() no error for all original names', {
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   ok = which(!duplicated(all.original))
   maphead = map_headernames[ok, ]
   all.long     <- maphead$longname[!is.na(maphead$longname) & nchar(maphead$longname) > 0]
@@ -154,7 +154,7 @@ testthat::test_that('fixcolnames() no error for all long names', {
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   ok = which(!duplicated(all.original))
   maphead = map_headernames[ok, ]
   all.long     <- maphead$longname[!is.na(maphead$longname) & nchar(maphead$longname) > 0]
@@ -189,7 +189,7 @@ testthat::test_that('fixcolnames() no error for all r names', {
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   ok = which(!duplicated(all.original))
   maphead = map_headernames[ok, ]
   all.long     <- maphead$longname[!is.na(maphead$longname) & nchar(maphead$longname) > 0]
@@ -226,7 +226,7 @@ testthat::test_that("valid oldtype specified but inputs are not that type, so re
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   all.long     <- map_headernames$longname[!is.na(map_headernames$longname) & nchar(map_headernames$longname) > 0]
   all.rname    <- map_headernames$rname[!is.na(map_headernames$rname) & nchar(map_headernames$rname) > 0]
 
@@ -251,7 +251,7 @@ testthat::test_that("nonexistent oldtype specified so warn and return all unchan
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   all.long     <- map_headernames$longname[!is.na(map_headernames$longname) & nchar(map_headernames$longname) > 0]
   all.rname    <- map_headernames$rname[!is.na(map_headernames$rname) & nchar(map_headernames$rname) > 0]
 
@@ -279,7 +279,7 @@ testthat::test_that("nonexistent newtype specified so warn and return all unchan
     "US percentile for Supplemental Summary Index for Particulate Matter",
     "unfound", NA)
   # cbind(test.original, test.rname, test.long)
-  all.original <- map_headernames$apiname[!is.na(map_headernames$apiname) & nchar(map_headernames$apiname) > 0]
+  all.original <- map_headernames$ejscreen_apinames_old[!is.na(map_headernames$ejscreen_apinames_old) & nchar(map_headernames$ejscreen_apinames_old) > 0]
   ok = which(!duplicated(all.original))
   maphead = map_headernames[ok, ]
   all.long     <- maphead$longname[!is.na(maphead$longname) & nchar(maphead$longname) > 0]

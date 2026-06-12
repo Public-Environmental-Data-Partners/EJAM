@@ -62,7 +62,9 @@
 #' @param updateProgress, optional function to update Shiny progress bar
 #'
 #' @examples
-#'   # indexblocks() # if localtree not available yet, quadtree = localtree
+#'   # getblocksnearby() usually creates/reuses the quadtree index for you.
+#'   # To call this lower-level function directly, use:
+#'   # quadtree <- indexblocks()
 #'   x = getblocksnearby(testpoints_1000, radius = 3)
 #' @seealso [ejamit()] [getblocksnearby()]
 #' @import data.table
@@ -112,6 +114,8 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
             is.numeric(radius_donut_lower_edge), radius_donut_lower_edge <= 100, radius_donut_lower_edge >= 0, length(radius_donut_lower_edge) == 1)
   if (radius_donut_lower_edge > 0 && radius_donut_lower_edge >= radius) {stop("radius_donut_lower_edge must be less than radius")}
   if (!data.table::is.data.table(sitepoints)) {data.table::setDT(sitepoints)} # should we set a key or index here, like ? ***
+  quaddata_now <- ejam_cached_data_get("quaddata")
+  blockwts_now <- ejam_cached_data_get("blockwts")
   ########################################################################### ##
   # ejam_uniq_id ####
   if (!("ejam_uniq_id" %in% names(sitepoints))) {
@@ -147,11 +151,11 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
 
     ### * FAST SEARCH - WHICH BLOCKS ARE APPROX NEARBY ####
 
-    vec <- SearchTrees::rectLookup(localtree,
+    vec <- SearchTrees::rectLookup(quadtree,
                                    xlims = FAC_X[a] + c(-1,1) * truedistance,
                                    ylims = FAC_Z[a] + c(-1,1) * truedistance
     )
-    tmp <- quaddata[vec,]
+    tmp <- quaddata_now[vec,]
 
     ### * EXACT DISTANCE TO EACH BLOCK  ####
 
@@ -212,9 +216,9 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
   ## if retain_unadjusted_distance ####
   if (retain_unadjusted_distance) {
     sites2blocks[ , distance_unadjusted := distance] # wastes space but for development/ debugging probably useful
-    sites2blocks <-  blockwts[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, block_radius_miles, distance_unadjusted), on = 'blockid']
+    sites2blocks <-  blockwts_now[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, block_radius_miles, distance_unadjusted), on = 'blockid']
   } else {
-    sites2blocks <-  blockwts[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, block_radius_miles), on = 'blockid']
+    sites2blocks <-  blockwts_now[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, block_radius_miles), on = 'blockid']
   }
   if (!use_unadjusted_distance) {
     if (!quiet) {  cat("\n\nAdjusting upwards the very short distances now...\n ")}

@@ -24,7 +24,7 @@
 #'
 #'   except it also uses these functions:
 #'
-#'   EJAM  ::latlon_from_siteid()
+#'
 #'
 #'   EJAM  ::latlon_from_programid()  but not  _from_naics() ?
 #'
@@ -38,7 +38,7 @@
 read_and_clean_points <- function(filepath, default_points=NULL) {
 
   warning('work in progress - it can replace similar code in server function')
-  stop(' this needs EJAM pkg data files and latlon_from_siteid() and latlon_from_programid() ')
+  stop(' this needs EJAM pkg data files and latlon_from_siteid() ? and latlon_from_programid() ')
 
   ## We should disable upload of a crazy number of points
 
@@ -112,8 +112,8 @@ read_and_clean_points <- function(filepath, default_points=NULL) {
 
 
 
-          stop(' this needs EJAM  data files and latlon_from_siteid()  ')
-           x <- try( latlon_from_siteid(siteid = pts_filecontents$registry_id))
+          stop(' this needs EJAM  data files and latlon_from_siteid() ? ')
+           # x <- try( latlon_from_siteid(siteid = pts_filecontents$registry_id))
 
 
 

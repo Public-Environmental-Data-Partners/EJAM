@@ -53,7 +53,7 @@ or (https://mastering-shiny.org/action-bookmark.html)}
 \value{
 An object that represents the app. Printing the object or
 passing it to \code{\link[shiny:runApp]{runApp()}} will run the app, as would just typing
-\code{\link[=run_app]{run_app()}} or \code{\link[=ejamapp]{ejamapp()}} in the console.
+\code{\link[=ejamapp]{ejamapp()}} in the console.
 }
 \description{
 Launch the web app
@@ -243,7 +243,7 @@ ejamapp(
  ejamapp(
   isPublic = FALSE, # to allow full set of features (menus)
   default_can_show_advanced_settings = FALSE, # removes user's ability to show Advanced tab
-  default_show_advanced_settings = FALSE, # just confirms default -- hiding Advanced tab when app launches
+  default_show_advanced_settings = FALSE, # the default, hide Advanced tab at app launch
   default_hide_plot_histo_tab = TRUE # to hide just this feature
   )
 

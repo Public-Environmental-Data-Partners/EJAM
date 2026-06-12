@@ -16,6 +16,7 @@ vector of ST info like AK, CA, DE, etc.
 given data.table with blockid column, get state abbreviation of each (function might not be used)
 }
 \examples{
+\dontrun{
 x = sample(blockpoints$blockid, 3)
 EJAM:::state_from_blockid_table(blockpoints[blockid \%in\% x, ])[]
 mapfast(blockpoints[blockid \%in\% x, ])
@@ -23,7 +24,9 @@ mapfast(blockpoints[blockid \%in\% x, ])
 table(EJAM:::state_from_blockid_table(testoutput_getblocksnearby_10pts_1miles))
 # unique(EJAM:::state_from_latlon(testpoints_10)$ST) # slow
 
-all.equal(EJAM:::state_from_blockid(x), EJAM:::state_from_blockid_table(blockpoints[blockid \%in\% x, ]))
+all.equal(EJAM:::state_from_blockid(x),
+  EJAM:::state_from_blockid_table(blockpoints[blockid \%in\% x, ]))
+}
 
 }
 \keyword{internal}

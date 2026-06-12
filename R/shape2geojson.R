@@ -7,14 +7,14 @@
 #' @param shp spatial data.frame to be written via [sf::st_write()]
 #' @param file optional file path and name, useful if txt=F
 #' @param txt optional logical, set to FALSE to just get the path to a temp .geojson file
-#' @return if txt=T, returns geojson text string(s) for the input spatial data.frame
-#'   if txt=F, returns file path/name(s) of .geojson file(s).
+#' @return if txt = TRUE, returns geojson text string(s) for the input spatial data.frame
+#'   if txt = FALSE, returns file path/name(s) of .geojson file(s).
 #' @param combine_in_one_string  set to TRUE to get back only 1 geojson txt string.
 #'   If FALSE, output is a vector of strings.
 #' @param combine_in_one_file  set to TRUE to get back only 1 file (1 row per polygon, not union/dissolved).
 #'   If FALSE, output is a vector of filenames (saves each row of input shp as a separate file).
 #' @details
-#'   Note that trying to use txt=T and combine_in_one_string = T for large polygons or many polygons
+#'   Note that trying to use txt=TRUE and combine_in_one_string = TRUE for large polygons or many polygons
 #'   would create a very long string that might exceed URL length limits for GET requests,
 #'   if that is what you're using the text for.
 #' @seealso [geojsonsf::sf_geojson()] that should be able to do the same as shape2geojson().

@@ -6,22 +6,23 @@
 updates EJAM/data/*.rda (BUT NOT ARROW & NOT TXT FILES)}
 \usage{
 metadata_update_attr(
-  x = pkg_data("EJAM")$Item,
+  x,
   attr_name = "ejam_package_version",
-  newvalue = desc::desc_get("Version"),
+  newvalue = ejam_package_version_current(),
   exclude_atomic_vectors = TRUE,
   only_update_if_had_been_set = FALSE
 )
 }
 \arguments{
-\item{x}{vector of 1+ quoted names of data object(s), like "testpoints_10"}
+\item{x}{if missing, defaults to all items found in EJAM pkg;
+otherwise, a vector of 1+ quoted names of data object(s), like "testpoints_10"}
 
 \item{attr_name}{e.g. "ejam_package_version"}
 
 \item{newvalue}{the new value of that attribute}
 
 \item{exclude_atomic_vectors}{if TRUE, avoids updating attributes on atomic vectors like names_e,
-since it is distracting when printing them to console}
+since it is distracting when looking at one in console, like \code{names_e}}
 
 \item{only_update_if_had_been_set}{set to TRUE to only update this attribute for data objects where
 that object already had a value set for this attribute, to update only but not create/add attribute.}

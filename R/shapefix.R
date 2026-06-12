@@ -53,8 +53,8 @@ shapefix = function(shp,
   validate_errmsg <- NULL
 
   if (is.null(shp)) {
-    disable_buttons_SHP <- TRUE
-    validate_errmsg <- "Uploaded file should have valid file extension(s)"
+    warning("Uploaded file should have valid file extension(s)")
+    return(NULL)
   }
   if (any(sf::st_geometry_type(shp) == "POINT") && !interactive() && shiny::isRunning()) {
     disable_buttons_SHP <- TRUE

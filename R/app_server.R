@@ -23,7 +23,7 @@ app_server <- function(input, output, session) {
   # Key reactives include these:
   ##  data_uploaded   reactive holds selected latlon points or shapefiles. It is defined later.
   ##  data_processed  reactive holds results of analysis, like output of doaggregate(getblocksnearby(points)), or a subset of output of ejamit()
-  ##  data_summarized reactive holds results of batch.summarize()
+
 
   # SETUP: ####
 
@@ -32,30 +32,30 @@ app_server <- function(input, output, session) {
   analysis_complete <- reactiveVal(FALSE)
 
   sanitized_standard_analysis_title <- reactive({
-    EJAM:::global_or_param("sanitize_text")(input$standard_analysis_title)
+    global_or_param("sanitize_text")(input$standard_analysis_title)
   })
   sanitized_analysis_title <- reactive({
-    EJAM:::global_or_param("sanitize_text")(input$analysis_title)
+    global_or_param("sanitize_text")(input$analysis_title)
   })
   sanitized_an_threshgroup1 <- reactive({
-    EJAM:::global_or_param("sanitize_text")(input$an_threshgroup1)
+    global_or_param("sanitize_text")(input$an_threshgroup1)
   })
   sanitized_an_threshgroup2 <- reactive({
-    EJAM:::global_or_param("sanitize_text")(input$an_threshgroup2)
+    global_or_param("sanitize_text")(input$an_threshgroup2)
   })
   sanitized_radius_now <- reactive({
     req(input$radius_now)
-    EJAM:::global_or_param("sanitize_numeric")(input$radius_now)
+    global_or_param("sanitize_numeric")(input$radius_now)
   })
   ################################################################### #
   # testing/dev mode settings ####
   observe({
     req(input$testing)
-    if (input$testing) {cat("testing == TRUE \n ")} else {cat("testing == FALSE \n----------------------\n")}
+    if (input$testing) {message("testing == TRUE \n ")} else {message("testing == FALSE \n----------------------\n")}
   })
   observe({
-    if (length(EJAM:::global_or_param("default_shiny.testmode")) > 0  ) { # allow params in ejamapp() to override default
-      if (!isTRUE(EJAM:::global_or_param("default_shiny.testmode"))) {
+    if (length(global_or_param("default_shiny.testmode")) > 0  ) { # allow params in ejamapp() to override default
+      if (!isTRUE(global_or_param("default_shiny.testmode"))) {
         updateRadioButtons(session = session, inputId = "shiny.testmode", selected = FALSE)
         # if (!isTRUE(getOption("shiny.testmode"))) {
         #   options(shiny.testmode = FALSE)
@@ -70,11 +70,11 @@ app_server <- function(input, output, session) {
     req(input$shiny.testmode)
     if (input$shiny.testmode) {
       options(shiny.testmode = TRUE)
-      cat('shiny.testmode == TRUE\n')
+      message('shiny.testmode == TRUE\n')
     } else {
       if (!isTRUE(getOption("shiny.testmode"))) {
         options(shiny.testmode = FALSE)
-        cat('shiny.testmode == FALSE\n')
+        message('shiny.testmode == FALSE\n')
       }
     }
   }, priority = 2)
@@ -99,22 +99,21 @@ app_server <- function(input, output, session) {
   #. ####
   # ___ BUTTONS/TABS (events: Go to tab/ Help/ Start analysis) ####
 
-  ## outline of tabs
-  # at one point was this:
-  #
-  # tabsetPanel(                         id = 'all_tabs',     ##
-  #   tabPanel(title = 'About EJAM',
-  #   tabPanel(title = 'Site Selection',
-  #   tabPanel(title =   , # ??
-  #   tabsetPanel(                       id = 'results_tabs', ##
-  #       tabPanel(title = 'Summary',
-  #       tabPanel(title = 'Details',
-  #          tabPanel(title = 'Site-by-Site Table',
-  #          tabPanel(title = 'Plot Average Scores',
-  #          tabPanel(title = 'Plot Full Range of Scores',
-  #       tabPanel(title = 'Written Report',
-  #   tabPanel(title = 'EJSCREEN Batch Tool',
-  #   tabPanel(title = 'Advanced Settings',
+  ## To see names of tabs defined in UI:
+  #      x = find_in_files("tab(|set)Panel[^,]*,", filename_pattern = "app_ui.R", whole_line = T, quiet = T)
+  #      cbind(x[[1]])
+  # was this:
+  # 68   "        tabPanel(title = 'About',"
+  # 505  "        tabPanel(title = \"See Results\","
+  # 513  "                 tabsetPanel(id = 'results_tabs',"
+  # 574  "                             tabPanel(title = 'Details',"
+  # 590  "                                            tabPanel(title = 'Site-by-Site Table',"
+  # 622  "                                            tabPanel(id = \"plot_average\","
+  # 654  "                                            ),  # end of tabPanel(title = 'Plot Average Scores',"
+  # 658  "                                            tabPanel(id = \"plot_range\","
+  # 712  "                               tabPanel(title = 'Written Report',"
+  # 1025 "        tabPanel(title = \"Advanced Settings\","
+
 
   ##     -------------------------- BUTTONS to switch tabs ---------------------- #
 
@@ -180,21 +179,21 @@ app_server <- function(input, output, session) {
 
 
   ## hide vs show ABOUT tab  ---------------------- #
-  if (EJAM:::global_or_param("default_hide_about_tab")) {
+  if (isTRUE(global_or_param("default_hide_about_tab"))) {
     hideTab(inputId = 'all_tabs', target = 'About')
   }
   ## hide vs show WRITTEN REPORT tab ---------------------- #
-  if (EJAM:::global_or_param("default_hide_written_report")) {
+  if (global_or_param("default_hide_written_report")) {
     hideTab(inputId = 'results_tabs', target = 'Written Report')
   }
 
   ## hide vs show BARPLOTS tab  ---------------------- #
-  if (EJAM:::global_or_param("default_hide_plot_barplot_tab")) {
+  if (global_or_param("default_hide_plot_barplot_tab")) {
     hideTab(inputId = 'details_subtabs', target = 'Plot Average Scores')
   }
 
   ## hide vs show HISTOGRAMS tab  ---------------------- #
-  if (EJAM:::global_or_param("default_hide_plot_histo_tab")) {
+  if (global_or_param("default_hide_plot_histo_tab")) {
     hideTab(inputId = 'details_subtabs', target = 'Plot Full Range of Scores')
   }
 
@@ -203,11 +202,11 @@ app_server <- function(input, output, session) {
   max_mb_upload_react <- reactive({
     x <- as.numeric((input$max_mb_upload))
     if (is.null(x) || is.na(x) || length(x) == 0) {
-      x <- EJAM:::global_or_param("default_max_mb_upload") #?
+      x <- global_or_param("default_max_mb_upload") #?
       shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     } else {
-      if (x > EJAM:::global_or_param("maxmax_mb_upload")) {x <- EJAM:::global_or_param("maxmax_mb_upload")}
-      if (x < EJAM:::global_or_param("minmax_mb_upload")) {x <- EJAM:::global_or_param("minmax_mb_upload")}
+      if (x > global_or_param("maxmax_mb_upload")) {x <- global_or_param("maxmax_mb_upload")}
+      if (x < global_or_param("minmax_mb_upload")) {x <- global_or_param("minmax_mb_upload")}
       shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     }
     x
@@ -228,15 +227,15 @@ app_server <- function(input, output, session) {
   ## buttons to see help info  ---------------------- #
 
   observeEvent(input$latlon_help, {
-    showModal(modalDialog(HTML(EJAM:::global_or_param("latlon_help_msg")), easyClose = TRUE))})
+    showModal(modalDialog(HTML(global_or_param("latlon_help_msg")), easyClose = TRUE))})
   observeEvent(input$frs_help, {
-    showModal(modalDialog(HTML(EJAM:::global_or_param("frs_help_msg")),    easyClose = TRUE))})
+    showModal(modalDialog(HTML(global_or_param("frs_help_msg")),    easyClose = TRUE))})
   observeEvent(input$epa_program_help, {
-    showModal(modalDialog(HTML(EJAM:::global_or_param("epa_program_help_msg")), easyClose = TRUE))})
+    showModal(modalDialog(HTML(global_or_param("epa_program_help_msg")), easyClose = TRUE))})
   observeEvent(input$fips_help, {
-    showModal(modalDialog(HTML(EJAM:::global_or_param("fips_help_msg")),   easyClose = TRUE))})
+    showModal(modalDialog(HTML(global_or_param("fips_help_msg")),   easyClose = TRUE))})
   observeEvent(input$shp_help, {
-    showModal(modalDialog(HTML(EJAM:::global_or_param("shp_help_msg")),    easyClose = TRUE))})
+    showModal(modalDialog(HTML(global_or_param("shp_help_msg")),    easyClose = TRUE))})
   # . --------------------------------------------------------------- ####
   #. ####
 
@@ -256,12 +255,12 @@ app_server <- function(input, output, session) {
     updateSelectizeInput(session = session, inputId = 'default_naics', # in advanced tab
                          ## use named list version, grouped by first two code numbers
                          choices = setNames(naics_counts$NAICS, naics_counts$label_w_subs),
-                         selected = EJAM:::global_or_param("default_naics"),
+                         selected = global_or_param("default_naics"),
                          server = TRUE)
   }, once = TRUE)
   observe({
     # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
-    level_of_detail_based_on_default_naics <- if (any(nchar(input$default_naics) > 3)) 'detailed' else EJAM:::global_or_param("default_naics_digits_shown")
+    level_of_detail_based_on_default_naics <- if (any(nchar(input$default_naics) > 3)) 'detailed' else global_or_param("default_naics_digits_shown")
     updateRadioButtons(session = session, inputId = 'naics_digits_shown',
                        selected = level_of_detail_based_on_default_naics
     )
@@ -283,7 +282,7 @@ app_server <- function(input, output, session) {
       naics_choices <- setNames(naics_counts_filtered()$NAICS, naics_counts_filtered()$label_no_subs)
     }
 
-    trydefault <- if (is.null(input$default_naics)) EJAM:::global_or_param("default_naics") else input$default_naics
+    trydefault <- if (is.null(input$default_naics)) global_or_param("default_naics") else input$default_naics
     vals <- if (is.null(input$ss_select_naics)) trydefault else input$ss_select_naics
     ### update ss_select_NAICS input options ###
     updateSelectizeInput(session = session, inputId = 'ss_select_naics', # in site selection tab
@@ -297,7 +296,7 @@ app_server <- function(input, output, session) {
   observe({
     updateSelectizeInput(session = session, inputId = 'default_sic', # in advanced tab
                          choices = SIC, # named list of >1,000 codes, like "5983 - Fuel oil dealers (620 sites)" is the name and "5983" is the value
-                         selected = EJAM:::global_or_param("default_sic"),
+                         selected = global_or_param("default_sic"),
                          server = TRUE)
   })
   observe({
@@ -307,11 +306,11 @@ app_server <- function(input, output, session) {
                          server = TRUE)
   })
 
-  # update MACT input options ###
+  # update MACT input options in UI ###
   # observe({ ### already done in app_ui.R since not many choices so it loads faster than naics or sic
   #   updateSelectizeInput(session = session, inputId = 'default_mact', # in advanced tab
   #                        # choices =
-  #                        selected = EJAM:::global_or_param("default_mact"),
+  #                        selected = global_or_param("default_mact"),
   #                        server = TRUE)
   # })
   observe({ # NOTE IT USES select not selectize here
@@ -326,7 +325,7 @@ app_server <- function(input, output, session) {
 
   output$ss_choose_method_ui <- renderUI({
     req(input$default_ss_choose_method)
-    if (input$testing) {cat("input$default_ss_choose_method is ", input$default_ss_choose_method, "\n")}
+    if (input$testing) {message("input$default_ss_choose_method is ", input$default_ss_choose_method, "\n")}
     radioButtons(inputId = 'ss_choose_method',
                  label = 'How would you like to identify locations?',
                  choiceNames = c('Select a category of locations',
@@ -336,13 +335,8 @@ app_server <- function(input, output, session) {
                  # selected = "upload" # hard-coded default selection
                  selected = input$default_ss_choose_method  # flexible default selection
     )
-    if (input$testing) {cat(" and input$ss_choose_method selected is ", input$ss_choose_method, "\n")}
+    if (input$testing) {message(" and input$ss_choose_method selected is ", input$ss_choose_method, "\n")}
   })
-  # observe({
-  #   if (is.null(input$ss_choose_method) || input$ss_choose_method == "") {
-  #     updateRadioButtons(inputId = "ss_choose_method", selected = input$default_ss_choose_method)
-  #   }
-  # })
 
   # keep track of currently used method of site selection (also see submitted_upload_method reactive)
   current_upload_method <- reactive({
@@ -409,11 +403,14 @@ app_server <- function(input, output, session) {
   ## initialize SHP file extension error message
   error_message <- reactiveVal(NULL)
 
+  ## initialize lat/lon upload error message (e.g. point cap exceeded)
+  latlon_upload_error <- reactiveVal(NULL)
+
   data_up_shp <- reactive({
 
     if (is.null(input$ss_upload_shp)) {
       ## no uploaded file, so check if shape was provided as parameter in ejamapp()
-      xshp <- EJAM:::global_or_param("shapefile")
+      xshp <- global_or_param("shapefile")
       if (is.null(xshp) || length(xshp) == 0) {
         if (input$testing) {cat("no shp uploaded, no shp provided in ejamapp(), so should stop here\n")}
         req(FALSE, cancelOutput = TRUE)
@@ -442,7 +439,7 @@ app_server <- function(input, output, session) {
       # required_extensions <- c('shp', 'shx', 'dbf', 'prj', 'json')
       # valid_zip <- 'zip'
       # has_required_files <- all(required_extensions %in% infile_ext) || any(infile_ext == valid_zip)
-      allowed_extensions <- EJAM:::global_or_param("default_shp_oktypes_1") # c("zip", "gdb", "geojson", "json", "kml", "shp") # see shapefile_from_any()
+      allowed_extensions <- global_or_param("default_shp_oktypes_1") # c("zip", "gdb", "geojson", "json", "kml", "shp") # see shapefile_from_any()
       if (all(infile_ext %in% allowed_extensions)) {
         error_message(NULL)
         disable_buttons[['SHP']] <- FALSE
@@ -487,6 +484,13 @@ app_server <- function(input, output, session) {
     if (!is.null(error_message())) {
       cat(error_message(), "\n") # for console / server log
       error_message()
+    }
+  })
+  ## show error message in UI when lat/lon upload exceeds the point cap
+  output$latlon_upload_error <- renderText({
+    if (!is.null(latlon_upload_error())) {
+      cat(latlon_upload_error(), "\n") # for console / server log
+      latlon_upload_error()
     }
   })
   #############################################################################  #
@@ -570,7 +574,7 @@ app_server <- function(input, output, session) {
   data_up_tablepassed_latlon <- reactive({
 
     sitepoints <- NULL # since never set in global_defaults_*.R, only exists if at all via  get_golem_options()
-    sitepoints <- EJAM:::global_or_param("sitepoints")
+    sitepoints <- global_or_param("sitepoints")
     req(sitepoints)
 
     ################################# #
@@ -641,6 +645,7 @@ app_server <- function(input, output, session) {
 
       ## if acceptable file type, read in; if not, send warning text
       input_file_path <- input$ss_upload_latlon$datapath
+      latlon_upload_error(NULL)             # clear any previous upload error before parsing this upload
       # ideally would quickly check file size here before actually trying to read the entire file in case it is > cap.
 
       ## this part could be replaced each time it happens, by the function sitepoints_from_any
@@ -653,12 +658,17 @@ app_server <- function(input, output, session) {
 
         cat("ROW COUNT TOO HIGH IN FILE THAT SHOULD provide lat lon: ", NROW(sitepoints), "\n")
 
-        errmsg    = paste0('Max allowed upload of points is ', as.character(input$max_pts_upload))
+        errmsg    = paste0('Too many points: your file has ',
+                           prettyNum(NROW(sitepoints), big.mark = ','),
+                           ' rows, but the maximum allowed upload is ',
+                           prettyNum(input$max_pts_upload, big.mark = ','),
+                           ' points. Please upload a smaller file.')
         placetype = 'latlon'
 
         invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
         an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
         disable_buttons[[placetype]] <- TRUE
+        latlon_upload_error(errmsg)           # show visible error message in UI
         shiny::validate(errmsg)
 
       } else {
@@ -711,7 +721,7 @@ app_server <- function(input, output, session) {
         colnames(read_frs) <- gsub("regid", "REGISTRY_ID", colnames(read_frs))
       }
       #converts registry id to character if not already in that class ( frs registry ids are character)
-      if (('REGISTRY_ID' %in% colnames(read_frs)) && (class(read_frs$REGISTRY_ID) != "character")) {
+      if (('REGISTRY_ID' %in% colnames(read_frs)) && !is.character(read_frs$REGISTRY_ID)) {
         read_frs$REGISTRY_ID = as.character(read_frs$REGISTRY_ID)
       }
 
@@ -740,7 +750,7 @@ app_server <- function(input, output, session) {
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
       disable_buttons[[placetype]] <- TRUE
-      shiny::validate(errmsg)
+      return(shiny::validate(errmsg))
 
     }
     ## return merged dataset
@@ -755,18 +765,18 @@ app_server <- function(input, output, session) {
 
   data_up_naics <- reactive({
 
-    ## check if anything has been selected or entered
-    req(isTruthy(input$ss_select_naics))
     placetype = 'NAICS'
-    naics_user_picked_from_list <- input$ss_select_naics
+    naics_user_picked_from_list <- unique(as.character(input$ss_select_naics))
+    naics_user_picked_from_list <- naics_user_picked_from_list[
+      !is.na(naics_user_picked_from_list) & nzchar(naics_user_picked_from_list)
+    ]
     add_naics_subcategories <- input$add_naics_subcategories
 
     # check for non empty NAICS inputs
     #  naics_is.valid() could be used here too but if picked from valid list all should be valid (unlike if using uploaded info)
-    if (!is.null(naics_user_picked_from_list) && length(naics_user_picked_from_list) > 0) {
+    if (length(naics_user_picked_from_list) > 0) {
 
       inputnaics <- naics_user_picked_from_list
-      inputnaics <- unique(inputnaics[inputnaics != ""])
       cat("selected NAICS:  ")
       cat(paste0(inputnaics, collapse = ", "), "\n")
 
@@ -800,7 +810,10 @@ app_server <- function(input, output, session) {
         }
     } else {
 
-      errmsg    = 'Invalid NAICS Input'
+      errmsg    = 'No NAICS category selected.'
+      cat("selected NAICS: none\n")
+      cat("COUNT OF SITES BY NAICS SELECTED, from frs_from_naics: 0\n")
+      cat("COUNT OF SITES BY NAICS SELECTED, after latlon_df_clean with valid lat/lon: 0\n")
 
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
@@ -850,10 +863,10 @@ app_server <- function(input, output, session) {
     }
 
     ## convert pgm_sys_id and registry_id columns to character before joining
-    if (('pgm_sys_id' %in% colnames(read_pgm)) & (class(read_pgm$pgm_sys_id) != "character")) {
+    if (('pgm_sys_id' %in% colnames(read_pgm)) & !is.character(read_pgm$pgm_sys_id)) {
       read_pgm$pgm_sys_id = as.character(read_pgm$pgm_sys_id)
     }
-    if (('registry_id' %in% colnames(read_pgm)) & (class(read_pgm$registry_id) != "character")) {
+    if (('registry_id' %in% colnames(read_pgm)) & !is.character(read_pgm$registry_id)) {
       read_pgm$registry_id = as.character(read_pgm$registry_id)
     }
     ## add check for program and pgm_sys_id
@@ -961,17 +974,14 @@ app_server <- function(input, output, session) {
 
   data_up_sic <- reactive({
 
-    ## check if anything has been selected or entered
-    req(isTruthy(input$ss_select_sic))
-
     placetype = 'SIC'
     add_sic_subcategories <- FALSE #input$add_naics_subcategories
+    inputsic <- unique(as.character(input$ss_select_sic))
+    inputsic <- inputsic[!is.na(inputsic) & nzchar(inputsic)]
 
     # check SIC inputs
-    if (!is.null(input$ss_select_sic) && length(input$ss_select_sic) > 0) {
+    if (length(inputsic) > 0) {
 
-      inputsic <- input$ss_select_sic
-      inputsic <- unique(inputsic[inputsic != ""])
       cat("selected SIC:  ")
       cat(paste0(inputsic, collapse = ", "), "\n")
 
@@ -1023,7 +1033,10 @@ app_server <- function(input, output, session) {
 
       # }
     } else {
-      errmsg    = 'Invalid SIC Input'
+      errmsg    = 'No SIC category selected.'
+      cat("selected SIC: none\n")
+      cat("COUNT OF SITES BY SIC: 0\n")
+      cat("COUNT OF SITES BY SIC with lat lon values: 0\n")
 
       invalid_alert[[  placetype]] <- 0    # hide warning of invalid sites
       an_map_text_pts[[placetype]] <- NULL # hide count of uploaded sites
@@ -1133,7 +1146,7 @@ app_server <- function(input, output, session) {
     xfips <- NULL
     if (is.null(input$ss_upload_fips)) {
       ### nothing uploaded, so check if fips got passed as parameter to ejamapp()
-      xfips <- EJAM:::global_or_param("fips")
+      xfips <- global_or_param("fips")
       if (!is.null(xfips)) {
         cat("fips seems to have been passed as parameter to ejamapp() \n")
         shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = "upload")     # already done by ejamapp() but ok to repeat
@@ -1519,7 +1532,7 @@ app_server <- function(input, output, session) {
         min = current_slider_min[[current_upload_method()]],
         max = input$max_miles,
         value = input$radius_default,
-        step = EJAM:::global_or_param("stepradius"),
+        step = global_or_param("stepradius"),
         post = ' miles'
       )
     } else {
@@ -1546,19 +1559,19 @@ app_server <- function(input, output, session) {
   ## create different initial (and minimum?) radius values for each site selection type
   ### input$radius_default is set in advanced tab by global_defaults_*.R and then based on user input if any
   ### or via e.g., radius=3.1 or radius_shapefile=1 param that can be provided to ejamapp()
-  #minr = EJAM:::global_or_param("minradius")
+  #minr = global_or_param("minradius")
   current_slider_min <- list(
     # constants defined in global_defaults_*.R
-    'latlon' =  EJAM:::global_or_param("minradius"),
-    'NAICS' =  EJAM:::global_or_param("minradius"),
-    'SIC' =  EJAM:::global_or_param("minradius"),
-    'FRS' =  EJAM:::global_or_param("minradius"),
-    'MACT' =  EJAM:::global_or_param("minradius"),
-    'EPA_PROGRAM_up' =  EJAM:::global_or_param("minradius"),
-    'EPA_PROGRAM_sel' =  EJAM:::global_or_param("minradius"),
-    'FIPS' = EJAM:::global_or_param("minradius_shapefile"),
-    'FIPS_PLACE' = EJAM:::global_or_param("minradius_shapefile"),
-    'SHP' = EJAM:::global_or_param("minradius_shapefile") # but disabled for FIPS
+    'latlon' =  global_or_param("minradius"),
+    'NAICS' =  global_or_param("minradius"),
+    'SIC' =  global_or_param("minradius"),
+    'FRS' =  global_or_param("minradius"),
+    'MACT' =  global_or_param("minradius"),
+    'EPA_PROGRAM_up' =  global_or_param("minradius"),
+    'EPA_PROGRAM_sel' =  global_or_param("minradius"),
+    'FIPS' = global_or_param("minradius_shapefile"),
+    'FIPS_PLACE' = global_or_param("minradius_shapefile"),
+    'SHP' = global_or_param("minradius_shapefile") # but disabled for FIPS
   )
   current_slider_val <- reactiveValues(
     # these are just placeholders that should get updated at startup, though.
@@ -1569,9 +1582,9 @@ app_server <- function(input, output, session) {
     'MACT' = 1,
     'EPA_PROGRAM_up' = 1,
     'EPA_PROGRAM_sel' = 1,
-    'FIPS' = EJAM:::global_or_param("minradius_shapefile"),
-    'FIPS_PLACE' = EJAM:::global_or_param("minradius_shapefile"),
-    'SHP' = EJAM:::global_or_param("minradius_shapefile")  # but disabled for FIPS
+    'FIPS' = global_or_param("minradius_shapefile"),
+    'FIPS_PLACE' = global_or_param("minradius_shapefile"),
+    'SHP' = global_or_param("minradius_shapefile")  # but disabled for FIPS
   )
 
   ## record radius at time of analysis
@@ -1836,23 +1849,65 @@ app_server <- function(input, output, session) {
 
     showNotification('Processing sites now!', type = 'message', duration = 1)
 
-    ## progress bar setup overall for 3 operations  (getblocksnearby, doaggregate, batch.summarize)
+    ## progress bar setup overall for getting blocks at/near sites and then doaggregate()
     ## and done here once for all cases: fips, shp, and latlon sitetype
     progress_all <- shiny::Progress$new(min = 0, max = 1)
-    progress_all$set(value = 0, message = 'Step 1 of 3', detail = 'Getting nearby census blocks')
+    progress_all$set(value = 0, message = 'Step 1 of 3', detail = 'Getting census blocks at/near each site')
+    ejamitRunTimeNotification <- NULL
+    show_ejamit_runtime_estimate <- function(rows, radius = 0, analysis_type, analysis_subtype = NULL) {
+      if (length(rows) == 0 || is.na(rows) || rows < 1) {
+        return(invisible(NULL))
+      }
+      runtime_estimate <- try(
+        speed_ejamit_runtime_estimate(
+          rows = rows,
+          radius = radius,
+          analysis_type = analysis_type,
+          analysis_subtype = analysis_subtype
+        ),
+        silent = TRUE
+      )
+      if (inherits(runtime_estimate, "try-error")) {
+        return(invisible(NULL))
+      }
+      progress_all$set(value = 0, message = 'Step 1 of 3', detail = runtime_estimate$message)
+      if (runtime_estimate$seconds_upper > 30) {
+        ejamitRunTimeNotification <<- showNotification(
+          runtime_estimate$message,
+          type = 'message',
+          duration = NULL
+        )
+      }
+      invisible(runtime_estimate)
+    }
 
     ################################################# #
     # > ejamit() for FIPS  ####
     if (submitted_upload_method() %in% c('FIPS', 'FIPS_PLACE')) {  # if FIPS, do everything in 1 step right here.
+      fips_uploaded_for_prediction <- data_uploaded()
+      fips_for_prediction <- if (is.data.frame(fips_uploaded_for_prediction)) {
+        fips_from_table(fips_uploaded_for_prediction, addleadzeroes = TRUE, in_shiny = TRUE)
+      } else {
+        fips_lead_zero(fips_uploaded_for_prediction)
+      }
+      fips_for_prediction <- fips_for_prediction[fips_valid(fips_for_prediction)]
+      show_ejamit_runtime_estimate(
+        rows = length(fips_for_prediction),
+        radius = 0,
+        analysis_type = "fips",
+        analysis_subtype = speed_fips_analysis_subtype(fips_for_prediction)
+      )
 
       out <- ejamit(fips = data_uploaded(),              # unlike for SHP or latlon cases, this could include invalid FIPS!
                     updateProgress_getblocks = NULL, # differs in shp vs latlon cases, unused in fips case.
                     in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
-                    download_city_fips_bounds = EJAM:::global_or_param("default_download_city_fips_bounds"),
-                    download_noncity_fips_bounds = EJAM:::global_or_param("default_download_noncity_fips_bounds"),
+                    download_city_fips_bounds = global_or_param("default_download_city_fips_bounds"),
+                    download_noncity_fips_bounds = global_or_param("default_download_noncity_fips_bounds"),
 
-                    radius = 999, # because FIPS analysis
+                    # Allow user-selected buffer radius for FIPS/FIPS_PLACE.
+                    # (Previously hard-coded to 999, which prevented the new buffering support from being reachable via the web app.)
+                    radius = submitted_radius_val(),
 
                     maxradius = input$maxradius,
                     avoidorphans = isTRUE(as.logical(input$avoidorphans)),
@@ -1878,7 +1933,7 @@ app_server <- function(input, output, session) {
 
                     # "reports" param here controls which URL/report columns to create.
                     # and could change to be an input$ in advanced tab possibly
-                    reports = EJAM:::global_or_param("default_reports"),
+                    reports = global_or_param("default_reports"),
 
                     progress_all = progress_all,
                     silentinteractive = TRUE,
@@ -1915,6 +1970,12 @@ app_server <- function(input, output, session) {
         } else {
           shp <- data_uploaded()
         }
+        show_ejamit_runtime_estimate(
+          rows = NROW(shp),
+          radius = sanitized_radius_now(),
+          analysis_type = "shapefile",
+          analysis_subtype = "polygon"
+        )
 
         ## progress bar to show getblocksnearby status
         progress_getblocks_shp <- shiny::Progress$new(min = 0, max = 1)
@@ -1958,7 +2019,7 @@ app_server <- function(input, output, session) {
 
                       # "reports" param here controls which URL/report columns to create.
                       # and could change to be an input$ in advanced tab possibly
-                      reports = EJAM:::global_or_param("default_reports"),
+                      reports = global_or_param("default_reports"),
 
                       progress_all = progress_all,
                       silentinteractive = TRUE,
@@ -1974,6 +2035,18 @@ app_server <- function(input, output, session) {
       # > ejamit() for LAT/LON  POINTS  ####
 
       if (!(submitted_upload_method() %in% c('SHP', 'FIPS', 'FIPS_PLACE'))) {  # if LATITUDE AND LONGITUDE (POINTS), find blocks nearby
+        sitepoints_for_prediction <- data_uploaded()
+        n_points_for_prediction <- if (is.data.frame(sitepoints_for_prediction) && "valid" %in% names(sitepoints_for_prediction)) {
+          sum(sitepoints_for_prediction$valid, na.rm = TRUE)
+        } else {
+          NROW(sitepoints_for_prediction)
+        }
+        show_ejamit_runtime_estimate(
+          rows = n_points_for_prediction,
+          radius = sanitized_radius_now(),
+          analysis_type = "points",
+          analysis_subtype = "point_buffer"
+        )
 
         ## progress bar to show getblocksnearby (now all of ejamit actually) status
         progress_getblocks <- shiny::Progress$new(min = 0, max = 1)
@@ -2017,7 +2090,7 @@ app_server <- function(input, output, session) {
 
                        # "reports" param here controls which URL/report columns to create.
                        # and could change to be an input$ in advanced tab possibly
-                       reports = EJAM:::global_or_param("default_reports"),
+                       reports = global_or_param("default_reports"),
 
                        progress_all = progress_all,
                        silentinteractive = TRUE,
@@ -2165,9 +2238,9 @@ app_server <- function(input, output, session) {
     }
     full_page <- FUN(
 
-      logo_path      = pkg_relative_path(EJAM:::global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
+      logo_path      = pkg_relative_path(global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
       logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
-      report_title   = EJAM:::global_or_param("report_title_multisite"),
+      report_title   = global_or_param("report_title_multisite"),
       analysis_title = sanitized_analysis_title(), # changing it will trigger re-render here
       locationstr    = residents_within_xyz,
       totalpop       = popstr,
@@ -2178,7 +2251,7 @@ app_server <- function(input, output, session) {
       extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
       extratable_title                 = input$extratable_title, # above the table, not in the upper left cell
       extratable_title_top_row         = input$extratable_title_top_row,
-      extratable_list_of_sections      = EJAM:::global_or_param("default_extratable_list_of_sections"),
+      extratable_list_of_sections      = global_or_param("default_extratable_list_of_sections"),
       extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
       in_shiny = TRUE,
       filename = NULL
@@ -2251,7 +2324,7 @@ app_server <- function(input, output, session) {
           }
           if (!is.null(fips_shapes) && nrow(fips_shapes) > 0) {
 
-            popups <- popup_from_ejscreen(data_processed()$results_bysite) # linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+            popups <- popup_from_ejscreen(data_processed()$results_bysite) # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
             map_shapes_leaflet(fips_shapes, popup = popups)
 
           } else {
@@ -2336,7 +2409,7 @@ app_server <- function(input, output, session) {
           map_facilities_proxy(rad = sanitized_radius_now(),
                                highlight = TRUE, #input$an_map_clusters,
                                popup_vec = popup_vec,
-                               use_marker_clusters = nrow(d_upload) > EJAM:::global_or_param("marker_cluster_cutoff"),
+                               use_marker_clusters = nrow(d_upload) > global_or_param("marker_cluster_cutoff"),
                                clustered = FALSE) # is_clustered())
       )
     }
@@ -2552,9 +2625,9 @@ app_server <- function(input, output, session) {
           extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
           extratable_title = input$extratable_title,
           extratable_title_top_row = input$extratable_title_top_row,
-          extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
+          extratable_list_of_sections = global_or_param("default_extratable_list_of_sections"),
           extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
-          logo_path =  EJAM:::global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
+          logo_path =  global_or_param("report_logo"), # use FULL path for ejam2report() unlike for UI build # app_sys("report/community_report/ejamhex4.png"),   # NULL means default, "" means no logo
           logo_html = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
           footer_version_number = NULL,
           footer_date = date_in_user_timezone(),
@@ -2753,9 +2826,9 @@ app_server <- function(input, output, session) {
             extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
             extratable_title = input$extratable_title,
             extratable_title_top_row = input$extratable_title_top_row,
-            extratable_list_of_sections = EJAM:::global_or_param("default_extratable_list_of_sections"),
+            extratable_list_of_sections = global_or_param("default_extratable_list_of_sections"),
             extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for,
-            logo_path =  EJAM:::global_or_param("report_logo"),
+            logo_path =  global_or_param("report_logo"),
             footer_date = date_in_user_timezone(),
             original_style_report = isTRUE(input$original_style_report)
           )
@@ -2799,7 +2872,7 @@ app_server <- function(input, output, session) {
                                  # reports param here controls which URL/report columns to show in this table
                                  #  (among those already created in data_processed() via ejamit() etc.)
                                  #  could change to be an input$ in advanced tab possibly:
-                                 reports = EJAM:::global_or_param("default_reports"),
+                                 reports = global_or_param("default_reports"),
                                  sitereport_download_buttons_show = isTRUE(as.logical(input$sitereport_download_buttons_show)),
                                  sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
 
@@ -2825,7 +2898,7 @@ app_server <- function(input, output, session) {
                        # choices = names(testoutput_ejamit_10pts_1miles$results_overall), # simpler
                        choices = choicelist
                        # comment out selected to start with none picked.
-                       , selected <- EJAM:::global_or_param("default_bysite_webtable_colnames")
+                       , selected <- global_or_param("default_bysite_webtable_colnames")
     )
   })
 
@@ -2886,7 +2959,7 @@ app_server <- function(input, output, session) {
         buffer_desc = NULL, # "Selected Locations", # the function will figure it out
 
         # specify columns with URLs/links to 1-site reports, etc.
-        reports = EJAM:::global_or_param("default_reports"), # could use here just to limit which report URL columns get saved - if not already created in data_processed() this will not create them!
+        reports = global_or_param("default_reports"), # could use here just to limit which report URL columns get saved - if not already created in data_processed() this will not create them!
 
         # plot
         ok2plot = input$ok2plot,
@@ -3034,7 +3107,7 @@ app_server <- function(input, output, session) {
     req(input$summ_bar_data)
     ##  if allowing option of median ('med'), use thiS
     if (isTRUE(as.logical(input$allow_median_in_barplot_indicators))) {
-      # if (EJAM:::global_or_param("default_allow_median_in_barplot_indicators")) {
+      # if (global_or_param("default_allow_median_in_barplot_indicators")) {
       mybarvars.stat <- input$summ_bar_stat
     } else {
       mybarvars.stat <- "avg"

@@ -10,7 +10,9 @@ You can look up sites by REGISTRY_ID in \link{frs}, and get their location, etc.
 }
 \details{
 This dataset can be updated by a package maintainer by using
-frs_update_datasets() (which is not an exported function)
+frs_update_datasets() (which is not an exported function).
+FRS tables are dynamic \code{.arrow} files loaded by \code{\link[=dataload_dynamic]{dataload_dynamic()}},
+not \code{.rda} files installed in \verb{EJAM/data/}.
 
 The definitions of active/inactive here are not quite the
 same as used in ECHO. See attributes(frs) to see date created, etc.
@@ -30,7 +32,7 @@ and \link{epa_programs_defined}
 \item frs_by_sic rows:           Approx 764k (664k unique regid as of 02/2025, 2048 unique SIC)
 }
 
-Classes ‘data.table’ and 'data.frame'
+Classes \code{data.table} and \code{data.frame}
 
 colnames
 \itemize{

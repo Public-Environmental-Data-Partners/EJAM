@@ -27,7 +27,7 @@
 #' - EJAM names_whichlist()
 #' - EJAM names_whichlist_multi()
 #' - EJAM names_whichlist_multi_key()
-#' - EJAM formula_varname()
+#' - EJAM calc_varname_from_formula()
 #'
 #' and the various related data objects like map_headernames and namez
 #'
@@ -125,7 +125,7 @@ varinfo <- function(var = map_headernames$rname, info=colnames(map_headernames),
 #
 #     t1 <- t2 <- t3 <- t4 <- tt1 <- tt2 <- tt3 <- tt4 <- NA
 #     x <- c( "rname",
-#             'api' , 'apiname',
+#             'api' , 'ejscreen_apinames_old',
 #           'acs', 'acsname',
 #             'csv' , 'csvname',
 #             'r' , 'rname',
@@ -141,4 +141,3 @@ varinfo <- function(var = map_headernames$rname, info=colnames(map_headernames),
 #
 #
 # #################################################################### #
-

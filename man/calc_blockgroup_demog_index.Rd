@@ -4,10 +4,13 @@
 \alias{calc_blockgroup_demog_index}
 \title{utility to calculate annually for EJSCREEN the updated Demographic Indexes per blockgroup from ACS data}
 \usage{
-calc_blockgroup_demog_index(yr)
+calc_blockgroup_demog_index(bgstats, formulas = formulas_ejscreen_demog_index)
 }
 \arguments{
-\item{yr}{endyear of ACS 5-year survey to use, inferred if omitted}
+\item{bgstats}{a data.frame or data.table like \link{blockgroupstats}, with one row
+per blockgroup and the columns used in the demographic index formulas.}
+
+\item{formulas}{formulas used to calculate the demographic index columns.}
 }
 \value{
 data.table, one row per blockgroup, columns bgfips, etc.

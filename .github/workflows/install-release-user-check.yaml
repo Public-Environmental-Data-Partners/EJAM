@@ -114,14 +114,17 @@ jobs:
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          dependencies: true
+          dependencies: '"hard"'
           extra-packages: any::remotes
 
       - name: Check DESCRIPTION version
         run: |
-          desc_version <- read.dcf("DESCRIPTION", fields = "Version")[1, "Version"]
-          expected <- Sys.getenv("EXPECTED_VERSION")
-          ref <- Sys.getenv("EJAM_INSTALL_REF")
+          clean_scalar <- function(x) {
+            trimws(unname(as.character(x[1])))
+          }
+          desc_version <- clean_scalar(read.dcf("DESCRIPTION", fields = "Version")[1, "Version"])
+          expected <- clean_scalar(Sys.getenv("EXPECTED_VERSION"))
+          ref <- clean_scalar(Sys.getenv("EJAM_INSTALL_REF"))
           if (!nzchar(expected) && grepl("^v[0-9]", ref)) {
             expected <- sub("^v", "", ref)
           }
@@ -149,7 +152,7 @@ jobs:
             remotes::install_github(
               repo,
               ref = ref,
-              dependencies = TRUE,
+              dependencies = NA,
               force = TRUE,
               upgrade = "never",
               build = FALSE,
@@ -158,7 +161,7 @@ jobs:
           } else if (method == "url-tarball") {
             remotes::install_url(
               url = sprintf("https://github.com/%s/archive/%s.tar.gz", repo, ref),
-              dependencies = TRUE,
+              dependencies = NA,
               force = TRUE,
               upgrade = "never",
               INSTALL_opts = install_opts
@@ -193,7 +196,7 @@ jobs:
       GITHUB_PAT: ${{ github.token }}
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       EJAM_INSTALL_REPO: ${{ github.repository }}
-      EJAM_INSTALL_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || '*release' }}
+      EJAM_INSTALL_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.event.release.tag_name }}
       EXPECTED_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_version || '' }}
       RELEASE_TAG: ${{ github.event.release.tag_name || '' }}
 
@@ -214,14 +217,17 @@ jobs:
 
           pak::pkg_install(
             pkg,
-            dependencies = TRUE,
+            dependencies = NA,
             upgrade = FALSE
           )
 
           library(EJAM)
-          installed_version <- as.character(utils::packageVersion("EJAM"))
-          expected <- Sys.getenv("EXPECTED_VERSION")
-          release_tag <- Sys.getenv("RELEASE_TAG")
+          clean_scalar <- function(x) {
+            trimws(unname(as.character(x[1])))
+          }
+          installed_version <- clean_scalar(utils::packageVersion("EJAM"))
+          expected <- clean_scalar(Sys.getenv("EXPECTED_VERSION"))
+          release_tag <- clean_scalar(Sys.getenv("RELEASE_TAG"))
           if (!nzchar(expected) && grepl("^v[0-9]", release_tag)) {
             expected <- sub("^v", "", release_tag)
           }

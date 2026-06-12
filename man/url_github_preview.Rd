@@ -14,15 +14,16 @@ url_github_preview(
 )
 }
 \arguments{
-\item{ghurl}{URL of HTML file in a github repository,
+\item{ghurl}{URL of HTML (or other type) file in a github repository,
 inferred by default from parameters repo, ver, fold, and file}
 
-\item{repo}{URL of github repository}
+\item{repo}{URL of github repository, optional}
 
-\item{ver}{name of branch or tag of a released version}
+\item{ver}{name of branch or tag of a released version, like "main" or "development" or "v2.32.8.001"}
 
 \item{fold}{path to the repository subfolder containing the HTML file,
-relative to the selected branch or tag, such as \code{"docs/reference"}}
+relative to the selected branch or tag, such as \code{"docs/reference"}
+or \code{"inst/testdata/examples_of_output"} or \code{"inst/app/www"}}
 
 \item{file}{name of the HTML file within \code{fold}, such as \code{"index.html"}
 or \code{"ejam2excel.html"}}
@@ -37,9 +38,9 @@ utility to view rendered .html file stored in a github repo
 }
 \examples{
 url_github_preview(fold = "docs",
-  launch_browser = F, file = "index.html")
+  launch_browser = FALSE, file = "index.html")
 url_github_preview(fold = "docs/reference",
-  launch_browser = F, file = "ejam2excel.html")
+  launch_browser = FALSE, file = "ejam2excel.html")
 
 \dontrun{
 #   Compare versions of the HTML summary report:
@@ -49,17 +50,18 @@ myfile = "testoutput_ejam2report_100pts_1miles.html"
 # in latest main branch on GH (but map does not render using this tool)
 url_github_preview(file = myfile)
 
-# from a specific prior release on GH (but map does not render using this tool)
-url_github_preview(file = myfile,
-  ver = "v2.32.5", fold = "inst/testdata/examples_of_output")
+# from a specific release on GH (but map does not render using this tool)
+vernum = paste0("v", desc::desc_get(
+  "Version", file = system.file("DESCRIPTION", package="EJAM")))
+url_github_preview(ver = vernum, fold = "inst/testdata/examples_of_output", file = myfile)
 
 # local installed version
-browseURL(testdata(myfile, quiet = T))
+browseURL(testdata(myfile, quiet = TRUE))
 browseURL( system.file(file.path("testdata/examples_of_output", myfile), package="EJAM") )
 
 # local source package version in checked out branch
-browseURL(testdata(myfile, quiet = T, installed = F))
-browseURL( file.path(testdatafolder(installed = F), "examples_of_output", myfile) )
+browseURL(testdata(myfile, quiet = TRUE, installed = FALSE))
+browseURL( file.path(testdatafolder(installed = FALSE), "examples_of_output", myfile) )
 }
 
 }

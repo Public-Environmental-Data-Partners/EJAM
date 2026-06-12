@@ -27,8 +27,9 @@ blockgroups and one or more columns of user provided raw indicator scores
 and any other variables needed for formulas to aggregate indicators
 across blockgroups in each site.}
 
-\item{formulas}{a character vector of formulas in R code (see formulas_d for
-an example), that use variables in userstats to calculate any
+\item{formulas}{a character vector of formulas in R code (see
+\code{formulas_ejscreen_acs$formula} for examples), that use variables in
+userstats to calculate any
 derived indicators or aggregated ones, for cases where just a sum or a
 population weighted mean is not the right way to aggregate some indicator.
 Formulas can include intermediate steps, or can aggregate across all places.

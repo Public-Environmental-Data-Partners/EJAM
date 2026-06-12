@@ -193,3 +193,17 @@ test_that("urls_from_keylists keylist_4all ok", {
   )
 })
 ############################ #
+
+test_that("url_online rejects empty/NA/NULL input with a clear message (no offline call)", {
+  # These must stop BEFORE any network/offline() check, with the intended message,
+  # not a cryptic 'missing value where TRUE/FALSE needed'.
+  expect_error(EJAM:::url_online(""),               regexp = "must specify a URL")
+  expect_error(EJAM:::url_online("   "),            regexp = "must specify a URL")
+  expect_error(EJAM:::url_online(NA),               regexp = "must specify a URL")
+  expect_error(EJAM:::url_online(NA_character_),    regexp = "must specify a URL")
+  expect_error(EJAM:::url_online(character(0)),     regexp = "must specify a URL")
+  expect_error(EJAM:::url_online(NULL),             regexp = "must specify a URL")
+  # multiple URLs still rejected distinctly
+  expect_error(EJAM:::url_online(c("a", "b")),      regexp = "one URL at a time")
+})
+############################ #

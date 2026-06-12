@@ -10,19 +10,61 @@
 
 ################################################### #################################################### #
 
+#' get URL(s) of Census Bureau pages showing ACS 5-year tables examples
+#'
+#' @param tables vector of one or more ACS table names like "B01001"
+#' @param fips optional vector of one or more FIPS codes (e.g., FIPS of tracts or blockgroups)
+#' @param yr year of ACS data (end year of 5-year period)
+#' @param fiveorone must be 5 or 1
+#' @examples url_acs_table_info()
+#' @seealso [tables_ejscreen_acs] [acs_table_info()]
+#' @returns vector of URLs
+#'
+#' @export
+#'
+url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fiveorone=5) {
+
+  # url_acs_table_info()  # and see ACSdownload::url_acs_table()
+
+  if (missing(yr)) {yr <- acs_endyear()}
+  if (is.null(fips) || any(nchar(fips) == 0)) {
+    # just general info on the table(s)
+    urls <- paste0("https://data.census.gov/table/ACSDT", fiveorone,"Y", yr, ".", tables)
+
+  } else {
+    ######################################## #
+    ftype <-  fipstype(fips)
+
+    ######################################## #
+    sumlevel <- ftype
+    sumlevel[ftype %in% "blockgroup"] <- 150
+    sumlevel[ftype %in% "tract"] <- 140
+
+    urls <- paste0("https://data.census.gov/table?q=", tables,"&g=", sumlevel,"0000US", fips,"&y=", yr)
+  }
+  x <- acs_table_info(yr = yr, tables_acs = tables) # prints some info
+  cat("\n")
+  return(urls)
+}
+################################################### #################################################### #
+
 #' utility - check if URL available, such as if an API is online or offline
 #' @param url the URL to check
 #' @return TRUE or FALSE (but NA if no internet connection seems to be available at all)
 #' @details
-#' Also see EJAM:::global_or_param("ejamapi_is_down")
+#' Also see global_or_param("ejamapi_is_down")
 #'    as set in global_defaults_package.R
 #'
 #' @keywords internal
 #'
-url_online <- function(url = "https://ejam.policyinnovation.info") {
+url_online <- function(url = "https://ejam.publicenvirodata.org") {
 
-  if (missing(url)) {stop("must specify a URL")}
   if (length(url) > 1) {stop("can only check one URL at a time using url_online()")}
+  url <- trimws(unname(as.character(url[1])))
+  # Guard NULL / character(0) / NA before nzchar(): those would otherwise make the nzchar()
+  # test return logical(0) or TRUE and trigger a cryptic "missing value where TRUE/FALSE
+  # needed" error instead of the intended "must specify a URL".
+  if (length(url) == 0 || is.na(url) || !nzchar(url)) {stop("must specify a URL")}
   if (offline()) {
     warning("Cannot check URL when offline -- internet connection does not seem to be available")
     return(NA)
@@ -60,7 +102,7 @@ url_online <- function(url = "https://ejam.policyinnovation.info") {
 #' @param text string that is label
 #' @param newtab unless set to FALSE, link opens in a new browser tab
 #' @param encode unless set to FALSE, it uses [utils::URLencode()] first
-#' @param reserved if encode=T, this parameter is passed to [utils::URLencode()]
+#' @param reserved if encode = T, this parameter is passed to [utils::URLencode()]
 #' @return url_linkify('epa.gov','EPA') returns `"<a href=\"epa.gov\" target=\"_blank\">EPA</a>"`
 #' @seealso [enurl()]
 #' @details

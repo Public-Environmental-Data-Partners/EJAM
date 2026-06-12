@@ -208,7 +208,10 @@ skip_if(TRUE, "test fails until API can handle combo of 2 types of fips like cou
       shapefile = rbind(testinput_shapes_2,testinput_shapes_2,testinput_shapes_2), ...,
       regid = testinput_regid[1:6])
       })})
-    expect_equal(length(x), 6)
+    # A multi-polygon shapefile yields one report link per polygon by default,
+    # but a specific sitenumber selects a single site (one URL: the per-site or
+    # app-fallback link). See do_url_tests(..., sitenumber = 2) below.
+    expect_equal(length(x), if (isTRUE(specified_sitenumber)) 1L else 6L)
     expect_true(substr(x[1], 1, 5) == "https")
   }))
 
@@ -221,6 +224,23 @@ do_url_tests("url_ejamapi", url_ejamapi)
 specified_sitenumber = TRUE
 do_url_tests("url_ejamapi", url_ejamapi, sitenumber = 2)
 rm(specified_sitenumber)
+
+test_that("url_ejamapi falls back to app URL for polygon one-site report links", {
+  fallback_url <- "https://ejanalysis.com/ejamapp"
+
+  expect_equal(
+    url_ejamapi(shapefile = testinput_shapes_2[1, ], as_html = FALSE),
+    fallback_url
+  )
+  expect_equal(
+    url_ejamapi(shapefile = testinput_shapes_2, as_html = FALSE),
+    rep(fallback_url, NROW(testinput_shapes_2))
+  )
+  expect_match(
+    url_ejamapi(shapefile = testinput_shapes_2, sitenumber = "overall", as_html = FALSE),
+    "^https://ejamapi-84652557241\\.us-central1\\.run\\.app/report\\?"
+  )
+})
 
 # sitenumber (overall vs 1-site) ####
 
@@ -268,4 +288,3 @@ if (FALSE) {
 # ejam2report(ejamit(shapefile=shp1, radius=0))
 
 }
-

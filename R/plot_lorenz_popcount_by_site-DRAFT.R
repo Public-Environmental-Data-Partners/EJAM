@@ -9,16 +9,21 @@
 #' @param radius miles ************ tbd
 #'
 #' @return a ggplot
-#' @export
+#'
+#' @keywords internal
+#' @noRd
 #'
 plot_lorenz_popcount_by_site <- function(bysite, radius) {
 
   pkg_available("gglorenz", if_not_loaded = "stop")
 
-  bysite$`Demog Index State Percentile` <- ifelse(bysite$state.pctile.pctlowinc >= 80, "High Demog.Index (at least 80th pctile in State)", "All Other Sites")
+  bysite$`Demog Index State Percentile` <- ifelse(bysite$state.pctile.pctlowinc >= 80,
+                                                  "High Demog.Index (at least 80th pctile in State)",
+                                                  "All Other Sites")
 
   bysite |>
-    filter("Demog Index State Percentile" %in% c( "High Demog.Index (at least 80th pctile in State)", "All Other Sites")) |>
+    filter("Demog Index State Percentile" %in% c("High Demog.Index (at least 80th pctile in State)",
+                                                 "All Other Sites")) |>
     # ggplot(aes(pop)) +
     ggplot2::ggplot(ggplot2::aes(x = pop, colour = "Demog Index State Percentile")) +
 
@@ -43,7 +48,9 @@ plot_lorenz_popcount_by_site <- function(bysite, radius) {
 #' @param varname ************ tbd
 #'
 #' @return a ggplot
-#' @export
+#'
+#' @keywords internal
+#' @noRd
 #'
 plot_lorenz_distance_by_dcount <- function(bybg_people, varname = NULL) {
 

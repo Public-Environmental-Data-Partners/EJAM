@@ -5,12 +5,15 @@
 \alias{formulas_ejscreen_demog_index}
 \title{formulas_ejscreen_demog_index (DATA) special formulas for annually recalculating the Demog.Index annual update}
 \format{
-An object of class \code{data.frame} with 11 rows and 4 columns.
+An object of class \code{data.frame} with 11 rows and 3 columns.
 }
 \usage{
 formulas_ejscreen_demog_index
 }
 \description{
 formulas_ejscreen_demog_index (DATA) special formulas for annually recalculating the Demog.Index annual update
+}
+\seealso{
+\link{formulas_ejscreen_acs} \link{formulas_ejscreen_acs_disability}
 }
 \keyword{datasets}

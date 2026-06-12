@@ -18,18 +18,38 @@
 
 # app_version <- desc::desc_get("Version") # should be same as this:
 app_version <- EJAM:::description_file$get("Version")  # based on Version field in DESCRIPTION file, description_file is an object created in EJAM namespace by metadata_mapping.R when loaded/attached
-app_version_header_text <- paste0("  (Version ", app_version, ")")
 app_version_short <- substr(app_version, start = 1, stop = gregexpr('\\.', app_version)[[1]][2] - 1) ## trim version number to Major.Minor
+
+# Build "EJAM v<version>, <M/D/YY release date>, ACS <vintage>" used in the app header
+# and report footer, so users always see version + EJAM release date + ACS vintage.
+app_acs_vintage <- EJAM:::description_file$get("VersionACS")
+.ejam_reldate <- tryCatch(as.Date(EJAM:::description_file$get("ReleaseDateEJAM")), error = function(e) NA)
+app_reldate_short <- if (!is.na(.ejam_reldate)) {
+  paste0(as.integer(format(.ejam_reldate, "%m")), "/",
+         as.integer(format(.ejam_reldate, "%d")), "/",
+         format(.ejam_reldate, "%y"))
+} else { "" }
+app_version_info <- paste0(
+  "EJAM v", app_version,
+  if (nzchar(app_reldate_short)) paste0(", ", app_reldate_short) else "",
+  ", ACS ", app_acs_vintage
+)
+app_version_header_text <- paste0("  (", app_version_info, ")")
 
 global_defaults_package <- list(
   app_version             = app_version,
+  app_version_info        = app_version_info,
   app_version_header_text = app_version_header_text,
   app_version_short       = app_version_short
 )
 # clean up
 rm(app_version,
-   app_version_header_text,
-   app_version_short)
+   app_version_short,
+   app_acs_vintage,
+   .ejam_reldate,
+   app_reldate_short,
+   app_version_info,
+   app_version_header_text)
 ############################### #
 
 # APP TITLE ####

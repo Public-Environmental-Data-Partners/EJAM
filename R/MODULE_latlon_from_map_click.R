@@ -1,5 +1,16 @@
 ################################################ ################################################# #
 
+# This file is draft possible module
+# for selecting sites by user clicking on a map to get lat lon values, and
+# adjusting the radius of the circle shown on the map around that point.
+
+# It is not yet fully developed or tested, but it is a starting point for development of this module.
+
+# It also has notes on and is a demo of how to use reactives as inputs/outputs of a module,
+# and how to call a module from an outer overall app.
+
+################################################ ################################################# #
+
 # *How to use reactives as inputs/outputs of a module  ####
 #
 # If a module needs to use a reactive expression, the outer function should take the reactive expression as a parameter.
@@ -89,7 +100,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
       shiny::observe({   # WHEN CLICK ON MAP, GET LAT LON VALUE AND SHOW IT ON THE MAP
 
         # Each kind of Incremental change to the map should be performed in its own observer.
-        leaflet::leafletProxy("mymap", session) %>% clearMarkers()
+        leaflet::leafletProxy("mymap", session) %>% leaflet::clearMarkers()
         # to remove just a specific one they click on, use its id # removeMarker("mycircle") # or input$mymap_marker_click$id
         event <- input$mymap_click
         if (is.null(event)) {return()}
@@ -114,7 +125,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
       shiny::observe({   # WHEN RADIUS SLIDER MOVED, CHANGE RADIUS SHOWN ON MAP
         shiny::req(input$mymap_click)
         # Each kind of Incremental change to the map should be performed in its own observer.
-        leaflet::leafletProxy("mymap", session) %>% clearMarkers()
+        leaflet::leafletProxy("mymap", session) %>% leaflet::clearMarkers()
         event <- input$pointradius_input
         if (is.null(event)) {return()}
         shiny::isolate({
@@ -148,7 +159,7 @@ if (try_this_module_here) {
   ## Set up so it works here (if the packages were not attached, etc.) ####
   ## This test only would work after sourcing this whole file first, or after installing and loading EJAM to have the module and the sourcing this simplified outer overall app
 
-  # cat('also see  EJAM/R/module_latlontypedin_DEMO.R \n')
+  # cat('also see   module latlontypedin \n')
 
   ## to start from a clean slate:
 

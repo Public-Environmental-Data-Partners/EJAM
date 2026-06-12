@@ -108,7 +108,7 @@ ejam2boxplot_ratios <- function(ejamitout, radius, varnames = c(names_d, names_d
     #  show average PERSON's ratio to US,  for each boxplot column (probably need to debug)
     # geom_point(
     #   data =  meanratios,
-    #   aes(x = reorder(indicator, meanratios), y = value), colour = "orange", size = 2
+    #   ggplot2::aes(x = reorder(indicator, meanratios), y = value), colour = "orange", size = 2
     # ) +
 
     #  show average SITE's ratio to US,  for each boxplot column  ?

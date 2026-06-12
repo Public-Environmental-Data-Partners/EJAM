@@ -53,8 +53,9 @@ high_pctiles_tied_with_min <- datacreate_high_pctiles_tied_with_min(usastats, st
 
 # metadata and use_data ####
 
-high_pctiles_tied_with_min <- metadata_add(high_pctiles_tied_with_min)
-usethis::use_data(high_pctiles_tied_with_min, overwrite = TRUE)
+# high_pctiles_tied_with_min <- metadata_add(high_pctiles_tied_with_min)
+# usethis::use_data(high_pctiles_tied_with_min, overwrite = TRUE)
+EJAM:::metadata_add_and_use_this("high_pctiles_tied_with_min")
 
 dataset_documenter("high_pctiles_tied_with_min",
                    "high_pctiles_tied_with_min (DATA) internal data - may be obsolete - had been used to handle cases where multiple places are tied for the lowest indicator score")

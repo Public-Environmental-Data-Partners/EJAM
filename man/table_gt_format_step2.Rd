@@ -13,7 +13,7 @@ table_gt_format_step2(
 )
 }
 \arguments{
-\item{df}{A data frame from table_gt_format_step1
+\item{df}{A data frame from the internal first-stage gt formatter.
 
 which is just a specific format of key EJAM results.
 
@@ -47,3 +47,4 @@ Format a table of demog or envt scores, percentiles, etc. to look similar to EJS
 \seealso{
 \code{\link[=table_gt_from_ejamit]{table_gt_from_ejamit()}}
 }
+\keyword{internal}

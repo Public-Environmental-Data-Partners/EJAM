@@ -40,7 +40,7 @@ naics17 = naics_download(year = 2017)
 
 naics_v6 = EJAM::NAICS
 
-all.equal( naics_v6, naics17, check.attributes = F)
+all.equal( naics_v6, naics17, check.attributes = FALSE)
 
 length(naics22); length(naics17)
 }

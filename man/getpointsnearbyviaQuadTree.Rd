@@ -85,3 +85,4 @@ with distance in miles as one output column of table in \href{https://r-datatabl
 \seealso{
 \code{\link[=getpointsnearby]{getpointsnearby()}}
 }
+\keyword{internal}

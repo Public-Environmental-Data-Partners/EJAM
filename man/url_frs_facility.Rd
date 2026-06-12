@@ -10,8 +10,8 @@ url_frs_facility(
   as_html = FALSE,
   linktext = "FRS",
   ifna = "https://www.epa.gov/frs",
-  baseurl =
-    "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=",
+  baseurl = paste0("https://frs-public.epa.gov/ords/frs_public2/",
+    "fii_query_detail.disp_program_facility?p_registry_id="),
   ...
 )
 }

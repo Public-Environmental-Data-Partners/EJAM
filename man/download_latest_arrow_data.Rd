@@ -2,12 +2,14 @@
 % Please edit documentation in R/download_latest_arrow_data.R
 \name{download_latest_arrow_data}
 \alias{download_latest_arrow_data}
-\title{Download latest release of arrow datasets if user doesn't have them already}
+\title{Download package-compatible Arrow datasets if user does not have them already}
 \usage{
 download_latest_arrow_data(
   varnames = .arrow_ds_names,
   repository = NULL,
-  envir = globalenv()
+  envir = globalenv(),
+  piggybacktag = "latest",
+  force = FALSE
 )
 }
 \arguments{
@@ -17,16 +19,29 @@ download_latest_arrow_data(
 (wherever the ejamdata repo is hosted, as specified in the DESCRIPTION file of this package)}
 
 \item{envir}{if needed to specify environment other than default, e.g., globalenv() or parent.frame()}
+
+\item{piggybacktag}{default is \code{"latest"}, which resolves internally to the
+DESCRIPTION \code{ejamdata_required_tag} field. Pass a specific tag such as
+\code{"v2.32.8.001"} only for explicit maintenance or diagnostic work.}
+
+\item{force}{set TRUE to download requested files even if local copies exist.}
 }
 \description{
 Used when EJAM package is attached
 }
 \details{
-Checks to see what is the latest release of datasets available according to the data repository's latest release tag.
-Compares that to what version was last saved locally (as stored in the installed package's ejamdata_version.txt file).
+Checks to see what \code{ejamdata} release tag should be used for requested
+Arrow datasets. By default, EJAM uses the required \code{ejamdata} release tag
+recorded in DESCRIPTION as \code{ejamdata_required_tag}. For example, EJAM
+2.32.8.001 currently looks for Arrow files in the \code{ejamdata} release tagged
+\code{v2.32.8.001}, not in whichever data-repository release GitHub currently
+marks as latest.
 
-Relies on \code{\link[piggyback:pb_releases]{piggyback::pb_releases()}} to track / update / store / download
-data files as assets of a specific release on the data repository.
+The installed package's \code{data/ejamdata_version.txt} marker records the
+release tag for locally installed Arrow files.
+
+Relies on \code{\link[piggyback:pb_download]{piggyback::pb_download()}} to download data files that have been
+stored as assets of a specific release on the data repository.
 For details, see \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{technical details of how datasets are updated}
 }
 \keyword{internal}

@@ -123,15 +123,15 @@ varin_map_headernames_all <- function(query, varlist = NULL, simple=FALSE) {
 #' EJAM:::varin_map_headernames("spanish")
 #' EJAM:::varin_map_headernames("lowinc")
 #' EJAM:::varin_map_headernames("pop")
-#' EJAM:::varin_map_headernames("POV", ignore.case = T)
-#' EJAM:::varin_map_headernames("POV", ignore.case = F)
+#' EJAM:::varin_map_headernames("POV", ignore.case = TRUE)
+#' EJAM:::varin_map_headernames("POV", ignore.case = FALSE)
 #'
-#' EJAM:::varin_map_headernames( "traffic.score", exact = T)
+#' EJAM:::varin_map_headernames( "traffic.score", exact = TRUE)
 #'
 #' EJAM:::varin_map_headernames( "traffic" )
 #'
 #' t(EJAM:::varinfo("traffic.score",
-#'   info = c("oldname","apiname", "acsname" ,"csvname",
+#'   info = c("oldname", "ejscreen_apinames_old", "acsname" ,"csvname",
 #'   "basevarname", 'shortlabel', 'longname', 'varlist')))
 #'
 #' @seealso [varinfo()] [varin_map_headernames_all()]
@@ -141,11 +141,12 @@ varin_map_headernames_all <- function(query, varlist = NULL, simple=FALSE) {
 #'
 varin_map_headernames <- function(query = "lowinc", ignore.case = TRUE, exact = FALSE,
                                   cols_with_names = c("oldname",
-                                                      "apiname",
+                                                      "ejscreen_apinames_old",
                                                       "api_synonym",
                                                       "acsname" ,
                                                       "csvname",
-                                                      "ejscreen_csv",
+                                                      "ejscreen_ftp_names",
+                                                      "ejscreen_indicator",
                                                       "rname",
                                                       "topic_root_term",
                                                       "basevarname",

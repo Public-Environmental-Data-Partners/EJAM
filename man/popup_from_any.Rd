@@ -13,7 +13,8 @@ popup_from_any(
 )
 }
 \arguments{
-\item{x, }{a table in \href{https://r-datatable.com}{data.table} format table or data frame}
+\item{x, }{a table in \href{https://r-datatable.com}{data.table} format table or data frame.
+If \code{x} is another object type, it is coerced via \code{\link[=as.data.frame]{as.data.frame()}}.}
 
 \item{column_names}{default is all, or a vector of column names from x to use.
 If some of column_names requested are not found in names(x),
@@ -52,13 +53,19 @@ Each popup has one row of text per column of the data.frame
    SupplementalLocation = c(NA_character_,NA_character_))
 
  ## add popups only
- leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addPopups(popup = popup_from_any(dat))
+ leaflet::leaflet(dat) |>
+   leaflet::addTiles() |>
+   leaflet::addPopups(popup = popup_from_any(dat))
 
  ## add circles with clickable popups
- leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
+ leaflet::leaflet(dat) |>
+   leaflet::addTiles() |>
+   leaflet::addCircles(popup = popup_from_any(dat))
 
  ## convert to data frame, works the same way
  dat_df <- as.data.frame(dat)
- leaflet::leaflet(dat) |> leaflet::addTiles() |> leaflet::addCircles(popup = popup_from_any(dat))
+ leaflet::leaflet(dat) |>
+   leaflet::addTiles() |>
+   leaflet::addCircles(popup = popup_from_any(dat))
 
 }

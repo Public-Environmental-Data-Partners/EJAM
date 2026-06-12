@@ -22,10 +22,13 @@
 #'
 #' @param vnames_ST name of column in bgstats that has the 2-character State abbreviation to use in
 #'   finding envt percentiles in the [statestats] table used by [calc_pctile_columns()]
+#' @param usastats_lookup optional percentile lookup table to use for national
+#'   environmental percentiles. Defaults to [usastats].
+#' @param statestats_lookup optional percentile lookup table to use for state
+#'   environmental percentiles. Defaults to [statestats].
 #'
 #' @return data.table like [bgej]
 #'
-#' @export
 #' @keywords internal
 #'
 calc_bgej <- function(bgstats,
@@ -43,7 +46,10 @@ calc_bgej <- function(bgstats,
                       vnames_d_demogindex_state      = "Demog.Index.State",
                       vnames_d_demogindex_supp_state = "Demog.Index.Supp.State",
 
-                      vnames_ST = "ST"
+                      vnames_ST = "ST",
+
+                      usastats_lookup = NULL,
+                      statestats_lookup = NULL
 
 ) {
 
@@ -56,14 +62,16 @@ calc_bgej <- function(bgstats,
     calc_pctile_columns(bge,
                         varnames        = vnames_e,
                         varnames_pctile = vnames_e_pctile,
-                        zones = "USA")
+                        zones = "USA",
+                        lookup = usastats_lookup)
 
   cat("calculating envt State percentiles\n")
   state_epctiles <-
     calc_pctile_columns(bge,
                         varnames              = vnames_e,
                         varnames_state_pctile = vnames_e_state_pctile,
-                        zones = as.vector(unlist(bgstats[, ..vnames_ST])))
+                        zones = as.vector(unlist(bgstats[, ..vnames_ST])),
+                        lookup = statestats_lookup)
 
   colnames(epctiles)       <- vnames_e_pctile
   colnames(state_epctiles) <- vnames_e_state_pctile
@@ -113,6 +121,9 @@ if (FALSE) {
   # all.equal(bgej_new, bgej_old, check.attributes=FALSE )
   ## [1] "Column 'EJ.DISPARITY.no2.eo': Mean relative difference: 7.250982e-05"
   all.equal(bgej_new, bgej_old, check.attributes=FALSE, tolerance = 0.001)
+  # Historical validation note: EJAM versions through v2.32.8.001 converted
+  # missing drinking-water scores to zero in blockgroupstats. Later releases
+  # should preserve missing environmental scores as NA.
   ## [1] "Column 'EJ.DISPARITY.drinking.eo': 'is.NA' value mismatch: 285 in current 0 in target"
 
   EJAM:::nacounts(bgej_old)

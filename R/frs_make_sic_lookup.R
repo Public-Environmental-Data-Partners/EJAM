@@ -33,7 +33,7 @@ frs_make_sic_lookup <- function(x) {
   data.table::setkey(x, SIC, REGISTRY_ID)
 
   attr(x, 'released') <- Sys.Date()
-  # print('To use in package,  usethis::use_data(frs_by_sic, overwrite=TRUE)  ')
+  # Obsolete: publish frs_by_sic.arrow; do not save as package .rda data.
 
   invisible(x)
 

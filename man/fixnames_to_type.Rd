@@ -6,7 +6,7 @@
 \usage{
 fixnames_to_type(
   namesnow,
-  oldtype = "apiname",
+  oldtype = "ejscreen_apinames_old",
   newtype = "rname",
   mapping_for_names
 )
@@ -31,7 +31,8 @@ Vector or new column names same length as input
 helps convert between original variable names and plain-English short or long versions of variable names
 }
 \details{
-YOU NEED TO SPECIFY NAMES OF COLUMNS IN MAP_HEADERNAMES, like "apiname" or "rname",
+YOU NEED TO SPECIFY NAMES OF COLUMNS IN MAP_HEADERNAMES, like
+"ejscreen_apinames_old" or "rname",
 UNLIKE IN fixnames() or fixcolnames() where you specify a type like "long" or "api"
 Using lookup table mapping_for_names, finds each namesnow
 in the column specified by oldtype

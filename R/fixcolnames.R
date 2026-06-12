@@ -9,7 +9,8 @@
 #'   Also, you can use this to extract any info from `map_headernames` (which
 #'   here is called mapping_for_names).
 #'
-#'   NOTE: if you ask to rename your words to a known type like rname or apiname, and
+#'   NOTE: if you ask to rename your words to a known type like rname or
+#'   ejscreen_apinames_old, and
 #'   the namesnow is not found among the oldtype, then it is not renamed, and those are returned as unchanged.
 #'   BUT, if you specify as newtype some column that is not a known type of name, like "varcategory"
 #'   then it will instead return an empty string for those in namesnow that are not found among the oldtype.
@@ -25,11 +26,11 @@
 #'
 #'   - "rname" (aka "r", the R variable names as used in the EJAM code)
 #'
-#'   - "apiname" (aka "api", as returned by EJSCREEN API)
+#'   - "ejscreen_apinames_old" (aka "api", as used by the old EJSCREEN API)
 #'
-#'   - "csvname" (aka "csv", as found in the CSV files of just the key residential population and environmental indicators, found on the EJSCREEN FTP site)
+#'   - "csvname" (aka "csv", as used in archived EJSCREEN CSV/FTP downloads for key indicators)
 #'
-#'   - "acsname" (aka "acs", as found in a ACS data file internally used by EJSCREEN, containing all the extra residential population groups and other indicators not stored in the CSV files on the EJSCREEN FTP site)
+#'   - "acsname" (aka "acs", as used in ACS-derived fields for additional demographic indicators not included in archived EJSCREEN CSV/FTP downloads)
 #'
 #'   - "DEJ" (whether the indicator is residential population, environmental, etc.)
 #'
@@ -62,7 +63,7 @@
 #'
 #'  # see the different names for the same variable,
 #'  # and see it is not in the csv tables on the FTP site
-#'  varinfo("pcthisp", c("csvname", "acsname", "apiname"))
+#'  varinfo("pcthisp", c("csvname", "acsname", "ejscreen_apinames_old"))
 #'
 #'  # EJAM:::names_whichlist("RAW_D_INCOME")
 #'  fixcolnames(c("RAW_D_INCOME", "S_D_LIFEEXP"), 'api')
@@ -157,9 +158,9 @@ fixcolnames <- function(namesnow, oldtype='csvname', newtype='r', mapping_for_na
 #' @param newtype  same as in [fixcolnames()]
 #' @return Vector or new column names same length as input
 #'
-#' @export
+#' @keywords internal
 #'
-fixcolnames_anyoldtype <- function(namesnow, oldtypes = c('longname', 'apiname', 'api_synonym', 'csvname', 'acsname', 'oldname'), newtype = "r") {
+fixcolnames_anyoldtype <- function(namesnow, oldtypes = c('longname', 'ejscreen_apinames_old', 'api_synonym', 'csvname', 'acsname', 'oldname'), newtype = "r") {
 
   x <- namesnow
   for (old in oldtypes) {

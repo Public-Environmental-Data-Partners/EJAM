@@ -2,7 +2,7 @@
 % Please edit documentation in R/dataload_dynamic.R
 \name{dataload_dynamic}
 \alias{dataload_dynamic}
-\title{Utility to download / load datasets}
+\title{Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)}
 \usage{
 dataload_dynamic(
   varnames = .arrow_ds_names[1:3],
@@ -10,7 +10,8 @@ dataload_dynamic(
   folder_local_source = NULL,
   silent = FALSE,
   return_data_table = TRUE,
-  onAttach = FALSE
+  onAttach = FALSE,
+  piggybacktag = "latest"
 )
 }
 \arguments{
@@ -28,6 +29,10 @@ look in for locally saved copies}
 \href{https://r-datatable.com}{data.table} format (T, the default), or arrow (F). Passed to \code{\link[=dataload_from_local]{dataload_from_local()}}}
 
 \item{onAttach}{Indicates whether the function is being called from onAttach. IF so, it will download all arrow files if necessary}
+
+\item{piggybacktag}{default is \code{"latest"}, which resolves internally to the
+DESCRIPTION \code{ejamdata_required_tag} field. Pass a specific tag such as
+\code{"v2.32.8.001"} only for explicit maintenance or diagnostic work.}
 }
 \value{
 returns vector of names of objects now in memory in specified envir, either because
@@ -38,10 +43,15 @@ returns vector of names of objects now in memory in specified envir, either beca
 }
 }
 \description{
-Utility to download / load datasets
+Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)
 }
 \details{
-First checks memory, then installed package's data folder
-When package is first loaded, all arrow files are downloaded from a repository called ejamdata
-into package's data directory
+First checks memory, then the installed package's data folder. When the
+package is first loaded, Arrow files are downloaded from the package's data
+repository, normally called \code{ejamdata}, into the package's data directory.
+
+By default, Arrow files are loaded from the \code{ejamdata} release tag recorded
+in DESCRIPTION as \code{ejamdata_required_tag}. The local
+\code{ejamdata_version.txt} marker records which \code{ejamdata} release tag is
+currently saved in the installed package's data folder.
 }

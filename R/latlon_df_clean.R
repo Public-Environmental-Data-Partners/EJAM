@@ -18,7 +18,7 @@
 #'
 #' @examples
 #'   #  x <- EJAM:::latlon_df_clean(x)
-#'  EJAM:::latlon_df_clean(testpoints_bad, set_invalid_to_na = F, invalid_msg_table = T)
+#'  EJAM:::latlon_df_clean(testpoints_bad, set_invalid_to_na = FALSE, invalid_msg_table = TRUE)
 #'
 #' @keywords internal
 #'

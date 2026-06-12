@@ -115,8 +115,8 @@
 #' @details
 #' EJAM:::pkg_ver() is very similar to [golem::pkg_version()]
 #'
-#' By default (if local_source_only=F) looks at installed version
-#' but if load_all() was used (and local_source_only=F), it looks at local source as loaded by load_all().
+#' By default (if local_source_only = FALSE) looks at installed version
+#' but if load_all() was used (and local_source_only = FALSE), it looks at local source as loaded by load_all().
 #'
 #' @keywords internal
 #' @noRd
@@ -144,7 +144,7 @@ pkg_ver = function(short = FALSE, local_source_only = FALSE, package="EJAM") {
   # as.character(utils::packageVersion("EJAM"))
   # as.character(EJAM:::description_file$get("Version")) # description_file is created by metadata_mapping.R
   # as.character(EJAM:::metadata_mapping$blockgroupstats[['ejam_package_version']])
-  # as.character(EJAM:::global_or_param("app_version")) # only available after package is attached, and relies on EJAM:::description_file$get("Version")
+  # as.character(global_or_param("app_version")) # only available after package is attached, and relies on EJAM:::description_file$get("Version")
   #
   # ## The local source version:   (these read the local source version number)
   # #
@@ -171,8 +171,8 @@ pkg_ver = function(short = FALSE, local_source_only = FALSE, package="EJAM") {
 #' @returns desc package object that is from DESCRIPTION file,
 #'   or just the specified field, or NULL if not found
 #' @details
-#' By default (if local_source_only=F) looks at installed version
-#' but if load_all() was used (and local_source_only=F), it looks at local source as loaded by load_all().
+#' By default (if local_source_only = FALSE) looks at installed version
+#' but if load_all() was used (and local_source_only = FALSE), it looks at local source as loaded by load_all().
 #'
 #' @keywords internal
 #' @noRd
@@ -271,26 +271,50 @@ pkg_dir_loaded_from = function(pkg="EJAM") {find.package(pkg, lib.loc = NULL)}
 
 ## searching text in source files ####
 
-# Helper for EJAM:::find_in_files()
-#
-# Related: EJAM:::found_in_files()
-# Undocumented related functions:
-# EJAM:::found_in_N_files_T_times()
-# EJAM:::grab_hits()
-# EJAM:::grepn()
-
-grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, value = TRUE) {
-
-  # use grepl to find all members of character vector z where the character string "h" appears in the string
-  # but the string does not start with zero or more spaces followed by the character "#"
-  # ## example
-  #   xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej", "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
-  #
-  # cbind(xx, grab_hits("ej", xx, ignorecomments = TRUE,  value = F))
-  # cbind(xx, grab_hits("ej", xx, ignorecomments = FALSE, value = F))
-  #
-  # cbind(  grab_hits("ej", xx, ignorecomments = TRUE,    value = T))
-  # cbind(  grab_hits("ej", xx, ignorecomments = FALSE,   value = T))
+#' utility - Helper for find_in_files()
+#'
+#' @details
+#' Search an in-memory character vector line by line
+#'
+#'  This is somewhat like grepv() but with these options:
+#'  option to return numbers of the elements or line numbers as names of the output vector
+#'  option to ignore commented-out lines of code (if searching with in lines of code)
+#'  option to return just the matching part of the element or line instead of the whole line if desired.
+#'
+#'  use grepl to find all members of character vector z where the character string "h" appears in the string
+#'  but the string does not start with zero or more spaces followed by the character "#"
+#'
+#' @examples
+#'
+#' EJAM:::grep_lines("x",  c("x", "y", "has any x x xxxxx"))
+#'
+#' xx = c("   ej", "ej", "#ej", "   #ej", "asdf#ej",
+#'   "   asdf#ej", "#   ej", "#   xej", "x#  ej", "  x#ej")
+#'
+#'  cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = TRUE,  value = FALSE))
+#'  cbind(xx, EJAM:::grep_lines("ej", xx, ignorecomments = FALSE, value = FALSE))
+#'
+#'  cbind(  EJAM:::grep_lines("ej", xx, ignorecomments = TRUE,    value = TRUE))
+#'  cbind(  EJAM:::grep_lines("ej", xx, ignorecomments = FALSE,   value = TRUE))
+#'
+#' @inherit grepn seealso
+#'
+#' @keywords internal
+#'
+#' @description Internal helper used by [find_in_files()] to search text that is
+#'   already in memory, such as the output of [readLines()].
+#' @param pattern regular expression to look for
+#' @param x character vector to search, typically one element per line
+#' @param ignore.case logical passed to [grepl()]
+#' @param ignorecomments if `TRUE`, lines beginning with `#` are excluded
+#' @param value if `TRUE`, return matching lines; otherwise return a logical vector
+#' @return Character vector of matching lines if `value = TRUE`, otherwise a
+#'   logical vector the same length as `x`. Returned values are named with line
+#'   numbers where applicable.
+#' @seealso [find_in_files()] [grepn()] [grepns()] [grepls()]
+#' @keywords internal
+#'
+grep_lines = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, value = TRUE) {
 
   hit_line = grepl(pattern = pattern, x = x, ignore.case = ignore.case)
   commented_line = grepl("^\\s*#", x = x)
@@ -311,7 +335,7 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 ################################ #
 
 
-#' utility to do global search/find in full text of the files in a folder, like source code files or unit tests
+#' Search across files for lines matching a regular expression
 #'
 #' @param pattern regular expression to look for
 #' @param path can be e.g., "./R" or "./tests/testthat" or "."
@@ -324,30 +348,34 @@ grab_hits = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, val
 #'   vs entire line of text that has a match in it
 #' @param quiet whether to print results or just invisibly return
 #'
-#' @details
-#' Also see (mostly undocumented) related functions
-#' EJAM:::found_in_N_files_T_times() and
-#' EJAM:::found_in_files() and
-#' EJAM:::grab_hits() and
-#' EJAM:::grepn()
+#' @seealso [grep_lines()] [grepn()] [grepns()] [grepls()] [found_in_files()]
+#'   [found_in_N_files_T_times()]
 #'
 #' @examples
 #' EJAM:::find_in_files("[^_]logo_....",    path = "./R", whole_line = FALSE)
 #' EJAM:::find_in_files("report_logo.....", path = "./R", whole_line = FALSE)
 #' EJAM:::find_in_files("app_logo......",   path = "./R", whole_line = FALSE)
 #'
-#' EJAM:::find_in_files("latlon_from_.{18}",    whole_line = F)
-#' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = F)
-#' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = F)
+#' EJAM:::find_in_files("latlon_from_.{18}",    whole_line = FALSE)
+#' EJAM:::find_in_files("latlon_from_s.{9}",    whole_line = FALSE)
+#' EJAM:::find_in_files("latlon_from_mact.{9}", whole_line = FALSE)
 #'
 #' ## useful reminders of how to filter lines of code vs comments when using find_in_files()
 #'
-#' grepl_line_not_commented_out = "^[ ]*[^# ]+.*"  ## line starts with zero or more spaces followed by a non-space non-# character, so not commented out and not blank line, but may have a comment later in the line after code
-#' grepl_line_commented_out     = "^[ |#]*#.*"     ## line starts with (zero or more spaces and then) a hash mark
-#' grepl_line_may_have_comment  = "#.*"            ## line contains a hash mark somewhere, but that may be number sign within quoted text
-#'  grepl(grepl_line_may_have_comment,  " print('The # of people is 4.')")  ## TRUE even though there is no comment here
-#'  grepl(grepl_line_may_have_comment,  " # print('The number of people is 4.')") # a commented-out line
-#'  grepl(grepl_line_may_have_comment,  "   print('The number of people is 4.')   # a comment only after the code")
+#' grepl_line_not_commented_out = "^[ ]*[^# ]+.*"
+#' # line starts with zero or more spaces followed by a non-space non-# character
+#'
+#' grepl_line_commented_out     = "^[ |#]*#.*"
+#' # line starts with zero or more spaces and then a hash mark
+#'
+#' grepl_line_may_have_comment  = "#.*"
+#' # line contains a hash mark somewhere
+#'
+#' grepl(grepl_line_may_have_comment, " print('The # of people is 4.')")
+#' # TRUE even though there is no comment here
+#' grepl(grepl_line_may_have_comment, " # print('The number of people is 4.')")
+#' grepl(grepl_line_may_have_comment,
+#'   "   print('The number of people is 4.')   # a comment only after the code")
 #'
 #' EJAM:::find_in_files(paste0(grepl_line_not_commented_out, "xxx"))
 #' EJAM:::find_in_files(paste0(grepl_line_commented_out,     "xxx"))
@@ -399,7 +427,7 @@ find_in_files <- function(pattern,
   }
   found <- x |>
     purrr::map(
-      ~grab_hits(pattern, readLines(.x, warn = FALSE), value = TRUE, ignore.case = ignore.case,
+      ~grep_lines(pattern, readLines(.x, warn = FALSE), value = TRUE, ignore.case = ignore.case,
                  ignorecomments = ignorecomments)
     ) |>
     purrr::keep(~length(.x) > 0)
@@ -485,7 +513,7 @@ find_in_files <- function(pattern,
 ################################ #
 
 
-#' search for vector of query terms, to see which ones are found in any of the files
+#' Check which search terms are found in any file
 #'
 #' @param pattern_vector in a loop, each element is passed to `find_in_files()`
 #' @param path optional path like "./R"
@@ -493,22 +521,16 @@ find_in_files <- function(pattern,
 #' and note TRUE IS NOT DEFAULT IN find_in_files() but is here
 #' @param ... passed to `find_in_files()` can be ignore.case, filename_pattern, etc.
 #' @examples
-#'   found_in_files(c("gray", "grey"), quiet=F, ignore.case=F)
-#' @details
-#' Uses EJAM:::find_in_files()
+#'   EJAM:::found_in_files(c("gray", "grey"), quiet = FALSE, ignore.case = FALSE)
+#' @details Uses [find_in_files()] once for each element of `pattern_vector`.
 #'
-#' @return data.frame
+#' @return Logical vector, one element per search term in `pattern_vector`.
+#' @seealso [find_in_files()] [found_in_N_files_T_times()] [grepn()] [grepns()]
+#'   [grepls()] [grep_lines()]
 #'
 #' @keywords internal
-#' @export
 #'
 found_in_files <- function(pattern_vector, path = "./R", ignorecomments = TRUE, ...) {
-
-  # Undocumented related functions:
-  #
-  # EJAM:::found_in_N_files_T_times()
-  # EJAM:::grab_hits()
-  # EJAM:::grepn()
 
   found <- vector(length = length(pattern_vector))
   for (i in seq_along(pattern_vector)) {
@@ -521,20 +543,24 @@ found_in_files <- function(pattern_vector, path = "./R", ignorecomments = TRUE, 
 }
 ################################ #
 
-# frequency of occurrences of each term within a list of files
-# actually how many lines of code does it appear in so counts as 1 each line where it appears even if it appears >1x in that line
-# ignorecomments = TRUE IS NOT DEFAULT IN find_in_files() but is here
-
-# Uses EJAM:::find_in_files()
-#
-# Related:
-# EJAM:::found_in_files()
-# Undocumented related functions:
-# EJAM:::found_in_N_files_T_times()
-# EJAM:::grepn()  - seek 1 query pattern in each of vector of strings
-# EJAM:::found_in_N_files_T_times() - seek vector of query patterns, in each of vector of files
-# EJAM:::grab_hits()
-
+#' Count how often each search term appears across files
+#'
+#' @description For each term in `pattern_vector`, runs [find_in_files()] and
+#'   reports both how many files contain the term and how many matching lines
+#'   were found overall.
+#' @param pattern_vector character vector of search terms
+#' @param path optional path like "./R"
+#' @param ignorecomments if `TRUE`, ignore matches in lines that are just
+#'   comments rather than active source code
+#' @param ... passed to [find_in_files()] such as `ignore.case` or
+#'   `filename_pattern`
+#' @return Data frame with columns `term`, `nfiles`, and `nhits`.
+#' @examples
+#' EJAM:::found_in_N_files_T_times(c("gray", "grey"), path = "./R", quiet = TRUE)
+#' @seealso [find_in_files()] [found_in_files()] [grepn()] [grepns()] [grepls()]
+#'   [grep_lines()]
+#' @keywords internal
+#'
 found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomments = TRUE, ...) {
 
   nfiles <- vector(length = length(pattern_vector))
@@ -575,14 +601,118 @@ found_in_N_files_T_times <- function(pattern_vector, path = "./R", ignorecomment
 #' @param pkg name of package as character like "EJAM"
 #' @param alphasort_table default is FALSE, to show internal first as a group, then exported funcs, then datasets
 #' @param internal_included default TRUE includes internal (unexported) objects in the list
-#' @param exportedfuncs_included default TRUE includes exported functions (non-datasets, actually) in the list
-#' @param data_included default TRUE includes datasets in the list, as would be seen via data(package=pkg)
+#' @param exportedfuncs_included default TRUE includes exported functions (non-datasets, actually) in the list (unless functions_included = FALSE)
+#' @param data_included default TRUE includes datasets in the output, as would be seen via data(package=pkg)
+#' @param functions_included default TRUE includes functions in the output
 #' @param vectoronly set to TRUE to just get a character vector of object names instead of the data.frame table output
 #' @seealso [ls()] [getNamespace()] [getNamespaceExports()] [loadedNamespaces()]
 #'
 #' @return table in [data.table](https://r-datatable.com) format with colnames object, exported, data  where exported and data are 1 or 0 for T/F,
 #'   unless vectoronly = TRUE in which case it returns a character vector
-#' @examples  # EJAM:::pkg_functions_and_data("datasets")
+#'
+#' @examples
+#'
+#'  # some way to see what functions are in the package:
+#'
+#'  x1 <- EJAM:::pkg_functions_and_data(data_included = FALSE, vectoronly = TRUE)
+#'  if (interactive()) {
+#'    x2 <- EJAM:::pkg_functions_and_sourcefiles()
+#'    info3 <- capture.output({ x3 <- EJAM:::pkg_functions_by_roxygen_tag() })
+#'    info4 <- capture.output({ x4 <- EJAM:::pkg_functions_found_in_files() })
+#'    ## x5 <- EJAM:::pkg_functions_preceding_lines() # may need to be debugged
+#'  }
+#'
+#'  # Which functions, files, or data objects are named with certain terms?
+#'
+#'  terms <- c("name",  "var", "fix",  "meta", "calc", "ejscreen", "report", "make")
+#'  # also try   "^get", "^block", "^bg"
+#'
+#'  # See FUNCTION names that use certain words - Useful view
+#'
+#'  extra <- capture.output({
+#'    funcs <- EJAM:::pkg_functions_found_in_files()
+#'  }); rm(extra)
+#'  sapply(terms, function(term) {cbind(grep(term, funcs, value = TRUE))})
+#'
+#'  # See FILE names that use certain words - Useful view
+#'
+#'  # list.files(recursive = TRUE, pattern = "^datacreate")
+#'  list.files(recursive = TRUE, pattern = "^util.*R$")
+#'  sapply(setdiff(terms, 'name'), function(term) {
+#'    list.files(recursive = TRUE, pattern = paste0(term, ".*R$"))
+#'  })
+#'
+#'  # See DATASET names that use certain words - Useful view
+#'
+#'  dat <- EJAM:::pkg_functions_and_data(functions_included = FALSE, vectoronly = TRUE)
+#'  terms1 = "formula"
+#'  cat("DATA OBJECTS \n"); grep(terms1, dat, value=TRUE)
+#'  cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=TRUE), "()")
+#'
+#'  terms1="calc"
+#'  cat("DATA OBJECTS \n"); grep(terms1, dat, value=TRUE)
+#'  cat("FUNCTIONS \n"); paste0(grep(terms1, funcs, value=TRUE), "()")
+#'
+#'  # some ways to to see what datasets are in the EJAM package:
+#'
+#'   yo <- EJAM:::pkg_functions_and_data(functions_included = FALSE, vectoronly = TRUE)
+#'   x  <- EJAM:::pkg_data("EJAM", simple = FALSE)
+#'   setequal(x$Item, yo)
+#'
+#'  # Plot showing that just a couple of large datasets
+#'  # account for most of the total:
+#'
+#'   biggest = x$Item[which.max(x$sizen)]
+#'   bigp = round(100 * x$sizen[which.max(x$sizen)] / sum(x$sizen), 0)
+#'   plot(cumsum(  sort(x$sizen,decreasing = TRUE )) / sum(x$sizen),
+#'        ylim = c(0, 1), ylab = "Share of total size",
+#'        xlab = "datasets sorted large to small", type = 'b',
+#'             main= paste0(biggest, " alone is ", bigp,"% of total"))
+#'             abline(v=0);abline(h=0);abline(h=1);abline(v=length(x$sizen))
+#'
+#'   subset(x, x$size >= 0.1) # at least 100 KB
+#'   xo <- x$Item
+#'   grep("names_", xo, value = TRUE, ignore.case = TRUE, invert = TRUE)
+#'   # most were like names_d, etc.
+#'   ls()
+#'   data("avg.in.us", package="EJAM") # lazy load an object into memory and make it visible to user
+#'   ls()
+#'
+#'
+#'  # another way to see just a vector of the data object names
+#'  data(package = "EJAM")$results[, 'Item']
+#'
+#'  # not actually sorted within each pkg by default
+#'  head(EJAM:::pkg_data())
+#'  # not actually sorted by default
+#'  head(EJAM:::pkg_data("EJAM")$Item)
+#'  ## EJAM:::pkg_data("MASS", simple = TRUE)
+#'
+#'  # sorted by size if simple=F
+#'  ## EJAM:::pkg_data("datasets", simple = FALSE)
+#'  x <- EJAM:::pkg_data(simple = FALSE)
+#'  # sorted by size already, to see largest ones among all these pkgs:
+#'  tail(x[, 1:3], 20)
+#'
+#'  # sorted alphabetically within each pkg
+#'  head(
+#'    x[order(x$Package, x$Item), 1:2]
+#'  )
+#'  # sorted alphabetically across all the pkgs
+#'  head(
+#'    x[order(x$Item), 1:2]
+#'  )
+#'
+#' # datasets as lazyloaded objects vs. files installed with package
+#'
+#' topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
+#'
+#' # datasets / R objects
+#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = TRUE)))
+#'
+#' # files
+#' cbind(files.in.package = sort(basename(testdata(topic, quiet = TRUE))))
+#'
 #'
 #' @keywords internal
 #'
@@ -590,6 +720,7 @@ pkg_functions_and_data <- function(pkg = "EJAM",
                                    alphasort_table = FALSE,
                                    internal_included = TRUE,
                                    exportedfuncs_included = TRUE,
+                                   functions_included = TRUE,
                                    data_included = TRUE,
                                    vectoronly = FALSE) {
 
@@ -653,8 +784,12 @@ pkg_functions_and_data <- function(pkg = "EJAM",
     data = ifelse(omni %in% dataonly(pkg), 1, 0)
   )
   if (!data_included) {
-    y <- y[y$data == 0, ]
+    y <- y[y$data != 1, , drop = FALSE]
   }
+  if (!functions_included) { # to supposedly drop funcs, actually drop non-data, or keep only data
+    y <- y[y$data == 1, , drop = FALSE]
+  }
+
   if (!internal_included) {
     y <- y[!(y$exported == 0), ]
   }
@@ -714,43 +849,15 @@ pkg_functions_and_data <- function(pkg = "EJAM",
 #' @param pkg a character vector giving the package(s) to look in for data sets
 #' @param len Only affects what is printed to console - specifies the
 #'   number of characters to limit Title to, making it easier to see in the console.
-#' @param sortbysize if TRUE (and simple=F),
+#' @param sortbysize if TRUE (and simple = FALSE),
 #'   sort by increasing size of object, within each package, not alpha.
 #' @param simple FALSE to get object sizes, etc., or
 #'    TRUE to just get names in each package, like
 #'    `data(package = "EJAM")$results[, c("Package", 'Item')]`
 #' @return If simple = TRUE, data.frame with colnames Package and Item.
 #'   If simple = FALSE, data.frame with colnames Package, Item, size, Title.Short
-#' @examples
-#'  # see just a vector of the data object names
-#'  data(package = "EJAM")$results[, 'Item']
 #'
-#'  # not actually sorted within each pkg by default
-#'  EJAM:::pkg_data()
-#'  # not actually sorted by default
-#'  EJAM:::pkg_data("EJAM")$Item
-#'  ##EJAM:::pkg_data("MASS", simple=T)
-#'
-#'  # sorted by size if simple=F
-#'  ##EJAM:::pkg_data("datasets", simple=F)
-#'  x <- EJAM:::pkg_data(simple = F)
-#'  # sorted by size already, to see largest ones among all these pkgs:
-#'  tail(x[, 1:3], 20)
-#'
-#'  # sorted alphabetically within each pkg
-#'  x[order(x$Package, x$Item), 1:2]
-#'  # sorted alphabetically across all the pkgs
-#'  x[order(x$Item), 1:2]
-#'
-#' # datasets as lazyloaded objects vs. files installed with package
-#'
-#' topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
-#'
-#' # datasets / R objects
-#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
-#'
-#' # files
-#' cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
+#' @inherit pkg_functions_and_data examples
 #'
 #' @keywords internal
 #'
@@ -905,8 +1012,9 @@ pkg_functions_and_sourcefiles <- function(pkg = "EJAM",
   }
   # does not work:
   ## funcnames <- paste0(pkg, ":::", funcnames) # to be able to find them if load_all() not done
-
-  if (basename(getwd()) != pkg) {stop("working directory must be the source package folder for pkg", pkg)}
+  if (!file.exists(file.path(getwd(), "DESCRIPTION")) || desc::desc_get(file = "DESCRIPTION", keys = "Package") != pkg) {stop("working directory must be the source package folder for pkg", pkg)}
+  # if (basename(getwd()) != "EJAM") {stop('do this from EJAM source package folder')} # fails if you put the source in a worktree like one named after a branch
+  # if (basename(getwd()) != pkg) {stop("working directory must be the source package folder for pkg", pkg)}
   if (loadagain) {
     devtools::load_all()
     envt <- globalenv()
@@ -999,24 +1107,19 @@ pkg_functions_with_keywords_internal_tag <- function(
   # but does check unexported functions with roxygen tags
   # and does check documented datasets not just functions
 
-  roclets <- NULL
-  load_code <- NULL
-  clean <- FALSE
-
   base_path <- normalizePath(package.dir)
-  is_first <- roxygen2:::roxygen_setup(base_path)
-  roxygen2:::roxy_meta_load(base_path)
-  packages <- roxygen2::roxy_meta_get("packages")
-  lapply(packages, loadNamespace)
   if (loadagain) {
-    load_code <- roxygen2:::find_load_strategy(load_code)
-    env <- load_code(base_path) # slow step
+    if (!requireNamespace("devtools", quietly = TRUE)) {
+      stop("Package 'devtools' is required when loadagain = TRUE.", call. = FALSE)
+    }
+    devtools::load_all(base_path, quiet = quiet, export_all = TRUE) # slow step
+    pkg_name <- desc::desc_get("Package", file = file.path(base_path, "DESCRIPTION"))[[1]]
+    env <- asNamespace(pkg_name)
   } else {
     env = globalenv()
   }
-  roxygen2:::local_roxy_meta_set("env", env)
 
-  blocks <- roxygen2::parse_package(base_path, env = NULL)  # slow step
+  blocks <- roxygen2::parse_package(base_path, env = env)  # slow step
 
   results <- list()
   i <- 0
@@ -1103,7 +1206,8 @@ pkg_functions_with_keywords_internal_tag <- function(
 ################################ #
 
 # see also pkg_functions_preceding_lines() to check multiple tags
-# nlines_to_search defines how many rows above  the func definition line should be checked
+# nlines_to_search defines how many rows after each matching tag line can be
+# checked for the next function definition.
 
 pkg_functions_by_roxygen_tag <- function(
 
@@ -1125,16 +1229,15 @@ pkg_functions_by_roxygen_tag <- function(
     txt = readLines(fname[i])
     for (ii in 1:length(taglinenumbers)) {
       nextfuncname <-
-        grep(pattern = "^([^# ]*) .*function\\(",
+        grep(pattern = "^[^ #]+ *(<-|=) *function\\(",
              x = txt[   taglinenumbers[ii]:(nlines_to_search + taglinenumbers[ii]) ],
              value = TRUE)
-      nextfuncname <- gsub("^([^ #]*) .*function\\(.*", "\\1", nextfuncname)
-      if (is.null(nextfuncname)
-          # || (0 %in% length(nextfuncname) )
-      ) {
+      if (length(nextfuncname) == 0) {
         cat("no function definition found just after line ", taglinenumbers[ii], " in file ", fname[i])
         nextfuncname <- NULL
       } else {
+        nextfuncname <- nextfuncname[1]
+        nextfuncname <- gsub("^([^ #]+) *(<-|=) *function\\(.*", "\\1", nextfuncname)
         if ("" %in% nextfuncname) { nextfuncname <- NULL} else {
           if (length(nextfuncname) == 0) { nextfuncname <- NULL}
         }
@@ -1193,14 +1296,14 @@ pkg_functions_preceding_lines = function(path = "./R",
   # (ignore if any spaces or # precede func name, since those are usually function within a function, or comments or roxygen tags/examples, etc.)
   # find function definition lines, seeking "xyz=function(" or "xyz  <-  function(" etc. ignoring commented out or roxygen tag lines
   query = "^[^ #]+ *(<-|=) *function\\("
-  files_defining_functions <- EJAM:::find_in_files(pattern = query, path = path, quiet = TRUE)
+  files_defining_functions <- find_in_files(pattern = query, path = path, quiet = TRUE)
   filenames = (names(files_defining_functions))
 
   for (thisfile in seq_along(files_defining_functions)) {
 
     textrows = readLines(filenames[thisfile])
     linenums = as.numeric(names(files_defining_functions[[thisfile]]))
-    funcnames = as.vector(gsub("^([^ ]*) .*", "\\1", files_defining_functions[[thisfile]]))
+    funcnames = as.vector(gsub("^([^ #]+) *(<-|=) *function\\(.*", "\\1", files_defining_functions[[thisfile]]))
 
     for (thisfunction in 1:length(funcnames)) {
       n = n + 1
@@ -1210,7 +1313,7 @@ pkg_functions_preceding_lines = function(path = "./R",
       # Remove preceding rows that are unrelated to this one function
       # by searching up from func definition to 1st row encountered that is not roxygen tags
       lastunrelatedline <-  which(!grepl("^ *#'", rev( textrows[priorlinenums[1:(length(priorlinenums) - 1)]])))[1]
-      if (length(lastunrelatedline) != 0) {
+      if (length(lastunrelatedline) != 0 && !is.na(lastunrelatedline)) {
         lastunrelatedline <- length(priorlinenums) - lastunrelatedline
         priorlinenums <- priorlinenums[(1+lastunrelatedline):length(priorlinenums)]
       }
@@ -1219,7 +1322,7 @@ pkg_functions_preceding_lines = function(path = "./R",
       # but is also what to show in console. might want to show only a few lines but still search in all/many prior rows, though.
       text2show <- textrows[priorlinenums]
       # show just the function name not that whole line
-      funcname <- gsub(" .*", "", text2show[length(text2show)])
+      funcname <- funcnames[thisfunction]
       # text2show[length(text2show)] <- paste0(funcname, " <- ")
       # drop func definition line itself
       text2show <- text2show[1:(length(text2show) - 1)]
@@ -1237,14 +1340,18 @@ pkg_functions_preceding_lines = function(path = "./R",
       }
       # summarize counts for a table of results
 
-      priorlinetext = textrows[max(priorlinenums)]
-      info_roxy_nobreak[n] <- substr(priorlinetext,1,2) == "#'" # only in the last row (?)
+      priorlinetext <- if (length(priorlinenums) > 1) {
+        textrows[priorlinenums[length(priorlinenums) - 1]]
+      } else {
+        ""
+      }
+      info_roxy_nobreak[n] <- grepl("^ *#'", priorlinetext)
       info_roxy[n] <- any(grepl("#'", text2show)) # any of last few rows
       info_func[n] <- funcname
-      info_internal[n] <- any(grepl("@keywords internal", text2show))
-      info_nord[n]     <- any(grepl("@noRd", text2show))
-      info_export[n]   <- any(grepl("@export", text2show))
-      info_return[n]   <- any(grepl("@return", text2show))
+      info_internal[n] <- any(grepl("^ *#' *@keywords +internal\\b", text2show))
+      info_nord[n]     <- any(grepl("^ *#' *@noRd\\b", text2show))
+      info_export[n]   <- any(grepl("^ *#' *@export\\b", text2show))
+      info_return[n]   <- any(grepl("^ *#' *@return\\b", text2show))
     }
   }
   info_table <- data.frame(
@@ -1342,7 +1449,7 @@ pkg_dupeRfiles <- function(folder1 = '../EJAM/R', folder2 = './R') {
 #'
 #' @keywords internal
 #'
-pkg_dupenames <- function(pkg = EJAM::ejampackages, sortbypkg=FALSE, compare.functions=TRUE) {
+pkg_dupenames <- function(pkg = "EJAM", sortbypkg=FALSE, compare.functions=TRUE) {
 
   # Get list of exported names in package1, then look in package1 to
   #   obs <- getNamespaceExports(pkg)
@@ -1442,7 +1549,7 @@ pkg_functions_all_equal <- function(fun="latlon_infer", package1="EJAM", package
   # 1) Normally it checks the first two cases of dupe named functions from 2 packages,
   # and answers with FALSE or TRUE (1 value).
   # But it returns FALSE 3 times for some?
-  # pkg_dupenames(ejampackages) # or just pkg_dupenames()
+  # pkg_dupenames()
 
   # 2) ### error when checking a package that is loaded but not attached.
   # eg doing this:

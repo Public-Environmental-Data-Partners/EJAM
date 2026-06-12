@@ -11,32 +11,35 @@
 #' @param quiet set TRUE if you want to just get the path
 #'   without seeing all the info in console and without browsing to the folder
 #' @param folder_only set TRUE to get only directories, no files
+#' @param ... ignored; accepted for compatibility with callers that pass
+#'   standard EJAM quiet/silentinteractive-style arguments.
 #' @return path to local testdata folder comes with the EJAM package
+#' @seealso [pkg_functions_and_data()]
 #' @examples
 #' testdata('shape', quiet = TRUE)
-#' testdata('shape', quiet = T, folder_only=T)
+#' testdata('shape', quiet = TRUE, folder_only=TRUE)
 #'
-#' testdata("id", quiet = T)
-#' testdata("id", quiet = T, folder_only=T)
+#' testdata("id", quiet = TRUE)
+#' testdata("id", quiet = TRUE, folder_only=TRUE)
 #'
-#' testdata('fips', quiet = T)
-#' testdata('registryid', quiet = T)
-#' testdata("address", quiet = T)
+#' testdata('fips', quiet = TRUE)
+#' testdata('registryid', quiet = TRUE)
+#' testdata("address", quiet = TRUE)
 #'
 #' # datasets as lazyloaded objects vs. files installed with package
 #'
 #' topic = "fips"  # or "shape" or "latlon" or "naics" or "address" etc.
 #'
 #' # datasets / R objects
-#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = T)))
+#' cbind(data.in.package  = sort(grep(topic, EJAM:::pkg_data()$Item, value = TRUE)))
 #'
 #' # files
-#' cbind(files.in.package = sort(basename(testdata(topic, quiet = T))))
+#' cbind(files.in.package = sort(basename(testdata(topic, quiet = TRUE))))
 #'
 #' @keywords internal
 #' @export
 #'
-testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_only = FALSE) {
+testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_only = FALSE, ...) {
 
   if (installed) {
     # testdata_folder <- system.file('testdata', package = 'EJAM')
@@ -49,7 +52,7 @@ testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_onl
   }
   if (!installed && !file.exists("DESCRIPTION")) {
     warning('testdata(installed = F) can only be used while working directory is the root of a source package - showing testdata(installed = T) instead')
-    return(testdata(installed = TRUE, pattern = pattern, quiet = quiet, folder_only = folder_only))
+    return(testdata(installed = TRUE, pattern = pattern, quiet = quiet, folder_only = folder_only, ...))
   }
 
   # get path, but side effect is printing path in 3 formats, and prefer to show that after the tree
@@ -120,14 +123,11 @@ testdata <- function(pattern = NULL, installed = TRUE, quiet = FALSE, folder_onl
 #' # in latest main branch on GH (but map does not render using this tool)
 #' url_github_preview(file.path(repo, "blob/main/inst/testdata", fname))
 #'
-#' # from a specific release on GH (but map does not render using this tool)
-#' url_github_preview(file.path(repo, "blob/v2.32.5/inst/testdata", fname))
-#'
 #' # local installed version
 #' browseURL( system.file(file.path("testdata", fname), package="EJAM") )
 #'
 #' # local source package version in checked out branch
-#' browseURL( file.path(testdatafolder(installed = F), fname) )
+#' browseURL( file.path(testdatafolder(installed = FALSE), fname) )
 #' }
 #'
 #' @keywords internal

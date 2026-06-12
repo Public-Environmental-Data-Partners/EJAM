@@ -86,19 +86,196 @@
 # . ####
 
 
+#' Configure Pandoc for local pkgdown rendering
+#'
+#' @return TRUE, invisibly.
+#'
+#' @keywords internal
+#'
+pkgdown_configure_pandoc = function() {
+  if (!requireNamespace("rmarkdown", quietly = TRUE)) {
+    stop("Package 'rmarkdown' is required to render pkgdown articles.", call. = FALSE)
+  }
+  if (rmarkdown::pandoc_available()) {
+    return(invisible(TRUE))
+  }
+
+  rstudio_pandoc_dirs <- c(
+    Sys.getenv("RSTUDIO_PANDOC", unset = NA_character_),
+    "/Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64",
+    "/Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/x86_64"
+  )
+  rstudio_pandoc_dirs <- rstudio_pandoc_dirs[!is.na(rstudio_pandoc_dirs)]
+  rstudio_pandoc_dirs <- rstudio_pandoc_dirs[
+    file.exists(file.path(rstudio_pandoc_dirs, "pandoc"))
+  ]
+
+  if (length(rstudio_pandoc_dirs) > 0) {
+    Sys.setenv(RSTUDIO_PANDOC = rstudio_pandoc_dirs[[1]])
+  }
+
+  if (!rmarkdown::pandoc_available()) {
+    stop(
+      "Pandoc was not found. Open RStudio and retry, or set RSTUDIO_PANDOC ",
+      "to the folder containing the pandoc executable.",
+      call. = FALSE
+    )
+  }
+
+  invisible(TRUE)
+}
+
+#' Preview one pkgdown article without publishing the site
+#'
+#' @param article Article name such as `"installing"` or a path such as
+#'   `"vignettes/installing.Rmd"`.
+#' @param pkg Package root.
+#' @param destination Local output folder. Defaults to a temporary preview
+#'   folder so source branches do not accumulate generated HTML.
+#' @param preview Open the rendered article in a browser?
+#' @param clean Delete the preview folder before rendering?
+#' @param lazy Passed to `pkgdown::build_article()`.
+#' @param quiet Passed to `pkgdown::build_article()`.
+#'
+#' @return The rendered article HTML path, invisibly.
+#'
+#' @keywords internal
+#'
+pkgdown_preview_article = function(
+    article,
+    pkg = ".",
+    destination = file.path(tempdir(), "EJAM-pkgdown-preview"),
+    preview = interactive(),
+    clean = FALSE,
+    lazy = FALSE,
+    quiet = FALSE
+) {
+  if (!requireNamespace("pkgdown", quietly = TRUE)) {
+    stop("Package 'pkgdown' is required to preview pkgdown articles.", call. = FALSE)
+  }
+  pkgdown_configure_pandoc()
+
+  article_name <- tools::file_path_sans_ext(basename(article))
+  pkg <- normalizePath(pkg, mustWork = TRUE)
+  destination <- normalizePath(destination, mustWork = FALSE)
+
+  if (clean && dir.exists(destination)) {
+    unlink(destination, recursive = TRUE)
+  }
+  dir.create(destination, recursive = TRUE, showWarnings = FALSE)
+
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
+  setwd(pkg)
+
+  pkgdown::build_article(
+    article_name,
+    pkg = pkg,
+    lazy = lazy,
+    new_process = FALSE,
+    override = list(destination = destination),
+    quiet = quiet
+  )
+
+  html_path <- file.path(destination, "articles", paste0(article_name, ".html"))
+  if (preview && file.exists(html_path)) {
+    utils::browseURL(html_path)
+  }
+
+  invisible(normalizePath(html_path, mustWork = FALSE))
+}
+
+#' Preview the pkgdown site locally without publishing it
+#'
+#' @param pkg Package root.
+#' @param destination Local output folder. Defaults to a temporary preview
+#'   folder so source branches do not accumulate generated HTML.
+#' @param pkgdown_dev_mode Use `"release"` for the main site or `"devel"` for
+#'   the development site under `dev/`.
+#' @param preview Open the rendered site in a browser?
+#' @param clean Delete the preview folder before rendering?
+#' @param lazy Passed to `pkgdown::build_site()`.
+#' @param quiet Passed to `pkgdown::build_site()`.
+#'
+#' @return The rendered site index path, invisibly.
+#'
+#' @keywords internal
+#'
+pkgdown_preview_site = function(
+    pkg = ".",
+    destination = file.path(tempdir(), "EJAM-pkgdown-preview"),
+    pkgdown_dev_mode = c("release", "devel"),
+    preview = interactive(),
+    clean = FALSE,
+    lazy = TRUE,
+    quiet = FALSE
+) {
+  if (!requireNamespace("pkgdown", quietly = TRUE)) {
+    stop("Package 'pkgdown' is required to preview the pkgdown site.", call. = FALSE)
+  }
+  pkgdown_configure_pandoc()
+
+  pkgdown_dev_mode <- match.arg(pkgdown_dev_mode)
+  pkg <- normalizePath(pkg, mustWork = TRUE)
+  destination <- normalizePath(destination, mustWork = FALSE)
+
+  if (clean && dir.exists(destination)) {
+    unlink(destination, recursive = TRUE)
+  }
+  dir.create(destination, recursive = TRUE, showWarnings = FALSE)
+
+  old_mode <- Sys.getenv("PKGDOWN_DEV_MODE", unset = NA_character_)
+  on.exit({
+    if (is.na(old_mode)) {
+      Sys.unsetenv("PKGDOWN_DEV_MODE")
+    } else {
+      Sys.setenv(PKGDOWN_DEV_MODE = old_mode)
+    }
+  }, add = TRUE)
+  Sys.setenv(PKGDOWN_DEV_MODE = pkgdown_dev_mode)
+
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
+  setwd(pkg)
+
+  pkgdown::build_site(
+    pkg = pkg,
+    examples = FALSE,
+    lazy = lazy,
+    override = list(destination = destination),
+    preview = FALSE,
+    devel = TRUE,
+    new_process = FALSE,
+    install = FALSE,
+    quiet = quiet
+  )
+
+  html_path <- file.path(destination, "index.html")
+  if (pkgdown_dev_mode == "devel") {
+    html_path <- file.path(destination, "dev", "index.html")
+  }
+  if (preview && file.exists(html_path)) {
+    utils::browseURL(html_path)
+  }
+
+  invisible(normalizePath(html_path, mustWork = FALSE))
+}
+
 #' Package-maintainer utility - Rebuilds website of package help docs and vignettes (articles) using pkgdown
 #'
 #' @param doask whether to ask about each input parameter, for interactively picking settings
 #'
-#' @param dotests run unit tests first? uses EJAM:::test_ejam()
+#' @param dotests run unit tests first? uses test_ejam()
 #' @param testinteractively related to unit testing
-#' @param doyamlcheck report on the yaml file via EJAM:::dataset_pkgdown_yaml_check() ?
-#' @param dodocument use devtools::document() ? usually should leave TRUE
-#' @param doinstall use devtools::install() ? usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky
+#' @param doyamlcheck report on the yaml file via dataset_pkgdown_yaml_check() ?
+#' @param dodocument use `roxygen2::roxygenise()` to regenerate documentation?
+#'   Usually should leave TRUE.
+#' @param doinstall TRUE would mean reinstall package from local source. usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky
 #' @param doloadall_not_library use devtools::load_all() ? usually should leave this TRUE
 #' @param doclean_man delete all files in the /man/ folder ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them
 #' @param doclean_docs delete all files in /docs/ folder, essentially ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them
-#' @param dobuild_site should leave this TRUE
+#' @param dobuild_site should leave this TRUE for a local preview build, not
+#'   for publishing the public site. Publishing is handled by GitHub Actions.
 #'
 #' @examples
 #'   # EJAM:::pkgdown_update(doask = TRUE)
@@ -130,8 +307,7 @@ pkgdown_update = function(
 
   if (!interactive()) {doask <- FALSE}
   golem::detach_all_attached()
-  library(devtools) # library() stops with error where require() would only warn
-  library(pkgdown)
+  pkgdown_configure_pandoc()
   ############################################################# #
 
   # ask what to do ####
@@ -154,12 +330,12 @@ pkgdown_update = function(
 
   if (doask && interactive()  && rstudioapi::isAvailable()
       && missing("dodocument")
-  ) {dodocument <- utils::askYesNo("Do document() now since just installing via this script wont do document() ?")}
+  ) {dodocument <- utils::askYesNo("Regenerate documentation now with roxygen2::roxygenise()?")}
   if (is.na(dodocument)) {stop('stopped')}
 
   if (doask && interactive()  && rstudioapi::isAvailable()
       && missing("doinstall")
-  ) {doinstall <- utils::askYesNo("Do you want to re-install the package? This wont redo document()")}
+  ) {doinstall <- utils::askYesNo("Do you want to re-install the package? This will not rerun roxygen2::roxygenise() unless dodocument is also TRUE")}
   if (is.na(doinstall)) {stop('stopped')}
 
   if (doask && interactive()  && rstudioapi::isAvailable()
@@ -185,7 +361,7 @@ pkgdown_update = function(
   if (dotests) {
     cat('doing unit tests \n')
     print(Sys.time())
-    EJAM:::test_ejam(ask = doask & interactive() & testinteractively )
+    test_ejam(ask = doask & interactive() & testinteractively )
     print(Sys.time())
   }
   #################### #
@@ -227,6 +403,9 @@ pkgdown_update = function(
   # if doyamlcheck, _pkgdown.yml check ####
 
   if (doyamlcheck) {
+    if (!requireNamespace("pkgdown", quietly = TRUE)) {
+      stop("Package 'pkgdown' is required to check _pkgdown.yml.", call. = FALSE)
+    }
     # first just check if any .Rd files should get deleted as obsolete
     pkg_clean_stale_rd(dry_run = TRUE, verbose=TRUE)
 
@@ -234,7 +413,7 @@ pkgdown_update = function(
     #devtools::load_all(quiet = T, helpers = F, export_all = T)
     #    dataset_pkgdown_yaml_check() will not work without the unexported dataset_pkgdown_yaml_check() available
     cat('Using dataset_pkgdown_yaml_check() which includes pkgdown_sitrep(), which reports status of all checks ... \n')
-    missing_from_yml <- EJAM:::dataset_pkgdown_yaml_check() #  needs EJAM::: if haven't just done load_all(export_all=T)
+    missing_from_yml <- dataset_pkgdown_yaml_check()
     # that prints some results to console.
     # `pkgdown::pkgdown_sitrep()` does, among other things,
     #   confirm the URL for publishing the pkgdown site listed in _pkgdown.yml
@@ -268,7 +447,7 @@ pkgdown_update = function(
     # # MAYBE NEED TO DELETE ALL IN THE man/ FOLDER TO REMOVE OBSOLETE .Rd files like no longer documented or renamed functions ?
     # cat("You might need to do something like  \n  file.remove(list.files('./man', full.names = TRUE, include.dirs = FALSE)) \nto delete all of /man/*.* to be sure there is nothing obsolete like renamed or deleted or no-longer-documented functions. \n")
   }
-  # if dodocument, README & DOCUMENT via via render() & document() ####
+  # if dodocument, README & DOCUMENT via render() & roxygenise() ####
 
   if (dodocument || doclean_man) {
     cat('rendering README.Rmd to .md  \n')
@@ -280,14 +459,15 @@ pkgdown_update = function(
     #################### # #################### # #################### # #################### #
     cat('detaching packages  \n')
     golem::detach_all_attached()
-    library(devtools) # library() stops with error where require() would only warn
-    library(pkgdown) # library() stops with error where require() would only warn
 
-    cat('trying to do document() \n')
-    document()
+    cat('trying to do roxygen2::roxygenise() \n')
+    if (!requireNamespace("roxygen2", quietly = TRUE)) {
+      stop("Package 'roxygen2' is required to regenerate documentation.", call. = FALSE)
+    }
+    roxygen2::roxygenise()
     if (doclean_man) {
-      cat('doing document() again now, just in case, because if doclean_man=T, it deletes all files in the man folder, \nafter which the 1st time you try to document() it cannot resolve links to other topics not yet turned into .md files\n')
-      document()
+      cat('doing roxygen2::roxygenise() again now, just in case, because if doclean_man=T, it deletes all files in the man folder, \nafter which the 1st time you try to document it cannot resolve links to other topics not yet turned into .Rd files\n')
+      roxygen2::roxygenise()
       }
   }
   #################### # #################### # #################### # #################### #
@@ -304,37 +484,20 @@ pkgdown_update = function(
 
       # Usually just use devtools::load_all()  during development, not re-install every time you edit source.
 
-      # BUT, using devtools::install() will ensure anything that uses the INSTALLED version will work!
+      # BUT, using a local install from source will ensure anything that uses the INSTALLED version will work!
 
       # note, If you want to build/install using RStudio buttons, not the function install(), need to
       #   1st confirm you already turned off traditional vignette-building...  see   help(vignette_roclet, package = "roxygen2")
-      #   That button includes a step that is the same as   devtools::document()
+      #   That button includes a step that is similar to roxygen2::roxygenise().
 
-      devtools::install(
-
-        quick = TRUE,   # USUALLY LEAVE IT AS TRUE
-        # # quick=T is MUCH faster but skips docs, vignettes, etc., building 'EJAM_x.xx.xx.tar.gz' or the .zip binary, etc.
-        # # quick=F is SLOW!  takes a few minutes!
-
-        upgrade = FALSE,
-        dependencies = FALSE, # skip checking/installing all dependencies here
-
-        build_vignettes = FALSE,
-        ## old-style vignettes were in  doc folder, but pkgdown-style are in   docs folder,
-
-        build = FALSE,
-        ## build = TRUE means it converts a package source directory into a single bundled file...
-        ##   If binary = FALSE this creates a tar.gz package that can be installed on any platform, provided they have a full development environment (although packages without source code can typically be installed out of the box).
-        ##   If binary = TRUE, the package will have a platform specific extension (e.g. .zip for windows), and will only be installable on the current platform, but no development environment is needed.
-
-        quiet = FALSE
-      )
+      if (!requireNamespace("pak", quietly = TRUE)) {
+        stop("Package 'pak' is required to install the package from pkgdown_update().", call. = FALSE)
+      }
+      pak::local_install(root = ".", dependencies = TRUE, upgrade = FALSE)
       #################### #
-      cat('detaching packages - RESTART R IF THIS FAILS  \n') # got Error: lazy-load database '....EJAM/R/EJAM.rdb' is corrupt
+      cat('detaching packages - RESTART R IF THIS FAILS  \n') # when using devtools had gotten Error: lazy-load database '....EJAM/R/EJAM.rdb' is corrupt
       golem::detach_all_attached()
       # rstudioapi::restartSession() might be needed. or just relaunch R seems to help.
-      library(devtools) # library() stops with error where require() would only warn
-      library(pkgdown)
     })
   }
   #################### # #################### # #################### # #################### #
@@ -345,8 +508,9 @@ pkgdown_update = function(
   if (doloadall_not_library) {
     cat('detaching packages, then doing load_all() \n')
     golem::detach_all_attached()
-    library(devtools) # library() stops with error where require() would only warn
-    library(pkgdown)
+    if (!requireNamespace("devtools", quietly = TRUE)) {
+      stop("Package 'devtools' is required to load source files from pkgdown_update().", call. = FALSE)
+    }
     devtools::load_all() # doing load_all() without having done library() first might fail to do some of what is needed?
   } else {
     cat('doing library(EJAM) \n')
@@ -376,6 +540,9 @@ pkgdown_update = function(
   # if dobuild_site, ** BUILD SITE (HTML FILES) ####
 
   if (dobuild_site) {
+    if (!requireNamespace("pkgdown", quietly = TRUE)) {
+      stop("Package 'pkgdown' is required to rebuild the pkgdown site.", call. = FALSE)
+    }
 
     ## if doclean_docs ####
     if (doclean_docs) {
@@ -425,7 +592,8 @@ pkgdown_update = function(
   # remember to push so gh actions publish it ####
   if (TRUE) {
     cat( '\n\n NOW COMMIT AND PUSH THE NEW FILES \n\n')
-    cat("Github actions in the repo will deploy from the docs folder to gh pages. \n")
+    cat("GitHub Actions publishes the public site to the gh-pages branch. \n")
+    cat("Local files in docs/ are previews only and should not be committed from source branches. \n")
   }
   ################################################################## #
   # note on build() - how to build pkg as a single file ####

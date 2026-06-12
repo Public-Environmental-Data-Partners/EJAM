@@ -4,11 +4,14 @@
 # test passes but
 # can run this test only if source those functions or load_all() or if testing whole pkg maybe testthat can use internal functions
 
-testServer(
-  mod_specify_sites_server,
-  # Add here your module params
-  args = list()
-  , {
+test_that("draft specify-sites module server works when present", {
+  skip_if_not(exists("mod_specify_sites_server"), message = "draft specify-sites module server is not present")
+
+  testServer(
+    mod_specify_sites_server,
+    # Add here your module params
+    args = list(),
+    {
     ns <- session$ns
     expect_true(
       inherits(ns, "function")
@@ -30,9 +33,12 @@ testServer(
     # expect_true(r$x == 1)
     # - Testing output
     # expect_true(inherits(output$tbl$html, "html"))
+    })
 })
 
 test_that("module ui works", {
+  skip_if_not(exists("mod_specify_sites_ui"), message = "draft specify-sites module UI is not present")
+
   ui <- mod_specify_sites_ui(id = "test")
   golem::expect_shinytaglist(ui)
   # Check that formals have not been removed
@@ -41,4 +47,3 @@ test_that("module ui works", {
     expect_true(i %in% names(fmls))
   }
 })
-

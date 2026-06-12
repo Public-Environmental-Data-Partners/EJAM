@@ -40,7 +40,7 @@ blocks nearby using \code{\link[=getblocksnearby]{getblocksnearby()}}, before us
 \value{
 Block points table for those blocks whose internal point is inside the buffer
 which is just a circular buffer of specified radius if polys are just points.
-This is like the output of  \code{\link[=getblocksnearby]{getblocksnearby()}}, or \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} if return_shp=F.
+This is like the output of  \code{\link[=getblocksnearby]{getblocksnearby()}}, or \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} if return_shp = FALSE.
 
 The ejam_uniq_id represents which of the input sites is being referred to, and the table
 will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8

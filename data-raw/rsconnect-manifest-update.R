@@ -2,6 +2,8 @@
 # Note the package here is called 'EJAM' even though a repo can be called something other than 'EJAM'
 # and still contain/offer an installable copy of a branch/version/release of the EJAM pkg.
 
+## this file is somewhat obsolete and would have to be updated to be useful
+
 ################################################################################################## #
 
 #       SCRIPT USED TO HELP REDEPLOY SHINY APP AFTER UPDATES/EDITS
@@ -20,23 +22,14 @@
 # browseURL(paste0(EJAM::url_package(type = "docs"), "/articles/installing.html"))
 
 # reponame = EJAM::url_package() # works if currently is installed
-reponame = EJAM::url_package()
+reponame = EJAM::url_package(get_full_url = FALSE)
 
 ## If you want to uninstall the currently-installed version first:
-# remove.packages("EJAM", lib = "~/Rlibs")
-
-devtools::install_github(
-
-  repo = reponame,
-
-  ref = 'main',  #  or a specific tagged release
-
-  build_vignettes = FALSE,
-  build_manual = FALSE,
-  dependencies = TRUE, # to ensure it checks for the packages in Suggests not just Imports
-  build = FALSE,
-  upgrade = "never"
-)
+# remove.packages("EJAM")
+ref = 'main'   #  or a specific tagged release see ?pak
+pkg = paste0(reponame, "@", "ref")
+pak::pkg_install(pkg = pkg, dependencies = TRUE, upgrade = FALSE)
+## pak is replacing devtools for installing from github
 ############################################ #
 
 ## get list of files found in EJAM root directory
