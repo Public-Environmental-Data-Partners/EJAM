@@ -1,3 +1,81 @@
+# EJAM 3.2022.1 / 3.2023.1 / 3.2024.1 (unreleased)
+
+Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1,
+v3.2024.1). Functionality is identical across all three ACS vintages
+(2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between
+branches. This is a code-and-docs patch: it reuses the existing per-vintage
+ejamdata release, with no change to the packaged ACS or environmental data.
+
+Changes since v3.YYYY.0:
+
+## Bug Fixes
+
+- Census API key (tidycensus >= 1.8 breaking change): tidycensus now *errors*
+  (no longer warns) without a key -- including for the `load_variables()`
+  metadata lookup. `calc_blockgroupstats_acs()` and `acs_table_info()` now fail
+  fast with an actionable message when `CENSUS_API_KEY` is unset. A follow-up
+  scopes this check to the live-download path only: when raw ACS data are
+  supplied (for example, the pipeline rebuilding block-group data from a saved
+  stage), no Census API call is made, so a keyless environment is no longer
+  blocked.
+- `url_online()`: corrected default behavior, and now gives the intended
+  "must specify a URL" error on empty, `NA`, or `NULL` input instead of a cryptic
+  "missing value where TRUE/FALSE needed".
+- `calc_blockgroupstats_acs()`: when ACS table-geography metadata cannot be
+  retrieved for any candidate year (e.g. the Census API is unreachable), it now
+  stops with a clear, actionable message instead of failing obscurely later.
+- Fixed the release-install workflow and updated the EJAM web-app URLs.
+- `table_validated_ejamit_row()`: fixed for use by `table_gt_from_ejamit()`.
+- `statestats_means()` and `statestats_means_bystates()`: fixed, improved, and
+  documented.
+- Excel output (issue #148): no longer freezes the "valid" column; freeze panes
+  now begin where that column starts.
+
+## New EJScreen Web-App Pipeline Outputs (issue #395)
+
+The data pipeline now produces the remaining EJScreen web-app data files
+directly from the `ejscreen_export` stage, so a single pipeline run yields the
+full set of EJScreen-ready outputs:
+
+- ACS "additional demographics" summarized by block group, tract, county, and
+  state. Count columns are summed and percentage columns are recomputed as
+  denominator-weighted means (via the same `calctype()` / `calcweight()` rules
+  `doaggregate()` uses), so block-group values match the ACS data already in the
+  package.
+- The four EJScreen threshold layers (US and State, EJ-index and supplemental)
+  with `P1`..`P100` hit-count columns, tallied in a single NA-aware pass with
+  out-of-range ranks clamped into `P1`/`P100`.
+- A replication helper that compares these outputs to EPA's published EJScreen
+  values -- fetched live from EPA's ArcGIS FeatureServers -- repairing FIPS
+  leading zeros and mapping EPA column names. Used to confirm the pipeline
+  reproduces EPA's by-geography and threshold layers.
+
+(These are produced by internal helpers `calc_acs_by_geography()`,
+`calc_ejscreen_threshold_layers()`,
+`calc_ejscreen_threshold_layers_from_exports()`, and
+`ejscreen_compare_geography_to_epa()`.)
+
+## Documentation
+
+- Folded the v3.2024.0 dataset-update recipe into the dataset-update vignettes.
+- Added internal developer notes for the `ejam2areafeatures()` helpers.
+
+## Internal / Packaging
+
+- Unexported internal helper/report functions (`build_community_report()`,
+  `build_barplot_report()`, `calc_acs_by_geography()`,
+  `calc_ejscreen_threshold_layers()`,
+  `calc_ejscreen_threshold_layers_from_exports()`,
+  `ejscreen_compare_geography_to_epa()`, `table_gt_format_step1()`,
+  `table_gt_format_step2()`, `latlon2nexus()`, `latloncsv2nexus()`, and
+  `calc_bgej()`). Their help topics remain available under the pkgdown internal
+  reference section.
+- pkgdown CI: build the reference without running examples, and install only
+  hard dependencies, so the docs site builds reliably.
+- Ensured the final byte of `data/ejamdata_version.txt` is always a newline.
+- Git-ignore local Claude Code / agent files.
+
+
 # EJAM 3.2023.0 (June 2026)
 
 EJAM 3.2023.0 is the ACS 2019-2023 vintage in the new annual-vintage release
