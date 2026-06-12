@@ -115,8 +115,6 @@ x <- test_ejam(
   ask = TRUE,
   noquestions = TRUE, # just for shapefile folder selections
 
-  useloadall  = TRUE, # might be essential actually
-
   y_skipbasic = TRUE,   y_latlon=TRUE, y_shp=TRUE, y_fips=TRUE,
 
   y_coverage_check = FALSE,
@@ -667,7 +665,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       }
       if (is.na(y_coverage_check)) {stop("canceled")}
 
-      ## seems to not work if useloadall = FALSE
+      ## tests using internal functions without EJAM::: can fail if useloadall = FALSE
       # if (missing(useloadall)) {
       #   useloadall <- askYesNo(msg = "Do you want to load and test the current source code files version of EJAM (via devtools::load_all() etc.,
       #                 rather than testing the installed version)? MUST BE YES/TRUE OR UNEXPORTED FUNCTIONS CANT BE FOUND", default = TRUE)

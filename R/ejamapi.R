@@ -17,17 +17,17 @@
 #' Note this function would be most useful to an R user who does NOT have EJAM installed.
 #' Anyone who already has the EJAM package installed
 #' can more quickly and flexibly get reports directly locally via
-#' [EJAM::ejamit()] for the "data", and [EJAM::ejam2report()] for the "report".
+#' [ejamit()] for the "data", and [ejam2report()] for the "report".
 #' The API call provides fewer features/options.
 #'
 #' This function requires the geojsonsf, httr2, jsonlite, htmltools, rlang, and utils packages.
 #'
 #' For the "report" endpoint,
-#' the EJAM package version of this function uses [EJAM::url_ejamapi()] and related helper functions
+#' the EJAM package version of this function uses [url_ejamapi()] and related helper functions
 #' to convert the parameters to a URL for the API as a GET request to obtain an HTML report.
 #'
 #'
-#' @seealso [EJAM::url_ejamapi()]
+#' @seealso [url_ejamapi()]
 #'
 #' @param lat,lon Coordinates of point(s) for analysis of residents nearby.
 #'   To specify point(s), provide either lat and lon, or sites, or sitepoints --
@@ -38,17 +38,17 @@
 #' @param sites,sitepoints Only one of these should be provided - they are synonymous.
 #'   Coordinates of point(s) for analysis of residents nearby.
 #'   sites or sitepoints, if provided, must be a data.frame with colnames "lat" and "lon", 1 row per point.
-#'   Like the sitepoints param in [EJAM::url_ejamapi()]
+#'   Like the sitepoints param in [url_ejamapi()]
 #'
 #' @param shape,shapefile  Only one of these should be provided - they are synonymous.
 #'   A GeoJSON string representing the area of interest,
-#'   like shapefile param in [EJAM::url_ejamapi()]
+#'   like shapefile param in [url_ejamapi()]
 #' @param fips A FIPS code for a specific US Census geography, like "050014801001",
 #'   and must be consistent with the scale parameter
 #'
 #' @param buffer,radius  Only one of these should be provided - they are synonymous.
 #'   The buffer radius in miles,
-#'   like radius param in [EJAM::url_ejamapi()]
+#'   like radius param in [url_ejamapi()]
 #'
 #' @param geometries A boolean to indicate whether to include geometries in the output,
 #'   relevant only for the "data" endpoint
@@ -82,14 +82,14 @@
 #'
 #' - Setting save_and_return_html=FALSE will just display the report(s) in the browser or RStudio viewer using `browseURL()`.
 #'
-#' @param ejamit_format set TRUE to get output formatted more like output of [EJAM::ejamit()],
-#'   for convenience, so it can be used as input to [EJAM::ejam2report()] for example,
+#' @param ejamit_format set TRUE to get output formatted more like output of [ejamit()],
+#'   for convenience, so it can be used as input to [ejam2report()] for example,
 #'   but importantly note (until the API supports summary analysis over multiple locations)
 #'   the API does not return a summary overall across sites, so results_overall will
 #'   be just a placeholder, for the first site, not an overall summary across all sites.
 #' @param fileextension can be "html" or "pdf", only relevant if  endpoint = "report"
 #' @param ... other parameters, passed to [httr2::req_body_json()] in the "data" case,
-#'   passed to [EJAM::url_ejamapi()] in the "report" case, and used for the
+#'   passed to [url_ejamapi()] in the "report" case, and used for the
 #'   required `attribute` and `value` parameters in the "query" case
 #' @param dry_run set to TRUE to see preview info about what the API call would look like.
 #'
