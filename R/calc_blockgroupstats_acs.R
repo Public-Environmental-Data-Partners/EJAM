@@ -120,6 +120,15 @@ calc_blockgroupstats_acs <- function(yr,
         x <- geo_info(2023)
       }
     }
+    # If every attempted year failed (e.g. tidycensus/Census API unreachable), x is NULL or
+    # all-NA. Stop with a clear message rather than letting the NULL/all-NA flow downstream,
+    # where it would silently yield empty tables_bg/tables_tract and a confusing later error.
+    if (needs_fallback(x)) {
+      stop("Could not obtain ACS table geography metadata from tidycensus for ", yr, ", ",
+           as.numeric(yr) - 1, ", or 2023, so block-group vs tract resolution per table ",
+           "cannot be determined. Check the internet connection and that tidycensus can ",
+           "reach the Census API (a valid CENSUS_API_KEY is required).")
+    }
     tables_resolution = x$geography[ match(tables, x$table)] # geo res of first hit in x info, per table
     tables_bg    = tables[tables_resolution %in% "block group" ]
     tables_tract = tables[tables_resolution %in% "tract" ]
