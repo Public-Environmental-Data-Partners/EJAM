@@ -293,8 +293,8 @@ test_that("shinytest category selection waits for input values and saves failure
   )
   expect_match(
     setup_text,
-    "wait_for_input_value\\(input_id, expected = expected\\)",
-    fixed = TRUE
+    "wait_for_input_value(input_id, expected = expected)",
+    fixed = TRUE ##
   )
   expect_match(
     setup_text,

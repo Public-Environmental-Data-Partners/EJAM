@@ -566,7 +566,7 @@ test_that("calc_ejscreen_dataset can resume from a saved blockgroupstats stage",
   )
 
   expect_equal(out$blockgroupstats, blockgroupstats, ignore_attr = TRUE)
-  expect_equal(attr(out$blockgroupstats, "acs_version"), "2020-2024")
+  expect_equal(attr(out$blockgroupstats, "acs_version"), as.vector(desc::desc_get("VersionACS"))) # e.g., "2020-2024"
   expect_true(attr(out, "loaded_stages")[["blockgroupstats"]])
 })
 

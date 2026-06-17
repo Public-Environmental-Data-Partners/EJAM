@@ -332,7 +332,7 @@ test_that("bg_envirodata stage validation requires pctpre1960", {
   expect_true(file.exists(path))
   bg_envirodata_loaded <- EJAM:::ejscreen_pipeline_load("bg_envirodata", pipeline_dir, format = "rds")
   expect_equal(bg_envirodata_loaded, bg_envirodata, ignore_attr = TRUE)
-  expect_equal(attr(bg_envirodata_loaded, "acs_version"), "2020-2024")
+  expect_equal(attr(bg_envirodata_loaded, "acs_version"), as.vector(desc::desc_get("VersionACS"))) # "2020-2024")
 })
 
 test_that("ejscreen_export stage validation requires usable ID and helper fields", {
@@ -379,7 +379,7 @@ test_that("ejscreen_export stage validation requires usable ID and helper fields
   expect_true(file.exists(path))
   good_loaded <- EJAM:::ejscreen_pipeline_load("ejscreen_export", pipeline_dir, format = "rds")
   expect_equal(good_loaded, good, ignore_attr = TRUE)
-  expect_equal(attr(good_loaded, "acs_version"), "2020-2024")
+  expect_equal(attr(good_loaded, "acs_version"), as.vector(desc::desc_get("VersionACS"))) #"2020-2024")
 
   statepct_path <- EJAM:::ejscreen_pipeline_save(good, "ejscreen_export_statepct", pipeline_dir, format = "rds")
   expect_true(file.exists(statepct_path))
