@@ -101,6 +101,43 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertEqual(changes["closed_issue_numbers"], [999])
         self.assertEqual(changes["quadrant_changed_issue_numbers"], [101])
 
+    def test_generate_markdown_puts_methodology_after_full_table(self):
+        scored = [
+            {
+                "num": 101,
+                "title": "Low-cost high-benefit fix",
+                "labels": ["PRIORITY HIGH", "BUG"],
+                "cost": 1,
+                "benefit": 10,
+                "quad": "A",
+            },
+            {
+                "num": 202,
+                "title": "High-cost low-benefit refactor",
+                "labels": ["refactor"],
+                "cost": 8,
+                "benefit": 1,
+                "quad": "D",
+            },
+        ]
+
+        markdown = scoring.generate_markdown(
+            scored,
+            cost_med=4,
+            benefit_med=6,
+            generated_date="2026-06-20",
+        )
+
+        full_table_idx = markdown.index("## Full Table")
+        score_ranges_idx = markdown.index("### Score ranges")
+        scoring_factors_idx = markdown.index("## Scoring Factors")
+
+        self.assertLess(full_table_idx, score_ranges_idx)
+        self.assertLess(score_ranges_idx, scoring_factors_idx)
+
+        later_top_level = markdown.find("\n## ", scoring_factors_idx + 1)
+        self.assertEqual(later_top_level, -1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -586,20 +586,8 @@ def generate_markdown(scored_issues: list[dict],
         "PRIORITY label, BUG label, web app vs R-only impact, crash/wrong-calculation "
         "signals, CRAN visibility |"
     )
-    lines.append("")
-    lines.append("### Score ranges")
-    lines.append("")
-    lines.append("| Dimension | Range | Median (split threshold) |")
-    lines.append("|-----------|-------|--------------------------|")
     costs    = sorted(r["cost"]    for r in scored_issues)
     benefits = sorted(r["benefit"] for r in scored_issues)
-    lines.append(f"| Cost    | {costs[0]} – {costs[-1]}    | {cost_med} |")
-    lines.append(f"| Benefit | {benefits[0]} – {benefits[-1]} | {benefit_med} |")
-    lines.append("")
-    lines.append(
-        "Issues at or above the median are **High**; below are **Low** "
-        "for that dimension."
-    )
     lines.append("")
     lines.append("### Previous-run comparison")
     lines.append("")
@@ -650,6 +638,54 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
     lines.append("---")
     lines.append("")
+
+    _write_quad(lines, "A",
+                "BEST CANDIDATES — Low Cost, High Benefit",
+                "Easy fixes with clear high value. Prioritize these above all others.",
+                quads["A"])
+    _write_quad(lines, "B",
+                "OK Candidates — High Cost, High Benefit",
+                "Worth doing but require more effort or expertise. Plan carefully before starting.",
+                quads["B"])
+    _write_quad(lines, "C",
+                "Might As Well — Low Cost, Low Benefit",
+                "Cheap to do; low urgency. Pick these up when bandwidth allows or combine with nearby work.",
+                quads["C"])
+    _write_quad(lines, "D",
+                "WORST CANDIDATES — High Cost, Low Benefit",
+                "Expensive to fix, limited payoff. Defer or deprioritize unless circumstances change.",
+                quads["D"])
+
+    lines.append(f"## Full Table — All {n} Issues")
+    lines.append("")
+    lines.append("Sorted: A first (best), then B, C, D; within each group by benefit DESC.")
+    lines.append("")
+    lines.append("| Quad | Issue # | Cost | Benefit | Priority | Title |")
+    lines.append("|------|---------|------|---------|----------|-------|")
+    for letter in ("A", "B", "C", "D"):
+        for r in quads[letter]:
+            plbl  = get_priority_label(r["labels"])
+            short = r["title"][:72] + ("…" if len(r["title"]) > 72 else "")
+            lines.append(
+                f"| {letter} | [{r['num']}]({URL_BASE}{r['num']}) | "
+                f"{r['cost']} | {r['benefit']} | {plbl} | {short} |"
+            )
+
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append("### Score ranges")
+    lines.append("")
+    lines.append("| Dimension | Range | Median (split threshold) |")
+    lines.append("|-----------|-------|--------------------------|")
+    lines.append(f"| Cost    | {costs[0]} – {costs[-1]}    | {cost_med} |")
+    lines.append(f"| Benefit | {benefits[0]} – {benefits[-1]} | {benefit_med} |")
+    lines.append("")
+    lines.append(
+        "Issues at or above the median are **High**; below are **Low** "
+        "for that dimension."
+    )
+    lines.append("")
     lines.append("## Scoring Factors")
     lines.append("")
     lines.append("### Cost factors (higher = harder/riskier)")
@@ -697,41 +733,6 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("| Title: README / silence / suppress | −2 to −3 |")
     lines.append("| Title: changelog / NEWS.md | −3 |")
     lines.append("| Unrated enhancement (no PRIORITY label) | −1 |")
-    lines.append("")
-    lines.append("---")
-    lines.append("")
-
-    _write_quad(lines, "A",
-                "BEST CANDIDATES — Low Cost, High Benefit",
-                "Easy fixes with clear high value. Prioritize these above all others.",
-                quads["A"])
-    _write_quad(lines, "B",
-                "OK Candidates — High Cost, High Benefit",
-                "Worth doing but require more effort or expertise. Plan carefully before starting.",
-                quads["B"])
-    _write_quad(lines, "C",
-                "Might As Well — Low Cost, Low Benefit",
-                "Cheap to do; low urgency. Pick these up when bandwidth allows or combine with nearby work.",
-                quads["C"])
-    _write_quad(lines, "D",
-                "WORST CANDIDATES — High Cost, Low Benefit",
-                "Expensive to fix, limited payoff. Defer or deprioritize unless circumstances change.",
-                quads["D"])
-
-    lines.append(f"## Full Table — All {n} Issues")
-    lines.append("")
-    lines.append("Sorted: A first (best), then B, C, D; within each group by benefit DESC.")
-    lines.append("")
-    lines.append("| Quad | Issue # | Cost | Benefit | Priority | Title |")
-    lines.append("|------|---------|------|---------|----------|-------|")
-    for letter in ("A", "B", "C", "D"):
-        for r in quads[letter]:
-            plbl  = get_priority_label(r["labels"])
-            short = r["title"][:72] + ("…" if len(r["title"]) > 72 else "")
-            lines.append(
-                f"| {letter} | [{r['num']}]({URL_BASE}{r['num']}) | "
-                f"{r['cost']} | {r['benefit']} | {plbl} | {short} |"
-            )
 
     return "\n".join(lines)
 
