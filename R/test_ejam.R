@@ -15,6 +15,8 @@
 #'
 #'     [testthat::test_check()]     to test the installed version of a package, in the way used by R CMD check or [utils::check()]
 #'
+#' Note: shinytest2 diagnostics are saved on failure, under
+#'   `file.path(tempdir(), "ejam-shinytest2-logs")`
 #' @param ask logical, whether it should ask in RStudio what parameter values to use
 #' @param noquestions logical, whether to avoid questions later on about where to save shapefiles
 #' @param useloadall logical, TRUE means use [pkgload::load_all()], FALSE means use [library()].
@@ -33,6 +35,8 @@
 #'   shinytest2 functionality suite; use 'webapp_individual' only when debugging
 #'   one-category web app test files.
 #' @param skip_these if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.
+#'   By default, live URL/API integration groups are skipped so routine unit
+#'   testing does not depend on network/API availability.
 #' @param y_seeresults logical, whether to show results in console
 #' @param y_save logical, whether to save files of results
 #' @param y_tempdir logical, whether to save in tempdir
@@ -48,6 +52,15 @@
 #'       y_runsome = TRUE, run_these = c('test', 'maps'),
 #'       mydir = "~/../Downloads/unit testing") # for example
 #'
+#' # To run slower tests, live api/url tests for a pre-release check:
+#'
+#' Sys.setenv(NOT_CRAN = "true")
+#' EJAM:::test_ejam(
+#'   ask = FALSE,
+#'   y_runsome = TRUE,
+#'   run_these = c("live_url", "live_api"),
+#'   skip_these = NULL
+#'   )
 #'   }
 #'
 #' @return a named list of objects with tables in [data.table](https://r-datatable.com) format, e.g., named
@@ -70,7 +83,7 @@ test_ejam <- function(ask = TRUE,
                       #   "shape", "getblocks", "fixcolnames", "doag",
                       #   "ejamit", "misc",  "mod", "webapp",
                       #   "test", "golem"),
-                      skip_these = NULL, # c(  "webapp"),
+                      skip_these = c("live_url", "live_api"), # c("webapp"),
 
                       y_stopif = FALSE,
                       y_seeresults = TRUE,
@@ -127,12 +140,18 @@ x <- test_ejam(
   #   "ejamit", "misc", "mod", "webapp",
   #   "test", "golem"),
 
+  skip_these = c("live_url", "live_api"),
+
   y_stopif     = FALSE, # stop as soon as problem is hit?
   y_seeresults = TRUE,
   y_save       = TRUE,
   y_tempdir    = TRUE,
   mydir = NULL
 )
+
+Note: shinytest2 diagnostics are saved on failure, under
+  file.path(tempdir(), "ejam-shinytest2-logs")
+instead of tests/testthat/_logs
 
 ')
   }
@@ -326,22 +345,35 @@ x <- test_ejam(
         "test-ejscreen-export.R"
       ),
 
-      test_misc = c(
-        "test-sites_from_input.R",
-
-        "test-url_ejamapi.R",
+      test_url = c(
+        # Fast URL/API request construction and formatting tests that do not
+        # hit the network.
         "test-ejamapi.R",
-        "test-ejamapi_local.R",
-
+        "test-url_ejamapi.R",
         "test-URL_FUNCTIONS_part1.R",
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
+        "test-url_package.R"
+      ),
+      test_live_url = c(
+        # Live url_online() smoke tests. Skipped by default via skip_these.
+        "test-url_ejamapi-live.R",
+        "test-URL_FUNCTIONS_part2-live.R",
+        "test-url_package-live.R"
+      ),
+      test_live_api = c(
+        # Live EJAM/EJScreen API calls. Skipped by default via skip_these.
+        "test-ejamapi-live.R",
+        "test-ejamapi_local.R",
+        "test-ejscreen-facilities-live.R"
+      ),
 
+      test_misc = c(
+        "test-sites_from_input.R",
         "test-is.numericish.R",
         "test-create_filename.R",
         "test-grepn.R",
         "test-utils_PACKAGE_DEV.R",
-        "test-url_package.R",
         "test-pctile_x_is_hit_by_score.R",
         "test-plot_vs_us.R",
 
@@ -601,6 +633,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
           # The individual webapp files are kept for focused debugging but are
           # intentionally omitted from the default full suite.
           timing_testlist <- timing_testlist[names(timing_testlist) != "test_webapp_individual"]
+          timing_skip_these <- paste0("test_", unlist(strsplit(gsub(" ", "", skip_these), ",")))
+          if (length(timing_skip_these) > 0 && !is.null(timing_skip_these)) {
+            timing_testlist <- timing_testlist[!(names(timing_testlist) %in% timing_skip_these)]
+          }
         }
         missingtime_tests <- setdiff(as.vector(unlist(timing_testlist)), timebyfile$file)
         if (length(missingtime_tests) > 0) {
