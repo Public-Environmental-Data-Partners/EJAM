@@ -81,7 +81,7 @@ test_ejam <- function(ask = TRUE,
                       run_these = NULL,  ## or...
                       # run_these = c("fips", "naics", "frs", "latlon", "maps",
                       #   "shape", "getblocks", "fixcolnames", "doag",
-                      #   "ejamit", "misc",  "mod", "webapp",
+                      #   "ejamit", "misc",  "mod", "webapp", "modules",
                       #   "test", "golem"),
                       skip_these = c("live_url", "live_api"), # c("webapp"),
 
@@ -381,11 +381,9 @@ instead of tests/testthat/_logs
         "test-shinytest2-app-dir.R",
         "test-map_headernames-report-ratio-metadata.R"
       ),
-      test_mod = c(
-        "test-mod_save_report.R",
-        "test-mod_specify_sites.R",
-        "test-mod_view_results.R"
-      ),
+      # test_modules = c(
+      #   "test-MODULE_latlontypedin.R"
+      # ),
       test_webapp = c(
         "test-webapp-ui_and_server.R",
         "test-webapp-all-functionality.R",
@@ -536,7 +534,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-address_xyz.R", "test-latlon_as.numeric.R", "test-latlon_df_clean.R",
               "test-latlon_from_anything.R", "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
               "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
-              "test-mod_save_report.R", "test-mod_specify_sites.R", "test-mod_view_results.R",
+
               "test-create_interactive_table.R", "test-ejamapi_local.R", "test-url_ejamapi.R",
               "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R", "test-create_filename.R",
               "test-ejamapi.R", "test-grepn.R", "test-is.numericish.R", "test-map_headernames-report-ratio-metadata.R",
@@ -572,8 +570,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
             ),
           seconds_byfile =
             c(0, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0,
-              1, 6, 0, 0, 0, 0, 2, 76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-              0, 0, 0, 0, 410, 0, 22, 0, 42, 0, 0, 0, 1, 0, 0, 0, 4, 3, 0,
+              1, 6, 0, 0, 0, 0, 2, 76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+              0, 0, 410, 0, 22, 0, 42, 0, 0, 0, 1, 0, 0, 0, 4, 3, 0,
               9, 11, 0, 4, 1, 0, 3, 0, 3, 0, 0, 0, 1, 0, 3, 43, 1, 2, 0, 0,
               0, 0, 0, 0, 0, 1, 0, 6, 3, 9, 0, 3, 3, 24, 0, 9, 0, 0, 14, 15,
               0, 6, 43, 24, 6, 0, 7, 0, 0, 0, 0, 0, 1, 0, 3, 2, 0, 0, 0, 0,
