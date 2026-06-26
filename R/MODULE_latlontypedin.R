@@ -55,15 +55,20 @@ MODULE_SERVER_latlontypedin <- function(id,
     function(input, output, session) {
       ns <- session$ns
       pkg_available("rhandsontable", if_not_loaded = "stop")
+      if (is.null(reactdat)) {
+        # provide a default template of lat lon values table ready for user to type into
+        reactdat <- shiny::reactiveVal(data.frame(
+          lat = c(37.64122, NA),
+          lon = c(-122.41065, NA),
+          sitenumber = 1:2,
+          sitename = c("Example Site 1", "Site 2")
+        ))
+      }
+      if (!inherits(reactdat, "reactiveVal")) {
+        stop("`reactdat` must be a shiny::reactiveVal object.")
+      }
       output$TYPED_IN_DATA <- rhandsontable::renderRHandsontable({ # need rhandsontable pkg
-        tmp <- isolate({
-          if (is.null(reactdat) ) {
-            # try to provide a default template of lat lon values table ready for user to type into
-            reactdat = shiny::reactiveVal(data.frame(lat = c(37.64122, NA), lon = c(-122.41065, NA), sitenumber = 1:2, sitename = c("Example Site 1", "Site 2")))
-          }
-          reactdat()
-
-        }) # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
+        tmp <- isolate(reactdat()) # must isolate it or causes infinite loop -- avoid the issue described [here](https://github.com/jrowen/rhandsontable/issues/166)
         rownames(tmp) <- NULL
         rhandsontable::rhandsontable(tmp,  # need rhandsontable pkg
                                      allowRowEdit = allowRowEdit, allowColumnEdit = allowColumnEdit, manualRowMove = manualRowMove, ...)
