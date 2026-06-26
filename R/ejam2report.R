@@ -111,6 +111,8 @@ assert_pdf_report_available <- function() {
 #'
 #' @param shp provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 #'   they are not in ejamitout
+#' @param shape alias (synonym) for shp
+#' @param shapefile alias (synonym) for shp
 #' @param launch_browser set TRUE to have it launch browser and show report.
 #' @param return_html set TRUE to have function return HTML object instead of URL of local file
 #' @param fileextension html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
@@ -204,8 +206,13 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         fileextension = c("html", "pdf")[1],
                         filename = NULL,
                         return_html = FALSE,
-                        launch_browser = TRUE
+                        launch_browser = TRUE,
+                        shape = NULL,     # alias (synonym) for shp (name-only, at end to avoid arg shift)
+                        shapefile = NULL  # alias (synonym) for shp
 ) {
+  # Aliases (synonyms) for shp, for naming consistency with ejamit()/ejamapp() etc.
+  if (is.null(shp) && !is.null(shape))     {shp <- shape}
+  if (is.null(shp) && !is.null(shapefile)) {shp <- shapefile}
 
   # analysis title default and report_title default depend on if this is 1-site or multisite
 

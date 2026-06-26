@@ -11,10 +11,12 @@ Changes since v3.YYYY.0:
 ## New Features
 
 - Parameter aliases for consistency across `ejamit()`, `ejamapp()`, `url_ejamapp()`,
-  `url_ejamapi()`/`ejamapi()`, and the EJAM API: **`buffer`** is now a synonym for
-  **`radius`** (it reads more naturally for FIPS or polygon analysis), and
-  **`shape`** is a synonym for **`shapefile`**. The canonical names (`radius`,
-  `shapefile`) are unchanged; the aliases are accepted wherever relevant. (Note:
+  `url_ejamapi()`/`ejamapi()`, `ejam2report()`, `ejam2map()`, `shapefile_from_any()`,
+  and the EJAM API: **`buffer`** is now a synonym for **`radius`** (it reads more
+  naturally for FIPS or polygon analysis), and **`shape`** (and **`shapefile`**) is a
+  synonym for the polygon input -- including `ejam2report()`/`ejam2map()`'s `shp` and
+  `shapefile_from_any()`'s `path`. The canonical names are unchanged; the aliases are
+  accepted wherever relevant. (Note:
   `ejamit()` still takes points as a `sitepoints` data.frame with lat/lon columns,
   not yet as separate `lat`/`lon` args -- see issue #171.)
 

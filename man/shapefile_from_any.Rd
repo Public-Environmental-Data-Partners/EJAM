@@ -11,6 +11,9 @@ shapefile_from_any(
   layer = NULL,
   inputname = NULL,
   silentinteractive = FALSE,
+  shapefile = NULL,
+  shape = NULL,
+  shp = NULL,
   ...
 )
 }
@@ -45,6 +48,12 @@ default is crs = 4269 or Geodetic CRS NAD83}
 \item{inputname}{vector of shiny fileInput uploaded filenames}
 
 \item{silentinteractive}{set to TRUE to NOT prompt for a file/folder when one is not specified}
+
+\item{shapefile}{alias (synonym) for path (the input shapefile/sf/GeoJSON)}
+
+\item{shape}{alias (synonym) for path}
+
+\item{shp}{alias (synonym) for path}
 
 \item{...}{passed to \code{\link[sf:st_read]{sf::st_read()}}}
 }

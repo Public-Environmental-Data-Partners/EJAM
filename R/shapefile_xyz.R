@@ -57,13 +57,21 @@
 #' @param layer optional layer name passed to [sf::st_read()]
 #' @param inputname vector of shiny fileInput uploaded filenames
 #' @param silentinteractive set to TRUE to NOT prompt for a file/folder when one is not specified
+#' @param shapefile alias (synonym) for path (the input shapefile/sf/GeoJSON)
+#' @param shape alias (synonym) for path
+#' @param shp alias (synonym) for path
 #' @param ... passed to [sf::st_read()]
 #'
 #' @return a simple feature [sf::sf] class spatial data.frame
 #'
 #' @export
 #'
-shapefile_from_any <- function(path = NULL, cleanit = TRUE, crs = 4269, layer = NULL, inputname = NULL, silentinteractive = FALSE, ...) {
+shapefile_from_any <- function(path = NULL, cleanit = TRUE, crs = 4269, layer = NULL, inputname = NULL, silentinteractive = FALSE,
+                               shapefile = NULL, shape = NULL, shp = NULL, ...) {
+  # Aliases (synonyms) for path: accept shapefile/shape/shp as the input too.
+  if (is.null(path)) {
+    path <- if (!is.null(shapefile)) shapefile else if (!is.null(shape)) shape else shp
+  }
 
   # and see app_ui.R text and latlon_from_ and global_defaults_*.R
   oktypes_shp4 <- c("shp", "shx", "dbf", "prj") # ".sbn", ".sbx",".cpg" # others to possibly allow
