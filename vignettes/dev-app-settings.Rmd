@@ -173,6 +173,9 @@ initial values for inputs in the shiny app, so some useful information
 including some that is controlled by global defaults or user parameters in ejamapp()
 cannot be bookmarked because it is stored in reactives
 but not as shiny app inputs.
+To pass a set of *sites* (points, FIPS codes, or polygons) into an already-deployed
+app through a URL — which the file-upload inputs cannot do through a url-bookmark —
+use the custom launch query parameters described next.
 
 ### Launch URL with pre-selected sites (handoff from an external app)
 
@@ -191,10 +194,30 @@ url-encoded bookmark. The vocabulary matches `url_ejamapi()`:
   Use this for large polygon sets that would not fit in a URL.
 
 Only one place-type is loaded per launch (points, then FIPS, then polygons),
-matching the one-method-per-analysis model. These set per-session reactives that
-`data_up_latlon()`, `data_up_fips()`, and `data_up_shp()` prefer over the
-`ejamapp()`/global defaults, so the app opens with those sites selected and ready
-to run. See the handler near the top of the SELECT SITES section in `app_server.R`.
+matching the one-method-per-analysis model. Internally the launch handler stores
+the parsed places in three per-session reactives — `url_sitepoints`, `url_fips`,
+and `url_shapefile` — which `data_up_tablepassed_latlon()`/`data_up_latlon()`,
+`data_up_fips()`, and `data_up_shp()` prefer over the `ejamapp()`/global defaults.
+It also updates `ss_choose_method` and `ss_choose_method_upload` so the matching
+upload tab is shown, so the app opens with those sites selected and ready to run.
+The handler is the `observe()` near the top of the SELECT SITES section in
+`R/app_server.R`.
+
+For example, this opens the hosted app pre-loaded with two counties (two sites):
+
+    https://ejam.publicenvirodata.org/?fips=10001,10003
+
+and this pre-loads two points with a 3-mile radius:
+
+    https://ejam.publicenvirodata.org/?lat=33,34&lon=-112,-114&radius=3
+
+Because the query vocabulary matches `url_ejamapi()`, the same helper that builds
+EJAM API report URLs can build app-launch URLs, and `url_ejamapi2arglist()` parses
+them back into R. The `?handoff=<token>` form is how EJScreen's "Send to EJAM"
+button passes a large set of drawn polygons without hitting URL-length limits:
+EJScreen `POST`s the GeoJSON to the EJAM API `/handoff`, gets a token, and opens
+`https://ejam.publicenvirodata.org/?handoff=<token>`; the app then fetches those
+places back from the API's `GET /handoff/<token>` at startup.
 
 --------------
 --------------
