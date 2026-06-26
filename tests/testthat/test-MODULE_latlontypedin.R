@@ -48,13 +48,12 @@ test_that("module server works", {
 
 test_that("module ui works", {
   # skip_if_not(exists("MODULE_UI_latlontypedin"), message = "MODULE_UI_latlontypedin is not present")
-  skip_if_not(require(rhandsontable))
-  skip_if_not(pkg_available("rhandsontable"))
+  skip_if_not(requireNamespace("rhandsontable", quietly = TRUE))
 
-  ui <- MODULE_UI_latlontypedin(id = "TESTID")
+  ui <- EJAM:::MODULE_UI_latlontypedin(id = "TESTID")
   golem::expect_shinytaglist(ui)
   # Check that formals have not been removed
-  fmls <- formals(MODULE_UI_latlontypedin)
+  fmls <- formals(EJAM:::MODULE_UI_latlontypedin)
   for (i in c("id")) {
     expect_true(i %in% names(fmls))
   }
