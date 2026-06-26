@@ -25,6 +25,7 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #'
 #' @param sitepoints data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers
 #' @param radius in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
+#' @param buffer Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
 #'   For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
 #'   before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).
 #' @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
@@ -38,6 +39,7 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #' @param fips optional FIPS code vector to provide if using FIPS instead of sitepoints to specify places to analyze,
 #'   such as a list of US Counties or tracts. Passed to [getblocksnearby_from_fips()]
 #' @param shapefile optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
+#' @param shape Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
 #'   e.g., `out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)`
 #'   If in RStudio you want it to interactively prompt you to pick a file,
 #'   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
@@ -213,12 +215,14 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #'
 ejamit <- function(sitepoints = NULL,
                    radius = 3,
+                   buffer = NULL,  # alias (synonym) for radius
                    radius_donut_lower_edge = 0,
                    maxradius = 31.07,
                    avoidorphans = FALSE,
                    quadtree = NULL,
                    fips = NULL,  # namestr = '', ?
                    shapefile = NULL,
+                   shape = NULL,  # alias (synonym) for shapefile
                    countcols = NULL,
                    wtdmeancols = NULL,
                    calculatedcols = NULL,
@@ -255,6 +259,12 @@ ejamit <- function(sitepoints = NULL,
                    download_noncity_fips_bounds = FALSE,
                    ...
 ) {
+  # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
+  # read more naturally for FIPS or polygon analysis; "radius"/"shapefile" remain
+  # the canonical names. If an alias is provided it takes effect here.
+  if (!is.null(buffer)) {radius <- buffer}
+  if (!is.null(shape) && (missing(shapefile) || is.null(shapefile))) {shapefile <- shape}
+
   # note on avoidorphans parameter:
   # What EJSCREEN does in that case is report NA, right?
   # So, does EJAM really need to report stats on residents presumed to be within radius,

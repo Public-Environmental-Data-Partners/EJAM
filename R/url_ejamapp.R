@@ -23,8 +23,10 @@
 #' @param sitepoints data.frame with columns lat and lon (alternative to lat/lon)
 #' @param lat,lon coordinate vector(s) of point(s), each treated as a site
 #' @param fips vector of FIPS codes, each treated as a separate site
-#' @param shapefile an sf polygon/multipolygon object, encoded as simplified GeoJSON
+#' @param shapefile an sf polygon/multipolygon object (or ready-made GeoJSON text), encoded as simplified GeoJSON
+#' @param shape alias (synonym) for shapefile
 #' @param radius analysis radius in miles (the buffer around points or out from polygon edges)
+#' @param buffer alias (synonym) for radius ("buffer" reads more naturally for FIPS or polygon analysis)
 #' @param handoff a token previously returned by the EJAM API `POST /handoff`.
 #'   When supplied, the other site arguments are ignored and the app fetches the
 #'   places back from `GET /handoff/<token>` at startup (the scalable path for
@@ -46,10 +48,15 @@
 #' @export
 #'
 url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
-                        fips = NULL, shapefile = NULL, radius = NULL,
+                        fips = NULL, shapefile = NULL, shape = NULL,
+                        radius = NULL, buffer = NULL,
                         handoff = NULL, dTolerance = 100,
                         baseurl = "https://ejanalysis.com/ejamapp",
                         browse = FALSE) {
+
+  # Aliases (synonyms): buffer for radius, shape for shapefile.
+  if (is.null(radius)) {radius <- buffer}
+  if (is.null(shapefile)) {shapefile <- shape}
 
   if (!is.null(sitepoints)) {
     lat <- sitepoints$lat
@@ -67,8 +74,9 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   } else if (!is.null(fips)) {
     q <- c(q, paste0("fips=", paste(fips, collapse = ",")))
   } else if (!is.null(shapefile)) {
-    # simplify polygons so the GeoJSON fits in a URL, like url_ejamapi() does
-    geotxt <- shape2geojson(sf::st_simplify(shapefile, dTolerance = dTolerance))
+    # accept either an sf object or ready-made GeoJSON text; simplify sf polygons
+    # so the GeoJSON fits in a URL, like url_ejamapi() does
+    geotxt <- if (is.character(shapefile)) shapefile else shape2geojson(sf::st_simplify(shapefile, dTolerance = dTolerance))
     q <- c(q, paste0("shape=", utils::URLencode(geotxt[1], reserved = TRUE)))
   }
   if (is.null(handoff) && !is.null(radius)) {

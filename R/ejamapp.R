@@ -293,6 +293,9 @@ ejamapp <- function(
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
   }
+  if ("shape" %in% names(dots) && !("shapefile" %in% names(dots))) {
+    dots$shapefile <- dots$shape # convenient alias (synonym) for shapefile
+  }
   if ("shapefile" %in% names(dots)) {
     # dots$shapefile will be used
     dots$default_upload_dropdown = "upload"
@@ -338,6 +341,10 @@ ejamapp <- function(
   if ("radius" %in% names(dots)) {
     dots$radius_default <- dots$radius
     cat("launching with specified radius =", dots$radius_default, "\n")
+  }
+  if ("buffer" %in% names(dots)) {
+    dots$radius_default <- dots$buffer # buffer is a synonym (alias) for radius
+    cat("launching with specified buffer (radius) =", dots$radius_default, "\n")
   }
 
   # more aliases

@@ -7,12 +7,14 @@
 ejamit(
   sitepoints = NULL,
   radius = 3,
+  buffer = NULL,
   radius_donut_lower_edge = 0,
   maxradius = 31.07,
   avoidorphans = FALSE,
   quadtree = NULL,
   fips = NULL,
   shapefile = NULL,
+  shape = NULL,
   countcols = NULL,
   wtdmeancols = NULL,
   calculatedcols = NULL,
@@ -48,7 +50,9 @@ ejamit(
 \arguments{
 \item{sitepoints}{data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers}
 
-\item{radius}{in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
+\item{radius}{in miles, defining circular buffer around a site point (defaults to zero in shapefile case).}
+
+\item{buffer}{Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
 For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
 before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).}
 
@@ -67,7 +71,9 @@ It can be automatically created when the package is attached via the .onAttach()
 \item{fips}{optional FIPS code vector to provide if using FIPS instead of sitepoints to specify places to analyze,
 such as a list of US Counties or tracts. Passed to \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}}}
 
-\item{shapefile}{optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
+\item{shapefile}{optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.}
+
+\item{shape}{Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
 e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)}
 If in RStudio you want it to interactively prompt you to pick a file,
 use shapefile=1 (otherwise it assumes you want to pick a latlon file).}

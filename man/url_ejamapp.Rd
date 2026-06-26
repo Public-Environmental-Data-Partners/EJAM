@@ -10,7 +10,9 @@ url_ejamapp(
   lon = NULL,
   fips = NULL,
   shapefile = NULL,
+  shape = NULL,
   radius = NULL,
+  buffer = NULL,
   handoff = NULL,
   dTolerance = 100,
   baseurl = "https://ejanalysis.com/ejamapp",
@@ -24,9 +26,13 @@ url_ejamapp(
 
 \item{fips}{vector of FIPS codes, each treated as a separate site}
 
-\item{shapefile}{an sf polygon/multipolygon object, encoded as simplified GeoJSON}
+\item{shapefile}{an sf polygon/multipolygon object (or ready-made GeoJSON text), encoded as simplified GeoJSON}
+
+\item{shape}{alias (synonym) for shapefile}
 
 \item{radius}{analysis radius in miles (the buffer around points or out from polygon edges)}
+
+\item{buffer}{alias (synonym) for radius ("buffer" reads more naturally for FIPS or polygon analysis)}
 
 \item{handoff}{a token previously returned by the EJAM API \code{POST /handoff}.
 When supplied, the other site arguments are ignored and the app fetches the
