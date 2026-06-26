@@ -10,14 +10,25 @@ Changes since v3.YYYY.0:
 
 ## New Features
 
-- Launch-URL site handoff: the web app server now reads custom launch query
-  parameters (`?lat=&lon=`, `?fips=`, `?shape=<geojson>`, `?radius=`/`?buffer=`,
-  and `?handoff=<token>`) so an external app such as EJScreen can open EJAM
-  pre-loaded with a set of points, FIPS codes, or polygons. Each FIPS code is
-  treated as a separate site. Polygons (a file upload that cannot travel in a
-  Shiny url-bookmark) are now passable via `?shape=` or, for large sets, via a
-  `?handoff=<token>` resolved against the EJAM API. The vocabulary matches
-  `url_ejamapi()`. See `vignettes/dev-app-settings.Rmd`.
+- Launch-URL site handoff (pre-load the web app from an external site). The app
+  server now reads custom launch query parameters so another app -- notably the
+  EJScreen Report tool's new "Send to EJAM" button -- can open EJAM already
+  pre-loaded with a set of places:
+    - `?lat=33,34&lon=-112,-114` -- one or more points, each a site
+    - `?fips=10001,10003` -- one or more FIPS codes, each a separate site
+    - `?shape=<url-encoded GeoJSON>` -- a polygon or FeatureCollection
+    - `?radius=` / `?buffer=` -- analysis radius in miles
+    - `?handoff=<token>` -- a token minted by the EJAM API `POST /handoff` and
+      fetched back via `GET /handoff/<token>`, for large polygon sets that exceed
+      URL-length limits
+
+  Points and polygons are file-upload inputs that cannot travel in a Shiny
+  url-bookmark, so this is the supported way to pass them in at launch. One
+  place-type loads per launch (points, then FIPS, then polygons); the parsed
+  places are held in per-session reactives (`url_sitepoints`, `url_fips`,
+  `url_shapefile`) that the upload reactives prefer over `ejamapp()`/global
+  defaults. The vocabulary matches `url_ejamapi()`. See
+  `vignettes/dev-app-settings.Rmd`.
 
 ## Bug Fixes
 
