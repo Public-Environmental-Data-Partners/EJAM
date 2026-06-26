@@ -220,3 +220,29 @@ test_that("ejam2report does not buffer FIPS shapes for legacy radius 999", {
   )
   expect_length(buffer_state$radii, 0)
 })
+
+test_that("ejam2report normalizes default_format1pager fallback without a leading dot", {
+  buffer_state <- new.env(parent = emptyenv())
+  buffer_state$radii <- numeric()
+  local_ejam2report_fips_mocks(buffer_state)
+  local_mocked_bindings(
+    global_or_param = function(...) "pdf",
+    create_filename = function(..., ext) paste0("report", ext),
+    assert_pdf_report_available = function(...) invisible(TRUE),
+    .package = "EJAM"
+  )
+
+  expect_warning(
+    result <- ejam2report(
+      fips_report_test_output(radius = 1),
+      fileextension = "docx",
+      report_title = "Report",
+      analysis_title = "Analysis",
+      return_html = FALSE,
+      launch_browser = FALSE
+    ),
+    regexp = "fileextension must be one of",
+    fixed = TRUE
+  )
+  expect_match(basename(result), "\\.pdf$")
+})
