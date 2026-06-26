@@ -44,6 +44,7 @@
 #' @param shape,shapefile  Only one of these should be provided - they are synonymous.
 #'   A GeoJSON string representing the area of interest,
 #'   like shapefile param in [url_ejamapi()]
+#' @param shp alias (synonym) for shapefile/shape
 #' @param fips A FIPS code for a specific US Census geography, like "050014801001",
 #'   and must be consistent with the scale parameter
 #'
@@ -197,8 +198,11 @@ ejamapi <- function(
     fileextension = c("html", "pdf"),
     dry_run = FALSE,
     version = NULL,
+    shp = NULL,
     ...
 ) {
+  # shp is an alias (synonym) for shape/shapefile
+  if (is.null(shape) && is.null(shapefile) && !is.null(shp)) {shape <- shp}
   # API repo at https://github.com/edgi-govdata-archiving/EJAM-API/blob/main/rest_controller.r
 
   ############################################################## #

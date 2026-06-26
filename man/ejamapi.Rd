@@ -24,6 +24,7 @@ ejamapi(
   fileextension = c("html", "pdf"),
   dry_run = FALSE,
   version = NULL,
+  shp = NULL,
   ...
 )
 }
@@ -98,6 +99,8 @@ be just a placeholder, for the first site, not an overall summary across all sit
 \item{version}{optional EJAM version tag (e.g. "3.2024.0") passed to the API as
 version=\if{html}{\out{<ver>}} via \code{\link[=url_ejamapi]{url_ejamapi()}} so it can serve the matching data vintage.
 Default NULL resolves to the installed package Version (from DESCRIPTION).}
+
+\item{shp}{alias (synonym) for shapefile/shape}
 
 \item{...}{other parameters, passed to \code{\link[httr2:req_body_json]{httr2::req_body_json()}} in the "data" case,
 passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case, and used for the

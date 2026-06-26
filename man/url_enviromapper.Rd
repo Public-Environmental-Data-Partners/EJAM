@@ -15,6 +15,8 @@ url_enviromapper(
   linktext = "EnviroMapper",
   ifna = "https://geopub.epa.gov/myem/efmap/",
   baseurl = "https://geopub.epa.gov/myem/efmap/index.html?ve=",
+  shape = NULL,
+  shp = NULL,
   ...
 )
 }
@@ -36,6 +38,8 @@ url_enviromapper(
 \item{ifna}{URL shown for missing, NA, NULL, bad input values}
 
 \item{baseurl}{do not change unless endpoint actually changed}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 
 \item{...}{unused}
 }

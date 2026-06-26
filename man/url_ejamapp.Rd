@@ -16,7 +16,8 @@ url_ejamapp(
   handoff = NULL,
   dTolerance = 100,
   baseurl = "https://ejanalysis.com/ejamapp",
-  browse = FALSE
+  browse = FALSE,
+  shp = NULL
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ many/large polygons).}
 must forward the query string so the launch parameters reach the app.}
 
 \item{browse}{set TRUE to open the URL in a browser (if interactive)}
+
+\item{shp}{alias (synonym) for shapefile}
 }
 \value{
 URL (character) for the live EJAM app

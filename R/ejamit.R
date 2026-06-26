@@ -43,6 +43,8 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #'   e.g., `out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)`
 #'   If in RStudio you want it to interactively prompt you to pick a file,
 #'   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
+#' @param shp alias (synonym) for shapefile
+#' @param lat,lon optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.
 #' @param countcols character vector of names of variables to aggregate within a buffer using a sum of counts,
 #'   like, for example, the number of people for whom a poverty ratio is known,
 #'   the count of which is the exact denominator needed to correctly calculate percent low income.
@@ -257,6 +259,8 @@ ejamit <- function(sitepoints = NULL,
                    download_noncity_fips_bounds = FALSE,
                    buffer = NULL,  # alias (synonym) for radius -- placed here (name-only) to avoid shifting positional args
                    shape = NULL,   # alias (synonym) for shapefile
+                   shp = NULL,     # alias (synonym) for shapefile
+                   lat = NULL, lon = NULL,  # optional coordinates to build sitepoints (issue #171)
                    ...
 ) {
   # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
@@ -264,6 +268,8 @@ ejamit <- function(sitepoints = NULL,
   # the canonical names. If an alias is provided it takes effect here.
   if (!is.null(buffer)) {radius <- buffer}
   if (!is.null(shape) && (missing(shapefile) || is.null(shapefile))) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp)) {shapefile <- shp}
+  if (is.null(sitepoints) && !is.null(lat) && !is.null(lon)) {sitepoints <- data.frame(lat = lat, lon = lon)}
 
   # note on avoidorphans parameter:
   # What EJSCREEN does in that case is report NA, right?

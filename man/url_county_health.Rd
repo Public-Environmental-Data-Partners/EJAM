@@ -16,6 +16,8 @@ url_county_health(
   ifna = "https://www.countyhealthrankings.org",
   baseurl = "https://www.countyhealthrankings.org/health-data/",
   statereport = FALSE,
+  shape = NULL,
+  shp = NULL,
   ...
 )
 }
@@ -41,6 +43,8 @@ url_county_health(
 \item{statereport}{can be passed here by \code{\link[=url_state_health]{url_state_health()}}
 if FALSE, returns NA when given a State fips, otherwise return report on enclosing county.
 if TRUE, gets report on enclosing State/DC/PR (not county).}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 
 \item{...}{unused}
 }

@@ -15,6 +15,8 @@ url_county_equityatlas(
   ifna = "https://nationalequityatlas.org",
   baseurl = "https://nationalequityatlas.org/research/data_summary",
   statereport = FALSE,
+  shape = NULL,
+  shp = NULL,
   ...
 )
 }
@@ -38,6 +40,8 @@ url_county_equityatlas(
 \item{statereport}{Do not use directly. Used by \code{\link[=url_state_equityatlas]{url_state_equityatlas()}}.
 if TRUE, gets report on enclosing State/DC/PR, not county.
 if FALSE, returns NA when given a State fips, otherwise return report on enclosing county.}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 
 \item{...}{unused}
 }

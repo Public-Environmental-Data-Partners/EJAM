@@ -18,6 +18,7 @@
 #' @param silentinteractive passed to [ejamit()]
 #' @param shapefile  see [ejamit()]
 #' @param shape alias (synonym) for shapefile
+#' @param shp alias (synonym) for shapefile
 #' @param fips  see [ejamit()]
 #' @param ...  see [ejamit()]
 #'
@@ -84,10 +85,11 @@
 #'
 ejamit_compare_types_of_places <- function(sitepoints, typeofsite = NULL,
                                            shapefile = NULL, fips = NULL,
-                                           silentinteractive = TRUE, shape = NULL,  ...) {
+                                           silentinteractive = TRUE, shape = NULL, shp = NULL,  ...) {
 
   # Alias (synonym) shape for shapefile.
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   ########################################################## #
   # note this means latlon vs fips vs shp, not type in the sense of which group (subset) that is specified via typeofsite param

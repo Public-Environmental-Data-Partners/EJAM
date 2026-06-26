@@ -11,6 +11,7 @@ ejamit_compare_types_of_places(
   fips = NULL,
   silentinteractive = TRUE,
   shape = NULL,
+  shp = NULL,
   ...
 )
 }
@@ -27,6 +28,8 @@ each unique value defines a group of sites}
 \item{silentinteractive}{passed to \code{\link[=ejamit]{ejamit()}}}
 
 \item{shape}{alias (synonym) for shapefile}
+
+\item{shp}{alias (synonym) for shapefile}
 
 \item{...}{see \code{\link[=ejamit]{ejamit()}}}
 }

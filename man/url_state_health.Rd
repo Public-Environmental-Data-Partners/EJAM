@@ -16,6 +16,8 @@ url_state_health(
   ifna = "https://www.countyhealthrankings.org",
   baseurl = "https://www.countyhealthrankings.org/health-data/",
   statereport = TRUE,
+  shape = NULL,
+  shp = NULL,
   ...
 )
 }
@@ -39,6 +41,8 @@ url_state_health(
 \item{baseurl}{do not change unless endpoint actually changed}
 
 \item{statereport}{Do not use directly here. passed here by \code{\link[=url_county_health]{url_county_health()}}}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 
 \item{...}{unused}
 }

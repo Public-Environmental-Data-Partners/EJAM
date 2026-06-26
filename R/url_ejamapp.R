@@ -25,6 +25,7 @@
 #' @param fips vector of FIPS codes, each treated as a separate site
 #' @param shapefile an sf polygon/multipolygon object (or ready-made GeoJSON text), encoded as simplified GeoJSON
 #' @param shape alias (synonym) for shapefile
+#' @param shp alias (synonym) for shapefile
 #' @param radius analysis radius in miles (the buffer around points or out from polygon edges)
 #' @param buffer alias (synonym) for radius ("buffer" reads more naturally for FIPS or polygon analysis)
 #' @param handoff a token previously returned by the EJAM API `POST /handoff`.
@@ -52,11 +53,12 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                         radius = NULL, buffer = NULL,
                         handoff = NULL, dTolerance = 100,
                         baseurl = "https://ejanalysis.com/ejamapp",
-                        browse = FALSE) {
+                        browse = FALSE, shp = NULL) {
 
-  # Aliases (synonyms): buffer for radius, shape for shapefile.
+  # Aliases (synonyms): buffer for radius, shape/shp for shapefile.
   if (is.null(radius)) {radius <- buffer}
   if (is.null(shapefile)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp)) {shapefile <- shp}
 
   if (!is.null(sitepoints)) {
     lat <- sitepoints$lat

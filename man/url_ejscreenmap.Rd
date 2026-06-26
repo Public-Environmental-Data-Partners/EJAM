@@ -15,6 +15,8 @@ url_ejscreenmap(
   linktext = "EJSCREEN",
   ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
   baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
+  shape = NULL,
+  shp = NULL,
   ...
 )
 }
@@ -53,6 +55,8 @@ but using the fips parameter is probably a better idea.}
 \item{ifna}{URL shown for missing, NA, NULL, bad input values}
 
 \item{baseurl}{do not change unless endpoint actually changed}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 
 \item{...}{unused}
 }

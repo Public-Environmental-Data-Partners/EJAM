@@ -123,6 +123,7 @@
 #' @param radius  see [ejamit()]
 #' @param fips  see [ejamit()]
 #' @param shapefile  see [ejamit()]
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param custom_blockgroupstats like blockgroupstats but with custom
 #'   indicators, one value per blockgroup, with colnames bgid, bgfips, pop
 #' @param countcols vector of colnames in custom_blockgroupstats to be
@@ -151,7 +152,12 @@ custom_ejamit <- function(sitepoints, radius = 3, fips = NULL, shapefile = NULL,
                           wtcols = names_wts, # "pop"  or a vector exactly as long as wtdmeancols
                           custom_formulas = NULL,
                           custom_cols = NULL,
-                          custom_map_headernames = map_headernames) {
+                          custom_map_headernames = map_headernames,
+                          shape = NULL, shp = NULL) {
+
+  # Aliases (synonyms) shape/shp for shapefile.
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   if (!is.null(fips)) {
     sites2blocks <- getblocksnearby_from_fips(fips)

@@ -32,6 +32,7 @@
 #'
 #' @param shapefile  see [ejamit()], but each polygon is encoded as geojson string
 #'   which might get too long for encoding in a URL for the API using GET
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param dTolerance number of meters tolerance to use in [sf::st_simplify()] to simplify polygons to fit as url-encoded text geojson
 #'
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
@@ -160,8 +161,13 @@ url_ejamapi = function(
 
   version = NULL,
 
+  shape = NULL, shp = NULL,
+
   ...
 ) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   ## unused so far:
   {

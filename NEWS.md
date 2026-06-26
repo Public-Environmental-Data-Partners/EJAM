@@ -10,17 +10,21 @@ Changes since v3.YYYY.0:
 
 ## New Features
 
-- Parameter aliases for consistency across `ejamit()`, `ejamapp()`, `url_ejamapp()`,
-  `url_ejamapi()`/`ejamapi()`, `ejam2report()`, `ejam2map()`, `shapefile_from_any()`,
-  `ejamit_compare_distances()`/`_fulloutput()` (where **`buffers`** is a synonym for
-  the `radii` vector), `ejamit_compare_types_of_places()`, `ejamit_sitetype_from_input()`,
-  and the EJAM API: **`buffer`** is now a synonym for **`radius`** (it reads more
-  naturally for FIPS or polygon analysis), and **`shape`** (and **`shapefile`**) is a
-  synonym for the polygon input -- including `ejam2report()`/`ejam2map()`'s `shp` and
-  `shapefile_from_any()`'s `path`. The canonical names are unchanged; the aliases are
-  accepted wherever relevant. (Note:
-  `ejamit()` still takes points as a `sitepoints` data.frame with lat/lon columns,
-  not yet as separate `lat`/`lon` args -- see issue #171.)
+- Parameter aliases for consistency across the place-input functions -- `ejamit()`,
+  `ejamapp()`, `custom_ejamit()`, `ejamapi()`, `url_ejamapp()`, `url_ejamapi()`,
+  `ejam2report()`, `ejam2map()`, `shapefile_from_any()`, `sites_from_input()`,
+  `ejamit_compare_distances()`/`_fulloutput()`, `ejamit_compare_types_of_places()`,
+  `ejamit_sitetype_from_input()`, `latlon_from_shapefile_centroids()`,
+  `shape_buffered_from_shapefile()`, the `url_*` map/report-link builders
+  (`url_ejscreenmap`, `url_enviromapper`, `url_county_health`/`_equityatlas`,
+  `url_state_health`/`_equityatlas`), and the EJAM API:
+    - **`buffer`** is a synonym for **`radius`** (and **`buffers`** for the `radii`
+      vector) -- it reads more naturally for FIPS or polygon analysis;
+    - **`shape`** and **`shp`** are synonyms for the polygon input (**`shapefile`**).
+  Canonical names are unchanged; the aliases are accepted wherever relevant.
+
+- `ejamit()` now accepts `lat` and `lon` vectors directly (it builds `sitepoints`
+  from them), in addition to a `sitepoints` data.frame. Closes #171.
 
 - Launch-URL site handoff (pre-load the web app from an external site). The app
   server now reads custom launch query parameters so another app -- notably the

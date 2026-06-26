@@ -789,6 +789,7 @@ shapefile_filepaths_validize <- function(filepaths, inputname = NULL) {
 #'   convertible to arc_degree if x has geographic coordinates,
 #'   and to st_crs(x)$units otherwise)
 #' @param crs used in st_transform()  default is crs = 4269 or Geodetic CRS NAD83
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param ... passed to st_buffer()
 #' @return a simple feature [sf::sf] class spatial data.frame, same format as [sf::st_buffer()] returns
 #' @seealso [get_blockpoints_in_shape()] [shapefile_from_sitepoints()] [shape_buffered_from_shapefile_points()]
@@ -802,7 +803,10 @@ shapefile_filepaths_validize <- function(filepaths, inputname = NULL) {
 #'
 #' @export
 #'
-shape_buffered_from_shapefile <- function(shapefile, radius.miles, crs = 4269, ...) {
+shape_buffered_from_shapefile <- function(shapefile = NULL, radius.miles, crs = 4269, shape = NULL, shp = NULL, ...) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   # add error checking ***
 

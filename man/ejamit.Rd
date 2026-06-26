@@ -44,6 +44,9 @@ ejamit(
   download_noncity_fips_bounds = FALSE,
   buffer = NULL,
   shape = NULL,
+  shp = NULL,
+  lat = NULL,
+  lon = NULL,
   ...
 )
 }
@@ -151,6 +154,10 @@ before finding blocks; if not specified, no buffer is added (only blocks within 
 e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)}
 If in RStudio you want it to interactively prompt you to pick a file,
 use shapefile=1 (otherwise it assumes you want to pick a latlon file).}
+
+\item{shp}{alias (synonym) for shapefile}
+
+\item{lat, lon}{optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.}
 
 \item{...}{passed to \code{\link[=getblocksnearby]{getblocksnearby()}} etc. such as  report_progress_every_n = 0}
 }
