@@ -6,11 +6,10 @@
 
 test_that("module server works", {
   # skip_if_not(exists("MODULE_SERVER_latlontypedin"), message = "MODULE_SERVER_latlontypedin is not present")
-  skip_if_not(require(rhandsontable))
-  skip_if_not(pkg_available("rhandsontable"))
+  skip_if_not(requireNamespace("rhandsontable", quietly = TRUE))
 
-  testServer(
-    MODULE_SERVER_latlontypedin,
+  shiny::testServer(
+    EJAM:::MODULE_SERVER_latlontypedin,
     # Add here your module params
     args = list(
       id = "TESTID",
