@@ -1,7 +1,7 @@
 # Plan: "Click on map" point selection in the EJAM app
 
-Status: **designed, NOT yet implemented** (2026-06-26)
-Branch where the module fix lives: `fix-latlon-from-map-click-module`
+Status: **Phase 1 (module refactor) DONE; Phases 2-7 (app wiring) NOT yet implemented** (2026-06-26)
+Branch where the work lives: `fix-latlon-from-map-click-module`
 Module file: `R/MODULE_latlon_from_map_click.R`
 
 ## Goal
@@ -229,10 +229,15 @@ they key off `data_uploaded()` and `current_upload_method()` — `R/app_server.R
 
 ## Implementation phases / task breakdown
 
-1. **Refactor module** (`R/MODULE_latlon_from_map_click.R`): add `add_click`,
-   `remove_click`, `clear`, `render_map` params; keep standalone demo + `testServer`
-   passing; add `testServer` cases for external-wiring mode (simulate `add_click`,
-   `remove_click`, `clear` reactives).
+1. **Refactor module** (`R/MODULE_latlon_from_map_click.R`) — **DONE (2026-06-26)**:
+   added `add_click`, `remove_click`, `clear`, `render_map` params; extracted the
+   reusable accumulator core (`add_point` / `remove_point_by_index` / `remove_last`
+   / `clear_all`); standalone demo + `testServer` still pass; added `testServer`
+   cases for the embedded/external-wiring mode. Implemented the add-vs-delete guard
+   (`last_remove_time`) so a map click coinciding with a marker-delete click does not
+   re-add. **Gotcha recorded:** `observeEvent(reactive(input$x)(), ignoreInit = TRUE)`
+   swallows the first real event — use the default `ignoreNULL = TRUE` to skip the
+   startup NULL instead of `ignoreInit = TRUE` for the reactive-wrapped sources.
 2. **Globals/UI**: add `'Click or draw on map' = 'mapclick'` to the `ss_choose_method`
    radio (`R/app_ui.R:114`); add the `mapclick` `conditionalPanel` (Clear button, help
    text, count/alert). Decide whether `mapclick` appears for both public and internal

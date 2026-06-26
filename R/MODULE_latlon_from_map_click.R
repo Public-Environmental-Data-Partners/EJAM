@@ -24,13 +24,29 @@
 ################################################ ################################################# #
 
 # *How to call a module from outer overall app ####
+#
+## (A) STANDALONE mode - the module draws its own map (good for testing on its own)
 ## copied to the UI
 # MODULE_UI_latlon_from_map_click("pts_entry_table2")
-
 ## copied to the server
 # testpoints_template <-  testpoints_5[1:2, ]
 # reactive_data1 <-  reactiveVal(testpoints_template)
 # MODULE_SERVER_latlon_from_map_click(id = "pts_entry_table2", reactdat = reactive_data1)
+#
+## (B) EMBEDDED mode - the OUTER app already owns the map (e.g. EJAM's an_leaf_map).
+##     The module is used only as a point accumulator: no UI is added, and the
+##     outer app passes its own map events in as reactives. render_map = FALSE.
+## copied to the server (no module UI needed - the app's existing map is reused):
+# mapclick_points <- reactiveVal(data.frame(lat = numeric(0), lon = numeric(0)))
+# MODULE_SERVER_latlon_from_map_click(
+#   id           = "mapclick",
+#   reactdat     = mapclick_points,
+#   add_click    = reactive(input$an_leaf_map_click),         # add a point where the user clicks the map
+#   remove_click = reactive(input$an_leaf_map_marker_click),  # remove the point the user clicks on
+#   clear        = reactive(input$mapclick_clear),            # a "Clear all points" button in the app
+#   render_map   = FALSE
+# )
+## then feed mapclick_points() into the app's data_uploaded() the same way uploaded lat/lon are handled.
 
 ################################################ ################################################# #
 
@@ -60,7 +76,7 @@ MODULE_UI_latlon_from_map_click <- function(id) {
     shiny::sliderInput(inputId = ns('pointradius_input'),
       'Point Radius (miles)', min = 1, max = 10, value = radiusdefault),
 
-    shiny::helpText("Click on the map to add one or more points. ",
+    shiny::helpText("Click on the map to add points. Click a point again to remove it. ",
                     "Move the slider to change the radius drawn around each point."),
 
     leaflet::leafletOutput(
@@ -84,10 +100,49 @@ MODULE_UI_latlon_from_map_click <- function(id) {
 
 #' MODULE_SERVER_latlon_from_map_click - latlon_from_map_click Server code
 #'
+#' @description
+#' Accumulates one or more lat,lon points the user selects, and returns them as a
+#' reactive data.frame (columns lat, lon). It runs in either of two modes:
+#'
+#' * **Standalone** (default, `render_map = TRUE`): the module renders its own
+#'   leaflet map (via `MODULE_UI_latlon_from_map_click()`) and uses its own map
+#'   click, marker click, "Undo last point" and "Clear all points" controls.
+#'   Good for testing the module by itself.
+#'
+#' * **Embedded in a larger app** (`render_map = FALSE`): the outer app already
+#'   owns a leaflet map, a radius slider, and the circle drawing. The module is
+#'   used only as a reusable *point accumulator* - the outer app passes its map
+#'   events in as reactives (`add_click`, `remove_click`, `clear`) and the module
+#'   just maintains `reactdat` (append on add, drop one on remove, empty on
+#'   clear). This is how the EJAM app can bind clicks on its existing
+#'   `an_leaf_map` to a points table without the module drawing a second map.
+#'
+#' @param id module id
+#' @param reactdat a reactiveVal holding the data.frame of points; the module
+#'   appends/removes rows. The output is always normalized to columns lat, lon.
+#' @param add_click optional reactive returning the latest "add a point" click as
+#'   a list with `$lat` and `$lng` (e.g. `reactive(input$an_leaf_map_click)`).
+#'   If NULL and `render_map = TRUE`, the module's own `input$mymap_click` is used.
+#' @param remove_click optional reactive returning the latest "remove this point"
+#'   click as a list carrying a layer `$id` (e.g.
+#'   `reactive(input$an_leaf_map_marker_click)`); `$id` is the 1-based row index
+#'   of the point to drop. If `$id` is absent but `$lat`/`$lng` are present, the
+#'   nearest point is removed. If NULL and `render_map = TRUE`, the module's own
+#'   `input$mymap_marker_click` is used.
+#' @param clear optional reactive/event that, when it fires, empties all points
+#'   (e.g. `reactive(input$mapclick_clear)`). If NULL and `render_map = TRUE`, the
+#'   module's own "Clear all points" button is used.
+#' @param render_map if TRUE (default) the module renders its own demo map, slider
+#'   and Undo/Clear buttons. Set FALSE when the outer app owns the map.
+#'
 #' @noRd
 #'
 MODULE_SERVER_latlon_from_map_click <- function(id,
-                                                reactdat,  # reactiveVal holding the data.frame of lat,lon points; the module appends a row to it for each map click
+                                                reactdat,     # reactiveVal holding the data.frame of lat,lon points
+                                                add_click    = NULL, # reactive() of the outer app's map click (list with $lat,$lng)
+                                                remove_click = NULL, # reactive() of the outer app's marker/shape click (list with $id)
+                                                clear        = NULL, # reactive()/event that empties all points
+                                                render_map   = TRUE, # FALSE when the outer app owns the map
                                                 ...) {
 
   # if instead of this being a param passed here, you were to initialize the reactive data.frame of lat,lon points that will be output of this function:
@@ -113,65 +168,127 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
         }
       }
 
-      output$mymap <- leaflet::renderLeaflet({  # DRAW BASIC MAP
-        # Use leaflet() here, and only include aspects of map that won't need to change dynamically
-        # (at least, not unless the entire map is being torn down and recreated).
-        leaflet::leaflet() %>%
-          leaflet::setView(-99, 40, zoom = 4)  %>%
-          leaflet::addProviderTiles(
-            leaflet::providers$CartoDB.Positron,
-            options = leaflet::providerTileOptions(noWrap = TRUE)
-          )
-      })
-
-      shiny::observeEvent(input$mymap_click, {   # WHEN MAP IS CLICKED, APPEND THAT LAT,LON AS A NEW POINT
-        click <- input$mymap_click
-        if (is.null(click)) {return()}
-        # APPEND the clicked point to the accumulated table of points
-        # (leaflet sends the clicked location as $lat and $lng)
-        newpt <- data.frame(lat = click$lat, lon = click$lng)
-        reactdat(rbind(latlon_only(reactdat()), newpt))
-      })
-
-      shiny::observeEvent(input$undo_point, {    # REMOVE THE MOST RECENTLY ADDED POINT
+      # ---- accumulator operations (the reusable core, shared by both modes) ----
+      add_point <- function(lat, lon) {
+        if (length(lat) != 1 || length(lon) != 1) {return(invisible())}
+        if (is.na(suppressWarnings(as.numeric(lat))) || is.na(suppressWarnings(as.numeric(lon)))) {return(invisible())}
+        reactdat(rbind(latlon_only(reactdat()),
+                       data.frame(lat = as.numeric(lat), lon = as.numeric(lon))))
+      }
+      remove_point_by_index <- function(i) {        # i is a 1-based row index (e.g. a leaflet layerId)
         cur <- latlon_only(reactdat())
-        if (NROW(cur) > 0) {
-          reactdat(cur[-NROW(cur), , drop = FALSE])
+        i <- suppressWarnings(as.integer(i))
+        if (length(i) == 1 && !is.na(i) && i >= 1 && i <= NROW(cur)) {
+          reactdat(cur[-i, , drop = FALSE])
         }
-      })
+      }
+      remove_last <- function() {
+        cur <- latlon_only(reactdat())
+        if (NROW(cur) > 0) {reactdat(cur[-NROW(cur), , drop = FALSE])}
+      }
+      clear_all <- function() {reactdat(data.frame(lat = numeric(0), lon = numeric(0)))}
 
-      shiny::observeEvent(input$clear_points, {  # REMOVE ALL POINTS
-        reactdat(data.frame(lat = numeric(0), lon = numeric(0)))
-      })
+      # Guard so the map click that may coincide with a delete (marker) click does not re-add a point.
+      # Most leaflet vector-layer clicks do not bubble to the map's click event, but this is a defensive,
+      # order-independent, auto-expiring guard. Non-reactive on purpose - mutated with <<-.
+      last_remove_time <- NULL
 
-      shiny::observe({   # REDRAW ALL POINTS WHENEVER THE POINTS OR THE RADIUS SLIDER CHANGE
-        df <- latlon_only(reactdat())
-        radius_miles <- input$pointradius_input
-        if (is.null(radius_miles)) {radius_miles <- 3}
+      # ---- choose event sources for the two modes ----
+      add_source    <- if (!is.null(add_click))    {add_click}    else if (render_map) {shiny::reactive(input$mymap_click)}        else {NULL}
+      remove_source <- if (!is.null(remove_click)) {remove_click} else if (render_map) {shiny::reactive(input$mymap_marker_click)} else {NULL}
 
-        # clear everything previously drawn, then redraw all current points.
-        # Note: circles are "shapes", center dots are "markers" - clear both (the old code only cleared markers, which never removed the circles).
-        proxy <- leaflet::leafletProxy("mymap", session) %>%
-          leaflet::clearShapes() %>%
-          leaflet::clearMarkers() %>%
-          leaflet::clearPopups()
+      # REMOVE one point. Defined BEFORE the ADD observer so it runs first within a reactive flush.
+      if (!is.null(remove_source)) {
+        shiny::observeEvent(remove_source(), {
+          mc <- remove_source()
+          if (is.null(mc)) {return()}
+          last_remove_time <<- Sys.time()
+          if (!is.null(mc$id)) {
+            remove_point_by_index(mc$id)                 # leaflet layerId == 1-based row index
+          } else if (!is.null(mc$lat) && !is.null(mc$lng)) {
+            cur <- latlon_only(reactdat())               # no layerId: remove the nearest existing point
+            if (NROW(cur) > 0) {
+              d <- (cur$lat - mc$lat)^2 + (cur$lon - mc$lng)^2
+              remove_point_by_index(which.min(d))
+            }
+          }
+        # ignoreInit not set: the startup NULL is skipped by ignoreNULL (default TRUE);
+        # do NOT use ignoreInit = TRUE here - with a reactive() event source it would also swallow the first real click.
+        })
+      }
 
-        if (NROW(df) > 0) {
-          labels <- paste0("Point ", seq_len(NROW(df)), ": ",
-                           # Note slight changes can occur in lat,lon values if using paste() instead of format() as per ?as.character()
-                           round(df$lat, 5), ", ", round(df$lon, 5))
-          proxy %>%
-            leaflet::addCircles(lng = df$lon, lat = df$lat,
-                                radius = radius_miles * meters_per_mile,   # radius in meters; changes when slider is used
-                                fillOpacity = 0.1, color = "#3388ff",
-                                highlightOptions = leaflet::highlightOptions(fillOpacity = 0.5, bringToFront = TRUE), # shaded when mouse hovers over the circle
-                                popup = labels, label = labels) %>%
-            leaflet::addCircleMarkers(lng = df$lon, lat = df$lat,    # a small visible dot at each clicked point's center
-                                radius = 4, color = "red", fillColor = "red",
-                                fillOpacity = 1, stroke = FALSE,
-                                popup = labels, label = labels)
-        }
-      })
+      # ADD one point
+      if (!is.null(add_source)) {
+        shiny::observeEvent(add_source(), {
+          click <- add_source()
+          if (is.null(click)) {return()}
+          # skip the map click that coincides with a just-performed delete (marker) click
+          if (!is.null(last_remove_time) &&
+              as.numeric(difftime(Sys.time(), last_remove_time, units = "secs")) < 0.5) {
+            last_remove_time <<- NULL
+            return()
+          }
+          add_point(click$lat, click$lng)                # leaflet sends clicked location as $lat and $lng
+        }) # ignoreInit deliberately not set (see remove observer note above)
+      }
+
+      # CLEAR all points (outer app's clear event, if provided).
+      # An actionButton clear source starts at 0 (not NULL), so this may fire once at startup,
+      # which is harmless (clearing an already-empty set).
+      if (!is.null(clear)) {
+        shiny::observeEvent(clear(), {clear_all()})
+      }
+      # the module's own Undo/Clear buttons (standalone mode only)
+      if (render_map) {
+        shiny::observeEvent(input$clear_points, {clear_all()})
+        shiny::observeEvent(input$undo_point,  {remove_last()})
+      }
+
+      # ---- standalone demo map (only when the module owns the map) ----
+      if (render_map) {
+
+        output$mymap <- leaflet::renderLeaflet({  # DRAW BASIC MAP
+          # Use leaflet() here, and only include aspects of map that won't need to change dynamically
+          # (at least, not unless the entire map is being torn down and recreated).
+          leaflet::leaflet() %>%
+            leaflet::setView(-99, 40, zoom = 4)  %>%
+            leaflet::addProviderTiles(
+              leaflet::providers$CartoDB.Positron,
+              options = leaflet::providerTileOptions(noWrap = TRUE)
+            )
+        })
+
+        shiny::observe({   # REDRAW ALL POINTS WHENEVER THE POINTS OR THE RADIUS SLIDER CHANGE
+          df <- latlon_only(reactdat())
+          radius_miles <- input$pointradius_input
+          if (is.null(radius_miles)) {radius_miles <- 3}
+
+          # clear everything previously drawn, then redraw all current points.
+          # Note: circles are "shapes", center dots are "markers" - clear both (the old code only cleared markers, which never removed the circles).
+          proxy <- leaflet::leafletProxy("mymap", session) %>%
+            leaflet::clearShapes() %>%
+            leaflet::clearMarkers() %>%
+            leaflet::clearPopups()
+
+          if (NROW(df) > 0) {
+            ids <- as.character(seq_len(NROW(df)))       # layerId == row index, so clicking a dot removes that point
+            labels <- paste0("Point ", seq_len(NROW(df)), ": ",
+                             # Note slight changes can occur in lat,lon values if using paste() instead of format() as per ?as.character()
+                             round(df$lat, 5), ", ", round(df$lon, 5))
+            proxy %>%
+              leaflet::addCircles(lng = df$lon, lat = df$lat,
+                                  radius = radius_miles * meters_per_mile,   # radius in meters; changes when slider is used
+                                  fillOpacity = 0.1, color = "#3388ff",
+                                  highlightOptions = leaflet::highlightOptions(fillOpacity = 0.5, bringToFront = TRUE), # shaded when mouse hovers over the circle
+                                  popup = labels, label = labels) %>%
+              leaflet::addCircleMarkers(lng = df$lon, lat = df$lat,    # a small visible dot at each clicked point's center
+                                  layerId = ids,        # clicking a dot fires input$mymap_marker_click with $id = this index
+                                  radius = 4, color = "red", fillColor = "red",
+                                  fillOpacity = 1, stroke = FALSE,
+                                  popup = labels, label = labels)
+          }
+        })
+      }
 
       # return the reactive data.frame of lat,lon values (one row per clicked point)
       return( reactdat ) # no parentheses here - return the reactive object not just its current value
@@ -290,6 +407,8 @@ if (try_this_module_here) {
 
 # *How to run automated tests on a module: ####
 # (does not need a browser - simulates clicks via session$setInputs)
+
+## (A) STANDALONE mode - the module owns the map; clicks arrive on input$mymap_*
 if (1 == 0) {
   shiny::testServer(
     app = MODULE_SERVER_latlon_from_map_click,
@@ -307,12 +426,46 @@ if (1 == 0) {
       session$setInputs(mymap_click = list(lat = 34.05, lng = -118.25))
       stopifnot(NROW(reactdat()) == 2)
 
-      # undo removes the most recent point
+      # undo removes the most recent point (does not engage the delete-click guard)
       session$setInputs(undo_point = 1)
       stopifnot(NROW(reactdat()) == 1)
+      stopifnot(reactdat()$lat == 40)
+
+      # add it back, then click an existing point (marker) to remove just that one (layerId == row index)
+      session$setInputs(mymap_click = list(lat = 34.05, lng = -118.25))
+      stopifnot(NROW(reactdat()) == 2)
+      session$setInputs(mymap_marker_click = list(id = "1", lat = 40, lng = -99))
+      stopifnot(NROW(reactdat()) == 1)
+      stopifnot(reactdat()$lat == 34.05)
 
       # clear removes all points
       session$setInputs(clear_points = 1)
+      stopifnot(NROW(reactdat()) == 0)
+    }
+  )
+}
+
+## (B) EMBEDDED mode - the outer app owns the map; events arrive via reactives.
+##     render_map = FALSE, and add_click / remove_click / clear are reactiveVals we drive.
+if (1 == 0) {
+  rd <- shiny::reactiveVal(data.frame(lat = numeric(0), lon = numeric(0)))
+  ac <- shiny::reactiveVal(NULL) # stands in for reactive(input$an_leaf_map_click)
+  rc <- shiny::reactiveVal(NULL) # stands in for reactive(input$an_leaf_map_marker_click)
+  cl <- shiny::reactiveVal(NULL) # stands in for reactive(input$mapclick_clear)
+  shiny::testServer(
+    app = MODULE_SERVER_latlon_from_map_click,
+    args = list(reactdat = rd, add_click = ac, remove_click = rc, clear = cl, render_map = FALSE),
+    {
+      stopifnot(NROW(reactdat()) == 0)
+
+      ac(list(lat = 40,    lng = -99));     session$flushReact()
+      ac(list(lat = 34.05, lng = -118.25)); session$flushReact()
+      stopifnot(NROW(reactdat()) == 2)
+
+      rc(list(id = "1", lat = 40, lng = -99)); session$flushReact() # remove the first point
+      stopifnot(NROW(reactdat()) == 1 && reactdat()$lat == 34.05)
+
+      cl(1); session$flushReact()  # clear all
       stopifnot(NROW(reactdat()) == 0)
     }
   )
