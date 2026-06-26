@@ -215,14 +215,12 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #'
 ejamit <- function(sitepoints = NULL,
                    radius = 3,
-                   buffer = NULL,  # alias (synonym) for radius
                    radius_donut_lower_edge = 0,
                    maxradius = 31.07,
                    avoidorphans = FALSE,
                    quadtree = NULL,
                    fips = NULL,  # namestr = '', ?
                    shapefile = NULL,
-                   shape = NULL,  # alias (synonym) for shapefile
                    countcols = NULL,
                    wtdmeancols = NULL,
                    calculatedcols = NULL,
@@ -257,6 +255,8 @@ ejamit <- function(sitepoints = NULL,
                    showpctowned = TRUE,
                    download_city_fips_bounds = TRUE,
                    download_noncity_fips_bounds = FALSE,
+                   buffer = NULL,  # alias (synonym) for radius -- placed here (name-only) to avoid shifting positional args
+                   shape = NULL,   # alias (synonym) for shapefile
                    ...
 ) {
   # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"

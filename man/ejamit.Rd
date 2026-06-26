@@ -7,14 +7,12 @@
 ejamit(
   sitepoints = NULL,
   radius = 3,
-  buffer = NULL,
   radius_donut_lower_edge = 0,
   maxradius = 31.07,
   avoidorphans = FALSE,
   quadtree = NULL,
   fips = NULL,
   shapefile = NULL,
-  shape = NULL,
   countcols = NULL,
   wtdmeancols = NULL,
   calculatedcols = NULL,
@@ -44,6 +42,8 @@ ejamit(
   showpctowned = TRUE,
   download_city_fips_bounds = TRUE,
   download_noncity_fips_bounds = FALSE,
+  buffer = NULL,
+  shape = NULL,
   ...
 )
 }
@@ -51,10 +51,6 @@ ejamit(
 \item{sitepoints}{data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers}
 
 \item{radius}{in miles, defining circular buffer around a site point (defaults to zero in shapefile case).}
-
-\item{buffer}{Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
-For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
-before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).}
 
 \item{radius_donut_lower_edge}{radius of lower edge of donut ring if analyzing a ring not circle}
 
@@ -72,11 +68,6 @@ It can be automatically created when the package is attached via the .onAttach()
 such as a list of US Counties or tracts. Passed to \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}}}
 
 \item{shapefile}{optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.}
-
-\item{shape}{Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
-e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)}
-If in RStudio you want it to interactively prompt you to pick a file,
-use shapefile=1 (otherwise it assumes you want to pick a latlon file).}
 
 \item{countcols}{character vector of names of variables to aggregate within a buffer using a sum of counts,
 like, for example, the number of people for whom a poverty ratio is known,
@@ -151,6 +142,15 @@ passed to \code{\link[=doaggregate]{doaggregate()}} also. app server sets this t
 \item{download_city_fips_bounds}{passed to \code{\link[=area_sqmi]{area_sqmi()}}}
 
 \item{download_noncity_fips_bounds}{passed to \code{\link[=area_sqmi]{area_sqmi()}}}
+
+\item{buffer}{Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
+For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
+before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).}
+
+\item{shape}{Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
+e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)}
+If in RStudio you want it to interactively prompt you to pick a file,
+use shapefile=1 (otherwise it assumes you want to pick a latlon file).}
 
 \item{...}{passed to \code{\link[=getblocksnearby]{getblocksnearby()}} etc. such as  report_progress_every_n = 0}
 }
