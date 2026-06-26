@@ -389,6 +389,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     if (!(fileextension %in% fileextensions_implemented)) {
       warning("fileextension must be one of", fileextensions_implemented)
       fileextension <- global_or_param("default_format1pager")  #".html"
+      fileextension <- paste0(".", gsub("^\\.", "", fileextension))
       if (!(fileextension %in% fileextensions_implemented)) {
         fileextension <- ".html" # fallback if problem with global
       }

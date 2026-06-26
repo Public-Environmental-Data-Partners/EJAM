@@ -556,7 +556,7 @@ app_ui <- function(request) {
                                    label   = "Download format:",
                                    choices = c("HTML" = "html", "PDF" = "pdf"),
                                    # html format has live interactive maps with popups and links, but pdf has better pagination for printing.
-                                   selected = input$default_format1pager, # based on advanced tab, which is based on global_or_param("default_format1pager"),
+                                   selected = global_or_param("default_format1pager"), # kept in sync with advanced tab via updateRadioButtons() in server
                                    inline   = TRUE
                                  ),
                                  downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'

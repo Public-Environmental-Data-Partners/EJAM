@@ -265,6 +265,20 @@ app_server <- function(input, output, session) {
                        selected = level_of_detail_based_on_default_naics
     )
   })
+  observeEvent(input$default_format1pager, {
+    selected_format <- input$default_format1pager
+    if (!isTRUE(selected_format %in% c("html", "pdf"))) {
+      selected_format <- global_or_param("default_format1pager")
+    }
+    if (!isTRUE(selected_format %in% c("html", "pdf"))) {
+      selected_format <- "html"
+    }
+    shiny::updateRadioButtons(
+      session = session,
+      inputId = "fileextension",
+      selected = selected_format
+    )
+  })
 
   # update ss_select_NAICS input options (since using server side and it starts as NULL to load faster) ###
   observeEvent(eventExpr = {
