@@ -2668,7 +2668,7 @@ app_server <- function(input, output, session) {
   output$download_report_multisite <- downloadHandler(
     filename = function() {
       html_path <- downloadable_file_report_multisite()
-      if (isTRUE(input$format_report_multisite %in% "pdf")) {
+      if (isTRUE(input$fileextension %in% "pdf")) { # had been input$format_report_multisite
         sub("\\.html$", ".pdf", basename(html_path))
       } else {
         basename(html_path)
@@ -2683,7 +2683,7 @@ app_server <- function(input, output, session) {
         # stop(msg, call. = FALSE)
       }
 
-      if (isTRUE(input$format_report_multisite %in% "pdf")) {
+      if (isTRUE(input$fileextension %in% "pdf")) { # had been input$format_report_multisite
         # pdf format was requested
         tryCatch({
           assert_pdf_report_available() # stop() if pagedown/Chrome unavailable
@@ -2740,7 +2740,7 @@ app_server <- function(input, output, session) {
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
+        ext = ifelse(input$fileextension %in% 'pdf', '.pdf', '.html') # had been input$format_report_multisite
       )
     },
     content = function(file) {
@@ -2763,7 +2763,7 @@ app_server <- function(input, output, session) {
   # (1 button per site in the table of sites, to see report or barplot for that site)
   #
   # NOTE: This code was written but is not used if the app obtains these reports via API.
-  # Rendering here is probably faster and supports more parameters / features than API,
+  # Rendering here is probably faster and supports more parameters / features than API, & would be especially useful for large multipolygon shapefiles,
   # while using the API for 1-site reports in the app is simpler.
 
   cur_button <- reactiveVal(NULL)
@@ -2788,7 +2788,7 @@ app_server <- function(input, output, session) {
         selected_location_name(location_name)
 
         # Store a temporary file name/path in the reactive value
-        fileextension <- ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
+        fileextension <- ifelse(input$fileextension %in% 'pdf', '.pdf', '.html') # had been input$format_report_multisite
         temp_file <- tempfile(fileext = fileextension)
 
          # if shapefile was used for analysis, provide it to ejam2report()

@@ -552,10 +552,11 @@ app_ui <- function(request) {
                                ###              > DOWNLOAD BUTTON    ####
                                tags$div(
                                  radioButtons(
-                                   inputId = "format_report_multisite",
+                                   inputId = "fileextension", # had been called format_report_multisite, # see format1pager and fileextension
                                    label   = "Download format:",
                                    choices = c("HTML" = "html", "PDF" = "pdf"),
-                                   selected = "html",
+                                   # html format has live interactive maps with popups and links, but pdf has better pagination for printing.
+                                   selected = input$default_format1pager, # based on advanced tab, which is based on global_or_param("default_format1pager"),
                                    inline   = TRUE
                                  ),
                                  downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
@@ -1302,9 +1303,11 @@ app_ui <- function(request) {
                                      selected = global_or_param("default_plotkind_1pager")),
 
                  ## _radio button on format of short report
-                 #                  was DISABLED while PDF KNITTING DEBUGGED
-                 radioButtons(inputId = "format1pager", "Format",
+                 # sets filename and fileextension parameter in ejam2report()
+                 h3("Short report title and format - html provides live interactive map with popups and links, but pdf has better pagination for printing."),
+                 shiny::radioButtons(inputId = "default_format1pager", "Format",
                               choices = c(html = "html", pdf = "pdf"),
+                              selected = global_or_param("default_format1pager"),
                               inline = TRUE),
 
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),

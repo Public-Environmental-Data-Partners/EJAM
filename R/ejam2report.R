@@ -388,7 +388,10 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     fileextensions_implemented <- c(".html", ".pdf")
     if (!(fileextension %in% fileextensions_implemented)) {
       warning("fileextension must be one of", fileextensions_implemented)
-      fileextension <- ".html"
+      fileextension <- global_or_param("default_format1pager")  #".html"
+      if (!(fileextension %in% fileextensions_implemented)) {
+        fileextension <- ".html" # fallback if problem with global
+      }
     }
 
     ## > filename ####
@@ -405,7 +408,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         buffer_dist = rad,
         site_method = site_method, # can be latlon, shp, SHP, fips, FIPS, MACT, etc. (just used as-is in filename)
         with_datetime = FALSE,
-        ext = fileextension # in server,  ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = fileextension
       )
       temp_comm_report <- file.path(tempdir(), filename)
     } else {
