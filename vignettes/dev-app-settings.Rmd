@@ -169,10 +169,32 @@ of UI inputs, not other reactive values (unless the server code specifies otherw
 using the `shiny::onBookmark()` and `shiny::onRestore()` functions to make 
 bookmarks store other information, beyond just inputs).
 Some important global defaults affect the app but not by providing
-initial values for inputs in the shiny app, so some useful information 
+initial values for inputs in the shiny app, so some useful information
 including some that is controlled by global defaults or user parameters in ejamapp()
 cannot be bookmarked because it is stored in reactives
-but not as shiny app inputs. 
+but not as shiny app inputs.
+
+### Launch URL with pre-selected sites (handoff from an external app)
+
+Separately from Shiny's `?_inputs_&...` bookmark mechanism, the app server reads a
+small set of **custom launch query parameters** so an external app (e.g. EJScreen)
+can open EJAM already pre-loaded with a set of places. This is the way to pass in
+**points or polygons**, which are file uploads and therefore cannot travel in a
+url-encoded bookmark. The vocabulary matches `url_ejamapi()`:
+
+- `?lat=33,34&lon=-112,-114` — one or more points (comma-separated), each a site
+- `?fips=10001,10003` — one or more FIPS codes, **each a separate site**
+- `?shape=<url-encoded GeoJSON>` — a polygon / FeatureCollection (read by `shapefile_from_any()`)
+- `?radius=3` (or `?buffer=3`) — analysis radius in miles
+- `?handoff=<token>` — a token previously minted by the EJAM API `POST /handoff`;
+  the app fetches `GET /handoff/<token>` and pre-loads whatever places it holds.
+  Use this for large polygon sets that would not fit in a URL.
+
+Only one place-type is loaded per launch (points, then FIPS, then polygons),
+matching the one-method-per-analysis model. These set per-session reactives that
+`data_up_latlon()`, `data_up_fips()`, and `data_up_shp()` prefer over the
+`ejamapp()`/global defaults, so the app opens with those sites selected and ready
+to run. See the handler near the top of the SELECT SITES section in `app_server.R`.
 
 --------------
 --------------

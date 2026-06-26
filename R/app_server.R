@@ -406,11 +406,97 @@ app_server <- function(input, output, session) {
   ## initialize lat/lon upload error message (e.g. point cap exceeded)
   latlon_upload_error <- reactiveVal(NULL)
 
+  #############################################################################  #
+  ## Sites supplied via the launch URL (handoff from an external app like EJScreen) ####
+  #
+  # These reactiveVals hold a set of places provided at launch through the URL,
+  # either as direct query params (?lat=&lon=, ?fips=, ?shape=<geojson>, ?radius=)
+  # or via a token (?handoff=<token>) that the EJAM API resolves to the same kinds
+  # of places. They mirror the ejamapp() parameters sitepoints/fips/shapefile but
+  # are set per-session at runtime, so a deployed app can be opened pre-loaded.
+  # data_up_tablepassed_latlon(), data_up_shp(), and data_up_fips() prefer these
+  # over the global_or_param() defaults. See url_ejamapi() for the matching URL
+  # vocabulary used by the EJAM API. Only one place-type is loaded per launch
+  # (points, then FIPS, then polygons), matching the one-method-per-analysis model.
+  url_sitepoints <- reactiveVal(NULL)
+  url_shapefile  <- reactiveVal(NULL)
+  url_fips       <- reactiveVal(NULL)
+
+  observe({
+    search <- session$clientData$url_search
+    if (is.null(search) || !nzchar(search)) {return(NULL)}
+    q <- shiny::parseQueryString(search)
+
+    # base URL of the EJAM API that mints/resolves handoff tokens (matches url_ejamapi())
+    apibase <- "https://ejamapi-84652557241.us-central1.run.app"
+
+    # Normalize either a ?handoff= token or direct params into one spec.
+    spec <- list()
+    if (!is.null(q$handoff) && nzchar(q$handoff)) {
+      tokenurl <- paste0(apibase, "/handoff/", utils::URLencode(q$handoff, reserved = TRUE))
+      payload  <- tryCatch(jsonlite::fromJSON(tokenurl), error = function(e) NULL)
+      if (!is.null(payload) && is.null(payload$error)) {
+        if (!is.null(payload$sites) && is.data.frame(payload$sites)) {
+          spec$lat <- payload$sites$lat
+          spec$lon <- payload$sites$lon
+        }
+        if (!is.null(payload$fips))   {spec$fips   <- as.character(payload$fips)}
+        if (!is.null(payload$shape))  {spec$shape  <- as.character(jsonlite::toJSON(payload$shape, auto_unbox = TRUE))}
+        if (!is.null(payload$radius)) {spec$radius <- payload$radius}
+      }
+    } else {
+      if (!is.null(q$lat) && !is.null(q$lon)) {
+        spec$lat <- as.numeric(trimws(strsplit(q$lat, ",")[[1]]))
+        spec$lon <- as.numeric(trimws(strsplit(q$lon, ",")[[1]]))
+      }
+      if (!is.null(q$fips)  && nzchar(q$fips))  {spec$fips  <- trimws(strsplit(q$fips, ",")[[1]])}
+      if (!is.null(q$shape) && nzchar(q$shape)) {spec$shape <- q$shape}
+      spec$radius <- q$radius %||% q$buffer
+    }
+
+    loaded <- FALSE
+    ## POINTS (lat/lon)
+    if (!is.null(spec$lat) && !is.null(spec$lon)) {
+      pts <- tryCatch(data.frame(lat = as.numeric(spec$lat), lon = as.numeric(spec$lon)),
+                      error = function(e) NULL)
+      if (!is.null(pts) && nrow(pts) > 0 && !anyNA(pts[, c("lat", "lon")])) {
+        url_sitepoints(pts)
+        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
+        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "latlon")
+        loaded <- TRUE
+      }
+    }
+    ## FIPS (each code is a separate site)
+    if (!loaded && !is.null(spec$fips) && length(spec$fips) > 0) {
+      url_fips(as.character(spec$fips))
+      shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
+      shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "FIPS")
+      loaded <- TRUE
+    }
+    ## POLYGONS (GeoJSON text; stored as text and parsed by data_up_shp())
+    if (!loaded && !is.null(spec$shape)) {
+      shape_txt <- as.character(spec$shape)
+      shp <- tryCatch(shapefile_from_any(shape_txt, cleanit = FALSE, silentinteractive = TRUE),
+                      error = function(e) NULL)
+      if (!is.null(shp) && !inherits(shp, "try-error")) {
+        url_shapefile(shape_txt)
+        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
+        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "SHP")
+        loaded <- TRUE
+      }
+    }
+    ## radius / buffer
+    if (!is.null(spec$radius)) {
+      radval <- suppressWarnings(as.numeric(spec$radius))
+      if (!is.na(radval)) {try(shiny::updateSliderInput(session, inputId = "radius_now", value = radval), silent = TRUE)}
+    }
+  }, priority = 1000)
+
   data_up_shp <- reactive({
 
     if (is.null(input$ss_upload_shp)) {
-      ## no uploaded file, so check if shape was provided as parameter in ejamapp()
-      xshp <- global_or_param("shapefile")
+      ## no uploaded file, so check if shape was provided via launch URL or as parameter in ejamapp()
+      xshp <- url_shapefile() %||% global_or_param("shapefile")
       if (is.null(xshp) || length(xshp) == 0) {
         if (input$testing) {cat("no shp uploaded, no shp provided in ejamapp(), so should stop here\n")}
         req(FALSE, cancelOutput = TRUE)
@@ -574,7 +660,7 @@ app_server <- function(input, output, session) {
   data_up_tablepassed_latlon <- reactive({
 
     sitepoints <- NULL # since never set in global_defaults_*.R, only exists if at all via  get_golem_options()
-    sitepoints <- global_or_param("sitepoints")
+    sitepoints <- url_sitepoints() %||% global_or_param("sitepoints") # launch-URL points take precedence over ejamapp() param
     req(sitepoints)
 
     ################################# #
@@ -1145,8 +1231,8 @@ app_server <- function(input, output, session) {
 
     xfips <- NULL
     if (is.null(input$ss_upload_fips)) {
-      ### nothing uploaded, so check if fips got passed as parameter to ejamapp()
-      xfips <- global_or_param("fips")
+      ### nothing uploaded, so check if fips got passed via launch URL or as parameter to ejamapp()
+      xfips <- url_fips() %||% global_or_param("fips")
       if (!is.null(xfips)) {
         cat("fips seems to have been passed as parameter to ejamapp() \n")
         shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = "upload")     # already done by ejamapp() but ok to repeat

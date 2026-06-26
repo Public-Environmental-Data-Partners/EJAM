@@ -8,6 +8,17 @@ ejamdata release, with no change to the packaged ACS or environmental data.
 
 Changes since v3.YYYY.0:
 
+## New Features
+
+- Launch-URL site handoff: the web app server now reads custom launch query
+  parameters (`?lat=&lon=`, `?fips=`, `?shape=<geojson>`, `?radius=`/`?buffer=`,
+  and `?handoff=<token>`) so an external app such as EJScreen can open EJAM
+  pre-loaded with a set of points, FIPS codes, or polygons. Each FIPS code is
+  treated as a separate site. Polygons (a file upload that cannot travel in a
+  Shiny url-bookmark) are now passable via `?shape=` or, for large sets, via a
+  `?handoff=<token>` resolved against the EJAM API. The vocabulary matches
+  `url_ejamapi()`. See `vignettes/dev-app-settings.Rmd`.
+
 ## Bug Fixes
 
 - Census API key (tidycensus >= 1.8 breaking change): tidycensus now *errors*
