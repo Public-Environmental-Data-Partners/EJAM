@@ -5,7 +5,12 @@
 \title{helper to infer what type of sites were analyzed by looking at params given as INPUT to ejamit()
 used by ejamit() and ejamit_compare_types_of_places()}
 \usage{
-ejamit_sitetype_from_input(sitepoints = NULL, fips = NULL, shapefile = NULL)
+ejamit_sitetype_from_input(
+  sitepoints = NULL,
+  fips = NULL,
+  shapefile = NULL,
+  shape = NULL
+)
 }
 \arguments{
 \item{sitepoints}{parameter as was passed to \code{\link[=ejamit]{ejamit()}}}
@@ -13,6 +18,8 @@ ejamit_sitetype_from_input(sitepoints = NULL, fips = NULL, shapefile = NULL)
 \item{fips}{parameter as was passed to \code{\link[=ejamit]{ejamit()}}}
 
 \item{shapefile}{parameter as was passed to \code{\link[=ejamit]{ejamit()}}}
+
+\item{shape}{alias (synonym) for shapefile}
 }
 \value{
 either "latlon", "fips", or "shp",

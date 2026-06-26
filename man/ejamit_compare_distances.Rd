@@ -16,6 +16,9 @@ ejamit_compare_distances(
   ylab = "Ratio of Avg. within X miles to Avg. Statewide or Nationwide",
   ylim = c(0, 5),
   n = 1,
+  buffers = NULL,
+  buffer = NULL,
+  radius = NULL,
   ...
 )
 }
@@ -48,6 +51,8 @@ etc.}
 
 \item{n}{optional, how many of the indicators to report on (printed to console),
 when reporting which indicators most strongly increase as radius decreases.}
+
+\item{buffers, buffer, radius}{aliases (synonyms) for radii}
 
 \item{...}{optional, passed to \code{\link[=ejamit]{ejamit()}}}
 }

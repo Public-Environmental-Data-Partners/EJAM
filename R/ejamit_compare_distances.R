@@ -33,6 +33,7 @@
 #'
 #' @param sitepoints like for [ejamit()]
 #' @param radii vector of radius values like 1:3 for [ejamit()]
+#' @param buffers,buffer,radius aliases (synonyms) for radii
 #' @param donuts_not_cumulative set to TRUE to get results on each ring not each full circle
 #' @param ... passed to [ejamit()]
 #' @param quiet passed to [ejamit()]
@@ -55,7 +56,12 @@
 ejamit_compare_distances_fulloutput <- function(sitepoints, radii = c(1,2,3),
                                                 donuts_not_cumulative = FALSE,
                                                 quiet = TRUE, silentinteractive = TRUE,
+                                                buffers = NULL, buffer = NULL, radius = NULL, # aliases (synonyms) for radii
                                                 ...) {
+  # Aliases (synonyms) for radii (the vector of distances), for naming consistency.
+  if (!is.null(buffers)) {radii <- buffers}
+  if (!is.null(buffer))  {radii <- buffer}
+  if (!is.null(radius))  {radii <- radius}
   radii <- as.numeric(radii) # 1:2 is integer but c(1,2) is numeric, so this keeps class of radius.miles in output consistently always numeric, like for ejamit()
   if (length(radii) > 30 || max(radii, na.rm = T) > 31 || any(!is.numeric(radii)) || any(radii < 0.5)) {
     stop("radii must be numbers between 0.5 and 31, and 30 different radii is the max allowed.")
@@ -123,6 +129,7 @@ out_bydistance2results_bydistance <- function(out_bydistance) {
 #'
 #' @param sitepoints like for [ejamit()]
 #' @param radii optional, vector of radius values like 1:3 for [ejamit()]
+#' @param buffers,buffer,radius aliases (synonyms) for radii
 #' @param donuts_not_cumulative optional, when implemented, if set TRUE,
 #'   would return results on areas in each "donut" or ring that is a distance bin,
 #'   such as for
@@ -177,7 +184,12 @@ ejamit_compare_distances <- function(sitepoints, radii = c(1,2,3),
                                      ylab = "Ratio of Avg. within X miles to Avg. Statewide or Nationwide",
                                      ylim = c(0, 5),
                                      n = 1,
+                                     buffers = NULL, buffer = NULL, radius = NULL, # aliases (synonyms) for radii
                                      ...) {
+  # Aliases (synonyms) for radii (the vector of distances), for naming consistency.
+  if (!is.null(buffers)) {radii <- buffers}
+  if (!is.null(buffer))  {radii <- buffer}
+  if (!is.null(radius))  {radii <- radius}
 
   # Options for what format to return
   # from this function or similarly ejamit_compare_types_of_places()

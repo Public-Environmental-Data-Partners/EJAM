@@ -12,6 +12,8 @@ Changes since v3.YYYY.0:
 
 - Parameter aliases for consistency across `ejamit()`, `ejamapp()`, `url_ejamapp()`,
   `url_ejamapi()`/`ejamapi()`, `ejam2report()`, `ejam2map()`, `shapefile_from_any()`,
+  `ejamit_compare_distances()`/`_fulloutput()` (where **`buffers`** is a synonym for
+  the `radii` vector), `ejamit_compare_types_of_places()`, `ejamit_sitetype_from_input()`,
   and the EJAM API: **`buffer`** is now a synonym for **`radius`** (it reads more
   naturally for FIPS or polygon analysis), and **`shape`** (and **`shapefile`**) is a
   synonym for the polygon input -- including `ejam2report()`/`ejam2map()`'s `shp` and
