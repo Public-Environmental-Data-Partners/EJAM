@@ -5,7 +5,9 @@
 # can run this test only if source those functions or load_all() or if testing whole pkg maybe testthat can use internal functions
 
 test_that("module server works", {
-  skip_if_not(exists("MODULE_SERVER_latlontypedin"), message = "MODULE_SERVER_latlontypedin is not present")
+  # skip_if_not(exists("MODULE_SERVER_latlontypedin"), message = "MODULE_SERVER_latlontypedin is not present")
+  skip_if_not(require(rhandsontable))
+  skip_if_not(pkg_available("rhandsontable"))
 
   testServer(
     MODULE_SERVER_latlontypedin,
@@ -18,35 +20,37 @@ test_that("module server works", {
       manualRowMove   = TRUE
     ),
     {
-    ns <- session$ns
-    expect_true(
-      inherits(ns, "function")
-    )
-    expect_true(
-      grepl(id, ns(""))
-    )
-    expect_true(
-      grepl("test", ns("test"))
-    )
-    session$setInputs(reactdat = 1)
-    expect_true(input$reactdat == 1)
+      ns <- session$ns
+      expect_true(
+        inherits(ns, "function")
+      )
+      expect_true(
+        grepl(id, ns(""))
+      )
+      expect_true(
+        grepl("test", ns("test"))
+      )
+      session$setInputs(reactdat = 1)
+      expect_true(input$reactdat == 1)
 
-    # Here are some examples of tests you can
-    # run on your module
-    # - Testing the setting of inputs
-    # session$setInputs(x = 1)
-    # expect_true(input$x == 1)
-    # - If ever your input updates a reactiveValues
-    # - Note that this reactiveValues must be passed
-    # - to the testServer function via args = list()
-    # expect_true(r$x == 1)
-    # - Testing output
-    # expect_true(inherits(output$tbl$html, "html"))
+      # Here are some examples of tests you can
+      # run on your module
+      # - Testing the setting of inputs
+      # session$setInputs(x = 1)
+      # expect_true(input$x == 1)
+      # - If ever your input updates a reactiveValues
+      # - Note that this reactiveValues must be passed
+      # - to the testServer function via args = list()
+      # expect_true(r$x == 1)
+      # - Testing output
+      # expect_true(inherits(output$tbl$html, "html"))
     })
 })
 
 test_that("module ui works", {
-  skip_if_not(exists("MODULE_UI_latlontypedin"), message = "MODULE_UI_latlontypedin is not present")
+  # skip_if_not(exists("MODULE_UI_latlontypedin"), message = "MODULE_UI_latlontypedin is not present")
+  skip_if_not(require(rhandsontable))
+  skip_if_not(pkg_available("rhandsontable"))
 
   ui <- MODULE_UI_latlontypedin(id = "TESTID")
   golem::expect_shinytaglist(ui)
