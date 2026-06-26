@@ -31,8 +31,9 @@ ejamapi(
 \item{lat, lon}{Coordinates of point(s) for analysis of residents nearby.
 To specify point(s), provide either lat and lon, or sites, or sitepoints --
 they are alternative ways to specify point(s).
-For the "report" endpoint, specify only one point
-(until the API supports summary analysis over multiple locations).
+For the "report" endpoint you may specify one or more points; pass
+sitenumber=0 (via ...) for an aggregate multisite report over all of them
+(otherwise the default is a single-site report on the first site).
 For the "data" endpoint, specify one or more points.}
 
 \item{sites, sitepoints}{Only one of these should be provided - they are synonymous.

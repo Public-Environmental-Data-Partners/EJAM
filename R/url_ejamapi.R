@@ -8,22 +8,21 @@
 #' - Relies on API from
 #'   https://github.com/edgi-govdata-archiving/EJAM-API
 #'
-#' - Another option in the future might be to construct a URL that is a "deep link" to the live EJAM
-#'   app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.
+#' - To construct a "deep link" that launches the live EJAM *app* (not the API)
+#'   pre-loaded with sites, see [url_ejamapp()], which uses the same query
+#'   vocabulary (lat, lon, fips, shape, radius, handoff).
 #'
 #' - Will try to use the same input parameters as [ejamit()] does.
 #'
-#' - The API as of mid-2026 used [ejam2report()] with these parameter settings:
-#'   - `sitenumber = 1`
-#'   - `report_title="EJSCREEN Community Report"`
-#'
-#'   Therefore, it was not yet accepting parameters used by [ejamit()] and [ejam2report()] such as
-#'   - sitenumber=0 (for a multisite report)
-#'   - logo_path
-#'   - report_title
-#'   - analysis_title
-#'   - thresholds & threshnames
-#'   - radius_donut_lower_edge
+#' - The API now honors the `sitenumber` parameter passed through to [ejam2report()]:
+#'   the default is `sitenumber = 1` (a single-site report), and `sitenumber = 0`
+#'   (or "overall") produces an aggregate *multisite* report. The API leaves the
+#'   report title to [ejam2report()], which uses "EJSCREEN Community Report" for a
+#'   single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
+#'   polygons can exceed URL length for this GET-based path; the API also provides
+#'   a POST `/report` endpoint for those. The API does not yet accept every
+#'   [ejam2report()] option (e.g. logo_path, thresholds & threshnames,
+#'   radius_donut_lower_edge).
 #'
 #' @param sitepoints see [ejamit()]
 #' @param lat,lon can be provided as vectors of coordinates instead of providing sitepoints table

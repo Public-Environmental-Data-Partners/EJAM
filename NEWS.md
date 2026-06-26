@@ -30,6 +30,14 @@ Changes since v3.YYYY.0:
   defaults. The vocabulary matches `url_ejamapi()`. See
   `vignettes/dev-app-settings.Rmd`.
 
+- `url_ejamapp()` now builds a deep link that launches the live app pre-loaded
+  with a set of places: `url_ejamapp(lat=, lon=, fips=, shapefile=, radius=)` or
+  `url_ejamapp(handoff=<token>)`, using the same query vocabulary as
+  `url_ejamapi()`. (Default app base URL is `https://ejanalysis.com/ejamapp`.)
+  Docs for `ejamapp()`, `ejamapi()`, and `url_ejamapi()` were updated to reflect
+  that the EJAM API now supports multisite reports (`sitenumber=0`) and a POST
+  `/report` endpoint for many/large polygons.
+
 ## Bug Fixes
 
 - Census API key (tidycensus >= 1.8 breaking change): tidycensus now *errors*

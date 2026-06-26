@@ -32,8 +32,9 @@
 #' @param lat,lon Coordinates of point(s) for analysis of residents nearby.
 #'   To specify point(s), provide either lat and lon, or sites, or sitepoints --
 #'   they are alternative ways to specify point(s).
-#'   For the "report" endpoint, specify only one point
-#'   (until the API supports summary analysis over multiple locations).
+#'   For the "report" endpoint you may specify one or more points; pass
+#'   sitenumber=0 (via ...) for an aggregate multisite report over all of them
+#'   (otherwise the default is a single-site report on the first site).
 #'   For the "data" endpoint, specify one or more points.
 #' @param sites,sitepoints Only one of these should be provided - they are synonymous.
 #'   Coordinates of point(s) for analysis of residents nearby.
@@ -400,9 +401,16 @@ ejamapi <- function(
       # just needs functions in URL_API_NON_EJAM_FUNCTIONS.R
 
       latlon_length_mismatch <- !is.null(lat) && !is.null(lon) && length(lat) != length(lon)
-      if (length(lat) > 1 || length(lon) > 1 || latlon_length_mismatch ||
-          length(fips) > 1 || NROW(shape) > 1) {
-        warning("may not yet support multisite report for endpoint='report' ")
+      if (latlon_length_mismatch) {
+        warning("lat and lon should have the same length for a multisite report")
+      }
+      # The API now supports multisite reports for endpoint='report': pass
+      # sitenumber=0 (or "overall") via ... for an aggregate report over all sites.
+      # Many/large polygons may exceed URL length for this GET-based path; for
+      # those, use the API's POST /report endpoint.
+      if (NROW(shape) > 1) {
+        message("Multiple polygons in a GET report URL may exceed URL-length limits; ",
+                "consider the API's POST /report endpoint for many/large polygons.")
       }
 
       # . params as list ####
@@ -501,9 +509,9 @@ ejamapi <- function(
       reports = list()
       for (i in seq_along(urlx)) {
 
-        # handled this way while/if sitenumber = 1 is still hard coded in API.
-        # in url_ejamapi(), sitenumber 0 means overall combo report, -1 means N reports on 1 site each, 1 means just site #1.
-        # and note a better way to get multiple reports once EJAM is installed may be just ejam2report(ejamit())
+        # The API now honors sitenumber (default 1; pass sitenumber=0 / "overall" via ... for a multisite report).
+        # In url_ejamapi(), sitenumber 0 means overall combo report, -1 means N reports (one per site), 1 means just site #1.
+        # Note a better way to get reports once EJAM is installed is ejam2report(ejamit()) directly.
 
         if (fileextension %in% "pdf") {
 

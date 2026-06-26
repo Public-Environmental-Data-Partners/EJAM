@@ -82,24 +82,19 @@ Get URL(s) of HTML summary reports for use with EJAM-API
 \item This is work in progress to some extent -- this and the API may be add features in later releases.
 \item Relies on API from
 https://github.com/edgi-govdata-archiving/EJAM-API
-\item Another option in the future might be to construct a URL that is a "deep link" to the live EJAM
-app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.
+\item To construct a "deep link" that launches the live EJAM \emph{app} (not the API)
+pre-loaded with sites, see \code{\link[=url_ejamapp]{url_ejamapp()}}, which uses the same query
+vocabulary (lat, lon, fips, shape, radius, handoff).
 \item Will try to use the same input parameters as \code{\link[=ejamit]{ejamit()}} does.
-\item The API as of mid-2026 used \code{\link[=ejam2report]{ejam2report()}} with these parameter settings:
-\itemize{
-\item \code{sitenumber = 1}
-\item \code{report_title="EJSCREEN Community Report"}
-}
-
-Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejamit()}} and \code{\link[=ejam2report]{ejam2report()}} such as
-\itemize{
-\item sitenumber=0 (for a multisite report)
-\item logo_path
-\item report_title
-\item analysis_title
-\item thresholds & threshnames
-\item radius_donut_lower_edge
-}
+\item The API now honors the \code{sitenumber} parameter passed through to \code{\link[=ejam2report]{ejam2report()}}:
+the default is \code{sitenumber = 1} (a single-site report), and \code{sitenumber = 0}
+(or "overall") produces an aggregate \emph{multisite} report. The API leaves the
+report title to \code{\link[=ejam2report]{ejam2report()}}, which uses "EJSCREEN Community Report" for a
+single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
+polygons can exceed URL length for this GET-based path; the API also provides
+a POST \verb{/report} endpoint for those. The API does not yet accept every
+\code{\link[=ejam2report]{ejam2report()}} option (e.g. logo_path, thresholds & threshnames,
+radius_donut_lower_edge).
 }
 }
 \examples{

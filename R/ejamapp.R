@@ -18,6 +18,14 @@
 #'  ```
 #'  See details and examples.
 #'
+#'  These parameters are fixed when the app is launched (or deployed). To pre-load
+#'  an already-running/deployed app with a set of sites at runtime instead, open it
+#'  with launch query parameters in the URL: the app reads `?lat=&lon=`, `?fips=`,
+#'  `?shape=` (GeoJSON), `?radius=`, or `?handoff=<token>` at startup and
+#'  pre-selects those places. Use [url_ejamapp()] to build such a URL (its query
+#'  vocabulary matches [url_ejamapi()]). See the "Defaults and Custom Settings for
+#'  the Web App" vignette.
+#'
 #' @param enableBookmarking see [shiny::shinyApp]
 #' This parameter lets a user click the [shiny::bookmarkButton()] in the app
 #' to save the state of all  input$  settings.
