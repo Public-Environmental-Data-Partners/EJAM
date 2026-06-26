@@ -434,7 +434,14 @@ app_server <- function(input, output, session) {
     spec <- list()
     if (!is.null(q$handoff) && nzchar(q$handoff)) {
       tokenurl <- paste0(apibase, "/handoff/", utils::URLencode(q$handoff, reserved = TRUE))
-      payload  <- tryCatch(jsonlite::fromJSON(tokenurl), error = function(e) NULL)
+      # Fetch with a short timeout so a slow/unreachable API can't hang app startup
+      # (this runs on the Shiny server thread during session init).
+      payload  <- tryCatch(
+        jsonlite::fromJSON(httr2::resp_body_string(
+          httr2::req_perform(httr2::req_timeout(httr2::request(tokenurl), 5))
+        )),
+        error = function(e) NULL
+      )
       if (!is.null(payload) && is.null(payload$error)) {
         if (!is.null(payload$sites) && is.data.frame(payload$sites)) {
           spec$lat <- payload$sites$lat
@@ -455,8 +462,9 @@ app_server <- function(input, output, session) {
     }
 
     loaded <- FALSE
-    ## POINTS (lat/lon)
-    if (!is.null(spec$lat) && !is.null(spec$lon)) {
+    ## POINTS (lat/lon) -- require matching counts so a mismatch (e.g. lat=33 with
+    ## lon=-112,-114) is ignored rather than silently recycled into wrong points.
+    if (!is.null(spec$lat) && !is.null(spec$lon) && length(spec$lat) == length(spec$lon)) {
       pts <- tryCatch(data.frame(lat = as.numeric(spec$lat), lon = as.numeric(spec$lon)),
                       error = function(e) NULL)
       if (!is.null(pts) && nrow(pts) > 0 && !anyNA(pts[, c("lat", "lon")])) {
