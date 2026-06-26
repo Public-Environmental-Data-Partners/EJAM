@@ -1,10 +1,12 @@
 ################################################ ################################################# #
 
-# This file is draft possible module
-# for selecting sites by user clicking on a map to get lat lon values, and
-# adjusting the radius of the circle shown on the map around that point.
+# This file is a shiny Module
+# for selecting sites by user clicking on a map to get lat,lon values, and
+# adjusting the radius of the circle shown on the map around each point.
 
-# It is not yet fully developed or tested, but it is a starting point for development of this module.
+# The module lets the user click the map to add ONE OR MORE points. It accumulates
+# those clicks into a data.frame of lat,lon values (stored in the reactive `reactdat`)
+# that an "outer" app can read and use (e.g., as the list of sites to analyze in EJAM).
 
 # It also has notes on and is a demo of how to use reactives as inputs/outputs of a module,
 # and how to call a module from an outer overall app.
@@ -51,16 +53,27 @@ MODULE_UI_latlon_from_map_click <- function(id) {
   radiusdefault = 3
 
   ns <- shiny::NS(id)
-  tagList(
+  shiny::tagList(
 
     # show SLIDER & MAP
 
     shiny::sliderInput(inputId = ns('pointradius_input'),
-      'Point Radius', min = 1, max = 10, value = radiusdefault),
+      'Point Radius (miles)', min = 1, max = 10, value = radiusdefault),
+
+    shiny::helpText("Click on the map to add one or more points. ",
+                    "Move the slider to change the radius drawn around each point."),
 
     leaflet::leafletOutput(
       ns("mymap")
     ),
+
+    shiny::br(),
+
+    # let the user remove the most recent point or start over
+    shiny::actionButton(inputId = ns("undo_point"),  label = "Undo last point",
+                        class = 'usa-button usa-button--outline'),
+    shiny::actionButton(inputId = ns("clear_points"), label = "Clear all points",
+                        class = 'usa-button usa-button--outline'),
 
     shiny::br()
   )
@@ -74,17 +87,31 @@ MODULE_UI_latlon_from_map_click <- function(id) {
 #' @noRd
 #'
 MODULE_SERVER_latlon_from_map_click <- function(id,
-                                                reactdat,  # this is a reactive value that could be passed here as the default data.frame of lat,lon of 1 point
+                                                reactdat,  # reactiveVal holding the data.frame of lat,lon points; the module appends a row to it for each map click
                                                 ...) {
 
-  # if instead of this being a param passed here, you were to initialize the reactive data.frame of lat,lon of 1 point that will be output of this function
-  # reactdat <- shiny::reactiveVal(data.frame(lat = NA, lon = NA))
+  # if instead of this being a param passed here, you were to initialize the reactive data.frame of lat,lon points that will be output of this function:
+  # reactdat <- shiny::reactiveVal(data.frame(lat = numeric(0), lon = numeric(0)))
 
   #################################### #
   shiny::moduleServer(
     id = id,
     function(input, output, session) {
       ns <- session$ns
+
+      # Helper: coerce whatever is in reactdat() down to a clean data.frame of just lat,lon (dropping rows without valid lat/lon).
+      # This lets the module accept an initial/seed table that may have extra columns (e.g. testpoints_10 has sitenumber, sitename),
+      # while the module's own output is always a simple lat,lon table.
+      latlon_only <- function(x) {
+        if (is.data.frame(x) && all(c("lat", "lon") %in% names(x)) && NROW(x) > 0) {
+          out <- data.frame(lat = as.numeric(x$lat), lon = as.numeric(x$lon))
+          out <- out[!is.na(out$lat) & !is.na(out$lon), , drop = FALSE]
+          rownames(out) <- NULL
+          out
+        } else {
+          data.frame(lat = numeric(0), lon = numeric(0))
+        }
+      }
 
       output$mymap <- leaflet::renderLeaflet({  # DRAW BASIC MAP
         # Use leaflet() here, and only include aspects of map that won't need to change dynamically
@@ -97,51 +124,56 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
           )
       })
 
-      shiny::observe({   # WHEN CLICK ON MAP, GET LAT LON VALUE AND SHOW IT ON THE MAP
-
-        # Each kind of Incremental change to the map should be performed in its own observer.
-        leaflet::leafletProxy("mymap", session) %>% leaflet::clearMarkers()
-        # to remove just a specific one they click on, use its id # removeMarker("mycircle") # or input$mymap_marker_click$id
-        event <- input$mymap_click
-        if (is.null(event)) {return()}
-        shiny::isolate({
-
-          # UPDATE THE REACTIVE DATAFRAME WHEN POINT IS CLICKED
-          reactdat(data.frame(lat = input$lat, lon = input$lon))
-
-          # UPDATE THE MAP TO SHOW THE NEW POINT
-          leaflet::leafletProxy("mymap", session)  %>%
-            leaflet::addCircles(lng = input$mymap_click$lng, lat = input$mymap_click$lat,     # new point is drawn here when map is clicked
-                                radius = input$pointradius_input * meters_per_mile, fillOpacity = 0.1,
-                                highlightOptions = leaflet::highlightOptions(fillOpacity = 0.5), # this just makes it shaded when mouse hovers above the circle
-                                layerId = "mycircle"
-            ) %>%
-            leaflet::addPopups(lng = input$mymap_click$lng, lat = input$mymap_click$lat,
-                               # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
-                               popup = paste0("lat,lon: ", input$mymap_click$lat, ", ", input$mymap_click$lng))
-        })
+      shiny::observeEvent(input$mymap_click, {   # WHEN MAP IS CLICKED, APPEND THAT LAT,LON AS A NEW POINT
+        click <- input$mymap_click
+        if (is.null(click)) {return()}
+        # APPEND the clicked point to the accumulated table of points
+        # (leaflet sends the clicked location as $lat and $lng)
+        newpt <- data.frame(lat = click$lat, lon = click$lng)
+        reactdat(rbind(latlon_only(reactdat()), newpt))
       })
 
-      shiny::observe({   # WHEN RADIUS SLIDER MOVED, CHANGE RADIUS SHOWN ON MAP
-        shiny::req(input$mymap_click)
-        # Each kind of Incremental change to the map should be performed in its own observer.
-        leaflet::leafletProxy("mymap", session) %>% leaflet::clearMarkers()
-        event <- input$pointradius_input
-        if (is.null(event)) {return()}
-        shiny::isolate({
-          leaflet::leafletProxy("mymap", session)  %>%
-            leaflet::addCircles(lng = input$mymap_click$lng, lat = input$mymap_click$lat,
-                                radius = input$pointradius_input * meters_per_mile,   # radius changes here if slider is used
-                                fillOpacity = 0.1,
-                                layerId = "mycircle",
-                                highlightOptions = leaflet::highlightOptions(fillOpacity = 0.5, bringToFront = TRUE) ) %>%# this just makes it shaded when mouse hovers above the circle
-            leaflet::addPopups(lng = input$mymap_click$lng, lat = input$mymap_click$lat,
-                               # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
-                               popup = paste0("lat,lon: ", input$mymap_click$lat, ", ", input$mymap_click$lng))
-        })
+      shiny::observeEvent(input$undo_point, {    # REMOVE THE MOST RECENTLY ADDED POINT
+        cur <- latlon_only(reactdat())
+        if (NROW(cur) > 0) {
+          reactdat(cur[-NROW(cur), , drop = FALSE])
+        }
       })
 
-      # return a reactive data.frame of lat lon values for 1 point
+      shiny::observeEvent(input$clear_points, {  # REMOVE ALL POINTS
+        reactdat(data.frame(lat = numeric(0), lon = numeric(0)))
+      })
+
+      shiny::observe({   # REDRAW ALL POINTS WHENEVER THE POINTS OR THE RADIUS SLIDER CHANGE
+        df <- latlon_only(reactdat())
+        radius_miles <- input$pointradius_input
+        if (is.null(radius_miles)) {radius_miles <- 3}
+
+        # clear everything previously drawn, then redraw all current points.
+        # Note: circles are "shapes", center dots are "markers" - clear both (the old code only cleared markers, which never removed the circles).
+        proxy <- leaflet::leafletProxy("mymap", session) %>%
+          leaflet::clearShapes() %>%
+          leaflet::clearMarkers() %>%
+          leaflet::clearPopups()
+
+        if (NROW(df) > 0) {
+          labels <- paste0("Point ", seq_len(NROW(df)), ": ",
+                           # Note slight changes can occur in lat,lon values if using paste() instead of format() as per ?as.character()
+                           round(df$lat, 5), ", ", round(df$lon, 5))
+          proxy %>%
+            leaflet::addCircles(lng = df$lon, lat = df$lat,
+                                radius = radius_miles * meters_per_mile,   # radius in meters; changes when slider is used
+                                fillOpacity = 0.1, color = "#3388ff",
+                                highlightOptions = leaflet::highlightOptions(fillOpacity = 0.5, bringToFront = TRUE), # shaded when mouse hovers over the circle
+                                popup = labels, label = labels) %>%
+            leaflet::addCircleMarkers(lng = df$lon, lat = df$lat,    # a small visible dot at each clicked point's center
+                                radius = 4, color = "red", fillColor = "red",
+                                fillOpacity = 1, stroke = FALSE,
+                                popup = labels, label = labels)
+        }
+      })
+
+      # return the reactive data.frame of lat,lon values (one row per clicked point)
       return( reactdat ) # no parentheses here - return the reactive object not just its current value
     })
 }
@@ -193,9 +225,10 @@ if (try_this_module_here) {
       # h3("Example of a live map of results of module, drawn in the parent app"),
       # leaflet::leafletOutput( ('map_click_module'), height = '600px', width = '100%'),
 
-      h3("Example of a live view of the point (data) updated by the module, as seen in the parent app as a data.table"),
+      shiny::h3("Example of a live view of the points (data) updated by the module, as seen in the parent app as a data.table"),
+      shiny::verbatimTextOutput(outputId = "latlon_from_map_click_count_TEST"),
       DT::DTOutput(outputId =  "latlon_from_map_click_TEST" ),
-      br()
+      shiny::br()
     )}
   ################################################# #
 
@@ -203,8 +236,10 @@ if (try_this_module_here) {
 
   APP_SERVER_TEST <- function(input, output, session) {
 
-    init_data = testpoints_10[1,]
-    # Send  initial value, but the module updates that reactive_data1 as the user types
+    # Start with an empty lat,lon table so the table clearly fills in as the user clicks the map.
+    # (You could instead seed it with e.g. testpoints_10[1:2, ] - the module keeps only the lat,lon columns and appends to them.)
+    init_data <- data.frame(lat = numeric(0), lon = numeric(0))
+    # The module updates that reactive_data1 as the user clicks points on the map
     reactive_data1 <-  shiny::reactiveVal(init_data)
 
     ################################# #
@@ -217,6 +252,7 @@ if (try_this_module_here) {
     # to view actual table in rendered form to be ready to display it in app UI
     shiny::observe({
       tmp <- reactive_data1() # reactiveVal(out())  # WHEN THIS VALUE CHANGES, THE OUTER APP SHOULD UPDATE THE RENDERED TABLE
+      output$latlon_from_map_click_count_TEST <- shiny::renderText(paste0(NROW(tmp), " point(s) selected by clicking the map"))
       output$latlon_from_map_click_TEST <- DT::renderDT(DT::datatable(  tmp  ))
     })  # %>%  bindEvent(input$latlontypedin_submit_button_TEST)   # (when the "Done entering points" button is pressed? but that is inside the module)
 
@@ -252,6 +288,37 @@ if (try_this_module_here) {
 }
 ################################################ ################################################# #
 
+# *How to run automated tests on a module: ####
+# (does not need a browser - simulates clicks via session$setInputs)
+if (1 == 0) {
+  shiny::testServer(
+    app = MODULE_SERVER_latlon_from_map_click,
+    args = list(reactdat = shiny::reactiveVal(data.frame(lat = numeric(0), lon = numeric(0)))),
+    {
+      # no points yet
+      stopifnot(NROW(reactdat()) == 0)
+
+      # simulate a first map click -> one row appended
+      session$setInputs(mymap_click = list(lat = 40, lng = -99))
+      stopifnot(NROW(reactdat()) == 1)
+      stopifnot(reactdat()$lat == 40 && reactdat()$lon == -99)
+
+      # simulate a second map click -> two rows
+      session$setInputs(mymap_click = list(lat = 34.05, lng = -118.25))
+      stopifnot(NROW(reactdat()) == 2)
+
+      # undo removes the most recent point
+      session$setInputs(undo_point = 1)
+      stopifnot(NROW(reactdat()) == 1)
+
+      # clear removes all points
+      session$setInputs(clear_points = 1)
+      stopifnot(NROW(reactdat()) == 0)
+    }
+  )
+}
+################################################ ################################################# #
+
 
 ################################################ ################################################# #
 
@@ -262,11 +329,11 @@ if (try_this_module_here) {
 #   condition = "input.ss_choose_method == 'upload' && input.ss_choose_method_upload == 'latlon_from_map_click'",
 #   ### input: latlon_from_map_click
 #   ## _+++ MODULE_UI_latlon_from_map_click  ####
-#   tags$p("Click to specify latitude and longitude of point to analyze"),
+#   tags$p("Click on a map to specify the latitude and longitude of one or more points to analyze"),
 #   column(
 #     6,
-#     ## on button click, show modal with   lat lon value?
-#     actionButton(inputId = 'show_latlon_from_map_click_module_button', label = "Click to specify lat lon value", class = 'usa-button usa-button--outline'),
+#     ## on button click, show modal with the map and the accumulating lat lon values
+#     actionButton(inputId = 'show_latlon_from_map_click_module_button', label = "Click on a map to specify lat lon values", class = 'usa-button usa-button--outline'),
 #     shinyBS::bsModal(
 #       trigger = 'show_latlon_from_map_click_module_button',
 #       id = 'view_latlon_from_map_click',
