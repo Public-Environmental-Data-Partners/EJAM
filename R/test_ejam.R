@@ -1,4 +1,32 @@
 
+test_ejam_group_names <- function(x) {
+  if (is.null(x) || length(x) == 0) {
+    return(character())
+  }
+  x <- unlist(strsplit(gsub(" ", "", as.character(x)), ","))
+  x <- x[nzchar(x)]
+  paste0("test_", sub("^test_", "", x))
+}
+
+test_ejam_requests_live_groups <- function(run_these = NULL,
+                                           skip_these = NULL,
+                                           y_runall = TRUE,
+                                           y_runsome = FALSE,
+                                           live_groups = c("live_url", "live_api")) {
+  live_groups <- test_ejam_group_names(live_groups)
+
+  if (!is.null(run_these)) {
+    y_runsome <- TRUE
+  }
+  if (isTRUE(y_runsome)) {
+    return(any(test_ejam_group_names(run_these) %in% live_groups))
+  }
+  if (isTRUE(y_runall)) {
+    return(any(!(live_groups %in% test_ejam_group_names(skip_these))))
+  }
+  FALSE
+}
+
 #' run group(s) of unit tests for EJAM package
 #' run tests of local source pkg EJAM, by group of functions, quietly, interactively or not, with compact summary of test results
 #'
@@ -35,8 +63,9 @@
 #'   shinytest2 functionality suite; use 'webapp_individual' only when debugging
 #'   one-category web app test files.
 #' @param skip_these if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.
-#'   By default, live URL/API integration groups are skipped so routine unit
-#'   testing does not depend on network/API availability.
+#'   By default, live URL/API integration groups and local draft API tests are
+#'   skipped so routine unit testing does not depend on network/API availability
+#'   or a locally running draft Plumber API.
 #' @param y_seeresults logical, whether to show results in console
 #' @param y_save logical, whether to save files of results
 #' @param y_tempdir logical, whether to save in tempdir
@@ -83,7 +112,7 @@ test_ejam <- function(ask = TRUE,
                       #   "shape", "getblocks", "fixcolnames", "doag",
                       #   "ejamit", "misc",  "mod", "webapp", "modules",
                       #   "test", "golem"),
-                      skip_these = c("live_url", "live_api"), # c("webapp"),
+                      skip_these = c("live_url", "live_api", "local_api"), # c("webapp"),
 
                       y_stopif = FALSE,
                       y_seeresults = TRUE,
@@ -104,8 +133,6 @@ test_ejam <- function(ask = TRUE,
   #   "seconds_bygroup", "seconds_byfile", "seconds_bygroup_predicted",
   #   "untested_cant", "untested_skipped", "warned"
   # ))
-  x <- offline_cat(); if (x) {stop("cannot use test_ejam() if offline")}
-
   if (ask) {
     # how to use test_ejam() ####
     cat('\n
@@ -140,7 +167,7 @@ x <- test_ejam(
   #   "ejamit", "misc", "mod", "webapp",
   #   "test", "golem"),
 
-  skip_these = c("live_url", "live_api"),
+  skip_these = c("live_url", "live_api", "local_api"),
 
   y_stopif     = FALSE, # stop as soon as problem is hit?
   y_seeresults = TRUE,
@@ -364,8 +391,12 @@ instead of tests/testthat/_logs
       test_live_api = c(
         # Live EJAM/EJScreen API calls. Skipped by default via skip_these.
         "test-ejamapi-live.R",
-        "test-ejamapi_local.R",
         "test-ejscreen-facilities-live.R"
+      ),
+      test_local_api = c(
+        # Draft local Plumber API tests. Skipped by default via skip_these and
+        # separately gated by EJAM_TEST_LOCAL_API=true in the test file.
+        "test-ejamapi_local.R"
       ),
 
       test_misc = c(
@@ -802,6 +833,14 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       if (length(skip_these) > 0 && !is.null(skip_these)) {
         partial_testlist <-  partial_testlist[!(names(partial_testlist) %in% skip_these)]
       }
+    }
+
+    offline_now <- offline_cat()
+    if (offline_now && test_ejam_requests_live_groups(run_these = run_these,
+                                                      skip_these = skip_these,
+                                                      y_runall = y_runall,
+                                                      y_runsome = y_runsome)) {
+      stop("cannot run test_ejam() live URL/API groups if offline")
     }
     ################################### #  ################################### #
     if (!isTRUE(y_runall) && !isTRUE(y_runsome)) {

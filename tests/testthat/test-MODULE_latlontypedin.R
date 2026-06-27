@@ -7,13 +7,14 @@
 test_that("module server works", {
   # skip_if_not(exists("MODULE_SERVER_latlontypedin"), message = "MODULE_SERVER_latlontypedin is not present")
   skip_if_not(requireNamespace("rhandsontable", quietly = TRUE))
+  typed_points <- testpoints_10[1:2, ]
 
   shiny::testServer(
     EJAM:::MODULE_SERVER_latlontypedin,
     # Add here your module params
     args = list(
       id = "TESTID",
-      reactdat = shiny::reactiveVal(testpoints_10[1:2, ]),
+      reactdat = shiny::reactiveVal(typed_points),
       allowColumnEdit = FALSE,
       allowRowEdit    = TRUE,
       manualRowMove   = TRUE
@@ -29,8 +30,8 @@ test_that("module server works", {
       expect_true(
         grepl("test", ns("test"))
       )
-      session$setInputs(reactdat = 1)
-      expect_true(input$reactdat == 1)
+      expect_s3_class(reactdat, "reactiveVal")
+      expect_equal(reactdat(), typed_points)
 
       # Here are some examples of tests you can
       # run on your module
