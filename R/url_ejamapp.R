@@ -71,6 +71,9 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   if (!is.null(handoff)) {
     q <- c(q, paste0("handoff=", utils::URLencode(as.character(handoff)[1], reserved = TRUE)))
   } else if (!is.null(lat) && !is.null(lon)) {
+    if (length(lat) != length(lon)) {
+      stop("lat and lon must have the same length")
+    }
     q <- c(q, paste0("lat=", paste(lat, collapse = ",")),
               paste0("lon=", paste(lon, collapse = ",")))
   } else if (!is.null(fips)) {
@@ -82,7 +85,7 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     q <- c(q, paste0("shape=", utils::URLencode(geotxt[1], reserved = TRUE)))
   }
   if (is.null(handoff) && !is.null(radius)) {
-    q <- c(q, paste0("radius=", radius))
+    q <- c(q, paste0("radius=", radius[1]))  # a single radius applies to all sites
   }
 
   urlx <- if (length(q) > 0) paste0(baseurl, "?", paste(q, collapse = "&")) else baseurl

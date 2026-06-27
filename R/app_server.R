@@ -448,7 +448,11 @@ app_server <- function(input, output, session) {
           spec$lon <- payload$sites$lon
         }
         if (!is.null(payload$fips))   {spec$fips   <- as.character(payload$fips)}
-        if (!is.null(payload$shape))  {spec$shape  <- as.character(jsonlite::toJSON(payload$shape, auto_unbox = TRUE))}
+        if (!is.null(payload$shape))  {
+          # If the API already returned shape as GeoJSON text, use it as-is;
+          # only re-serialize when it came back as a parsed object (avoid double-encoding).
+          spec$shape <- if (is.character(payload$shape)) payload$shape else as.character(jsonlite::toJSON(payload$shape, auto_unbox = TRUE))
+        }
         if (!is.null(payload$radius)) {spec$radius <- payload$radius}
       }
     } else {
@@ -481,11 +485,15 @@ app_server <- function(input, output, session) {
       shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "FIPS")
       loaded <- TRUE
     }
-    ## POLYGONS (GeoJSON text; stored as text and parsed by data_up_shp())
+    ## POLYGONS -- only inline GeoJSON text (the documented ?shape= contract).
+    ## Guard so a non-GeoJSON value (a URL or local path) is NOT handed to
+    ## shapefile_from_any(), which would otherwise try to read it.
     if (!loaded && !is.null(spec$shape)) {
       shape_txt <- as.character(spec$shape)
-      shp <- tryCatch(shapefile_from_any(shape_txt, cleanit = FALSE, silentinteractive = TRUE),
-                      error = function(e) NULL)
+      looks_geojson <- grepl("\"type\"\\s*:\\s*\"(FeatureCollection|Feature|Polygon|MultiPolygon)\"", shape_txt)
+      shp <- if (looks_geojson) {
+        tryCatch(shapefile_from_any(shape_txt, cleanit = FALSE, silentinteractive = TRUE), error = function(e) NULL)
+      } else {NULL}
       if (!is.null(shp) && !inherits(shp, "try-error")) {
         url_shapefile(shape_txt)
         shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")

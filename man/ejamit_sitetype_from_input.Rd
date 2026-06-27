@@ -9,7 +9,8 @@ ejamit_sitetype_from_input(
   sitepoints = NULL,
   fips = NULL,
   shapefile = NULL,
-  shape = NULL
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -19,7 +20,7 @@ ejamit_sitetype_from_input(
 
 \item{shapefile}{parameter as was passed to \code{\link[=ejamit]{ejamit()}}}
 
-\item{shape}{alias (synonym) for shapefile}
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 either "latlon", "fips", or "shp",
