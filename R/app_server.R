@@ -446,8 +446,13 @@ app_server <- function(input, output, session) {
     if (is.null(search) || !nzchar(search)) {return(NULL)}
     q <- shiny::parseQueryString(search)
 
-    # base URL of the EJAM API that mints/resolves handoff tokens (matches url_ejamapi())
-    apibase <- "https://ejamapi-84652557241.us-central1.run.app"
+    # base URL of the EJAM API that mints/resolves handoff tokens. Derive it from
+    # url_ejamapi()'s default baseurl so there is a single source of truth (strip
+    # the trailing "/report?"); allow override via global_or_param("ejamapi_baseurl").
+    apibase <- global_or_param("ejamapi_baseurl")
+    if (is.null(apibase) || !nzchar(apibase)) {
+      apibase <- sub("/report\\??$", "", as.character(formals(url_ejamapi)$baseurl))
+    }
 
     # Normalize either a ?handoff= token or direct params into one spec.
     spec <- list()
@@ -508,8 +513,12 @@ app_server <- function(input, output, session) {
     ## Guard so a non-GeoJSON value (a URL or local path) is NOT handed to
     ## shapefile_from_any(), which would otherwise try to read it.
     if (!loaded && !is.null(spec$shape)) {
-      shape_txt <- as.character(spec$shape)
-      looks_geojson <- grepl("\"type\"\\s*:\\s*\"(FeatureCollection|Feature|Polygon|MultiPolygon)\"", shape_txt)
+      shape_txt <- trimws(as.character(spec$shape))
+      # Must be an inline JSON object (starts with "{") AND carry a GeoJSON type tag.
+      # The leading-"{" check defeats a crafted URL/path that merely *contains* the
+      # type substring; [[:space:]] is the portable whitespace class (not \\s).
+      looks_geojson <- grepl("^\\{", shape_txt) &&
+        grepl("\"type\"[[:space:]]*:[[:space:]]*\"(FeatureCollection|Feature|Polygon|MultiPolygon)\"", shape_txt)
       shp <- if (looks_geojson) {
         tryCatch(shapefile_from_any(shape_txt, cleanit = FALSE, silentinteractive = TRUE), error = function(e) NULL)
       } else {NULL}

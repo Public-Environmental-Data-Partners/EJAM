@@ -265,8 +265,10 @@ ejamit <- function(sitepoints = NULL,
 ) {
   # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
   # read more naturally for FIPS or polygon analysis; "radius"/"shapefile" remain
-  # the canonical names. If an alias is provided it takes effect here.
-  if (!is.null(buffer)) {radius <- buffer}
+  # the canonical names. The alias is used only when the canonical name was not
+  # supplied, so an explicit radius/shapefile always wins (consistent with the
+  # other helpers, e.g. url_ejamapp()).
+  if (!is.null(buffer) && missing(radius)) {radius <- buffer}
   if (!is.null(shape) && (missing(shapefile) || is.null(shapefile))) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp)) {shapefile <- shp}
   if (is.null(sitepoints) && !is.null(lat) && !is.null(lon)) {sitepoints <- data.frame(lat = lat, lon = lon)}

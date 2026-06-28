@@ -81,7 +81,10 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   } else if (!is.null(shapefile)) {
     # accept either an sf object or ready-made GeoJSON text; simplify sf polygons
     # so the GeoJSON fits in a URL, like url_ejamapi() does
-    geotxt <- if (is.character(shapefile)) shapefile else shape2geojson(sf::st_simplify(shapefile, dTolerance = dTolerance))
+    # combine_in_one_string = TRUE so multi-polygon sf becomes ONE FeatureCollection
+    # string (otherwise shape2geojson() returns a vector and geotxt[1] would drop all
+    # but the first polygon).
+    geotxt <- if (is.character(shapefile)) shapefile else shape2geojson(sf::st_simplify(shapefile, dTolerance = dTolerance), combine_in_one_string = TRUE)
     q <- c(q, paste0("shape=", utils::URLencode(geotxt[1], reserved = TRUE)))
   }
   if (is.null(handoff) && !is.null(radius)) {

@@ -342,8 +342,8 @@ ejamapp <- function(
     dots$radius_default <- dots$radius
     cat("launching with specified radius =", dots$radius_default, "\n")
   }
-  if ("buffer" %in% names(dots)) {
-    dots$radius_default <- dots$buffer # buffer is a synonym (alias) for radius
+  if ("buffer" %in% names(dots) && !("radius" %in% names(dots))) {
+    dots$radius_default <- dots$buffer # buffer is a synonym (alias) for radius (used only if radius not given)
     cat("launching with specified buffer (radius) =", dots$radius_default, "\n")
   }
 
