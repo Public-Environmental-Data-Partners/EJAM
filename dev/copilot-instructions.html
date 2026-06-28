@@ -81,25 +81,28 @@
 <p><strong>On linux/Ubuntu/Debian, ALWAYS install these system libraries before attempting package installation:</strong> NOTE THIS LIST MAY NEED TO BE EDITED FROM TIME TO TIME, AS THE REQUIRED R PACKAGES GET UPDATED AND CREATE CHANGING DEPENDENCIES, FOR EXAMPLE!</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">sudo</span> apt-get install <span class="at">-y</span> <span class="dt">\</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  libfontconfig1-dev <span class="dt">\</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  libudunits2-dev <span class="dt">\</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  libcairo2-dev <span class="dt">\</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  libcurl4-openssl-dev <span class="dt">\</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  libharfbuzz-dev <span class="dt">\</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  libfribidi-dev <span class="dt">\</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  libfreetype6-dev <span class="dt">\</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  libpng-dev <span class="dt">\</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  libtiff5-dev <span class="dt">\</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  libjpeg-dev <span class="dt">\</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  libgdal-dev <span class="dt">\</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  libgeos-dev <span class="dt">\</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  libproj-dev <span class="dt">\</span></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  libjq-dev <span class="dt">\</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  libprotobuf-dev <span class="dt">\</span></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  protobuf-compiler</span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  cmake <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  libfontconfig1-dev <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  libudunits2-dev <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  libcairo2-dev <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  libcurl4-openssl-dev <span class="dt">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  libssl-dev <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  libharfbuzz-dev <span class="dt">\</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  libfribidi-dev <span class="dt">\</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  libfreetype6-dev <span class="dt">\</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  libpng-dev <span class="dt">\</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  libtiff5-dev <span class="dt">\</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  libjpeg-dev <span class="dt">\</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  libgdal-dev <span class="dt">\</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  libgeos-dev <span class="dt">\</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  libproj-dev <span class="dt">\</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  libjq-dev <span class="dt">\</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  pkg-config <span class="dt">\</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  libprotobuf-dev <span class="dt">\</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>  protobuf-compiler</span></code></pre></div>
 <p><strong>macOS Dependencies:</strong> NOTE THIS LIST MAY NEED TO BE EDITED FROM TIME TO TIME, AS THE REQUIRED R PACKAGES GET UPDATED AND CREATE CHANGING DEPENDENCIES, FOR EXAMPLE!</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">brew</span> update</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">brew</span> install freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pkg-config</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">brew</span> install freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pkg-config cmake</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="r-package-installation">R Package Installation<a class="anchor" aria-label="anchor" href="#r-package-installation"></a></h3>
