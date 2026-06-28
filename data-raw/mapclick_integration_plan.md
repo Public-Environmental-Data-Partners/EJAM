@@ -1,5 +1,31 @@
 # Plan: "Click on map" point selection in the EJAM app
 
+> ## ⚠️ IMPORTANT RELATED WORK — read first: EJScreen already does map-click point selection
+>
+> **The EJScreen app already provides a way for a user to click on a map and specify
+> points for analysis one at a time.** It is also gaining a way to **add those clicked
+> points to a running list of points** and then **run a multisite analysis straight from
+> the EJScreen UI** — by calling the EJAM analysis engine over the **API** (and/or handing
+> the accumulated sites off to the EJAM app to pre-load).
+>
+> That EJScreen-side capability is being implemented across **three coordinated PRs**
+> (all on the `ejscreen-multisite-selection` branch in their repos):
+>
+> | Repo | PR | What it does |
+> |------|----|--------------|
+> | **EJScreen** | [#66](https://github.com/Public-Environmental-Data-Partners/EJScreen/pull/66) | UI: accumulate clicked places into a list → "Multisite Report" + "Send to EJAM" |
+> | **EJAM-API** | [#36](https://github.com/Public-Environmental-Data-Partners/EJAM-API/pull/36) | Multisite `GET /report`, token handoff, and CORS |
+> | **EJAM** | [#413](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/413) | Launch-URL site handoff to pre-load EJAM from EJScreen (the "edits in EJAM repo") |
+>
+> **Why this matters for THIS plan:** the feature described below is a *different,
+> complementary* capability — clicking points **natively inside the EJAM Shiny app itself**
+> (on EJAM's own `an_leaf_map`), independent of EJScreen and the API. Before/while
+> implementing the EJAM-native version, reconcile it with the EJScreen path so the two are
+> consistent (same notion of a "running list of points", similar UX, no duplicated/ conflicting
+> handoff logic). In particular, EJAM #413's launch-URL handoff is how externally-selected
+> points (e.g. from EJScreen) already arrive in EJAM, and should interoperate with the
+> in-app `mapclick` method proposed here.
+
 Status: **Phase 1 (module refactor) DONE; Phases 2-7 (app wiring) NOT yet implemented** (2026-06-26)
 Branch where the work lives: `fix-latlon-from-map-click-module`
 Module file: `R/MODULE_latlon_from_map_click.R`
