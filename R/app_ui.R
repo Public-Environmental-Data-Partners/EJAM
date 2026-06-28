@@ -556,7 +556,8 @@ app_ui <- function(request) {
                                    label   = "Download format:",
                                    choices = c("HTML" = "html", "PDF" = "pdf"),
                                    # html format has live interactive maps with popups and links, but pdf has better pagination for printing.
-                                   selected = global_or_param("default_format1pager"), # kept in sync with advanced tab via updateRadioButtons() in server
+                                   # normalize (strip leading dot, lowercase) so e.g. ".pdf"/"PDF" still matches "pdf" (mirrors ejam2report())
+                                   selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))), # kept in sync with advanced tab via updateRadioButtons() in server
                                    inline   = TRUE
                                  ),
                                  downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
@@ -1307,7 +1308,8 @@ app_ui <- function(request) {
                  h3("Short report title and format - html provides live interactive map with popups and links, but pdf has better pagination for printing."),
                  shiny::radioButtons(inputId = "default_format1pager", "Format",
                               choices = c(html = "html", pdf = "pdf"),
-                              selected = global_or_param("default_format1pager"),
+                              # normalize (strip leading dot, lowercase) so e.g. ".pdf"/"PDF" still matches "pdf" (mirrors ejam2report())
+                              selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))),
                               inline = TRUE),
 
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),

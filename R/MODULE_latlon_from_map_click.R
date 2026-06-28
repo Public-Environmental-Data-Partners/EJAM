@@ -222,12 +222,18 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
         shiny::observeEvent(add_source(), {
           click <- add_source()
           if (is.null(click)) {return()}
-          # skip the map click that coincides with a just-performed delete (marker) click
-          if (!is.null(last_remove_time) &&
-              as.numeric(difftime(Sys.time(), last_remove_time, units = "secs")) < 0.5) {
-            last_remove_time <<- NULL
-            return()
-          }
+          # Skip ONLY the map click that coincides with a just-performed delete (marker) click,
+          # i.e. the same interaction, so we don't delete-then-re-add a point. Two safeguards keep
+          # this from ever dropping a deliberate add:
+          #  - clear the guard on EVERY add evaluation (so it cannot persist to a later click - important
+          #    because leaflet vector-layer clicks often do NOT bubble to the map click, meaning no
+          #    coincident add ever arrives to consume the guard); and
+          #  - use a very tight window: a coincident click lands in the same reactive flush (~0 ms),
+          #    whereas any deliberate follow-up click is far slower than this.
+          coincident_with_delete <- !is.null(last_remove_time) &&
+            as.numeric(difftime(Sys.time(), last_remove_time, units = "secs")) < 0.1
+          last_remove_time <<- NULL
+          if (coincident_with_delete) {return()}
           add_point(click$lat, click$lng)                # leaflet sends clicked location as $lat and $lng
         }) # ignoreInit deliberately not set (see remove observer note above)
       }

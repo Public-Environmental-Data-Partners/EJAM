@@ -388,10 +388,18 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     fileextensions_implemented <- c(".html", ".pdf")
     if (!(fileextension %in% fileextensions_implemented)) {
       warning("fileextension must be one of", fileextensions_implemented)
-      fileextension <- global_or_param("default_format1pager")  #".html"
-      fileextension <- paste0(".", gsub("^\\.", "", fileextension))
-      if (!(fileextension %in% fileextensions_implemented)) {
-        fileextension <- ".html" # fallback if problem with global
+      ## Fall back to the global default. global_or_param("default_format1pager") can be NULL
+      ## (e.g. when EJAM is used via :: without attaching, so .onAttach() never built the package
+      ## defaults), so guard against NULL/empty before normalizing - otherwise gsub()/`%in%` operate
+      ## on a length-0 value and the `if` below errors ("argument is of length zero").
+      gdef <- global_or_param("default_format1pager")  # normally "html"/"pdf"; could be ".pdf", "PDF", or NULL
+      if (length(gdef) == 0 || is.na(gdef[1]) || !nzchar(gdef[1])) {
+        fileextension <- ".html" # fallback if global default is missing/blank
+      } else {
+        fileextension <- paste0(".", gsub("^\\.", "", tolower(gdef[1])))
+        if (!(fileextension %in% fileextensions_implemented)) {
+          fileextension <- ".html" # fallback if problem with global
+        }
       }
     }
 

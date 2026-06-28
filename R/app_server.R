@@ -266,9 +266,14 @@ app_server <- function(input, output, session) {
     )
   })
   observeEvent(input$default_format1pager, {
-    selected_format <- input$default_format1pager
+    ## normalize like ejam2report() does (strip a leading dot, lowercase) so a user-supplied or
+    ## mis-set ".pdf"/"PDF"/".html" still matches the "html"/"pdf" radio values instead of being
+    ## silently rejected and falling back to HTML. as.character(NULL) -> character(0), which is
+    ## handled by isTRUE(... %in% ...) == FALSE, so NULL/missing safely fall through to "html".
+    norm_format1pager <- function(x) sub("^[.]", "", tolower(as.character(x)))
+    selected_format <- norm_format1pager(input$default_format1pager)
     if (!isTRUE(selected_format %in% c("html", "pdf"))) {
-      selected_format <- global_or_param("default_format1pager")
+      selected_format <- norm_format1pager(global_or_param("default_format1pager"))
     }
     if (!isTRUE(selected_format %in% c("html", "pdf"))) {
       selected_format <- "html"
