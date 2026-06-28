@@ -62,6 +62,39 @@ ejam_shinytest2_truthy_env <- function(name, default = FALSE) {
   tolower(value) %in% c("1", "true", "t", "yes", "y")
 }
 
+shinytest2_upload_log_has_files <- function(logs, input_id, expected_names) {
+  if (is.null(logs) || !"message" %in% names(logs)) {
+    return(FALSE)
+  }
+
+  messages <- as.character(logs$message)
+  upload_init_messages <- messages[grepl("uploadInit", messages, fixed = TRUE)]
+  upload_end_messages <- messages[grepl("uploadEnd", messages, fixed = TRUE)]
+  upload_file_messages <- messages[grepl("Uploading file(s) for id:", messages, fixed = TRUE)]
+  upload_finished_messages <- messages[grepl("Finished uploading file", messages, fixed = TRUE)]
+
+  files_seen_in_init <- all(vapply(
+    as.character(expected_names),
+    function(expected_name) {
+      any(grepl(expected_name, upload_init_messages, fixed = TRUE))
+    },
+    logical(1)
+  ))
+  input_seen_in_end <- any(grepl(input_id, upload_end_messages, fixed = TRUE))
+
+  files_seen_in_upload_file_message <- all(vapply(
+    as.character(expected_names),
+    function(expected_name) {
+      any(grepl(expected_name, upload_file_messages, fixed = TRUE))
+    },
+    logical(1)
+  ))
+  upload_finished <- length(upload_finished_messages) > 0
+
+  (files_seen_in_init && input_seen_in_end) ||
+    (files_seen_in_upload_file_message && upload_finished)
+}
+
 ejam_shinytest2_make_app_dir <- function(sourcefolder,
                                          test_category = "webapp",
                                          app_dir = NULL) {
@@ -164,7 +197,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
 
     testthat::skip_if_not_installed("shinytest2") # setup-shinytest2.R is sourced automatically by testthat, but shinytest2 itself is only needed for these web app tests
 
-    test_log_dir <- testthat::test_path("_logs")
+    test_log_dir <- file.path(tempdir(), "ejam-shinytest2-logs")
     dir.create(test_log_dir, recursive = TRUE, showWarnings = FALSE)
 
     sourcefolder <- testthat::test_path("../../")
@@ -343,23 +376,7 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     ################## #
     upload_log_has_files <- function(input_id, expected_names) {
       logs <- tryCatch(app$get_logs(), error = function(e) NULL)
-      if (is.null(logs) || !"message" %in% names(logs)) {
-        return(FALSE)
-      }
-      messages <- as.character(logs$message)
-      upload_init_messages <- messages[grepl("uploadInit", messages, fixed = TRUE)]
-      upload_end_messages <- messages[grepl("uploadEnd", messages, fixed = TRUE)]
-
-      files_seen <- all(vapply(
-        as.character(expected_names),
-        function(expected_name) {
-          any(grepl(expected_name, upload_init_messages, fixed = TRUE))
-        },
-        logical(1)
-      ))
-      input_seen <- any(grepl(input_id, upload_end_messages, fixed = TRUE))
-
-      files_seen && input_seen
+      shinytest2_upload_log_has_files(logs, input_id, expected_names)
     }
     ################## #
     expect_uploaded_file <- function(input_id, expected_names) {
