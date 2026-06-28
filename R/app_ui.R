@@ -17,6 +17,8 @@ app_ui <- function(request) {
       ## enable JavaScript, CSS   ####
       #   functionality (such as resetting inputs) etc.
       shinyjs::useShinyjs(),
+      # enable shinybusy indicators (spinners) for any long-running processes not already covered by shinycssloaders::withSpinner()
+      shiny::useBusyIndicators(spinners = FALSE, pulse = TRUE, fade = FALSE),
       ## javascript function for jumping to top of screen
       shinyjs::extendShinyjs(text = "shinyjs.toTop = function() {window.scrollTo(0, 0);}", functions = "toTop"),
       # For info on using javascript in shiny apps,
