@@ -1,9 +1,10 @@
 test_that("DESCRIPTION requires Shiny 1.14.0 or newer", {
   imports <- read.dcf(testthat::test_path("../../DESCRIPTION"), fields = "Imports")[1, "Imports"]
   shiny_min <- sub(
-    ".*shiny\\s*\\(\\s*>=\\s*([0-9.]+)\\s*\\).*",
+    "(?s).*shiny\\s*\\(\\s*>=\\s*([0-9.]+)\\s*\\).*",
     "\\1",
-    imports
+    imports,
+    perl = TRUE
   )
 
   expect_false(identical(shiny_min, imports))
