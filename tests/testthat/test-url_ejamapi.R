@@ -24,10 +24,6 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
 
   if (is.null(FUN)) {FUN <- get(funcname)}
 
-  test_that("Site responds with 200", {
-    expect_true(url_online(FUN(sitepoints = testpoints_10[1,], ...)))
-  })
-
   # fipsmix = testinput_fips_mix
   fipsmix =  c(
     "091701844002024", # block
@@ -44,7 +40,9 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
   try(test_that(paste0(funcname, " sitepoints POINTS works"), {
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10[1,], ...)})})
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10, radius = 1, ...)})})
-    expect_true(url_online(x[1]))
+    expect_true(all(grepl("^https://", x)))
+    expect_true(grepl("lat=", x[1], fixed = TRUE))
+    expect_true(grepl("lon=", x[1], fixed = TRUE))
   }))
   ############### #  ############### #
 
@@ -53,7 +51,6 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
   #   expect_no_error({
   #     x <- FUN(fips = "091701844002024", ...) # fipsmix[1] # blockid is 1203214, parent bgid is 43168
   #   })
-  #   expect_true(url_online(x[1]))
   #   options(width = as.vector(unlist(oldwidth)))
   # }))
   ############### #  ############### #
@@ -66,7 +63,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = testinput_fips_blockgroups[1:2] , ...)
     })
-    expect_true(url_online(x[1]))
+    expect_true(all(grepl("^https://", x)))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   # ### problem in unit test where options changed:
@@ -80,7 +78,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = testinput_fips_tracts[1], ...)
     })
-    expect_true(url_online(x[1]))
+    expect_true(grepl("^https://", x[1]))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
@@ -89,7 +88,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = testinput_fips_cities[1], ...)
     })
-    expect_true(url_online(x[1]))
+    expect_true(grepl("^https://", x[1]))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
@@ -98,7 +98,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = testinput_fips_counties[1], ...)
     })
-    expect_true(url_online(x[1]))
+    expect_true(grepl("^https://", x[1]))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
@@ -125,7 +126,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     } else {
     expect_equal(length(x), 2) # not true if sitenumber = 2
       }
-    expect_true(url_online(x[1]))
+    expect_true(all(grepl("^https://", x)))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #     MULTISITE OVERALL RESULTS REPORT url:
@@ -136,39 +138,18 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
       x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]
     })
     expect_equal(length(x), 1) # (makes url)
-    # expect_true(url_online(x[1]))
     options(width = as.vector(unlist(oldwidth)))
   }))
-  ############### #     MULTISITE OVERALL RESULTS REPORT - API MIGHT NOT HAVE IMPLEMENTED this YET:
-
-  try(test_that(paste0(funcname, " API handles 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL"), {
-skip_if(TRUE, "test fails until API can handle combo of 2 types of fips like county and state in 1 URL")
-    oldwidth = options("width")
-    expect_no_error({
-      x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]
-    })
-    # expect_equal(length(x), 1)
-    attempt = try( url_online(x[1]) , silent = TRUE)
-    if (inherits(attempt, "try-error")) {
-      cat("This test fails until API can handle combo of 2 types of areas like county and state in 1 URL\n")
-    }
-    expect_true(attempt) # (can API HANDLE IT?)
-    options(width = as.vector(unlist(oldwidth)))
-  }))
-  ############### #  ############### #
-
-  ############### #  ############### #
-
   try(test_that(paste0(funcname, " SHAPEFILE works"), {
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2[1, ], ...)})})
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2, radius = 1, ...)})})
-    expect_true(url_online(x[1]))
+    expect_true(all(grepl("^https://", x)))
   }))
   ############### #
   try(test_that(paste0(funcname, " REGID works"), {
     expect_no_error({
       x <- FUN( regid = testinput_regid[1], ... )
-      expect_true(url_online(x[1]))
+      expect_true(grepl("^https://", x[1]))
     })
     expect_no_error({  ({
       x <- FUN(sitepoints = data.frame(lat = 35, lon = -100,

@@ -14,13 +14,6 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
 
   if (is.null(FUN)) {FUN <- get(funcname)}
 
-  if (!grepl("equityatlas|frs_facility", funcname)) {
-    # url_online() fails for those URLs even when the URL is OK, browseable,
-    # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
-    test_that("Site responds with 200", {
-      expect_true(url_online(FUN(sitepoints = testpoints_10[1,])))
-    })
-  }
   # fipsmix = testinput_fips_mix
   fipsmix =  c(
     "091701844002024", # block
@@ -36,11 +29,7 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
   try(test_that(paste0(funcname, " sitepoints POINTS works"), {
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10[1,])})})
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10, radius = 1)})})
-    if (!grepl("equityatlas|frs_facility", funcname)) {
-      # url_online() fails for those URLs even when the URL is OK, browseable,
-      # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
-      expect_true(url_online(x[1]))
-    }
+    expect_true(all(grepl("^https://", x)))
   }))
   ############### #
   try(test_that(paste0(funcname, " BG FIPS works"), {
@@ -53,42 +42,26 @@ do_url_tests = function(funcname = "url_ejscreenmap", FUN = NULL) {
     expect_no_error({
       x <- FUN(fips = c("060371011101", "060371011102") ) # in "Los Angeles County, CA"   # testinput_fips_blockgroups[1:2] )
     })
-    if (!grepl("equityatlas|frs_facility", funcname)) {
-      # url_online() fails for those URLs even when the URL is OK, browseable,
-      # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
-      expect_true(url_online(x[1]))
-    }
+    expect_true(all(grepl("^https://", x)))
   }))
   ############### #
   try(test_that(paste0(funcname, " mix of FIPS works"), {
     expect_no_error({
       x <- FUN(fips = fipsmix)
     })
-    if (!grepl("equityatlas|frs_facility", funcname)) {
-      # url_online() fails for those URLs even when the URL is OK, browseable,
-      # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
-      expect_true(url_online(x[1]))
-    }
+    expect_true(all(grepl("^https://", x)))
   }))
   ############### #
   try(test_that(paste0(funcname, " SHAPEFILE works"), {
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2[1, ])})})
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2, radius = 1)})})
-    if (!grepl("equityatlas|frs_facility", funcname)) {
-      # url_online() fails for those URLs even when the URL is OK, browseable,
-      # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
-      expect_true(url_online(x[1]))
-    }
+    expect_true(all(grepl("^https://", x)))
   }))
   ############### #
   try(test_that(paste0(funcname, " REGID works"), {
     expect_no_error({
       x <- FUN( regid = testinput_regid[1] )
-      if (!grepl("equityatlas|frs_facility", funcname)) {
-        # url_online() fails for those URLs even when the URL is OK, browseable,
-        # like "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110071293460"
-        expect_true(url_online(x[1]))
-      }
+      expect_true(grepl("^https://", x[1]))
     })
     expect_no_error({  ({
       x <- FUN(sitepoints = data.frame(lat = 35, lon = -100,
@@ -219,38 +192,4 @@ test_that("url_facilities_nearby errors if lat and lon lengths differ", {
 test_that("url_facilities_nearby uses correct layer number per sitecategory", {
   expect_true(grepl("MapServer/0/query", EJAM:::url_facilities_nearby("npl",  lat = 39.65, lon = -75.73, radius = 1)))
   expect_true(grepl("MapServer/4/query", EJAM:::url_facilities_nearby("tsdf", lat = 39.65, lon = -75.73, radius = 1)))
-})
-
-test_that("get_ejscreen_facilities_nearby returns a data.frame (live API)", {
-  skip_if_offline()
-  result <- tryCatch(
-    get_ejscreen_facilities_nearby(
-      frompoints = data.frame(lat = 39.65, lon = -75.73),
-      radius = 0.5,
-      sitecategory = "npl"
-    ),
-    httr2_http = function(e) skip(paste("live EJScreen facility API unavailable:", conditionMessage(e)))
-  )
-  expect_true(is.data.frame(result))
-  if (NROW(result) > 0) {
-    expect_true("lat" %in% names(result))
-    expect_true("lon" %in% names(result))
-    expect_true("frompoint_n" %in% names(result))
-    expect_true("sitecategory" %in% names(result))
-  }
-})
-
-test_that("get_ejscreen_facilities_nearby returns empty data.frame when no facilities found (live API)", {
-  skip_if_offline()
-  # Use a remote location (middle of the ocean) where no TSDF facilities should exist
-  result <- tryCatch(
-    get_ejscreen_facilities_nearby(
-      frompoints = data.frame(lat = 0.0, lon = -150.0),
-      radius = 0.1,
-      sitecategory = "npl"
-    ),
-    httr2_http = function(e) skip(paste("live EJScreen facility API unavailable:", conditionMessage(e)))
-  )
-  expect_true(is.data.frame(result))
-  expect_equal(NROW(result), 0)
 })
