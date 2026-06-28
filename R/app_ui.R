@@ -565,7 +565,7 @@ app_ui <- function(request) {
                                  downloadButton('download_report_multisite',
                                                 label = 'Download Multisite Summary Report',
                                                 class = 'usa-button',
-                                                enabled = FALSE), style = 'text-align: center;'
+                                                enabled = TRUE), style = 'text-align: center;'
                                )
                              ),  # end report tab
 
@@ -608,7 +608,7 @@ app_ui <- function(request) {
                                                               downloadButton('download_results_spreadsheet',
                                                                              label = 'Download Results Table',
                                                                              class = 'usa-button',
-                                                                             enabled = FALSE)
+                                                                             enabled = TRUE)
                                                        )
                                                      ),
                                                      br(), ## vertical space
