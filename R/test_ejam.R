@@ -299,6 +299,7 @@ x <- test_ejam(
         "test-ejam2excel.R",
         "test-ejam2barplot_sites.R",
         "test-ejam2barplot_indicators.R",
+        "test-ejam2boxplot_ratios.R",
         "test-ejam2histogram.R",
         "test-table_validated_ejamit_row.R"
       ),
@@ -357,7 +358,8 @@ x <- test_ejam(
       test_webapp = c(
         "test-webapp-ui_and_server.R",
         "test-webapp-all-functionality.R",
-        "test-ejscreen-webapp-layers.R"
+        "test-ejscreen-webapp-layers.R",
+        "test-shiny-1-14-compat.R"
       ),
       test_webapp_individual = c(
         "test-webapp-FIPS-functionality.R",
@@ -500,7 +502,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-ejscreen-reference-adjustments.R", "test-ejscreen-stats.R",
               "test-map-headernames-review-artifacts.R", "test-pctiles_lookup_create.R",
               "test-webapp-ui_and_server.R", "test-webapp-all-functionality.R",
-              "test-ejscreen-webapp-layers.R", "test-latlon_from_address.R",
+              "test-ejscreen-webapp-layers.R", "test-shiny-1-14-compat.R",
+              "test-latlon_from_address.R",
               "test-address_xyz.R", "test-latlon_as.numeric.R", "test-latlon_df_clean.R",
               "test-latlon_from_anything.R", "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
               "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
@@ -524,7 +527,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
               "test-calc_ratio_columns.R", "test-doaggregate.R", "test-pctile_from_raw_lookup.R",
               "test-utils_flagged_FUNCTIONS.R", "test-utils_speedtest.R", "test-ejam2barplot_indicators.R",
-              "test-ejam2barplot_sites.R", "test-ejam2excel.R", "test-ejam2histogram.R",
+              "test-ejam2barplot_sites.R", "test-ejam2boxplot_ratios.R", "test-ejam2excel.R", "test-ejam2histogram.R",
               "test-ejam2report.R", "test-ejamit.R", "test-ejamit_compare_distances.R",
               "test-ejamit_compare_types_of_places.R", "test-ejamit_sitetype_from_input.R",
               "test-ejamit_sitetype_from_output.R", "test-table_validated_ejamit_row.R",
@@ -540,14 +543,14 @@ and all filenames listed there actually exist as in that folder called `test`.\n
             ),
           seconds_byfile =
             c(0, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0,
-              1, 6, 0, 0, 0, 0, 2, 76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+              1, 6, 0, 0, 0, 0, 2, 76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
               0, 0, 0, 0, 410, 0, 22, 0, 42, 0, 0, 0, 1, 0, 0, 0, 4, 3, 0,
               9, 11, 0, 4, 1, 0, 3, 0, 3, 0, 0, 0, 1, 0, 3, 43, 1, 2, 0, 0,
               0, 0, 0, 0, 0, 1, 0, 6, 3, 9, 0, 3, 3, 24, 0, 9, 0, 0, 14, 15,
               0, 6, 43, 24, 6, 0, 7, 0, 0, 0, 0, 0, 1, 0, 3, 2, 0, 0, 0, 0,
-              1, 0, 0, 21, 8, 0, 0, 2, 1, 0, 0, 0, 0, 0, 1)),
+              1, 0, 0, 21, 8, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1)),
           row.names = c(NA,
-                        -127L), class = "data.frame")
+                        -129L), class = "data.frame")
       )
 
       ############################ #      ############################ #      ############################ #
