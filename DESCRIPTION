@@ -28,11 +28,11 @@ VersionCensus: 2020
 Depends:
     R (>= 4.3.0)
 Imports:
-    arrow (>= 20.0.0),
+    arrow (>= 24.0.0),
     collapse (>= 2.1.0),
     colorspace,
     config (>= 0.3.1),
-    curl (>= 6.4.0),
+    curl (>= 7.1.0),
     data.table (>= 1.17.2),
     desc,
     dplyr (>= 1.1.4),
@@ -71,7 +71,7 @@ Imports:
     scales (>= 1.4.0),
     SearchTrees,
     sf (>= 1.0-20),
-    shiny (>= 1.12.0),
+    shiny (>= 1.14.0),
     shinycssloaders (>= 1.1.0),
     shinydisconnect,
     shinyjs (>= 2.1.0),

@@ -15,6 +15,18 @@ test_that("pipeline stage files round trip RDS and RDA formats", {
   expect_equal(as.data.frame(EJAM:::ejscreen_pipeline_load("sample_csv", pipeline_dir, format = "csv")), x)
 })
 
+test_that("pipeline stage files round trip Arrow IPC format", {
+  pipeline_dir <- file.path(tempdir(), "ejam-pipeline-arrow-io-test")
+  x <- data.frame(a = 1:3, b = c("x", "y", "z"))
+
+  arrow_path <- EJAM:::ejscreen_pipeline_save(x, "sample_arrow", pipeline_dir, format = "arrow")
+  expect_true(file.exists(arrow_path))
+  expect_equal(
+    as.data.frame(EJAM:::ejscreen_pipeline_load("sample_arrow", pipeline_dir, format = "arrow")),
+    x
+  )
+})
+
 test_that("pipeline R-native stage saves use the ACS vintage from the pipeline year", {
   pipeline_dir <- file.path(tempdir(), "ejam-pipeline-metadata-test")
   x <- data.frame(bgfips = "010010201001", pop = 100)
