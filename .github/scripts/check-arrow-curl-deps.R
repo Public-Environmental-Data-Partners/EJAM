@@ -24,7 +24,7 @@ declared_minimum <- function(package) {
     package,
     "\\s*\\(\\s*>=\\s*([0-9][^)[:space:],]*)\\s*\\)"
   )
-  match <- regexec(pattern, dependency_text)
+  match <- regexec(pattern, dependency_text, perl = TRUE)
   result <- regmatches(dependency_text, match)[[1]]
 
   if (length(result) < 3) {

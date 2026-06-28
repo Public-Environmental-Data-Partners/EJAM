@@ -208,6 +208,11 @@ jobs:
       RELEASE_TAG: ${{ github.event.release.tag_name || '' }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.3.0
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.event.release.tag_name }}
+
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
@@ -229,24 +234,6 @@ jobs:
           )
 
           library(EJAM)
-          required_versions <- c(arrow = "24.0.0", curl = "7.1.0")
-          for (package in names(required_versions)) {
-            installed <- as.character(utils::packageVersion(package))
-            required <- required_versions[[package]]
-            if (utils::compareVersion(installed, required) < 0) {
-              stop("Installed ", package, " is ", installed, "; expected >= ", required)
-            }
-            message(package, " package OK: ", installed, " >= ", required)
-          }
-          libcurl_version <- sub(
-            "^([0-9]+\\.[0-9]+(\\.[0-9]+)?).*",
-            "\\1",
-            curl::curl_version()[["version"]]
-          )
-          if (utils::compareVersion(libcurl_version, "7.73.0") < 0) {
-            stop("libcurl is ", libcurl_version, "; expected >= 7.73.0")
-          }
-          message("libcurl OK: ", libcurl_version, " >= 7.73.0")
           clean_scalar <- function(x) {
             trimws(unname(as.character(x[1])))
           }
@@ -260,4 +247,8 @@ jobs:
             stop("Installed EJAM version is ", installed_version, ", expected ", expected)
           }
           message("Installed EJAM ", installed_version, " from ", pkg)
+        shell: Rscript {0}
+
+      - name: Verify Arrow/curl dependencies
+        run: source(".github/scripts/check-arrow-curl-deps.R")
         shell: Rscript {0}
