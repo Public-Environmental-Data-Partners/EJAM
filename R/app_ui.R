@@ -17,6 +17,8 @@ app_ui <- function(request) {
       ## enable JavaScript, CSS   ####
       #   functionality (such as resetting inputs) etc.
       shinyjs::useShinyjs(),
+      # enable shinybusy indicators (spinners) for any long-running processes not already covered by shinycssloaders::withSpinner()
+      shiny::useBusyIndicators(spinners = FALSE, pulse = TRUE, fade = FALSE),
       ## javascript function for jumping to top of screen
       shinyjs::extendShinyjs(text = "shinyjs.toTop = function() {window.scrollTo(0, 0);}", functions = "toTop"),
       # For info on using javascript in shiny apps,
@@ -552,13 +554,18 @@ app_ui <- function(request) {
                                ###              > DOWNLOAD BUTTON    ####
                                tags$div(
                                  radioButtons(
-                                   inputId = "format_report_multisite",
+                                   inputId = "fileextension", # had been called format_report_multisite, # see format1pager and fileextension
                                    label   = "Download format:",
                                    choices = c("HTML" = "html", "PDF" = "pdf"),
-                                   selected = "html",
+                                   # html format has live interactive maps with popups and links, but pdf has better pagination for printing.
+                                   # normalize (strip leading dot, lowercase) so e.g. ".pdf"/"PDF" still matches "pdf" (mirrors ejam2report())
+                                   selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))), # kept in sync with advanced tab via updateRadioButtons() in server
                                    inline   = TRUE
                                  ),
-                                 downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
+                                 downloadButton('download_report_multisite',
+                                                label = 'Download Multisite Summary Report',
+                                                class = 'usa-button',
+                                                enabled = FALSE), style = 'text-align: center;'
                                )
                              ),  # end report tab
 
@@ -598,7 +605,10 @@ app_ui <- function(request) {
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()
-                                                              downloadButton('download_results_spreadsheet', label = 'Download Results Table', class = 'usa-button')
+                                                              downloadButton('download_results_spreadsheet',
+                                                                             label = 'Download Results Table',
+                                                                             class = 'usa-button',
+                                                                             enabled = FALSE)
                                                        )
                                                      ),
                                                      br(), ## vertical space
@@ -1302,9 +1312,12 @@ app_ui <- function(request) {
                                      selected = global_or_param("default_plotkind_1pager")),
 
                  ## _radio button on format of short report
-                 #                  was DISABLED while PDF KNITTING DEBUGGED
-                 radioButtons(inputId = "format1pager", "Format",
+                 # sets filename and fileextension parameter in ejam2report()
+                 h3("Short report title and format - html provides live interactive map with popups and links, but pdf has better pagination for printing."),
+                 shiny::radioButtons(inputId = "default_format1pager", "Format",
                               choices = c(html = "html", pdf = "pdf"),
+                              # normalize (strip leading dot, lowercase) so e.g. ".pdf"/"PDF" still matches "pdf" (mirrors ejam2report())
+                              selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))),
                               inline = TRUE),
 
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),

@@ -46,6 +46,10 @@ jobs:
             any::shinytest2
             any::testthat
 
+      - name: Verify Arrow/curl dependencies
+        run: source(".github/scripts/check-arrow-curl-deps.R")
+        shell: Rscript {0}
+
       # this ensures latest Pandoc is installed+used
       # setup-r-dependencies@v2 will try to install pandoc from Ubuntu repo, which might be older
       - name: Install Latest Pandoc

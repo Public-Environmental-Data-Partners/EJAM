@@ -75,10 +75,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
+            cmake \
             libfontconfig1-dev \
             libudunits2-dev \
             libcairo2-dev \
             libcurl4-openssl-dev \
+            libssl-dev \
             libharfbuzz-dev \
             libfribidi-dev \
             libfreetype6-dev \
@@ -89,6 +91,7 @@ jobs:
             libgeos-dev \
             libproj-dev \
             libjq-dev \
+            pkg-config \
             libprotobuf-dev \
             libuv1-dev \
             protobuf-compiler
@@ -97,7 +100,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           brew update
-          for pkg in freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pkg-config; do
+          for pkg in freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pkg-config cmake; do
             for i in {1..3}; do
               if brew install "$pkg"; then
                 break
@@ -116,6 +119,10 @@ jobs:
         with:
           dependencies: '"hard"'
           extra-packages: any::remotes
+
+      - name: Verify Arrow/curl dependencies
+        run: source(".github/scripts/check-arrow-curl-deps.R")
+        shell: Rscript {0}
 
       - name: Check DESCRIPTION version
         run: |
@@ -201,6 +208,11 @@ jobs:
       RELEASE_TAG: ${{ github.event.release.tag_name || '' }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.3.0
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.event.release.tag_name }}
+
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
@@ -235,4 +247,8 @@ jobs:
             stop("Installed EJAM version is ", installed_version, ", expected ", expected)
           }
           message("Installed EJAM ", installed_version, " from ", pkg)
+        shell: Rscript {0}
+
+      - name: Verify Arrow/curl dependencies
+        run: source(".github/scripts/check-arrow-curl-deps.R")
         shell: Rscript {0}

@@ -371,6 +371,16 @@ test_that("shinytest category selection waits for input values and saves failure
     "save_log\\(paste0\\(test_category, \"-category-selection-log\\.txt\"\\)\\)",
     fixed = FALSE
   )
+  expect_match(
+    setup_text,
+    "test_log_dir <- file.path(tempdir(), \"ejam-shinytest2-logs\")",
+    fixed = TRUE
+  )
+  expect_false(grepl(
+    "test_log_dir <- testthat::test_path(\"_logs\")",
+    setup_text,
+    fixed = TRUE
+  ))
   expect_false(grepl(
     paste0(
       "ss_upload_frs = EJAM:::app_sys\\(\"testdata/registryid/frs_testpoints_10\\.xlsx\"\\)\\)",
@@ -379,6 +389,27 @@ test_that("shinytest category selection waits for input values and saves failure
     setup_text,
     perl = TRUE
   ))
+})
+################################################# #
+
+test_that("shinytest upload log detection accepts AppDriver upload messages", {
+  expect_true(exists("shinytest2_upload_log_has_files"))
+
+  logs <- data.frame(
+    message = c(
+      "{shinytest2} R info Uploading file(s) for id: /tmp/counties_in_Delaware.xlsx",
+      "{shinytest2} R info Finished uploading file"
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_true(
+    shinytest2_upload_log_has_files(
+      logs,
+      input_id = "ss_upload_fips",
+      expected_names = "counties_in_Delaware.xlsx"
+    )
+  )
 })
 ################################################# #
 #
