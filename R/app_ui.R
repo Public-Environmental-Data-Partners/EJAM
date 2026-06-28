@@ -116,9 +116,11 @@ app_ui <- function(request) {
                   radioButtons(inputId = 'ss_choose_method',
                                label = 'How would you like to identify locations?',
                                choiceNames = c('Select a category of locations',
-                                               'Upload specific locations'),
+                                               'Upload specific locations',
+                                               'Click or draw on map'),
                                choiceValues = c('dropdown',
-                                                'upload'),
+                                                'upload',
+                                                'mapclick'),
                                selected = global_or_param("default_upload_dropdown")),
                   # selected = input$default_ss_choose_method), # which has a default of global_or_param("default_upload_dropdown")
                   # selected = 'upload'),   # if hard-coded default selection.
@@ -195,6 +197,18 @@ app_ui <- function(request) {
                       actionButton(inputId = 'latlon_help', label = 'More Info', class = 'usa-button usa-button--outline'), # HTML(latlon_help_msg)
                       br()
                     ), # end latlong conditionalPanel
+                    ################################################################# #
+
+                    ## _Click or draw on map  (conditional panel)  ------------------------------------- - ####
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'mapclick'",
+                      ## input: click on the an_leaf_map (below) to add/remove points; handled by MODULE_SERVER_latlon_from_map_click() in the server
+                      tags$p("Click on the map below to add one or more points to analyze. Click a point's red marker to remove it. Use the radius slider to change the circle drawn around each point.",
+                             tags$br(),
+                             tags$em("(Drawing polygons/areas on the map is planned for a future version.)")),
+                      actionButton(inputId = 'mapclick_clear', label = 'Clear all points', class = 'usa-button usa-button--outline'),
+                      br()
+                    ), # end mapclick conditionalPanel
                     ################################################################# #
 
                     ################################################################# #
