@@ -1717,10 +1717,27 @@ app_server <- function(input, output, session) {
       ## stable base map for click-to-add. Deliberately does NOT depend on the clicked points,
       ## so adding/removing a point does not tear down and re-zoom the map; the leafletProxy()
       ## observer below draws/updates the point circles + markers incrementally.
+      ## onRender adds a small tooltip that follows the cursor showing the lat,lon under the
+      ## pointer, so the user can aim a click. (pointer-events:none on leaflet tooltips means it
+      ## never blocks the click.)
       return(
         leaflet::leaflet() %>%
           leaflet::addTiles() %>%
-          leaflet::setView(lng = -98.5795, lat = 39.8283, zoom = 4)
+          leaflet::setView(lng = -98.5795, lat = 39.8283, zoom = 4) %>%
+          htmlwidgets::onRender(
+            "function(el, x) {
+               var map = this;
+               var tip = L.tooltip({permanent: true, direction: 'right', offset: [12, 0],
+                                    opacity: 0.9, className: 'mapclick-latlon-tip'});
+               var shown = false;
+               map.on('mousemove', function(e) {
+                 tip.setLatLng(e.latlng)
+                    .setContent('lat,lon: ' + e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5));
+                 if (!shown) { tip.addTo(map); shown = true; }
+               });
+               map.on('mouseout', function() { if (shown) { map.removeLayer(tip); shown = false; } });
+             }"
+          )
       )
     }
 
@@ -2466,9 +2483,12 @@ app_server <- function(input, output, session) {
           labels <- paste0("Point ", seq_len(NROW(d)), ": ", round(d$lat, 5), ", ", round(d$lon, 5),
                            "  (click marker to remove)")
           proxy %>%
+            ## radius circles styled to match uploaded-point circles (map_facilities_proxy):
+            ## navy, weight 4, default fill opacity. interactive = FALSE so a click inside a circle
+            ## passes through to the map and adds a point (delete is only via the red center marker).
             leaflet::addCircles(lng = d$lon, lat = d$lat, radius = rr,
-                                color = "#000080", fillColor = "#000080", fillOpacity = 0.1, weight = 2,
-                                popup = labels, label = labels) %>%
+                                color = "#000080", fillColor = "#000080", fill = TRUE, weight = 4,
+                                options = leaflet::pathOptions(interactive = FALSE)) %>%
             leaflet::addCircleMarkers(lng = d$lon, lat = d$lat, layerId = ids,
                                 radius = 5, color = "red", fillColor = "red", fillOpacity = 1, stroke = FALSE,
                                 popup = labels, label = labels)
@@ -2521,6 +2541,16 @@ app_server <- function(input, output, session) {
       )
     }
   }) # end of leafletProxy()  an_leaf_map
+
+  ## crosshair cursor on the map only while the click-to-add ('mapclick') method is selected.
+  ## (CSS rule for .mapclick-cursor-on is defined in app_ui.R near the an_leaf_map output.)
+  observe({
+    if (isTRUE(current_upload_method() == 'mapclick')) {
+      shinyjs::addClass(id = 'an_leaf_map', class = 'mapclick-cursor-on')
+    } else {
+      shinyjs::removeClass(id = 'an_leaf_map', class = 'mapclick-cursor-on')
+    }
+  })
   #############################################################################  #
   ## * PLOT - for short and long reports (avg person D ratios vs US avg) ####
   ############################################ #

@@ -467,6 +467,13 @@ app_ui <- function(request) {
                    ############################### #
                    ## MAP of uploaded points ####
 
+                   ## crosshair cursor for the click-to-add ('mapclick') method. The class
+                   ## 'mapclick-cursor-on' is toggled onto #an_leaf_map by the server only while that
+                   ## method is selected, so other methods keep the normal grab/pan cursor.
+                   tags$style(HTML(
+                     "#an_leaf_map.mapclick-cursor-on, #an_leaf_map.mapclick-cursor-on .leaflet-grab { cursor: crosshair !important; }"
+                   )),
+
                    #helpText('Red circles indicate overlapping sites.'),
                    ## output: show leaflet map of uploaded points
                    shinycssloaders::withSpinner(
