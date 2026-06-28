@@ -27,10 +27,12 @@ NOTE THIS LIST MAY NEED TO BE EDITED FROM TIME TO TIME, AS THE REQUIRED R PACKAG
 ```bash
 sudo apt-get update
 sudo apt-get install -y \
+  cmake \
   libfontconfig1-dev \
   libudunits2-dev \
   libcairo2-dev \
   libcurl4-openssl-dev \
+  libssl-dev \
   libharfbuzz-dev \
   libfribidi-dev \
   libfreetype6-dev \
@@ -41,6 +43,7 @@ sudo apt-get install -y \
   libgeos-dev \
   libproj-dev \
   libjq-dev \
+  pkg-config \
   libprotobuf-dev \
   protobuf-compiler
 ```
@@ -49,7 +52,7 @@ sudo apt-get install -y \
 NOTE THIS LIST MAY NEED TO BE EDITED FROM TIME TO TIME, AS THE REQUIRED R PACKAGES GET UPDATED AND CREATE CHANGING DEPENDENCIES, FOR EXAMPLE!
 ```bash
 brew update
-brew install freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pkg-config
+brew install freetype udunits cairo harfbuzz fribidi libpng libtiff jpeg gdal pkg-config cmake
 ```
 
 ### R Package Installation

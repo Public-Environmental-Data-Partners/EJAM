@@ -560,7 +560,10 @@ app_ui <- function(request) {
                                    selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))), # kept in sync with advanced tab via updateRadioButtons() in server
                                    inline   = TRUE
                                  ),
-                                 downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
+                                 downloadButton('download_report_multisite',
+                                                label = 'Download Multisite Summary Report',
+                                                class = 'usa-button',
+                                                enabled = FALSE), style = 'text-align: center;'
                                )
                              ),  # end report tab
 
@@ -600,7 +603,10 @@ app_ui <- function(request) {
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()
-                                                              downloadButton('download_results_spreadsheet', label = 'Download Results Table', class = 'usa-button')
+                                                              downloadButton('download_results_spreadsheet',
+                                                                             label = 'Download Results Table',
+                                                                             class = 'usa-button',
+                                                                             enabled = FALSE)
                                                        )
                                                      ),
                                                      br(), ## vertical space

@@ -345,6 +345,7 @@ instead of tests/testthat/_logs
         "test-ejam2excel.R",
         "test-ejam2barplot_sites.R",
         "test-ejam2barplot_indicators.R",
+        "test-ejam2boxplot_ratios.R",
         "test-ejam2histogram.R",
         "test-table_validated_ejamit_row.R"
       ),
@@ -418,7 +419,8 @@ instead of tests/testthat/_logs
       test_webapp = c(
         "test-webapp-ui_and_server.R",
         "test-webapp-all-functionality.R",
-        "test-ejscreen-webapp-layers.R"
+        "test-ejscreen-webapp-layers.R",
+        "test-shiny-1-14-compat.R"
       ),
       test_webapp_individual = c(
         "test-webapp-FIPS-functionality.R",
@@ -598,7 +600,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-naics_is.valid.R", "test-naics_subcodes_from_code.R", "test-test1.R",
               "test-test2.R", "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R",
               "test-ejamapi.R", "test-url_columns_bysite.R", "test-url_ejamapi.R",
-              "test-url_package.R"),
+              "test-url_package.R", "test-ejam2boxplot_ratios.R", "test-shiny-1-14-compat.R"),
           seconds_byfile =
             c(0, 0, 0, 0, 0, 0, 0,
               0, 0, 2, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 6, 0, 0, 0,
@@ -606,9 +608,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               39, 0, 11, 11, 0, 5, 32, 5, 0, 5, 0, 2, 0, 140, 2, 8, 0, 3, 2,
               23, 0, 7, 0, 12, 0, 4, 5, 1, 0, 3, 0, 3, 0, 0, 0, 0, 1, 0, 4,
               2, 0, 0, 0, 0, 1, 0, 0, 16, 8, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-              0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 12, 0, 4, 0, 0)),
+              0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 12, 0, 4, 0, 0, 0, 0)),
           row.names = c(NA,
-                        -124L), class = "data.frame")
+                        -126L), class = "data.frame")
       )
 
 

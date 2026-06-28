@@ -117,6 +117,15 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: System libraries for Arrow/curl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            pkg-config
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::pkgdown, local::.
@@ -127,6 +136,10 @@ jobs:
           # Suggests (EJAM vignettes are eval=FALSE; AOI examples are \dontrun).
           dependencies: '"hard"'
           needs: website
+
+      - name: Verify Arrow/curl dependencies
+        run: source(".github/scripts/check-arrow-curl-deps.R")
+        shell: Rscript {0}
 
       - name: Build site
         # Do specific steps here to avoid build_llm_docs(), which is slow for
