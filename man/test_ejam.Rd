@@ -17,7 +17,7 @@ test_ejam(
   y_runall = TRUE,
   y_runsome = FALSE,
   run_these = NULL,
-  skip_these = NULL,
+  skip_these = c("live_url", "live_api", "local_api"),
   y_stopif = FALSE,
   y_seeresults = TRUE,
   y_save = TRUE,
@@ -54,7 +54,10 @@ which functions might not have unit tests, just based on matching source file an
 shinytest2 functionality suite; use 'webapp_individual' only when debugging
 one-category web app test files.}
 
-\item{skip_these}{if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.}
+\item{skip_these}{if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.
+By default, live URL/API integration groups and local draft API tests are
+skipped so routine unit testing does not depend on network/API availability
+or a locally running draft Plumber API.}
 
 \item{y_seeresults}{logical, whether to show results in console}
 
@@ -85,6 +88,9 @@ Note these require installing the package \href{https://testthat.r-lib.org}{test
 
 [testthat::test_check()]     to test the installed version of a package, in the way used by R CMD check or [utils::check()]
 }\if{html}{\out{</div>}}
+
+Note: shinytest2 diagnostics are saved on failure, under
+\code{file.path(tempdir(), "ejam-shinytest2-logs")}
 }
 \examples{
 \dontrun{
@@ -95,6 +101,15 @@ biglist <- test_ejam(ask = FALSE,
       y_runsome = TRUE, run_these = c('test', 'maps'),
       mydir = "~/../Downloads/unit testing") # for example
 
+# To run slower tests, live api/url tests for a pre-release check:
+
+Sys.setenv(NOT_CRAN = "true")
+EJAM:::test_ejam(
+  ask = FALSE,
+  y_runsome = TRUE,
+  run_these = c("live_url", "live_api"),
+  skip_these = NULL
+  )
   }
 
 }

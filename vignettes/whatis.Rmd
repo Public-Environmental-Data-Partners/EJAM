@@ -78,7 +78,7 @@ Compared to related GIS tools this new tool provides a ready-to-use summary repo
 
 **Easy Ways to Specify the Places to Analyze**
 
-The new tool also lets users pick locations through several approaches: specifying facility points by industry categories (NAICS, SIC, EPA program, etc.), providing a table of point locations as latitudes/longitudes, using shapefiles with polygons (e.g., from air quality modeling), and selecting Census units to compare, such as counties.
+The new tool also lets users pick locations through several approaches: specifying facility points by industry categories (NAICS, SIC, EPA program, etc.), providing a table of point locations as latitudes/longitudes, clicking on a map to specify points, using shapefiles with polygons (e.g., from air quality modeling), and selecting Census units to compare, such as counties.
 
 **Open Source Well-Documented Extensible Software**
 

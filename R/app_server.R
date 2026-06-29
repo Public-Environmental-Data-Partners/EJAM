@@ -340,22 +340,18 @@ app_server <- function(input, output, session) {
   })
   #############################################################################  #
 
-  # SELECT Facility Type vs UPLOAD Latlon/ id/ fips/ shape (radio button) ####
-
-  output$ss_choose_method_ui <- renderUI({
-    req(input$default_ss_choose_method)
-    if (input$testing) {message("input$default_ss_choose_method is ", input$default_ss_choose_method, "\n")}
-    radioButtons(inputId = 'ss_choose_method',
-                 label = 'How would you like to identify locations?',
-                 choiceNames = c('Select a category of locations',
-                                 'Upload specific locations'),
-                 choiceValues = c('dropdown',
-                                  'upload'),
-                 # selected = "upload" # hard-coded default selection
-                 selected = input$default_ss_choose_method  # flexible default selection
-    )
-    if (input$testing) {message(" and input$ss_choose_method selected is ", input$ss_choose_method, "\n")}
-  })
+  # SELECT method of site selection: dropdown / upload / mapclick (radio button) ####
+  #
+  # The ss_choose_method radio is defined statically in app_ui.R (initial value =
+  # global_or_param("default_upload_dropdown")). The advanced-tab "Site Selection Method" radio
+  # (input$default_ss_choose_method) lets a user change which method is selected at runtime; apply
+  # that here via updateRadioButtons() - you cannot reference input$ from the UI. (This replaces an
+  # older approach that re-rendered the radio server-side via output$ss_choose_method_ui.)
+  observeEvent(input$default_ss_choose_method, {
+    if (input$testing) {message("input$default_ss_choose_method is ", input$default_ss_choose_method)}
+    shiny::updateRadioButtons(session = session, inputId = "ss_choose_method",
+                              selected = input$default_ss_choose_method)
+  }, ignoreInit = TRUE)
 
   # keep track of currently used method of site selection (also see submitted_upload_method reactive)
   current_upload_method <- reactive({
@@ -381,7 +377,8 @@ app_server <- function(input, output, session) {
                           EPA_PROGRAM =      "EPA_PROGRAM_up", #  NOTE "EPA_PROGRAM_up" AND "EPA_PROGRAM_sel" both are converted to just "EPA_PROGRAM"
                           FRS =              "FRS",       # 'FRS (facility ID)',
                           #ECHO =            "ECHO",      # 'ECHO Search Tools',
-                          FIPS =             "FIPS")
+                          FIPS =             "FIPS"),
+      'mapclick' = "mapclick"   # click on the map to specify lat/lon points (handled like uploaded latlon points)
     )
     if (input$testing) {
       cat(' reactive current_upload_method() now is ', x, '\n')
@@ -409,7 +406,7 @@ app_server <- function(input, output, session) {
   ## HTML for alert for invalid sites
   #invalid_alert <- reactiveVal(NULL)
 
-  invalid_alert <- reactiveValues('latlon' = 0, 'NAICS' = 0, 'SIC' = 0, 'MACT' = 0,
+  invalid_alert <- reactiveValues('latlon' = 0, 'mapclick' = 0, 'NAICS' = 0, 'SIC' = 0, 'MACT' = 0,
                                   'FRS' = 0,
                                   'EPA_PROGRAM_up' = 0, 'EPA_PROGRAM_sel' = 0,
                                   'FIPS' = 0, 'FIPS_PLACE' = 0,
@@ -717,6 +714,67 @@ app_server <- function(input, output, session) {
         }
       }
     }
+  })
+
+  #############################################################################  #
+  ## reactive: lat/lon points the user clicked on the map (mapclick method) ####
+  ##
+  ## The reusable map-click module (R/MODULE_latlon_from_map_click.R) accumulates the points:
+  ## it appends a point on each map click, removes the point whose marker is clicked, and empties
+  ## the list when "Clear all points" is pressed. render_map = FALSE because this app already owns
+  ## the leaflet map (an_leaf_map) - the module is used only as the point accumulator.
+  mapclick_points <- reactiveVal(data.frame(lat = numeric(0), lon = numeric(0)))
+
+  MODULE_SERVER_latlon_from_map_click(
+    id           = "mapclick",
+    reactdat     = mapclick_points,
+    add_click    = reactive(input$an_leaf_map_click),         # click empty map -> add a point
+    remove_click = reactive(input$an_leaf_map_marker_click),  # click a point's marker -> remove it
+    clear        = reactive(input$mapclick_clear),            # "Clear all points" button
+    render_map   = FALSE,
+    # only accumulate/remove points while the click-on-map method is selected - an_leaf_map is shared
+    # by all methods, so without this a click in (e.g.) latlon mode would add hidden mapclick points.
+    enabled      = reactive(isTRUE(current_upload_method() == 'mapclick'))
+  )
+
+  ## cap the number of clicked points at input$max_pts_click (advanced tab; default_max_pts_click).
+  ## When a click would push past the cap, drop that newest click and notify - keeps drawing and
+  ## analysis bounded so a user cannot hang the app by clicking a very large number of points.
+  observeEvent(mapclick_points(), {
+    pts <- mapclick_points()
+    cap <- suppressWarnings(as.numeric(input$max_pts_click))
+    if (length(cap) != 1 || is.na(cap) || cap < 1) {cap <- as.numeric(global_or_param("default_max_pts_click"))}
+    maxcap <- suppressWarnings(as.numeric(global_or_param("maxmax_pts_click")))
+    if (length(maxcap) == 1 && !is.na(maxcap) && cap > maxcap) {cap <- maxcap}
+    if (!is.null(pts) && NROW(pts) > cap) {
+      mapclick_points(pts[seq_len(cap), , drop = FALSE])  # keep the first cap points; drop the newest (over-cap) click
+      showNotification(
+        paste0("Maximum ", cap, " points by clicking the map. Additional clicks are ignored."),
+        type = "warning", duration = 3, session = session
+      )
+    }
+  }, ignoreInit = TRUE)
+
+  ## clean the clicked points into the same shape data_up_latlon() produces, so the rest of the app
+  ## (map circles, "Review selected sites", run, downloads) treats them exactly like uploaded lat/lon.
+  data_up_mapclick <- reactive({
+    pts <- mapclick_points()
+    if (is.null(pts) || NROW(pts) == 0) {
+      disable_buttons[['mapclick']] <- TRUE  # nothing selected yet -> keep Run disabled / preview hidden
+      an_map_text_pts[['mapclick']] <- NULL
+      invalid_alert[['mapclick']]   <- 0
+      return(NULL)
+    }
+    sitepoints <- as.data.table(data.frame(lat = pts$lat, lon = pts$lon))
+    sitepoints[, ejam_uniq_id := .I]
+    data.table::setcolorder(sitepoints, 'ejam_uniq_id')
+    sitepoints <- sitepoints %>%
+      latlon_df_clean(invalid_msg_table = TRUE) # latlon_infer() + latlon_as.numeric() + latlon_is.valid()
+    sitepoints$invalid_msg <- NA
+    sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
+    disable_buttons[['mapclick']] <- FALSE
+    invalid_alert[['mapclick']]   <- sum(!sitepoints$valid)
+    sitepoints
   })
 
   #############################################################################  #
@@ -1316,6 +1374,7 @@ app_server <- function(input, output, session) {
     ## if >1 upload method used, use the one currently indicated by radio button ss_choose_method
 
     if        (current_upload_method() == 'latlon'         ) {data_up_latlon()
+    } else if (current_upload_method() == 'mapclick'        ) {data_up_mapclick() # lat/lon points the user clicked on the map; handled like uploaded latlon
       #} else if (current_upload_method() == 'latlontypedin'  ) {data_typedin_latlon() # enable if implemented/ready ***
       #} else if (current_upload_method() == 'ECHO'           ) {data_up_echo()        # enable if implemented/ready ***
     } else if (current_upload_method() == 'FRS'            ) {data_up_frs()
@@ -1335,6 +1394,7 @@ app_server <- function(input, output, session) {
   #############################################################################  #
 
   disable_buttons <- reactiveValues('latlon' = TRUE,
+                                    'mapclick' = TRUE,
                                     # 'latlontypedin' = TRUE,
                                     # 'ECHO' = TRUE,
                                     'FRS' = TRUE,
@@ -1423,6 +1483,7 @@ app_server <- function(input, output, session) {
   # for (i in 1:length(x)) {an_map_text_pts[[x[i]]] <- NULL }
 
   an_map_text_pts <-  reactiveValues('latlon' = NULL,
+                                     'mapclick' = NULL,
                                      # 'latlontypedin' = NULL,
                                      # 'ECHO' = NULL,
                                      'FRS' = NULL,
@@ -1582,6 +1643,7 @@ app_server <- function(input, output, session) {
   current_slider_min <- list(
     # constants defined in global_defaults_*.R
     'latlon' =  global_or_param("minradius"),
+    'mapclick' =  global_or_param("minradius"),
     'NAICS' =  global_or_param("minradius"),
     'SIC' =  global_or_param("minradius"),
     'FRS' =  global_or_param("minradius"),
@@ -1595,6 +1657,7 @@ app_server <- function(input, output, session) {
   current_slider_val <- reactiveValues(
     # these are just placeholders that should get updated at startup, though.
     'latlon' = 1,
+    'mapclick' = 1,
     'NAICS' = 1,
     'SIC' = 1,
     'FRS' = 1,
@@ -1620,6 +1683,7 @@ app_server <- function(input, output, session) {
     }
     these <- c(
       'latlon',
+      'mapclick',
       'FRS',
       'EPA_PROGRAM_up',
       'EPA_PROGRAM_sel',
@@ -1663,6 +1727,36 @@ app_server <- function(input, output, session) {
   # *MAP of uploaded/selected places ####
 
   orig_leaf_map <- reactive({
+
+    req(current_upload_method())
+
+    if (current_upload_method() == 'mapclick') {
+      ## stable base map for click-to-add. Deliberately does NOT depend on the clicked points,
+      ## so adding/removing a point does not tear down and re-zoom the map; the leafletProxy()
+      ## observer below draws/updates the point circles + markers incrementally.
+      ## onRender adds a small tooltip that follows the cursor showing the lat,lon under the
+      ## pointer, so the user can aim a click. (pointer-events:none on leaflet tooltips means it
+      ## never blocks the click.)
+      return(
+        leaflet::leaflet() %>%
+          leaflet::addTiles() %>%
+          leaflet::setView(lng = -98.5795, lat = 39.8283, zoom = 4) %>%
+          htmlwidgets::onRender(
+            "function(el, x) {
+               var map = this;
+               var tip = L.tooltip({permanent: true, direction: 'right', offset: [12, 0],
+                                    opacity: 0.9, className: 'mapclick-latlon-tip'});
+               var shown = false;
+               map.on('mousemove', function(e) {
+                 tip.setLatLng(e.latlng)
+                    .setContent('lat,lon: ' + e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5));
+                 if (!shown) { tip.addTo(map); shown = true; }
+               });
+               map.on('mouseout', function() { if (shown) { map.removeLayer(tip); shown = false; } });
+             }"
+          )
+      )
+    }
 
     # ***
     ## or...
@@ -1808,6 +1902,14 @@ app_server <- function(input, output, session) {
   ## __ render map of uploaded  ####
 
   output$an_leaf_map <- leaflet::renderLeaflet({
+
+    ## For the click-to-add method, render a stable base map that does NOT depend on the clicked
+    ## points (otherwise the whole map would be rebuilt and re-zoomed on every click). The points
+    ## are drawn/updated incrementally by the leafletProxy() observer below.
+    method <- tryCatch(current_upload_method(), error = function(e) NULL)
+    if (isTRUE(method == 'mapclick')) {
+      return(orig_leaf_map())
+    }
 
     ## check if data has been uploaded yet
     ## make errors silent by default; print below
@@ -2377,13 +2479,44 @@ app_server <- function(input, output, session) {
     req(orig_leaf_map())
     ## This statement needed to ensure site selection map stops if too many points uploaded
     #req(isTruthy(orig_leaf_map()))
-    # clear shapes from map so buffers don't show twice
-    leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>% leaflet::clearShapes()
+    # Clear shapes AND markers/popups so nothing persists when switching site-selection methods.
+    # (The mapclick method adds red center markers via addCircleMarkers(); clearing only shapes would
+    # leave those stale markers/popups on the map after switching away from mapclick.)
+    leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
+      leaflet::clearShapes() %>% leaflet::clearMarkers() %>% leaflet::clearPopups()
     rad_buff <- sanitized_radius_now()
+
+    # mapclick map ------------------------------ #
+    # draw each clicked point as a radius circle + a small red center marker. The marker carries
+    # layerId = ejam_uniq_id so clicking it fires input$an_leaf_map_marker_click$id and the module
+    # removes that one point. Reads data_uploaded() + the radius, so it redraws on add/remove/clear
+    # and when the radius slider moves.
+    if (current_upload_method() == 'mapclick') {
+      proxy <- leaflet::leafletProxy(mapId = 'an_leaf_map', session)  # shapes/markers/popups already cleared above
+      d <- data_uploaded()
+      if (!is.null(d) && NROW(d) > 0) {
+        d <- d[!is.na(d$lat) & !is.na(d$lon), , drop = FALSE]
+        if (NROW(d) > 0) {
+          ids    <- as.character(if ("ejam_uniq_id" %in% names(d)) d$ejam_uniq_id else seq_len(NROW(d)))
+          rr     <- if (is.na(rad_buff) || rad_buff <= 0) 0 else rad_buff * meters_per_mile
+          labels <- paste0("Point ", seq_len(NROW(d)), ": ", round(d$lat, 5), ", ", round(d$lon, 5),
+                           "  (click marker to remove)")
+          proxy %>%
+            ## radius circles styled to match uploaded-point circles (map_facilities_proxy):
+            ## navy, weight 4, default fill opacity. interactive = FALSE so a click inside a circle
+            ## passes through to the map and adds a point (delete is only via the red center marker).
+            leaflet::addCircles(lng = d$lon, lat = d$lat, radius = rr,
+                                color = "#000080", fillColor = "#000080", fill = TRUE, weight = 4,
+                                options = leaflet::pathOptions(interactive = FALSE)) %>%
+            leaflet::addCircleMarkers(lng = d$lon, lat = d$lat, layerId = ids,
+                                radius = 5, color = "red", fillColor = "red", fillOpacity = 1, stroke = FALSE,
+                                popup = labels, label = labels)
+        }
+      }
 
     # SHP map ------------------------------ #
 
-    if ("SHP" %in% current_upload_method()) {
+    } else if ("SHP" %in% current_upload_method()) {
       if (!is.na(rad_buff) && rad_buff > 0) {
         shp_valid <- data_uploaded()[data_uploaded()$valid == T, ] # *** remove this if shapefile_clean() will do it
         d_uploads <- sf::st_buffer(shp_valid, # was "ESRI:102005" but want 4269
@@ -2427,6 +2560,16 @@ app_server <- function(input, output, session) {
       )
     }
   }) # end of leafletProxy()  an_leaf_map
+
+  ## crosshair cursor on the map only while the click-to-add ('mapclick') method is selected.
+  ## (CSS rule for .mapclick-cursor-on is defined in app_ui.R near the an_leaf_map output.)
+  observe({
+    if (isTRUE(current_upload_method() == 'mapclick')) {
+      shinyjs::addClass(id = 'an_leaf_map', class = 'mapclick-cursor-on')
+    } else {
+      shinyjs::removeClass(id = 'an_leaf_map', class = 'mapclick-cursor-on')
+    }
+  })
   #############################################################################  #
   ## * PLOT - for short and long reports (avg person D ratios vs US avg) ####
   ############################################ #

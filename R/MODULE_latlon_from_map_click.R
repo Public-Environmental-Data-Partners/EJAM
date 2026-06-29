@@ -134,6 +134,10 @@ MODULE_UI_latlon_from_map_click <- function(id) {
 #'   module's own "Clear all points" button is used.
 #' @param render_map if TRUE (default) the module renders its own demo map, slider
 #'   and Undo/Clear buttons. Set FALSE when the outer app owns the map.
+#' @param enabled optional reactive returning TRUE only while this module should act.
+#'   When an outer app shares one map across several site-selection modes, pass e.g.
+#'   `reactive(current_upload_method() == "mapclick")` so map clicks accumulate/remove
+#'   points only while the map-click mode is selected. NULL (default) = always on.
 #'
 #' @noRd
 #'
@@ -143,6 +147,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
                                                 remove_click = NULL, # reactive() of the outer app's marker/shape click (list with $id)
                                                 clear        = NULL, # reactive()/event that empties all points
                                                 render_map   = TRUE, # FALSE when the outer app owns the map
+                                                enabled      = NULL, # reactive() returning TRUE only while this module should act; NULL = always on
                                                 ...) {
 
   # if instead of this being a param passed here, you were to initialize the reactive data.frame of lat,lon points that will be output of this function:
@@ -188,6 +193,16 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
       }
       clear_all <- function() {reactdat(data.frame(lat = numeric(0), lon = numeric(0)))}
 
+      # When `enabled` is supplied (a reactive), the module only acts while it returns TRUE.
+      # This matters when an outer app shares ONE map across several modes: map clicks must not
+      # accumulate/remove points unless this module's mode is the active one. NULL = always on.
+      # Read inside the (isolated) observeEvent handlers below, so toggling `enabled` does NOT
+      # re-fire the observers (no replay of the last click when switching INTO the active mode).
+      is_enabled <- function() {
+        if (is.null(enabled)) {return(TRUE)}
+        isTRUE(tryCatch(enabled(), error = function(e) FALSE))
+      }
+
       # Guard so the map click that may coincide with a delete (marker) click does not re-add a point.
       # Most leaflet vector-layer clicks do not bubble to the map's click event, but this is a defensive,
       # order-independent, auto-expiring guard. Non-reactive on purpose - mutated with <<-.
@@ -200,6 +215,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
       # REMOVE one point. Defined BEFORE the ADD observer so it runs first within a reactive flush.
       if (!is.null(remove_source)) {
         shiny::observeEvent(remove_source(), {
+          if (!is_enabled()) {return()}   # ignore marker clicks unless this module's mode is active
           mc <- remove_source()
           if (is.null(mc)) {return()}
           last_remove_time <<- Sys.time()
@@ -220,6 +236,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
       # ADD one point
       if (!is.null(add_source)) {
         shiny::observeEvent(add_source(), {
+          if (!is_enabled()) {return()}   # ignore map clicks unless this module's mode is active
           click <- add_source()
           if (is.null(click)) {return()}
           # Skip ONLY the map click that coincides with a just-performed delete (marker) click,
@@ -242,7 +259,7 @@ MODULE_SERVER_latlon_from_map_click <- function(id,
       # An actionButton clear source starts at 0 (not NULL), so this may fire once at startup,
       # which is harmless (clearing an already-empty set).
       if (!is.null(clear)) {
-        shiny::observeEvent(clear(), {clear_all()})
+        shiny::observeEvent(clear(), {if (is_enabled()) {clear_all()}})
       }
       # the module's own Undo/Clear buttons (standalone mode only)
       if (render_map) {
