@@ -731,7 +731,10 @@ app_server <- function(input, output, session) {
     add_click    = reactive(input$an_leaf_map_click),         # click empty map -> add a point
     remove_click = reactive(input$an_leaf_map_marker_click),  # click a point's marker -> remove it
     clear        = reactive(input$mapclick_clear),            # "Clear all points" button
-    render_map   = FALSE
+    render_map   = FALSE,
+    # only accumulate/remove points while the click-on-map method is selected - an_leaf_map is shared
+    # by all methods, so without this a click in (e.g.) latlon mode would add hidden mapclick points.
+    enabled      = reactive(isTRUE(current_upload_method() == 'mapclick'))
   )
 
   ## cap the number of clicked points at input$max_pts_click (advanced tab; default_max_pts_click).
