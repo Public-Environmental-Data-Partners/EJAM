@@ -204,5 +204,8 @@ head(zz, 50)
 }
 }
 \seealso{
-\code{\link[=url_ejamapi]{url_ejamapi()}}
+\code{\link[=url_ejamapi]{url_ejamapi()}} for building API request URLs, \code{\link[=url_ejamapp]{url_ejamapp()}} for
+deep links that launch the live \emph{app} pre-loaded, and \code{\link[=url_package]{url_package()}} (type
+"api") for the single-sourced API base URL. See also the \code{dev-api} and
+"Defaults and Custom Settings for the Web App" articles.
 }

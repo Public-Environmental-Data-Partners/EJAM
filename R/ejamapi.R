@@ -27,7 +27,10 @@
 #' to convert the parameters to a URL for the API as a GET request to obtain an HTML report.
 #'
 #'
-#' @seealso [url_ejamapi()]
+#' @seealso [url_ejamapi()] for building API request URLs, [url_ejamapp()] for
+#'   deep links that launch the live *app* pre-loaded, and [url_package()] (type
+#'   "api") for the single-sourced API base URL. See also the `dev-api` and
+#'   "Defaults and Custom Settings for the Web App" articles.
 #'
 #' @param lat,lon Coordinates of point(s) for analysis of residents nearby.
 #'   To specify point(s), provide either lat and lon, or sites, or sitepoints --

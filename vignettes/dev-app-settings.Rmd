@@ -38,6 +38,31 @@ if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if 
 ```
 
 
+# Deep links: launch the app pre-loaded via URL parameters
+
+Besides the deploy-time settings described below, an already-running EJAM app can be
+**launched pre-loaded with a set of places** by opening it with launch query parameters in
+the URL. This is how the EJScreen Report tool's "Send to EJAM" button opens EJAM ready to
+run, and what `url_ejamapp()` builds as shareable deep links.
+
+The app reads these at startup (one place-type per launch -- points, else FIPS, else
+polygons):
+
+- `?lat=33,34&lon=-112,-114` -- one or more points, each treated as a site
+- `?fips=10001,10003` -- one or more FIPS codes, each a separate site
+- `?shape=<url-encoded GeoJSON>` -- a polygon or FeatureCollection
+- `?radius=` (or `?buffer=`) -- analysis radius in miles
+- `?handoff=<token>` -- a token minted by the EJAM API `POST /handoff` and fetched back at
+  startup, for large polygon sets that exceed URL-length limits
+
+Build such a link with `url_ejamapp()`; its query vocabulary matches `url_ejamapi()` (which
+builds *API* request URLs rather than *app* links). The default app base is
+`https://ejamapp.ejanalysis.com/`, a Cloudflare-fronted shortcut on the `ejanalysis.com`
+domain that forwards the query string to the live app (a plain redirect that dropped the
+query would open the app empty). For the API side -- including the friendlier
+`https://api.ejanalysis.com/` base and parameter details -- see the `dev-api` article, the
+help for `ejamapi()`/`url_ejamapi()`, and the EJAM-API repository's README.
+
 # NOTES ON GLOBAL DEFAULTS, SHINY INPUTS, BOOKMARKS, AND FUNCTION PARAMETERS
 
 This document provides technical notes on how defaults and custom settings are defined for the EJAM web app.

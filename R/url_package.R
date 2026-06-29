@@ -10,8 +10,13 @@
 #'   - "docs" is for the documentation website
 #'   - "api" is for the EJAM REST API base URL (DESCRIPTION field `ejam_api_url`,
 #'     falling back to the built-in production API base if that field is missing).
-#'     Always a full URL. (The `ejam_api_repo` field names the API source-code repo
-#'     and is informational only -- it is not used as the API endpoint.)
+#'     Always a full URL. This is the single source of the API endpoint: all
+#'     functions that call or build EJAM API URLs read it from here, so the
+#'     endpoint can be changed in one place (edit `ejam_api_url` in DESCRIPTION).
+#'     A friendlier branded alias, `https://api.ejanalysis.com` (also
+#'     `https://ejamapi.ejanalysis.com`), proxies the same API via Cloudflare and
+#'     may be used as `ejam_api_url`. (The `ejam_api_repo` field names the API
+#'     source-code repo and is informational only -- it is not the API endpoint.)
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
 #'   Ignored if type = "docs", where full URL is always returned.

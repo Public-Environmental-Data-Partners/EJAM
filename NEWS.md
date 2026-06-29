@@ -49,10 +49,19 @@ Changes since v3.YYYY.0:
 - `url_ejamapp()` now builds a deep link that launches the live app pre-loaded
   with a set of places: `url_ejamapp(lat=, lon=, fips=, shapefile=, radius=)` or
   `url_ejamapp(handoff=<token>)`, using the same query vocabulary as
-  `url_ejamapi()`. (Default app base URL is `https://ejanalysis.com/ejamapp`.)
-  Docs for `ejamapp()`, `ejamapi()`, and `url_ejamapi()` were updated to reflect
-  that the EJAM API now supports multisite reports (`sitenumber=0`) and a POST
-  `/report` endpoint for many/large polygons.
+  `url_ejamapi()`. The default app base is now **`https://ejamapp.ejanalysis.com/`**,
+  a Cloudflare-fronted shortcut on ejanalysis.com that forwards the query string
+  (302 redirect) to the live app so launch parameters arrive intact. Docs for
+  `ejamapp()`, `ejamapi()`, and `url_ejamapi()` were updated to reflect that the
+  EJAM API now supports multisite reports (`sitenumber=0`) and a POST `/report`
+  endpoint for many/large polygons.
+
+- The EJAM API base URL is now **single-sourced**: functions read it from
+  `DESCRIPTION` (`ejam_api_url`) via `url_package("api")`, so the endpoint can be
+  changed in one place instead of being hardcoded in several. A friendlier branded
+  alias, `https://api.ejanalysis.com/` (also `https://ejamapi.ejanalysis.com/`), is
+  available via Cloudflare and can be set as `ejam_api_url` if desired; the default
+  remains the Cloud Run URL. See the new `dev-api` article.
 
 ## Bug Fixes
 
