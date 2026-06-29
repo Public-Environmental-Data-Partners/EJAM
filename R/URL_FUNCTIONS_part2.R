@@ -609,8 +609,8 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                             linktext = "EJSCREEN",
                             ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
                             baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
-                            shape = NULL, shp = NULL,
-                            ...) {
+                            ...,
+                            shape = NULL, shp = NULL) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
@@ -762,8 +762,8 @@ url_enviromapper <- function(sitepoints = NULL, lon = NULL, lat = NULL, shapefil
                              linktext = "EnviroMapper",
                              ifna = "https://geopub.epa.gov/myem/efmap/",
                              baseurl = "https://geopub.epa.gov/myem/efmap/index.html?ve=",
-                             shape = NULL, shp = NULL,
-                             ...) {
+                             ...,
+                             shape = NULL, shp = NULL) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
@@ -886,8 +886,8 @@ url_county_health <- function(fips = NULL, year = 2025,
                               ifna = "https://www.countyhealthrankings.org",
                               baseurl = "https://www.countyhealthrankings.org/health-data/",
                               statereport = FALSE,
-                              shape = NULL, shp = NULL,
-                              ...) {
+                              ...,
+                              shape = NULL, shp = NULL) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
@@ -1042,8 +1042,8 @@ url_state_health = function(fips = NULL, year = 2025,
                             ifna = "https://www.countyhealthrankings.org",
                             baseurl = "https://www.countyhealthrankings.org/health-data/",
                             statereport = TRUE,
-                            shape = NULL, shp = NULL,
-                            ...) {
+                            ...,
+                            shape = NULL, shp = NULL) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
@@ -1101,8 +1101,8 @@ url_county_equityatlas <- function(fips = NULL, # year = 2025,
                                    ifna    = "https://nationalequityatlas.org",
                                    baseurl = "https://nationalequityatlas.org/research/data_summary",
                                    statereport = FALSE,
-                                   shape = NULL, shp = NULL,
-                                   ...) {
+                                   ...,
+                                   shape = NULL, shp = NULL) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
@@ -1694,8 +1694,8 @@ url_state_equityatlas <- function(fips = NULL,
                                   baseurl = "https://nationalequityatlas.org/research/data_summary",
 
                                   statereport = TRUE,
-                                  shape = NULL, shp = NULL,
-                                  ...) {
+                                  ...,
+                                  shape = NULL, shp = NULL) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}

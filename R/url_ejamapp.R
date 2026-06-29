@@ -33,9 +33,10 @@
 #'   places back from `GET /handoff/<token>` at startup (the scalable path for
 #'   many/large polygons).
 #' @param dTolerance meters tolerance for [sf::st_simplify()] so a polygon fits in a URL
-#' @param baseurl base URL of the live EJAM app. The default is a tidy
-#'   `ejanalysis.com` shortcut. If `baseurl` is a redirect/shortcut, the redirect
-#'   must forward the query string so the launch parameters reach the app.
+#' @param baseurl base URL of the live EJAM app. Defaults to the app's direct
+#'   URL so the launch parameters reach it. A tidy shortcut such as
+#'   `https://ejanalysis.com/ejamapp` works ONLY if its redirect forwards the
+#'   query string; a plain 301 drops it, which would open the app empty.
 #' @param browse set TRUE to open the URL in a browser (if interactive)
 #' @returns URL (character) for the live EJAM app
 #' @seealso [url_ejamapi()] [ejamapi()] [ejamapp()] [url_ejscreenmap()]
@@ -52,7 +53,7 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                         fips = NULL, shapefile = NULL, shape = NULL,
                         radius = NULL, buffer = NULL,
                         handoff = NULL, dTolerance = 100,
-                        baseurl = "https://ejanalysis.com/ejamapp",
+                        baseurl = "https://ejam.publicenvirodata.org/",
                         browse = FALSE, shp = NULL) {
 
   # Aliases (synonyms): buffer for radius, shape/shp for shapefile.

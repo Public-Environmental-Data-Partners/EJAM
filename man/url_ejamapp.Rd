@@ -15,7 +15,7 @@ url_ejamapp(
   buffer = NULL,
   handoff = NULL,
   dTolerance = 100,
-  baseurl = "https://ejanalysis.com/ejamapp",
+  baseurl = "https://ejam.publicenvirodata.org/",
   browse = FALSE,
   shp = NULL
 )
@@ -42,9 +42,10 @@ many/large polygons).}
 
 \item{dTolerance}{meters tolerance for \code{\link[sf:st_simplify]{sf::st_simplify()}} so a polygon fits in a URL}
 
-\item{baseurl}{base URL of the live EJAM app. The default is a tidy
-\code{ejanalysis.com} shortcut. If \code{baseurl} is a redirect/shortcut, the redirect
-must forward the query string so the launch parameters reach the app.}
+\item{baseurl}{base URL of the live EJAM app. Defaults to the app's direct
+URL so the launch parameters reach it. A tidy shortcut such as
+\verb{https://ejanalysis.com/ejamapp} works ONLY if its redirect forwards the
+query string; a plain 301 drops it, which would open the app empty.}
 
 \item{browse}{set TRUE to open the URL in a browser (if interactive)}
 

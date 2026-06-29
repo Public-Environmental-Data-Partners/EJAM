@@ -67,7 +67,7 @@
 #' @export
 #'
 shapefile_from_any <- function(path = NULL, cleanit = TRUE, crs = 4269, layer = NULL, inputname = NULL, silentinteractive = FALSE,
-                               shapefile = NULL, shape = NULL, shp = NULL, ...) {
+                               ..., shapefile = NULL, shape = NULL, shp = NULL) {  # name-only aliases for path (after ... so they can't bind positionally)
   # Aliases (synonyms) for path: accept shapefile/shape/shp as the input too.
   if (is.null(path)) {
     path <- if (!is.null(shapefile)) shapefile else if (!is.null(shape)) shape else shp
@@ -811,7 +811,7 @@ shapefile_filepaths_validize <- function(filepaths, inputname = NULL) {
 #'
 #' @export
 #'
-shape_buffered_from_shapefile <- function(shapefile = NULL, radius.miles, crs = 4269, shape = NULL, shp = NULL, ...) {
+shape_buffered_from_shapefile <- function(shapefile = NULL, radius.miles, crs = 4269, ..., shape = NULL, shp = NULL) {  # shape/shp name-only aliases (after ...)
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}

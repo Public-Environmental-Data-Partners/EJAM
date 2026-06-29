@@ -85,7 +85,7 @@
 #'
 ejamit_compare_types_of_places <- function(sitepoints, typeofsite = NULL,
                                            shapefile = NULL, fips = NULL,
-                                           silentinteractive = TRUE, shape = NULL, shp = NULL,  ...) {
+                                           silentinteractive = TRUE, ..., shape = NULL, shp = NULL) {
 
   # Alias (synonym) shape for shapefile.
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}

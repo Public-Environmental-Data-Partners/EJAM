@@ -165,9 +165,9 @@ url_ejamapi = function(
 
   version = NULL,
 
-  shape = NULL, shp = NULL,
+  ...,
 
-  ...
+  shape = NULL, shp = NULL   # name-only aliases (after ... so positional args still flow into ... unchanged)
 ) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}

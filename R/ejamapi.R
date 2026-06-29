@@ -198,8 +198,8 @@ ejamapi <- function(
     fileextension = c("html", "pdf"),
     dry_run = FALSE,
     version = NULL,
-    shp = NULL,
-    ...
+    ...,
+    shp = NULL   # name-only alias (synonym for shape/shapefile), after ... so it can't bind positionally
 ) {
   # shp is an alias (synonym) for shape/shapefile
   if (is.null(shape) && is.null(shapefile) && !is.null(shp)) {shape <- shp}

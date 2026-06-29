@@ -15,9 +15,9 @@ url_state_equityatlas(
   ifna = "https://nationalequityatlas.org",
   baseurl = "https://nationalequityatlas.org/research/data_summary",
   statereport = TRUE,
+  ...,
   shape = NULL,
-  shp = NULL,
-  ...
+  shp = NULL
 )
 }
 \arguments{
@@ -39,9 +39,9 @@ url_state_equityatlas(
 
 \item{statereport}{Do not use directly. passed to \code{\link[=url_county_equityatlas]{url_county_equityatlas()}}.}
 
-\item{shape, shp}{aliases (synonyms) for shapefile}
-
 \item{...}{unused}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 vector of URLs to reports on enclosing states (or generic link if fips invalid)

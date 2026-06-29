@@ -24,8 +24,8 @@ ejamapi(
   fileextension = c("html", "pdf"),
   dry_run = FALSE,
   version = NULL,
-  shp = NULL,
-  ...
+  ...,
+  shp = NULL
 )
 }
 \arguments{
@@ -100,11 +100,11 @@ be just a placeholder, for the first site, not an overall summary across all sit
 version=\if{html}{\out{<ver>}} via \code{\link[=url_ejamapi]{url_ejamapi()}} so it can serve the matching data vintage.
 Default NULL resolves to the installed package Version (from DESCRIPTION).}
 
-\item{shp}{alias (synonym) for shapefile/shape}
-
 \item{...}{other parameters, passed to \code{\link[httr2:req_body_json]{httr2::req_body_json()}} in the "data" case,
 passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case, and used for the
 required \code{attribute} and \code{value} parameters in the "query" case}
+
+\item{shp}{alias (synonym) for shapefile/shape}
 }
 \value{
 If dry_run=TRUE

@@ -18,9 +18,9 @@ url_ejamapi(
   baseurl = NULL,
   sitenumber = "each",
   version = NULL,
+  ...,
   shape = NULL,
-  shp = NULL,
-  ...
+  shp = NULL
 )
 }
 \arguments{
@@ -74,10 +74,10 @@ found in the inputs (third point or third fips or third polygon).}
 version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
 resolves to the installed package Version (from DESCRIPTION).}
 
-\item{shape, shp}{aliases (synonyms) for shapefile}
-
 \item{...}{a named list of other query parameters passed to the API,
 to allow for expansion of allowed parameters}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 vector of character string URLs -- see details on sitenumber parameter

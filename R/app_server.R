@@ -524,7 +524,10 @@ app_server <- function(input, output, session) {
         tryCatch(shapefile_from_any(shape_txt, cleanit = FALSE, silentinteractive = TRUE), error = function(e) NULL)
       } else {NULL}
       if (!is.null(shp) && !inherits(shp, "try-error")) {
-        url_shapefile(shape_txt)
+        # store the PARSED sf object (not the raw text) so data_up_shp() reuses it
+        # instead of re-parsing the GeoJSON -- matters for the large-polygon handoff.
+        # shapefile_from_any() fast-returns an sf object as-is, so data_up_shp() stays cheap.
+        url_shapefile(shp)
         shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
         shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "SHP")
         loaded <- TRUE

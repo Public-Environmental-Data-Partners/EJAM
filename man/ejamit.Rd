@@ -42,12 +42,12 @@ ejamit(
   showpctowned = TRUE,
   download_city_fips_bounds = TRUE,
   download_noncity_fips_bounds = FALSE,
+  ...,
   buffer = NULL,
   shape = NULL,
   shp = NULL,
   lat = NULL,
-  lon = NULL,
-  ...
+  lon = NULL
 )
 }
 \arguments{
@@ -146,6 +146,8 @@ passed to \code{\link[=doaggregate]{doaggregate()}} also. app server sets this t
 
 \item{download_noncity_fips_bounds}{passed to \code{\link[=area_sqmi]{area_sqmi()}}}
 
+\item{...}{passed to \code{\link[=getblocksnearby]{getblocksnearby()}} etc. such as  report_progress_every_n = 0}
+
 \item{buffer}{Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
 For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
 before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).}
@@ -158,8 +160,6 @@ use shapefile=1 (otherwise it assumes you want to pick a latlon file).}
 \item{shp}{alias (synonym) for shapefile}
 
 \item{lat, lon}{optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.}
-
-\item{...}{passed to \code{\link[=getblocksnearby]{getblocksnearby()}} etc. such as  report_progress_every_n = 0}
 }
 \value{
 This returns a named list of results.

@@ -15,9 +15,9 @@ url_enviromapper(
   linktext = "EnviroMapper",
   ifna = "https://geopub.epa.gov/myem/efmap/",
   baseurl = "https://geopub.epa.gov/myem/efmap/index.html?ve=",
+  ...,
   shape = NULL,
-  shp = NULL,
-  ...
+  shp = NULL
 )
 }
 \arguments{
@@ -39,9 +39,9 @@ url_enviromapper(
 
 \item{baseurl}{do not change unless endpoint actually changed}
 
-\item{shape, shp}{aliases (synonyms) for shapefile}
-
 \item{...}{unused}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 URL of one webpage (that launches the mapping tool)

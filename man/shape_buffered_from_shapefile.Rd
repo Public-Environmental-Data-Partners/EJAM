@@ -8,9 +8,9 @@ shape_buffered_from_shapefile(
   shapefile = NULL,
   radius.miles,
   crs = 4269,
+  ...,
   shape = NULL,
-  shp = NULL,
-  ...
+  shp = NULL
 )
 }
 \arguments{
@@ -23,9 +23,9 @@ and to st_crs(x)$units otherwise)}
 
 \item{crs}{used in st_transform()  default is crs = 4269 or Geodetic CRS NAD83}
 
-\item{shape, shp}{aliases (synonyms) for shapefile}
-
 \item{...}{passed to st_buffer()}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 a simple feature \link[sf:sf]{sf::sf} class spatial data.frame, same format as \code{\link[sf:st_buffer]{sf::st_buffer()}} returns

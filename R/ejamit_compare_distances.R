@@ -56,8 +56,9 @@
 ejamit_compare_distances_fulloutput <- function(sitepoints, radii = c(1,2,3),
                                                 donuts_not_cumulative = FALSE,
                                                 quiet = TRUE, silentinteractive = TRUE,
-                                                buffers = NULL, buffer = NULL, radius = NULL, # aliases (synonyms) for radii
-                                                ...) {
+                                                ...,
+                                                # name-only aliases (synonyms) for radii, after ... so they can't bind positionally:
+                                                buffers = NULL, buffer = NULL, radius = NULL) {
   # Aliases (synonyms) for radii (the vector of distances), for naming consistency.
   if (!is.null(buffers)) {radii <- buffers}
   if (!is.null(buffer))  {radii <- buffer}
@@ -184,8 +185,9 @@ ejamit_compare_distances <- function(sitepoints, radii = c(1,2,3),
                                      ylab = "Ratio of Avg. within X miles to Avg. Statewide or Nationwide",
                                      ylim = c(0, 5),
                                      n = 1,
-                                     buffers = NULL, buffer = NULL, radius = NULL, # aliases (synonyms) for radii
-                                     ...) {
+                                     ...,
+                                     # name-only aliases (synonyms) for radii, after ... so they can't bind positionally:
+                                     buffers = NULL, buffer = NULL, radius = NULL) {
   # Aliases (synonyms) for radii (the vector of distances), for naming consistency.
   if (!is.null(buffers)) {radii <- buffers}
   if (!is.null(buffer))  {radii <- buffer}

@@ -257,11 +257,12 @@ ejamit <- function(sitepoints = NULL,
                    showpctowned = TRUE,
                    download_city_fips_bounds = TRUE,
                    download_noncity_fips_bounds = FALSE,
-                   buffer = NULL,  # alias (synonym) for radius -- placed here (name-only) to avoid shifting positional args
+                   ...,
+                   # name-only aliases (after ... so any positional args still flow into ... as before):
+                   buffer = NULL,  # alias (synonym) for radius
                    shape = NULL,   # alias (synonym) for shapefile
                    shp = NULL,     # alias (synonym) for shapefile
-                   lat = NULL, lon = NULL,  # optional coordinates to build sitepoints (issue #171)
-                   ...
+                   lat = NULL, lon = NULL  # optional coordinates to build sitepoints (issue #171)
 ) {
   # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
   # read more naturally for FIPS or polygon analysis; "radius"/"shapefile" remain
