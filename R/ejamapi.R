@@ -190,7 +190,7 @@ ejamapi <- function(
     buffer = NULL, radius = NULL,
     geometries = FALSE,
     scale = c("blockgroup", "county"),
-    baseurl = "https://ejamapi-84652557241.us-central1.run.app/",
+    baseurl = paste0(url_package("api"), "/"),   # canonical API base from DESCRIPTION (ejam_api_url)
     endpoint = c("data", "report", "query"),
     browse = TRUE,
     save_and_return_html = TRUE,

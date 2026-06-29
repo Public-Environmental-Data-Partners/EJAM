@@ -16,7 +16,7 @@ ejamapi(
   radius = NULL,
   geometries = FALSE,
   scale = c("blockgroup", "county"),
-  baseurl = "https://ejamapi-84652557241.us-central1.run.app/",
+  baseurl = paste0(url_package("api"), "/"),
   endpoint = c("data", "report", "query"),
   browse = TRUE,
   save_and_return_html = TRUE,

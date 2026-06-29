@@ -130,7 +130,7 @@ radius_donut_lower_edge).
  z = url_ejamapi(shapefile = shp)
 
  \dontrun{
- browseURL("https://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-112&buffer=4")
+ browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
 
  browseURL(x[1])
  browseURL(y[1])

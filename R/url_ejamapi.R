@@ -97,7 +97,7 @@
 #'  z = url_ejamapi(shapefile = shp)
 #'
 #'  \dontrun{
-#'  browseURL("https://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-112&buffer=4")
+#'  browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
 #'
 #'  browseURL(x[1])
 #'  browseURL(y[1])
@@ -229,7 +229,7 @@ url_ejamapi = function(
   }
   ################################################## #  ################################################## #
   if (is.null(baseurl)) {
-    baseurl <- "https://ejamapi-84652557241.us-central1.run.app/report?"
+    baseurl <- paste0(url_package("api"), "/report?")   # canonical API base from DESCRIPTION (ejam_api_url)
   }
   if (is.null(ifna)) {
     ifna <- "https://ejanalysis.com"
