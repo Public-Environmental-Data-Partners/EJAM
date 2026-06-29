@@ -122,6 +122,16 @@ Just before launching the app, `ejamapp()` calls `get_global_defaults_or_user_op
 gets the global defaults and then overrides/replaces them with
 any user-specified versions of those options given as arguments in `ejamapp()`.
 
+### ejamapp() convenience aliases
+
+`ejamapp()` also accepts a number of short **aliases** for parameters and, for site selection,
+infers related defaults. For example `pts` (or `lat`+`lon`) is an alias for `sitepoints`, `shp` is
+an alias for `shapefile`, and `naics`/`sic`/`mact` are aliases for `default_naics`/etc. Some of these
+also set the method automatically -- e.g. passing `fips`, `shapefile`, or `sitepoints` sets
+`default_upload_dropdown = "upload"` (and the upload sub-type), while `default_naics` sets
+`default_upload_dropdown = "dropdown"`. See `?ejamapp` and the alias-handling block near the top of
+`R/ejamapp.R`.
+
 ### app launch
 
 `ejamapp()` launches the app -- it uses a function called `golem::with_golem_options()`, 
@@ -146,6 +156,31 @@ where they typically provide the default for an input$ but that default can be o
 there by someone using the app's Advanced Tab,
 so what ui or server ends up using could be an input$ that is adjustable in the Advanced Tab
 and therefore can be bookmarked (since inputs can be bookmarked unless specifically excluded from that).
+
+An Advanced-Tab setting that should change a *main* control (e.g. the "Site Selection Method"
+radio `default_ss_choose_method` setting the main `ss_choose_method` radio) is applied from the
+**server** via `updateRadioButtons()` -- you cannot reference `input$...` from `app_ui()`.
+
+### Launch-URL parameters (in addition to the above)
+
+Beyond `ejamapp()` params and the global_defaults_ files, the app can also read settings from the
+**launch URL**, via two distinct mechanisms:
+
+- Shiny's native **bookmarking** restores any `input$` value from a `?_inputs_&id=value...` URL
+  (see the bookmarking notes above).
+- The EJScreen / multisite handoff work adds **custom launch-URL parameters** (e.g. `?lat=&lon=`,
+  `?fips=`, `?shape=`, `?handoff=`) that take precedence over the matching `ejamapp()`/global default
+  via `url_x() %||% global_or_param("x")`. (See PR #413 on the `ejscreen-multisite-selection` branch.)
+
+### how an input control actually gets its default
+
+Because the UI is built once before any reactive `input$` exists, a control's `selected=`/`value=` in
+`app_ui.R` must be a **non-reactive** value -- `global_or_param("...")` -- not `input$...`. Controls
+whose choices load server-side (large selectize lists like NAICS/SIC/MACT) or whose value must change
+in response to an event (Advanced-Tab sync, upload→method switch) are instead populated from the
+server via `update*Input()`. A few controls whose structure is itself reactive (e.g. the radius
+slider) are built server-side with `renderUI()`. The precedence order, top to bottom, is: Shiny
+bookmark `?_inputs_&` > launch-URL custom param > `ejamapp()` param > `global_defaults_*.R`.
 
 To view the Advanced tab in the web app, click the About tab and then the Show advanced button on that page. If that button is not visible, use ejamapp(default_can_show_advanced_settings=TRUE). To show the advanced tab at launch, use ejamapp(default_show_advanced_settings=TRUE).
 
