@@ -144,7 +144,10 @@ shapefile_from_any <- function(path = NULL, cleanit = TRUE, crs = 4269, layer = 
     }
   }
 
-  if (all(grepl("type.*FeatureCollection", path))) {
+  # inline GeoJSON text: a FeatureCollection, a single Feature, or a bare
+  # Polygon/MultiPolygon geometry (matches shapefile_from_geojson_text() and the
+  # ?shape= launch-URL guard in app_server()).
+  if (all(grepl("type.*(FeatureCollection|Feature|Polygon|MultiPolygon)", path))) {
     # might be geojson text string(s)
     x <- shapefile_from_geojson_text(path, quiet=TRUE)
     if (!is.null(x)) {
@@ -297,7 +300,12 @@ shapefile_from_json <- function(path, cleanit = TRUE, crs = 4269, layer = NULL, 
 #'
 shapefile_from_geojson_text <- function(x, quiet = FALSE) {
 
-  if (all(grepl("type.*FeatureCollection",    x))) {
+  # Accept any GeoJSON root type sf::st_read() can parse: a FeatureCollection, a
+  # single Feature, or a bare Polygon/MultiPolygon geometry. This mirrors the set
+  # of types accepted by the ?shape= launch-URL guard in app_server(). Previously
+  # only FeatureCollection was recognized, so bare Feature/Polygon/MultiPolygon
+  # GeoJSON (which passes that guard) silently returned NULL here.
+  if (all(grepl("type.*(FeatureCollection|Feature|Polygon|MultiPolygon)", x))) {
     # might be geojson text string(s)
     junk = capture.output({
       shp <- try({
@@ -314,7 +322,7 @@ shapefile_from_geojson_text <- function(x, quiet = FALSE) {
       return(shp)
     }
   } else {
-    if (!quiet) {warning("cannot find type FeatureCollection in the text string provided")}
+    if (!quiet) {warning("cannot find a GeoJSON type (FeatureCollection/Feature/Polygon/MultiPolygon) in the text string provided")}
     return(NULL)
   }
 }
