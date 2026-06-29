@@ -112,10 +112,11 @@ msg <- utils::capture.output({
 
     ## ------------------------ Site Selection options  #####
 
-    # upload or dropdown method of site selection
+    # method of site selection: "dropdown" (select a category), "upload" (upload a file of
+    # points/IDs/FIPS/shapefile), or "mapclick" (click or draw on the map to specify points)
     default_upload_dropdown = "upload",
-    # global_default or ejamapp() parameter: default_upload_dropdown, which is initial selected value of
-    # input in advanced tab: input$default_ss_choose_method, which is initial selected value of
+    # global_default or ejamapp() parameter: default_upload_dropdown, which is the initial selected value of
+    # input in advanced tab: input$default_ss_choose_method, which (via updateRadioButtons in the server) sets
     # input in server:              input$ss_choose_method
 
     # NAICS
@@ -715,7 +716,8 @@ help_texts <- list(
   <div id="selectFrom1" class="form-group shiny-input-radiogroup shiny-input-container shiny-input-container-inline">
   <label class="control-label" for="selectFrom1">
 
-  <p>You may upload a list of location coordinates (latitudes and longitudes).</p>',
+  <p>You may upload a list of location coordinates (latitudes and longitudes).</p>
+  <p>You can also specify points without a file by choosing the "Click or draw on map" method and clicking the map to add one or more points.</p>',
 
                            # example file
 

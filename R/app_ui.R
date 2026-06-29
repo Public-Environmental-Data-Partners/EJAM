@@ -122,9 +122,12 @@ app_ui <- function(request) {
                                                 'upload',
                                                 'mapclick'),
                                selected = global_or_param("default_upload_dropdown")),
-                  # selected = input$default_ss_choose_method), # which has a default of global_or_param("default_upload_dropdown")
-                  # selected = 'upload'),   # if hard-coded default selection.
-                  # uiOutput(outputId = 'ss_choose_method_ui'), # flexible default selection, if handled in server code.
+                  # NOTE: the UI is built once at page-load, before any reactive `input` exists, so
+                  # `selected` MUST be a non-reactive value here - global_or_param() reads the ejamapp()
+                  # param / global default (default_upload_dropdown = "dropdown" / "upload" / "mapclick").
+                  # Do NOT use `selected = input$default_ss_choose_method` here (that errors at UI build).
+                  # The advanced-tab "Site Selection Method" setting is applied to this radio server-side
+                  # via updateRadioButtons() - see observeEvent(input$default_ss_choose_method) in app_server.R.
 
                   ## > what DROPDOWN CATEGORY TYPE? (NAICS, SIC, MACT, Program, FIPS_PLACE) ####
 
@@ -1118,11 +1121,13 @@ app_ui <- function(request) {
                  h3("Uploaded files and dropdown menu site selection"),
 
                  radioButtons(inputId = "default_ss_choose_method", label = "Site Selection Method",
-                              choices = c(Dropdown = "dropdown", Upload = "upload"),
+                              choices = c(Dropdown = "dropdown", Upload = "upload", `Click on map` = "mapclick"),
                               selected = global_or_param("default_upload_dropdown"),
                               inline = TRUE),
-                 # global_default or ejamapp() parameter: default_upload_dropdown, which is initial selected value of
-                 # input in advanced tab: input$default_ss_choose_method, which is initial selected value of
+                 # global_default or ejamapp() parameter: default_upload_dropdown ("dropdown", "upload", or "mapclick"),
+                 # which is the initial selected value of
+                 # input in advanced tab: input$default_ss_choose_method, which (via updateRadioButtons in the server)
+                 # sets the initial/selected value of
                  # input in server:              input$ss_choose_method
                  ######################################################## #
                  ###  Upload files for site selection options ####

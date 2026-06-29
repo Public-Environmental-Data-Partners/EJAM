@@ -580,9 +580,10 @@ bt_get_results=0
 
 ```{r, eval=FALSE}
 
-default_ss_choose_method="upload" # or "dropdown"
-ss_choose_method="upload"         # or "dropdown"
+default_ss_choose_method="upload" # or "dropdown" or "mapclick" (click/draw on map)
+ss_choose_method="upload"         # or "dropdown" or "mapclick"
 ss_choose_method_upload="latlon"   # see global_defaults_*.R for options
+mapclick_clear=0                   # "Clear all points" button for the mapclick method
 ss_choose_method_drop="FIPS_PLACE" # see global_defaults_*.R for options
 ss_upload_shp=null
 ss_upload_fips=null

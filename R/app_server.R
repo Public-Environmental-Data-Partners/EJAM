@@ -340,22 +340,18 @@ app_server <- function(input, output, session) {
   })
   #############################################################################  #
 
-  # SELECT Facility Type vs UPLOAD Latlon/ id/ fips/ shape (radio button) ####
-
-  output$ss_choose_method_ui <- renderUI({
-    req(input$default_ss_choose_method)
-    if (input$testing) {message("input$default_ss_choose_method is ", input$default_ss_choose_method, "\n")}
-    radioButtons(inputId = 'ss_choose_method',
-                 label = 'How would you like to identify locations?',
-                 choiceNames = c('Select a category of locations',
-                                 'Upload specific locations'),
-                 choiceValues = c('dropdown',
-                                  'upload'),
-                 # selected = "upload" # hard-coded default selection
-                 selected = input$default_ss_choose_method  # flexible default selection
-    )
-    if (input$testing) {message(" and input$ss_choose_method selected is ", input$ss_choose_method, "\n")}
-  })
+  # SELECT method of site selection: dropdown / upload / mapclick (radio button) ####
+  #
+  # The ss_choose_method radio is defined statically in app_ui.R (initial value =
+  # global_or_param("default_upload_dropdown")). The advanced-tab "Site Selection Method" radio
+  # (input$default_ss_choose_method) lets a user change which method is selected at runtime; apply
+  # that here via updateRadioButtons() - you cannot reference input$ from the UI. (This replaces an
+  # older approach that re-rendered the radio server-side via output$ss_choose_method_ui.)
+  observeEvent(input$default_ss_choose_method, {
+    if (input$testing) {message("input$default_ss_choose_method is ", input$default_ss_choose_method)}
+    shiny::updateRadioButtons(session = session, inputId = "ss_choose_method",
+                              selected = input$default_ss_choose_method)
+  }, ignoreInit = TRUE)
 
   # keep track of currently used method of site selection (also see submitted_upload_method reactive)
   current_upload_method <- reactive({
