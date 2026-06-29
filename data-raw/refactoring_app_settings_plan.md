@@ -8,6 +8,16 @@ Goal: targeted harmonization of how the EJAM web-app gets its input defaults/val
 
 ---
 
+## STATUS: plan committed, all code ON HOLD (decided 2026-06-28)
+
+User decision: **do the plan only; hold ALL code changes** until BOTH PR #418 and PR #413
+are merged into `development`, then do the whole refactor in one pass on a clean baseline
+(so nothing collides with the owner's open PRs). The Wave 1 / Wave 2 split below is retained
+for reference, but with this decision there is effectively a single wave AFTER the PRs land.
+Resume trigger: #418 and #413 both merged into `development`.
+
+---
+
 ## Sequencing constraint (READ FIRST)
 
 This branch is downstream of two OPEN PRs into `development`:
