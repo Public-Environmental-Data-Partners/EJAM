@@ -414,7 +414,8 @@ instead of tests/testthat/_logs
         "test-map_headernames-report-ratio-metadata.R"
       ),
       test_modules = c(
-        "test-MODULE_latlontypedin.R"
+        "test-MODULE_latlontypedin.R",
+        "test-MODULE_latlon_from_map_click.R"
       ),
       test_webapp = c(
         "test-webapp-ui_and_server.R",
@@ -427,6 +428,7 @@ instead of tests/testthat/_logs
         "test-webapp-FIPS-picker-functionality.R",
         "test-webapp-FRS-functionality.R",
         "test-webapp-latlon-functionality.R",
+        "test-webapp-mapclick-functionality.R",
         "test-webapp-NAICS-functionality.R",
         "test-webapp-SIC-functionality.R",
         "test-webapp-shp-gdb-zip-functionality.R",

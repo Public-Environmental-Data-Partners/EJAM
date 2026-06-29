@@ -606,6 +606,8 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
         expect_input_value("ss_choose_method", "upload")
         expect_input_value("ss_choose_method_upload", "FRS")
         expect_uploaded_file("ss_upload_frs", "frs_testpoints_10.xlsx")
+      } else if (test_category == "mapclick") {
+        expect_input_value("ss_choose_method", "mapclick")
       } else if (test_category == "NAICS") {
         expect_input_value("ss_choose_method", "dropdown")
         expect_input_value("ss_choose_method_drop", "NAICS")
@@ -845,6 +847,21 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       shinytestLogMessage("About to upload frs_testpoints_10.xlsx for FRS")
       select_upload_method("FRS")
       upload_test_file("ss_upload_frs", EJAM:::app_sys("testdata/registryid/frs_testpoints_10.xlsx"))
+    }
+
+    ## by CLICKING ON THE MAP ####
+
+    if (test_category == "mapclick") {
+      ### > mapclick ####
+      shinytestLogMessage("selecting Click-on-map method and clicking two points on an_leaf_map")
+      app$set_inputs(ss_choose_method = "mapclick", wait_ = FALSE)
+      wait_for_input_value("ss_choose_method", expected = "mapclick")
+      ## simulate two map clicks. leaflet delivers a click as input$<mapid>_click = list(lat=, lng=);
+      ## the mapclick module appends each as a point (no input binding exists for these custom inputs).
+      app$set_inputs(an_leaf_map_click = list(lat = 38.9,  lng = -77.03),  allow_no_input_binding_ = TRUE)
+      app$wait_for_idle(timeout = 10 * 1000)
+      app$set_inputs(an_leaf_map_click = list(lat = 34.05, lng = -118.25), allow_no_input_binding_ = TRUE)
+      app$wait_for_idle(timeout = 10 * 1000)
     }
 
     ## by CATEGORY IN DROPDOWN MENU ####
