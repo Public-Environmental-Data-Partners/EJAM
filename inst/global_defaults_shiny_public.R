@@ -58,6 +58,10 @@ global_defaults_shiny_public <- list(
   ############################################################################## #
 
   ## SITE SELECTION  ####
+  ## The top-level method is chosen by default_upload_dropdown: "dropdown" (select a category),
+  ## "upload" (upload a file), or "mapclick" (click or draw on the map to specify points).
+  ## The default_choices_* settings below configure the sub-options for the "dropdown" and
+  ## "upload" methods only; the "mapclick" method has no sub-options.
 
   # 'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',  # but NOT all fips of one category (unlike for NAICS etc.)
 

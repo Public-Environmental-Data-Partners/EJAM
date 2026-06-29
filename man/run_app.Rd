@@ -213,6 +213,14 @@ ejamapp(
   #  'Census place FIPS Codes file upload'            = 'FIPS'
   #)
 
+  ## Click-or-draw-on-map as the default site-selection method shown at launch.
+  ## The user clicks the map to specify one or more lat/lon points to analyze.
+  ## (default_upload_dropdown accepts "dropdown", "upload", or "mapclick".)
+
+ejamapp(
+  default_upload_dropdown = "mapclick"
+)
+
  ## Count how many of some indicator are >= some cutoff
 
 ejamapp(
