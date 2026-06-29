@@ -60,6 +60,7 @@ articles:
   contents:
   - dev-speed
   - dev-app-settings
+  - dev-api
   - dev-deploy-app
   - dev-run-shinytests
   - dev-run-unit-tests

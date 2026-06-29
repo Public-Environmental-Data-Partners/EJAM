@@ -1,0 +1,76 @@
+---
+title: "Using the EJAM API"
+description: "A brief overview of the hosted EJAM REST API and how to reach it from R"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Using the EJAM API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE, comment = "#>")
+```
+
+This is a short overview. For the authoritative and most current details, see:
+
+- the **[EJAM-API repository](https://github.com/Public-Environmental-Data-Partners/EJAM-API)**
+  and its README -- it documents every endpoint, parameter, and example;
+- the help for **`?ejamapi`** and **`?url_ejamapi`**; and
+- the **"Defaults and Custom Settings for the Web App"** article, for *deep links* that
+  launch the EJAM web app pre-loaded with a set of places.
+
+## What the API is
+
+Besides the R package and the web app, EJAM is available as a hosted **REST API** that
+returns EJScreen-style community reports (and the underlying data) for a point, a set of
+points, a polygon, or US Census areas (FIPS). It runs the same engine as the package, so an
+API report matches what `ejamit()` / `ejam2report()` would produce locally.
+
+## Reaching it from R
+
+Two functions wrap the API:
+
+- **`ejamapi()`** -- builds the request, calls the API, and returns the report or data.
+- **`url_ejamapi()`** -- builds the API request URL(s) *without* calling them (useful for a
+  table of shareable links, or to open one in a browser).
+
+```r
+ejamapi(lat = 33, lon = -112, radius = 3)              # get a report or data back
+url_ejamapi(lat = c(33, 34), lon = c(-112, -114))      # just build the URL(s)
+```
+
+The API base URL -- and a friendlier branded alias such as `https://api.ejanalysis.com` --
+are described in the
+[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API). You do not
+normally need to set the base URL yourself.
+
+## Deep linking: launch the app pre-loaded
+
+Separately from the data API, you can open a URL that **launches the live EJAM web app
+already loaded with a set of places** -- this is how the EJScreen "Send to EJAM" button
+works, so a user can move a selection straight into the full app. Points and FIPS codes
+travel directly in the URL; larger sets and drawn polygons use a token **handoff** so they
+are not limited by URL length.
+
+For the launch-URL vocabulary and the handoff endpoints, see the **"Defaults and Custom
+Settings for the Web App"** article and the
+[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
+
+## A few notes on parameters
+
+- Provide one input type per request: points (`lat`/`lon`), **or** `fips`, **or** `shape`.
+- `buffer` is a synonym for `radius`; `fileextension` is `html` or `pdf`.
+- For an aggregate **multisite** report over several places at once, and for sending many or
+  large polygons (which can exceed a GET URL's length, via a POST request), see the
+  parameter notes in the
+  [EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
+
+For anything not covered here, the
+[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API) is the
+source of truth, and `?ejamapi` / `?url_ejamapi` document the R interface.
