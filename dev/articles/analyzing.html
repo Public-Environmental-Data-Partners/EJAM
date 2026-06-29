@@ -142,8 +142,10 @@ which facilities have notable findings.</p>
 <h2 id="tools-for-selecting-locations-to-analyze">Tools for Selecting Locations to Analyze<a class="anchor" aria-label="anchor" href="#tools-for-selecting-locations-to-analyze"></a>
 </h2>
 <p>EJAM offers a variety of ways to specify the places to be analyzed
-and compared. The web app helps you select locations in several
-ways.</p>
+and compared. The web app helps you select locations in several ways,
+including uploading a table of points, selecting facilities by industry
+category or ID, uploading shapefiles or lists of FIPS codes, and
+clicking on a map to specify one or more points.</p>
 <p>If you are working in RStudio, and you already have identified the
 points or areas to analyze, the <code><a href="../reference/ejamit.html">ejamit()</a></code> function will
 accept 1) point coordinates, 2) a shapefile, or 3) a list of FIPS
@@ -206,7 +208,10 @@ as Counties or other types of Census Units are defined by FIPS code
 or more of the specified points, and you can define those points in a
 few ways. One way is to upload a table of coordinates – latitude and
 longitude for each point, one row per site, with columns called lat and
-lon (or some synonyms that work).</p>
+lon (or some synonyms that work). In the web app you can also pick
+points without a file by choosing “Click or draw on map” and clicking
+the map to add one or more points (click a point’s marker again to
+remove it).</p>
 <p>There are also <a href="../reference/index.html#specify-points-by-lat-lon">more detailed
 functions for working with latlon coordinates.</a></p>
 <p>The simplest way to do that in the RStudio console is something like
