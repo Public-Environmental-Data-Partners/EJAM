@@ -734,6 +734,24 @@ app_server <- function(input, output, session) {
     render_map   = FALSE
   )
 
+  ## cap the number of clicked points at input$max_pts_click (advanced tab; default_max_pts_click).
+  ## When a click would push past the cap, drop that newest click and notify - keeps drawing and
+  ## analysis bounded so a user cannot hang the app by clicking a very large number of points.
+  observeEvent(mapclick_points(), {
+    pts <- mapclick_points()
+    cap <- suppressWarnings(as.numeric(input$max_pts_click))
+    if (length(cap) != 1 || is.na(cap) || cap < 1) {cap <- as.numeric(global_or_param("default_max_pts_click"))}
+    maxcap <- suppressWarnings(as.numeric(global_or_param("maxmax_pts_click")))
+    if (length(maxcap) == 1 && !is.na(maxcap) && cap > maxcap) {cap <- maxcap}
+    if (!is.null(pts) && NROW(pts) > cap) {
+      mapclick_points(pts[seq_len(cap), , drop = FALSE])  # keep the first cap points; drop the newest (over-cap) click
+      showNotification(
+        paste0("Maximum ", cap, " points by clicking the map. Additional clicks are ignored."),
+        type = "warning", duration = 3, session = session
+      )
+    }
+  }, ignoreInit = TRUE)
+
   ## clean the clicked points into the same shape data_up_latlon() produces, so the rest of the app
   ## (map circles, "Review selected sites", run, downloads) treats them exactly like uploaded lat/lon.
   data_up_mapclick <- reactive({

@@ -64,6 +64,10 @@ msg <- utils::capture.output({
     default_max_pts_select  =   10 * 1000,
     maxmax_pts_select  =  35 * 1000, #   cap selected points
 
+    # input$max_pts_click
+    default_max_pts_click  =   30,
+    maxmax_pts_click  =  100, #   cap click-to-select points
+
     # input$max_pts_map uses these as its starting value and max allowed value
     default_max_pts_map   = 5 * 1000,
     maxmax_pts_map       = 15 * 1000, # max we will show on map

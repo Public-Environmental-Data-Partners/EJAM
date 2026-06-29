@@ -440,8 +440,8 @@ inputnames = c("add_naics_subcategories", "all_tabs", "allow_median_in_barplot_i
 "fipspicker_done_button", "format1pager", "frs_help", "fundingsource", 
 "go", "in_areas_where_enter", "in_the_x_zone", "in_the_x_zone_enter", 
 "include_ejindexes", "latlon_help", "latlontypedin_submit_button", 
-"max_mb_upload", "max_miles", "max_pts_map", "max_pts_run", "max_pts_select", 
-"max_pts_upload", "max_shapes_map", "maxradius", "naics_digits_shown", 
+"max_mb_upload", "max_miles", "max_pts_click", "max_pts_map", "max_pts_run", "max_pts_select",
+"max_pts_upload", "max_shapes_map", "maxradius", "naics_digits_shown",
 "need_proximityscore", "ok2plot", "plotkind_1pager", "radius_default", 
 "radius_default_shapefile", "radius_now", "radius_units", "results_tabs", 
 "return_to_results", "rg_author_email", "rg_author_name", "rg_enter_miles", 
@@ -660,6 +660,7 @@ max_miles=10
 maxradius=31.06856
 max_pts_upload=5000
 max_pts_select=5000
+max_pts_click=30
 max_pts_map=5000
 max_pts_showtable=1000
 max_pts_run=10000
