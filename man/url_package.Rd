@@ -6,7 +6,7 @@
 as specified in the DESCRIPTION file or by redirects from aliases}
 \usage{
 url_package(
-  type = c("code", "data", "docs")[1],
+  type = c("code", "data", "docs", "api")[1],
   get_full_url = FALSE,
   desc_or_alias = c("desc", "alias")[1],
   docs_version = NULL,
@@ -14,11 +14,13 @@ url_package(
 )
 }
 \arguments{
-\item{type}{Which type of URL is needed? Can be "data", "code", or "docs".
+\item{type}{Which type of URL is needed? Can be "data", "code", "docs", or "api".
 \itemize{
 \item "code" is for the github.com repository of R package code
 \item "data" is for the github.com repository of datasets
 \item "docs" is for the documentation website
+\item "api" is for the EJAM REST API base URL (DESCRIPTION field \code{ejam_api_url},
+falling back to \code{ejam_api_repo} if that field is missing). Always a full URL.
 }}
 
 \item{get_full_url}{logical, whether to return full URL or just the owner/reponame info.
@@ -64,6 +66,8 @@ See https://ejanalysis.com/ejam-code   for a list of URLs
 
  url_package("data")
  url_package("data", get_full_url = TRUE)
+
+ url_package("api")
 
  url_package("docs", desc_or_alias="alias")
  url_package("code", desc_or_alias="alias")

@@ -37,8 +37,12 @@
 #'
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
-#' @param ifna URL shown for missing, NA, NULL, bad input values
-#' @param baseurl do not change unless endpoint actually changed. See [ejamapi()] for a better way to handle choice of endpoint.
+#' @param ifna URL shown for missing, NA, NULL, bad input values. Default NULL
+#'   (and an explicitly passed NULL) resolves to the EJAM API base URL from
+#'   DESCRIPTION (`ejam_api_url`), via [url_package()] with type="api".
+#' @param baseurl do not change unless endpoint actually changed. Default NULL
+#'   (and an explicitly passed NULL) resolves to the DESCRIPTION `ejam_api_url`
+#'   followed by "/report?". See [ejamapi()] for a better way to handle choice of endpoint.
 #'
 #' @param sitenumber
 #'
@@ -154,8 +158,8 @@ url_ejamapi = function(
 
   linktext = "Report",
   as_html = FALSE,
-  ifna = "https://ejanalysis.com",
-  baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?",
+  ifna = NULL,
+  baseurl = NULL,
 
   sitenumber = "each",
 
@@ -168,6 +172,11 @@ url_ejamapi = function(
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
+
+  # Single source of truth: the EJAM API base URL lives in DESCRIPTION (ejam_api_url),
+  # read via url_package("api"). Default NULL (and an explicitly passed NULL) resolve here.
+  if (is.null(ifna))    {ifna    <- url_package("api")}
+  if (is.null(baseurl)) {baseurl <- paste0(url_package("api"), "/report?")}
 
   ## unused so far:
   {

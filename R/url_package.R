@@ -3,11 +3,13 @@
 #' Get URL, or just owner/reponame, for the package code, datasets, or documentation website
 #' as specified in the DESCRIPTION file or by redirects from aliases
 #'
-#' @param type Which type of URL is needed? Can be "data", "code", or "docs".
+#' @param type Which type of URL is needed? Can be "data", "code", "docs", or "api".
 #'
 #'   - "code" is for the github.com repository of R package code
 #'   - "data" is for the github.com repository of datasets
 #'   - "docs" is for the documentation website
+#'   - "api" is for the EJAM REST API base URL (DESCRIPTION field `ejam_api_url`,
+#'     falling back to `ejam_api_repo` if that field is missing). Always a full URL.
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
 #'   Ignored if type = "docs", where full URL is always returned.
@@ -43,6 +45,8 @@
 #'  url_package("data")
 #'  url_package("data", get_full_url = TRUE)
 #'
+#'  url_package("api")
+#'
 #'  url_package("docs", desc_or_alias="alias")
 #'  url_package("code", desc_or_alias="alias")
 #'  url_package("data", desc_or_alias="alias")
@@ -53,7 +57,7 @@
 #' @keywords internal
 #'
 url_package <- function(
-    type = c('code', 'data', 'docs')[1],
+    type = c('code', 'data', 'docs', 'api')[1],
     get_full_url = FALSE,
     desc_or_alias = c("desc", "alias")[1],
     docs_version = NULL,
@@ -72,8 +76,19 @@ url_package <- function(
       }
     }
   }
-  stopifnot(length(type) == 1, type %in% c('code', 'data', 'docs'))
+  stopifnot(length(type) == 1, type %in% c('code', 'data', 'docs', 'api'))
   stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias"))
+
+  # "api": full EJAM REST API base URL from DESCRIPTION (ejam_api_url), with the
+  # ejam_api_repo field as fallback. Returned as-is (a full URL, like "docs"),
+  # so it bypasses the github owner/repo handling below.
+  if (type == "api") {
+    one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_api_url"))
+    if (length(one_url) == 0 || is.na(one_url) || !nzchar(one_url)) {
+      one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_api_repo"))
+    }
+    return(sub("/+$", "", one_url[1]))
+  }
   if (desc_or_alias == "alias" && get_full_url == FALSE) {
     if (!missing(get_full_url)) {
       warning("cannot use desc_or_alias='alias' if get_full_url=FALSE, so just using get_full_url=TRUE ")

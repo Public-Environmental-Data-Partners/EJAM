@@ -446,12 +446,16 @@ app_server <- function(input, output, session) {
     if (is.null(search) || !nzchar(search)) {return(NULL)}
     q <- shiny::parseQueryString(search)
 
-    # base URL of the EJAM API that mints/resolves handoff tokens. Derive it from
-    # url_ejamapi()'s default baseurl so there is a single source of truth (strip
-    # the trailing "/report?"); allow override via global_or_param("ejamapi_baseurl").
+    # base URL of the EJAM API that mints/resolves handoff tokens. Single source of
+    # truth is the DESCRIPTION field ejam_api_url; read it via url_package("api"),
+    # and if that is unavailable derive it from url_ejamapi()'s resolved base (its
+    # /report? endpoint minus the path). Override via global_or_param("ejamapi_baseurl").
     apibase <- global_or_param("ejamapi_baseurl")
     if (is.null(apibase) || !nzchar(apibase)) {
-      apibase <- sub("/report\\??$", "", as.character(formals(url_ejamapi)$baseurl))
+      apibase <- tryCatch(url_package("api"), error = function(e) NULL)
+    }
+    if (is.null(apibase) || !nzchar(apibase)) {
+      apibase <- tryCatch(sub("/report.*$", "", url_ejamapi()), error = function(e) NULL)
     }
 
     # Normalize either a ?handoff= token or direct params into one spec.

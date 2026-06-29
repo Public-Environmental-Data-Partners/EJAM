@@ -14,8 +14,8 @@ url_ejamapi(
   dTolerance = 100,
   linktext = "Report",
   as_html = FALSE,
-  ifna = "https://ejanalysis.com",
-  baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?",
+  ifna = NULL,
+  baseurl = NULL,
   sitenumber = "each",
   version = NULL,
   shape = NULL,
@@ -41,9 +41,13 @@ which might get too long for encoding in a URL for the API using GET}
 
 \item{as_html}{Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example}
 
-\item{ifna}{URL shown for missing, NA, NULL, bad input values}
+\item{ifna}{URL shown for missing, NA, NULL, bad input values. Default NULL
+(and an explicitly passed NULL) resolves to the EJAM API base URL from
+DESCRIPTION (\code{ejam_api_url}), via \code{\link[=url_package]{url_package()}} with type="api".}
 
-\item{baseurl}{do not change unless endpoint actually changed. See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
+\item{baseurl}{do not change unless endpoint actually changed. Default NULL
+(and an explicitly passed NULL) resolves to the DESCRIPTION \code{ejam_api_url}
+followed by "/report?". See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
 
 \item{sitenumber}{\itemize{
 \item "each" (or -1) means return each site's URL
