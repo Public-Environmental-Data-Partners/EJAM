@@ -20,7 +20,9 @@ url_package(
 \item "data" is for the github.com repository of datasets
 \item "docs" is for the documentation website
 \item "api" is for the EJAM REST API base URL (DESCRIPTION field \code{ejam_api_url},
-falling back to \code{ejam_api_repo} if that field is missing). Always a full URL.
+falling back to the built-in production API base if that field is missing).
+Always a full URL. (The \code{ejam_api_repo} field names the API source-code repo
+and is informational only -- it is not used as the API endpoint.)
 }}
 
 \item{get_full_url}{logical, whether to return full URL or just the owner/reponame info.

@@ -268,7 +268,7 @@ ejamit <- function(sitepoints = NULL,
   # the canonical names. The alias is used only when the canonical name was not
   # supplied, so an explicit radius/shapefile always wins (consistent with the
   # other helpers, e.g. url_ejamapp()).
-  if (!is.null(buffer) && missing(radius)) {radius <- buffer}
+  if (!is.null(buffer) && (missing(radius) || is.null(radius))) {radius <- buffer}
   if (!is.null(shape) && (missing(shapefile) || is.null(shapefile))) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp)) {shapefile <- shp}
   if (is.null(sitepoints) && !is.null(lat) && !is.null(lon)) {sitepoints <- data.frame(lat = lat, lon = lon)}

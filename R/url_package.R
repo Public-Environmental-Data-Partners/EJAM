@@ -9,7 +9,9 @@
 #'   - "data" is for the github.com repository of datasets
 #'   - "docs" is for the documentation website
 #'   - "api" is for the EJAM REST API base URL (DESCRIPTION field `ejam_api_url`,
-#'     falling back to `ejam_api_repo` if that field is missing). Always a full URL.
+#'     falling back to the built-in production API base if that field is missing).
+#'     Always a full URL. (The `ejam_api_repo` field names the API source-code repo
+#'     and is informational only -- it is not used as the API endpoint.)
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
 #'   Ignored if type = "docs", where full URL is always returned.
@@ -79,13 +81,15 @@ url_package <- function(
   stopifnot(length(type) == 1, type %in% c('code', 'data', 'docs', 'api'))
   stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias"))
 
-  # "api": full EJAM REST API base URL from DESCRIPTION (ejam_api_url), with the
-  # ejam_api_repo field as fallback. Returned as-is (a full URL, like "docs"),
-  # so it bypasses the github owner/repo handling below.
+  # "api": full EJAM REST API base URL from DESCRIPTION (ejam_api_url). Returned
+  # as-is (a full URL, like "docs"), so it bypasses the github owner/repo handling
+  # below. If the field is somehow missing, fall back to the built-in production API
+  # base -- NOT ejam_api_repo, which names the API source-code repo (a github URL),
+  # not an API endpoint.
   if (type == "api") {
     one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_api_url"))
     if (length(one_url) == 0 || is.na(one_url) || !nzchar(one_url)) {
-      one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_api_repo"))
+      one_url <- "https://ejamapi-84652557241.us-central1.run.app"
     }
     return(sub("/+$", "", one_url[1]))
   }
