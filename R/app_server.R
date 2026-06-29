@@ -2458,8 +2458,11 @@ app_server <- function(input, output, session) {
     req(orig_leaf_map())
     ## This statement needed to ensure site selection map stops if too many points uploaded
     #req(isTruthy(orig_leaf_map()))
-    # clear shapes from map so buffers don't show twice
-    leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>% leaflet::clearShapes()
+    # Clear shapes AND markers/popups so nothing persists when switching site-selection methods.
+    # (The mapclick method adds red center markers via addCircleMarkers(); clearing only shapes would
+    # leave those stale markers/popups on the map after switching away from mapclick.)
+    leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
+      leaflet::clearShapes() %>% leaflet::clearMarkers() %>% leaflet::clearPopups()
     rad_buff <- sanitized_radius_now()
 
     # mapclick map ------------------------------ #
@@ -2468,8 +2471,7 @@ app_server <- function(input, output, session) {
     # removes that one point. Reads data_uploaded() + the radius, so it redraws on add/remove/clear
     # and when the radius slider moves.
     if (current_upload_method() == 'mapclick') {
-      proxy <- leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
-        leaflet::clearShapes() %>% leaflet::clearMarkers() %>% leaflet::clearPopups()
+      proxy <- leaflet::leafletProxy(mapId = 'an_leaf_map', session)  # shapes/markers/popups already cleared above
       d <- data_uploaded()
       if (!is.null(d) && NROW(d) > 0) {
         d <- d[!is.na(d$lat) & !is.na(d$lon), , drop = FALSE]
