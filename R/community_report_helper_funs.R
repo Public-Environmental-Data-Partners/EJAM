@@ -1033,7 +1033,7 @@ site_method2text =  function(site_method) {
     if (site_method %in% tolower("SHP")) {
       return("shapefile")
     }
-    if (site_method %in% tolower("latlon")) {
+    if (site_method %in% tolower(c("latlon", "mapclick"))) {  # mapclick = lat/lon points the user clicked on the map
       return("coordinates")
     }
     if (site_method %in% tolower("FIPS")) {

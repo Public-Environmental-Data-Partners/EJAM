@@ -58,6 +58,10 @@ global_defaults_shiny_public <- list(
   ############################################################################## #
 
   ## SITE SELECTION  ####
+  ## The top-level method is chosen by default_site_method: "dropdown" (select a category),
+  ## "upload" (upload a file), or "mapclick" (click or draw on the map to specify points).
+  ## The default_choices_* settings below configure the sub-options for the "dropdown" and
+  ## "upload" methods only; the "mapclick" method has no sub-options.
 
   # 'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',  # but NOT all fips of one category (unlike for NAICS etc.)
 
@@ -66,7 +70,7 @@ global_defaults_shiny_public <- list(
   ## default_choices_for_type_of_site_category defines the range of options
   ## If you want all the options available but want the app to default to NAICS, in ejamapp() use these params:
   # ejamapp(
-  #   default_upload_dropdown = "dropdown",
+  #   default_site_method = "dropdown",
   #   default_choices_for_type_of_site_category = c(
   #     'by Industry (NAICS) Code' = 'NAICS',
   #     'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
@@ -105,7 +109,7 @@ global_defaults_shiny_public <- list(
   ## If you want all the options available but want the app to default to polygons, in ejamapp() use these params:
   #
   # ejamapp(
-  #   default_upload_dropdown = "upload",
+  #   default_site_method = "upload",
   #   default_choices_for_type_of_site_upload = c(
   #     'Shapefile of polygons file upload'              = 'SHP',
   #     'Latitude/Longitude file upload'                 = 'latlon',

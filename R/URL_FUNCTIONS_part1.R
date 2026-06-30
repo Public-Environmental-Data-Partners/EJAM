@@ -248,8 +248,8 @@ url_xl_style <- function(urls, urltext = urls) {
 # this also drops any keys whose value is NA, NULL, or ""
 
 url_from_keylist <- function(..., keylist = NULL,
-                             baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?",
-                             ifna = "https://ejamapi-84652557241.us-central1.run.app",
+                             baseurl = paste0(url_package("api"), "/report?"),  # canonical API base from DESCRIPTION (ejam_api_url)
+                             ifna = url_package("api"),
                              encode = TRUE
 ) {
   # klist <- rlang::list2(...) # error if empty key like  (a=1, , b=2)  - so use .ignore_empty = "all" (but still errors on  b=,c=3)

@@ -470,3 +470,27 @@ testthat::test_that("shape_buffered_from_shapefile_points(testshape_points) not 
   rm(JUNK)
 })
 ######################################################### #
+
+test_that("shapefile_from_any() accepts shape/shp/shapefile aliases for path", {
+  gj <- '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-112.02,33.51],[-112.02,33.47],[-111.95,33.47],[-111.95,33.51],[-112.02,33.51]]]}}]}'
+  viapath <- shapefile_from_any(gj, cleanit = FALSE)
+  expect_s3_class(viapath, "sf")
+  expect_s3_class(shapefile_from_any(shape = gj, cleanit = FALSE), "sf")
+  expect_s3_class(shapefile_from_any(shapefile = gj, cleanit = FALSE), "sf")
+  expect_s3_class(shapefile_from_any(shp = gj, cleanit = FALSE), "sf")
+  # path (canonical) wins when both path and an alias are supplied
+  expect_equal(NROW(shapefile_from_any(gj, shape = "bogus", cleanit = FALSE)), NROW(viapath))
+})
+
+test_that("shapefile_from_any() reads bare Feature/Polygon/MultiPolygon GeoJSON, not just FeatureCollection", {
+  # The ?shape= launch-URL guard accepts these GeoJSON root types, so the parser
+  # must read them too (previously only FeatureCollection was recognized).
+  ring <- "[[[-112.02,33.51],[-112.02,33.47],[-111.95,33.47],[-111.95,33.51],[-112.02,33.51]]]"
+  polygon <- paste0('{"type":"Polygon","coordinates":', ring, '}')
+  feature <- paste0('{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":', ring, '}}')
+  multipolygon <- paste0('{"type":"MultiPolygon","coordinates":[', ring, ']}')
+  for (gj in list(polygon, feature, multipolygon)) {
+    expect_s3_class(shapefile_from_geojson_text(gj, quiet = TRUE), "sf")
+    expect_s3_class(shapefile_from_any(gj, cleanit = FALSE, silentinteractive = TRUE), "sf")
+  }
+})

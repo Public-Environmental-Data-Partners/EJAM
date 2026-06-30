@@ -11,7 +11,10 @@ ejamit_compare_distances_fulloutput(
   donuts_not_cumulative = FALSE,
   quiet = TRUE,
   silentinteractive = TRUE,
-  ...
+  ...,
+  buffers = NULL,
+  buffer = NULL,
+  radius = NULL
 )
 }
 \arguments{
@@ -26,6 +29,8 @@ ejamit_compare_distances_fulloutput(
 \item{silentinteractive}{passed to \code{\link[=ejamit]{ejamit()}}}
 
 \item{...}{passed to \code{\link[=ejamit]{ejamit()}}}
+
+\item{buffers, buffer, radius}{aliases (synonyms) for radii}
 }
 \value{
 list you can think of as "out_bydistance"

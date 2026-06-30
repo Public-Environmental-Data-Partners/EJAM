@@ -14,11 +14,13 @@ url_ejamapi(
   dTolerance = 100,
   linktext = "Report",
   as_html = FALSE,
-  ifna = "https://ejanalysis.com",
-  baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?",
+  ifna = NULL,
+  baseurl = NULL,
   sitenumber = "each",
   version = NULL,
-  ...
+  ...,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -26,43 +28,47 @@ url_ejamapi(
 
 \item{lat, lon}{can be provided as vectors of coordinates instead of providing sitepoints table}
 
-\item{radius}{see \code{\link[=ejamit]{ejamit()}}, default is 0 if fips or shapefile specified}
+\item{radius}{analysis radius in miles; see \code{\link[=ejamit]{ejamit()}}. Default is 3 miles for point
+(lat/lon/sitepoints) analysis, but 0 (no buffer) when fips or shapefile is specified.}
 
 \item{fips}{see \code{\link[=ejamit]{ejamit()}}}
 
 \item{shapefile}{see \code{\link[=ejamit]{ejamit()}}, but each polygon is encoded as geojson string
 which might get too long for encoding in a URL for the API using GET}
 
-\item{dTolerance}{number of meters tolerance to use in \code{\link[sf:st_simplify]{sf::st_simplify()}} to simplify polygons to fit as url-encoded text geojson}
+\item{dTolerance}{number of meters tolerance to use in \code{\link[sf:st_simplify]{sf::st_simplify()}} to simplify polygons
+to fit as url-encoded text geojson. Only used when a shapefile/polygon is provided; ignored
+for point (lat/lon) or fips analysis.}
 
 \item{linktext}{used as text for hyperlinks, if supplied and as_html=TRUE}
 
-\item{as_html}{Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example}
+\item{as_html}{if FALSE (default) returns plain character URL(s); if TRUE returns HTML
+hyperlinks (via \code{\link[=url_linkify]{url_linkify()}}) suitable for use in a \code{\link[DT:datatable]{DT::datatable()}} or other HTML context}
 
-\item{ifna}{URL shown for missing, NA, NULL, bad input values}
+\item{ifna}{URL shown for missing, NA, NULL, bad input values. Default NULL
+(and an explicitly passed NULL) resolves to the EJAM API base URL from
+DESCRIPTION (\code{ejam_api_url}), via \code{\link[=url_package]{url_package()}} with type="api".}
 
-\item{baseurl}{do not change unless endpoint actually changed. See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
+\item{baseurl}{do not change unless endpoint actually changed. Default NULL
+(and an explicitly passed NULL) resolves to the DESCRIPTION \code{ejam_api_url}
+followed by "/report?". See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
 
-\item{sitenumber}{\itemize{
-\item "each" (or -1) means return each site's URL
-\item "overall" (or 0) means return one URL, combining all sites
-\item N (a number > 0) means return just the Nth site's URL
+\item{sitenumber}{controls how many URLs are returned and which site(s) each covers:
+\itemize{
+\item \code{"each"} (or \code{-1}) -- \strong{the default} -- returns a vector of URLs, one per site
+(one single-site report per site). Unlike \code{\link[=ejam2report]{ejam2report()}}/\code{\link[=ejam2map]{ejam2map()}}, which never
+return a vector, the \verb{url_*} helpers can; that vector-per-site output is the main
+reason this parameter exists.
+\item \code{"overall"} (or \code{0}, \code{NULL}, or \code{""}) -- returns a single URL requesting one
+aggregate \emph{multisite} report combining all sites (sent to the API as \code{sitenumber=0};
+assumes >1 site was provided).
+\item \code{N} (a number \verb{> 0}) -- returns a single URL for just the Nth site found in the
+inputs (e.g. the 3rd point, fips, or polygon).
 }
 
-Like with other url_xyz functions, the default is to output
-a vector of URLs, one per site. The default value for sitenumber is
-"each" or -1 which means we want one url for each site.
-Note there is no comparable value of sitenumber in the \code{\link[=ejam2report]{ejam2report()}} or \code{\link[=ejam2map]{ejam2map()}} or similar functions,
-which never return a vector of reports, maps, etc. Getting a vector of 1 per site is useful mainly for
-the url_xyz functions.
-
-Like the sitenumber parameter in \code{\link[=ejam2report]{ejam2report()}},
-a value of NULL or 0 or "" or "overall" in url_ejamapi() means
-a single URL is returned that requests one
-overall summary report (assuming >1 sites were provided).
-
-Specifying sitenumber as a number like 3 means a report based on the third site
-found in the inputs (third point or third fips or third polygon).}
+Single-site auto-override: when the inputs resolve to exactly one site (one row of
+sitepoints, one fips code, or one polygon), sitenumber is coerced to \code{1} regardless of what
+was requested, so a lone place yields a single-site report URL.}
 
 \item{version}{optional EJAM version tag (e.g. "3.2024.0") sent to the API as
 version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
@@ -70,6 +76,8 @@ resolves to the installed package Version (from DESCRIPTION).}
 
 \item{...}{a named list of other query parameters passed to the API,
 to allow for expansion of allowed parameters}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 vector of character string URLs -- see details on sitenumber parameter
@@ -79,27 +87,27 @@ Get URL(s) of HTML summary reports for use with EJAM-API
 }
 \details{
 \itemize{
-\item This is work in progress to some extent -- this and the API may be add features in later releases.
-\item Relies on API from
-https://github.com/edgi-govdata-archiving/EJAM-API
-\item Another option in the future might be to construct a URL that is a "deep link" to the live EJAM
-app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.
-\item Will try to use the same input parameters as \code{\link[=ejamit]{ejamit()}} does.
-\item The API as of mid-2026 used \code{\link[=ejam2report]{ejam2report()}} with these parameter settings:
-\itemize{
-\item \code{sitenumber = 1}
-\item \code{report_title="EJSCREEN Community Report"}
-}
-
-Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejamit()}} and \code{\link[=ejam2report]{ejam2report()}} such as
-\itemize{
-\item sitenumber=0 (for a multisite report)
-\item logo_path
-\item report_title
-\item analysis_title
-\item thresholds & threshnames
-\item radius_donut_lower_edge
-}
+\item Relies on the EJAM REST API, whose source code is at
+https://github.com/Public-Environmental-Data-Partners/EJAM-API
+(the API base URL itself comes from \code{url_package("api")}; see the \code{ejam_api_url}
+field in DESCRIPTION).
+\item To construct a "deep link" that launches the live EJAM \emph{app} (not the API)
+pre-loaded with sites, see \code{\link[=url_ejamapp]{url_ejamapp()}}, which uses the same query
+vocabulary (lat, lon, fips, shape, radius, handoff).
+\item Accepts a subset of \code{\link[=ejamit]{ejamit()}}'s input-parameter names (sitepoints, lat, lon, radius,
+fips, shapefile); it does not accept every \code{\link[=ejamit]{ejamit()}}/\code{\link[=ejam2report]{ejam2report()}} option (see the
+note below on unsupported options).
+\item The API honors the \code{sitenumber} parameter passed through to \code{\link[=ejam2report]{ejam2report()}}:
+\code{sitenumber = 1} requests a single-site report (the API's per-request default when
+none is supplied), and \code{sitenumber = 0} (or "overall") produces an aggregate
+\emph{multisite} report. (Note \code{url_ejamapi()}'s own default is \code{sitenumber = "each"} --
+see the parameter docs below.) The API leaves the
+report title to \code{\link[=ejam2report]{ejam2report()}}, which uses "EJSCREEN Community Report" for a
+single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
+polygons can exceed URL length for this GET-based path; the API also provides
+a POST \verb{/report} endpoint for those. The API does not yet accept every
+\code{\link[=ejam2report]{ejam2report()}} option (e.g. logo_path, thresholds & threshnames,
+radius_donut_lower_edge).
 }
 }
 \examples{
@@ -126,8 +134,11 @@ Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejam
  shp = testinput_shapes_2[2, c("geometry", "FIPS", "NAME")]
  z = url_ejamapi(shapefile = shp)
 
+ # HTML hyperlinks (e.g. for a DT::datatable cell) instead of plain URLs
+ x_links = url_ejamapi(pts2, as_html = TRUE, linktext = "Report")
+
  \dontrun{
- browseURL("https://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-112&buffer=4")
+ browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
 
  browseURL(x[1])
  browseURL(y[1])
@@ -136,5 +147,5 @@ Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejam
 
 }
 \seealso{
-\code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}}
+\code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}} \code{\link[=url_package]{url_package()}}
 }

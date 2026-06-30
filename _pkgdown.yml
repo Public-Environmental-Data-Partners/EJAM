@@ -1,4 +1,12 @@
 url: https://public-environmental-data-partners.github.io/EJAM/
+repo:
+  # Pin the branch used in "Source: R/..." (blob) links. Without this, pkgdown
+  # falls back to GITHUB_REF_NAME (the ref the workflow run was triggered on), so
+  # a docs build dispatched from a feature branch bakes that branch name into
+  # every source link -- which 404s once the branch is deleted (see the dead
+  # blob/fix/pkgdown-docs-deps/ links from the 2026-06-03 build). "HEAD" always
+  # resolves to the repo default branch on GitHub, so these links never go dead.
+  branch: HEAD
 template:
   bootstrap: 5
   params:
@@ -60,6 +68,7 @@ articles:
   contents:
   - dev-speed
   - dev-app-settings
+  - dev-api
   - dev-deploy-app
   - dev-run-shinytests
   - dev-run-unit-tests

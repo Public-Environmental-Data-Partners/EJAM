@@ -199,22 +199,29 @@ app_server <- function(input, output, session) {
 
   ## advanced tab provides size cap on file uploads  ---------------------- #
 
+  # max_mb_upload_react is a PURE reactive: it reads input$max_mb_upload and returns the value
+  # clamped to [minmax_mb_upload, maxmax_mb_upload] (or the default if unset). It has NO
+  # side-effects. The observe below applies the side-effects (reflect the clamped value back into
+  # the widget, set shiny.maxRequestSize, reset the file inputs so a too-large upload can be retried
+  # under the new cap). Previously the reactive called updateNumericInput() inside itself -- a
+  # side-effect-in-a-reactive anti-pattern.
   max_mb_upload_react <- reactive({
     x <- as.numeric((input$max_mb_upload))
     if (is.null(x) || is.na(x) || length(x) == 0) {
       x <- global_or_param("default_max_mb_upload") #?
-      shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     } else {
       if (x > global_or_param("maxmax_mb_upload")) {x <- global_or_param("maxmax_mb_upload")}
       if (x < global_or_param("minmax_mb_upload")) {x <- global_or_param("minmax_mb_upload")}
-      shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     }
     x
   })
   observe({
+    x <- max_mb_upload_react()
+    # reflect the clamped/default value back in the widget (this side-effect moved here out of the reactive)
+    shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     # Adjusts cap on file size user can upload, and resets file inputs in case
     #   last attempt failed due to size, so you can retry with new cap.
-    options(shiny.maxRequestSize = max_mb_upload_react() * 1024^2)
+    options(shiny.maxRequestSize = x * 1024^2)
     ids_of_fileInput_lines <- c("ss_upload_latlon", "ss_upload_shp",
                                 "ss_upload_frs", "ss_upload_program","ss_upload_fips")
     for (idx in ids_of_fileInput_lines) {shinyjs::reset(idx)}
@@ -259,10 +266,33 @@ app_server <- function(input, output, session) {
                          server = TRUE)
   }, once = TRUE)
   observe({
-    # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
-    level_of_detail_based_on_default_naics <- if (any(nchar(input$default_naics) > 3)) 'detailed' else global_or_param("default_naics_digits_shown")
-    updateRadioButtons(session = session, inputId = 'naics_digits_shown',
-                       selected = level_of_detail_based_on_default_naics
+    # If default_naics (from the global default and/or the advanced tab) contains a detailed
+    # (>3-digit) NAICS code, force the detailed list so that code is visible as an initial choice.
+    # Otherwise DO NOT touch naics_digits_shown: leave the app_ui.R default or the user's own pick
+    # in place. (The previous version reset it to the default on EVERY default_naics change, which
+    # silently clobbered a manual choice.) This observe depends only on input$default_naics, so its
+    # own updateRadioButtons() write to naics_digits_shown never re-triggers it.
+    if (any(nchar(input$default_naics) > 3)) {
+      updateRadioButtons(session = session, inputId = 'naics_digits_shown', selected = 'detailed')
+    }
+  })
+  observeEvent(input$default_format1pager, {
+    ## normalize like ejam2report() does (strip a leading dot, lowercase) so a user-supplied or
+    ## mis-set ".pdf"/"PDF"/".html" still matches the "html"/"pdf" radio values instead of being
+    ## silently rejected and falling back to HTML. as.character(NULL) -> character(0), which is
+    ## handled by isTRUE(... %in% ...) == FALSE, so NULL/missing safely fall through to "html".
+    norm_format1pager <- function(x) sub("^[.]", "", tolower(as.character(x)))
+    selected_format <- norm_format1pager(input$default_format1pager)
+    if (!isTRUE(selected_format %in% c("html", "pdf"))) {
+      selected_format <- norm_format1pager(global_or_param("default_format1pager"))
+    }
+    if (!isTRUE(selected_format %in% c("html", "pdf"))) {
+      selected_format <- "html"
+    }
+    shiny::updateRadioButtons(
+      session = session,
+      inputId = "fileextension",
+      selected = selected_format
     )
   })
 
@@ -321,22 +351,44 @@ app_server <- function(input, output, session) {
   })
   #############################################################################  #
 
-  # SELECT Facility Type vs UPLOAD Latlon/ id/ fips/ shape (radio button) ####
-
-  output$ss_choose_method_ui <- renderUI({
-    req(input$default_ss_choose_method)
-    if (input$testing) {message("input$default_ss_choose_method is ", input$default_ss_choose_method, "\n")}
-    radioButtons(inputId = 'ss_choose_method',
-                 label = 'How would you like to identify locations?',
-                 choiceNames = c('Select a category of locations',
-                                 'Upload specific locations'),
-                 choiceValues = c('dropdown',
-                                  'upload'),
-                 # selected = "upload" # hard-coded default selection
-                 selected = input$default_ss_choose_method  # flexible default selection
-    )
-    if (input$testing) {message(" and input$ss_choose_method selected is ", input$ss_choose_method, "\n")}
-  })
+  # SELECT method of site selection: dropdown / upload / mapclick (radio button) ####
+  #
+  # The ss_choose_method radio can be set from several sources. PRECEDENCE (highest first):
+  #   1. launch-URL params (?lat/?lon/?fips/?shape, #413) - set once at session init
+  #   2. ejamapp() data params (sitepoints / shapefile / fips) - belt-and-suspenders in data_up_*
+  #   3. advanced-tab "Site Selection Method" radio (input$default_ss_choose_method) - explicit user runtime choice
+  #   4. static UI default (global_or_param("default_site_method")) baked into app_ui.R
+  # All non-static writers go through set_site_method() so the writes live in one place. Once the
+  # user explicitly picks a method at runtime (layer 3), site_method_user_override latches TRUE and
+  # the lazy layer-2 belt-and-suspenders writes stop clobbering the user's choice. (You cannot
+  # reference input$ from app_ui.R, so the static default is applied there and any later change is
+  # applied server-side here via update*Input(); this replaces an older approach that re-rendered
+  # the radio via output$ss_choose_method_ui.)
+  site_method_user_override <- reactiveVal(FALSE)
+  site_method_last_set <- reactiveVal(NULL)  # value set_site_method() last wrote -- lets us tell our own programmatic writes apart from a user click on the main radio
+  set_site_method <- function(method, upload_submethod = NULL, source = "") {
+    if (isTRUE(input$testing)) {
+      message("set_site_method: ", method, if (!is.null(upload_submethod)) paste0("/", upload_submethod) else "", " (", source, ")")
+    }
+    site_method_last_set(method)  # record before the (async) update so the ss_choose_method observer ignores this programmatic change
+    shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = method)
+    if (!is.null(upload_submethod)) {
+      shiny::updateSelectInput(session = session, inputId = "ss_choose_method_upload", selected = upload_submethod)
+    }
+  }
+  # Latch the user-override on an explicit runtime method change via EITHER the advanced-tab radio
+  # (input$default_ss_choose_method) OR the main radio (input$ss_choose_method). For the main radio we
+  # must distinguish a real user click from our own set_site_method() writes, so we only latch when the
+  # new value differs from the value set_site_method() last wrote.
+  observeEvent(input$default_ss_choose_method, {
+    site_method_user_override(TRUE)  # explicit user runtime choice (layer 3): protect it from layer-2 clobber
+    set_site_method(input$default_ss_choose_method, source = "advanced-tab")
+  }, ignoreInit = TRUE)
+  observeEvent(input$ss_choose_method, {
+    if (!identical(as.character(input$ss_choose_method), as.character(site_method_last_set()))) {
+      site_method_user_override(TRUE)  # user changed the MAIN radio directly (not via set_site_method)
+    }
+  }, ignoreInit = TRUE)
 
   # keep track of currently used method of site selection (also see submitted_upload_method reactive)
   current_upload_method <- reactive({
@@ -362,7 +414,8 @@ app_server <- function(input, output, session) {
                           EPA_PROGRAM =      "EPA_PROGRAM_up", #  NOTE "EPA_PROGRAM_up" AND "EPA_PROGRAM_sel" both are converted to just "EPA_PROGRAM"
                           FRS =              "FRS",       # 'FRS (facility ID)',
                           #ECHO =            "ECHO",      # 'ECHO Search Tools',
-                          FIPS =             "FIPS")
+                          FIPS =             "FIPS"),
+      'mapclick' = "mapclick"   # click on the map to specify lat/lon points (handled like uploaded latlon points)
     )
     if (input$testing) {
       cat(' reactive current_upload_method() now is ', x, '\n')
@@ -390,7 +443,7 @@ app_server <- function(input, output, session) {
   ## HTML for alert for invalid sites
   #invalid_alert <- reactiveVal(NULL)
 
-  invalid_alert <- reactiveValues('latlon' = 0, 'NAICS' = 0, 'SIC' = 0, 'MACT' = 0,
+  invalid_alert <- reactiveValues('latlon' = 0, 'mapclick' = 0, 'NAICS' = 0, 'SIC' = 0, 'MACT' = 0,
                                   'FRS' = 0,
                                   'EPA_PROGRAM_up' = 0, 'EPA_PROGRAM_sel' = 0,
                                   'FIPS' = 0, 'FIPS_PLACE' = 0,
@@ -406,11 +459,150 @@ app_server <- function(input, output, session) {
   ## initialize lat/lon upload error message (e.g. point cap exceeded)
   latlon_upload_error <- reactiveVal(NULL)
 
+  #############################################################################  #
+  ## Sites supplied via the launch URL (handoff from an external app like EJScreen) ####
+  #
+  # These reactiveVals hold a set of places provided at launch through the URL,
+  # either as direct query params (?lat=&lon=, ?fips=, ?shape=<geojson>, ?radius=)
+  # or via a token (?handoff=<token>) that the EJAM API resolves to the same kinds
+  # of places. They mirror the ejamapp() parameters sitepoints/fips/shapefile but
+  # are set per-session at runtime, so a deployed app can be opened pre-loaded.
+  # data_up_tablepassed_latlon(), data_up_shp(), and data_up_fips() prefer these
+  # over the global_or_param() defaults. See url_ejamapi() for the matching URL
+  # vocabulary used by the EJAM API. Only one place-type is loaded per launch
+  # (points, then FIPS, then polygons), matching the one-method-per-analysis model.
+  url_sitepoints <- reactiveVal(NULL)
+  url_shapefile  <- reactiveVal(NULL)
+  url_fips       <- reactiveVal(NULL)
+
+  # Launch-URL precedence helper (single home for layer-2 precedence). url_param(name) maps a
+  # parameter name to its launch-URL reactiveVal -- the only URL-provided params are these three
+  # typed place specs, so there is no generic per-name URL lookup. global_or_shinyparam_or_urlparam()
+  # returns the launch-URL value when present, else the ejamapp()/global default: a launch-URL value
+  # wins over the ejamapp/global default. Defined as closures here because the url_* reactiveVals are
+  # local to this server function. Used instead of hand-written url_*() %||% global_or_param() chains
+  # so the precedence is defined in one place.
+  url_param <- function(name) {
+    switch(name,
+           sitepoints = url_sitepoints(),
+           shapefile  = url_shapefile(),
+           fips       = url_fips(),
+           NULL)
+  }
+  global_or_shinyparam_or_urlparam <- function(name) {
+    url_param(name) %||% global_or_param(name)
+  }
+
+  observe({
+    search <- session$clientData$url_search
+    if (is.null(search) || !nzchar(search)) {return(NULL)}
+    q <- shiny::parseQueryString(search)
+
+    # base URL of the EJAM API that mints/resolves handoff tokens. Single source of
+    # truth is the DESCRIPTION field ejam_api_url; read it via url_package("api"),
+    # and if that is unavailable derive it from url_ejamapi()'s resolved base (its
+    # /report? endpoint minus the path). Override via global_or_param("ejamapi_baseurl").
+    # A usable base is a single non-NA, non-empty string; each fallback is tried only
+    # if the previous left it unusable (NULL, character(0), NA, or ""). length()!=1 is
+    # checked first so is.na()/nzchar() are never called on a zero-length value.
+    apibase <- global_or_param("ejamapi_baseurl")
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
+      apibase <- tryCatch(url_package("api"), error = function(e) NULL)
+    }
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
+      apibase <- tryCatch(sub("/report.*$", "", url_ejamapi()), error = function(e) NULL)
+    }
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
+      apibase <- ""   # API base unresolved -> the ?handoff= fetch below is skipped cleanly
+    }
+
+    # Normalize either a ?handoff= token or direct params into one spec.
+    spec <- list()
+    if (!is.null(q$handoff) && nzchar(q$handoff) && nzchar(apibase)) {
+      tokenurl <- paste0(apibase, "/handoff/", utils::URLencode(q$handoff, reserved = TRUE))
+      # Fetch with a short timeout so a slow/unreachable API can't hang app startup
+      # (this runs on the Shiny server thread during session init).
+      payload  <- tryCatch(
+        jsonlite::fromJSON(httr2::resp_body_string(
+          httr2::req_perform(httr2::req_timeout(httr2::request(tokenurl), 5))
+        )),
+        error = function(e) NULL
+      )
+      if (!is.null(payload) && is.null(payload$error)) {
+        if (!is.null(payload$sites) && is.data.frame(payload$sites)) {
+          spec$lat <- payload$sites$lat
+          spec$lon <- payload$sites$lon
+        }
+        if (!is.null(payload$fips))   {spec$fips   <- as.character(payload$fips)}
+        if (!is.null(payload$shape))  {
+          # If the API already returned shape as GeoJSON text, use it as-is;
+          # only re-serialize when it came back as a parsed object (avoid double-encoding).
+          spec$shape <- if (is.character(payload$shape)) payload$shape else as.character(jsonlite::toJSON(payload$shape, auto_unbox = TRUE))
+        }
+        if (!is.null(payload$radius)) {spec$radius <- payload$radius}
+      }
+    } else {
+      if (!is.null(q$lat) && !is.null(q$lon)) {
+        spec$lat <- as.numeric(trimws(strsplit(q$lat, ",")[[1]]))
+        spec$lon <- as.numeric(trimws(strsplit(q$lon, ",")[[1]]))
+      }
+      if (!is.null(q$fips)  && nzchar(q$fips))  {spec$fips  <- trimws(strsplit(q$fips, ",")[[1]])}
+      if (!is.null(q$shape) && nzchar(q$shape)) {spec$shape <- q$shape}
+      spec$radius <- q$radius %||% q$buffer
+    }
+
+    loaded <- FALSE
+    ## POINTS (lat/lon) -- require matching counts so a mismatch (e.g. lat=33 with
+    ## lon=-112,-114) is ignored rather than silently recycled into wrong points.
+    if (!is.null(spec$lat) && !is.null(spec$lon) && length(spec$lat) == length(spec$lon)) {
+      pts <- tryCatch(data.frame(lat = as.numeric(spec$lat), lon = as.numeric(spec$lon)),
+                      error = function(e) NULL)
+      if (!is.null(pts) && nrow(pts) > 0 && !anyNA(pts[, c("lat", "lon")])) {
+        url_sitepoints(pts)
+        set_site_method("upload", "latlon", source = "launch-URL")  # layer 1 (highest), init only
+        loaded <- TRUE
+      }
+    }
+    ## FIPS (each code is a separate site)
+    if (!loaded && !is.null(spec$fips) && length(spec$fips) > 0) {
+      url_fips(as.character(spec$fips))
+      set_site_method("upload", "FIPS", source = "launch-URL")  # layer 1 (highest), init only
+      loaded <- TRUE
+    }
+    ## POLYGONS -- only inline GeoJSON text (the documented ?shape= contract).
+    ## Guard so a non-GeoJSON value (a URL or local path) is NOT handed to
+    ## shapefile_from_any(), which would otherwise try to read it.
+    if (!loaded && !is.null(spec$shape)) {
+      shape_txt <- trimws(as.character(spec$shape))
+      # Must be an inline JSON object (starts with "{") AND carry a GeoJSON type tag.
+      # The leading-"{" check defeats a crafted URL/path that merely *contains* the
+      # type substring; [[:space:]] is the portable whitespace class (not \\s).
+      looks_geojson <- grepl("^\\{", shape_txt) &&
+        grepl("\"type\"[[:space:]]*:[[:space:]]*\"(FeatureCollection|Feature|Polygon|MultiPolygon)\"", shape_txt)
+      shp <- if (looks_geojson) {
+        tryCatch(shapefile_from_any(shape_txt, cleanit = FALSE, silentinteractive = TRUE), error = function(e) NULL)
+      } else {NULL}
+      if (!is.null(shp) && !inherits(shp, "try-error")) {
+        # store the PARSED sf object (not the raw text) so data_up_shp() reuses it
+        # instead of re-parsing the GeoJSON -- matters for the large-polygon handoff.
+        # shapefile_from_any() fast-returns an sf object as-is, so data_up_shp() stays cheap.
+        url_shapefile(shp)
+        set_site_method("upload", "SHP", source = "launch-URL")  # layer 1 (highest), init only
+        loaded <- TRUE
+      }
+    }
+    ## radius / buffer
+    if (!is.null(spec$radius)) {
+      radval <- suppressWarnings(as.numeric(spec$radius))
+      if (!is.na(radval)) {try(shiny::updateSliderInput(session, inputId = "radius_now", value = radval), silent = TRUE)}
+    }
+  }, priority = 1000)
+
   data_up_shp <- reactive({
 
     if (is.null(input$ss_upload_shp)) {
-      ## no uploaded file, so check if shape was provided as parameter in ejamapp()
-      xshp <- global_or_param("shapefile")
+      ## no uploaded file, so check if shape was provided via launch URL or as parameter in ejamapp()
+      xshp <- global_or_shinyparam_or_urlparam("shapefile")
       if (is.null(xshp) || length(xshp) == 0) {
         if (input$testing) {cat("no shp uploaded, no shp provided in ejamapp(), so should stop here\n")}
         req(FALSE, cancelOutput = TRUE)
@@ -424,9 +616,9 @@ app_server <- function(input, output, session) {
           cat("shapefile_from_any() cannot read specified shp parameter \n")
           req(FALSE, cancelOutput = TRUE)
         }
-        ## if user provided ejamapp(shapefile=xyz) but did not set these also, they will not see their upload ready to run:
-        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")    # ejamapp() should ensure this happens via changing defaults but ok to also do here
-        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "SHP") # ejamapp() should ensure this happens via changing defaults but ok to also do here
+        ## if user provided ejamapp(shapefile=xyz) but did not set the method defaults also, reflect
+        ## it in the radio (layer 2) -- but never override an explicit runtime method choice (layer 3).
+        if (!site_method_user_override()) {set_site_method("upload", "SHP", source = "ejamapp(shapefile=)")}
       }
     } else {
       #   ###################################### #
@@ -574,7 +766,7 @@ app_server <- function(input, output, session) {
   data_up_tablepassed_latlon <- reactive({
 
     sitepoints <- NULL # since never set in global_defaults_*.R, only exists if at all via  get_golem_options()
-    sitepoints <- global_or_param("sitepoints")
+    sitepoints <- global_or_shinyparam_or_urlparam("sitepoints") # launch-URL points take precedence over ejamapp() param
     req(sitepoints)
 
     ################################# #
@@ -631,11 +823,11 @@ app_server <- function(input, output, session) {
       xsitepoints <- data_up_tablepassed_latlon()
       if (!is.null(xsitepoints)) {
         ## if user provided ejamapp(sitepoints=xyz) but did not set these also, they will not see their upload ready to run:
-        ## default_upload_dropdown = "upload"  --  input$default_ss_choose_method
+        ## default_site_method = "upload"  --  input$default_ss_choose_method
         ## default_selected_type_of_site_upload = "latlon"  --  input$ss_choose_method_upload
-        # shiny::updateRadioButtons(session = session, inputId = "default_ss_choose_method", selected = "upload")
-        shiny::updateRadioButtons(inputId = "ss_choose_method", selected = "upload")
-        shiny::updateSelectInput(inputId = "ss_choose_method_upload", selected = "latlon")
+        ## reflect the ejamapp(sitepoints=) param in the radio (layer 2), but don't override an
+        ## explicit runtime method choice (layer 3).
+        if (!site_method_user_override()) {set_site_method("upload", "latlon", source = "ejamapp(sitepoints=)")}
         xsitepoints
       }
     } else {
@@ -698,6 +890,67 @@ app_server <- function(input, output, session) {
         }
       }
     }
+  })
+
+  #############################################################################  #
+  ## reactive: lat/lon points the user clicked on the map (mapclick method) ####
+  ##
+  ## The reusable map-click module (R/MODULE_latlon_from_map_click.R) accumulates the points:
+  ## it appends a point on each map click, removes the point whose marker is clicked, and empties
+  ## the list when "Clear all points" is pressed. render_map = FALSE because this app already owns
+  ## the leaflet map (an_leaf_map) - the module is used only as the point accumulator.
+  mapclick_points <- reactiveVal(data.frame(lat = numeric(0), lon = numeric(0)))
+
+  MODULE_SERVER_latlon_from_map_click(
+    id           = "mapclick",
+    reactdat     = mapclick_points,
+    add_click    = reactive(input$an_leaf_map_click),         # click empty map -> add a point
+    remove_click = reactive(input$an_leaf_map_marker_click),  # click a point's marker -> remove it
+    clear        = reactive(input$mapclick_clear),            # "Clear all points" button
+    render_map   = FALSE,
+    # only accumulate/remove points while the click-on-map method is selected - an_leaf_map is shared
+    # by all methods, so without this a click in (e.g.) latlon mode would add hidden mapclick points.
+    enabled      = reactive(isTRUE(current_upload_method() == 'mapclick'))
+  )
+
+  ## cap the number of clicked points at input$max_pts_click (advanced tab; default_max_pts_click).
+  ## When a click would push past the cap, drop that newest click and notify - keeps drawing and
+  ## analysis bounded so a user cannot hang the app by clicking a very large number of points.
+  observeEvent(mapclick_points(), {
+    pts <- mapclick_points()
+    cap <- suppressWarnings(as.numeric(input$max_pts_click))
+    if (length(cap) != 1 || is.na(cap) || cap < 1) {cap <- as.numeric(global_or_param("default_max_pts_click"))}
+    maxcap <- suppressWarnings(as.numeric(global_or_param("maxmax_pts_click")))
+    if (length(maxcap) == 1 && !is.na(maxcap) && cap > maxcap) {cap <- maxcap}
+    if (!is.null(pts) && NROW(pts) > cap) {
+      mapclick_points(pts[seq_len(cap), , drop = FALSE])  # keep the first cap points; drop the newest (over-cap) click
+      showNotification(
+        paste0("Maximum ", cap, " points by clicking the map. Additional clicks are ignored."),
+        type = "warning", duration = 3, session = session
+      )
+    }
+  }, ignoreInit = TRUE)
+
+  ## clean the clicked points into the same shape data_up_latlon() produces, so the rest of the app
+  ## (map circles, "Review selected sites", run, downloads) treats them exactly like uploaded lat/lon.
+  data_up_mapclick <- reactive({
+    pts <- mapclick_points()
+    if (is.null(pts) || NROW(pts) == 0) {
+      disable_buttons[['mapclick']] <- TRUE  # nothing selected yet -> keep Run disabled / preview hidden
+      an_map_text_pts[['mapclick']] <- NULL
+      invalid_alert[['mapclick']]   <- 0
+      return(NULL)
+    }
+    sitepoints <- as.data.table(data.frame(lat = pts$lat, lon = pts$lon))
+    sitepoints[, ejam_uniq_id := .I]
+    data.table::setcolorder(sitepoints, 'ejam_uniq_id')
+    sitepoints <- sitepoints %>%
+      latlon_df_clean(invalid_msg_table = TRUE) # latlon_infer() + latlon_as.numeric() + latlon_is.valid()
+    sitepoints$invalid_msg <- NA
+    sitepoints$invalid_msg[is.na(sitepoints$lon) | is.na(sitepoints$lat)] <- 'bad lat/lon coordinates'
+    disable_buttons[['mapclick']] <- FALSE
+    invalid_alert[['mapclick']]   <- sum(!sitepoints$valid)
+    sitepoints
   })
 
   #############################################################################  #
@@ -1145,12 +1398,13 @@ app_server <- function(input, output, session) {
 
     xfips <- NULL
     if (is.null(input$ss_upload_fips)) {
-      ### nothing uploaded, so check if fips got passed as parameter to ejamapp()
-      xfips <- global_or_param("fips")
+      ### nothing uploaded, so check if fips got passed via launch URL or as parameter to ejamapp()
+      xfips <- global_or_shinyparam_or_urlparam("fips")
       if (!is.null(xfips)) {
         cat("fips seems to have been passed as parameter to ejamapp() \n")
-        shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = "upload")     # already done by ejamapp() but ok to repeat
-        shiny::updateSelectInput(session = session, inputId = "ss_choose_method_upload", selected = "FIPS") # already done by ejamapp() but ok to repeat
+        ## reflect the fips param (launch-URL or ejamapp) in the radio (layer 2), but don't override
+        ## an explicit runtime method choice (layer 3).
+        if (!site_method_user_override()) {set_site_method("upload", "FIPS", source = "ejamapp(fips=)/launch-URL")}
 
         fips_vec <- xfips
         fips_dt <- data.table(fips = fips_vec)
@@ -1297,6 +1551,7 @@ app_server <- function(input, output, session) {
     ## if >1 upload method used, use the one currently indicated by radio button ss_choose_method
 
     if        (current_upload_method() == 'latlon'         ) {data_up_latlon()
+    } else if (current_upload_method() == 'mapclick'        ) {data_up_mapclick() # lat/lon points the user clicked on the map; handled like uploaded latlon
       #} else if (current_upload_method() == 'latlontypedin'  ) {data_typedin_latlon() # enable if implemented/ready ***
       #} else if (current_upload_method() == 'ECHO'           ) {data_up_echo()        # enable if implemented/ready ***
     } else if (current_upload_method() == 'FRS'            ) {data_up_frs()
@@ -1316,6 +1571,7 @@ app_server <- function(input, output, session) {
   #############################################################################  #
 
   disable_buttons <- reactiveValues('latlon' = TRUE,
+                                    'mapclick' = TRUE,
                                     # 'latlontypedin' = TRUE,
                                     # 'ECHO' = TRUE,
                                     'FRS' = TRUE,
@@ -1404,6 +1660,7 @@ app_server <- function(input, output, session) {
   # for (i in 1:length(x)) {an_map_text_pts[[x[i]]] <- NULL }
 
   an_map_text_pts <-  reactiveValues('latlon' = NULL,
+                                     'mapclick' = NULL,
                                      # 'latlontypedin' = NULL,
                                      # 'ECHO' = NULL,
                                      'FRS' = NULL,
@@ -1563,6 +1820,7 @@ app_server <- function(input, output, session) {
   current_slider_min <- list(
     # constants defined in global_defaults_*.R
     'latlon' =  global_or_param("minradius"),
+    'mapclick' =  global_or_param("minradius"),
     'NAICS' =  global_or_param("minradius"),
     'SIC' =  global_or_param("minradius"),
     'FRS' =  global_or_param("minradius"),
@@ -1576,6 +1834,7 @@ app_server <- function(input, output, session) {
   current_slider_val <- reactiveValues(
     # these are just placeholders that should get updated at startup, though.
     'latlon' = 1,
+    'mapclick' = 1,
     'NAICS' = 1,
     'SIC' = 1,
     'FRS' = 1,
@@ -1601,6 +1860,7 @@ app_server <- function(input, output, session) {
     }
     these <- c(
       'latlon',
+      'mapclick',
       'FRS',
       'EPA_PROGRAM_up',
       'EPA_PROGRAM_sel',
@@ -1644,6 +1904,36 @@ app_server <- function(input, output, session) {
   # *MAP of uploaded/selected places ####
 
   orig_leaf_map <- reactive({
+
+    req(current_upload_method())
+
+    if (current_upload_method() == 'mapclick') {
+      ## stable base map for click-to-add. Deliberately does NOT depend on the clicked points,
+      ## so adding/removing a point does not tear down and re-zoom the map; the leafletProxy()
+      ## observer below draws/updates the point circles + markers incrementally.
+      ## onRender adds a small tooltip that follows the cursor showing the lat,lon under the
+      ## pointer, so the user can aim a click. (pointer-events:none on leaflet tooltips means it
+      ## never blocks the click.)
+      return(
+        leaflet::leaflet() %>%
+          leaflet::addTiles() %>%
+          leaflet::setView(lng = -98.5795, lat = 39.8283, zoom = 4) %>%
+          htmlwidgets::onRender(
+            "function(el, x) {
+               var map = this;
+               var tip = L.tooltip({permanent: true, direction: 'right', offset: [12, 0],
+                                    opacity: 0.9, className: 'mapclick-latlon-tip'});
+               var shown = false;
+               map.on('mousemove', function(e) {
+                 tip.setLatLng(e.latlng)
+                    .setContent('lat,lon: ' + e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5));
+                 if (!shown) { tip.addTo(map); shown = true; }
+               });
+               map.on('mouseout', function() { if (shown) { map.removeLayer(tip); shown = false; } });
+             }"
+          )
+      )
+    }
 
     # ***
     ## or...
@@ -1789,6 +2079,14 @@ app_server <- function(input, output, session) {
   ## __ render map of uploaded  ####
 
   output$an_leaf_map <- leaflet::renderLeaflet({
+
+    ## For the click-to-add method, render a stable base map that does NOT depend on the clicked
+    ## points (otherwise the whole map would be rebuilt and re-zoomed on every click). The points
+    ## are drawn/updated incrementally by the leafletProxy() observer below.
+    method <- tryCatch(current_upload_method(), error = function(e) NULL)
+    if (isTRUE(method == 'mapclick')) {
+      return(orig_leaf_map())
+    }
 
     ## check if data has been uploaded yet
     ## make errors silent by default; print below
@@ -2358,13 +2656,44 @@ app_server <- function(input, output, session) {
     req(orig_leaf_map())
     ## This statement needed to ensure site selection map stops if too many points uploaded
     #req(isTruthy(orig_leaf_map()))
-    # clear shapes from map so buffers don't show twice
-    leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>% leaflet::clearShapes()
+    # Clear shapes AND markers/popups so nothing persists when switching site-selection methods.
+    # (The mapclick method adds red center markers via addCircleMarkers(); clearing only shapes would
+    # leave those stale markers/popups on the map after switching away from mapclick.)
+    leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
+      leaflet::clearShapes() %>% leaflet::clearMarkers() %>% leaflet::clearPopups()
     rad_buff <- sanitized_radius_now()
+
+    # mapclick map ------------------------------ #
+    # draw each clicked point as a radius circle + a small red center marker. The marker carries
+    # layerId = ejam_uniq_id so clicking it fires input$an_leaf_map_marker_click$id and the module
+    # removes that one point. Reads data_uploaded() + the radius, so it redraws on add/remove/clear
+    # and when the radius slider moves.
+    if (current_upload_method() == 'mapclick') {
+      proxy <- leaflet::leafletProxy(mapId = 'an_leaf_map', session)  # shapes/markers/popups already cleared above
+      d <- data_uploaded()
+      if (!is.null(d) && NROW(d) > 0) {
+        d <- d[!is.na(d$lat) & !is.na(d$lon), , drop = FALSE]
+        if (NROW(d) > 0) {
+          ids    <- as.character(if ("ejam_uniq_id" %in% names(d)) d$ejam_uniq_id else seq_len(NROW(d)))
+          rr     <- if (is.na(rad_buff) || rad_buff <= 0) 0 else rad_buff * meters_per_mile
+          labels <- paste0("Point ", seq_len(NROW(d)), ": ", round(d$lat, 5), ", ", round(d$lon, 5),
+                           "  (click marker to remove)")
+          proxy %>%
+            ## radius circles styled to match uploaded-point circles (map_facilities_proxy):
+            ## navy, weight 4, default fill opacity. interactive = FALSE so a click inside a circle
+            ## passes through to the map and adds a point (delete is only via the red center marker).
+            leaflet::addCircles(lng = d$lon, lat = d$lat, radius = rr,
+                                color = "#000080", fillColor = "#000080", fill = TRUE, weight = 4,
+                                options = leaflet::pathOptions(interactive = FALSE)) %>%
+            leaflet::addCircleMarkers(lng = d$lon, lat = d$lat, layerId = ids,
+                                radius = 5, color = "red", fillColor = "red", fillOpacity = 1, stroke = FALSE,
+                                popup = labels, label = labels)
+        }
+      }
 
     # SHP map ------------------------------ #
 
-    if ("SHP" %in% current_upload_method()) {
+    } else if ("SHP" %in% current_upload_method()) {
       if (!is.na(rad_buff) && rad_buff > 0) {
         shp_valid <- data_uploaded()[data_uploaded()$valid == T, ] # *** remove this if shapefile_clean() will do it
         d_uploads <- sf::st_buffer(shp_valid, # was "ESRI:102005" but want 4269
@@ -2408,6 +2737,16 @@ app_server <- function(input, output, session) {
       )
     }
   }) # end of leafletProxy()  an_leaf_map
+
+  ## crosshair cursor on the map only while the click-to-add ('mapclick') method is selected.
+  ## (CSS rule for .mapclick-cursor-on is defined in app_ui.R near the an_leaf_map output.)
+  observe({
+    if (isTRUE(current_upload_method() == 'mapclick')) {
+      shinyjs::addClass(id = 'an_leaf_map', class = 'mapclick-cursor-on')
+    } else {
+      shinyjs::removeClass(id = 'an_leaf_map', class = 'mapclick-cursor-on')
+    }
+  })
   #############################################################################  #
   ## * PLOT - for short and long reports (avg person D ratios vs US avg) ####
   ############################################ #
@@ -2668,7 +3007,7 @@ app_server <- function(input, output, session) {
   output$download_report_multisite <- downloadHandler(
     filename = function() {
       html_path <- downloadable_file_report_multisite()
-      if (isTRUE(input$format_report_multisite %in% "pdf")) {
+      if (isTRUE(input$fileextension %in% "pdf")) { # had been input$format_report_multisite
         sub("\\.html$", ".pdf", basename(html_path))
       } else {
         basename(html_path)
@@ -2683,7 +3022,7 @@ app_server <- function(input, output, session) {
         # stop(msg, call. = FALSE)
       }
 
-      if (isTRUE(input$format_report_multisite %in% "pdf")) {
+      if (isTRUE(input$fileextension %in% "pdf")) { # had been input$format_report_multisite
         # pdf format was requested
         tryCatch({
           assert_pdf_report_available() # stop() if pagedown/Chrome unavailable
@@ -2740,7 +3079,7 @@ app_server <- function(input, output, session) {
         buffer_dist = submitted_radius_val(),
         site_method = submitted_upload_method(),
         with_datetime = TRUE,
-        ext = ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
+        ext = ifelse(input$fileextension %in% 'pdf', '.pdf', '.html') # had been input$format_report_multisite
       )
     },
     content = function(file) {
@@ -2763,7 +3102,7 @@ app_server <- function(input, output, session) {
   # (1 button per site in the table of sites, to see report or barplot for that site)
   #
   # NOTE: This code was written but is not used if the app obtains these reports via API.
-  # Rendering here is probably faster and supports more parameters / features than API,
+  # Rendering here is probably faster and supports more parameters / features than API, & would be especially useful for large multipolygon shapefiles,
   # while using the API for 1-site reports in the app is simpler.
 
   cur_button <- reactiveVal(NULL)
@@ -2788,7 +3127,7 @@ app_server <- function(input, output, session) {
         selected_location_name(location_name)
 
         # Store a temporary file name/path in the reactive value
-        fileextension <- ifelse(input$format1pager %in% 'pdf', '.pdf', '.html')
+        fileextension <- ifelse(input$fileextension %in% 'pdf', '.pdf', '.html') # had been input$format_report_multisite
         temp_file <- tempfile(fileext = fileextension)
 
          # if shapefile was used for analysis, provide it to ejam2report()

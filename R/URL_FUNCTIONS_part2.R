@@ -582,6 +582,7 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'
 #' @param shapefile shows URL of a EJSCREEN app map centered on the centroid of a given polygon,
 #'   but does not actually show the polygon.
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values
@@ -608,7 +609,11 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                             linktext = "EJSCREEN",
                             ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
                             baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
-                            ...) {
+                            ...,
+                            shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   if (is.null(linktext)) {linktext <- paste0("EJSCREEN")}
 
@@ -729,6 +734,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
 #' @param sitepoints data.frame with colnames lat, lon (or lat, lon parameters can be provided separately)
 #' @param lat,lon ignored if sitepoints provided, can be used otherwise, if shapefile and fips not used
 #' @param shapefile if provided function uses centroids of polygons for lat lon
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param fips ignored
 #' @param zoom initial map zoom extent
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
@@ -756,7 +762,11 @@ url_enviromapper <- function(sitepoints = NULL, lon = NULL, lat = NULL, shapefil
                              linktext = "EnviroMapper",
                              ifna = "https://geopub.epa.gov/myem/efmap/",
                              baseurl = "https://geopub.epa.gov/myem/efmap/index.html?ve=",
-                             ...) {
+                             ...,
+                             shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   if (is.null(linktext)) {linktext <- paste0("EnviroMapper")}
 
@@ -850,6 +860,7 @@ url_enviromapper <- function(sitepoints = NULL, lon = NULL, lat = NULL, shapefil
 #' @param sitepoints if provided and fips is NULL, gets county fips from lat,lon columns of sitepoints
 #' @param lat,lon ignored if sitepoints provided, can be used otherwise, if shapefile and fips not used
 #' @param shapefile if provided and fips is NULL, gets county fips from lat,lon of polygon centroid
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values
@@ -875,7 +886,11 @@ url_county_health <- function(fips = NULL, year = 2025,
                               ifna = "https://www.countyhealthrankings.org",
                               baseurl = "https://www.countyhealthrankings.org/health-data/",
                               statereport = FALSE,
-                              ...) {
+                              ...,
+                              shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
   ####### #
   if (missing(year) && year != as.numeric(substr(Sys.Date(), 1, 4))) {
     message("Note that default year used is ", year, " but newer data might be available now or soon.")
@@ -1027,7 +1042,11 @@ url_state_health = function(fips = NULL, year = 2025,
                             ifna = "https://www.countyhealthrankings.org",
                             baseurl = "https://www.countyhealthrankings.org/health-data/",
                             statereport = TRUE,
-                            ...) {
+                            ...,
+                            shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   url_county_health(
     fips = fips, year = year,
@@ -1055,6 +1074,7 @@ url_state_health = function(fips = NULL, year = 2025,
 #' @param sitepoints if provided and fips is NULL, gets county fips from lat,lon columns of sitepoints
 #' @param lat,lon ignored if sitepoints provided, can be used otherwise, if shapefile and fips not used
 #' @param shapefile if provided and fips is NULL, gets county fips from lat,lon of polygon centroid
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values
@@ -1081,7 +1101,12 @@ url_county_equityatlas <- function(fips = NULL, # year = 2025,
                                    ifna    = "https://nationalequityatlas.org",
                                    baseurl = "https://nationalequityatlas.org/research/data_summary",
                                    statereport = FALSE,
-                                   ...) {
+                                   ...,
+                                   shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
+
   if (is.null(linktext)) {linktext <- paste0("County (Equity Atlas)")}
 
   ######################## #  ######################## #  ######################## #
@@ -1669,7 +1694,12 @@ url_state_equityatlas <- function(fips = NULL,
                                   baseurl = "https://nationalequityatlas.org/research/data_summary",
 
                                   statereport = TRUE,
-                                  ...) {
+                                  ...,
+                                  shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
+
   url_county_equityatlas(
     fips = fips,
     sitepoints = sitepoints, lat = lat, lon = lon,

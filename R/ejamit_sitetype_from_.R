@@ -13,13 +13,18 @@
 #' @param sitepoints  parameter as was passed to [ejamit()]
 #' @param fips  parameter as was passed to [ejamit()]
 #' @param shapefile parameter as was passed to [ejamit()]
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @seealso [sites_from_input()]
 #' @return either "latlon", "fips", or "shp",
 #'   or errors if 2 or 3 types were specified at once
 #'
 #' @keywords internal
 #'
-ejamit_sitetype_from_input <- function(sitepoints = NULL, fips = NULL, shapefile = NULL) {
+ejamit_sitetype_from_input <- function(sitepoints = NULL, fips = NULL, shapefile = NULL, shape = NULL, shp = NULL) {
+
+  # Aliases (synonyms): shape and shp for shapefile.
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   # see also now  sites_from_input()
 

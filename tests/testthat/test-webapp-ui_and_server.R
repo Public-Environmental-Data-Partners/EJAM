@@ -281,6 +281,61 @@ test_that("app_server validates invalid FRS uploads without falling through to s
 })
 ################################################# #
 
+test_that("app_server override latch: a programmatic set_site_method() write does not latch, but a real user change of the main radio does", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+  ## Item 2 regression (PR #420): set_site_method() records its own writes in site_method_last_set so the
+  ## ss_choose_method observer can tell a programmatic update apart from a real user click. Only a user
+  ## click latches site_method_user_override, which then protects the pick from the layer-2
+  ## belt-and-suspenders ejamapp writes (each guarded by if (!site_method_user_override())).
+  ## Mock global_or_param for the hide-tab flags so app_server init runs in testServer (same
+  ## workaround the other testServer tests in this file use; golem_options isn't visible here).
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c("default_hide_about_tab", "default_hide_written_report",
+                       "default_hide_plot_barplot_tab", "default_hide_plot_histo_tab")) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    .package = "EJAM"
+  )
+  testServer(app = app_server, expr = {
+    session$setInputs(testing = FALSE)
+    expect_false(site_method_user_override())                # no override at start
+
+    set_site_method("upload", source = "test-programmatic")  # our own write -> records site_method_last_set("upload")
+    session$setInputs(ss_choose_method = "upload")           # simulated radio round-trip to that same value
+    expect_false(site_method_user_override())                # value == last_set -> NOT treated as a user change
+
+    session$setInputs(ss_choose_method = "dropdown")         # user changes the MAIN radio to a different value
+    expect_true(site_method_user_override())                 # latched -> now protected from layer-2 clobber
+  })
+})
+################################################# #
+
+test_that("app_server override latch: an advanced-tab Site Selection Method pick latches the override", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c("default_hide_about_tab", "default_hide_written_report",
+                       "default_hide_plot_barplot_tab", "default_hide_plot_histo_tab")) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    .package = "EJAM"
+  )
+  testServer(app = app_server, expr = {
+    session$setInputs(testing = FALSE)
+    expect_false(site_method_user_override())
+    session$setInputs(default_ss_choose_method = "upload")   # advanced-tab radio = explicit runtime choice (layer 3)
+    expect_true(site_method_user_override())
+  })
+})
+################################################# #
+
 test_that("shinytest category selection waits for input values and saves failure logs", {
   setup_file <- testthat::test_path("setup-shinytest2.R")
   setup_lines <- readLines(setup_file, warn = FALSE)
@@ -371,6 +426,16 @@ test_that("shinytest category selection waits for input values and saves failure
     "save_log\\(paste0\\(test_category, \"-category-selection-log\\.txt\"\\)\\)",
     fixed = FALSE
   )
+  expect_match(
+    setup_text,
+    "test_log_dir <- file.path(tempdir(), \"ejam-shinytest2-logs\")",
+    fixed = TRUE
+  )
+  expect_false(grepl(
+    "test_log_dir <- testthat::test_path(\"_logs\")",
+    setup_text,
+    fixed = TRUE
+  ))
   expect_false(grepl(
     paste0(
       "ss_upload_frs = EJAM:::app_sys\\(\"testdata/registryid/frs_testpoints_10\\.xlsx\"\\)\\)",
@@ -379,6 +444,27 @@ test_that("shinytest category selection waits for input values and saves failure
     setup_text,
     perl = TRUE
   ))
+})
+################################################# #
+
+test_that("shinytest upload log detection accepts AppDriver upload messages", {
+  expect_true(exists("shinytest2_upload_log_has_files"))
+
+  logs <- data.frame(
+    message = c(
+      "{shinytest2} R info Uploading file(s) for id: /tmp/counties_in_Delaware.xlsx",
+      "{shinytest2} R info Finished uploading file"
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_true(
+    shinytest2_upload_log_has_files(
+      logs,
+      input_id = "ss_upload_fips",
+      expected_names = "counties_in_Delaware.xlsx"
+    )
+  )
 })
 ################################################# #
 #
@@ -397,5 +483,29 @@ shiny::shinyOptions(golem_options = old_golem_options)
 rm(old_golem_options)
 rm(global_defaults_or_user_options)
 
+
+################################################# #
+# Item 4: default_site_method back-compat alias (param renamed from default_upload_dropdown) #
+
+test_that("global_or_param() resolves default_upload_dropdown as a back-compat alias for default_site_method", {
+  prev <- shiny::getShinyOption("golem_options")
+  on.exit(shiny::shinyOptions(golem_options = prev), add = TRUE)
+
+  # only the OLD key is set -> the new name still resolves (alias fallback)
+  shiny::shinyOptions(golem_options = list(default_upload_dropdown = "dropdown"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "dropdown")
+
+  # the NEW key is set -> resolves directly
+  shiny::shinyOptions(golem_options = list(default_site_method = "upload"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "upload")
+
+  # both set -> the new (canonical) key wins over the old alias
+  shiny::shinyOptions(golem_options = list(default_site_method = "mapclick", default_upload_dropdown = "dropdown"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "mapclick")
+
+  # a name with no alias is unaffected (no spurious fallback) -> NULL when unset
+  shiny::shinyOptions(golem_options = list())
+  expect_null(EJAM:::global_or_param("a_param_with_no_such_name_xyz"))
+})
 
 ################################################# #

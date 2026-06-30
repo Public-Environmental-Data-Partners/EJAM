@@ -10,7 +10,9 @@ ejamit_compare_types_of_places(
   shapefile = NULL,
   fips = NULL,
   silentinteractive = TRUE,
-  ...
+  ...,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -26,6 +28,10 @@ each unique value defines a group of sites}
 \item{silentinteractive}{passed to \code{\link[=ejamit]{ejamit()}}}
 
 \item{...}{see \code{\link[=ejamit]{ejamit()}}}
+
+\item{shape}{alias (synonym) for shapefile}
+
+\item{shp}{alias (synonym) for shapefile}
 }
 \value{
 similar to ejamit output but results_overall has one row per unique typeofsite

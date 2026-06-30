@@ -37,7 +37,9 @@ ejam2report(
   fileextension = c("html", "pdf")[1],
   filename = NULL,
   return_html = FALSE,
-  launch_browser = TRUE
+  launch_browser = TRUE,
+  shape = NULL,
+  shapefile = NULL
 )
 }
 \arguments{
@@ -118,6 +120,10 @@ PDF output is required when this option is selected; it is not optional.}
 \item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
 
 \item{launch_browser}{set TRUE to have it launch browser and show report.}
+
+\item{shape}{alias (synonym) for shp}
+
+\item{shapefile}{alias (synonym) for shp}
 }
 \value{
 URL of temp file or object depending on return_html,

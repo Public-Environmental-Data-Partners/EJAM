@@ -111,6 +111,8 @@ assert_pdf_report_available <- function() {
 #'
 #' @param shp provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 #'   they are not in ejamitout
+#' @param shape alias (synonym) for shp
+#' @param shapefile alias (synonym) for shp
 #' @param launch_browser set TRUE to have it launch browser and show report.
 #' @param return_html set TRUE to have function return HTML object instead of URL of local file
 #' @param fileextension html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
@@ -204,8 +206,13 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         fileextension = c("html", "pdf")[1],
                         filename = NULL,
                         return_html = FALSE,
-                        launch_browser = TRUE
+                        launch_browser = TRUE,
+                        shape = NULL,     # alias (synonym) for shp (name-only, at end to avoid arg shift)
+                        shapefile = NULL  # alias (synonym) for shp
 ) {
+  # Aliases (synonyms) for shp, for naming consistency with ejamit()/ejamapp() etc.
+  if (is.null(shp) && !is.null(shape))     {shp <- shape}
+  if (is.null(shp) && !is.null(shapefile)) {shp <- shapefile}
 
   # analysis title default and report_title default depend on if this is 1-site or multisite
 
@@ -388,7 +395,19 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     fileextensions_implemented <- c(".html", ".pdf")
     if (!(fileextension %in% fileextensions_implemented)) {
       warning("fileextension must be one of", fileextensions_implemented)
-      fileextension <- ".html"
+      ## Fall back to the global default. global_or_param("default_format1pager") can be NULL
+      ## (e.g. when EJAM is used via :: without attaching, so .onAttach() never built the package
+      ## defaults), so guard against NULL/empty before normalizing - otherwise gsub()/`%in%` operate
+      ## on a length-0 value and the `if` below errors ("argument is of length zero").
+      gdef <- global_or_param("default_format1pager")  # normally "html"/"pdf"; could be ".pdf", "PDF", or NULL
+      if (length(gdef) == 0 || is.na(gdef[1]) || !nzchar(gdef[1])) {
+        fileextension <- ".html" # fallback if global default is missing/blank
+      } else {
+        fileextension <- paste0(".", gsub("^\\.", "", tolower(gdef[1])))
+        if (!(fileextension %in% fileextensions_implemented)) {
+          fileextension <- ".html" # fallback if problem with global
+        }
+      }
     }
 
     ## > filename ####
@@ -405,7 +424,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         buffer_dist = rad,
         site_method = site_method, # can be latlon, shp, SHP, fips, FIPS, MACT, etc. (just used as-is in filename)
         with_datetime = FALSE,
-        ext = fileextension # in server,  ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = fileextension
       )
       temp_comm_report <- file.path(tempdir(), filename)
     } else {

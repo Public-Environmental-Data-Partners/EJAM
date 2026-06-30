@@ -17,6 +17,8 @@ app_ui <- function(request) {
       ## enable JavaScript, CSS   ####
       #   functionality (such as resetting inputs) etc.
       shinyjs::useShinyjs(),
+      # enable shinybusy indicators (spinners) for any long-running processes not already covered by shinycssloaders::withSpinner()
+      shiny::useBusyIndicators(spinners = FALSE, pulse = TRUE, fade = FALSE),
       ## javascript function for jumping to top of screen
       shinyjs::extendShinyjs(text = "shinyjs.toTop = function() {window.scrollTo(0, 0);}", functions = "toTop"),
       # For info on using javascript in shiny apps,
@@ -114,13 +116,18 @@ app_ui <- function(request) {
                   radioButtons(inputId = 'ss_choose_method',
                                label = 'How would you like to identify locations?',
                                choiceNames = c('Select a category of locations',
-                                               'Upload specific locations'),
+                                               'Upload specific locations',
+                                               'Click or draw on map'),
                                choiceValues = c('dropdown',
-                                                'upload'),
-                               selected = global_or_param("default_upload_dropdown")),
-                  # selected = input$default_ss_choose_method), # which has a default of global_or_param("default_upload_dropdown")
-                  # selected = 'upload'),   # if hard-coded default selection.
-                  # uiOutput(outputId = 'ss_choose_method_ui'), # flexible default selection, if handled in server code.
+                                                'upload',
+                                                'mapclick'),
+                               selected = global_or_param("default_site_method")),
+                  # NOTE: the UI is built once at page-load, before any reactive `input` exists, so
+                  # `selected` MUST be a non-reactive value here - global_or_param() reads the ejamapp()
+                  # param / global default (default_site_method = "dropdown" / "upload" / "mapclick").
+                  # Do NOT use `selected = input$default_ss_choose_method` here (that errors at UI build).
+                  # The advanced-tab "Site Selection Method" setting is applied to this radio server-side
+                  # via updateRadioButtons() - see observeEvent(input$default_ss_choose_method) in app_server.R.
 
                   ## > what DROPDOWN CATEGORY TYPE? (NAICS, SIC, MACT, Program, FIPS_PLACE) ####
 
@@ -193,6 +200,18 @@ app_ui <- function(request) {
                       actionButton(inputId = 'latlon_help', label = 'More Info', class = 'usa-button usa-button--outline'), # HTML(latlon_help_msg)
                       br()
                     ), # end latlong conditionalPanel
+                    ################################################################# #
+
+                    ## _Click or draw on map  (conditional panel)  ------------------------------------- - ####
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'mapclick'",
+                      ## input: click on the an_leaf_map (below) to add/remove points; handled by MODULE_SERVER_latlon_from_map_click() in the server
+                      tags$p("Click on the map below to add one or more points to analyze. Click a point's red marker to remove it. Use the radius slider to change the circle drawn around each point.",
+                             tags$br(),
+                             tags$em("(Drawing polygons/areas on the map is planned for a future version.)")),
+                      actionButton(inputId = 'mapclick_clear', label = 'Clear all points', class = 'usa-button usa-button--outline'),
+                      br()
+                    ), # end mapclick conditionalPanel
                     ################################################################# #
 
                     ################################################################# #
@@ -451,6 +470,13 @@ app_ui <- function(request) {
                    ############################### #
                    ## MAP of uploaded points ####
 
+                   ## crosshair cursor for the click-to-add ('mapclick') method. The class
+                   ## 'mapclick-cursor-on' is toggled onto #an_leaf_map by the server only while that
+                   ## method is selected, so other methods keep the normal grab/pan cursor.
+                   tags$style(HTML(
+                     "#an_leaf_map.mapclick-cursor-on, #an_leaf_map.mapclick-cursor-on .leaflet-grab { cursor: crosshair !important; }"
+                   )),
+
                    #helpText('Red circles indicate overlapping sites.'),
                    ## output: show leaflet map of uploaded points
                    shinycssloaders::withSpinner(
@@ -552,13 +578,18 @@ app_ui <- function(request) {
                                ###              > DOWNLOAD BUTTON    ####
                                tags$div(
                                  radioButtons(
-                                   inputId = "format_report_multisite",
+                                   inputId = "fileextension", # had been called format_report_multisite, # see format1pager and fileextension
                                    label   = "Download format:",
                                    choices = c("HTML" = "html", "PDF" = "pdf"),
-                                   selected = "html",
+                                   # html format has live interactive maps with popups and links, but pdf has better pagination for printing.
+                                   # normalize (strip leading dot, lowercase) so e.g. ".pdf"/"PDF" still matches "pdf" (mirrors ejam2report())
+                                   selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))), # kept in sync with advanced tab via updateRadioButtons() in server
                                    inline   = TRUE
                                  ),
-                                 downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
+                                 downloadButton('download_report_multisite',
+                                                label = 'Download Multisite Summary Report',
+                                                class = 'usa-button',
+                                                enabled = TRUE), style = 'text-align: center;'
                                )
                              ),  # end report tab
 
@@ -598,7 +629,10 @@ app_ui <- function(request) {
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()
-                                                              downloadButton('download_results_spreadsheet', label = 'Download Results Table', class = 'usa-button')
+                                                              downloadButton('download_results_spreadsheet',
+                                                                             label = 'Download Results Table',
+                                                                             class = 'usa-button',
+                                                                             enabled = TRUE)
                                                        )
                                                      ),
                                                      br(), ## vertical space
@@ -1059,6 +1093,10 @@ app_ui <- function(request) {
                               min = 1000,  step = 500,
                               value = global_or_param("default_max_pts_select"),
                               max   = global_or_param("maxmax_pts_select")),
+                 numericInput(inputId = 'max_pts_click', label = "Cap on number of points one can CLICK on the map, additional clicks are ignored",
+                              min = 1,  step = 5,
+                              value = global_or_param("default_max_pts_click"),
+                              max   = global_or_param("maxmax_pts_click")),
                  numericInput(inputId = 'max_pts_map', label = "Cap on number of points one can MAP",
                               min = 500,  step = 100,
                               value = global_or_param("default_max_pts_map"),
@@ -1087,11 +1125,13 @@ app_ui <- function(request) {
                  h3("Uploaded files and dropdown menu site selection"),
 
                  radioButtons(inputId = "default_ss_choose_method", label = "Site Selection Method",
-                              choices = c(Dropdown = "dropdown", Upload = "upload"),
-                              selected = global_or_param("default_upload_dropdown"),
+                              choices = c(Dropdown = "dropdown", Upload = "upload", `Click on map` = "mapclick"),
+                              selected = global_or_param("default_site_method"),
                               inline = TRUE),
-                 # global_default or ejamapp() parameter: default_upload_dropdown, which is initial selected value of
-                 # input in advanced tab: input$default_ss_choose_method, which is initial selected value of
+                 # global_default or ejamapp() parameter: default_site_method ("dropdown", "upload", or "mapclick"),
+                 # which is the initial selected value of
+                 # input in advanced tab: input$default_ss_choose_method, which (via updateRadioButtons in the server)
+                 # sets the initial/selected value of
                  # input in server:              input$ss_choose_method
                  ######################################################## #
                  ###  Upload files for site selection options ####
@@ -1302,9 +1342,12 @@ app_ui <- function(request) {
                                      selected = global_or_param("default_plotkind_1pager")),
 
                  ## _radio button on format of short report
-                 #                  was DISABLED while PDF KNITTING DEBUGGED
-                 radioButtons(inputId = "format1pager", "Format",
+                 # sets filename and fileextension parameter in ejam2report()
+                 h3("Short report title and format - html provides live interactive map with popups and links, but pdf has better pagination for printing."),
+                 shiny::radioButtons(inputId = "default_format1pager", "Format",
                               choices = c(html = "html", pdf = "pdf"),
+                              # normalize (strip leading dot, lowercase) so e.g. ".pdf"/"PDF" still matches "pdf" (mirrors ejam2report())
+                              selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))),
                               inline = TRUE),
 
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),

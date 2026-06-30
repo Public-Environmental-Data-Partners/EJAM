@@ -12,6 +12,10 @@
 #' @param column_names can be "ej", passed to [mapfast()]
 #' @param launch_browser logical optional whether to open the web browser to view the map
 #' @param shp shapefile it can map if analysis was for polygons, for example
+#' @param shape alias (synonym) for shp
+#' @param shapefile alias (synonym) for shp
+#' @param radius optional radius in miles
+#' @param buffer alias (synonym) for radius
 #'
 #' @param sitenumber as used in [ejam2report()]
 #'
@@ -43,7 +47,15 @@
 #'
 ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp = NULL,
                      radius = NULL,
-                     sitenumber = NULL) {
+                     sitenumber = NULL,
+                     shape = NULL,     # alias (synonym) for shp
+                     shapefile = NULL, # alias (synonym) for shp
+                     buffer = NULL) {  # alias (synonym) for radius
+
+  # Aliases (synonyms) for naming consistency with ejamit()/ejamapp() etc.
+  if (is.null(shp) && !is.null(shape))     {shp <- shape}
+  if (is.null(shp) && !is.null(shapefile)) {shp <- shapefile}
+  if (is.null(radius)) {radius <- buffer}
 
   if (is.data.frame(ejamitout)) {
     # if it's a data.frame not the whole list output of ejamit(), assume it's the results_bysite, so make it look like we expected

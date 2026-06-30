@@ -66,7 +66,13 @@ global_defaults_package$app_title = as.vector(desc::desc_get("Title", file = sys
 
 global_defaults_package$report_title_multisite = "EJSCREEN Multisite Summary"
 global_defaults_package$report_title           = "EJSCREEN Community Report"
+############################### #
 
+# REPORT FORMAT ####
+# pdf or html can be default for downloadable 1-page summary report.
+# html format has live interactive maps with popups and links, but pdf has better pagination for printing.
+global_defaults_package$default_format1pager = "html"
+# see fileextension parameter in ejam2report() and input$default_format1pager etc in server, and see API/ url_ejamapi() etc.
 ############################### #
 
 # APP LOGO ####

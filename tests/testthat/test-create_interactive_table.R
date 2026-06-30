@@ -1,9 +1,16 @@
 test_that("create_interactive_table does not mutate results_bysite by reference", {
-  skip_if_not(
-    exists("testoutput_ejamit_10pts_1miles", envir = asNamespace("EJAM"), inherits = FALSE),
-    message = "testoutput_ejamit_10pts_1miles is required for this test"
+  env <- new.env(parent = emptyenv())
+  data("testoutput_ejamit_10pts_1miles", package = "EJAM", envir = env)
+  out <- get("testoutput_ejamit_10pts_1miles", envir = env, inherits = FALSE)
+
+  local_mocked_bindings(
+    saveWidget = function(widget, file, ...) {
+      writeLines("<html></html>", file)
+      invisible(file)
+    },
+    .package = "htmlwidgets"
   )
-  out <- get("testoutput_ejamit_10pts_1miles", envir = asNamespace("EJAM"))
+
   expect_false(is.null(out$results_bysite))
   expect_true(data.table::is.data.table(out$results_bysite))
 

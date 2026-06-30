@@ -103,3 +103,10 @@
 
   ################################################ #
 
+
+test_that("ejamit_sitetype_from_input() accepts shape/shp aliases for shapefile", {
+  sf1 <- shapefile_from_any(testshapes_2, cleanit = FALSE)
+  expect_equal(ejamit_sitetype_from_input(shapefile = sf1), "shp")
+  expect_equal(ejamit_sitetype_from_input(shape = sf1), "shp")
+  expect_equal(ejamit_sitetype_from_input(shp = sf1), "shp")
+})

@@ -16,7 +16,7 @@ ejamapi(
   radius = NULL,
   geometries = FALSE,
   scale = c("blockgroup", "county"),
-  baseurl = "https://ejamapi-84652557241.us-central1.run.app/",
+  baseurl = paste0(url_package("api"), "/"),
   endpoint = c("data", "report", "query"),
   browse = TRUE,
   save_and_return_html = TRUE,
@@ -24,15 +24,17 @@ ejamapi(
   fileextension = c("html", "pdf"),
   dry_run = FALSE,
   version = NULL,
-  ...
+  ...,
+  shp = NULL
 )
 }
 \arguments{
 \item{lat, lon}{Coordinates of point(s) for analysis of residents nearby.
 To specify point(s), provide either lat and lon, or sites, or sitepoints --
 they are alternative ways to specify point(s).
-For the "report" endpoint, specify only one point
-(until the API supports summary analysis over multiple locations).
+For the "report" endpoint you may specify one or more points; pass
+sitenumber=0 (via ...) for an aggregate multisite report over all of them
+(otherwise the default is a single-site report on the first site).
 For the "data" endpoint, specify one or more points.}
 
 \item{sites, sitepoints}{Only one of these should be provided - they are synonymous.
@@ -41,8 +43,8 @@ sites or sitepoints, if provided, must be a data.frame with colnames "lat" and "
 Like the sitepoints param in \code{\link[=url_ejamapi]{url_ejamapi()}}}
 
 \item{shape, shapefile}{Only one of these should be provided - they are synonymous.
-A GeoJSON string representing the area of interest,
-like shapefile param in \code{\link[=url_ejamapi]{url_ejamapi()}}}
+The area of interest, as either an \code{sf} polygon object (auto-converted to GeoJSON) or a
+ready-made GeoJSON string, like the shapefile param in \code{\link[=url_ejamapi]{url_ejamapi()}}.}
 
 \item{fips}{A FIPS code for a specific US Census geography, like "050014801001",
 and must be consistent with the scale parameter}
@@ -62,7 +64,9 @@ the API tries to return one result for each "county" or "blockgroup"
 that is found within the specified fips. For example, all counties in specified State fips,
 or all blockgroups in specified County fips.}
 
-\item{baseurl}{base API URL without the endpoint path}
+\item{baseurl}{base API URL without the endpoint path. Defaults to \code{\link[=url_package]{url_package()}} with
+type="api" (the DESCRIPTION \code{ejam_api_url}), the single source of the API endpoint; pass a
+different value only to target another API (e.g. a staging server).}
 
 \item{endpoint}{"data", "report", or "query".
 \itemize{
@@ -101,6 +105,8 @@ Default NULL resolves to the installed package Version (from DESCRIPTION).}
 \item{...}{other parameters, passed to \code{\link[httr2:req_body_json]{httr2::req_body_json()}} in the "data" case,
 passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case, and used for the
 required \code{attribute} and \code{value} parameters in the "query" case}
+
+\item{shp}{alias (synonym) for shapefile/shape}
 }
 \value{
 If dry_run=TRUE
@@ -200,5 +206,8 @@ head(zz, 50)
 }
 }
 \seealso{
-\code{\link[=url_ejamapi]{url_ejamapi()}}
+\code{\link[=url_ejamapi]{url_ejamapi()}} for building API request URLs, \code{\link[=url_ejamapp]{url_ejamapp()}} for
+deep links that launch the live \emph{app} pre-loaded, and \code{\link[=url_package]{url_package()}} (type
+"api") for the single-sourced API base URL. See also the \code{dev-api} and
+"Defaults and Custom Settings for the Web App" articles.
 }
