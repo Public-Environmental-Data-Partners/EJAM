@@ -199,22 +199,29 @@ app_server <- function(input, output, session) {
 
   ## advanced tab provides size cap on file uploads  ---------------------- #
 
+  # max_mb_upload_react is a PURE reactive: it reads input$max_mb_upload and returns the value
+  # clamped to [minmax_mb_upload, maxmax_mb_upload] (or the default if unset). It has NO
+  # side-effects. The observe below applies the side-effects (reflect the clamped value back into
+  # the widget, set shiny.maxRequestSize, reset the file inputs so a too-large upload can be retried
+  # under the new cap). Previously the reactive called updateNumericInput() inside itself -- a
+  # side-effect-in-a-reactive anti-pattern.
   max_mb_upload_react <- reactive({
     x <- as.numeric((input$max_mb_upload))
     if (is.null(x) || is.na(x) || length(x) == 0) {
       x <- global_or_param("default_max_mb_upload") #?
-      shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     } else {
       if (x > global_or_param("maxmax_mb_upload")) {x <- global_or_param("maxmax_mb_upload")}
       if (x < global_or_param("minmax_mb_upload")) {x <- global_or_param("minmax_mb_upload")}
-      shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     }
     x
   })
   observe({
+    x <- max_mb_upload_react()
+    # reflect the clamped/default value back in the widget (this side-effect moved here out of the reactive)
+    shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     # Adjusts cap on file size user can upload, and resets file inputs in case
     #   last attempt failed due to size, so you can retry with new cap.
-    options(shiny.maxRequestSize = max_mb_upload_react() * 1024^2)
+    options(shiny.maxRequestSize = x * 1024^2)
     ids_of_fileInput_lines <- c("ss_upload_latlon", "ss_upload_shp",
                                 "ss_upload_frs", "ss_upload_program","ss_upload_fips")
     for (idx in ids_of_fileInput_lines) {shinyjs::reset(idx)}
@@ -259,11 +266,15 @@ app_server <- function(input, output, session) {
                          server = TRUE)
   }, once = TRUE)
   observe({
-    # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
-    level_of_detail_based_on_default_naics <- if (any(nchar(input$default_naics) > 3)) 'detailed' else global_or_param("default_naics_digits_shown")
-    updateRadioButtons(session = session, inputId = 'naics_digits_shown',
-                       selected = level_of_detail_based_on_default_naics
-    )
+    # If default_naics (from the global default and/or the advanced tab) contains a detailed
+    # (>3-digit) NAICS code, force the detailed list so that code is visible as an initial choice.
+    # Otherwise DO NOT touch naics_digits_shown: leave the app_ui.R default or the user's own pick
+    # in place. (The previous version reset it to the default on EVERY default_naics change, which
+    # silently clobbered a manual choice.) This observe depends only on input$default_naics, so its
+    # own updateRadioButtons() write to naics_digits_shown never re-triggers it.
+    if (any(nchar(input$default_naics) > 3)) {
+      updateRadioButtons(session = session, inputId = 'naics_digits_shown', selected = 'detailed')
+    }
   })
   observeEvent(input$default_format1pager, {
     ## normalize like ejam2report() does (strip a leading dot, lowercase) so a user-supplied or
