@@ -22,8 +22,9 @@ This is a short overview. For the authoritative and most current details, see:
 - the **[EJAM-API repository](https://github.com/Public-Environmental-Data-Partners/EJAM-API)**
   and its README -- it documents every endpoint, parameter, and example;
 - the help for **`?ejamapi`** and **`?url_ejamapi`**; and
-- the **"Defaults and Custom Settings for the Web App"** article, for *deep links* that
-  launch the EJAM web app pre-loaded with a set of places.
+- the [Defaults and Custom Settings for the Web App](dev-app-settings.html) article, for the
+  *deep links* (launch-URL parameters + token handoff) that pre-load the EJAM web app -- a
+  capability being added in the multisite work (PR #413, `ejscreen-multisite-selection`).
 
 ## What the API is
 
@@ -52,14 +53,16 @@ normally need to set the base URL yourself.
 
 ## Deep linking: launch the app pre-loaded
 
-Separately from the data API, you can open a URL that **launches the live EJAM web app
-already loaded with a set of places** -- this is how the EJScreen "Send to EJAM" button
-works, so a user can move a selection straight into the full app. Points and FIPS codes
-travel directly in the URL; larger sets and drawn polygons use a token **handoff** so they
-are not limited by URL length.
+Separately from the data API, the EJAM web app can be **launched pre-loaded with a set of
+places** by opening it with launch query parameters in the URL -- the basis for the EJScreen
+"Send to EJAM" hand-off, which moves a selection straight into the full app. This launch-URL
+support is being added in the multisite/deep-linking work (PR #413,
+`ejscreen-multisite-selection`), so on any given deployment it is available once that work has
+been merged and released. Points and FIPS codes travel directly in the URL; larger sets and
+drawn polygons use a token **handoff** so they are not limited by URL length.
 
-For the launch-URL vocabulary and the handoff endpoints, see the **"Defaults and Custom
-Settings for the Web App"** article and the
+For the launch-URL vocabulary and the handoff endpoints, see the
+[Defaults and Custom Settings for the Web App](dev-app-settings.html) article and the
 [EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
 
 ## A few notes on parameters
