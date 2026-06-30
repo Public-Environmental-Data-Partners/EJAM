@@ -25,9 +25,9 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #'
 #' @param sitepoints data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers
 #' @param radius in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
-#' @param buffer Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
 #'   For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
 #'   before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).
+#' @param buffer Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
 #' @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)
 #' @param avoidorphans logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,

@@ -447,17 +447,23 @@ app_server <- function(input, output, session) {
     # truth is the DESCRIPTION field ejam_api_url; read it via url_package("api"),
     # and if that is unavailable derive it from url_ejamapi()'s resolved base (its
     # /report? endpoint minus the path). Override via global_or_param("ejamapi_baseurl").
+    # A usable base is a single non-NA, non-empty string; each fallback is tried only
+    # if the previous left it unusable (NULL, character(0), NA, or ""). length()!=1 is
+    # checked first so is.na()/nzchar() are never called on a zero-length value.
     apibase <- global_or_param("ejamapi_baseurl")
-    if (is.null(apibase) || !nzchar(apibase)) {
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
       apibase <- tryCatch(url_package("api"), error = function(e) NULL)
     }
-    if (is.null(apibase) || !nzchar(apibase)) {
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
       apibase <- tryCatch(sub("/report.*$", "", url_ejamapi()), error = function(e) NULL)
+    }
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
+      apibase <- ""   # API base unresolved -> the ?handoff= fetch below is skipped cleanly
     }
 
     # Normalize either a ?handoff= token or direct params into one spec.
     spec <- list()
-    if (!is.null(q$handoff) && nzchar(q$handoff)) {
+    if (!is.null(q$handoff) && nzchar(q$handoff) && nzchar(apibase)) {
       tokenurl <- paste0(apibase, "/handoff/", utils::URLencode(q$handoff, reserved = TRUE))
       # Fetch with a short timeout so a slow/unreachable API can't hang app startup
       # (this runs on the Shiny server thread during session init).

@@ -228,12 +228,7 @@ url_ejamapi = function(
     and_other_query_terms <- paste0(and_other_query_terms, "&version=", version)
   }
   ################################################## #  ################################################## #
-  if (is.null(baseurl)) {
-    baseurl <- paste0(url_package("api"), "/report?")   # canonical API base from DESCRIPTION (ejam_api_url)
-  }
-  if (is.null(ifna)) {
-    ifna <- "https://ejanalysis.com"
-  }
+  # (baseurl and ifna were already resolved from url_package("api") near the top.)
   shp_one_site_fallback_url <- "https://ejanalysis.com/ejamapp"
   # see https://github.com/edgi-govdata-archiving/EJAM-API/tree/main
   # baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?"

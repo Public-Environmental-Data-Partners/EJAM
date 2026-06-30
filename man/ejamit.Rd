@@ -53,7 +53,9 @@ ejamit(
 \arguments{
 \item{sitepoints}{data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers}
 
-\item{radius}{in miles, defining circular buffer around a site point (defaults to zero in shapefile case).}
+\item{radius}{in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
+For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
+before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).}
 
 \item{radius_donut_lower_edge}{radius of lower edge of donut ring if analyzing a ring not circle}
 
@@ -148,9 +150,7 @@ passed to \code{\link[=doaggregate]{doaggregate()}} also. app server sets this t
 
 \item{...}{passed to \code{\link[=getblocksnearby]{getblocksnearby()}} etc. such as  report_progress_every_n = 0}
 
-\item{buffer}{Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
-For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
-before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).}
+\item{buffer}{Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.}
 
 \item{shape}{Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
 e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)}
