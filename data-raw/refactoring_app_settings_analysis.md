@@ -60,7 +60,7 @@ golem_opts  ──►  global_or_param("name")   [R/utils_global_or_param.R]
    └─► app_server : Design C  (update*Input(..., selected = global_or_param("name")))
 ```
 
-**Role of `get_global_defaults_or_user_options()`** (the user asked about this): it is the single place that collects the **startup** settings from the 4 sources above and consolidates them into one list (`golem_opts`) that both UI and server read via `global_or_param()`. The merge helper `update_global_defaults_or_user_options()` only adds a key if it is **not already set**, so earlier (higher-priority) sources win — user `ejamapp()` params override the files. 
+**Role of `get_global_defaults_or_user_options()`** (the user asked about this): it is the single place that collects the **startup** settings from the 4 sources above and consolidates them into one list (`golem_opts`) that both UI and server read via `global_or_param()`. The merge helper `update_global_defaults_or_user_options()` only adds a key if it is **not already set**, so earlier (higher-priority) sources win — user `ejamapp()` params override the files.
 
 **Is it a good way to collect the various ways params get set?** For the **startup/config layer, yes** — it is centralized, ordered, first-writer-wins, and easy to reason about. Caveats / things to know:
 - It only covers the **startup** layer. It does **not** incorporate the *runtime* overrides below (advanced-tab inputs, bookmarks, launch-URL params). So it is "the collector" for config-at-launch, not a single unifying point for *all* ways a value can be set.
@@ -68,13 +68,13 @@ golem_opts  ──►  global_or_param("name")   [R/utils_global_or_param.R]
 - It depends on each file defining a specific named list (`global_defaults_package`, `global_defaults_shiny`, `global_defaults_shiny_public`) in the sourced env — implicit coupling, but stable.
 - Recommendation: keep it. Just document clearly that it owns the **startup** layer, and give the **launch-URL** layer a parallel single helper (see the deferred plan) so runtime precedence is as centralized as startup precedence.
 
-**Role of `ejamapp()` alias handling** (the user asked about this): before the merge, `ejamapp()` normalizes a set of **convenience aliases** on its `...` dots and, for some, **cross-sets related defaults** so a one-liner "just works." Examples (`R/ejamapp.R ~275-388`):
-- `pts` → `sitepoints`; `lat`+`lon` → `sitepoints`; and `sitepoints` ⇒ also sets `default_upload_dropdown="upload"`, `default_selected_type_of_site_upload="latlon"`.
-- `shp` → `shapefile`; and `shapefile` ⇒ `default_upload_dropdown="upload"`, `…upload="SHP"`.
-- `fips` ⇒ `default_upload_dropdown="upload"`, `…upload="FIPS"`.
-- `naics` → `default_naics`; and `default_naics` ⇒ `default_upload_dropdown="dropdown"`, `…category="NAICS"`. Similarly `sic`/`mact`.
+**Role of `ejamapp()` alias handling** (the user asked about this): before the merge, `ejamapp()` normalizes a set of **convenience aliases** on its `...` dots and, for some, **cross-sets related defaults** so a one-liner "just works." (The site-selection method param is now `default_site_method`; the former name `default_upload_dropdown` still works as a back-compat alias.) Examples (`R/ejamapp.R ~275-388`):
+- `pts` → `sitepoints`; `lat`+`lon` → `sitepoints`; and `sitepoints` ⇒ also sets `default_site_method="upload"`, `default_selected_type_of_site_upload="latlon"`.
+- `shp` → `shapefile`; and `shapefile` ⇒ `default_site_method="upload"`, `…upload="SHP"`.
+- `fips` ⇒ `default_site_method="upload"`, `…upload="FIPS"`.
+- `naics` → `default_naics`; and `default_naics` ⇒ `default_site_method="dropdown"`, `…category="NAICS"`. Similarly `sic`/`mact`.
 - `radius`/`default_radius`; `report_title`/`default_report_title`/`default_report_title_multisite`; `analysis_title`/`default_analysis_title`; `testing`; etc.
-This is a **third param-setting concern** (alias normalization + dependent-default inference) that runs *upstream* of the merge. It is convenient and mostly good, but it is also where some of the "many ways to set the same thing" feeling comes from — e.g. the method (`default_upload_dropdown`) can be set directly, or implicitly via `fips`/`shp`/`pts`/`naics`/`sitepoints`/`shapefile`. Worth documenting the alias table in one place.
+This is a **third param-setting concern** (alias normalization + dependent-default inference) that runs *upstream* of the merge. It is convenient and mostly good, but it is also where some of the "many ways to set the same thing" feeling comes from — e.g. the method (`default_site_method`) can be set directly, or implicitly via `fips`/`shp`/`pts`/`naics`/`sitepoints`/`shapefile`. Worth documenting the alias table in one place.
 
 ### Runtime overrides (each wired separately — this is where harmonization helps)
 
@@ -106,7 +106,7 @@ Layers 3–4 are consolidated and consistent (via `get_global_defaults_or_user_o
 | `naics_digits_shown` (`app_server.R:~261`) | an `observe` resets it whenever `default_naics` changes — silently overrides a user's manual pick | low |
 | `default_naics` / `default_sic` | belt-and-suspenders: Category-C server populate that re-fetches the same `global_or_param` the static UI "knows" — confusing but harmless | low |
 | Launch-URL `%||%` precedence (#413) | repeated per-reactive instead of one helper → easy to apply inconsistently as more URL params are added | medium (growing) |
-| `default_upload_dropdown` name | now selects 3 methods (dropdown / upload / mapclick) — the name is a misnomer | cosmetic |
+| `default_upload_dropdown` name | selected 3 methods (dropdown / upload / mapclick) — the name was a misnomer; **renamed to `default_site_method`** (old name kept as a back-compat alias) | resolved |
 
 ---
 
