@@ -281,6 +281,61 @@ test_that("app_server validates invalid FRS uploads without falling through to s
 })
 ################################################# #
 
+test_that("app_server override latch: a programmatic set_site_method() write does not latch, but a real user change of the main radio does", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+  ## Item 2 regression (PR #420): set_site_method() records its own writes in site_method_last_set so the
+  ## ss_choose_method observer can tell a programmatic update apart from a real user click. Only a user
+  ## click latches site_method_user_override, which then protects the pick from the layer-2
+  ## belt-and-suspenders ejamapp writes (each guarded by if (!site_method_user_override())).
+  ## Mock global_or_param for the hide-tab flags so app_server init runs in testServer (same
+  ## workaround the other testServer tests in this file use; golem_options isn't visible here).
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c("default_hide_about_tab", "default_hide_written_report",
+                       "default_hide_plot_barplot_tab", "default_hide_plot_histo_tab")) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    .package = "EJAM"
+  )
+  testServer(app = app_server, expr = {
+    session$setInputs(testing = FALSE)
+    expect_false(site_method_user_override())                # no override at start
+
+    set_site_method("upload", source = "test-programmatic")  # our own write -> records site_method_last_set("upload")
+    session$setInputs(ss_choose_method = "upload")           # simulated radio round-trip to that same value
+    expect_false(site_method_user_override())                # value == last_set -> NOT treated as a user change
+
+    session$setInputs(ss_choose_method = "dropdown")         # user changes the MAIN radio to a different value
+    expect_true(site_method_user_override())                 # latched -> now protected from layer-2 clobber
+  })
+})
+################################################# #
+
+test_that("app_server override latch: an advanced-tab Site Selection Method pick latches the override", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c("default_hide_about_tab", "default_hide_written_report",
+                       "default_hide_plot_barplot_tab", "default_hide_plot_histo_tab")) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    .package = "EJAM"
+  )
+  testServer(app = app_server, expr = {
+    session$setInputs(testing = FALSE)
+    expect_false(site_method_user_override())
+    session$setInputs(default_ss_choose_method = "upload")   # advanced-tab radio = explicit runtime choice (layer 3)
+    expect_true(site_method_user_override())
+  })
+})
+################################################# #
+
 test_that("shinytest category selection waits for input values and saves failure logs", {
   setup_file <- testthat::test_path("setup-shinytest2.R")
   setup_lines <- readLines(setup_file, warn = FALSE)
