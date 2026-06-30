@@ -152,7 +152,7 @@
 #'   ## Cities dropdown list as default shown at launch:
 #'
 #' ejamapp(
-#'   default_upload_dropdown = "dropdown",
+#'   default_site_method = "dropdown",
 #'   default_selected_type_of_site_category = "FIPS_PLACE",
 #'   fipspicker_fips_type2pick_default = "Cities or Places"
 #' )
@@ -160,7 +160,7 @@
 #'   ## Specific cities are preselected at launch
 #'
 #'   ejamapp(
-#'   default_upload_dropdown = "dropdown",
+#'   default_site_method = "dropdown",
 #'   default_selected_type_of_site_category = "FIPS_PLACE",
 #'   fipspicker_fips_type2pick_default = "Cities or Places",
 #'   default_cities_picked = name2fips(c("akutan,ak", "syracuse city,ny") )
@@ -181,7 +181,7 @@
 #'   ## Polygons upload as the default shown at launch:
 #'
 #' ejamapp(
-#'   default_upload_dropdown = "upload",
+#'   default_site_method = "upload",
 #'   default_selected_type_of_site_upload = "SHP"
 #' )
 #'   #default_choices_for_type_of_site_upload = c(
@@ -194,10 +194,11 @@
 #'
 #'   ## Click-or-draw-on-map as the default site-selection method shown at launch.
 #'   ## The user clicks the map to specify one or more lat/lon points to analyze.
-#'   ## (default_upload_dropdown accepts "dropdown", "upload", or "mapclick".)
+#'   ## (default_site_method accepts "dropdown", "upload", or "mapclick".
+#'   ##  It was formerly named default_upload_dropdown, which still works as an alias.)
 #'
 #' ejamapp(
-#'   default_upload_dropdown = "mapclick"
+#'   default_site_method = "mapclick"
 #' )
 #'
 #'  ## Count how many of some indicator are >= some cutoff
@@ -284,10 +285,19 @@ ejamapp <- function(
 
   dots = rlang::list2(...)
 
+  # Back-compat: default_upload_dropdown was renamed to default_site_method (it now selects
+  # dropdown/upload/mapclick, not just upload). Normalize the OLD name to the new one BEFORE the
+  # alias blocks below run, so existing ejamapp(default_upload_dropdown=...) calls keep working and
+  # everything downstream (this function, global_or_param(), the UI) only sees default_site_method.
+  if ('default_upload_dropdown' %in% names(dots) && !('default_site_method' %in% names(dots))) {
+    dots$default_site_method <- dots$default_upload_dropdown
+  }
+  dots$default_upload_dropdown <- NULL  # drop the old key so only the new name flows downstream
+
   if ("fips" %in% names(dots)) {
     # dots$fips will be used
-    if (!('default_upload_dropdown' %in% names(dots))) {
-      dots$default_upload_dropdown <- "upload"
+    if (!('default_site_method' %in% names(dots))) {
+      dots$default_site_method <- "upload"
     }
     if (!('default_selected_type_of_site_upload' %in% names(dots))) {
       dots$default_selected_type_of_site_upload <- "FIPS"
@@ -298,7 +308,7 @@ ejamapp <- function(
   if ("shp" %in% names(dots) && is.null(dots$shapefile)) {   # is.null() so an explicit shapefile=NULL still lets the alias apply
     # dots$shp will be used
     dots$shapefile <- dots$shp # convenient alias
-    dots$default_upload_dropdown = "upload"
+    dots$default_site_method = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
   }
   if ("shape" %in% names(dots) && is.null(dots$shapefile)) {
@@ -306,7 +316,7 @@ ejamapp <- function(
   }
   if (!is.null(dots$shapefile)) {
     # dots$shapefile will be used
-    dots$default_upload_dropdown = "upload"
+    dots$default_site_method = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
     cat("launching with specified shapefile", "\n")
   }
@@ -318,27 +328,27 @@ ejamapp <- function(
     dots$sitepoints = data.frame(lat=dots$lat, lon = dots$lon)
   }
   if ("sitepoints" %in% names(dots)) {
-    dots$default_upload_dropdown = "upload"
+    dots$default_site_method = "upload"
     dots$default_selected_type_of_site_upload = "latlon"
     cat("launching with specified sitepoints", "\n")
   }
 
   if ("naics" %in% names(dots)) {dots$default_naics <- dots$naics}
   if ("default_naics" %in% names(dots)) {
-    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_site_method   <- "dropdown"
     dots$default_selected_type_of_site_category <- "NAICS"
     dots$default_naics_digits_shown <- "detailed"  # if default_naics is >3 digits, this has to be "detailed" not "basic"
     cat("launching with specified default_naics =", paste0(dots$default_naics, collapse = ", "), "\n")
   }
   if ("sic" %in% names(dots)) {dots$default_sic <- dots$sic}
   if ("default_sic" %in% names(dots)) {
-    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_site_method   <- "dropdown"
     dots$default_selected_type_of_site_category <- "SIC"
     cat("launching with specified default_sic =", paste0(dots$default_sic, collapse = ", "), "\n")
     }
   if ("mact" %in% names(dots)) {dots$default_mact <- dots$mact}
   if ("default_mact" %in% names(dots)) {
-    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_site_method   <- "dropdown"
     dots$default_selected_type_of_site_category <- "MACT"
     cat("launching with specified default_mact =", paste0(dots$default_mact, collapse = ", "), "\n")
   }

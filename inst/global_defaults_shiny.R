@@ -118,8 +118,9 @@ msg <- utils::capture.output({
 
     # method of site selection: "dropdown" (select a category), "upload" (upload a file of
     # points/IDs/FIPS/shapefile), or "mapclick" (click or draw on the map to specify points)
-    default_upload_dropdown = "upload",
-    # global_default or ejamapp() parameter: default_upload_dropdown, which is the initial selected value of
+    default_site_method = "upload",
+    # global_default or ejamapp() parameter: default_site_method (formerly named default_upload_dropdown,
+    # which still works as a back-compat alias), which is the initial selected value of
     # input in advanced tab: input$default_ss_choose_method, which (via updateRadioButtons in the server) sets
     # input in server:              input$ss_choose_method
 

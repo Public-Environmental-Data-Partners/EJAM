@@ -199,22 +199,29 @@ app_server <- function(input, output, session) {
 
   ## advanced tab provides size cap on file uploads  ---------------------- #
 
+  # max_mb_upload_react is a PURE reactive: it reads input$max_mb_upload and returns the value
+  # clamped to [minmax_mb_upload, maxmax_mb_upload] (or the default if unset). It has NO
+  # side-effects. The observe below applies the side-effects (reflect the clamped value back into
+  # the widget, set shiny.maxRequestSize, reset the file inputs so a too-large upload can be retried
+  # under the new cap). Previously the reactive called updateNumericInput() inside itself -- a
+  # side-effect-in-a-reactive anti-pattern.
   max_mb_upload_react <- reactive({
     x <- as.numeric((input$max_mb_upload))
     if (is.null(x) || is.na(x) || length(x) == 0) {
       x <- global_or_param("default_max_mb_upload") #?
-      shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     } else {
       if (x > global_or_param("maxmax_mb_upload")) {x <- global_or_param("maxmax_mb_upload")}
       if (x < global_or_param("minmax_mb_upload")) {x <- global_or_param("minmax_mb_upload")}
-      shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     }
     x
   })
   observe({
+    x <- max_mb_upload_react()
+    # reflect the clamped/default value back in the widget (this side-effect moved here out of the reactive)
+    shiny::updateNumericInput(session = session, inputId = "max_mb_upload", value = x)
     # Adjusts cap on file size user can upload, and resets file inputs in case
     #   last attempt failed due to size, so you can retry with new cap.
-    options(shiny.maxRequestSize = max_mb_upload_react() * 1024^2)
+    options(shiny.maxRequestSize = x * 1024^2)
     ids_of_fileInput_lines <- c("ss_upload_latlon", "ss_upload_shp",
                                 "ss_upload_frs", "ss_upload_program","ss_upload_fips")
     for (idx in ids_of_fileInput_lines) {shinyjs::reset(idx)}
@@ -259,11 +266,15 @@ app_server <- function(input, output, session) {
                          server = TRUE)
   }, once = TRUE)
   observe({
-    # if defaults and/or adv tab was used to specify a detailed NAICS, must show detailed not basic versions for it to be visible as initial choice
-    level_of_detail_based_on_default_naics <- if (any(nchar(input$default_naics) > 3)) 'detailed' else global_or_param("default_naics_digits_shown")
-    updateRadioButtons(session = session, inputId = 'naics_digits_shown',
-                       selected = level_of_detail_based_on_default_naics
-    )
+    # If default_naics (from the global default and/or the advanced tab) contains a detailed
+    # (>3-digit) NAICS code, force the detailed list so that code is visible as an initial choice.
+    # Otherwise DO NOT touch naics_digits_shown: leave the app_ui.R default or the user's own pick
+    # in place. (The previous version reset it to the default on EVERY default_naics change, which
+    # silently clobbered a manual choice.) This observe depends only on input$default_naics, so its
+    # own updateRadioButtons() write to naics_digits_shown never re-triggers it.
+    if (any(nchar(input$default_naics) > 3)) {
+      updateRadioButtons(session = session, inputId = 'naics_digits_shown', selected = 'detailed')
+    }
   })
   observeEvent(input$default_format1pager, {
     ## normalize like ejam2report() does (strip a leading dot, lowercase) so a user-supplied or
@@ -342,15 +353,41 @@ app_server <- function(input, output, session) {
 
   # SELECT method of site selection: dropdown / upload / mapclick (radio button) ####
   #
-  # The ss_choose_method radio is defined statically in app_ui.R (initial value =
-  # global_or_param("default_upload_dropdown")). The advanced-tab "Site Selection Method" radio
-  # (input$default_ss_choose_method) lets a user change which method is selected at runtime; apply
-  # that here via updateRadioButtons() - you cannot reference input$ from the UI. (This replaces an
-  # older approach that re-rendered the radio server-side via output$ss_choose_method_ui.)
+  # The ss_choose_method radio can be set from several sources. PRECEDENCE (highest first):
+  #   1. launch-URL params (?lat/?lon/?fips/?shape, #413) - set once at session init
+  #   2. ejamapp() data params (sitepoints / shapefile / fips) - belt-and-suspenders in data_up_*
+  #   3. advanced-tab "Site Selection Method" radio (input$default_ss_choose_method) - explicit user runtime choice
+  #   4. static UI default (global_or_param("default_site_method")) baked into app_ui.R
+  # All non-static writers go through set_site_method() so the writes live in one place. Once the
+  # user explicitly picks a method at runtime (layer 3), site_method_user_override latches TRUE and
+  # the lazy layer-2 belt-and-suspenders writes stop clobbering the user's choice. (You cannot
+  # reference input$ from app_ui.R, so the static default is applied there and any later change is
+  # applied server-side here via update*Input(); this replaces an older approach that re-rendered
+  # the radio via output$ss_choose_method_ui.)
+  site_method_user_override <- reactiveVal(FALSE)
+  site_method_last_set <- reactiveVal(NULL)  # value set_site_method() last wrote -- lets us tell our own programmatic writes apart from a user click on the main radio
+  set_site_method <- function(method, upload_submethod = NULL, source = "") {
+    if (isTRUE(input$testing)) {
+      message("set_site_method: ", method, if (!is.null(upload_submethod)) paste0("/", upload_submethod) else "", " (", source, ")")
+    }
+    site_method_last_set(method)  # record before the (async) update so the ss_choose_method observer ignores this programmatic change
+    shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = method)
+    if (!is.null(upload_submethod)) {
+      shiny::updateSelectInput(session = session, inputId = "ss_choose_method_upload", selected = upload_submethod)
+    }
+  }
+  # Latch the user-override on an explicit runtime method change via EITHER the advanced-tab radio
+  # (input$default_ss_choose_method) OR the main radio (input$ss_choose_method). For the main radio we
+  # must distinguish a real user click from our own set_site_method() writes, so we only latch when the
+  # new value differs from the value set_site_method() last wrote.
   observeEvent(input$default_ss_choose_method, {
-    if (input$testing) {message("input$default_ss_choose_method is ", input$default_ss_choose_method)}
-    shiny::updateRadioButtons(session = session, inputId = "ss_choose_method",
-                              selected = input$default_ss_choose_method)
+    site_method_user_override(TRUE)  # explicit user runtime choice (layer 3): protect it from layer-2 clobber
+    set_site_method(input$default_ss_choose_method, source = "advanced-tab")
+  }, ignoreInit = TRUE)
+  observeEvent(input$ss_choose_method, {
+    if (!identical(as.character(input$ss_choose_method), as.character(site_method_last_set()))) {
+      site_method_user_override(TRUE)  # user changed the MAIN radio directly (not via set_site_method)
+    }
   }, ignoreInit = TRUE)
 
   # keep track of currently used method of site selection (also see submitted_upload_method reactive)
@@ -438,6 +475,24 @@ app_server <- function(input, output, session) {
   url_shapefile  <- reactiveVal(NULL)
   url_fips       <- reactiveVal(NULL)
 
+  # Launch-URL precedence helper (single home for layer-2 precedence). url_param(name) maps a
+  # parameter name to its launch-URL reactiveVal -- the only URL-provided params are these three
+  # typed place specs, so there is no generic per-name URL lookup. global_or_shinyparam_or_urlparam()
+  # returns the launch-URL value when present, else the ejamapp()/global default: a launch-URL value
+  # wins over the ejamapp/global default. Defined as closures here because the url_* reactiveVals are
+  # local to this server function. Used instead of hand-written url_*() %||% global_or_param() chains
+  # so the precedence is defined in one place.
+  url_param <- function(name) {
+    switch(name,
+           sitepoints = url_sitepoints(),
+           shapefile  = url_shapefile(),
+           fips       = url_fips(),
+           NULL)
+  }
+  global_or_shinyparam_or_urlparam <- function(name) {
+    url_param(name) %||% global_or_param(name)
+  }
+
   observe({
     search <- session$clientData$url_search
     if (is.null(search) || !nzchar(search)) {return(NULL)}
@@ -504,16 +559,14 @@ app_server <- function(input, output, session) {
                       error = function(e) NULL)
       if (!is.null(pts) && nrow(pts) > 0 && !anyNA(pts[, c("lat", "lon")])) {
         url_sitepoints(pts)
-        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
-        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "latlon")
+        set_site_method("upload", "latlon", source = "launch-URL")  # layer 1 (highest), init only
         loaded <- TRUE
       }
     }
     ## FIPS (each code is a separate site)
     if (!loaded && !is.null(spec$fips) && length(spec$fips) > 0) {
       url_fips(as.character(spec$fips))
-      shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
-      shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "FIPS")
+      set_site_method("upload", "FIPS", source = "launch-URL")  # layer 1 (highest), init only
       loaded <- TRUE
     }
     ## POLYGONS -- only inline GeoJSON text (the documented ?shape= contract).
@@ -534,8 +587,7 @@ app_server <- function(input, output, session) {
         # instead of re-parsing the GeoJSON -- matters for the large-polygon handoff.
         # shapefile_from_any() fast-returns an sf object as-is, so data_up_shp() stays cheap.
         url_shapefile(shp)
-        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
-        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "SHP")
+        set_site_method("upload", "SHP", source = "launch-URL")  # layer 1 (highest), init only
         loaded <- TRUE
       }
     }
@@ -550,7 +602,7 @@ app_server <- function(input, output, session) {
 
     if (is.null(input$ss_upload_shp)) {
       ## no uploaded file, so check if shape was provided via launch URL or as parameter in ejamapp()
-      xshp <- url_shapefile() %||% global_or_param("shapefile")
+      xshp <- global_or_shinyparam_or_urlparam("shapefile")
       if (is.null(xshp) || length(xshp) == 0) {
         if (input$testing) {cat("no shp uploaded, no shp provided in ejamapp(), so should stop here\n")}
         req(FALSE, cancelOutput = TRUE)
@@ -564,9 +616,9 @@ app_server <- function(input, output, session) {
           cat("shapefile_from_any() cannot read specified shp parameter \n")
           req(FALSE, cancelOutput = TRUE)
         }
-        ## if user provided ejamapp(shapefile=xyz) but did not set these also, they will not see their upload ready to run:
-        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")    # ejamapp() should ensure this happens via changing defaults but ok to also do here
-        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "SHP") # ejamapp() should ensure this happens via changing defaults but ok to also do here
+        ## if user provided ejamapp(shapefile=xyz) but did not set the method defaults also, reflect
+        ## it in the radio (layer 2) -- but never override an explicit runtime method choice (layer 3).
+        if (!site_method_user_override()) {set_site_method("upload", "SHP", source = "ejamapp(shapefile=)")}
       }
     } else {
       #   ###################################### #
@@ -714,7 +766,7 @@ app_server <- function(input, output, session) {
   data_up_tablepassed_latlon <- reactive({
 
     sitepoints <- NULL # since never set in global_defaults_*.R, only exists if at all via  get_golem_options()
-    sitepoints <- url_sitepoints() %||% global_or_param("sitepoints") # launch-URL points take precedence over ejamapp() param
+    sitepoints <- global_or_shinyparam_or_urlparam("sitepoints") # launch-URL points take precedence over ejamapp() param
     req(sitepoints)
 
     ################################# #
@@ -771,11 +823,11 @@ app_server <- function(input, output, session) {
       xsitepoints <- data_up_tablepassed_latlon()
       if (!is.null(xsitepoints)) {
         ## if user provided ejamapp(sitepoints=xyz) but did not set these also, they will not see their upload ready to run:
-        ## default_upload_dropdown = "upload"  --  input$default_ss_choose_method
+        ## default_site_method = "upload"  --  input$default_ss_choose_method
         ## default_selected_type_of_site_upload = "latlon"  --  input$ss_choose_method_upload
-        # shiny::updateRadioButtons(session = session, inputId = "default_ss_choose_method", selected = "upload")
-        shiny::updateRadioButtons(inputId = "ss_choose_method", selected = "upload")
-        shiny::updateSelectInput(inputId = "ss_choose_method_upload", selected = "latlon")
+        ## reflect the ejamapp(sitepoints=) param in the radio (layer 2), but don't override an
+        ## explicit runtime method choice (layer 3).
+        if (!site_method_user_override()) {set_site_method("upload", "latlon", source = "ejamapp(sitepoints=)")}
         xsitepoints
       }
     } else {
@@ -1347,11 +1399,12 @@ app_server <- function(input, output, session) {
     xfips <- NULL
     if (is.null(input$ss_upload_fips)) {
       ### nothing uploaded, so check if fips got passed via launch URL or as parameter to ejamapp()
-      xfips <- url_fips() %||% global_or_param("fips")
+      xfips <- global_or_shinyparam_or_urlparam("fips")
       if (!is.null(xfips)) {
         cat("fips seems to have been passed as parameter to ejamapp() \n")
-        shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = "upload")     # already done by ejamapp() but ok to repeat
-        shiny::updateSelectInput(session = session, inputId = "ss_choose_method_upload", selected = "FIPS") # already done by ejamapp() but ok to repeat
+        ## reflect the fips param (launch-URL or ejamapp) in the radio (layer 2), but don't override
+        ## an explicit runtime method choice (layer 3).
+        if (!site_method_user_override()) {set_site_method("upload", "FIPS", source = "ejamapp(fips=)/launch-URL")}
 
         fips_vec <- xfips
         fips_dt <- data.table(fips = fips_vec)

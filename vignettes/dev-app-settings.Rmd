@@ -153,9 +153,24 @@ any user-specified versions of those options given as arguments in `ejamapp()`.
 infers related defaults. For example `pts` (or `lat`+`lon`) is an alias for `sitepoints`, `shp` is
 an alias for `shapefile`, and `naics`/`sic`/`mact` are aliases for `default_naics`/etc. Some of these
 also set the method automatically -- e.g. passing `fips`, `shapefile`, or `sitepoints` sets
-`default_upload_dropdown = "upload"` (and the upload sub-type), while `default_naics` sets
-`default_upload_dropdown = "dropdown"`. See `?ejamapp` and the alias-handling block near the top of
+`default_site_method = "upload"` (and the upload sub-type), while `default_naics` sets
+`default_site_method = "dropdown"`. See `?ejamapp` and the alias-handling block near the top of
 `R/ejamapp.R`.
+
+The aliases and the defaults they cross-set (kept in sync with the alias block near the top of `R/ejamapp.R`):
+
+| You pass to `ejamapp()` | Canonical param | Also cross-sets |
+|---|---|---|
+| `pts`, or `lat`+`lon` | `sitepoints` | `default_site_method="upload"`, `default_selected_type_of_site_upload="latlon"` |
+| `shp` or `shape` | `shapefile` | `default_site_method="upload"`, `default_selected_type_of_site_upload="SHP"` |
+| `shapefile` | `shapefile` | `default_site_method="upload"`, `default_selected_type_of_site_upload="SHP"` |
+| `fips` | `fips` | `default_site_method="upload"`, `default_selected_type_of_site_upload="FIPS"` |
+| `naics` | `default_naics` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="NAICS"`, `default_naics_digits_shown="detailed"` |
+| `sic` | `default_sic` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="SIC"` |
+| `mact` | `default_mact` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="MACT"` |
+
+The site-selection method param `default_site_method` was formerly named `default_upload_dropdown`;
+the old name still works as a back-compat alias (normalized to the new name inside `ejamapp()`).
 
 ### app launch
 
@@ -199,13 +214,31 @@ Beyond `ejamapp()` params and the global_defaults_ files, the app can also read 
 
 ### how an input control actually gets its default
 
-Because the UI is built once before any reactive `input$` exists, a control's `selected=`/`value=` in
-`app_ui.R` must be a **non-reactive** value -- `global_or_param("...")` -- not `input$...`. Controls
-whose choices load server-side (large selectize lists like NAICS/SIC/MACT) or whose value must change
-in response to an event (Advanced-Tab sync, upload→method switch) are instead populated from the
-server via `update*Input()`. A few controls whose structure is itself reactive (e.g. the radius
-slider) are built server-side with `renderUI()`. The precedence order, top to bottom, is: Shiny
-bookmark `?_inputs_&` > launch-URL custom param > `ejamapp()` param > `global_defaults_*.R`.
+Two orthogonal things determine an input control: **(Axis 1) how the widget is built**, and
+**(Axis 2) where its value comes from**.
+
+**Axis 1 -- how the widget is built** (a UI-mechanics choice, almost always forced by the widget, not stylistic):
+
+| Pattern | Use when | Example |
+|---|---|---|
+| **A. static UI default** -- `selected=`/`value=` set in `app_ui.R` to `global_or_param("...")` | the default is a plain value known at page-load, with a fixed choice set | most controls |
+| **B. server `renderUI`** (`uiOutput()` in UI + `output$x <- renderUI({...})`) | the widget's *structure* (which choices exist, min/max, conditional sub-controls) depends on reactive state | radius slider (`radius_now`) |
+| **C. static-empty UI + server `update*Input()`** | choices load server-side (large selectize lists) OR the value must change on a later event | NAICS/SIC/MACT selectize; advanced-tab -> main-control sync |
+
+Because the UI is built once before any reactive `input$` exists, an Axis-1-A control's `selected=`/`value=`
+must be a **non-reactive** value -- `global_or_param("...")` -- never `input$...` (that errors at UI build).
+To make an advanced-tab setting change a main control, sync it server-side via `update*Input()` (Axis-1-C).
+
+**Axis 2 -- where the value comes from** (the precedence stack, highest wins):
+
+1. **Shiny bookmark** `?_inputs_&...` -- restores saved `input$` values on load (framework-level; orthogonal to the rest).
+2. **Launch-URL custom params** `?lat=&lon=`, `?fips=`, `?shape=`, `?handoff=`, `?radius=` -- read via the `url_*`
+   reactives and resolved by `global_or_shinyparam_or_urlparam(name)`, so a launch-URL value wins over the default.
+3. **`ejamapp()` params** (after alias normalization) -- override the global-default files.
+4. **`global_defaults_*.R`** files (package < shiny < shiny_public).
+
+The advanced-tab -> main-control sync sits *alongside* this stack: it applies a user's runtime change after load
+(e.g. the "Site Selection Method" radio updates `ss_choose_method` via `update*Input()`).
 
 To view the Advanced tab in the web app, click the About tab and then the Show advanced button on that page. If that button is not visible, use ejamapp(default_can_show_advanced_settings=TRUE). To show the advanced tab at launch, use ejamapp(default_show_advanced_settings=TRUE).
 
@@ -295,7 +328,7 @@ One such example:
 ```{r run-app, eval=FALSE}
 ejamapp(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -337,7 +370,7 @@ Launch using parameters that are saved in a named vector or list
 ```{r run-with-paramlist, eval=FALSE}
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -354,7 +387,7 @@ Save a custom reusable function you can use to launch with preset parameters
 
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -432,7 +465,7 @@ myparams <- c(
 )
 
 params <- c('standard_analysis_title="Custom NAICS Analysis"',
-            'ss_choose_method="dropdown"',   # like ejamapp( default_upload_dropdown="dropdown" )
+            'ss_choose_method="dropdown"',   # like ejamapp( default_site_method="dropdown" )
             'ss_choose_method_drop="NAICS"', # see ?ejamapp()
             'naics_digits_shown="detailed"', # like ejamapp( default_naics_digits_shown = "detailed")
             # 'ss_select_naics=313',           # like ejamapp(default_naics=313)
