@@ -63,9 +63,48 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.2022.1" id="ejam-320221--320231--320241-unreleased">EJAM 3.2022.1 / 3.2023.1 / 3.2024.1 (unreleased)<a class="anchor" aria-label="anchor" href="#ejam-320221--320231--320241-unreleased"></a></h2>
+<p>Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1, v3.2024.1). Functionality is identical across all three ACS vintages (2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between branches. This is a code-and-docs patch: it reuses the existing per-vintage ejamdata release, with no change to the packaged ACS or environmental data.</p>
+<p>Changes since v3.YYYY.0:</p>
+<div class="section level3">
+<h3 id="bug-fixes-3-2022-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2022-1"></a></h3>
+<ul><li>Census API key (tidycensus &gt;= 1.8 breaking change): tidycensus now <em>errors</em> (no longer warns) without a key – including for the <code>load_variables()</code> metadata lookup. <code><a href="../reference/calc_blockgroupstats_acs.html">calc_blockgroupstats_acs()</a></code> and <code><a href="../reference/acs_table_info.html">acs_table_info()</a></code> now fail fast with an actionable message when <code>CENSUS_API_KEY</code> is unset. A follow-up scopes this check to the live-download path only: when raw ACS data are supplied (for example, the pipeline rebuilding block-group data from a saved stage), no Census API call is made, so a keyless environment is no longer blocked.</li>
+<li>
+<code><a href="../reference/url_online.html">url_online()</a></code>: corrected default behavior, and now gives the intended “must specify a URL” error on empty, <code>NA</code>, or <code>NULL</code> input instead of a cryptic “missing value where TRUE/FALSE needed”.</li>
+<li>
+<code><a href="../reference/calc_blockgroupstats_acs.html">calc_blockgroupstats_acs()</a></code>: when ACS table-geography metadata cannot be retrieved for any candidate year (e.g. the Census API is unreachable), it now stops with a clear, actionable message instead of failing obscurely later.</li>
+<li>Fixed the release-install workflow and updated the EJAM web-app URLs.</li>
+<li>
+<code><a href="../reference/table_validated_ejamit_row.html">table_validated_ejamit_row()</a></code>: fixed for use by <code><a href="../reference/table_gt_from_ejamit.html">table_gt_from_ejamit()</a></code>.</li>
+<li>
+<code><a href="../reference/statestats_means.html">statestats_means()</a></code> and <code><a href="../reference/statestats_means_bystates.html">statestats_means_bystates()</a></code>: fixed, improved, and documented.</li>
+<li>Excel output (issue <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/148" class="external-link">#148</a>): no longer freezes the “valid” column; freeze panes now begin where that column starts.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-ejscreen-web-app-pipeline-outputs-issue-3-2022-1">New EJScreen Web-App Pipeline Outputs (issue <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/395" class="external-link">#395</a>)<a class="anchor" aria-label="anchor" href="#new-ejscreen-web-app-pipeline-outputs-issue-3-2022-1"></a></h3>
+<p>The data pipeline now produces the remaining EJScreen web-app data files directly from the <code>ejscreen_export</code> stage, so a single pipeline run yields the full set of EJScreen-ready outputs:</p>
+<ul><li>ACS “additional demographics” summarized by block group, tract, county, and state. Count columns are summed and percentage columns are recomputed as denominator-weighted means (via the same <code><a href="../reference/calctype.html">calctype()</a></code> / <code><a href="../reference/calcweight.html">calcweight()</a></code> rules <code><a href="../reference/doaggregate.html">doaggregate()</a></code> uses), so block-group values match the ACS data already in the package.</li>
+<li>The four EJScreen threshold layers (US and State, EJ-index and supplemental) with <code>P1</code>..<code>P100</code> hit-count columns, tallied in a single NA-aware pass with out-of-range ranks clamped into <code>P1</code>/<code>P100</code>.</li>
+<li>A replication helper that compares these outputs to EPA’s published EJScreen values – fetched live from EPA’s ArcGIS FeatureServers – repairing FIPS leading zeros and mapping EPA column names. Used to confirm the pipeline reproduces EPA’s by-geography and threshold layers.</li>
+</ul><p>(These are produced by internal helpers <code><a href="../reference/calc_acs_by_geography.html">calc_acs_by_geography()</a></code>, <code><a href="../reference/calc_ejscreen_threshold_layers.html">calc_ejscreen_threshold_layers()</a></code>, <code><a href="../reference/calc_ejscreen_threshold_layers_from_exports.html">calc_ejscreen_threshold_layers_from_exports()</a></code>, and <code><a href="../reference/ejscreen_compare_geography_to_epa.html">ejscreen_compare_geography_to_epa()</a></code>.)</p>
+</div>
+<div class="section level3">
+<h3 id="documentation-3-2022-1">Documentation<a class="anchor" aria-label="anchor" href="#documentation-3-2022-1"></a></h3>
+<ul><li>Folded the v3.2024.0 dataset-update recipe into the dataset-update vignettes.</li>
+<li>Added internal developer notes for the <code><a href="../reference/ejam2areafeatures.html">ejam2areafeatures()</a></code> helpers.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="internal--packaging-3-2022-1">Internal / Packaging<a class="anchor" aria-label="anchor" href="#internal--packaging-3-2022-1"></a></h3>
+<ul><li>Unexported internal helper/report functions (<code><a href="../reference/build_community_report.html">build_community_report()</a></code>, <code><a href="../reference/build_barplot_report.html">build_barplot_report()</a></code>, <code><a href="../reference/calc_acs_by_geography.html">calc_acs_by_geography()</a></code>, <code><a href="../reference/calc_ejscreen_threshold_layers.html">calc_ejscreen_threshold_layers()</a></code>, <code><a href="../reference/calc_ejscreen_threshold_layers_from_exports.html">calc_ejscreen_threshold_layers_from_exports()</a></code>, <code><a href="../reference/ejscreen_compare_geography_to_epa.html">ejscreen_compare_geography_to_epa()</a></code>, <code><a href="../reference/table_gt_format_step1.html">table_gt_format_step1()</a></code>, <code><a href="../reference/table_gt_format_step2.html">table_gt_format_step2()</a></code>, <code><a href="../reference/latlon2nexus.html">latlon2nexus()</a></code>, <code><a href="../reference/latloncsv2nexus.html">latloncsv2nexus()</a></code>, and <code><a href="../reference/calc_bgej.html">calc_bgej()</a></code>). Their help topics remain available under the pkgdown internal reference section.</li>
+<li>pkgdown CI: build the reference without running examples, and install only hard dependencies, so the docs site builds reliably.</li>
+<li>Ensured the final byte of <code>data/ejamdata_version.txt</code> is always a newline.</li>
+<li>Git-ignore local Claude Code / agent files.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2022.0" id="ejam-320220-june-2026">EJAM 3.2022.0 (June 2026)<a class="anchor" aria-label="anchor" href="#ejam-320220-june-2026"></a></h2>
 <p>EJAM 3.2022.0 is the ACS 2018-2022 vintage in the new annual-vintage release line (v3.YYYY.0). It provides EJAM and EJScreen-compatible outputs using demographics from the 2018-2022 American Community Survey – the same vintage EPA’s EJScreen used through its final update – now delivered through the new EJAM annual data pipeline with the v3 functionality.</p>

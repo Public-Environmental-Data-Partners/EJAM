@@ -63,7 +63,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>download ACS 5year data from Census API, at blockgroup resolution (slowly if for entire US)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/R/acs_bybg.R" class="external-link"><code>R/acs_bybg.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/R/acs_bybg.R" class="external-link"><code>R/acs_bybg.R</code></a></small>
       <div class="d-none name"><code>acs_bybg.Rd</code></div>
     </div>
 
@@ -184,8 +184,10 @@ if you omit the space or capitalize by accident)</p></dd>
     <p>See newer ACSdownload::get_acs_new() as used in calc_blockgroupstats_acs() etc.,
 which will download ACS nationwide data by table
 instead of using acs_bybg(), which queried the API state-by-state.</p>
-<p>acs_bybg() probably requires <a href="https://api.census.gov/data/key_signup.html" class="external-link">getting and specifying an API key for Census Bureau</a> ! (at least if query is large).
-see <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package help</a>  envt var CENSUS_API_KEY</p>
+<p>acs_bybg() requires a <a href="https://api.census.gov/data/key_signup.html" class="external-link">Census Bureau API key</a>:
+tidycensus (&gt;= 1.8) now errors (no longer just warns) without one. Set it once with
+<code>tidycensus::census_api_key("YOUR KEY", install = TRUE)</code> (stores envt var CENSUS_API_KEY),
+then restart R. See <a href="https://walker-data.com/tidycensus/" class="external-link">tidycensus package help</a> and ?tidycensus::census_api_key.</p>
 <p>NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>x <span class="ot">&lt;-</span> tidycensus<span class="sc">::</span><span class="fu">load_variables</span>(<span class="fu">acs_endyear</span>(<span class="at">guess_census_has_published =</span> <span class="cn">TRUE</span>), <span class="st">"acs5"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="do">## tables_ejscreen_acs</span></span>

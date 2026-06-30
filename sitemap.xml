@@ -62,6 +62,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/buffer_desc_from_sitetype.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/build_barplot_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/build_community_report.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_acs_by_geography.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_avg_columns.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_bg_acsdata.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_bg_extra_indicators.html</loc></url>
@@ -86,6 +87,8 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_map_pctile_text.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_pctile_lookup_export.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_stats.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_threshold_layers.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_ejscreen_threshold_layers_from_exports.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_formulas_from_varname.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_formulas_rhs_names.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/calc_pctile_columns.html</loc></url>
@@ -163,6 +166,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_sitetype_from_input.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejampackages.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_arcgis_service_field.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_compare_geography_to_epa.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_dataset_creator_input_fields.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_dataset_creator_placeholder_fields.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/ejscreen_pipeline_acs_version_from_year.html</loc></url>

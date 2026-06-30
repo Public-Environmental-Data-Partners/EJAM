@@ -63,7 +63,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>statestats_means - convenient way to see STATE MEANS of ENVIRONMENTAL and RESIDENTIAL POPULATION indicators</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/R/statestats_query.R" class="external-link"><code>R/statestats_query.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/R/statestats_query.R" class="external-link"><code>R/statestats_query.R</code></a></small>
       <div class="d-none name"><code>statestats_means.Rd</code></div>
     </div>
 
@@ -101,7 +101,24 @@
 <dd><p>digits to round to</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>numeric matrix with one row per indicator in varnames and one column per state in ST
+(ST may contain repeats; columns follow the order of ST).</p>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># \donttest{</span></span>
+<span><span class="co"># indicators as rows, one column per state</span></span>
+<span><span class="fu">statestats_means</span><span class="op">(</span>ST <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MD"</span>, <span class="st">"VA"</span><span class="op">)</span>, varnames <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="names_e.html">names_e</a></span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ST may repeat (e.g. one entry per site) - one column per element, values stay numeric</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">statestats_means</span><span class="op">(</span>ST <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MD"</span>, <span class="st">"MD"</span>, <span class="st">"VA"</span><span class="op">)</span>, varnames <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="names_e.html">names_e</a></span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">m</span><span class="op">[</span><span class="fu">EJAM</span><span class="fu">::</span><span class="va"><a href="names_e.html">names_e</a></span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, <span class="op">]</span></span>
+<span><span class="co"># }</span></span>
+<span></span></code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

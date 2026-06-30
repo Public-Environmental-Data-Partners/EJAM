@@ -100,7 +100,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Using EJAM for Analysis in R</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/vignettes/analyzing.Rmd" class="external-link"><code>vignettes/analyzing.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/vignettes/analyzing.Rmd" class="external-link"><code>vignettes/analyzing.Rmd</code></a></small>
       <div class="d-none name"><code>analyzing.Rmd</code></div>
     </div>
 
@@ -1069,6 +1069,90 @@ output in console:<a class="anchor" aria-label="anchor" href="#overall-results-f
 <span><span class="co">#&gt; pctile.pctmin           70</span></span>
 <span><span class="co"># cbind(overall = as.list( out$results_overall[ , ..names_ej_pctile])); cat("\n")</span></span></code></pre></div>
 </div>
+<div class="section level5">
+<h5 id="see-the-us-or-state-reference-averages-and-percentiles">See the US or State reference averages and percentiles<a class="anchor" aria-label="anchor" href="#see-the-us-or-state-reference-averages-and-percentiles"></a>
+</h5>
+<p>These lookup tables hold the benchmark values that site results get
+compared against (for example in the “Compared to US/State Averages”
+barplots below).</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># US mean plus key percentiles, for environmental and demographic indicators</span></span>
+<span><span class="fu"><a href="../reference/usastats_query.html">usastats_query</a></span><span class="op">(</span>varnames <span class="op">=</span> <span class="va">names_e</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   REGION PCTILE      pm       o3     no2    dpm         rsei traffic.score</span></span>
+<span><span class="co">#&gt; 1    USA      0  3.2886  38.7784  0.0368 0.0006       0.0000          0.00</span></span>
+<span><span class="co">#&gt; 2    USA      5  5.9044  51.5233  2.7216 0.0399       1.2869      11202.88</span></span>
+<span><span class="co">#&gt; 3    USA     50  8.1561  60.2542  7.5653 0.1560     603.0321     814996.31</span></span>
+<span><span class="co">#&gt; 4    USA     80  9.3060  67.4684 10.7127 0.2721    3121.8767    2703270.44</span></span>
+<span><span class="co">#&gt; 5    USA     90 10.4548  72.5816 12.4905 0.3663    6944.4256    4437336.81</span></span>
+<span><span class="co">#&gt; 6    USA     95 12.9132  77.4690 14.2645 0.4731   14174.0358    6414285.76</span></span>
+<span><span class="co">#&gt; 7    USA     99 15.4726  95.3021 17.7069 0.7425   68182.1517   11202280.01</span></span>
+<span><span class="co">#&gt; 8    USA    100 25.6121 112.8128 25.2692 2.9793 4512172.0810   30181802.55</span></span>
+<span><span class="co">#&gt; 9    USA   mean  8.4473  61.8496  7.8464 0.1911    4611.7526    1687230.49</span></span>
+<span><span class="co">#&gt;   pctpre1960 proximity.npl proximity.rmp proximity.tsdf      ust</span></span>
+<span><span class="co">#&gt; 1     0.0000        0.0000        0.0000         0.0000   0.0000</span></span>
+<span><span class="co">#&gt; 2     0.0000        0.0000        0.0000         0.0000   0.0000</span></span>
+<span><span class="co">#&gt; 3     0.2110        0.0000        0.2693         1.2741   0.8243</span></span>
+<span><span class="co">#&gt; 4     0.5893        0.3794        0.9612         5.2036   5.1726</span></span>
+<span><span class="co">#&gt; 5     0.7612        0.8419        1.5360         9.4650  10.2846</span></span>
+<span><span class="co">#&gt; 6     0.8585        1.5980        2.1131        16.0833  17.0185</span></span>
+<span><span class="co">#&gt; 7     0.9637        7.6275        3.8023        28.7909  35.7895</span></span>
+<span><span class="co">#&gt; 8     1.0000       46.0823       18.0597        82.2821 137.8717</span></span>
+<span><span class="co">#&gt; 9     0.2999        0.3948        0.5703         3.5356   3.6375</span></span>
+<span><span class="co">#&gt;   proximity.npdes drinking</span></span>
+<span><span class="co">#&gt; 1    0.000000e+00   0.0000</span></span>
+<span><span class="co">#&gt; 2    0.000000e+00   0.0000</span></span>
+<span><span class="co">#&gt; 3    5.047510e+01   0.0000</span></span>
+<span><span class="co">#&gt; 4    2.302532e+03   1.0000</span></span>
+<span><span class="co">#&gt; 5    1.351239e+04   4.6342</span></span>
+<span><span class="co">#&gt; 6    4.070759e+04  10.0000</span></span>
+<span><span class="co">#&gt; 7    2.374183e+05  32.0000</span></span>
+<span><span class="co">#&gt; 8    7.709095e+09 899.0000</span></span>
+<span><span class="co">#&gt; 9    7.018054e+05   2.2147</span></span>
+<span></span>
+<span><span class="co"># US means only, as a tidy 1-column matrix (indicators as rownames)</span></span>
+<span><span class="fu"><a href="../reference/usastats_means.html">usastats_means</a></span><span class="op">(</span><span class="va">names_d</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                  us.avg</span></span>
+<span><span class="co">#&gt; Demog.Index      1.3407</span></span>
+<span><span class="co">#&gt; Demog.Index.Supp 1.6423</span></span>
+<span><span class="co">#&gt; pctlowinc        0.3041</span></span>
+<span><span class="co">#&gt; pctlingiso       0.0481</span></span>
+<span><span class="co">#&gt; pctunemployed    0.0561</span></span>
+<span><span class="co">#&gt; pctlths          0.1131</span></span>
+<span><span class="co">#&gt; pctunder5        0.0539</span></span>
+<span><span class="co">#&gt; pctover64        0.1779</span></span>
+<span><span class="co">#&gt; pctmin           0.3958</span></span>
+<span></span>
+<span><span class="co"># the same for one state: mean plus key percentiles</span></span>
+<span><span class="fu"><a href="../reference/statestats_query.html">statestats_query</a></span><span class="op">(</span><span class="st">"MD"</span>, varnames <span class="op">=</span> <span class="va">names_e</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   REGION PCTILE    pm     o3    no2   dpm      rsei traffic.score pctpre1960</span></span>
+<span><span class="co">#&gt; 1     MD      0 5.367 52.958  1.374 0.029     0.022          0.00      0.000</span></span>
+<span><span class="co">#&gt; 2     MD      5 5.897 54.968  3.192 0.075    19.548      45189.41      0.000</span></span>
+<span><span class="co">#&gt; 3     MD     50 6.919 60.564  7.289 0.218   258.382    1351498.75      0.215</span></span>
+<span><span class="co">#&gt; 4     MD     80 7.073 62.747  9.247 0.281   667.044    2665707.04      0.653</span></span>
+<span><span class="co">#&gt; 5     MD     90 7.162 62.901 10.231 0.310   951.123    3083701.81      0.835</span></span>
+<span><span class="co">#&gt; 6     MD     95 7.229 62.953 12.129 0.320  1279.760    3398964.01      0.911</span></span>
+<span><span class="co">#&gt; 7     MD     99 7.415 63.015 14.731 0.354  2143.295    4094602.44      1.000</span></span>
+<span><span class="co">#&gt; 8     MD    100 7.662 63.058 17.136 0.615 49507.599    5150543.37      1.000</span></span>
+<span><span class="co">#&gt; 9     MD   mean 6.808 60.295  7.270 0.208   432.084    1489436.75      0.321</span></span>
+<span><span class="co">#&gt;   proximity.npl proximity.rmp proximity.tsdf    ust proximity.npdes drinking</span></span>
+<span><span class="co">#&gt; 1         0.000         0.000          0.000  0.000           0.000    0.000</span></span>
+<span><span class="co">#&gt; 2         0.000         0.000          0.000  0.000           0.008    0.000</span></span>
+<span><span class="co">#&gt; 3         0.103         0.179          3.021  1.007          86.222    0.000</span></span>
+<span><span class="co">#&gt; 4         0.358         0.897          7.585  3.427       11172.758    0.000</span></span>
+<span><span class="co">#&gt; 5         0.612         1.735         11.380  5.129      204977.996    0.000</span></span>
+<span><span class="co">#&gt; 6         0.997         2.455         14.531  6.496      766925.607    0.000</span></span>
+<span><span class="co">#&gt; 7         2.876         3.174         18.700 10.689     2895564.429    1.000</span></span>
+<span><span class="co">#&gt; 8        11.243         5.143         28.006 17.463    12715947.245   11.000</span></span>
+<span><span class="co">#&gt; 9         0.278         0.523          4.434  1.883      137010.635    0.045</span></span>
+<span></span>
+<span><span class="co"># state means as a matrix with indicators as rows and one column per state</span></span>
+<span><span class="co"># (ST may repeat, e.g. one entry per site)</span></span>
+<span><span class="fu"><a href="../reference/statestats_means.html">statestats_means</a></span><span class="op">(</span>ST <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MD"</span>, <span class="st">"VA"</span><span class="op">)</span>, varnames <span class="op">=</span> <span class="va">names_e</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          MD      VA</span></span>
+<span><span class="co">#&gt; pm   6.8078  6.8280</span></span>
+<span><span class="co">#&gt; o3  60.2948 53.8339</span></span>
+<span><span class="co">#&gt; no2  7.2701  6.3434</span></span></code></pre></div>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -1082,7 +1166,7 @@ functions</a>.</p>
 <div class="section level4">
 <h4 id="barplot-showing-which-indicator-is-most-elevated-overall">Barplot showing which indicator is most elevated overall<a class="anchor" aria-label="anchor" href="#barplot-showing-which-indicator-is-most-elevated-overall"></a>
 </h4>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="va">testoutput_ejamit_1000pts_1miles</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/ejam2barplot.html">ejam2barplot</a></span><span class="op">(</span><span class="va">out</span>,</span>
@@ -1094,7 +1178,7 @@ functions</a>.</p>
 <h4 id="histogram-of-indicators-distribution-over-all-people-across-all-sites">Histogram of indicators distribution over all people across all
 sites<a class="anchor" aria-label="anchor" href="#histogram-of-indicators-distribution-over-all-people-across-all-sites"></a>
 </h4>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span><span class="op">$</span><span class="va">pctile.traffic.score</span>, <span class="fl">10</span>, xlab <span class="op">=</span> <span class="st">"Local traffic scores (expressed as a percentile)"</span>, </span>
 <span>     ylab <span class="op">=</span> <span class="st">"count of sites in each bin, out of 1,000 sites"</span>, freq <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>     main <span class="op">=</span> <span class="st">"Actual distribution of scores nearby, as percentiles, </span></span>

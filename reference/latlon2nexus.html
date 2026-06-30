@@ -65,7 +65,7 @@ into a format you can paste into NEXUS tool lat/lon site selection box"><meta pr
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>helper function - combine lat/lon values to paste into NEXUS tool</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/fix/pkgdown-docs-deps/R/latlon_from_vectorofcsvpairs.R" class="external-link"><code>R/latlon_from_vectorofcsvpairs.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/R/latlon_from_vectorofcsvpairs.R" class="external-link"><code>R/latlon_from_vectorofcsvpairs.R</code></a></small>
       <div class="d-none name"><code>latlon2nexus.Rd</code></div>
     </div>
 
@@ -102,7 +102,7 @@ with a semicolon between each pair and the next like
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span>  <span class="va">lat_example</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30.01</span>,<span class="fl">30.26</span>,<span class="fl">30.51</span><span class="op">)</span></span>
 <span>  <span class="va">lon_example</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">90.61</span>,<span class="op">-</span><span class="fl">90.95</span>,<span class="op">-</span><span class="fl">91.23</span><span class="op">)</span></span>
-<span>  <span class="fu">latlon2nexus</span><span class="op">(</span>lat<span class="op">=</span><span class="va">lat_example</span>, lon<span class="op">=</span><span class="va">lon_example</span><span class="op">)</span></span>
+<span>  <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">latlon2nexus</span><span class="op">(</span>lat<span class="op">=</span><span class="va">lat_example</span>, lon<span class="op">=</span><span class="va">lon_example</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
