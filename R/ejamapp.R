@@ -295,16 +295,16 @@ ejamapp <- function(
     cat("launching with specified fips =", paste0(dots$fips, collapse = ", "), "\n")
   }
 
-  if ("shp" %in% names(dots) && !("shapefile" %in% names(dots))) {
+  if ("shp" %in% names(dots) && is.null(dots$shapefile)) {   # is.null() so an explicit shapefile=NULL still lets the alias apply
     # dots$shp will be used
     dots$shapefile <- dots$shp # convenient alias
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
   }
-  if ("shape" %in% names(dots) && !("shapefile" %in% names(dots))) {
+  if ("shape" %in% names(dots) && is.null(dots$shapefile)) {
     dots$shapefile <- dots$shape # convenient alias (synonym) for shapefile
   }
-  if ("shapefile" %in% names(dots)) {
+  if (!is.null(dots$shapefile)) {
     # dots$shapefile will be used
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
@@ -346,11 +346,11 @@ ejamapp <- function(
   if ("default_radius" %in% names(dots)) {
     dots$radius_default <- dots$default_radius
   }
-  if ("radius" %in% names(dots)) {
+  if (!is.null(dots$radius)) {   # is.null() so an explicit radius=NULL does not clobber radius_default or block the buffer alias
     dots$radius_default <- dots$radius
     cat("launching with specified radius =", dots$radius_default, "\n")
   }
-  if ("buffer" %in% names(dots) && !("radius" %in% names(dots))) {
+  if (!is.null(dots$buffer) && is.null(dots$radius)) {
     dots$radius_default <- dots$buffer # buffer is a synonym (alias) for radius (used only if radius not given)
     cat("launching with specified buffer (radius) =", dots$radius_default, "\n")
   }

@@ -58,6 +58,16 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                         baseurl = "https://ejamapp.ejanalysis.com/",
                         browse = FALSE, shp = NULL) {
 
+  # Back-compat: url_ejamapp() historically took `browse` as its first/only argument,
+  # so url_ejamapp(TRUE) opened the app in a browser. Preserve that when the first
+  # positional arg is a lone logical and no site/handoff args were supplied.
+  if (is.logical(sitepoints) && length(sitepoints) == 1 && !is.na(sitepoints) &&
+      is.null(lat) && is.null(lon) && is.null(fips) && is.null(shapefile) &&
+      is.null(shape) && is.null(shp) && is.null(handoff)) {
+    browse <- sitepoints
+    sitepoints <- NULL
+  }
+
   # Aliases (synonyms): buffer for radius, shape/shp for shapefile.
   if (is.null(radius)) {radius <- buffer}
   if (is.null(shapefile)) {shapefile <- shape}
