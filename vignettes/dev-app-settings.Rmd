@@ -265,11 +265,11 @@ The handler is the `observe()` near the top of the SELECT SITES section in
 
 For example, this opens the hosted app pre-loaded with two counties (two sites):
 
-    https://ejanalysis.com/ejamapp?fips=10001,10003
+    https://ejamapp.ejanalysis.com/?fips=10001,10003
 
 and this pre-loads two points with a 3-mile radius:
 
-    https://ejanalysis.com/ejamapp?lat=33,34&lon=-112,-114&radius=3
+    https://ejamapp.ejanalysis.com/?lat=33,34&lon=-112,-114&radius=3
 
 Because the query vocabulary matches `url_ejamapi()` (which builds EJAM API report
 URLs), the helper `url_ejamapp()` builds these app-launch URLs with the same
@@ -278,7 +278,7 @@ vocabulary -- for example `url_ejamapp(fips = c("10001","10003"))` or
 "Send to EJAM" button passes a large set of drawn polygons without hitting
 URL-length limits:
 EJScreen `POST`s the GeoJSON to the EJAM API `/handoff`, gets a token, and opens
-the EJAM app at `?handoff=<token>` (e.g. `https://ejanalysis.com/ejamapp?handoff=<token>`);
+the EJAM app at `?handoff=<token>` (e.g. `https://ejamapp.ejanalysis.com/?handoff=<token>`);
 the app then fetches those places back from the API's `GET /handoff/<token>` at startup.
 
 --------------
