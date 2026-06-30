@@ -121,10 +121,10 @@ app_ui <- function(request) {
                                choiceValues = c('dropdown',
                                                 'upload',
                                                 'mapclick'),
-                               selected = global_or_param("default_upload_dropdown")),
+                               selected = global_or_param("default_site_method")),
                   # NOTE: the UI is built once at page-load, before any reactive `input` exists, so
                   # `selected` MUST be a non-reactive value here - global_or_param() reads the ejamapp()
-                  # param / global default (default_upload_dropdown = "dropdown" / "upload" / "mapclick").
+                  # param / global default (default_site_method = "dropdown" / "upload" / "mapclick").
                   # Do NOT use `selected = input$default_ss_choose_method` here (that errors at UI build).
                   # The advanced-tab "Site Selection Method" setting is applied to this radio server-side
                   # via updateRadioButtons() - see observeEvent(input$default_ss_choose_method) in app_server.R.
@@ -1126,9 +1126,9 @@ app_ui <- function(request) {
 
                  radioButtons(inputId = "default_ss_choose_method", label = "Site Selection Method",
                               choices = c(Dropdown = "dropdown", Upload = "upload", `Click on map` = "mapclick"),
-                              selected = global_or_param("default_upload_dropdown"),
+                              selected = global_or_param("default_site_method"),
                               inline = TRUE),
-                 # global_default or ejamapp() parameter: default_upload_dropdown ("dropdown", "upload", or "mapclick"),
+                 # global_default or ejamapp() parameter: default_site_method ("dropdown", "upload", or "mapclick"),
                  # which is the initial selected value of
                  # input in advanced tab: input$default_ss_choose_method, which (via updateRadioButtons in the server)
                  # sets the initial/selected value of

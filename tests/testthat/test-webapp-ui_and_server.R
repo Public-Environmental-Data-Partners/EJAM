@@ -430,3 +430,27 @@ rm(global_defaults_or_user_options)
 
 
 ################################################# #
+# Item 4: default_site_method back-compat alias (param renamed from default_upload_dropdown) #
+
+test_that("global_or_param() resolves default_upload_dropdown as a back-compat alias for default_site_method", {
+  prev <- shiny::getShinyOption("golem_options")
+  on.exit(shiny::shinyOptions(golem_options = prev), add = TRUE)
+
+  # only the OLD key is set -> the new name still resolves (alias fallback)
+  shiny::shinyOptions(golem_options = list(default_upload_dropdown = "dropdown"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "dropdown")
+
+  # the NEW key is set -> resolves directly
+  shiny::shinyOptions(golem_options = list(default_site_method = "upload"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "upload")
+
+  # both set -> the new (canonical) key wins over the old alias
+  shiny::shinyOptions(golem_options = list(default_site_method = "mapclick", default_upload_dropdown = "dropdown"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "mapclick")
+
+  # a name with no alias is unaffected (no spurious fallback) -> NULL when unset
+  shiny::shinyOptions(golem_options = list())
+  expect_null(EJAM:::global_or_param("a_param_with_no_such_name_xyz"))
+})
+
+################################################# #

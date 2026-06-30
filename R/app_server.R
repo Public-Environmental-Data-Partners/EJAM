@@ -357,7 +357,7 @@ app_server <- function(input, output, session) {
   #   1. launch-URL params (?lat/?lon/?fips/?shape, #413) - set once at session init
   #   2. ejamapp() data params (sitepoints / shapefile / fips) - belt-and-suspenders in data_up_*
   #   3. advanced-tab "Site Selection Method" radio (input$default_ss_choose_method) - explicit user runtime choice
-  #   4. static UI default (global_or_param("default_upload_dropdown")) baked into app_ui.R
+  #   4. static UI default (global_or_param("default_site_method")) baked into app_ui.R
   # All non-static writers go through set_site_method() so the writes live in one place. Once the
   # user explicitly picks a method at runtime (layer 3), site_method_user_override latches TRUE and
   # the lazy layer-2 belt-and-suspenders writes stop clobbering the user's choice. (You cannot
@@ -812,7 +812,7 @@ app_server <- function(input, output, session) {
       xsitepoints <- data_up_tablepassed_latlon()
       if (!is.null(xsitepoints)) {
         ## if user provided ejamapp(sitepoints=xyz) but did not set these also, they will not see their upload ready to run:
-        ## default_upload_dropdown = "upload"  --  input$default_ss_choose_method
+        ## default_site_method = "upload"  --  input$default_ss_choose_method
         ## default_selected_type_of_site_upload = "latlon"  --  input$ss_choose_method_upload
         ## reflect the ejamapp(sitepoints=) param in the radio (layer 2), but don't override an
         ## explicit runtime method choice (layer 3).

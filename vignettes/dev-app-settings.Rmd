@@ -153,8 +153,8 @@ any user-specified versions of those options given as arguments in `ejamapp()`.
 infers related defaults. For example `pts` (or `lat`+`lon`) is an alias for `sitepoints`, `shp` is
 an alias for `shapefile`, and `naics`/`sic`/`mact` are aliases for `default_naics`/etc. Some of these
 also set the method automatically -- e.g. passing `fips`, `shapefile`, or `sitepoints` sets
-`default_upload_dropdown = "upload"` (and the upload sub-type), while `default_naics` sets
-`default_upload_dropdown = "dropdown"`. See `?ejamapp` and the alias-handling block near the top of
+`default_site_method = "upload"` (and the upload sub-type), while `default_naics` sets
+`default_site_method = "dropdown"`. See `?ejamapp` and the alias-handling block near the top of
 `R/ejamapp.R`.
 
 ### app launch
@@ -295,7 +295,7 @@ One such example:
 ```{r run-app, eval=FALSE}
 ejamapp(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -337,7 +337,7 @@ Launch using parameters that are saved in a named vector or list
 ```{r run-with-paramlist, eval=FALSE}
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -354,7 +354,7 @@ Save a custom reusable function you can use to launch with preset parameters
 
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -432,7 +432,7 @@ myparams <- c(
 )
 
 params <- c('standard_analysis_title="Custom NAICS Analysis"',
-            'ss_choose_method="dropdown"',   # like ejamapp( default_upload_dropdown="dropdown" )
+            'ss_choose_method="dropdown"',   # like ejamapp( default_site_method="dropdown" )
             'ss_choose_method_drop="NAICS"', # see ?ejamapp()
             'naics_digits_shown="detailed"', # like ejamapp( default_naics_digits_shown = "detailed")
             # 'ss_select_naics=313',           # like ejamapp(default_naics=313)

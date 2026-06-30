@@ -173,7 +173,7 @@ ejamapp(
   ## Cities dropdown list as default shown at launch:
 
 ejamapp(
-  default_upload_dropdown = "dropdown",
+  default_site_method = "dropdown",
   default_selected_type_of_site_category = "FIPS_PLACE",
   fipspicker_fips_type2pick_default = "Cities or Places"
 )
@@ -181,7 +181,7 @@ ejamapp(
   ## Specific cities are preselected at launch
 
   ejamapp(
-  default_upload_dropdown = "dropdown",
+  default_site_method = "dropdown",
   default_selected_type_of_site_category = "FIPS_PLACE",
   fipspicker_fips_type2pick_default = "Cities or Places",
   default_cities_picked = name2fips(c("akutan,ak", "syracuse city,ny") )
@@ -202,7 +202,7 @@ ejamapp(
   ## Polygons upload as the default shown at launch:
 
 ejamapp(
-  default_upload_dropdown = "upload",
+  default_site_method = "upload",
   default_selected_type_of_site_upload = "SHP"
 )
   #default_choices_for_type_of_site_upload = c(
@@ -215,10 +215,11 @@ ejamapp(
 
   ## Click-or-draw-on-map as the default site-selection method shown at launch.
   ## The user clicks the map to specify one or more lat/lon points to analyze.
-  ## (default_upload_dropdown accepts "dropdown", "upload", or "mapclick".)
+  ## (default_site_method accepts "dropdown", "upload", or "mapclick".
+  ##  It was formerly named default_upload_dropdown, which still works as an alias.)
 
 ejamapp(
-  default_upload_dropdown = "mapclick"
+  default_site_method = "mapclick"
 )
 
  ## Count how many of some indicator are >= some cutoff
