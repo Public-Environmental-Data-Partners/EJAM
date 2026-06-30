@@ -508,6 +508,31 @@ This previously had been handled with a GitHub Actions workflow that tried to
 use Git LFS. That automatic workflow is no longer used and should not be
 restored.
 
+### Bump the package version number
+
+The package version (`Version: 3.YYYY.x` in `DESCRIPTION`) is recorded verbatim
+in several other files. When cutting a release, bump all of them together so the
+version shown in the app, the docs site, and the citation agree:
+
+- `DESCRIPTION` — `Version:`, plus the human-readable release fields
+  `VersionDate:`, `ReleaseDateEJAM:`, `VersionEJSCREEN:`, `ReleaseDateEJSCREEN:`.
+  (`ejamdata_required_tag:` is *not* a code version — see above; a code-only
+  patch keeps it at the existing `v3.YYYY.0`.)
+- `_pkgdown.yml` — the footer `components:` (`datefooter:` and `versionmsg:`),
+  shown on every docs page.
+- `CITATION.cff` — `version:` and `date-released:`. (`inst/CITATION` reads
+  `Version`/`VersionDate` from `DESCRIPTION` at build time, so it needs no edit.)
+- `inst/golem-config.yml` — `golem_version:`.
+- `NEWS.md` — when publishing, retitle the top `# EJAM 3.YYYY.x (unreleased)`
+  heading to the dated release heading (for example `# EJAM 3.2022.1 (July 2026)`).
+
+`README.md` carries no hard-coded version (only a lifecycle badge), so it needs
+no edit. The deployed-API repo (EJAM-API) selects which EJAM version to build via
+the `EJAM_VERSION` build arg in its `Dockerfile` (with a matching mention in its
+`README.md`); bump that to the new tag (for example `v3.2022.1`) when redeploying
+the API. EJScreen has no EJAM-version string of its own — it reaches EJAM through
+the API URL — so it needs no version edit for an EJAM release.
+
 
 ## Potential Improvements
 
