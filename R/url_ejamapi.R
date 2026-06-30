@@ -1,22 +1,26 @@
 
 
 #' Get URL(s) of HTML summary reports for use with EJAM-API
-#' @seealso [ejamapi()] [url_ejamapp()]
+#' @seealso [ejamapi()] [url_ejamapp()] [url_package()]
 #' @details
-#' - This is work in progress to some extent -- this and the API may be add features in later releases.
-#'
-#' - Relies on API from
-#'   https://github.com/edgi-govdata-archiving/EJAM-API
+#' - Relies on the EJAM REST API, whose source code is at
+#'   https://github.com/Public-Environmental-Data-Partners/EJAM-API
+#'   (the API base URL itself comes from `url_package("api")`; see the `ejam_api_url`
+#'   field in DESCRIPTION).
 #'
 #' - To construct a "deep link" that launches the live EJAM *app* (not the API)
 #'   pre-loaded with sites, see [url_ejamapp()], which uses the same query
 #'   vocabulary (lat, lon, fips, shape, radius, handoff).
 #'
-#' - Will try to use the same input parameters as [ejamit()] does.
+#' - Accepts a subset of [ejamit()]'s input-parameter names (sitepoints, lat, lon, radius,
+#'   fips, shapefile); it does not accept every [ejamit()]/[ejam2report()] option (see the
+#'   note below on unsupported options).
 #'
-#' - The API now honors the `sitenumber` parameter passed through to [ejam2report()]:
-#'   the default is `sitenumber = 1` (a single-site report), and `sitenumber = 0`
-#'   (or "overall") produces an aggregate *multisite* report. The API leaves the
+#' - The API honors the `sitenumber` parameter passed through to [ejam2report()]:
+#'   `sitenumber = 1` requests a single-site report (the API's per-request default when
+#'   none is supplied), and `sitenumber = 0` (or "overall") produces an aggregate
+#'   *multisite* report. (Note `url_ejamapi()`'s own default is `sitenumber = "each"` --
+#'   see the parameter docs below.) The API leaves the
 #'   report title to [ejam2report()], which uses "EJSCREEN Community Report" for a
 #'   single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
 #'   polygons can exceed URL length for this GET-based path; the API also provides
@@ -26,16 +30,20 @@
 #'
 #' @param sitepoints see [ejamit()]
 #' @param lat,lon can be provided as vectors of coordinates instead of providing sitepoints table
-#' @param radius  see [ejamit()], default is 0 if fips or shapefile specified
+#' @param radius  analysis radius in miles; see [ejamit()]. Default is 3 miles for point
+#'   (lat/lon/sitepoints) analysis, but 0 (no buffer) when fips or shapefile is specified.
 #'
 #' @param fips  see [ejamit()]
 #'
 #' @param shapefile  see [ejamit()], but each polygon is encoded as geojson string
 #'   which might get too long for encoding in a URL for the API using GET
 #' @param shape,shp aliases (synonyms) for shapefile
-#' @param dTolerance number of meters tolerance to use in [sf::st_simplify()] to simplify polygons to fit as url-encoded text geojson
+#' @param dTolerance number of meters tolerance to use in [sf::st_simplify()] to simplify polygons
+#'   to fit as url-encoded text geojson. Only used when a shapefile/polygon is provided; ignored
+#'   for point (lat/lon) or fips analysis.
 #'
-#' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
+#' @param as_html if FALSE (default) returns plain character URL(s); if TRUE returns HTML
+#'   hyperlinks (via [url_linkify()]) suitable for use in a [DT::datatable()] or other HTML context
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values. Default NULL
 #'   (and an explicitly passed NULL) resolves to the EJAM API base URL from
@@ -44,28 +52,23 @@
 #'   (and an explicitly passed NULL) resolves to the DESCRIPTION `ejam_api_url`
 #'   followed by "/report?". See [ejamapi()] for a better way to handle choice of endpoint.
 #'
-#' @param sitenumber
+#' @param sitenumber controls how many URLs are returned and which site(s) each covers:
 #'
-#'  - "each" (or -1) means return each site's URL
+#'  - `"each"` (or `-1`) -- **the default** -- returns a vector of URLs, one per site
+#'    (one single-site report per site). Unlike [ejam2report()]/[ejam2map()], which never
+#'    return a vector, the `url_*` helpers can; that vector-per-site output is the main
+#'    reason this parameter exists.
 #'
-#'  - "overall" (or 0) means return one URL, combining all sites
+#'  - `"overall"` (or `0`, `NULL`, or `""`) -- returns a single URL requesting one
+#'    aggregate *multisite* report combining all sites (sent to the API as `sitenumber=0`;
+#'    assumes >1 site was provided).
 #'
-#'  - N (a number > 0) means return just the Nth site's URL
+#'  - `N` (a number `> 0`) -- returns a single URL for just the Nth site found in the
+#'    inputs (e.g. the 3rd point, fips, or polygon).
 #'
-#'  Like with other url_xyz functions, the default is to output
-#'   a vector of URLs, one per site. The default value for sitenumber is
-#'   "each" or -1 which means we want one url for each site.
-#'   Note there is no comparable value of sitenumber in the [ejam2report()] or [ejam2map()] or similar functions,
-#'   which never return a vector of reports, maps, etc. Getting a vector of 1 per site is useful mainly for
-#'   the url_xyz functions.
-#'
-#'   Like the sitenumber parameter in [ejam2report()],
-#'   a value of NULL or 0 or "" or "overall" in url_ejamapi() means
-#'   a single URL is returned that requests one
-#'   overall summary report (assuming >1 sites were provided).
-#'
-#'   Specifying sitenumber as a number like 3 means a report based on the third site
-#'   found in the inputs (third point or third fips or third polygon).
+#'  Single-site auto-override: when the inputs resolve to exactly one site (one row of
+#'  sitepoints, one fips code, or one polygon), sitenumber is coerced to `1` regardless of what
+#'  was requested, so a lone place yields a single-site report URL.
 #'
 #' @param ... a named list of other query parameters passed to the API,
 #'   to allow for expansion of allowed parameters
@@ -95,6 +98,9 @@
 #'  # Polygons
 #'  shp = testinput_shapes_2[2, c("geometry", "FIPS", "NAME")]
 #'  z = url_ejamapi(shapefile = shp)
+#'
+#'  # HTML hyperlinks (e.g. for a DT::datatable cell) instead of plain URLs
+#'  x_links = url_ejamapi(pts2, as_html = TRUE, linktext = "Report")
 #'
 #'  \dontrun{
 #'  browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
@@ -230,7 +236,7 @@ url_ejamapi = function(
   ################################################## #  ################################################## #
   # (baseurl and ifna were already resolved from url_package("api") near the top.)
   shp_one_site_fallback_url <- "https://ejanalysis.com/ejamapp"
-  # see https://github.com/edgi-govdata-archiving/EJAM-API/tree/main
+  # see https://github.com/Public-Environmental-Data-Partners/EJAM-API/tree/main
   # baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?"
   # e.g.,
   # https://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-112&buffer=4

@@ -67,7 +67,8 @@ of \code{\link[=ejamapp]{ejamapp()}}.
 }
 \details{
 The query vocabulary matches \code{\link[=url_ejamapi]{url_ejamapi()}}: \code{lat}, \code{lon}, \code{fips},
-\code{shape} (GeoJSON text), \code{radius}, and \code{handoff}. Only one place-type is used
+\code{shape} (GeoJSON text; alias \code{shapefile}/\code{shp}), \code{radius} (alias \code{buffer}), and \code{handoff}.
+Only one place-type is used
 per launch (points, else FIPS, else polygons), matching the app's
 one-method-per-analysis model. See the launch-URL handler described in the
 "Defaults and Custom Settings for the Web App" vignette.
@@ -81,6 +82,9 @@ then fetches the places back from \verb{GET /handoff/<token>} at startup.
  url_ejamapp(lat = c(33, 34), lon = c(-112, -114), radius = 3)
  url_ejamapp(fips = c("10001", "10003"))
  url_ejamapp(handoff = "abc123token")
+
+ # sitepoints data.frame, and the buffer alias for radius
+ url_ejamapp(sitepoints = data.frame(lat = c(33, 34), lon = c(-112, -114)), buffer = 5)
 
 }
 \seealso{
