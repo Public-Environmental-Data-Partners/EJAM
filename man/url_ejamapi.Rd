@@ -49,26 +49,18 @@ DESCRIPTION (\code{ejam_api_url}), via \code{\link[=url_package]{url_package()}}
 (and an explicitly passed NULL) resolves to the DESCRIPTION \code{ejam_api_url}
 followed by "/report?". See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
 
-\item{sitenumber}{\itemize{
-\item "each" (or -1) means return each site's URL
-\item "overall" (or 0) means return one URL, combining all sites
-\item N (a number > 0) means return just the Nth site's URL
-}
-
-Like with other url_xyz functions, the default is to output
-a vector of URLs, one per site. The default value for sitenumber is
-"each" or -1 which means we want one url for each site.
-Note there is no comparable value of sitenumber in the \code{\link[=ejam2report]{ejam2report()}} or \code{\link[=ejam2map]{ejam2map()}} or similar functions,
-which never return a vector of reports, maps, etc. Getting a vector of 1 per site is useful mainly for
-the url_xyz functions.
-
-Like the sitenumber parameter in \code{\link[=ejam2report]{ejam2report()}},
-a value of NULL or 0 or "" or "overall" in url_ejamapi() means
-a single URL is returned that requests one
-overall summary report (assuming >1 sites were provided).
-
-Specifying sitenumber as a number like 3 means a report based on the third site
-found in the inputs (third point or third fips or third polygon).}
+\item{sitenumber}{controls how many URLs are returned and which site(s) each covers:
+\itemize{
+\item \code{"each"} (or \code{-1}) -- \strong{the default} -- returns a vector of URLs, one per site
+(one single-site report per site). Unlike \code{\link[=ejam2report]{ejam2report()}}/\code{\link[=ejam2map]{ejam2map()}}, which never
+return a vector, the \verb{url_*} helpers can; that vector-per-site output is the main
+reason this parameter exists.
+\item \code{"overall"} (or \code{0}, \code{NULL}, or \code{""}) -- returns a single URL requesting one
+aggregate \emph{multisite} report combining all sites (sent to the API as \code{sitenumber=0};
+assumes >1 site was provided).
+\item \code{N} (a number \verb{> 0}) -- returns a single URL for just the Nth site found in the
+inputs (e.g. the 3rd point, fips, or polygon).
+}}
 
 \item{version}{optional EJAM version tag (e.g. "3.2024.0") sent to the API as
 version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
@@ -87,16 +79,19 @@ Get URL(s) of HTML summary reports for use with EJAM-API
 }
 \details{
 \itemize{
-\item This is work in progress to some extent -- this and the API may be add features in later releases.
-\item Relies on API from
-https://github.com/edgi-govdata-archiving/EJAM-API
+\item Relies on the EJAM REST API, whose source code is at
+https://github.com/Public-Environmental-Data-Partners/EJAM-API
+(the API base URL itself comes from \code{url_package("api")}; see the \code{ejam_api_url}
+field in DESCRIPTION).
 \item To construct a "deep link" that launches the live EJAM \emph{app} (not the API)
 pre-loaded with sites, see \code{\link[=url_ejamapp]{url_ejamapp()}}, which uses the same query
 vocabulary (lat, lon, fips, shape, radius, handoff).
 \item Will try to use the same input parameters as \code{\link[=ejamit]{ejamit()}} does.
-\item The API now honors the \code{sitenumber} parameter passed through to \code{\link[=ejam2report]{ejam2report()}}:
-the default is \code{sitenumber = 1} (a single-site report), and \code{sitenumber = 0}
-(or "overall") produces an aggregate \emph{multisite} report. The API leaves the
+\item The API honors the \code{sitenumber} parameter passed through to \code{\link[=ejam2report]{ejam2report()}}:
+\code{sitenumber = 1} requests a single-site report (the API's per-request default when
+none is supplied), and \code{sitenumber = 0} (or "overall") produces an aggregate
+\emph{multisite} report. (Note \code{url_ejamapi()}'s own default is \code{sitenumber = "each"} --
+see the parameter docs below.) The API leaves the
 report title to \code{\link[=ejam2report]{ejam2report()}}, which uses "EJSCREEN Community Report" for a
 single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
 polygons can exceed URL length for this GET-based path; the API also provides
