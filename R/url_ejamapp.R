@@ -11,7 +11,8 @@
 #' of [ejamapp()].
 #'
 #' The query vocabulary matches [url_ejamapi()]: `lat`, `lon`, `fips`,
-#' `shape` (GeoJSON text), `radius`, and `handoff`. Only one place-type is used
+#' `shape` (GeoJSON text; alias `shapefile`/`shp`), `radius` (alias `buffer`), and `handoff`.
+#' Only one place-type is used
 #' per launch (points, else FIPS, else polygons), matching the app's
 #' one-method-per-analysis model. See the launch-URL handler described in the
 #' "Defaults and Custom Settings for the Web App" vignette.
@@ -48,6 +49,9 @@
 #'  url_ejamapp(lat = c(33, 34), lon = c(-112, -114), radius = 3)
 #'  url_ejamapp(fips = c("10001", "10003"))
 #'  url_ejamapp(handoff = "abc123token")
+#'
+#'  # sitepoints data.frame, and the buffer alias for radius
+#'  url_ejamapp(sitepoints = data.frame(lat = c(33, 34), lon = c(-112, -114)), buffer = 5)
 #'
 #' @export
 #'

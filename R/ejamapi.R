@@ -45,8 +45,8 @@
 #'   Like the sitepoints param in [url_ejamapi()]
 #'
 #' @param shape,shapefile  Only one of these should be provided - they are synonymous.
-#'   A GeoJSON string representing the area of interest,
-#'   like shapefile param in [url_ejamapi()]
+#'   The area of interest, as either an `sf` polygon object (auto-converted to GeoJSON) or a
+#'   ready-made GeoJSON string, like the shapefile param in [url_ejamapi()].
 #' @param shp alias (synonym) for shapefile/shape
 #' @param fips A FIPS code for a specific US Census geography, like "050014801001",
 #'   and must be consistent with the scale parameter
@@ -65,7 +65,9 @@
 #'   that is found within the specified fips. For example, all counties in specified State fips,
 #'   or all blockgroups in specified County fips.
 #'
-#' @param baseurl base API URL without the endpoint path
+#' @param baseurl base API URL without the endpoint path. Defaults to [url_package()] with
+#'   type="api" (the DESCRIPTION `ejam_api_url`), the single source of the API endpoint; pass a
+#'   different value only to target another API (e.g. a staging server).
 #'
 #' @param endpoint "data", "report", or "query".
 #'
@@ -206,7 +208,7 @@ ejamapi <- function(
 ) {
   # shp is an alias (synonym) for shape/shapefile
   if (is.null(shape) && is.null(shapefile) && !is.null(shp)) {shape <- shp}
-  # API repo at https://github.com/edgi-govdata-archiving/EJAM-API/blob/main/rest_controller.r
+  # API repo at https://github.com/Public-Environmental-Data-Partners/EJAM-API/blob/main/rest_controller.r
 
   ############################################################## #
 

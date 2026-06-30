@@ -28,18 +28,22 @@ url_ejamapi(
 
 \item{lat, lon}{can be provided as vectors of coordinates instead of providing sitepoints table}
 
-\item{radius}{see \code{\link[=ejamit]{ejamit()}}, default is 0 if fips or shapefile specified}
+\item{radius}{analysis radius in miles; see \code{\link[=ejamit]{ejamit()}}. Default is 3 miles for point
+(lat/lon/sitepoints) analysis, but 0 (no buffer) when fips or shapefile is specified.}
 
 \item{fips}{see \code{\link[=ejamit]{ejamit()}}}
 
 \item{shapefile}{see \code{\link[=ejamit]{ejamit()}}, but each polygon is encoded as geojson string
 which might get too long for encoding in a URL for the API using GET}
 
-\item{dTolerance}{number of meters tolerance to use in \code{\link[sf:st_simplify]{sf::st_simplify()}} to simplify polygons to fit as url-encoded text geojson}
+\item{dTolerance}{number of meters tolerance to use in \code{\link[sf:st_simplify]{sf::st_simplify()}} to simplify polygons
+to fit as url-encoded text geojson. Only used when a shapefile/polygon is provided; ignored
+for point (lat/lon) or fips analysis.}
 
 \item{linktext}{used as text for hyperlinks, if supplied and as_html=TRUE}
 
-\item{as_html}{Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example}
+\item{as_html}{if FALSE (default) returns plain character URL(s); if TRUE returns HTML
+hyperlinks (via \code{\link[=url_linkify]{url_linkify()}}) suitable for use in a \code{\link[DT:datatable]{DT::datatable()}} or other HTML context}
 
 \item{ifna}{URL shown for missing, NA, NULL, bad input values. Default NULL
 (and an explicitly passed NULL) resolves to the EJAM API base URL from
@@ -60,7 +64,11 @@ aggregate \emph{multisite} report combining all sites (sent to the API as \code{
 assumes >1 site was provided).
 \item \code{N} (a number \verb{> 0}) -- returns a single URL for just the Nth site found in the
 inputs (e.g. the 3rd point, fips, or polygon).
-}}
+}
+
+Single-site auto-override: when the inputs resolve to exactly one site (one row of
+sitepoints, one fips code, or one polygon), sitenumber is coerced to \code{1} regardless of what
+was requested, so a lone place yields a single-site report URL.}
 
 \item{version}{optional EJAM version tag (e.g. "3.2024.0") sent to the API as
 version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
@@ -86,7 +94,9 @@ field in DESCRIPTION).
 \item To construct a "deep link" that launches the live EJAM \emph{app} (not the API)
 pre-loaded with sites, see \code{\link[=url_ejamapp]{url_ejamapp()}}, which uses the same query
 vocabulary (lat, lon, fips, shape, radius, handoff).
-\item Will try to use the same input parameters as \code{\link[=ejamit]{ejamit()}} does.
+\item Accepts a subset of \code{\link[=ejamit]{ejamit()}}'s input-parameter names (sitepoints, lat, lon, radius,
+fips, shapefile); it does not accept every \code{\link[=ejamit]{ejamit()}}/\code{\link[=ejam2report]{ejam2report()}} option (see the
+note below on unsupported options).
 \item The API honors the \code{sitenumber} parameter passed through to \code{\link[=ejam2report]{ejam2report()}}:
 \code{sitenumber = 1} requests a single-site report (the API's per-request default when
 none is supplied), and \code{sitenumber = 0} (or "overall") produces an aggregate
@@ -124,6 +134,9 @@ radius_donut_lower_edge).
  shp = testinput_shapes_2[2, c("geometry", "FIPS", "NAME")]
  z = url_ejamapi(shapefile = shp)
 
+ # HTML hyperlinks (e.g. for a DT::datatable cell) instead of plain URLs
+ x_links = url_ejamapi(pts2, as_html = TRUE, linktext = "Report")
+
  \dontrun{
  browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
 
@@ -134,5 +147,5 @@ radius_donut_lower_edge).
 
 }
 \seealso{
-\code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}}
+\code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}} \code{\link[=url_package]{url_package()}}
 }

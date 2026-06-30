@@ -19,7 +19,7 @@
 #'     source-code repo and is informational only -- it is not the API endpoint.)
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
-#'   Ignored if type = "docs", where full URL is always returned.
+#'   Ignored if type = "docs" or "api", where a full URL is always returned.
 #'
 #' @param desc_or_alias must be "desc" or "alias" to use info from DESCRIPTION file
 #'   or the URL based on a redirect from the aliases at
@@ -36,6 +36,8 @@
 #'   within the version being built. `desc_or_alias = "alias"` shortcuts always point
 #'   to the root docs site only.
 #' @param domain obsolete parameter - do not use
+#' @seealso [url_ejamapi()] [ejamapi()] [url_ejamapp()] -- the functions that build/call EJAM API
+#'   and app URLs; `url_package("api")` is their single source for the API base URL.
 #' @details
 #' See https://ejanalysis.com/ejam-code   for a list of URLs
 #'

@@ -31,7 +31,7 @@ source-code repo and is informational only -- it is not the API endpoint.)
 }}
 
 \item{get_full_url}{logical, whether to return full URL or just the owner/reponame info.
-Ignored if type = "docs", where full URL is always returned.}
+Ignored if type = "docs" or "api", where a full URL is always returned.}
 
 \item{desc_or_alias}{must be "desc" or "alias" to use info from DESCRIPTION file
 or the URL based on a redirect from the aliases at
@@ -80,5 +80,9 @@ See https://ejanalysis.com/ejam-code   for a list of URLs
  url_package("code", desc_or_alias="alias")
  url_package("data", desc_or_alias="alias")
 
+}
+\seealso{
+\code{\link[=url_ejamapi]{url_ejamapi()}} \code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}} -- the functions that build/call EJAM API
+and app URLs; \code{url_package("api")} is their single source for the API base URL.
 }
 \keyword{internal}

@@ -43,8 +43,8 @@ sites or sitepoints, if provided, must be a data.frame with colnames "lat" and "
 Like the sitepoints param in \code{\link[=url_ejamapi]{url_ejamapi()}}}
 
 \item{shape, shapefile}{Only one of these should be provided - they are synonymous.
-A GeoJSON string representing the area of interest,
-like shapefile param in \code{\link[=url_ejamapi]{url_ejamapi()}}}
+The area of interest, as either an \code{sf} polygon object (auto-converted to GeoJSON) or a
+ready-made GeoJSON string, like the shapefile param in \code{\link[=url_ejamapi]{url_ejamapi()}}.}
 
 \item{fips}{A FIPS code for a specific US Census geography, like "050014801001",
 and must be consistent with the scale parameter}
@@ -64,7 +64,9 @@ the API tries to return one result for each "county" or "blockgroup"
 that is found within the specified fips. For example, all counties in specified State fips,
 or all blockgroups in specified County fips.}
 
-\item{baseurl}{base API URL without the endpoint path}
+\item{baseurl}{base API URL without the endpoint path. Defaults to \code{\link[=url_package]{url_package()}} with
+type="api" (the DESCRIPTION \code{ejam_api_url}), the single source of the API endpoint; pass a
+different value only to target another API (e.g. a staging server).}
 
 \item{endpoint}{"data", "report", or "query".
 \itemize{

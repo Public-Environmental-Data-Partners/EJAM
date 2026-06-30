@@ -1,7 +1,7 @@
 
 
 #' Get URL(s) of HTML summary reports for use with EJAM-API
-#' @seealso [ejamapi()] [url_ejamapp()]
+#' @seealso [ejamapi()] [url_ejamapp()] [url_package()]
 #' @details
 #' - Relies on the EJAM REST API, whose source code is at
 #'   https://github.com/Public-Environmental-Data-Partners/EJAM-API
@@ -12,7 +12,9 @@
 #'   pre-loaded with sites, see [url_ejamapp()], which uses the same query
 #'   vocabulary (lat, lon, fips, shape, radius, handoff).
 #'
-#' - Will try to use the same input parameters as [ejamit()] does.
+#' - Accepts a subset of [ejamit()]'s input-parameter names (sitepoints, lat, lon, radius,
+#'   fips, shapefile); it does not accept every [ejamit()]/[ejam2report()] option (see the
+#'   note below on unsupported options).
 #'
 #' - The API honors the `sitenumber` parameter passed through to [ejam2report()]:
 #'   `sitenumber = 1` requests a single-site report (the API's per-request default when
@@ -28,16 +30,20 @@
 #'
 #' @param sitepoints see [ejamit()]
 #' @param lat,lon can be provided as vectors of coordinates instead of providing sitepoints table
-#' @param radius  see [ejamit()], default is 0 if fips or shapefile specified
+#' @param radius  analysis radius in miles; see [ejamit()]. Default is 3 miles for point
+#'   (lat/lon/sitepoints) analysis, but 0 (no buffer) when fips or shapefile is specified.
 #'
 #' @param fips  see [ejamit()]
 #'
 #' @param shapefile  see [ejamit()], but each polygon is encoded as geojson string
 #'   which might get too long for encoding in a URL for the API using GET
 #' @param shape,shp aliases (synonyms) for shapefile
-#' @param dTolerance number of meters tolerance to use in [sf::st_simplify()] to simplify polygons to fit as url-encoded text geojson
+#' @param dTolerance number of meters tolerance to use in [sf::st_simplify()] to simplify polygons
+#'   to fit as url-encoded text geojson. Only used when a shapefile/polygon is provided; ignored
+#'   for point (lat/lon) or fips analysis.
 #'
-#' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
+#' @param as_html if FALSE (default) returns plain character URL(s); if TRUE returns HTML
+#'   hyperlinks (via [url_linkify()]) suitable for use in a [DT::datatable()] or other HTML context
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values. Default NULL
 #'   (and an explicitly passed NULL) resolves to the EJAM API base URL from
@@ -59,6 +65,10 @@
 #'
 #'  - `N` (a number `> 0`) -- returns a single URL for just the Nth site found in the
 #'    inputs (e.g. the 3rd point, fips, or polygon).
+#'
+#'  Single-site auto-override: when the inputs resolve to exactly one site (one row of
+#'  sitepoints, one fips code, or one polygon), sitenumber is coerced to `1` regardless of what
+#'  was requested, so a lone place yields a single-site report URL.
 #'
 #' @param ... a named list of other query parameters passed to the API,
 #'   to allow for expansion of allowed parameters
@@ -88,6 +98,9 @@
 #'  # Polygons
 #'  shp = testinput_shapes_2[2, c("geometry", "FIPS", "NAME")]
 #'  z = url_ejamapi(shapefile = shp)
+#'
+#'  # HTML hyperlinks (e.g. for a DT::datatable cell) instead of plain URLs
+#'  x_links = url_ejamapi(pts2, as_html = TRUE, linktext = "Report")
 #'
 #'  \dontrun{
 #'  browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
