@@ -98,7 +98,14 @@ file upload size or number of points.</p>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">default_max_miles=</span><span class="dv">31</span>,</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">default_max_mb_upload=</span><span class="dv">100</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>)</span></code></pre><p></p></div>
-<p>See details and examples.</p></dd>
+<p>See details and examples.</p>
+<p>These parameters are fixed when the app is launched (or deployed). To pre-load
+an already-running/deployed app with a set of sites at runtime instead, open it
+with launch query parameters in the URL: the app reads <code>?lat=&amp;lon=</code>, <code>?fips=</code>,
+<code>?shape=</code> (GeoJSON), <code>?radius=</code>, or <code>?handoff=&lt;token&gt;</code> at startup and
+pre-selects those places. Use <code><a href="url_ejamapp.html">url_ejamapp()</a></code> to build such a URL (its query
+vocabulary matches <code><a href="url_ejamapi.html">url_ejamapi()</a></code>). See the "Defaults and Custom Settings for
+the Web App" vignette.</p></dd>
 
 
 <dt id="arg-enablebookmarking">enableBookmarking<a class="anchor" aria-label="anchor" href="#arg-enablebookmarking"></a></dt>

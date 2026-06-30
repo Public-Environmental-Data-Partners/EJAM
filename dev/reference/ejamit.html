@@ -117,7 +117,12 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <span>  showpctowned <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  download_city_fips_bounds <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  download_noncity_fips_bounds <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shape <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lon <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -161,10 +166,7 @@ such as a list of US Counties or tracts. Passed to <code><a href="getblocksnearb
 
 
 <dt id="arg-shapefile">shapefile<a class="anchor" aria-label="anchor" href="#arg-shapefile"></a></dt>
-<dd><p>optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
-e.g., <code>out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)</code>
-If in RStudio you want it to interactively prompt you to pick a file,
-use shapefile=1 (otherwise it assumes you want to pick a latlon file).</p></dd>
+<dd><p>optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.</p></dd>
 
 
 <dt id="arg-countcols">countcols<a class="anchor" aria-label="anchor" href="#arg-countcols"></a></dt>
@@ -299,6 +301,25 @@ passed to <code><a href="doaggregate.html">doaggregate()</a></code> also. app se
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>passed to <code><a href="getblocksnearby.html">getblocksnearby()</a></code> etc. such as  report_progress_every_n = 0</p></dd>
+
+
+<dt id="arg-buffer">buffer<a class="anchor" aria-label="anchor" href="#arg-buffer"></a></dt>
+<dd><p>Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.</p></dd>
+
+
+<dt id="arg-shape">shape<a class="anchor" aria-label="anchor" href="#arg-shape"></a></dt>
+<dd><p>Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
+e.g., <code>out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)</code>
+If in RStudio you want it to interactively prompt you to pick a file,
+use shapefile=1 (otherwise it assumes you want to pick a latlon file).</p></dd>
+
+
+<dt id="arg-shp">shp<a class="anchor" aria-label="anchor" href="#arg-shp"></a></dt>
+<dd><p>alias (synonym) for shapefile</p></dd>
+
+
+<dt id="arg-lat-lon">lat, lon<a class="anchor" aria-label="anchor" href="#arg-lat-lon"></a></dt>
+<dd><p>optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.</p></dd>
 
 </dl></div>
     <div class="section level2">

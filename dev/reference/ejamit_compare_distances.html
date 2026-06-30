@@ -87,7 +87,10 @@ Run ejamit() once per radius, get a summary table with a row per radius</p>
 <span>  ylab <span class="op">=</span> <span class="st">"Ratio of Avg. within X miles to Avg. Statewide or Nationwide"</span>,</span>
 <span>  ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  buffers <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  radius <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -144,6 +147,10 @@ when reporting which indicators most strongly increase as radius decreases.</p><
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>optional, passed to <code><a href="ejamit.html">ejamit()</a></code></p></dd>
+
+
+<dt id="arg-buffers-buffer-radius">buffers, buffer, radius<a class="anchor" aria-label="anchor" href="#arg-buffers-buffer-radius"></a></dt>
+<dd><p>aliases (synonyms) for radii</p></dd>
 
 </dl></div>
     <div class="section level2">
