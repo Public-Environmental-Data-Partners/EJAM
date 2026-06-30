@@ -464,6 +464,24 @@ app_server <- function(input, output, session) {
   url_shapefile  <- reactiveVal(NULL)
   url_fips       <- reactiveVal(NULL)
 
+  # Launch-URL precedence helper (single home for layer-2 precedence). url_param(name) maps a
+  # parameter name to its launch-URL reactiveVal -- the only URL-provided params are these three
+  # typed place specs, so there is no generic per-name URL lookup. global_or_shinyparam_or_urlparam()
+  # returns the launch-URL value when present, else the ejamapp()/global default: a launch-URL value
+  # wins over the ejamapp/global default. Defined as closures here because the url_* reactiveVals are
+  # local to this server function. Used instead of hand-written url_*() %||% global_or_param() chains
+  # so the precedence is defined in one place.
+  url_param <- function(name) {
+    switch(name,
+           sitepoints = url_sitepoints(),
+           shapefile  = url_shapefile(),
+           fips       = url_fips(),
+           NULL)
+  }
+  global_or_shinyparam_or_urlparam <- function(name) {
+    url_param(name) %||% global_or_param(name)
+  }
+
   observe({
     search <- session$clientData$url_search
     if (is.null(search) || !nzchar(search)) {return(NULL)}
@@ -573,7 +591,7 @@ app_server <- function(input, output, session) {
 
     if (is.null(input$ss_upload_shp)) {
       ## no uploaded file, so check if shape was provided via launch URL or as parameter in ejamapp()
-      xshp <- url_shapefile() %||% global_or_param("shapefile")
+      xshp <- global_or_shinyparam_or_urlparam("shapefile")
       if (is.null(xshp) || length(xshp) == 0) {
         if (input$testing) {cat("no shp uploaded, no shp provided in ejamapp(), so should stop here\n")}
         req(FALSE, cancelOutput = TRUE)
@@ -737,7 +755,7 @@ app_server <- function(input, output, session) {
   data_up_tablepassed_latlon <- reactive({
 
     sitepoints <- NULL # since never set in global_defaults_*.R, only exists if at all via  get_golem_options()
-    sitepoints <- url_sitepoints() %||% global_or_param("sitepoints") # launch-URL points take precedence over ejamapp() param
+    sitepoints <- global_or_shinyparam_or_urlparam("sitepoints") # launch-URL points take precedence over ejamapp() param
     req(sitepoints)
 
     ################################# #
@@ -1370,7 +1388,7 @@ app_server <- function(input, output, session) {
     xfips <- NULL
     if (is.null(input$ss_upload_fips)) {
       ### nothing uploaded, so check if fips got passed via launch URL or as parameter to ejamapp()
-      xfips <- url_fips() %||% global_or_param("fips")
+      xfips <- global_or_shinyparam_or_urlparam("fips")
       if (!is.null(xfips)) {
         cat("fips seems to have been passed as parameter to ejamapp() \n")
         ## reflect the fips param (launch-URL or ejamapp) in the radio (layer 2), but don't override
