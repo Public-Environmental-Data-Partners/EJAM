@@ -82,7 +82,7 @@ This is a **third param-setting concern** (alias normalization + dependent-defau
 |---|---|---|---|
 | **Advanced-tab → main control** | `observeEvent(input$default_ss_choose_method, updateRadioButtons('ss_choose_method', …))` and similar | app_server.R | ad hoc per control |
 | **Shiny native bookmarking** | `enableBookmarking='url'` (default in `ejamapp()`); `bookmarkButton()`; `?_inputs_&id=val…` restores all `input$` on load | ejamapp.R, app_ui.R | framework-level; only `input$` vars; no `onBookmark`/`onRestore` customization yet |
-| **Launch-URL custom params** (PR #413, *not on this branch yet*) | parse `session$clientData$url_search`; `url_*()` reactiveVals; precedence via `url_x() %||% global_or_param("x")` in each `data_up_*` reactive; also `update*Input` to reflect in UI | app_server.R on `ejscreen-multisite-selection` | **ad hoc** — repeated `%||%` per reactive; precedence not centralized |
+| **Launch-URL custom params** (PR #413, now merged to `development`) | parse `session$clientData$url_search`; `url_*()` reactiveVals; precedence resolved by `global_or_shinyparam_or_urlparam()` in each `data_up_*` reactive; also `update*Input` to reflect in UI | app_server.R | **now centralized** via the `global_or_shinyparam_or_urlparam()` helper (Item 1) |
 
 ---
 

@@ -1,20 +1,19 @@
 # Plan — `refactoring_app_settings`
 
-Branch `refactoring_app_settings`, based on `development`.
-Worktree: `/Users/markcorrales/R PACKAGES/EJAM-refactoring-app-settings`.
+Branch `refactoring_app_settings`, based on `development` (developed in a dedicated git worktree).
 Companion analysis: [`refactoring_app_settings_analysis.md`](refactoring_app_settings_analysis.md) (full two-axis audit of how app settings get set).
 
 Goal: targeted harmonization of how the EJAM web-app gets its input defaults/values — **not a rewrite**. The architecture (two orthogonal axes: how the widget is built A/B/C × where the value comes from) is sound. We clean up ~5 specific spots.
 
 ---
 
-## STATUS: plan committed, all code ON HOLD (decided 2026-06-28)
+## STATUS: IMPLEMENTED (2026-06-30)
 
-User decision: **do the plan only; hold ALL code changes** until BOTH PR #418 and PR #413
-are merged into `development`, then do the whole refactor in one pass on a clean baseline
-(so nothing collides with the owner's open PRs). The Wave 1 / Wave 2 split below is retained
-for reference, but with this decision there is effectively a single wave AFTER the PRs land.
-Resume trigger: #418 and #413 both merged into `development`.
+All items below are implemented in this branch, rebased on `development` after PRs #418
+(mapclick) and #413 (launch-URL) both merged. The plan originally held all code until those
+two PRs landed (to avoid colliding with the owner's open PRs); that gate has cleared, so the
+Wave 1 / Wave 2 split below is now **historical context only** — everything was done in one
+pass on the clean baseline.
 
 ---
 

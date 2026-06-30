@@ -365,18 +365,29 @@ app_server <- function(input, output, session) {
   # applied server-side here via update*Input(); this replaces an older approach that re-rendered
   # the radio via output$ss_choose_method_ui.)
   site_method_user_override <- reactiveVal(FALSE)
+  site_method_last_set <- reactiveVal(NULL)  # value set_site_method() last wrote -- lets us tell our own programmatic writes apart from a user click on the main radio
   set_site_method <- function(method, upload_submethod = NULL, source = "") {
     if (isTRUE(input$testing)) {
       message("set_site_method: ", method, if (!is.null(upload_submethod)) paste0("/", upload_submethod) else "", " (", source, ")")
     }
+    site_method_last_set(method)  # record before the (async) update so the ss_choose_method observer ignores this programmatic change
     shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = method)
     if (!is.null(upload_submethod)) {
       shiny::updateSelectInput(session = session, inputId = "ss_choose_method_upload", selected = upload_submethod)
     }
   }
+  # Latch the user-override on an explicit runtime method change via EITHER the advanced-tab radio
+  # (input$default_ss_choose_method) OR the main radio (input$ss_choose_method). For the main radio we
+  # must distinguish a real user click from our own set_site_method() writes, so we only latch when the
+  # new value differs from the value set_site_method() last wrote.
   observeEvent(input$default_ss_choose_method, {
     site_method_user_override(TRUE)  # explicit user runtime choice (layer 3): protect it from layer-2 clobber
     set_site_method(input$default_ss_choose_method, source = "advanced-tab")
+  }, ignoreInit = TRUE)
+  observeEvent(input$ss_choose_method, {
+    if (!identical(as.character(input$ss_choose_method), as.character(site_method_last_set()))) {
+      site_method_user_override(TRUE)  # user changed the MAIN radio directly (not via set_site_method)
+    }
   }, ignoreInit = TRUE)
 
   # keep track of currently used method of site selection (also see submitted_upload_method reactive)
