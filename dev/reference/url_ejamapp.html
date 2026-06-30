@@ -176,7 +176,8 @@ is why <code>https://ejanalysis.com/ejamapp</code> — a Squarespace 301 — is 
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The query vocabulary matches <code><a href="url_ejamapi.html">url_ejamapi()</a></code>: <code>lat</code>, <code>lon</code>, <code>fips</code>,
-<code>shape</code> (GeoJSON text), <code>radius</code>, and <code>handoff</code>. Only one place-type is used
+<code>shape</code> (GeoJSON text; alias <code>shapefile</code>/<code>shp</code>), <code>radius</code> (alias <code>buffer</code>), and <code>handoff</code>.
+Only one place-type is used
 per launch (points, else FIPS, else polygons), matching the app's
 one-method-per-analysis model. See the launch-URL handler described in the
 "Defaults and Custom Settings for the Web App" vignette.</p>
@@ -195,6 +196,9 @@ then fetches the places back from <code>GET /handoff/&lt;token&gt;</code> at sta
 <span> <span class="fu">url_ejamapp</span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">33</span>, <span class="fl">34</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">112</span>, <span class="op">-</span><span class="fl">114</span><span class="op">)</span>, radius <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span> <span class="fu">url_ejamapp</span><span class="op">(</span>fips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10001"</span>, <span class="st">"10003"</span><span class="op">)</span><span class="op">)</span></span>
 <span> <span class="fu">url_ejamapp</span><span class="op">(</span>handoff <span class="op">=</span> <span class="st">"abc123token"</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co"># sitepoints data.frame, and the buffer alias for radius</span></span>
+<span> <span class="fu">url_ejamapp</span><span class="op">(</span>sitepoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">33</span>, <span class="fl">34</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">112</span>, <span class="op">-</span><span class="fl">114</span><span class="op">)</span><span class="op">)</span>, buffer <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -108,7 +108,7 @@ source-code repo and is informational only – it is not the API endpoint.)</p><
 
 <dt id="arg-get-full-url">get_full_url<a class="anchor" aria-label="anchor" href="#arg-get-full-url"></a></dt>
 <dd><p>logical, whether to return full URL or just the owner/reponame info.
-Ignored if type = "docs", where full URL is always returned.</p></dd>
+Ignored if type = "docs" or "api", where a full URL is always returned.</p></dd>
 
 
 <dt id="arg-desc-or-alias">desc_or_alias<a class="anchor" aria-label="anchor" href="#arg-desc-or-alias"></a></dt>
@@ -140,6 +140,11 @@ to the root docs site only.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>See https://ejanalysis.com/ejam-code   for a list of URLs</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="url_ejamapi.html">url_ejamapi()</a></code> <code><a href="ejamapi.html">ejamapi()</a></code> <code><a href="url_ejamapp.html">url_ejamapp()</a></code> – the functions that build/call EJAM API
+and app URLs; <code>url_package("api")</code> is their single source for the API base URL.</p></div>
     </div>
 
     <div class="section level2">

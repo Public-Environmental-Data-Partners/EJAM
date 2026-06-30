@@ -107,7 +107,8 @@
 
 
 <dt id="arg-radius">radius<a class="anchor" aria-label="anchor" href="#arg-radius"></a></dt>
-<dd><p>see <code><a href="ejamit.html">ejamit()</a></code>, default is 0 if fips or shapefile specified</p></dd>
+<dd><p>analysis radius in miles; see <code><a href="ejamit.html">ejamit()</a></code>. Default is 3 miles for point
+(lat/lon/sitepoints) analysis, but 0 (no buffer) when fips or shapefile is specified.</p></dd>
 
 
 <dt id="arg-fips">fips<a class="anchor" aria-label="anchor" href="#arg-fips"></a></dt>
@@ -120,7 +121,9 @@ which might get too long for encoding in a URL for the API using GET</p></dd>
 
 
 <dt id="arg-dtolerance">dTolerance<a class="anchor" aria-label="anchor" href="#arg-dtolerance"></a></dt>
-<dd><p>number of meters tolerance to use in <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">sf::st_simplify()</a></code> to simplify polygons to fit as url-encoded text geojson</p></dd>
+<dd><p>number of meters tolerance to use in <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">sf::st_simplify()</a></code> to simplify polygons
+to fit as url-encoded text geojson. Only used when a shapefile/polygon is provided; ignored
+for point (lat/lon) or fips analysis.</p></dd>
 
 
 <dt id="arg-linktext">linktext<a class="anchor" aria-label="anchor" href="#arg-linktext"></a></dt>
@@ -128,7 +131,8 @@ which might get too long for encoding in a URL for the API using GET</p></dd>
 
 
 <dt id="arg-as-html">as_html<a class="anchor" aria-label="anchor" href="#arg-as-html"></a></dt>
-<dd><p>Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example</p></dd>
+<dd><p>if FALSE (default) returns plain character URL(s); if TRUE returns HTML
+hyperlinks (via <code><a href="url_linkify.html">url_linkify()</a></code>) suitable for use in a <code><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">DT::datatable()</a></code> or other HTML context</p></dd>
 
 
 <dt id="arg-ifna">ifna<a class="anchor" aria-label="anchor" href="#arg-ifna"></a></dt>
@@ -144,21 +148,18 @@ followed by "/report?". See <code><a href="ejamapi.html">ejamapi()</a></code> fo
 
 
 <dt id="arg-sitenumber">sitenumber<a class="anchor" aria-label="anchor" href="#arg-sitenumber"></a></dt>
-<dd><ul><li><p>"each" (or -1) means return each site's URL</p></li>
-<li><p>"overall" (or 0) means return one URL, combining all sites</p></li>
-<li><p>N (a number &gt; 0) means return just the Nth site's URL</p></li>
-</ul><p>Like with other url_xyz functions, the default is to output
-a vector of URLs, one per site. The default value for sitenumber is
-"each" or -1 which means we want one url for each site.
-Note there is no comparable value of sitenumber in the <code><a href="ejam2report.html">ejam2report()</a></code> or <code><a href="ejam2map.html">ejam2map()</a></code> or similar functions,
-which never return a vector of reports, maps, etc. Getting a vector of 1 per site is useful mainly for
-the url_xyz functions.</p>
-<p>Like the sitenumber parameter in <code><a href="ejam2report.html">ejam2report()</a></code>,
-a value of NULL or 0 or "" or "overall" in url_ejamapi() means
-a single URL is returned that requests one
-overall summary report (assuming &gt;1 sites were provided).</p>
-<p>Specifying sitenumber as a number like 3 means a report based on the third site
-found in the inputs (third point or third fips or third polygon).</p></dd>
+<dd><p>controls how many URLs are returned and which site(s) each covers:</p><ul><li><p><code>"each"</code> (or <code>-1</code>) – <strong>the default</strong> – returns a vector of URLs, one per site
+(one single-site report per site). Unlike <code><a href="ejam2report.html">ejam2report()</a></code>/<code><a href="ejam2map.html">ejam2map()</a></code>, which never
+return a vector, the <code>url_*</code> helpers can; that vector-per-site output is the main
+reason this parameter exists.</p></li>
+<li><p><code>"overall"</code> (or <code>0</code>, <code>NULL</code>, or <code>""</code>) – returns a single URL requesting one
+aggregate <em>multisite</em> report combining all sites (sent to the API as <code>sitenumber=0</code>;
+assumes &gt;1 site was provided).</p></li>
+<li><p><code>N</code> (a number <code>&gt; 0</code>) – returns a single URL for just the Nth site found in the
+inputs (e.g. the 3rd point, fips, or polygon).</p></li>
+</ul><p>Single-site auto-override: when the inputs resolve to exactly one site (one row of
+sitepoints, one fips code, or one polygon), sitenumber is coerced to <code>1</code> regardless of what
+was requested, so a lone place yields a single-site report URL.</p></dd>
 
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
@@ -183,16 +184,21 @@ to allow for expansion of allowed parameters</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
-<ul><li><p>This is work in progress to some extent – this and the API may be add features in later releases.</p></li>
-<li><p>Relies on API from
-https://github.com/edgi-govdata-archiving/EJAM-API</p></li>
+<ul><li><p>Relies on the EJAM REST API, whose source code is at
+https://github.com/Public-Environmental-Data-Partners/EJAM-API
+(the API base URL itself comes from <code>url_package("api")</code>; see the <code>ejam_api_url</code>
+field in DESCRIPTION).</p></li>
 <li><p>To construct a "deep link" that launches the live EJAM <em>app</em> (not the API)
 pre-loaded with sites, see <code><a href="url_ejamapp.html">url_ejamapp()</a></code>, which uses the same query
 vocabulary (lat, lon, fips, shape, radius, handoff).</p></li>
-<li><p>Will try to use the same input parameters as <code><a href="ejamit.html">ejamit()</a></code> does.</p></li>
-<li><p>The API now honors the <code>sitenumber</code> parameter passed through to <code><a href="ejam2report.html">ejam2report()</a></code>:
-the default is <code>sitenumber = 1</code> (a single-site report), and <code>sitenumber = 0</code>
-(or "overall") produces an aggregate <em>multisite</em> report. The API leaves the
+<li><p>Accepts a subset of <code><a href="ejamit.html">ejamit()</a></code>'s input-parameter names (sitepoints, lat, lon, radius,
+fips, shapefile); it does not accept every <code><a href="ejamit.html">ejamit()</a></code>/<code><a href="ejam2report.html">ejam2report()</a></code> option (see the
+note below on unsupported options).</p></li>
+<li><p>The API honors the <code>sitenumber</code> parameter passed through to <code><a href="ejam2report.html">ejam2report()</a></code>:
+<code>sitenumber = 1</code> requests a single-site report (the API's per-request default when
+none is supplied), and <code>sitenumber = 0</code> (or "overall") produces an aggregate
+<em>multisite</em> report. (Note <code>url_ejamapi()</code>'s own default is <code>sitenumber = "each"</code> –
+see the parameter docs below.) The API leaves the
 report title to <code><a href="ejam2report.html">ejam2report()</a></code>, which uses "EJSCREEN Community Report" for a
 single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
 polygons can exceed URL length for this GET-based path; the API also provides
@@ -202,7 +208,7 @@ radius_donut_lower_edge).</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="ejamapi.html">ejamapi()</a></code> <code><a href="url_ejamapp.html">url_ejamapp()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="ejamapi.html">ejamapi()</a></code> <code><a href="url_ejamapp.html">url_ejamapp()</a></code> <code><a href="url_package.html">url_package()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -229,6 +235,9 @@ radius_donut_lower_edge).</p></li>
 <span> <span class="co"># Polygons</span></span>
 <span> <span class="va">shp</span> <span class="op">=</span> <span class="va">testinput_shapes_2</span><span class="op">[</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geometry"</span>, <span class="st">"FIPS"</span>, <span class="st">"NAME"</span><span class="op">)</span><span class="op">]</span></span>
 <span> <span class="va">z</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">shp</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="co"># HTML hyperlinks (e.g. for a DT::datatable cell) instead of plain URLs</span></span>
+<span> <span class="va">x_links</span> <span class="op">=</span> <span class="fu">url_ejamapi</span><span class="op">(</span><span class="va">pts2</span>, as_html <span class="op">=</span> <span class="cn">TRUE</span>, linktext <span class="op">=</span> <span class="st">"Report"</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="url_package.html">url_package</a></span><span class="op">(</span><span class="st">"api"</span><span class="op">)</span>, <span class="st">"/report?lat=33&amp;lon=-112&amp;buffer=4"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># API base from DESCRIPTION</span></span>
