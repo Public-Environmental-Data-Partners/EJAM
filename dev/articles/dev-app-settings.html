@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -281,11 +281,93 @@ related defaults. For example <code>pts</code> (or
 <code>default_naics</code>/etc. Some of these also set the method
 automatically – e.g. passing <code>fips</code>, <code>shapefile</code>,
 or <code>sitepoints</code> sets
-<code>default_upload_dropdown = "upload"</code> (and the upload
-sub-type), while <code>default_naics</code> sets
-<code>default_upload_dropdown = "dropdown"</code>. See
-<code><a href="../reference/ejamapp.html">?ejamapp</a></code> and the alias-handling block near the top of
+<code>default_site_method = "upload"</code> (and the upload sub-type),
+while <code>default_naics</code> sets
+<code>default_site_method = "dropdown"</code>. See <code><a href="../reference/ejamapp.html">?ejamapp</a></code>
+and the alias-handling block near the top of
 <code>R/ejamapp.R</code>.</p>
+<p>The aliases and the defaults they cross-set (kept in sync with the
+alias block near the top of <code>R/ejamapp.R</code>):</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>You pass to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>
+</th>
+<th>Canonical param</th>
+<th>Also cross-sets</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<code>pts</code>, or <code>lat</code>+<code>lon</code>
+</td>
+<td><code>sitepoints</code></td>
+<td>
+<code>default_site_method="upload"</code>,
+<code>default_selected_type_of_site_upload="latlon"</code>
+</td>
+</tr>
+<tr class="even">
+<td>
+<code>shp</code> or <code>shape</code>
+</td>
+<td><code>shapefile</code></td>
+<td>
+<code>default_site_method="upload"</code>,
+<code>default_selected_type_of_site_upload="SHP"</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>shapefile</code></td>
+<td><code>shapefile</code></td>
+<td>
+<code>default_site_method="upload"</code>,
+<code>default_selected_type_of_site_upload="SHP"</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>fips</code></td>
+<td><code>fips</code></td>
+<td>
+<code>default_site_method="upload"</code>,
+<code>default_selected_type_of_site_upload="FIPS"</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>naics</code></td>
+<td><code>default_naics</code></td>
+<td>
+<code>default_site_method="dropdown"</code>,
+<code>default_selected_type_of_site_category="NAICS"</code>,
+<code>default_naics_digits_shown="detailed"</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>sic</code></td>
+<td><code>default_sic</code></td>
+<td>
+<code>default_site_method="dropdown"</code>,
+<code>default_selected_type_of_site_category="SIC"</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>mact</code></td>
+<td><code>default_mact</code></td>
+<td>
+<code>default_site_method="dropdown"</code>,
+<code>default_selected_type_of_site_category="MACT"</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The site-selection method param <code>default_site_method</code> was
+formerly named <code>default_upload_dropdown</code>; the old name still
+works as a back-compat alias (normalized to the new name inside
+<code><a href="../reference/ejamapp.html">ejamapp()</a></code>).</p>
 </div>
 <div class="section level4">
 <h4 id="app-launch">app launch<a class="anchor" aria-label="anchor" href="#app-launch"></a>
@@ -351,18 +433,83 @@ via <code>url_x() %||% global_or_param("x")</code>. (See PR #413 on the
 <div class="section level4">
 <h4 id="how-an-input-control-actually-gets-its-default">how an input control actually gets its default<a class="anchor" aria-label="anchor" href="#how-an-input-control-actually-gets-its-default"></a>
 </h4>
+<p>Two orthogonal things determine an input control: <strong>(Axis 1)
+how the widget is built</strong>, and <strong>(Axis 2) where its value
+comes from</strong>.</p>
+<p><strong>Axis 1 – how the widget is built</strong> (a UI-mechanics
+choice, almost always forced by the widget, not stylistic):</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Pattern</th>
+<th>Use when</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<strong>A. static UI default</strong> –
+<code>selected=</code>/<code>value=</code> set in <code>app_ui.R</code>
+to <code>global_or_param("...")</code>
+</td>
+<td>the default is a plain value known at page-load, with a fixed choice
+set</td>
+<td>most controls</td>
+</tr>
+<tr class="even">
+<td>
+<strong>B. server <code>renderUI</code></strong>
+(<code>uiOutput()</code> in UI +
+<code>output$x &lt;- renderUI({...})</code>)</td>
+<td>the widget’s <em>structure</em> (which choices exist, min/max,
+conditional sub-controls) depends on reactive state</td>
+<td>radius slider (<code>radius_now</code>)</td>
+</tr>
+<tr class="odd">
+<td><strong>C. static-empty UI + server
+<code>update*Input()</code></strong></td>
+<td>choices load server-side (large selectize lists) OR the value must
+change on a later event</td>
+<td>NAICS/SIC/MACT selectize; advanced-tab -&gt; main-control sync</td>
+</tr>
+</tbody>
+</table>
 <p>Because the UI is built once before any reactive <code>input$</code>
-exists, a control’s <code>selected=</code>/<code>value=</code> in
-<code>app_ui.R</code> must be a <strong>non-reactive</strong> value –
-<code>global_or_param("...")</code> – not <code>input$...</code>.
-Controls whose choices load server-side (large selectize lists like
-NAICS/SIC/MACT) or whose value must change in response to an event
-(Advanced-Tab sync, upload→method switch) are instead populated from the
-server via <code>update*Input()</code>. A few controls whose structure
-is itself reactive (e.g. the radius slider) are built server-side with
-<code>renderUI()</code>. The precedence order, top to bottom, is: Shiny
-bookmark <code>?_inputs_&amp;</code> &gt; launch-URL custom param &gt;
-<code><a href="../reference/ejamapp.html">ejamapp()</a></code> param &gt; <code>global_defaults_*.R</code>.</p>
+exists, an Axis-1-A control’s <code>selected=</code>/<code>value=</code>
+must be a <strong>non-reactive</strong> value –
+<code>global_or_param("...")</code> – never <code>input$...</code> (that
+errors at UI build). To make an advanced-tab setting change a main
+control, sync it server-side via <code>update*Input()</code>
+(Axis-1-C).</p>
+<p><strong>Axis 2 – where the value comes from</strong> (the precedence
+stack, highest wins):</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Shiny bookmark</strong> <code>?_inputs_&amp;...</code> –
+restores saved <code>input$</code> values on load (framework-level;
+orthogonal to the rest).</li>
+<li>
+<strong>Launch-URL custom params</strong>
+<code>?lat=&amp;lon=</code>, <code>?fips=</code>, <code>?shape=</code>,
+<code>?handoff=</code>, <code>?radius=</code> – read via the
+<code>url_*</code> reactives and resolved by
+<code>global_or_shinyparam_or_urlparam(name)</code>, so a launch-URL
+value wins over the default.</li>
+<li>
+<strong><code><a href="../reference/ejamapp.html">ejamapp()</a></code> params</strong> (after alias
+normalization) – override the global-default files.</li>
+<li>
+<strong><code>global_defaults_*.R</code></strong> files (package
+&lt; shiny &lt; shiny_public).</li>
+</ol>
+<p>The advanced-tab -&gt; main-control sync sits <em>alongside</em> this
+stack: it applies a user’s runtime change after load (e.g. the “Site
+Selection Method” radio updates <code>ss_choose_method</code> via
+<code>update*Input()</code>).</p>
 <p>To view the Advanced tab in the web app, click the About tab and then
 the Show advanced button on that page. If that button is not visible,
 use ejamapp(default_can_show_advanced_settings=TRUE). To show the
@@ -479,7 +626,7 @@ the app then fetches those places back from the API’s
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span></span>
 <span>  default_standard_analysis_title<span class="op">=</span><span class="st">"Custom NAICS Analysis"</span>,</span>
-<span>  default_upload_dropdown<span class="op">=</span><span class="st">"dropdown"</span>,</span>
+<span>  default_site_method<span class="op">=</span><span class="st">"dropdown"</span>,</span>
 <span>  default_selected_type_of_site_category<span class="op">=</span><span class="st">"NAICS"</span>,</span>
 <span>  default_naics_digits_shown<span class="op">=</span><span class="st">"detailed"</span>,</span>
 <span>  default_naics<span class="op">=</span><span class="st">"562211"</span>,</span>
@@ -521,7 +668,7 @@ Launch using parameters that are saved in a named vector or list
 ``` r
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -539,7 +686,7 @@ Save a custom reusable function you can use to launch with preset parameters
 
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -609,7 +756,7 @@ start analysis via URL bookmark:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'standard_analysis_title="Custom NAICS Analysis"'</span>,</span>
-<span>            <span class="st">'ss_choose_method="dropdown"'</span>,   <span class="co"># like ejamapp( default_upload_dropdown="dropdown" )</span></span>
+<span>            <span class="st">'ss_choose_method="dropdown"'</span>,   <span class="co"># like ejamapp( default_site_method="dropdown" )</span></span>
 <span>            <span class="st">'ss_choose_method_drop="NAICS"'</span>, <span class="co"># see ?ejamapp()</span></span>
 <span>            <span class="st">'naics_digits_shown="detailed"'</span>, <span class="co"># like ejamapp( default_naics_digits_shown = "detailed")</span></span>
 <span>            <span class="co"># 'ss_select_naics=313',           # like ejamapp(default_naics=313)</span></span>
@@ -703,11 +850,11 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <span><span class="co">#&gt;  [61,] "default_show_ratios_in_report"                </span></span>
 <span><span class="co">#&gt;  [62,] "default_shp_oktypes_1"                        </span></span>
 <span><span class="co">#&gt;  [63,] "default_sic"                                  </span></span>
-<span><span class="co">#&gt;  [64,] "default_standard_analysis_title"              </span></span>
-<span><span class="co">#&gt;  [65,] "default_states_picked"                        </span></span>
-<span><span class="co">#&gt;  [66,] "default_subgroups_type"                       </span></span>
-<span><span class="co">#&gt;  [67,] "default_testing"                              </span></span>
-<span><span class="co">#&gt;  [68,] "default_upload_dropdown"                      </span></span>
+<span><span class="co">#&gt;  [64,] "default_site_method"                          </span></span>
+<span><span class="co">#&gt;  [65,] "default_standard_analysis_title"              </span></span>
+<span><span class="co">#&gt;  [66,] "default_states_picked"                        </span></span>
+<span><span class="co">#&gt;  [67,] "default_subgroups_type"                       </span></span>
+<span><span class="co">#&gt;  [68,] "default_testing"                              </span></span>
 <span><span class="co">#&gt;  [69,] "default.an_thresh_comp1"                      </span></span>
 <span><span class="co">#&gt;  [70,] "default.an_thresh_comp2"                      </span></span>
 <span><span class="co">#&gt;  [71,] "default.an_threshgroup1"                      </span></span>
@@ -1364,11 +1511,11 @@ settings, etc.<a class="anchor" aria-label="anchor" href="#inputs-more-ejamit-pa
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>June 2026</p>
+  <p>July 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.0</p>
+  <p>EJAM Version 3.2022.1</p>
 </div>
 
     </footer>

@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -682,6 +682,47 @@ release.</p>
 tried to use Git LFS. That automatic workflow is no longer used and
 should not be restored.</p>
 </div>
+<div class="section level3">
+<h3 id="bump-the-package-version-number">Bump the package version number<a class="anchor" aria-label="anchor" href="#bump-the-package-version-number"></a>
+</h3>
+<p>The package version (<code>Version: 3.YYYY.x</code> in
+<code>DESCRIPTION</code>) is recorded verbatim in several other files.
+When cutting a release, bump all of them together so the version shown
+in the app, the docs site, and the citation agree:</p>
+<ul>
+<li>
+<code>DESCRIPTION</code> — <code>Version:</code>, plus the
+human-readable release fields <code>VersionDate:</code>,
+<code>ReleaseDateEJAM:</code>, <code>VersionEJSCREEN:</code>,
+<code>ReleaseDateEJSCREEN:</code>. (<code>ejamdata_required_tag:</code>
+is <em>not</em> a code version — see above; a code-only patch keeps it
+at the existing <code>v3.YYYY.0</code>.)</li>
+<li>
+<code>_pkgdown.yml</code> — the footer <code>components:</code>
+(<code>datefooter:</code> and <code>versionmsg:</code>), shown on every
+docs page.</li>
+<li>
+<code>CITATION.cff</code> — <code>version:</code> and
+<code>date-released:</code>. (<code>inst/CITATION</code> reads
+<code>Version</code>/<code>VersionDate</code> from
+<code>DESCRIPTION</code> at build time, so it needs no edit.)</li>
+<li>
+<code>inst/golem-config.yml</code> —
+<code>golem_version:</code>.</li>
+<li>
+<code>NEWS.md</code> — when publishing, retitle the top
+<code># EJAM 3.YYYY.x (unreleased)</code> heading to the dated release
+heading (for example <code># EJAM 3.2022.1 (July 2026)</code>).</li>
+</ul>
+<p><code>README.md</code> carries no hard-coded version (only a
+lifecycle badge), so it needs no edit. The deployed-API repo (EJAM-API)
+selects which EJAM version to build via the <code>EJAM_VERSION</code>
+build arg in its <code>Dockerfile</code> (with a matching mention in its
+<code>README.md</code>); bump that to the new tag (for example
+<code>v3.2022.1</code>) when redeploying the API. EJScreen has no
+EJAM-version string of its own — it reaches EJAM through the API URL —
+so it needs no version edit for an EJAM release.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="potential-improvements">Potential Improvements<a class="anchor" aria-label="anchor" href="#potential-improvements"></a>
@@ -714,11 +755,11 @@ into a data.table/data.frame.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>June 2026</p>
+  <p>July 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.0</p>
+  <p>EJAM Version 3.2022.1</p>
 </div>
 
     </footer>

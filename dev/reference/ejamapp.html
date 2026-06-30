@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -241,7 +241,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  <span class="co">## Cities dropdown list as default shown at launch:</span></span>
 <span></span>
 <span><span class="fu">ejamapp</span><span class="op">(</span></span>
-<span>  default_upload_dropdown <span class="op">=</span> <span class="st">"dropdown"</span>,</span>
+<span>  default_site_method <span class="op">=</span> <span class="st">"dropdown"</span>,</span>
 <span>  default_selected_type_of_site_category <span class="op">=</span> <span class="st">"FIPS_PLACE"</span>,</span>
 <span>  fipspicker_fips_type2pick_default <span class="op">=</span> <span class="st">"Cities or Places"</span></span>
 <span><span class="op">)</span></span>
@@ -249,7 +249,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  <span class="co">## Specific cities are preselected at launch</span></span>
 <span></span>
 <span>  <span class="fu">ejamapp</span><span class="op">(</span></span>
-<span>  default_upload_dropdown <span class="op">=</span> <span class="st">"dropdown"</span>,</span>
+<span>  default_site_method <span class="op">=</span> <span class="st">"dropdown"</span>,</span>
 <span>  default_selected_type_of_site_category <span class="op">=</span> <span class="st">"FIPS_PLACE"</span>,</span>
 <span>  fipspicker_fips_type2pick_default <span class="op">=</span> <span class="st">"Cities or Places"</span>,</span>
 <span>  default_cities_picked <span class="op">=</span> <span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"akutan,ak"</span>, <span class="st">"syracuse city,ny"</span><span class="op">)</span> <span class="op">)</span></span>
@@ -270,7 +270,7 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span>  <span class="co">## Polygons upload as the default shown at launch:</span></span>
 <span></span>
 <span><span class="fu">ejamapp</span><span class="op">(</span></span>
-<span>  default_upload_dropdown <span class="op">=</span> <span class="st">"upload"</span>,</span>
+<span>  default_site_method <span class="op">=</span> <span class="st">"upload"</span>,</span>
 <span>  default_selected_type_of_site_upload <span class="op">=</span> <span class="st">"SHP"</span></span>
 <span><span class="op">)</span></span>
 <span>  <span class="co">#default_choices_for_type_of_site_upload = c(</span></span>
@@ -283,10 +283,11 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span></span>
 <span>  <span class="co">## Click-or-draw-on-map as the default site-selection method shown at launch.</span></span>
 <span>  <span class="co">## The user clicks the map to specify one or more lat/lon points to analyze.</span></span>
-<span>  <span class="co">## (default_upload_dropdown accepts "dropdown", "upload", or "mapclick".)</span></span>
+<span>  <span class="co">## (default_site_method accepts "dropdown", "upload", or "mapclick".</span></span>
+<span>  <span class="co">##  It was formerly named default_upload_dropdown, which still works as an alias.)</span></span>
 <span></span>
 <span><span class="fu">ejamapp</span><span class="op">(</span></span>
-<span>  default_upload_dropdown <span class="op">=</span> <span class="st">"mapclick"</span></span>
+<span>  default_site_method <span class="op">=</span> <span class="st">"mapclick"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span> <span class="co">## Count how many of some indicator are &gt;= some cutoff</span></span>
@@ -354,11 +355,11 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>June 2026</p>
+  <p>July 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.0</p>
+  <p>EJAM Version 3.2022.1</p>
 </div>
 
     </footer></div>

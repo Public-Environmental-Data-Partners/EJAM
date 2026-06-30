@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,15 +73,10 @@
 <p>Changes since v3.YYYY.0:</p>
 <div class="section level3">
 <h3 id="new-features-3-2022-1">New Features<a class="anchor" aria-label="anchor" href="#new-features-3-2022-1"></a></h3>
+<div class="section level4">
+<h4 id="ejscreen-integration-via-api-and-deep-linking-to-ejam-3-2022-1">EJScreen integration via API and deep-linking to EJAM<a class="anchor" aria-label="anchor" href="#ejscreen-integration-via-api-and-deep-linking-to-ejam-3-2022-1"></a></h4>
+<p>New features across the EJAM API, the EJScreen web app, and the EJAM web app now work together so that EJScreen users can select several places directly on the EJScreen map – clicking points, picking a “Select an Area” FIPS area, or drawing a polygon – and then either get a single multisite report covering all of those places at once, or hand the same selected places off to the EJAM (“multisite”) web app with the sites already loaded and ready to analyze. The supporting pieces:</p>
 <ul><li>
-<p>Parameter aliases for consistency across the place-input functions – <code><a href="../reference/ejamit.html">ejamit()</a></code>, <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, <code><a href="../reference/custom_ejamit.html">custom_ejamit()</a></code>, <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, <code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code>, <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>, <code><a href="../reference/ejam2report.html">ejam2report()</a></code>, <code><a href="../reference/ejam2map.html">ejam2map()</a></code>, <code><a href="../reference/shapefile_from_any.html">shapefile_from_any()</a></code>, <code><a href="../reference/sites_from_input.html">sites_from_input()</a></code>, <code><a href="../reference/ejamit_compare_distances.html">ejamit_compare_distances()</a></code>/<code>_fulloutput()</code>, <code><a href="../reference/ejamit_compare_types_of_places.html">ejamit_compare_types_of_places()</a></code>, <code><a href="../reference/ejamit_sitetype_from_input.html">ejamit_sitetype_from_input()</a></code>, <code><a href="../reference/latlon_from_shapefile_centroids.html">latlon_from_shapefile_centroids()</a></code>, <code><a href="../reference/shape_buffered_from_shapefile.html">shape_buffered_from_shapefile()</a></code>, the <code>url_*</code> map/report-link builders (<code>url_ejscreenmap</code>, <code>url_enviromapper</code>, <code>url_county_health</code>/<code>_equityatlas</code>, <code>url_state_health</code>/<code>_equityatlas</code>), and the EJAM API:</p>
-<ul><li>
-<strong><code>buffer</code></strong> is a synonym for <strong><code>radius</code></strong> (and <strong><code>buffers</code></strong> for the <code>radii</code> vector) – it reads more naturally for FIPS or polygon analysis;</li>
-<li>
-<strong><code>shape</code></strong> and <strong><code>shp</code></strong> are synonyms for the polygon input (<strong><code>shapefile</code></strong>). Canonical names are unchanged; the aliases are accepted wherever relevant.</li>
-</ul></li>
-<li><p><code><a href="../reference/ejamit.html">ejamit()</a></code> now accepts <code>lat</code> and <code>lon</code> vectors directly (it builds <code>sitepoints</code> from them), in addition to a <code>sitepoints</code> data.frame. Closes <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/171" class="external-link">#171</a>.</p></li>
-<li>
 <p>Launch-URL site handoff (pre-load the web app from an external site). The app server now reads custom launch query parameters so another app – notably the EJScreen Report tool’s new “Send to EJAM” button – can open EJAM already pre-loaded with a set of places:</p>
 <ul><li>
 <code>?lat=33,34&amp;lon=-112,-114</code> – one or more points, each a site</li>
@@ -95,9 +90,22 @@
 <code>?handoff=&lt;token&gt;</code> – a token minted by the EJAM API <code>POST /handoff</code> and fetched back via <code>GET /handoff/&lt;token&gt;</code>, for large polygon sets that exceed URL-length limits</li>
 </ul><p>Points and polygons are file-upload inputs that cannot travel in a Shiny url-bookmark, so this is the supported way to pass them in at launch. One place-type loads per launch (points, then FIPS, then polygons); the parsed places are held in per-session reactives (<code>url_sitepoints</code>, <code>url_fips</code>, <code>url_shapefile</code>) that the upload reactives prefer over <code><a href="../reference/ejamapp.html">ejamapp()</a></code>/global defaults. The vocabulary matches <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>. See <code>vignettes/dev-app-settings.Rmd</code>.</p>
 </li>
-<li><p><code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code> now builds a deep link that launches the live app pre-loaded with a set of places: <code>url_ejamapp(lat=, lon=, fips=, shapefile=, radius=)</code> or <code>url_ejamapp(handoff=&lt;token&gt;)</code>, using the same query vocabulary as <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>. The default app base is now <strong><code>https://ejamapp.ejanalysis.com/</code></strong>, a Cloudflare-fronted shortcut on ejanalysis.com that forwards the query string (302 redirect) to the live app so launch parameters arrive intact. Docs for <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> were updated to reflect that the EJAM API now supports multisite reports (<code>sitenumber=0</code>) and a POST <code>/report</code> endpoint for many/large polygons.</p></li>
+<li><p><code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code> now builds a deep link that launches the live app pre-loaded with a set of places: <code>url_ejamapp(lat=, lon=, fips=, shapefile=, radius=)</code> or <code>url_ejamapp(handoff=&lt;token&gt;)</code>, using the same query vocabulary as <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>. The default app base is now <strong><code>https://ejamapp.ejanalysis.com/</code></strong>, a Cloudflare-fronted shortcut on ejanalysis.com that forwards the query string (302 redirect) to the live app so launch parameters arrive intact.</p></li>
 <li><p>The EJAM API base URL is now <strong>single-sourced</strong>: functions read it from <code>DESCRIPTION</code> (<code>ejam_api_url</code>) via <code>url_package("api")</code>, so the endpoint can be changed in one place instead of being hardcoded in several. A friendlier branded alias, <code>https://api.ejanalysis.com/</code> (also <code>https://ejamapi.ejanalysis.com/</code>), is available via Cloudflare and can be set as <code>ejam_api_url</code> if desired; the default remains the Cloud Run URL. See the new <code>dev-api</code> article.</p></li>
+<li><p>The EJAM API now supports multisite reports (<code>sitenumber=0</code>) and also now has a POST <code>/report</code> endpoint for large or numerous polygons. Docs for <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> were updated to reflect that.</p></li>
 </ul></div>
+<div class="section level4">
+<h4 id="parameter-aliases-and-flexible-site-inputs-3-2022-1">Parameter aliases and flexible site inputs<a class="anchor" aria-label="anchor" href="#parameter-aliases-and-flexible-site-inputs-3-2022-1"></a></h4>
+<ul><li>Parameter aliases for consistency across the place-input functions – <code><a href="../reference/ejamit.html">ejamit()</a></code>, <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, <code><a href="../reference/custom_ejamit.html">custom_ejamit()</a></code>, <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, <code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code>, <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>, <code><a href="../reference/ejam2report.html">ejam2report()</a></code>, <code><a href="../reference/ejam2map.html">ejam2map()</a></code>, <code><a href="../reference/shapefile_from_any.html">shapefile_from_any()</a></code>, <code><a href="../reference/sites_from_input.html">sites_from_input()</a></code>, <code><a href="../reference/ejamit_compare_distances.html">ejamit_compare_distances()</a></code>/<code>_fulloutput()</code>, <code><a href="../reference/ejamit_compare_types_of_places.html">ejamit_compare_types_of_places()</a></code>, <code><a href="../reference/ejamit_sitetype_from_input.html">ejamit_sitetype_from_input()</a></code>, <code><a href="../reference/latlon_from_shapefile_centroids.html">latlon_from_shapefile_centroids()</a></code>, <code><a href="../reference/shape_buffered_from_shapefile.html">shape_buffered_from_shapefile()</a></code>, the <code>url_*</code> map/report-link builders (<code>url_ejscreenmap</code>, <code>url_enviromapper</code>, <code>url_county_health</code>/<code>_equityatlas</code>, <code>url_state_health</code>/<code>_equityatlas</code>), and the EJAM API:
+<ul><li>
+<strong><code>buffer</code></strong> is a synonym for <strong><code>radius</code></strong> (and <strong><code>buffers</code></strong> for the <code>radii</code> vector) – it reads more naturally for FIPS or polygon analysis;</li>
+<li>
+<strong><code>shape</code></strong> and <strong><code>shp</code></strong> are synonyms for the polygon input (<strong><code>shapefile</code></strong>). Canonical names are unchanged; the aliases are accepted wherever relevant.</li>
+</ul></li>
+<li>
+<code><a href="../reference/ejamit.html">ejamit()</a></code> now accepts <code>lat</code> and <code>lon</code> vectors directly (it builds <code>sitepoints</code> from them), in addition to a <code>sitepoints</code> data.frame. Closes <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/171" class="external-link">#171</a>.</li>
+</ul></div>
+</div>
 <div class="section level3">
 <h3 id="bug-fixes-3-2022-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2022-1"></a></h3>
 <ul><li>Census API key (tidycensus &gt;= 1.8 breaking change): tidycensus now <em>errors</em> (no longer warns) without a key – including for the <code>load_variables()</code> metadata lookup. <code><a href="../reference/calc_blockgroupstats_acs.html">calc_blockgroupstats_acs()</a></code> and <code><a href="../reference/acs_table_info.html">acs_table_info()</a></code> now fail fast with an actionable message when <code>CENSUS_API_KEY</code> is unset. A follow-up scopes this check to the live-download path only: when raw ACS data are supplied (for example, the pipeline rebuilding block-group data from a saved stage), no Census API call is made, so a keyless environment is no longer blocked.</li>
@@ -936,11 +944,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>June 2026</p>
+  <p>July 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.0</p>
+  <p>EJAM Version 3.2022.1</p>
 </div>
 
     </footer></div>
