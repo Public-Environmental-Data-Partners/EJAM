@@ -14,11 +14,13 @@ url_ejamapi(
   dTolerance = 100,
   linktext = "Report",
   as_html = FALSE,
-  ifna = "https://ejanalysis.com",
-  baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?",
+  ifna = NULL,
+  baseurl = NULL,
   sitenumber = "each",
   version = NULL,
-  ...
+  ...,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -39,9 +41,13 @@ which might get too long for encoding in a URL for the API using GET}
 
 \item{as_html}{Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example}
 
-\item{ifna}{URL shown for missing, NA, NULL, bad input values}
+\item{ifna}{URL shown for missing, NA, NULL, bad input values. Default NULL
+(and an explicitly passed NULL) resolves to the EJAM API base URL from
+DESCRIPTION (\code{ejam_api_url}), via \code{\link[=url_package]{url_package()}} with type="api".}
 
-\item{baseurl}{do not change unless endpoint actually changed. See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
+\item{baseurl}{do not change unless endpoint actually changed. Default NULL
+(and an explicitly passed NULL) resolves to the DESCRIPTION \code{ejam_api_url}
+followed by "/report?". See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
 
 \item{sitenumber}{\itemize{
 \item "each" (or -1) means return each site's URL
@@ -70,6 +76,8 @@ resolves to the installed package Version (from DESCRIPTION).}
 
 \item{...}{a named list of other query parameters passed to the API,
 to allow for expansion of allowed parameters}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 vector of character string URLs -- see details on sitenumber parameter
@@ -82,24 +90,19 @@ Get URL(s) of HTML summary reports for use with EJAM-API
 \item This is work in progress to some extent -- this and the API may be add features in later releases.
 \item Relies on API from
 https://github.com/edgi-govdata-archiving/EJAM-API
-\item Another option in the future might be to construct a URL that is a "deep link" to the live EJAM
-app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.
+\item To construct a "deep link" that launches the live EJAM \emph{app} (not the API)
+pre-loaded with sites, see \code{\link[=url_ejamapp]{url_ejamapp()}}, which uses the same query
+vocabulary (lat, lon, fips, shape, radius, handoff).
 \item Will try to use the same input parameters as \code{\link[=ejamit]{ejamit()}} does.
-\item The API as of mid-2026 used \code{\link[=ejam2report]{ejam2report()}} with these parameter settings:
-\itemize{
-\item \code{sitenumber = 1}
-\item \code{report_title="EJSCREEN Community Report"}
-}
-
-Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejamit()}} and \code{\link[=ejam2report]{ejam2report()}} such as
-\itemize{
-\item sitenumber=0 (for a multisite report)
-\item logo_path
-\item report_title
-\item analysis_title
-\item thresholds & threshnames
-\item radius_donut_lower_edge
-}
+\item The API now honors the \code{sitenumber} parameter passed through to \code{\link[=ejam2report]{ejam2report()}}:
+the default is \code{sitenumber = 1} (a single-site report), and \code{sitenumber = 0}
+(or "overall") produces an aggregate \emph{multisite} report. The API leaves the
+report title to \code{\link[=ejam2report]{ejam2report()}}, which uses "EJSCREEN Community Report" for a
+single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
+polygons can exceed URL length for this GET-based path; the API also provides
+a POST \verb{/report} endpoint for those. The API does not yet accept every
+\code{\link[=ejam2report]{ejam2report()}} option (e.g. logo_path, thresholds & threshnames,
+radius_donut_lower_edge).
 }
 }
 \examples{
@@ -127,7 +130,7 @@ Therefore, it was not yet accepting parameters used by \code{\link[=ejamit]{ejam
  z = url_ejamapi(shapefile = shp)
 
  \dontrun{
- browseURL("https://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-112&buffer=4")
+ browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
 
  browseURL(x[1])
  browseURL(y[1])

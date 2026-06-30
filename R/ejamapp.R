@@ -18,6 +18,14 @@
 #'  ```
 #'  See details and examples.
 #'
+#'  These parameters are fixed when the app is launched (or deployed). To pre-load
+#'  an already-running/deployed app with a set of sites at runtime instead, open it
+#'  with launch query parameters in the URL: the app reads `?lat=&lon=`, `?fips=`,
+#'  `?shape=` (GeoJSON), `?radius=`, or `?handoff=<token>` at startup and
+#'  pre-selects those places. Use [url_ejamapp()] to build such a URL (its query
+#'  vocabulary matches [url_ejamapi()]). See the "Defaults and Custom Settings for
+#'  the Web App" vignette.
+#'
 #' @param enableBookmarking see [shiny::shinyApp]
 #' This parameter lets a user click the [shiny::bookmarkButton()] in the app
 #' to save the state of all  input$  settings.
@@ -287,13 +295,16 @@ ejamapp <- function(
     cat("launching with specified fips =", paste0(dots$fips, collapse = ", "), "\n")
   }
 
-  if ("shp" %in% names(dots) && !("shapefile" %in% names(dots))) {
+  if ("shp" %in% names(dots) && is.null(dots$shapefile)) {   # is.null() so an explicit shapefile=NULL still lets the alias apply
     # dots$shp will be used
     dots$shapefile <- dots$shp # convenient alias
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
   }
-  if ("shapefile" %in% names(dots)) {
+  if ("shape" %in% names(dots) && is.null(dots$shapefile)) {
+    dots$shapefile <- dots$shape # convenient alias (synonym) for shapefile
+  }
+  if (!is.null(dots$shapefile)) {
     # dots$shapefile will be used
     dots$default_upload_dropdown = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
@@ -335,9 +346,13 @@ ejamapp <- function(
   if ("default_radius" %in% names(dots)) {
     dots$radius_default <- dots$default_radius
   }
-  if ("radius" %in% names(dots)) {
+  if (!is.null(dots$radius)) {   # is.null() so an explicit radius=NULL does not clobber radius_default or block the buffer alias
     dots$radius_default <- dots$radius
     cat("launching with specified radius =", dots$radius_default, "\n")
+  }
+  if (!is.null(dots$buffer) && is.null(dots$radius)) {
+    dots$radius_default <- dots$buffer # buffer is a synonym (alias) for radius (used only if radius not given)
+    cat("launching with specified buffer (radius) =", dots$radius_default, "\n")
   }
 
   # more aliases

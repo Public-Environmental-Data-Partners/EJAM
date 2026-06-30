@@ -38,6 +38,31 @@ if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if 
 ```
 
 
+# Deep links: launch the app pre-loaded via URL parameters
+
+Besides the deploy-time settings described below, an already-running EJAM app can be
+**launched pre-loaded with a set of places** by opening it with launch query parameters in
+the URL. This is how the EJScreen Report tool's "Send to EJAM" button opens EJAM ready to
+run, and what `url_ejamapp()` builds as shareable deep links.
+
+The app reads these at startup (one place-type per launch -- points, else FIPS, else
+polygons):
+
+- `?lat=33,34&lon=-112,-114` -- one or more points, each treated as a site
+- `?fips=10001,10003` -- one or more FIPS codes, each a separate site
+- `?shape=<url-encoded GeoJSON>` -- a polygon or FeatureCollection
+- `?radius=` (or `?buffer=`) -- analysis radius in miles
+- `?handoff=<token>` -- a token minted by the EJAM API `POST /handoff` and fetched back at
+  startup, for large polygon sets that exceed URL-length limits
+
+Build such a link with `url_ejamapp()`; its query vocabulary matches `url_ejamapi()` (which
+builds *API* request URLs rather than *app* links). The default app base is
+`https://ejamapp.ejanalysis.com/`, a Cloudflare-fronted shortcut on the `ejanalysis.com`
+domain that forwards the query string to the live app (a plain redirect that dropped the
+query would open the app empty). For the API side -- including the friendlier
+`https://api.ejanalysis.com/` base and parameter details -- see the `dev-api` article, the
+help for `ejamapi()`/`url_ejamapi()`, and the EJAM-API repository's README.
+
 # NOTES ON GLOBAL DEFAULTS, SHINY INPUTS, BOOKMARKS, AND FUNCTION PARAMETERS
 
 This document provides technical notes on how defaults and custom settings are defined for the EJAM web app.
@@ -204,10 +229,57 @@ of UI inputs, not other reactive values (unless the server code specifies otherw
 using the `shiny::onBookmark()` and `shiny::onRestore()` functions to make 
 bookmarks store other information, beyond just inputs).
 Some important global defaults affect the app but not by providing
-initial values for inputs in the shiny app, so some useful information 
+initial values for inputs in the shiny app, so some useful information
 including some that is controlled by global defaults or user parameters in ejamapp()
 cannot be bookmarked because it is stored in reactives
-but not as shiny app inputs. 
+but not as shiny app inputs.
+To pass a set of *sites* (points, FIPS codes, or polygons) into an already-deployed
+app through a URL — which the file-upload inputs cannot do through a url-bookmark —
+use the custom launch query parameters described next.
+
+### Launch URL with pre-selected sites (handoff from an external app)
+
+Separately from Shiny's `?_inputs_&...` bookmark mechanism, the app server reads a
+small set of **custom launch query parameters** so an external app (e.g. EJScreen)
+can open EJAM already pre-loaded with a set of places. This is the way to pass in
+**points or polygons**, which are file uploads and therefore cannot travel in a
+url-encoded bookmark. The vocabulary matches `url_ejamapi()`:
+
+- `?lat=33,34&lon=-112,-114` — one or more points (comma-separated), each a site
+- `?fips=10001,10003` — one or more FIPS codes, **each a separate site**
+- `?shape=<url-encoded GeoJSON>` — a polygon / FeatureCollection (read by `shapefile_from_any()`)
+- `?radius=3` (or `?buffer=3`) — analysis radius in miles
+- `?handoff=<token>` — a token previously minted by the EJAM API `POST /handoff`;
+  the app fetches `GET /handoff/<token>` and pre-loads whatever places it holds.
+  Use this for large polygon sets that would not fit in a URL.
+
+Only one place-type is loaded per launch (points, then FIPS, then polygons),
+matching the one-method-per-analysis model. Internally the launch handler stores
+the parsed places in three per-session reactives — `url_sitepoints`, `url_fips`,
+and `url_shapefile` — which `data_up_tablepassed_latlon()`/`data_up_latlon()`,
+`data_up_fips()`, and `data_up_shp()` prefer over the `ejamapp()`/global defaults.
+It also updates `ss_choose_method` and `ss_choose_method_upload` so the matching
+upload tab is shown, so the app opens with those sites selected and ready to run.
+The handler is the `observe()` near the top of the SELECT SITES section in
+`R/app_server.R`.
+
+For example, this opens the hosted app pre-loaded with two counties (two sites):
+
+    https://ejamapp.ejanalysis.com/?fips=10001,10003
+
+and this pre-loads two points with a 3-mile radius:
+
+    https://ejamapp.ejanalysis.com/?lat=33,34&lon=-112,-114&radius=3
+
+Because the query vocabulary matches `url_ejamapi()` (which builds EJAM API report
+URLs), the helper `url_ejamapp()` builds these app-launch URLs with the same
+vocabulary -- for example `url_ejamapp(fips = c("10001","10003"))` or
+`url_ejamapp(handoff = "<token>")`. The `?handoff=<token>` form is how EJScreen's
+"Send to EJAM" button passes a large set of drawn polygons without hitting
+URL-length limits:
+EJScreen `POST`s the GeoJSON to the EJAM API `/handoff`, gets a token, and opens
+the EJAM app at `?handoff=<token>` (e.g. `https://ejamapp.ejanalysis.com/?handoff=<token>`);
+the app then fetches those places back from the API's `GET /handoff/<token>` at startup.
 
 --------------
 --------------

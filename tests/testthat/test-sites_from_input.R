@@ -102,3 +102,10 @@ test_that("message not warning if lat,lon, and sitepoints provided?", {
     })
   })
 })
+
+test_that("sites_from_input() accepts shape/shp aliases for shapefile", {
+  sf1 <- shapefile_from_any(testshapes_2, cleanit = FALSE)
+  expect_equal(sites_from_input(shapefile = sf1)$sitetype, "shp")
+  expect_equal(sites_from_input(shape = sf1)$sitetype, "shp")
+  expect_equal(sites_from_input(shp = sf1)$sitetype, "shp")
+})

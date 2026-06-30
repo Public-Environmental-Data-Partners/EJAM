@@ -10,7 +10,10 @@ ejam2map(
   launch_browser = TRUE,
   shp = NULL,
   radius = NULL,
-  sitenumber = NULL
+  sitenumber = NULL,
+  shape = NULL,
+  shapefile = NULL,
+  buffer = NULL
 )
 }
 \arguments{
@@ -22,9 +25,15 @@ ejam2map(
 
 \item{shp}{shapefile it can map if analysis was for polygons, for example}
 
-\item{radius}{radius in miles}
+\item{radius}{optional radius in miles}
 
 \item{sitenumber}{as used in \code{\link[=ejam2report]{ejam2report()}}}
+
+\item{shape}{alias (synonym) for shp}
+
+\item{shapefile}{alias (synonym) for shp}
+
+\item{buffer}{alias (synonym) for radius}
 }
 \value{
 like what \code{\link[=mapfastej]{mapfastej()}} returns

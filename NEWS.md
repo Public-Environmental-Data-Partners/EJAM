@@ -8,6 +8,61 @@ ejamdata release, with no change to the packaged ACS or environmental data.
 
 Changes since v3.YYYY.0:
 
+## New Features
+
+- Parameter aliases for consistency across the place-input functions -- `ejamit()`,
+  `ejamapp()`, `custom_ejamit()`, `ejamapi()`, `url_ejamapp()`, `url_ejamapi()`,
+  `ejam2report()`, `ejam2map()`, `shapefile_from_any()`, `sites_from_input()`,
+  `ejamit_compare_distances()`/`_fulloutput()`, `ejamit_compare_types_of_places()`,
+  `ejamit_sitetype_from_input()`, `latlon_from_shapefile_centroids()`,
+  `shape_buffered_from_shapefile()`, the `url_*` map/report-link builders
+  (`url_ejscreenmap`, `url_enviromapper`, `url_county_health`/`_equityatlas`,
+  `url_state_health`/`_equityatlas`), and the EJAM API:
+    - **`buffer`** is a synonym for **`radius`** (and **`buffers`** for the `radii`
+      vector) -- it reads more naturally for FIPS or polygon analysis;
+    - **`shape`** and **`shp`** are synonyms for the polygon input (**`shapefile`**).
+  Canonical names are unchanged; the aliases are accepted wherever relevant.
+
+- `ejamit()` now accepts `lat` and `lon` vectors directly (it builds `sitepoints`
+  from them), in addition to a `sitepoints` data.frame. Closes #171.
+
+- Launch-URL site handoff (pre-load the web app from an external site). The app
+  server now reads custom launch query parameters so another app -- notably the
+  EJScreen Report tool's new "Send to EJAM" button -- can open EJAM already
+  pre-loaded with a set of places:
+    - `?lat=33,34&lon=-112,-114` -- one or more points, each a site
+    - `?fips=10001,10003` -- one or more FIPS codes, each a separate site
+    - `?shape=<url-encoded GeoJSON>` -- a polygon or FeatureCollection
+    - `?radius=` / `?buffer=` -- analysis radius in miles
+    - `?handoff=<token>` -- a token minted by the EJAM API `POST /handoff` and
+      fetched back via `GET /handoff/<token>`, for large polygon sets that exceed
+      URL-length limits
+
+  Points and polygons are file-upload inputs that cannot travel in a Shiny
+  url-bookmark, so this is the supported way to pass them in at launch. One
+  place-type loads per launch (points, then FIPS, then polygons); the parsed
+  places are held in per-session reactives (`url_sitepoints`, `url_fips`,
+  `url_shapefile`) that the upload reactives prefer over `ejamapp()`/global
+  defaults. The vocabulary matches `url_ejamapi()`. See
+  `vignettes/dev-app-settings.Rmd`.
+
+- `url_ejamapp()` now builds a deep link that launches the live app pre-loaded
+  with a set of places: `url_ejamapp(lat=, lon=, fips=, shapefile=, radius=)` or
+  `url_ejamapp(handoff=<token>)`, using the same query vocabulary as
+  `url_ejamapi()`. The default app base is now **`https://ejamapp.ejanalysis.com/`**,
+  a Cloudflare-fronted shortcut on ejanalysis.com that forwards the query string
+  (302 redirect) to the live app so launch parameters arrive intact. Docs for
+  `ejamapp()`, `ejamapi()`, and `url_ejamapi()` were updated to reflect that the
+  EJAM API now supports multisite reports (`sitenumber=0`) and a POST `/report`
+  endpoint for many/large polygons.
+
+- The EJAM API base URL is now **single-sourced**: functions read it from
+  `DESCRIPTION` (`ejam_api_url`) via `url_package("api")`, so the endpoint can be
+  changed in one place instead of being hardcoded in several. A friendlier branded
+  alias, `https://api.ejanalysis.com/` (also `https://ejamapi.ejanalysis.com/`), is
+  available via Cloudflare and can be set as `ejam_api_url` if desired; the default
+  remains the Cloud Run URL. See the new `dev-api` article.
+
 ## Bug Fixes
 
 - Census API key (tidycensus >= 1.8 breaking change): tidycensus now *errors*

@@ -8,22 +8,21 @@
 #' - Relies on API from
 #'   https://github.com/edgi-govdata-archiving/EJAM-API
 #'
-#' - Another option in the future might be to construct a URL that is a "deep link" to the live EJAM
-#'   app but has url-encoded parameters that are app settings, such as sitepoints, radius_default, etc.
+#' - To construct a "deep link" that launches the live EJAM *app* (not the API)
+#'   pre-loaded with sites, see [url_ejamapp()], which uses the same query
+#'   vocabulary (lat, lon, fips, shape, radius, handoff).
 #'
 #' - Will try to use the same input parameters as [ejamit()] does.
 #'
-#' - The API as of mid-2026 used [ejam2report()] with these parameter settings:
-#'   - `sitenumber = 1`
-#'   - `report_title="EJSCREEN Community Report"`
-#'
-#'   Therefore, it was not yet accepting parameters used by [ejamit()] and [ejam2report()] such as
-#'   - sitenumber=0 (for a multisite report)
-#'   - logo_path
-#'   - report_title
-#'   - analysis_title
-#'   - thresholds & threshnames
-#'   - radius_donut_lower_edge
+#' - The API now honors the `sitenumber` parameter passed through to [ejam2report()]:
+#'   the default is `sitenumber = 1` (a single-site report), and `sitenumber = 0`
+#'   (or "overall") produces an aggregate *multisite* report. The API leaves the
+#'   report title to [ejam2report()], which uses "EJSCREEN Community Report" for a
+#'   single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
+#'   polygons can exceed URL length for this GET-based path; the API also provides
+#'   a POST `/report` endpoint for those. The API does not yet accept every
+#'   [ejam2report()] option (e.g. logo_path, thresholds & threshnames,
+#'   radius_donut_lower_edge).
 #'
 #' @param sitepoints see [ejamit()]
 #' @param lat,lon can be provided as vectors of coordinates instead of providing sitepoints table
@@ -33,12 +32,17 @@
 #'
 #' @param shapefile  see [ejamit()], but each polygon is encoded as geojson string
 #'   which might get too long for encoding in a URL for the API using GET
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param dTolerance number of meters tolerance to use in [sf::st_simplify()] to simplify polygons to fit as url-encoded text geojson
 #'
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
-#' @param ifna URL shown for missing, NA, NULL, bad input values
-#' @param baseurl do not change unless endpoint actually changed. See [ejamapi()] for a better way to handle choice of endpoint.
+#' @param ifna URL shown for missing, NA, NULL, bad input values. Default NULL
+#'   (and an explicitly passed NULL) resolves to the EJAM API base URL from
+#'   DESCRIPTION (`ejam_api_url`), via [url_package()] with type="api".
+#' @param baseurl do not change unless endpoint actually changed. Default NULL
+#'   (and an explicitly passed NULL) resolves to the DESCRIPTION `ejam_api_url`
+#'   followed by "/report?". See [ejamapi()] for a better way to handle choice of endpoint.
 #'
 #' @param sitenumber
 #'
@@ -93,7 +97,7 @@
 #'  z = url_ejamapi(shapefile = shp)
 #'
 #'  \dontrun{
-#'  browseURL("https://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-112&buffer=4")
+#'  browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
 #'
 #'  browseURL(x[1])
 #'  browseURL(y[1])
@@ -154,15 +158,25 @@ url_ejamapi = function(
 
   linktext = "Report",
   as_html = FALSE,
-  ifna = "https://ejanalysis.com",
-  baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?",
+  ifna = NULL,
+  baseurl = NULL,
 
   sitenumber = "each",
 
   version = NULL,
 
-  ...
+  ...,
+
+  shape = NULL, shp = NULL   # name-only aliases (after ... so positional args still flow into ... unchanged)
 ) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
+
+  # Single source of truth: the EJAM API base URL lives in DESCRIPTION (ejam_api_url),
+  # read via url_package("api"). Default NULL (and an explicitly passed NULL) resolve here.
+  if (is.null(ifna))    {ifna    <- url_package("api")}
+  if (is.null(baseurl)) {baseurl <- paste0(url_package("api"), "/report?")}
 
   ## unused so far:
   {
@@ -214,12 +228,7 @@ url_ejamapi = function(
     and_other_query_terms <- paste0(and_other_query_terms, "&version=", version)
   }
   ################################################## #  ################################################## #
-  if (is.null(baseurl)) {
-    baseurl <- "https://ejamapi-84652557241.us-central1.run.app/report?"
-  }
-  if (is.null(ifna)) {
-    ifna <- "https://ejanalysis.com"
-  }
+  # (baseurl and ifna were already resolved from url_package("api") near the top.)
   shp_one_site_fallback_url <- "https://ejanalysis.com/ejamapp"
   # see https://github.com/edgi-govdata-archiving/EJAM-API/tree/main
   # baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?"

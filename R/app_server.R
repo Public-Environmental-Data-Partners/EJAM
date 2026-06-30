@@ -422,11 +422,135 @@ app_server <- function(input, output, session) {
   ## initialize lat/lon upload error message (e.g. point cap exceeded)
   latlon_upload_error <- reactiveVal(NULL)
 
+  #############################################################################  #
+  ## Sites supplied via the launch URL (handoff from an external app like EJScreen) ####
+  #
+  # These reactiveVals hold a set of places provided at launch through the URL,
+  # either as direct query params (?lat=&lon=, ?fips=, ?shape=<geojson>, ?radius=)
+  # or via a token (?handoff=<token>) that the EJAM API resolves to the same kinds
+  # of places. They mirror the ejamapp() parameters sitepoints/fips/shapefile but
+  # are set per-session at runtime, so a deployed app can be opened pre-loaded.
+  # data_up_tablepassed_latlon(), data_up_shp(), and data_up_fips() prefer these
+  # over the global_or_param() defaults. See url_ejamapi() for the matching URL
+  # vocabulary used by the EJAM API. Only one place-type is loaded per launch
+  # (points, then FIPS, then polygons), matching the one-method-per-analysis model.
+  url_sitepoints <- reactiveVal(NULL)
+  url_shapefile  <- reactiveVal(NULL)
+  url_fips       <- reactiveVal(NULL)
+
+  observe({
+    search <- session$clientData$url_search
+    if (is.null(search) || !nzchar(search)) {return(NULL)}
+    q <- shiny::parseQueryString(search)
+
+    # base URL of the EJAM API that mints/resolves handoff tokens. Single source of
+    # truth is the DESCRIPTION field ejam_api_url; read it via url_package("api"),
+    # and if that is unavailable derive it from url_ejamapi()'s resolved base (its
+    # /report? endpoint minus the path). Override via global_or_param("ejamapi_baseurl").
+    # A usable base is a single non-NA, non-empty string; each fallback is tried only
+    # if the previous left it unusable (NULL, character(0), NA, or ""). length()!=1 is
+    # checked first so is.na()/nzchar() are never called on a zero-length value.
+    apibase <- global_or_param("ejamapi_baseurl")
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
+      apibase <- tryCatch(url_package("api"), error = function(e) NULL)
+    }
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
+      apibase <- tryCatch(sub("/report.*$", "", url_ejamapi()), error = function(e) NULL)
+    }
+    if (length(apibase) != 1 || is.na(apibase) || !nzchar(apibase)) {
+      apibase <- ""   # API base unresolved -> the ?handoff= fetch below is skipped cleanly
+    }
+
+    # Normalize either a ?handoff= token or direct params into one spec.
+    spec <- list()
+    if (!is.null(q$handoff) && nzchar(q$handoff) && nzchar(apibase)) {
+      tokenurl <- paste0(apibase, "/handoff/", utils::URLencode(q$handoff, reserved = TRUE))
+      # Fetch with a short timeout so a slow/unreachable API can't hang app startup
+      # (this runs on the Shiny server thread during session init).
+      payload  <- tryCatch(
+        jsonlite::fromJSON(httr2::resp_body_string(
+          httr2::req_perform(httr2::req_timeout(httr2::request(tokenurl), 5))
+        )),
+        error = function(e) NULL
+      )
+      if (!is.null(payload) && is.null(payload$error)) {
+        if (!is.null(payload$sites) && is.data.frame(payload$sites)) {
+          spec$lat <- payload$sites$lat
+          spec$lon <- payload$sites$lon
+        }
+        if (!is.null(payload$fips))   {spec$fips   <- as.character(payload$fips)}
+        if (!is.null(payload$shape))  {
+          # If the API already returned shape as GeoJSON text, use it as-is;
+          # only re-serialize when it came back as a parsed object (avoid double-encoding).
+          spec$shape <- if (is.character(payload$shape)) payload$shape else as.character(jsonlite::toJSON(payload$shape, auto_unbox = TRUE))
+        }
+        if (!is.null(payload$radius)) {spec$radius <- payload$radius}
+      }
+    } else {
+      if (!is.null(q$lat) && !is.null(q$lon)) {
+        spec$lat <- as.numeric(trimws(strsplit(q$lat, ",")[[1]]))
+        spec$lon <- as.numeric(trimws(strsplit(q$lon, ",")[[1]]))
+      }
+      if (!is.null(q$fips)  && nzchar(q$fips))  {spec$fips  <- trimws(strsplit(q$fips, ",")[[1]])}
+      if (!is.null(q$shape) && nzchar(q$shape)) {spec$shape <- q$shape}
+      spec$radius <- q$radius %||% q$buffer
+    }
+
+    loaded <- FALSE
+    ## POINTS (lat/lon) -- require matching counts so a mismatch (e.g. lat=33 with
+    ## lon=-112,-114) is ignored rather than silently recycled into wrong points.
+    if (!is.null(spec$lat) && !is.null(spec$lon) && length(spec$lat) == length(spec$lon)) {
+      pts <- tryCatch(data.frame(lat = as.numeric(spec$lat), lon = as.numeric(spec$lon)),
+                      error = function(e) NULL)
+      if (!is.null(pts) && nrow(pts) > 0 && !anyNA(pts[, c("lat", "lon")])) {
+        url_sitepoints(pts)
+        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
+        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "latlon")
+        loaded <- TRUE
+      }
+    }
+    ## FIPS (each code is a separate site)
+    if (!loaded && !is.null(spec$fips) && length(spec$fips) > 0) {
+      url_fips(as.character(spec$fips))
+      shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
+      shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "FIPS")
+      loaded <- TRUE
+    }
+    ## POLYGONS -- only inline GeoJSON text (the documented ?shape= contract).
+    ## Guard so a non-GeoJSON value (a URL or local path) is NOT handed to
+    ## shapefile_from_any(), which would otherwise try to read it.
+    if (!loaded && !is.null(spec$shape)) {
+      shape_txt <- trimws(as.character(spec$shape))
+      # Must be an inline JSON object (starts with "{") AND carry a GeoJSON type tag.
+      # The leading-"{" check defeats a crafted URL/path that merely *contains* the
+      # type substring; [[:space:]] is the portable whitespace class (not \\s).
+      looks_geojson <- grepl("^\\{", shape_txt) &&
+        grepl("\"type\"[[:space:]]*:[[:space:]]*\"(FeatureCollection|Feature|Polygon|MultiPolygon)\"", shape_txt)
+      shp <- if (looks_geojson) {
+        tryCatch(shapefile_from_any(shape_txt, cleanit = FALSE, silentinteractive = TRUE), error = function(e) NULL)
+      } else {NULL}
+      if (!is.null(shp) && !inherits(shp, "try-error")) {
+        # store the PARSED sf object (not the raw text) so data_up_shp() reuses it
+        # instead of re-parsing the GeoJSON -- matters for the large-polygon handoff.
+        # shapefile_from_any() fast-returns an sf object as-is, so data_up_shp() stays cheap.
+        url_shapefile(shp)
+        shiny::updateRadioButtons(session, inputId = "ss_choose_method", selected = "upload")
+        shiny::updateSelectInput(session, inputId = "ss_choose_method_upload", selected = "SHP")
+        loaded <- TRUE
+      }
+    }
+    ## radius / buffer
+    if (!is.null(spec$radius)) {
+      radval <- suppressWarnings(as.numeric(spec$radius))
+      if (!is.na(radval)) {try(shiny::updateSliderInput(session, inputId = "radius_now", value = radval), silent = TRUE)}
+    }
+  }, priority = 1000)
+
   data_up_shp <- reactive({
 
     if (is.null(input$ss_upload_shp)) {
-      ## no uploaded file, so check if shape was provided as parameter in ejamapp()
-      xshp <- global_or_param("shapefile")
+      ## no uploaded file, so check if shape was provided via launch URL or as parameter in ejamapp()
+      xshp <- url_shapefile() %||% global_or_param("shapefile")
       if (is.null(xshp) || length(xshp) == 0) {
         if (input$testing) {cat("no shp uploaded, no shp provided in ejamapp(), so should stop here\n")}
         req(FALSE, cancelOutput = TRUE)
@@ -590,7 +714,7 @@ app_server <- function(input, output, session) {
   data_up_tablepassed_latlon <- reactive({
 
     sitepoints <- NULL # since never set in global_defaults_*.R, only exists if at all via  get_golem_options()
-    sitepoints <- global_or_param("sitepoints")
+    sitepoints <- url_sitepoints() %||% global_or_param("sitepoints") # launch-URL points take precedence over ejamapp() param
     req(sitepoints)
 
     ################################# #
@@ -1222,8 +1346,8 @@ app_server <- function(input, output, session) {
 
     xfips <- NULL
     if (is.null(input$ss_upload_fips)) {
-      ### nothing uploaded, so check if fips got passed as parameter to ejamapp()
-      xfips <- global_or_param("fips")
+      ### nothing uploaded, so check if fips got passed via launch URL or as parameter to ejamapp()
+      xfips <- url_fips() %||% global_or_param("fips")
       if (!is.null(xfips)) {
         cat("fips seems to have been passed as parameter to ejamapp() \n")
         shiny::updateRadioButtons(session = session, inputId = "ss_choose_method", selected = "upload")     # already done by ejamapp() but ok to repeat

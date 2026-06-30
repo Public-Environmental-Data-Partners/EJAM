@@ -16,7 +16,7 @@ ejamapi(
   radius = NULL,
   geometries = FALSE,
   scale = c("blockgroup", "county"),
-  baseurl = "https://ejamapi-84652557241.us-central1.run.app/",
+  baseurl = paste0(url_package("api"), "/"),
   endpoint = c("data", "report", "query"),
   browse = TRUE,
   save_and_return_html = TRUE,
@@ -24,15 +24,17 @@ ejamapi(
   fileextension = c("html", "pdf"),
   dry_run = FALSE,
   version = NULL,
-  ...
+  ...,
+  shp = NULL
 )
 }
 \arguments{
 \item{lat, lon}{Coordinates of point(s) for analysis of residents nearby.
 To specify point(s), provide either lat and lon, or sites, or sitepoints --
 they are alternative ways to specify point(s).
-For the "report" endpoint, specify only one point
-(until the API supports summary analysis over multiple locations).
+For the "report" endpoint you may specify one or more points; pass
+sitenumber=0 (via ...) for an aggregate multisite report over all of them
+(otherwise the default is a single-site report on the first site).
 For the "data" endpoint, specify one or more points.}
 
 \item{sites, sitepoints}{Only one of these should be provided - they are synonymous.
@@ -101,6 +103,8 @@ Default NULL resolves to the installed package Version (from DESCRIPTION).}
 \item{...}{other parameters, passed to \code{\link[httr2:req_body_json]{httr2::req_body_json()}} in the "data" case,
 passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case, and used for the
 required \code{attribute} and \code{value} parameters in the "query" case}
+
+\item{shp}{alias (synonym) for shapefile/shape}
 }
 \value{
 If dry_run=TRUE
@@ -200,5 +204,8 @@ head(zz, 50)
 }
 }
 \seealso{
-\code{\link[=url_ejamapi]{url_ejamapi()}}
+\code{\link[=url_ejamapi]{url_ejamapi()}} for building API request URLs, \code{\link[=url_ejamapp]{url_ejamapp()}} for
+deep links that launch the live \emph{app} pre-loaded, and \code{\link[=url_package]{url_package()}} (type
+"api") for the single-sourced API base URL. See also the \code{dev-api} and
+"Defaults and Custom Settings for the Web App" articles.
 }

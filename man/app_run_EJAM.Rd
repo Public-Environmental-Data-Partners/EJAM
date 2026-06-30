@@ -28,7 +28,15 @@ For example:
 )
 }\if{html}{\out{</div>}}
 
-See details and examples.}
+See details and examples.
+
+These parameters are fixed when the app is launched (or deployed). To pre-load
+an already-running/deployed app with a set of sites at runtime instead, open it
+with launch query parameters in the URL: the app reads \verb{?lat=&lon=}, \verb{?fips=},
+\verb{?shape=} (GeoJSON), \verb{?radius=}, or \verb{?handoff=<token>} at startup and
+pre-selects those places. Use \code{\link[=url_ejamapp]{url_ejamapp()}} to build such a URL (its query
+vocabulary matches \code{\link[=url_ejamapi]{url_ejamapi()}}). See the "Defaults and Custom Settings for
+the Web App" vignette.}
 
 \item{enableBookmarking}{see \link[shiny:shinyApp]{shiny::shinyApp}
 This parameter lets a user click the \code{\link[shiny:bookmarkButton]{shiny::bookmarkButton()}} in the app

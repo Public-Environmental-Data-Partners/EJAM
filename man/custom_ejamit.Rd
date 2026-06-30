@@ -15,7 +15,9 @@ custom_ejamit(
   wtcols = names_wts,
   custom_formulas = NULL,
   custom_cols = NULL,
-  custom_map_headernames = map_headernames
+  custom_map_headernames = map_headernames,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -46,6 +48,8 @@ same length as popmeancols, but not used yet}
 
 \item{custom_map_headernames}{like map_headernames but for the
 custom indicators}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 returns the output of \code{\link[=custom_doaggregate]{custom_doaggregate()}}

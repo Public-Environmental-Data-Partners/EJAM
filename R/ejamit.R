@@ -27,6 +27,7 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #' @param radius in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
 #'   For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
 #'   before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).
+#' @param buffer Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
 #' @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)
 #' @param avoidorphans logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
@@ -38,9 +39,12 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #' @param fips optional FIPS code vector to provide if using FIPS instead of sitepoints to specify places to analyze,
 #'   such as a list of US Counties or tracts. Passed to [getblocksnearby_from_fips()]
 #' @param shapefile optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
+#' @param shape Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
 #'   e.g., `out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)`
 #'   If in RStudio you want it to interactively prompt you to pick a file,
 #'   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
+#' @param shp alias (synonym) for shapefile
+#' @param lat,lon optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.
 #' @param countcols character vector of names of variables to aggregate within a buffer using a sum of counts,
 #'   like, for example, the number of people for whom a poverty ratio is known,
 #'   the count of which is the exact denominator needed to correctly calculate percent low income.
@@ -253,8 +257,23 @@ ejamit <- function(sitepoints = NULL,
                    showpctowned = TRUE,
                    download_city_fips_bounds = TRUE,
                    download_noncity_fips_bounds = FALSE,
-                   ...
+                   ...,
+                   # name-only aliases (after ... so any positional args still flow into ... as before):
+                   buffer = NULL,  # alias (synonym) for radius
+                   shape = NULL,   # alias (synonym) for shapefile
+                   shp = NULL,     # alias (synonym) for shapefile
+                   lat = NULL, lon = NULL  # optional coordinates to build sitepoints (issue #171)
 ) {
+  # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
+  # read more naturally for FIPS or polygon analysis; "radius"/"shapefile" remain
+  # the canonical names. The alias is used only when the canonical name was not
+  # supplied, so an explicit radius/shapefile always wins (consistent with the
+  # other helpers, e.g. url_ejamapp()).
+  if (!is.null(buffer) && (missing(radius) || is.null(radius))) {radius <- buffer}
+  if (!is.null(shape) && (missing(shapefile) || is.null(shapefile))) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp)) {shapefile <- shp}
+  if (is.null(sitepoints) && !is.null(lat) && !is.null(lon)) {sitepoints <- data.frame(lat = lat, lon = lon)}
+
   # note on avoidorphans parameter:
   # What EJSCREEN does in that case is report NA, right?
   # So, does EJAM really need to report stats on residents presumed to be within radius,
