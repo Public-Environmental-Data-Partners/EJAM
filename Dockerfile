@@ -148,7 +148,7 @@ RUN R -e "remotes::install_github('mikejohnson51/AOI')" && \
 # build context -- makes the deployed version explicit and reproducible. The
 # package's data/*.rda ship in the release tarball; the large ejamdata arrow files
 # are fetched separately below. (Container entrypoint runs the installed
-# EJAM::run_app(), so no local app source is needed in the image.)
+# EJAM::ejamapp(), so no local app source is needed in the image.)
 RUN R -e "remotes::install_github(paste0('Public-Environmental-Data-Partners/EJAM@', Sys.getenv('EJAM_VERSION')), dependencies = TRUE, upgrade = 'never')" && \
     rm -rf /tmp/downloaded_packages /tmp/*.rds
 
@@ -178,4 +178,8 @@ RUN RESOLVED_VERSION="${EJAMDATA_VERSION:-$(curl -fsSL \
 EXPOSE 2000 2001
 
 WORKDIR /root
-CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::run_app(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
+# EJAM v3.x exports ejamapp() as the app launcher; run_app() is no longer exported
+# (calling it here made every ECS task exit 1 with "'run_app' is not an exported
+# object from 'namespace:EJAM'"). ejamapp(isPublic=...) is supported and its
+# options= list is passed to shinyApp() for host/port.
+CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
