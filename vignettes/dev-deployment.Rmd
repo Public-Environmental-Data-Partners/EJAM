@@ -144,14 +144,14 @@ The workflows can also be run manually from **GitHub → Actions → (deploy wor
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | deploy credentials for ECR/ECS |
 | `EJAMDATA_PAT` | a GitHub PAT, passed to the build as the `GITHUB_PAT` build-arg, used to download the `ejamdata` arrow files from the ejamdata GitHub release |
 
-> **Which EJAM version deploys:** the `Dockerfile` installs EJAM from the **local
-> build context** (`remotes::install_local(...)`), so the deployed version is
-> simply **whatever EJAM source is on the deploy branch** — there is no version tag
-> to set. To ship a specific release (for example `v3.2022.1`), make sure the deploy
-> branch holds that code (sync it from `main`) before deploying. The `ejamdata`
-> arrow files are fetched separately from the ejamdata GitHub release via the
-> `EJAMDATA_VERSION` build-arg (leave unset for the latest release, or pin it — e.g.
-> `v3.2022.0` — to match the release's `ejamdata_required_tag`).
+> **Which EJAM version deploys:** the `Dockerfile` installs EJAM from a **pinned
+> GitHub release tag** via the `EJAM_VERSION` build-arg (default `v3.2022.1`;
+> override with `--build-arg EJAM_VERSION=vX.Y.Z`), so the deployed version is
+> explicit and reproducible rather than tied to whatever source happens to be
+> checked out on the deploy branch. The `ejamdata` arrow files are fetched
+> separately from the ejamdata GitHub release via the `EJAMDATA_VERSION` build-arg
+> (default `v3.2022.0` — the release that `v3.2022.1` requires, i.e. its
+> `ejamdata_required_tag`); keep the two in sync when bumping to a new release.
 
 ## First-time setup (manual / infrastructure)
 
