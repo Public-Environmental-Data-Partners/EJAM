@@ -47,11 +47,11 @@ jobs:
         run: |
           FULL_IMAGE=$REGISTRY/$ECR_REPOSITORY
 
-          # Use the auto-generated, always-valid GITHUB_TOKEN (mirrors the R CI
+          # Use the auto-generated GITHUB_TOKEN for this workflow run (mirrors the R CI
           # workflows, e.g. check-standard.yaml `GITHUB_PAT: ${{ github.token }}`).
-          # Both EJAM and ejamdata are public repos, so a token with public read
-          # access is sufficient; a stored PAT secret (EJAMDATA_PAT) is unneeded
-          # and had expired, causing HTTP 401 "Bad credentials" during the build.
+          # The token is short-lived and expires after the job; it's sufficient for
+          # authenticated reads of public repos. Avoid using a stored PAT (EJAMDATA_PAT),
+          # which can expire and cause HTTP 401 "Bad credentials" during the build.
           docker build \
             --build-arg GITHUB_PAT=${{ github.token }} \
             -t $FULL_IMAGE:$IMAGE_TAG .
