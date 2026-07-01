@@ -414,10 +414,14 @@ test_that("ejamit() still returns results_bysite with same EJAM Report column", 
     suppressMessages({
       # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
+      ## Compare column 1, the EJAM Report URLs. Each URL embeds the current package
+      ## version (version=X.Y.Z), which legitimately changes every release, so
+      ## normalize it before comparing -- otherwise this structural check breaks on
+      ## each version bump (the saved reference was built at an earlier version).
+      norm_report_version <- function(x) gsub("version=[0-9]+\\.[0-9]+\\.[0-9]+", "version=VER", x)
       expect_equal(
-        ## Compare column 1, the EJAM Report URLs
-        as.vector(unlist(ejamitoutnow$results_bysite[,1])),
-        as.vector(unlist(testoutput_ejamit_10pts_1miles$results_bysite[,1]))
+        norm_report_version(as.vector(unlist(ejamitoutnow$results_bysite[,1]))),
+        norm_report_version(as.vector(unlist(testoutput_ejamit_10pts_1miles$results_bysite[,1])))
       )
       # all.equal(    ejamitoutnow$results_bysite,
       #               testoutput_ejamit_10pts_1miles$results_bysite)
