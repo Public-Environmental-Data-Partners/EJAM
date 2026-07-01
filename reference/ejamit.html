@@ -11,7 +11,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -67,7 +68,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Get an EJ analysis (residential population and environmental indicators) in or near a list of locations</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/R/ejamit.R" class="external-link"><code>R/ejamit.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/R/ejamit.R" class="external-link"><code>R/ejamit.R</code></a></small>
       <div class="d-none name"><code>ejamit.Rd</code></div>
     </div>
 
@@ -117,7 +118,12 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <span>  showpctowned <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  download_city_fips_bounds <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  download_noncity_fips_bounds <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shape <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lon <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -161,10 +167,7 @@ such as a list of US Counties or tracts. Passed to <code><a href="getblocksnearb
 
 
 <dt id="arg-shapefile">shapefile<a class="anchor" aria-label="anchor" href="#arg-shapefile"></a></dt>
-<dd><p>optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
-e.g., <code>out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)</code>
-If in RStudio you want it to interactively prompt you to pick a file,
-use shapefile=1 (otherwise it assumes you want to pick a latlon file).</p></dd>
+<dd><p>optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.</p></dd>
 
 
 <dt id="arg-countcols">countcols<a class="anchor" aria-label="anchor" href="#arg-countcols"></a></dt>
@@ -300,6 +303,25 @@ passed to <code><a href="doaggregate.html">doaggregate()</a></code> also. app se
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>passed to <code><a href="getblocksnearby.html">getblocksnearby()</a></code> etc. such as  report_progress_every_n = 0</p></dd>
 
+
+<dt id="arg-buffer">buffer<a class="anchor" aria-label="anchor" href="#arg-buffer"></a></dt>
+<dd><p>Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.</p></dd>
+
+
+<dt id="arg-shape">shape<a class="anchor" aria-label="anchor" href="#arg-shape"></a></dt>
+<dd><p>Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
+e.g., <code>out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)</code>
+If in RStudio you want it to interactively prompt you to pick a file,
+use shapefile=1 (otherwise it assumes you want to pick a latlon file).</p></dd>
+
+
+<dt id="arg-shp">shp<a class="anchor" aria-label="anchor" href="#arg-shp"></a></dt>
+<dd><p>alias (synonym) for shapefile</p></dd>
+
+
+<dt id="arg-lat-lon">lat, lon<a class="anchor" aria-label="anchor" href="#arg-lat-lon"></a></dt>
+<dd><p>optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -422,11 +444,11 @@ one blockgroup since it may be near two analyzed sites, for example.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>June 2026</p>
+  <p>July 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.0</p>
+  <p>EJAM Version 3.2022.1</p>
 </div>
 
     </footer></div>

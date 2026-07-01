@@ -9,7 +9,7 @@ as specified in the DESCRIPTION file or by redirects from aliases"><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@ as specified in the DESCRIPTION file or by redirects from aliases"><meta propert
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -65,7 +66,7 @@ as specified in the DESCRIPTION file or by redirects from aliases"><meta propert
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Get URL, or just owner/reponame, for the package code, datasets, or documentation website as specified in the DESCRIPTION file or by redirects from aliases</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/R/url_package.R" class="external-link"><code>R/url_package.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/R/url_package.R" class="external-link"><code>R/url_package.R</code></a></small>
       <div class="d-none name"><code>url_package.Rd</code></div>
     </div>
 
@@ -77,7 +78,7 @@ as specified in the DESCRIPTION file or by redirects from aliases</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">url_package</span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"code"</span>, <span class="st">"data"</span>, <span class="st">"docs"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"code"</span>, <span class="st">"data"</span>, <span class="st">"docs"</span>, <span class="st">"api"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  get_full_url <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  desc_or_alias <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"desc"</span>, <span class="st">"alias"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  docs_version <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -90,15 +91,24 @@ as specified in the DESCRIPTION file or by redirects from aliases</p>
 
 
 <dl><dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>Which type of URL is needed? Can be "data", "code", or "docs".</p><ul><li><p>"code" is for the github.com repository of R package code</p></li>
+<dd><p>Which type of URL is needed? Can be "data", "code", "docs", or "api".</p><ul><li><p>"code" is for the github.com repository of R package code</p></li>
 <li><p>"data" is for the github.com repository of datasets</p></li>
 <li><p>"docs" is for the documentation website</p></li>
+<li><p>"api" is for the EJAM REST API base URL (DESCRIPTION field <code>ejam_api_url</code>,
+falling back to the built-in production API base if that field is missing).
+Always a full URL. This is the single source of the API endpoint: all
+functions that call or build EJAM API URLs read it from here, so the
+endpoint can be changed in one place (edit <code>ejam_api_url</code> in DESCRIPTION).
+A friendlier branded alias, <code>https://api.ejanalysis.com</code> (also
+<code>https://ejamapi.ejanalysis.com</code>), proxies the same API via Cloudflare and
+may be used as <code>ejam_api_url</code>. (The <code>ejam_api_repo</code> field names the API
+source-code repo and is informational only – it is not the API endpoint.)</p></li>
 </ul></dd>
 
 
 <dt id="arg-get-full-url">get_full_url<a class="anchor" aria-label="anchor" href="#arg-get-full-url"></a></dt>
 <dd><p>logical, whether to return full URL or just the owner/reponame info.
-Ignored if type = "docs", where full URL is always returned.</p></dd>
+Ignored if type = "docs" or "api", where a full URL is always returned.</p></dd>
 
 
 <dt id="arg-desc-or-alias">desc_or_alias<a class="anchor" aria-label="anchor" href="#arg-desc-or-alias"></a></dt>
@@ -131,6 +141,11 @@ to the root docs site only.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>See https://ejanalysis.com/ejam-code   for a list of URLs</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="url_ejamapi.html">url_ejamapi()</a></code> <code><a href="ejamapi.html">ejamapi()</a></code> <code><a href="url_ejamapp.html">url_ejamapp()</a></code> – the functions that build/call EJAM API
+and app URLs; <code>url_package("api")</code> is their single source for the API base URL.</p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -146,6 +161,8 @@ to the root docs site only.</p></dd>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"data"</span><span class="op">)</span></span>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"data"</span>, get_full_url <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
+<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"api"</span><span class="op">)</span></span>
+<span></span>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"docs"</span>, desc_or_alias<span class="op">=</span><span class="st">"alias"</span><span class="op">)</span></span>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"code"</span>, desc_or_alias<span class="op">=</span><span class="st">"alias"</span><span class="op">)</span></span>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"data"</span>, desc_or_alias<span class="op">=</span><span class="st">"alias"</span><span class="op">)</span></span>
@@ -156,11 +173,11 @@ to the root docs site only.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>June 2026</p>
+  <p>July 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.0</p>
+  <p>EJAM Version 3.2022.1</p>
 </div>
 
     </footer></div>

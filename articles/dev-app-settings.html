@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.0</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,6 +64,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
@@ -97,12 +98,53 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Defaults and Custom Settings for the Web App</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/vignettes/dev-app-settings.Rmd" class="external-link"><code>vignettes/dev-app-settings.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/blob/HEAD/vignettes/dev-app-settings.Rmd" class="external-link"><code>vignettes/dev-app-settings.Rmd</code></a></small>
       <div class="d-none name"><code>dev-app-settings.Rmd</code></div>
     </div>
 
     
     
+<div class="section level2">
+<h2 id="deep-links-launch-the-app-pre-loaded-via-url-parameters">Deep links: launch the app pre-loaded via URL parameters<a class="anchor" aria-label="anchor" href="#deep-links-launch-the-app-pre-loaded-via-url-parameters"></a>
+</h2>
+<p>Besides the deploy-time settings described below, an already-running
+EJAM app can be <strong>launched pre-loaded with a set of
+places</strong> by opening it with launch query parameters in the URL.
+This is how the EJScreen Report tool’s “Send to EJAM” button opens EJAM
+ready to run, and what <code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code> builds as shareable
+deep links.</p>
+<p>The app reads these at startup (one place-type per launch – points,
+else FIPS, else polygons):</p>
+<ul>
+<li>
+<code>?lat=33,34&amp;lon=-112,-114</code> – one or more points, each
+treated as a site</li>
+<li>
+<code>?fips=10001,10003</code> – one or more FIPS codes, each a
+separate site</li>
+<li>
+<code>?shape=&lt;url-encoded GeoJSON&gt;</code> – a polygon or
+FeatureCollection</li>
+<li>
+<code>?radius=</code> (or <code>?buffer=</code>) – analysis radius
+in miles</li>
+<li>
+<code>?handoff=&lt;token&gt;</code> – a token minted by the EJAM API
+<code>POST /handoff</code> and fetched back at startup, for large
+polygon sets that exceed URL-length limits</li>
+</ul>
+<p>Build such a link with <code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code>; its query
+vocabulary matches <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> (which builds <em>API</em>
+request URLs rather than <em>app</em> links). The default app base is
+<code>https://ejamapp.ejanalysis.com/</code>, a Cloudflare-fronted
+shortcut on the <code>ejanalysis.com</code> domain that forwards the
+query string to the live app (a plain redirect that dropped the query
+would open the app empty). For the API side – including the friendlier
+<code>https://api.ejanalysis.com/</code> base and parameter details –
+see the <code>dev-api</code> article, the help for
+<code><a href="../reference/ejamapi.html">ejamapi()</a></code>/<code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>, and the EJAM-API
+repository’s README.</p>
+</div>
 <div class="section level2">
 <h2 id="notes-on-global-defaults-shiny-inputs-bookmarks-and-function-parameters">NOTES ON GLOBAL DEFAULTS, SHINY INPUTS, BOOKMARKS, AND FUNCTION
 PARAMETERS<a class="anchor" aria-label="anchor" href="#notes-on-global-defaults-shiny-inputs-bookmarks-and-function-parameters"></a>
@@ -226,6 +268,107 @@ versions of those options given as arguments in
 <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</p>
 </div>
 <div class="section level4">
+<h4 id="ejamapp-convenience-aliases">ejamapp() convenience aliases<a class="anchor" aria-label="anchor" href="#ejamapp-convenience-aliases"></a>
+</h4>
+<p><code><a href="../reference/ejamapp.html">ejamapp()</a></code> also accepts a number of short
+<strong>aliases</strong> for parameters and, for site selection, infers
+related defaults. For example <code>pts</code> (or
+<code>lat</code>+<code>lon</code>) is an alias for
+<code>sitepoints</code>, <code>shp</code> is an alias for
+<code>shapefile</code>, and
+<code>naics</code>/<code>sic</code>/<code>mact</code> are aliases for
+<code>default_naics</code>/etc. Some of these also set the method
+automatically – e.g. passing <code>fips</code>, <code>shapefile</code>,
+or <code>sitepoints</code> sets
+<code>default_site_method = "upload"</code> (and the upload sub-type),
+while <code>default_naics</code> sets
+<code>default_site_method = "dropdown"</code>. See <code><a href="../reference/ejamapp.html">?ejamapp</a></code>
+and the alias-handling block near the top of
+<code>R/ejamapp.R</code>.</p>
+<p>The aliases and the defaults they cross-set (kept in sync with the
+alias block near the top of <code>R/ejamapp.R</code>):</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>You pass to <code><a href="../reference/ejamapp.html">ejamapp()</a></code>
+</th>
+<th>Canonical param</th>
+<th>Also cross-sets</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<code>pts</code>, or <code>lat</code>+<code>lon</code>
+</td>
+<td><code>sitepoints</code></td>
+<td>
+<code>default_site_method="upload"</code>,
+<code>default_selected_type_of_site_upload="latlon"</code>
+</td>
+</tr>
+<tr class="even">
+<td>
+<code>shp</code> or <code>shape</code>
+</td>
+<td><code>shapefile</code></td>
+<td>
+<code>default_site_method="upload"</code>,
+<code>default_selected_type_of_site_upload="SHP"</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>shapefile</code></td>
+<td><code>shapefile</code></td>
+<td>
+<code>default_site_method="upload"</code>,
+<code>default_selected_type_of_site_upload="SHP"</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>fips</code></td>
+<td><code>fips</code></td>
+<td>
+<code>default_site_method="upload"</code>,
+<code>default_selected_type_of_site_upload="FIPS"</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>naics</code></td>
+<td><code>default_naics</code></td>
+<td>
+<code>default_site_method="dropdown"</code>,
+<code>default_selected_type_of_site_category="NAICS"</code>,
+<code>default_naics_digits_shown="detailed"</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>sic</code></td>
+<td><code>default_sic</code></td>
+<td>
+<code>default_site_method="dropdown"</code>,
+<code>default_selected_type_of_site_category="SIC"</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>mact</code></td>
+<td><code>default_mact</code></td>
+<td>
+<code>default_site_method="dropdown"</code>,
+<code>default_selected_type_of_site_category="MACT"</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The site-selection method param <code>default_site_method</code> was
+formerly named <code>default_upload_dropdown</code>; the old name still
+works as a back-compat alias (normalized to the new name inside
+<code><a href="../reference/ejamapp.html">ejamapp()</a></code>).</p>
+</div>
+<div class="section level4">
 <h4 id="app-launch">app launch<a class="anchor" aria-label="anchor" href="#app-launch"></a>
 </h4>
 <p><code><a href="../reference/ejamapp.html">ejamapp()</a></code> launches the app – it uses a function called
@@ -261,6 +404,111 @@ that default can be overridden there by someone using the app’s Advanced
 Tab, so what ui or server ends up using could be an input$ that is
 adjustable in the Advanced Tab and therefore can be bookmarked (since
 inputs can be bookmarked unless specifically excluded from that).</p>
+<p>An Advanced-Tab setting that should change a <em>main</em> control
+(e.g. the “Site Selection Method” radio
+<code>default_ss_choose_method</code> setting the main
+<code>ss_choose_method</code> radio) is applied from the
+<strong>server</strong> via <code>updateRadioButtons()</code> – you
+cannot reference <code>input$...</code> from <code><a href="../reference/app_ui.html">app_ui()</a></code>.</p>
+</div>
+<div class="section level4">
+<h4 id="launch-url-parameters-in-addition-to-the-above">Launch-URL parameters (in addition to the above)<a class="anchor" aria-label="anchor" href="#launch-url-parameters-in-addition-to-the-above"></a>
+</h4>
+<p>Beyond <code><a href="../reference/ejamapp.html">ejamapp()</a></code> params and the global_defaults_ files,
+the app can also read settings from the <strong>launch URL</strong>, via
+two distinct mechanisms:</p>
+<ul>
+<li>Shiny’s native <strong>bookmarking</strong> restores any
+<code>input$</code> value from a <code>?_inputs_&amp;id=value...</code>
+URL (see the bookmarking notes above).</li>
+<li>The EJScreen / multisite handoff work adds <strong>custom launch-URL
+parameters</strong> (e.g. <code>?lat=&amp;lon=</code>,
+<code>?fips=</code>, <code>?shape=</code>, <code>?handoff=</code>) that
+take precedence over the matching <code><a href="../reference/ejamapp.html">ejamapp()</a></code>/global default
+via <code>url_x() %||% global_or_param("x")</code>. (See PR #413 on the
+<code>ejscreen-multisite-selection</code> branch.)</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="how-an-input-control-actually-gets-its-default">how an input control actually gets its default<a class="anchor" aria-label="anchor" href="#how-an-input-control-actually-gets-its-default"></a>
+</h4>
+<p>Two orthogonal things determine an input control: <strong>(Axis 1)
+how the widget is built</strong>, and <strong>(Axis 2) where its value
+comes from</strong>.</p>
+<p><strong>Axis 1 – how the widget is built</strong> (a UI-mechanics
+choice, almost always forced by the widget, not stylistic):</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Pattern</th>
+<th>Use when</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<strong>A. static UI default</strong> –
+<code>selected=</code>/<code>value=</code> set in <code>app_ui.R</code>
+to <code>global_or_param("...")</code>
+</td>
+<td>the default is a plain value known at page-load, with a fixed choice
+set</td>
+<td>most controls</td>
+</tr>
+<tr class="even">
+<td>
+<strong>B. server <code>renderUI</code></strong>
+(<code>uiOutput()</code> in UI +
+<code>output$x &lt;- renderUI({...})</code>)</td>
+<td>the widget’s <em>structure</em> (which choices exist, min/max,
+conditional sub-controls) depends on reactive state</td>
+<td>radius slider (<code>radius_now</code>)</td>
+</tr>
+<tr class="odd">
+<td><strong>C. static-empty UI + server
+<code>update*Input()</code></strong></td>
+<td>choices load server-side (large selectize lists) OR the value must
+change on a later event</td>
+<td>NAICS/SIC/MACT selectize; advanced-tab -&gt; main-control sync</td>
+</tr>
+</tbody>
+</table>
+<p>Because the UI is built once before any reactive <code>input$</code>
+exists, an Axis-1-A control’s <code>selected=</code>/<code>value=</code>
+must be a <strong>non-reactive</strong> value –
+<code>global_or_param("...")</code> – never <code>input$...</code> (that
+errors at UI build). To make an advanced-tab setting change a main
+control, sync it server-side via <code>update*Input()</code>
+(Axis-1-C).</p>
+<p><strong>Axis 2 – where the value comes from</strong> (the precedence
+stack, highest wins):</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Shiny bookmark</strong> <code>?_inputs_&amp;...</code> –
+restores saved <code>input$</code> values on load (framework-level;
+orthogonal to the rest).</li>
+<li>
+<strong>Launch-URL custom params</strong>
+<code>?lat=&amp;lon=</code>, <code>?fips=</code>, <code>?shape=</code>,
+<code>?handoff=</code>, <code>?radius=</code> – read via the
+<code>url_*</code> reactives and resolved by
+<code>global_or_shinyparam_or_urlparam(name)</code>, so a launch-URL
+value wins over the default.</li>
+<li>
+<strong><code><a href="../reference/ejamapp.html">ejamapp()</a></code> params</strong> (after alias
+normalization) – override the global-default files.</li>
+<li>
+<strong><code>global_defaults_*.R</code></strong> files (package
+&lt; shiny &lt; shiny_public).</li>
+</ol>
+<p>The advanced-tab -&gt; main-control sync sits <em>alongside</em> this
+stack: it applies a user’s runtime change after load (e.g. the “Site
+Selection Method” radio updates <code>ss_choose_method</code> via
+<code>update*Input()</code>).</p>
 <p>To view the Advanced tab in the web app, click the About tab and then
 the Show advanced button on that page. If that button is not visible,
 use ejamapp(default_can_show_advanced_settings=TRUE). To show the
@@ -291,7 +539,74 @@ inputs). Some important global defaults affect the app but not by
 providing initial values for inputs in the shiny app, so some useful
 information including some that is controlled by global defaults or user
 parameters in ejamapp() cannot be bookmarked because it is stored in
-reactives but not as shiny app inputs.</p>
+reactives but not as shiny app inputs. To pass a set of <em>sites</em>
+(points, FIPS codes, or polygons) into an already-deployed app through a
+URL — which the file-upload inputs cannot do through a url-bookmark —
+use the custom launch query parameters described next.</p>
+</div>
+<div class="section level4">
+<h4 id="launch-url-with-pre-selected-sites-handoff-from-an-external-app">Launch URL with pre-selected sites (handoff from an external
+app)<a class="anchor" aria-label="anchor" href="#launch-url-with-pre-selected-sites-handoff-from-an-external-app"></a>
+</h4>
+<p>Separately from Shiny’s <code>?_inputs_&amp;...</code> bookmark
+mechanism, the app server reads a small set of <strong>custom launch
+query parameters</strong> so an external app (e.g. EJScreen) can open
+EJAM already pre-loaded with a set of places. This is the way to pass in
+<strong>points or polygons</strong>, which are file uploads and
+therefore cannot travel in a url-encoded bookmark. The vocabulary
+matches <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>:</p>
+<ul>
+<li>
+<code>?lat=33,34&amp;lon=-112,-114</code> — one or more points
+(comma-separated), each a site</li>
+<li>
+<code>?fips=10001,10003</code> — one or more FIPS codes,
+<strong>each a separate site</strong>
+</li>
+<li>
+<code>?shape=&lt;url-encoded GeoJSON&gt;</code> — a polygon /
+FeatureCollection (read by <code><a href="../reference/shapefile_from_any.html">shapefile_from_any()</a></code>)</li>
+<li>
+<code>?radius=3</code> (or <code>?buffer=3</code>) — analysis radius
+in miles</li>
+<li>
+<code>?handoff=&lt;token&gt;</code> — a token previously minted by
+the EJAM API <code>POST /handoff</code>; the app fetches
+<code>GET /handoff/&lt;token&gt;</code> and pre-loads whatever places it
+holds. Use this for large polygon sets that would not fit in a URL.</li>
+</ul>
+<p>Only one place-type is loaded per launch (points, then FIPS, then
+polygons), matching the one-method-per-analysis model. Internally the
+launch handler stores the parsed places in three per-session reactives —
+<code>url_sitepoints</code>, <code>url_fips</code>, and
+<code>url_shapefile</code> — which
+<code>data_up_tablepassed_latlon()</code>/<code>data_up_latlon()</code>,
+<code>data_up_fips()</code>, and <code>data_up_shp()</code> prefer over
+the <code><a href="../reference/ejamapp.html">ejamapp()</a></code>/global defaults. It also updates
+<code>ss_choose_method</code> and <code>ss_choose_method_upload</code>
+so the matching upload tab is shown, so the app opens with those sites
+selected and ready to run. The handler is the <code>observe()</code>
+near the top of the SELECT SITES section in
+<code>R/app_server.R</code>.</p>
+<p>For example, this opens the hosted app pre-loaded with two counties
+(two sites):</p>
+<pre><code>https://ejamapp.ejanalysis.com/?fips=10001,10003</code></pre>
+<p>and this pre-loads two points with a 3-mile radius:</p>
+<pre><code>https://ejamapp.ejanalysis.com/?lat=33,34&amp;lon=-112,-114&amp;radius=3</code></pre>
+<p>Because the query vocabulary matches <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>
+(which builds EJAM API report URLs), the helper
+<code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code> builds these app-launch URLs with the same
+vocabulary – for example
+<code>url_ejamapp(fips = c("10001","10003"))</code> or
+<code>url_ejamapp(handoff = "&lt;token&gt;")</code>. The
+<code>?handoff=&lt;token&gt;</code> form is how EJScreen’s “Send to
+EJAM” button passes a large set of drawn polygons without hitting
+URL-length limits: EJScreen <code>POST</code>s the GeoJSON to the EJAM
+API <code>/handoff</code>, gets a token, and opens the EJAM app at
+<code>?handoff=&lt;token&gt;</code>
+(e.g. <code>https://ejamapp.ejanalysis.com/?handoff=&lt;token&gt;</code>);
+the app then fetches those places back from the API’s
+<code>GET /handoff/&lt;token&gt;</code> at startup.</p>
 </div>
 </div>
 <div class="section level3">
@@ -307,10 +622,10 @@ reactives but not as shiny app inputs.</p>
 <p>See the examples in the documentation of the function
 <code><a href="../reference/ejamapp.html">ejamapp()</a></code></p>
 <p>One such example:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span></span>
 <span>  default_standard_analysis_title<span class="op">=</span><span class="st">"Custom NAICS Analysis"</span>,</span>
-<span>  default_upload_dropdown<span class="op">=</span><span class="st">"dropdown"</span>,</span>
+<span>  default_site_method<span class="op">=</span><span class="st">"dropdown"</span>,</span>
 <span>  default_selected_type_of_site_category<span class="op">=</span><span class="st">"NAICS"</span>,</span>
 <span>  default_naics_digits_shown<span class="op">=</span><span class="st">"detailed"</span>,</span>
 <span>  default_naics<span class="op">=</span><span class="st">"562211"</span>,</span>
@@ -352,7 +667,7 @@ Launch using parameters that are saved in a named vector or list
 ``` r
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -370,7 +685,7 @@ Save a custom reusable function you can use to launch with preset parameters
 
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -412,7 +727,7 @@ the draft code handling this could not specify the NAICS code itself or
 start analysis via URL bookmark:</p>
 <p>Here is an example using the URL of one copy of the hosted app:</p>
 <p>Locally hosted app example</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In 1 R session, launch locally with advanced tab disabled</span></span>
 <span><span class="va">myport</span> <span class="op">&lt;-</span> <span class="fl">5432</span></span>
 <span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span>isPublic<span class="op">=</span><span class="cn">TRUE</span>, options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>port<span class="op">=</span><span class="va">myport</span><span class="op">)</span><span class="op">)</span></span>
@@ -426,7 +741,7 @@ start analysis via URL bookmark:</p>
 <span><span class="va">urlx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/URLencode.html" class="external-link">URLencode</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">urlbase</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">params</span>, collapse <span class="op">=</span> <span class="st">"&amp;"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="va">urlx</span><span class="op">)</span></span></code></pre></div>
 <p>Using a custom URL to go to a web app with custom settings</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">urlbase</span> <span class="op">&lt;-</span> <span class="st">"https://ejam.publicenvirodata.org/?_inputs_&amp;"</span></span>
 <span></span>
 <span><span class="va">myparams</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -440,7 +755,7 @@ start analysis via URL bookmark:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'standard_analysis_title="Custom NAICS Analysis"'</span>,</span>
-<span>            <span class="st">'ss_choose_method="dropdown"'</span>,   <span class="co"># like ejamapp( default_upload_dropdown="dropdown" )</span></span>
+<span>            <span class="st">'ss_choose_method="dropdown"'</span>,   <span class="co"># like ejamapp( default_site_method="dropdown" )</span></span>
 <span>            <span class="st">'ss_choose_method_drop="NAICS"'</span>, <span class="co"># see ?ejamapp()</span></span>
 <span>            <span class="st">'naics_digits_shown="detailed"'</span>, <span class="co"># like ejamapp( default_naics_digits_shown = "detailed")</span></span>
 <span>            <span class="co"># 'ss_select_naics=313',           # like ejamapp(default_naics=313)</span></span>
@@ -465,7 +780,7 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <div class="section level4">
 <h4 id="global_defaults_xyz---compiled-full-list">&gt; global_defaults_xyz - compiled full list<a class="anchor" aria-label="anchor" href="#global_defaults_xyz---compiled-full-list"></a>
 </h4>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gdefs</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/get_global_defaults_or_user_options.html">get_global_defaults_or_user_options</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; isPublic =  FALSE</span></span>
 <span><span class="va">gdefnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gdefs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -501,100 +816,103 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <span><span class="co">#&gt;  [28,] "default_extratable_show_ratios_in_report"     </span></span>
 <span><span class="co">#&gt;  [29,] "default_extratable_title"                     </span></span>
 <span><span class="co">#&gt;  [30,] "default_extratable_title_top_row"             </span></span>
-<span><span class="co">#&gt;  [31,] "default_hide_about_tab"                       </span></span>
-<span><span class="co">#&gt;  [32,] "default_hide_plot_barplot_tab"                </span></span>
-<span><span class="co">#&gt;  [33,] "default_hide_plot_histo_tab"                  </span></span>
-<span><span class="co">#&gt;  [34,] "default_hide_written_report"                  </span></span>
-<span><span class="co">#&gt;  [35,] "default_hyperlink_colnames"                   </span></span>
-<span><span class="co">#&gt;  [36,] "default_include_averages"                     </span></span>
-<span><span class="co">#&gt;  [37,] "default_include_ejindexes"                    </span></span>
-<span><span class="co">#&gt;  [38,] "default_include_extraindicators"              </span></span>
-<span><span class="co">#&gt;  [39,] "default_mact"                                 </span></span>
-<span><span class="co">#&gt;  [40,] "default_max_mb_upload"                        </span></span>
-<span><span class="co">#&gt;  [41,] "default_max_miles"                            </span></span>
-<span><span class="co">#&gt;  [42,] "default_max_pts_map"                          </span></span>
-<span><span class="co">#&gt;  [43,] "default_max_pts_run"                          </span></span>
-<span><span class="co">#&gt;  [44,] "default_max_pts_select"                       </span></span>
-<span><span class="co">#&gt;  [45,] "default_max_pts_showtable"                    </span></span>
-<span><span class="co">#&gt;  [46,] "default_max_pts_upload"                       </span></span>
-<span><span class="co">#&gt;  [47,] "default_max_shapes_map"                       </span></span>
-<span><span class="co">#&gt;  [48,] "default_maxradius"                            </span></span>
-<span><span class="co">#&gt;  [49,] "default_naics"                                </span></span>
-<span><span class="co">#&gt;  [50,] "default_naics_digits_shown"                   </span></span>
-<span><span class="co">#&gt;  [51,] "default_need_proximityscore"                  </span></span>
-<span><span class="co">#&gt;  [52,] "default_ok2plot"                              </span></span>
-<span><span class="co">#&gt;  [53,] "default_plotkind_1pager"                      </span></span>
-<span><span class="co">#&gt;  [54,] "default_print_uploaded_points_to_log"         </span></span>
-<span><span class="co">#&gt;  [55,] "default_reports"                              </span></span>
-<span><span class="co">#&gt;  [56,] "default_shiny.testmode"                       </span></span>
-<span><span class="co">#&gt;  [57,] "default_show_advanced_settings"               </span></span>
-<span><span class="co">#&gt;  [58,] "default_show_full_header_footer"              </span></span>
-<span><span class="co">#&gt;  [59,] "default_show_ratios_in_report"                </span></span>
-<span><span class="co">#&gt;  [60,] "default_shp_oktypes_1"                        </span></span>
-<span><span class="co">#&gt;  [61,] "default_sic"                                  </span></span>
-<span><span class="co">#&gt;  [62,] "default_standard_analysis_title"              </span></span>
-<span><span class="co">#&gt;  [63,] "default_states_picked"                        </span></span>
-<span><span class="co">#&gt;  [64,] "default_subgroups_type"                       </span></span>
-<span><span class="co">#&gt;  [65,] "default_testing"                              </span></span>
-<span><span class="co">#&gt;  [66,] "default_upload_dropdown"                      </span></span>
-<span><span class="co">#&gt;  [67,] "default.an_thresh_comp1"                      </span></span>
-<span><span class="co">#&gt;  [68,] "default.an_thresh_comp2"                      </span></span>
-<span><span class="co">#&gt;  [69,] "default.an_threshgroup1"                      </span></span>
-<span><span class="co">#&gt;  [70,] "default.an_threshgroup2"                      </span></span>
-<span><span class="co">#&gt;  [71,] "default.an_threshnames1"                      </span></span>
-<span><span class="co">#&gt;  [72,] "default.an_threshnames2"                      </span></span>
-<span><span class="co">#&gt;  [73,] "ejamapi_is_down"                              </span></span>
-<span><span class="co">#&gt;  [74,] "epa_program_help_msg"                         </span></span>
-<span><span class="co">#&gt;  [75,] "escape_html"                                  </span></span>
-<span><span class="co">#&gt;  [76,] "fips_help_msg"                                </span></span>
-<span><span class="co">#&gt;  [77,] "fipspicker_all_counties_button_defaultchecked"</span></span>
-<span><span class="co">#&gt;  [78,] "fipspicker_all_counties_button_defaultshow"   </span></span>
-<span><span class="co">#&gt;  [79,] "fipspicker_all_regions_button_defaultchecked" </span></span>
-<span><span class="co">#&gt;  [80,] "fipspicker_all_regions_button_defaultshow"    </span></span>
-<span><span class="co">#&gt;  [81,] "fipspicker_all_states_button_defaultchecked"  </span></span>
-<span><span class="co">#&gt;  [82,] "fipspicker_all_states_button_defaultshow"     </span></span>
-<span><span class="co">#&gt;  [83,] "fipspicker_fips_type2pick_choices_default"    </span></span>
-<span><span class="co">#&gt;  [84,] "fipspicker_fips_type2pick_default"            </span></span>
-<span><span class="co">#&gt;  [85,] "fipspicker_maxOptions_default_cities_picked"  </span></span>
-<span><span class="co">#&gt;  [86,] "fipspicker_maxOptions_default_counties_picked"</span></span>
-<span><span class="co">#&gt;  [87,] "fipspicker_maxOptions_default_states_picked"  </span></span>
-<span><span class="co">#&gt;  [88,] "frs_help_msg"                                 </span></span>
-<span><span class="co">#&gt;  [89,] "html_footer_fmt"                              </span></span>
-<span><span class="co">#&gt;  [90,] "html_header_fmt"                              </span></span>
-<span><span class="co">#&gt;  [91,] "latlon_help_msg"                              </span></span>
-<span><span class="co">#&gt;  [92,] "marker_cluster_cutoff"                        </span></span>
-<span><span class="co">#&gt;  [93,] "max_radius_default"                           </span></span>
-<span><span class="co">#&gt;  [94,] "maxmax_mb_upload"                             </span></span>
-<span><span class="co">#&gt;  [95,] "maxmax_miles"                                 </span></span>
-<span><span class="co">#&gt;  [96,] "maxmax_pts_map"                               </span></span>
-<span><span class="co">#&gt;  [97,] "maxmax_pts_run"                               </span></span>
-<span><span class="co">#&gt;  [98,] "maxmax_pts_select"                            </span></span>
-<span><span class="co">#&gt;  [99,] "maxmax_pts_showtable"                         </span></span>
-<span><span class="co">#&gt; [100,] "maxmax_pts_upload"                            </span></span>
-<span><span class="co">#&gt; [101,] "maxmax_shapes_map"                            </span></span>
-<span><span class="co">#&gt; [102,] "minmax_mb_upload"                             </span></span>
-<span><span class="co">#&gt; [103,] "minradius"                                    </span></span>
-<span><span class="co">#&gt; [104,] "minradius_shapefile"                          </span></span>
-<span><span class="co">#&gt; [105,] "radius_default"                               </span></span>
-<span><span class="co">#&gt; [106,] "radius_default_shapefile"                     </span></span>
-<span><span class="co">#&gt; [107,] "report_logo"                                  </span></span>
-<span><span class="co">#&gt; [108,] "report_logo_dir"                              </span></span>
-<span><span class="co">#&gt; [109,] "report_logo_file"                             </span></span>
-<span><span class="co">#&gt; [110,] "report_title"                                 </span></span>
-<span><span class="co">#&gt; [111,] "report_title_multisite"                       </span></span>
-<span><span class="co">#&gt; [112,] "sanitize_numeric"                             </span></span>
-<span><span class="co">#&gt; [113,] "sanitize_text"                                </span></span>
-<span><span class="co">#&gt; [114,] "shp_help_msg"                                 </span></span>
-<span><span class="co">#&gt; [115,] "sitereport_download_buttons_colname"          </span></span>
-<span><span class="co">#&gt; [116,] "sitereport_download_buttons_show"             </span></span>
-<span><span class="co">#&gt; [117,] "stepradius"                                   </span></span>
-<span><span class="co">#&gt; [118,] "tabshown_default"                             </span></span>
-<span><span class="co">#&gt; [119,] "use_shapefile_from_any"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [31,] "default_format1pager"                         </span></span>
+<span><span class="co">#&gt;  [32,] "default_hide_about_tab"                       </span></span>
+<span><span class="co">#&gt;  [33,] "default_hide_plot_barplot_tab"                </span></span>
+<span><span class="co">#&gt;  [34,] "default_hide_plot_histo_tab"                  </span></span>
+<span><span class="co">#&gt;  [35,] "default_hide_written_report"                  </span></span>
+<span><span class="co">#&gt;  [36,] "default_hyperlink_colnames"                   </span></span>
+<span><span class="co">#&gt;  [37,] "default_include_averages"                     </span></span>
+<span><span class="co">#&gt;  [38,] "default_include_ejindexes"                    </span></span>
+<span><span class="co">#&gt;  [39,] "default_include_extraindicators"              </span></span>
+<span><span class="co">#&gt;  [40,] "default_mact"                                 </span></span>
+<span><span class="co">#&gt;  [41,] "default_max_mb_upload"                        </span></span>
+<span><span class="co">#&gt;  [42,] "default_max_miles"                            </span></span>
+<span><span class="co">#&gt;  [43,] "default_max_pts_click"                        </span></span>
+<span><span class="co">#&gt;  [44,] "default_max_pts_map"                          </span></span>
+<span><span class="co">#&gt;  [45,] "default_max_pts_run"                          </span></span>
+<span><span class="co">#&gt;  [46,] "default_max_pts_select"                       </span></span>
+<span><span class="co">#&gt;  [47,] "default_max_pts_showtable"                    </span></span>
+<span><span class="co">#&gt;  [48,] "default_max_pts_upload"                       </span></span>
+<span><span class="co">#&gt;  [49,] "default_max_shapes_map"                       </span></span>
+<span><span class="co">#&gt;  [50,] "default_maxradius"                            </span></span>
+<span><span class="co">#&gt;  [51,] "default_naics"                                </span></span>
+<span><span class="co">#&gt;  [52,] "default_naics_digits_shown"                   </span></span>
+<span><span class="co">#&gt;  [53,] "default_need_proximityscore"                  </span></span>
+<span><span class="co">#&gt;  [54,] "default_ok2plot"                              </span></span>
+<span><span class="co">#&gt;  [55,] "default_plotkind_1pager"                      </span></span>
+<span><span class="co">#&gt;  [56,] "default_print_uploaded_points_to_log"         </span></span>
+<span><span class="co">#&gt;  [57,] "default_reports"                              </span></span>
+<span><span class="co">#&gt;  [58,] "default_shiny.testmode"                       </span></span>
+<span><span class="co">#&gt;  [59,] "default_show_advanced_settings"               </span></span>
+<span><span class="co">#&gt;  [60,] "default_show_full_header_footer"              </span></span>
+<span><span class="co">#&gt;  [61,] "default_show_ratios_in_report"                </span></span>
+<span><span class="co">#&gt;  [62,] "default_shp_oktypes_1"                        </span></span>
+<span><span class="co">#&gt;  [63,] "default_sic"                                  </span></span>
+<span><span class="co">#&gt;  [64,] "default_site_method"                          </span></span>
+<span><span class="co">#&gt;  [65,] "default_standard_analysis_title"              </span></span>
+<span><span class="co">#&gt;  [66,] "default_states_picked"                        </span></span>
+<span><span class="co">#&gt;  [67,] "default_subgroups_type"                       </span></span>
+<span><span class="co">#&gt;  [68,] "default_testing"                              </span></span>
+<span><span class="co">#&gt;  [69,] "default.an_thresh_comp1"                      </span></span>
+<span><span class="co">#&gt;  [70,] "default.an_thresh_comp2"                      </span></span>
+<span><span class="co">#&gt;  [71,] "default.an_threshgroup1"                      </span></span>
+<span><span class="co">#&gt;  [72,] "default.an_threshgroup2"                      </span></span>
+<span><span class="co">#&gt;  [73,] "default.an_threshnames1"                      </span></span>
+<span><span class="co">#&gt;  [74,] "default.an_threshnames2"                      </span></span>
+<span><span class="co">#&gt;  [75,] "ejamapi_is_down"                              </span></span>
+<span><span class="co">#&gt;  [76,] "epa_program_help_msg"                         </span></span>
+<span><span class="co">#&gt;  [77,] "escape_html"                                  </span></span>
+<span><span class="co">#&gt;  [78,] "fips_help_msg"                                </span></span>
+<span><span class="co">#&gt;  [79,] "fipspicker_all_counties_button_defaultchecked"</span></span>
+<span><span class="co">#&gt;  [80,] "fipspicker_all_counties_button_defaultshow"   </span></span>
+<span><span class="co">#&gt;  [81,] "fipspicker_all_regions_button_defaultchecked" </span></span>
+<span><span class="co">#&gt;  [82,] "fipspicker_all_regions_button_defaultshow"    </span></span>
+<span><span class="co">#&gt;  [83,] "fipspicker_all_states_button_defaultchecked"  </span></span>
+<span><span class="co">#&gt;  [84,] "fipspicker_all_states_button_defaultshow"     </span></span>
+<span><span class="co">#&gt;  [85,] "fipspicker_fips_type2pick_choices_default"    </span></span>
+<span><span class="co">#&gt;  [86,] "fipspicker_fips_type2pick_default"            </span></span>
+<span><span class="co">#&gt;  [87,] "fipspicker_maxOptions_default_cities_picked"  </span></span>
+<span><span class="co">#&gt;  [88,] "fipspicker_maxOptions_default_counties_picked"</span></span>
+<span><span class="co">#&gt;  [89,] "fipspicker_maxOptions_default_states_picked"  </span></span>
+<span><span class="co">#&gt;  [90,] "frs_help_msg"                                 </span></span>
+<span><span class="co">#&gt;  [91,] "html_footer_fmt"                              </span></span>
+<span><span class="co">#&gt;  [92,] "html_header_fmt"                              </span></span>
+<span><span class="co">#&gt;  [93,] "latlon_help_msg"                              </span></span>
+<span><span class="co">#&gt;  [94,] "marker_cluster_cutoff"                        </span></span>
+<span><span class="co">#&gt;  [95,] "max_radius_default"                           </span></span>
+<span><span class="co">#&gt;  [96,] "maxmax_mb_upload"                             </span></span>
+<span><span class="co">#&gt;  [97,] "maxmax_miles"                                 </span></span>
+<span><span class="co">#&gt;  [98,] "maxmax_pts_click"                             </span></span>
+<span><span class="co">#&gt;  [99,] "maxmax_pts_map"                               </span></span>
+<span><span class="co">#&gt; [100,] "maxmax_pts_run"                               </span></span>
+<span><span class="co">#&gt; [101,] "maxmax_pts_select"                            </span></span>
+<span><span class="co">#&gt; [102,] "maxmax_pts_showtable"                         </span></span>
+<span><span class="co">#&gt; [103,] "maxmax_pts_upload"                            </span></span>
+<span><span class="co">#&gt; [104,] "maxmax_shapes_map"                            </span></span>
+<span><span class="co">#&gt; [105,] "minmax_mb_upload"                             </span></span>
+<span><span class="co">#&gt; [106,] "minradius"                                    </span></span>
+<span><span class="co">#&gt; [107,] "minradius_shapefile"                          </span></span>
+<span><span class="co">#&gt; [108,] "radius_default"                               </span></span>
+<span><span class="co">#&gt; [109,] "radius_default_shapefile"                     </span></span>
+<span><span class="co">#&gt; [110,] "report_logo"                                  </span></span>
+<span><span class="co">#&gt; [111,] "report_logo_dir"                              </span></span>
+<span><span class="co">#&gt; [112,] "report_logo_file"                             </span></span>
+<span><span class="co">#&gt; [113,] "report_title"                                 </span></span>
+<span><span class="co">#&gt; [114,] "report_title_multisite"                       </span></span>
+<span><span class="co">#&gt; [115,] "sanitize_numeric"                             </span></span>
+<span><span class="co">#&gt; [116,] "sanitize_text"                                </span></span>
+<span><span class="co">#&gt; [117,] "shp_help_msg"                                 </span></span>
+<span><span class="co">#&gt; [118,] "sitereport_download_buttons_colname"          </span></span>
+<span><span class="co">#&gt; [119,] "sitereport_download_buttons_show"             </span></span>
+<span><span class="co">#&gt; [120,] "stepradius"                                   </span></span>
+<span><span class="co">#&gt; [121,] "tabshown_default"                             </span></span>
+<span><span class="co">#&gt; [122,] "use_shapefile_from_any"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="function-params---compiled-full-list">&gt; function params - compiled full list<a class="anchor" aria-label="anchor" href="#function-params---compiled-full-list"></a>
 </h4>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">params</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">ejamit</span><span class="op">)</span> </span>
 <span><span class="co"># params = c(formals(getblocksnearby), formals(getblocksnearbyviaQuadTree), formals(get_blockpoints_in_shape), formals(getblocksnearby_from_fips), formals(ejamit), formals(doaggregate))</span></span>
 <span><span class="va">paramnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">params</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -602,48 +920,53 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <span><span class="co">#&gt;       params                        </span></span>
 <span><span class="co">#&gt;  [1,] "..."                         </span></span>
 <span><span class="co">#&gt;  [2,] "avoidorphans"                </span></span>
-<span><span class="co">#&gt;  [3,] "calctype_maxbg"              </span></span>
-<span><span class="co">#&gt;  [4,] "calctype_minbg"              </span></span>
-<span><span class="co">#&gt;  [5,] "calculate_ratios"            </span></span>
-<span><span class="co">#&gt;  [6,] "calculatedcols"              </span></span>
-<span><span class="co">#&gt;  [7,] "called_by_ejamit"            </span></span>
-<span><span class="co">#&gt;  [8,] "countcols"                   </span></span>
-<span><span class="co">#&gt;  [9,] "download_city_fips_bounds"   </span></span>
-<span><span class="co">#&gt; [10,] "download_noncity_fips_bounds"</span></span>
-<span><span class="co">#&gt; [11,] "extra_demog"                 </span></span>
-<span><span class="co">#&gt; [12,] "fips"                        </span></span>
-<span><span class="co">#&gt; [13,] "in_shiny"                    </span></span>
-<span><span class="co">#&gt; [14,] "include_ejindexes"           </span></span>
-<span><span class="co">#&gt; [15,] "infer_sitepoints"            </span></span>
-<span><span class="co">#&gt; [16,] "maxradius"                   </span></span>
-<span><span class="co">#&gt; [17,] "need_blockwt"                </span></span>
-<span><span class="co">#&gt; [18,] "need_proximityscore"         </span></span>
-<span><span class="co">#&gt; [19,] "progress_all"                </span></span>
-<span><span class="co">#&gt; [20,] "quadtree"                    </span></span>
-<span><span class="co">#&gt; [21,] "quiet"                       </span></span>
-<span><span class="co">#&gt; [22,] "radius"                      </span></span>
-<span><span class="co">#&gt; [23,] "radius_donut_lower_edge"     </span></span>
-<span><span class="co">#&gt; [24,] "reports"                     </span></span>
-<span><span class="co">#&gt; [25,] "shapefile"                   </span></span>
-<span><span class="co">#&gt; [26,] "showdrinkingwater"           </span></span>
-<span><span class="co">#&gt; [27,] "showpctowned"                </span></span>
-<span><span class="co">#&gt; [28,] "silentinteractive"           </span></span>
-<span><span class="co">#&gt; [29,] "sitepoints"                  </span></span>
-<span><span class="co">#&gt; [30,] "subgroups_type"              </span></span>
-<span><span class="co">#&gt; [31,] "testing"                     </span></span>
-<span><span class="co">#&gt; [32,] "threshgroups"                </span></span>
-<span><span class="co">#&gt; [33,] "threshnames"                 </span></span>
-<span><span class="co">#&gt; [34,] "thresholds"                  </span></span>
-<span><span class="co">#&gt; [35,] "updateProgress"              </span></span>
-<span><span class="co">#&gt; [36,] "updateProgress_getblocks"    </span></span>
-<span><span class="co">#&gt; [37,] "wtdmeancols"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [3,] "buffer"                      </span></span>
+<span><span class="co">#&gt;  [4,] "calctype_maxbg"              </span></span>
+<span><span class="co">#&gt;  [5,] "calctype_minbg"              </span></span>
+<span><span class="co">#&gt;  [6,] "calculate_ratios"            </span></span>
+<span><span class="co">#&gt;  [7,] "calculatedcols"              </span></span>
+<span><span class="co">#&gt;  [8,] "called_by_ejamit"            </span></span>
+<span><span class="co">#&gt;  [9,] "countcols"                   </span></span>
+<span><span class="co">#&gt; [10,] "download_city_fips_bounds"   </span></span>
+<span><span class="co">#&gt; [11,] "download_noncity_fips_bounds"</span></span>
+<span><span class="co">#&gt; [12,] "extra_demog"                 </span></span>
+<span><span class="co">#&gt; [13,] "fips"                        </span></span>
+<span><span class="co">#&gt; [14,] "in_shiny"                    </span></span>
+<span><span class="co">#&gt; [15,] "include_ejindexes"           </span></span>
+<span><span class="co">#&gt; [16,] "infer_sitepoints"            </span></span>
+<span><span class="co">#&gt; [17,] "lat"                         </span></span>
+<span><span class="co">#&gt; [18,] "lon"                         </span></span>
+<span><span class="co">#&gt; [19,] "maxradius"                   </span></span>
+<span><span class="co">#&gt; [20,] "need_blockwt"                </span></span>
+<span><span class="co">#&gt; [21,] "need_proximityscore"         </span></span>
+<span><span class="co">#&gt; [22,] "progress_all"                </span></span>
+<span><span class="co">#&gt; [23,] "quadtree"                    </span></span>
+<span><span class="co">#&gt; [24,] "quiet"                       </span></span>
+<span><span class="co">#&gt; [25,] "radius"                      </span></span>
+<span><span class="co">#&gt; [26,] "radius_donut_lower_edge"     </span></span>
+<span><span class="co">#&gt; [27,] "reports"                     </span></span>
+<span><span class="co">#&gt; [28,] "shape"                       </span></span>
+<span><span class="co">#&gt; [29,] "shapefile"                   </span></span>
+<span><span class="co">#&gt; [30,] "showdrinkingwater"           </span></span>
+<span><span class="co">#&gt; [31,] "showpctowned"                </span></span>
+<span><span class="co">#&gt; [32,] "shp"                         </span></span>
+<span><span class="co">#&gt; [33,] "silentinteractive"           </span></span>
+<span><span class="co">#&gt; [34,] "sitepoints"                  </span></span>
+<span><span class="co">#&gt; [35,] "subgroups_type"              </span></span>
+<span><span class="co">#&gt; [36,] "testing"                     </span></span>
+<span><span class="co">#&gt; [37,] "threshgroups"                </span></span>
+<span><span class="co">#&gt; [38,] "threshnames"                 </span></span>
+<span><span class="co">#&gt; [39,] "thresholds"                  </span></span>
+<span><span class="co">#&gt; [40,] "updateProgress"              </span></span>
+<span><span class="co">#&gt; [41,] "updateProgress_getblocks"    </span></span>
+<span><span class="co">#&gt; [42,] "wtdmeancols"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="shiny-inputs---compiled-full-list">&gt; shiny inputs - compiled full list<a class="anchor" aria-label="anchor" href="#shiny-inputs---compiled-full-list"></a>
 </h4>
 <p>Compilation of input$ variables used in the shiny app</p>
 <!--   needs updating   and  compare to  EJAM:::input_names_listing()    -->
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># getwd() must be the source pkg root folder</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">lines_with_inputnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"input\\$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"^(.*)(input\\$.*\\))(.*)"</span>, <span class="st">"\\2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="st">"./R/app_server.R"</span><span class="op">)</span> <span class="op">)</span>, value<span class="op">=</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span></span>
@@ -662,7 +985,7 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>shiny_inputs <span class="op">=</span> <span class="va">inputnames</span><span class="op">)</span></span>
 <span><span class="va">inputnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"^input\\$"</span>, <span class="st">""</span>, <span class="va">inputnames</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dput.html" class="external-link">dput</a></span><span class="op">(</span><span class="va">inputnames</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">inputnames</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"add_naics_subcategories"</span>, <span class="st">"all_tabs"</span>, <span class="st">"allow_median_in_barplot_indicators"</span>, </span>
 <span><span class="st">"an_map_clusters"</span>, <span class="st">"an_thresh_comp2"</span>, <span class="st">"an_threshgroup1"</span>, <span class="st">"an_threshgroup2"</span>, </span>
@@ -678,8 +1001,8 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <span><span class="st">"fipspicker_done_button"</span>, <span class="st">"format1pager"</span>, <span class="st">"frs_help"</span>, <span class="st">"fundingsource"</span>, </span>
 <span><span class="st">"go"</span>, <span class="st">"in_areas_where_enter"</span>, <span class="st">"in_the_x_zone"</span>, <span class="st">"in_the_x_zone_enter"</span>, </span>
 <span><span class="st">"include_ejindexes"</span>, <span class="st">"latlon_help"</span>, <span class="st">"latlontypedin_submit_button"</span>, </span>
-<span><span class="st">"max_mb_upload"</span>, <span class="st">"max_miles"</span>, <span class="st">"max_pts_map"</span>, <span class="st">"max_pts_run"</span>, <span class="st">"max_pts_select"</span>, </span>
-<span><span class="st">"max_pts_upload"</span>, <span class="st">"max_shapes_map"</span>, <span class="st">"maxradius"</span>, <span class="st">"naics_digits_shown"</span>, </span>
+<span><span class="st">"max_mb_upload"</span>, <span class="st">"max_miles"</span>, <span class="st">"max_pts_click"</span>, <span class="st">"max_pts_map"</span>, <span class="st">"max_pts_run"</span>, <span class="st">"max_pts_select"</span>,</span>
+<span><span class="st">"max_pts_upload"</span>, <span class="st">"max_shapes_map"</span>, <span class="st">"maxradius"</span>, <span class="st">"naics_digits_shown"</span>,</span>
 <span><span class="st">"need_proximityscore"</span>, <span class="st">"ok2plot"</span>, <span class="st">"plotkind_1pager"</span>, <span class="st">"radius_default"</span>, </span>
 <span><span class="st">"radius_default_shapefile"</span>, <span class="st">"radius_now"</span>, <span class="st">"radius_units"</span>, <span class="st">"results_tabs"</span>, </span>
 <span><span class="st">"return_to_results"</span>, <span class="st">"rg_author_email"</span>, <span class="st">"rg_author_name"</span>, <span class="st">"rg_enter_miles"</span>, </span>
@@ -699,7 +1022,7 @@ GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)<a class="anchor" aria-label="anchor" hr
 <h4 id="all-overlaps-diffs-compiled-func-params-global-defaults-shiny-inputs">&gt; ALL OVERLAPS/ DIFFS (compiled func params, global defaults,
 shiny inputs)<a class="anchor" aria-label="anchor" href="#all-overlaps-diffs-compiled-func-params-global-defaults-shiny-inputs"></a>
 </h4>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">gdefnames_noprefix</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"default_"</span>, <span class="st">""</span>, <span class="va">gdefnames</span><span class="op">)</span></span>
 <span></span>
@@ -747,7 +1070,7 @@ shiny inputs)<a class="anchor" aria-label="anchor" href="#all-overlaps-diffs-com
 </h4>
 <p>Function parameters whose defaults are or could be included in
 advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()</a></code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">args2</span><span class="op">(</span><span class="va">getblocksnearby</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -856,7 +1179,7 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <div class="section level4">
 <h4 id="function-params---annotated-list-of-most">&gt; function params - annotated list of most<a class="anchor" aria-label="anchor" href="#function-params---annotated-list-of-most"></a>
 </h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># &gt; cbind(formals(ejamit))</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">args2</span><span class="op">(</span><span class="va">ejamit</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -900,7 +1223,12 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt;   showpctowned = TRUE,</span></span>
 <span><span class="co">#&gt;   download_city_fips_bounds = TRUE,</span></span>
 <span><span class="co">#&gt;   download_noncity_fips_bounds = FALSE,</span></span>
-<span><span class="co">#&gt;   ...</span></span>
+<span><span class="co">#&gt;   ...,</span></span>
+<span><span class="co">#&gt;   buffer = NULL,</span></span>
+<span><span class="co">#&gt;   shape = NULL,</span></span>
+<span><span class="co">#&gt;   shp = NULL,</span></span>
+<span><span class="co">#&gt;   lat = NULL,</span></span>
+<span><span class="co">#&gt;   lon = NULL</span></span>
 <span><span class="co">#&gt; )</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -918,7 +1246,8 @@ advanced tab, and allowed by <code><a href="../reference/ejamapp.html">ejamapp()
 <span><span class="co">#&gt;     updateProgress = NULL, updateProgress_getblocks = NULL, progress_all = NULL, </span></span>
 <span><span class="co">#&gt;     in_shiny = FALSE, quiet = TRUE, silentinteractive = FALSE, called_by_ejamit = TRUE, </span></span>
 <span><span class="co">#&gt;     testing = FALSE, showdrinkingwater = TRUE, showpctowned = TRUE, download_city_fips_bounds = TRUE, </span></span>
-<span><span class="co">#&gt;     download_noncity_fips_bounds = FALSE, ...)  </span></span>
+<span><span class="co">#&gt;     download_noncity_fips_bounds = FALSE, ..., buffer = NULL, shape = NULL, </span></span>
+<span><span class="co">#&gt;     shp = NULL, lat = NULL, lon = NULL)  </span></span>
 <span><span class="co">#&gt; NULL</span></span>
 <span></span>
 <span><span class="co"># sitepoints               NULL            -- Now can be passed to ejamapp()</span></span>
@@ -972,7 +1301,7 @@ characters</p>
 <div class="section level5">
 <h5 id="inputs-tabs-and-nav-and-help-buttons">inputs: tabs and nav and help buttons<a class="anchor" aria-label="anchor" href="#inputs-tabs-and-nav-and-help-buttons"></a>
 </h5>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">all_tabs</span><span class="op">=</span><span class="st">"See Results"</span>   <span class="co"># or # all_tabs="Advanced Settings"</span></span>
 <span><span class="va">results_tabs</span><span class="op">=</span><span class="st">"Community Report"</span></span>
@@ -996,50 +1325,51 @@ characters</p>
 <div class="section level5">
 <h5 id="inputs-start-analysis-button">inputs: start analysis button<a class="anchor" aria-label="anchor" href="#inputs-start-analysis-button"></a>
 </h5>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bt_get_results</span><span class="op">=</span><span class="fl">0</span></span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 id="inputs-site-selection-buttonsdropdowns">inputs: site selection (buttons/dropdowns)<a class="anchor" aria-label="anchor" href="#inputs-site-selection-buttonsdropdowns"></a>
 </h5>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>default_ss_choose_method<span class="ot">=</span><span class="st">"upload"</span> <span class="co"># or "dropdown"</span></span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>ss_choose_method<span class="ot">=</span><span class="st">"upload"</span>         <span class="co"># or "dropdown"</span></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>ss_choose_method_upload<span class="ot">=</span><span class="st">"latlon"</span>   <span class="co"># see global_defaults_*.R for options</span></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>ss_choose_method_drop<span class="ot">=</span><span class="st">"FIPS_PLACE"</span> <span class="co"># see global_defaults_*.R for options</span></span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>ss_upload_shp<span class="ot">=</span>null</span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>ss_upload_fips<span class="ot">=</span>null</span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>ss_upload_frs<span class="ot">=</span>null</span>
-<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>ss_upload_program<span class="ot">=</span>null</span>
-<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>ss_select_program<span class="ot">=</span><span class="st">"CAMDBS"</span></span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>ss_select_naics<span class="ot">=</span><span class="st">"313"</span>  <span class="co"># see default_naics</span></span>
-<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>ss_select_sic<span class="ot">=</span><span class="st">"2015"</span>   <span class="co"># see default_sic</span></span>
-<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>ss_select_mact<span class="ot">=</span><span class="st">"AA"</span> <span class="co"># see default_mact </span></span>
-<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>naics_digits_shown<span class="ot">=</span><span class="st">"basic"</span></span>
-<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>add_naics_subcategories<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a></span>
-<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_latlon<span class="ot">=</span>{}</span>
-<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_shp<span class="ot">=</span>{}</span>
-<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_frs<span class="ot">=</span>{}</span>
-<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_program<span class="ot">=</span>{}</span>
-<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_fips<span class="ot">=</span>{}</span>
-<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a></span>
-<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>fips_type2pick<span class="ot">=</span><span class="st">"Counties"</span></span>
-<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>states_picked<span class="ot">=</span>null</span>
-<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>counties_picked<span class="ot">=</span>null</span>
-<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>cities_picked<span class="ot">=</span>null</span>
-<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>regions_picked<span class="ot">=</span>[<span class="st">"1"</span>,<span class="st">"2"</span>,<span class="st">"3"</span>,<span class="st">"4"</span>,<span class="st">"5"</span>,<span class="st">"6"</span>,<span class="st">"7"</span>,<span class="st">"8"</span>,<span class="st">"9"</span>,<span class="st">"10"</span>]</span>
-<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_regions_button<span class="ot">=</span>true</span>
-<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_states_button<span class="ot">=</span>true</span>
-<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_counties_button<span class="ot">=</span>false</span>
-<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_cities_button<span class="ot">=</span>false</span>
-<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>reset_button<span class="ot">=</span><span class="dv">0</span></span>
-<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a>fipspicker_done_button<span class="ot">=</span><span class="dv">0</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>default_ss_choose_method<span class="ot">=</span><span class="st">"upload"</span> <span class="co"># or "dropdown" or "mapclick" (click/draw on map)</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>ss_choose_method<span class="ot">=</span><span class="st">"upload"</span>         <span class="co"># or "dropdown" or "mapclick"</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>ss_choose_method_upload<span class="ot">=</span><span class="st">"latlon"</span>   <span class="co"># see global_defaults_*.R for options</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>mapclick_clear<span class="ot">=</span><span class="dv">0</span>                   <span class="co"># "Clear all points" button for the mapclick method</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>ss_choose_method_drop<span class="ot">=</span><span class="st">"FIPS_PLACE"</span> <span class="co"># see global_defaults_*.R for options</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>ss_upload_shp<span class="ot">=</span>null</span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>ss_upload_fips<span class="ot">=</span>null</span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>ss_upload_frs<span class="ot">=</span>null</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>ss_upload_program<span class="ot">=</span>null</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>ss_select_program<span class="ot">=</span><span class="st">"CAMDBS"</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a>ss_select_naics<span class="ot">=</span><span class="st">"313"</span>  <span class="co"># see default_naics</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>ss_select_sic<span class="ot">=</span><span class="st">"2015"</span>   <span class="co"># see default_sic</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a>ss_select_mact<span class="ot">=</span><span class="st">"AA"</span> <span class="co"># see default_mact </span></span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>naics_digits_shown<span class="ot">=</span><span class="st">"basic"</span></span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>add_naics_subcategories<span class="ot">=</span><span class="st">"TRUE"</span></span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a></span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_latlon<span class="ot">=</span>{}</span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_shp<span class="ot">=</span>{}</span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_frs<span class="ot">=</span>{}</span>
+<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_program<span class="ot">=</span>{}</span>
+<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_fips<span class="ot">=</span>{}</span>
+<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a></span>
+<span id="cb16-24"><a href="#cb16-24" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>fips_type2pick<span class="ot">=</span><span class="st">"Counties"</span></span>
+<span id="cb16-25"><a href="#cb16-25" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>states_picked<span class="ot">=</span>null</span>
+<span id="cb16-26"><a href="#cb16-26" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>counties_picked<span class="ot">=</span>null</span>
+<span id="cb16-27"><a href="#cb16-27" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>cities_picked<span class="ot">=</span>null</span>
+<span id="cb16-28"><a href="#cb16-28" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>regions_picked<span class="ot">=</span>[<span class="st">"1"</span>,<span class="st">"2"</span>,<span class="st">"3"</span>,<span class="st">"4"</span>,<span class="st">"5"</span>,<span class="st">"6"</span>,<span class="st">"7"</span>,<span class="st">"8"</span>,<span class="st">"9"</span>,<span class="st">"10"</span>]</span>
+<span id="cb16-29"><a href="#cb16-29" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_regions_button<span class="ot">=</span>true</span>
+<span id="cb16-30"><a href="#cb16-30" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_states_button<span class="ot">=</span>true</span>
+<span id="cb16-31"><a href="#cb16-31" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_counties_button<span class="ot">=</span>false</span>
+<span id="cb16-32"><a href="#cb16-32" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_cities_button<span class="ot">=</span>false</span>
+<span id="cb16-33"><a href="#cb16-33" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>reset_button<span class="ot">=</span><span class="dv">0</span></span>
+<span id="cb16-34"><a href="#cb16-34" tabindex="-1"></a>fipspicker_done_button<span class="ot">=</span><span class="dv">0</span></span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 id="inputs-radius-and-caps">inputs: radius and caps<a class="anchor" aria-label="anchor" href="#inputs-radius-and-caps"></a>
 </h5>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">radius_now</span><span class="op">=</span><span class="fl">3.1</span>  <span class="co"># input from slider but not the way to bookmark /url-encode the radius</span></span>
 <span><span class="va">radius_default</span><span class="op">=</span><span class="fl">3.1</span>  <span class="co"># works as parameter to ejamapp() or as bookmarked input$ </span></span>
 <span><span class="va">radius_default_shapefile</span><span class="op">=</span><span class="fl">0</span></span>
@@ -1047,6 +1377,7 @@ characters</p>
 <span><span class="va">maxradius</span><span class="op">=</span><span class="fl">31.06856</span></span>
 <span><span class="va">max_pts_upload</span><span class="op">=</span><span class="fl">5000</span></span>
 <span><span class="va">max_pts_select</span><span class="op">=</span><span class="fl">5000</span></span>
+<span><span class="va">max_pts_click</span><span class="op">=</span><span class="fl">30</span></span>
 <span><span class="va">max_pts_map</span><span class="op">=</span><span class="fl">5000</span></span>
 <span><span class="va">max_pts_showtable</span><span class="op">=</span><span class="fl">1000</span></span>
 <span><span class="va">max_pts_run</span><span class="op">=</span><span class="fl">10000</span></span>
@@ -1057,65 +1388,65 @@ characters</p>
 <h5 id="inputs-more-ejamit-parameters-summary-report-and-excel-output-settings-etc-">inputs: more ejamit() parameters, summary report and excel output
 settings, etc.<a class="anchor" aria-label="anchor" href="#inputs-more-ejamit-parameters-summary-report-and-excel-output-settings-etc-"></a>
 </h5>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>standard_analysis_title<span class="ot">=</span><span class="st">"CUSTOM Analysis"</span> <span class="co"># shown on webpage of app and on reports</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>analysis_title<span class="ot">=</span><span class="st">"testname"</span></span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>Custom_title_for_bar_plot_of_indicators<span class="ot">=</span><span class="st">""</span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>include_ejindexes<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>calculate_ratios<span class="ot">=</span>true</span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>include_averages<span class="ot">=</span>true</span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>show_ratios_in_report<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>extratable_show_ratios_in_report<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>more3<span class="ot">=</span><span class="st">"a"</span></span>
-<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>avoidorphans<span class="ot">=</span><span class="st">"FALSE"</span></span>
-<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>need_proximityscore<span class="ot">=</span><span class="st">"FALSE"</span></span>
-<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a>plotkind_1pager<span class="ot">=</span><span class="st">"bar"</span></span>
-<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>format1pager<span class="ot">=</span><span class="st">"html"</span></span>
-<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a>ok2plot<span class="ot">=</span>true</span>
-<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>allow_median_in_barplot_indicators<span class="ot">=</span><span class="st">"FALSE"</span></span>
-<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>summ_hist_distn<span class="ot">=</span><span class="st">"People"</span> <span class="co"># histograms</span></span>
-<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a>summ_hist_data<span class="ot">=</span><span class="st">"pctile"</span></span>
-<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a>summ_hist_bins<span class="ot">=</span><span class="dv">10</span></span>
-<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a></span>
-<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a>extra_demog<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a>include_extraindicators<span class="ot">=</span>true</span>
-<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a>extratable_title<span class="ot">=</span><span class="st">""</span></span>
-<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a>extratable_title_top_row<span class="ot">=</span><span class="st">"ADDITIONAL INFORMATION"</span></span>
-<span id="cb16-24"><a href="#cb16-24" tabindex="-1"></a>extratable_list_of_sections<span class="ot">=</span><span class="st">"pctpoor"</span></span>
-<span id="cb16-25"><a href="#cb16-25" tabindex="-1"></a><span class="co"># extratable_hide_missing_rows_for=["pcthisp","pctnhba","pctnhaa","pctnhaiana","pctnhnhpia","pctnhotheralone","pctnhmulti","pctnhwa","pctlan_ie","pctlan_api","pctlan_other","pctlan_english","pctlan_spanish","pctlan_french",</span></span>
-<span id="cb16-26"><a href="#cb16-26" tabindex="-1"></a><span class="co"># "pctlan_rus_pol_slav","p_chinese","p_korean","pctlan_other_ie","pctlan_vietnamese","pctlan_other_asian","pctlan_arabic","pctlan_nonenglish",</span></span>
-<span id="cb16-27"><a href="#cb16-27" tabindex="-1"></a><span class="co"># "pctspanish_li","pctie_li","pctapi_li","pctother_li","pctmale","pctfemale","pctdisability","lowlifex","rateheartdisease","rateasthma","ratecancer","pctunder5","pctunder18","pctover64","occupiedunits","lifexyears",</span></span>
-<span id="cb16-28"><a href="#cb16-28" tabindex="-1"></a><span class="co"># "percapincome","pctownedunits","pctpoor","sitecount_avg","sitecount_unique","sitecount_max","distance_min_avgperson","distance_min","count.NPL","count.TSDF","num_waterdis","num_airpoll","num_brownfield","num_tri","num_school",</span></span>
-<span id="cb16-29"><a href="#cb16-29" tabindex="-1"></a><span class="co"># "num_hospital","num_church","yesno_tribal","yesno_airnonatt","yesno_impwaters","yesno_cejstdis","yesno_iradis","pctflood","pctfire","pctfire30","pctflood30","yesno_houseburden","yesno_transdis","yesno_fooddesert","pctnobroadband",</span></span>
-<span id="cb16-30"><a href="#cb16-30" tabindex="-1"></a><span class="co"># "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]</span></span>
-<span id="cb16-31"><a href="#cb16-31" tabindex="-1"></a></span>
-<span id="cb16-32"><a href="#cb16-32" tabindex="-1"></a><span class="co"># thresholds - counting how many of a certain indicator type are at/above some threshold</span></span>
-<span id="cb16-33"><a href="#cb16-33" tabindex="-1"></a><span class="co"># see help docs on ejamapp() for examples of using these (but they are named a bit differently as parameters there)</span></span>
-<span id="cb16-34"><a href="#cb16-34" tabindex="-1"></a>an_thresh_comp1<span class="ot">=</span><span class="dv">80</span></span>
-<span id="cb16-35"><a href="#cb16-35" tabindex="-1"></a>an_thresh_comp2<span class="ot">=</span><span class="dv">80</span></span>
-<span id="cb16-36"><a href="#cb16-36" tabindex="-1"></a>an_threshgroup1<span class="ot">=</span><span class="st">"EJ-US-or-ST"</span></span>
-<span id="cb16-37"><a href="#cb16-37" tabindex="-1"></a>an_threshgroup2<span class="ot">=</span><span class="st">"Supp-US-or-ST"</span></span>
-<span id="cb16-38"><a href="#cb16-38" tabindex="-1"></a>an_threshnames1<span class="ot">=</span>[<span class="st">"pctile.EJ.DISPARITY.dpm.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.drinking.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.no2.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.o3.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.pctpre1960.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.pm.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.npdes.eo"</span>,</span>
-<span id="cb16-39"><a href="#cb16-39" tabindex="-1"></a>                 <span class="st">"pctile.EJ.DISPARITY.proximity.npl.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.rmp.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.tsdf.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.rsei.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.traffic.score.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.ust.eo"</span>,</span>
-<span id="cb16-40"><a href="#cb16-40" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.dpm.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.drinking.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.no2.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.o3.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pctpre1960.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pm.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.npdes.eo"</span>,</span>
-<span id="cb16-41"><a href="#cb16-41" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.proximity.npl.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.rmp.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.tsdf.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.rsei.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.traffic.score.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.ust.eo"</span>]</span>
-<span id="cb16-42"><a href="#cb16-42" tabindex="-1"></a>an_threshnames2<span class="ot">=</span>[<span class="st">"pctile.EJ.DISPARITY.dpm.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.drinking.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.no2.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.o3.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.pctpre1960.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.pm.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.npdes.supp"</span>,</span>
-<span id="cb16-43"><a href="#cb16-43" tabindex="-1"></a>                 <span class="st">"pctile.EJ.DISPARITY.proximity.npl.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.rmp.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.tsdf.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.rsei.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.traffic.score.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.ust.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.dpm.supp"</span>,</span>
-<span id="cb16-44"><a href="#cb16-44" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.drinking.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.no2.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.o3.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pctpre1960.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pm.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.npdes.supp"</span>,</span>
-<span id="cb16-45"><a href="#cb16-45" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.proximity.npl.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.rmp.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.tsdf.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.rsei.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.traffic.score.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.ust.supp"</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>standard_analysis_title<span class="ot">=</span><span class="st">"CUSTOM Analysis"</span> <span class="co"># shown on webpage of app and on reports</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>analysis_title<span class="ot">=</span><span class="st">"testname"</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>Custom_title_for_bar_plot_of_indicators<span class="ot">=</span><span class="st">""</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>include_ejindexes<span class="ot">=</span><span class="st">"TRUE"</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>calculate_ratios<span class="ot">=</span>true</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>include_averages<span class="ot">=</span>true</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>show_ratios_in_report<span class="ot">=</span><span class="st">"TRUE"</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>extratable_show_ratios_in_report<span class="ot">=</span><span class="st">"TRUE"</span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>more3<span class="ot">=</span><span class="st">"a"</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>avoidorphans<span class="ot">=</span><span class="st">"FALSE"</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>need_proximityscore<span class="ot">=</span><span class="st">"FALSE"</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>plotkind_1pager<span class="ot">=</span><span class="st">"bar"</span></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a>format1pager<span class="ot">=</span><span class="st">"html"</span></span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a>ok2plot<span class="ot">=</span>true</span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a>allow_median_in_barplot_indicators<span class="ot">=</span><span class="st">"FALSE"</span></span>
+<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a>summ_hist_distn<span class="ot">=</span><span class="st">"People"</span> <span class="co"># histograms</span></span>
+<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a>summ_hist_data<span class="ot">=</span><span class="st">"pctile"</span></span>
+<span id="cb18-18"><a href="#cb18-18" tabindex="-1"></a>summ_hist_bins<span class="ot">=</span><span class="dv">10</span></span>
+<span id="cb18-19"><a href="#cb18-19" tabindex="-1"></a></span>
+<span id="cb18-20"><a href="#cb18-20" tabindex="-1"></a>extra_demog<span class="ot">=</span><span class="st">"TRUE"</span></span>
+<span id="cb18-21"><a href="#cb18-21" tabindex="-1"></a>include_extraindicators<span class="ot">=</span>true</span>
+<span id="cb18-22"><a href="#cb18-22" tabindex="-1"></a>extratable_title<span class="ot">=</span><span class="st">""</span></span>
+<span id="cb18-23"><a href="#cb18-23" tabindex="-1"></a>extratable_title_top_row<span class="ot">=</span><span class="st">"ADDITIONAL INFORMATION"</span></span>
+<span id="cb18-24"><a href="#cb18-24" tabindex="-1"></a>extratable_list_of_sections<span class="ot">=</span><span class="st">"pctpoor"</span></span>
+<span id="cb18-25"><a href="#cb18-25" tabindex="-1"></a><span class="co"># extratable_hide_missing_rows_for=["pcthisp","pctnhba","pctnhaa","pctnhaiana","pctnhnhpia","pctnhotheralone","pctnhmulti","pctnhwa","pctlan_ie","pctlan_api","pctlan_other","pctlan_english","pctlan_spanish","pctlan_french",</span></span>
+<span id="cb18-26"><a href="#cb18-26" tabindex="-1"></a><span class="co"># "pctlan_rus_pol_slav","p_chinese","p_korean","pctlan_other_ie","pctlan_vietnamese","pctlan_other_asian","pctlan_arabic","pctlan_nonenglish",</span></span>
+<span id="cb18-27"><a href="#cb18-27" tabindex="-1"></a><span class="co"># "pctspanish_li","pctie_li","pctapi_li","pctother_li","pctmale","pctfemale","pctdisability","lowlifex","rateheartdisease","rateasthma","ratecancer","pctunder5","pctunder18","pctover64","occupiedunits","lifexyears",</span></span>
+<span id="cb18-28"><a href="#cb18-28" tabindex="-1"></a><span class="co"># "percapincome","pctownedunits","pctpoor","sitecount_avg","sitecount_unique","sitecount_max","distance_min_avgperson","distance_min","count.NPL","count.TSDF","num_waterdis","num_airpoll","num_brownfield","num_tri","num_school",</span></span>
+<span id="cb18-29"><a href="#cb18-29" tabindex="-1"></a><span class="co"># "num_hospital","num_church","yesno_tribal","yesno_airnonatt","yesno_impwaters","yesno_cejstdis","yesno_iradis","pctflood","pctfire","pctfire30","pctflood30","yesno_houseburden","yesno_transdis","yesno_fooddesert","pctnobroadband",</span></span>
+<span id="cb18-30"><a href="#cb18-30" tabindex="-1"></a><span class="co"># "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]</span></span>
+<span id="cb18-31"><a href="#cb18-31" tabindex="-1"></a></span>
+<span id="cb18-32"><a href="#cb18-32" tabindex="-1"></a><span class="co"># thresholds - counting how many of a certain indicator type are at/above some threshold</span></span>
+<span id="cb18-33"><a href="#cb18-33" tabindex="-1"></a><span class="co"># see help docs on ejamapp() for examples of using these (but they are named a bit differently as parameters there)</span></span>
+<span id="cb18-34"><a href="#cb18-34" tabindex="-1"></a>an_thresh_comp1<span class="ot">=</span><span class="dv">80</span></span>
+<span id="cb18-35"><a href="#cb18-35" tabindex="-1"></a>an_thresh_comp2<span class="ot">=</span><span class="dv">80</span></span>
+<span id="cb18-36"><a href="#cb18-36" tabindex="-1"></a>an_threshgroup1<span class="ot">=</span><span class="st">"EJ-US-or-ST"</span></span>
+<span id="cb18-37"><a href="#cb18-37" tabindex="-1"></a>an_threshgroup2<span class="ot">=</span><span class="st">"Supp-US-or-ST"</span></span>
+<span id="cb18-38"><a href="#cb18-38" tabindex="-1"></a>an_threshnames1<span class="ot">=</span>[<span class="st">"pctile.EJ.DISPARITY.dpm.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.drinking.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.no2.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.o3.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.pctpre1960.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.pm.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.npdes.eo"</span>,</span>
+<span id="cb18-39"><a href="#cb18-39" tabindex="-1"></a>                 <span class="st">"pctile.EJ.DISPARITY.proximity.npl.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.rmp.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.tsdf.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.rsei.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.traffic.score.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.ust.eo"</span>,</span>
+<span id="cb18-40"><a href="#cb18-40" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.dpm.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.drinking.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.no2.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.o3.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pctpre1960.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pm.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.npdes.eo"</span>,</span>
+<span id="cb18-41"><a href="#cb18-41" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.proximity.npl.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.rmp.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.tsdf.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.rsei.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.traffic.score.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.ust.eo"</span>]</span>
+<span id="cb18-42"><a href="#cb18-42" tabindex="-1"></a>an_threshnames2<span class="ot">=</span>[<span class="st">"pctile.EJ.DISPARITY.dpm.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.drinking.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.no2.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.o3.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.pctpre1960.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.pm.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.npdes.supp"</span>,</span>
+<span id="cb18-43"><a href="#cb18-43" tabindex="-1"></a>                 <span class="st">"pctile.EJ.DISPARITY.proximity.npl.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.rmp.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.tsdf.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.rsei.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.traffic.score.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.ust.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.dpm.supp"</span>,</span>
+<span id="cb18-44"><a href="#cb18-44" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.drinking.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.no2.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.o3.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pctpre1960.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pm.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.npdes.supp"</span>,</span>
+<span id="cb18-45"><a href="#cb18-45" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.proximity.npl.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.rmp.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.tsdf.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.rsei.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.traffic.score.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.ust.supp"</span>]</span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 id="inputs-maps">inputs: maps<a class="anchor" aria-label="anchor" href="#inputs-maps"></a>
 </h5>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>an_leaf_map_zoom<span class="ot">=</span><span class="dv">5</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>an_leaf_map_bounds<span class="ot">=</span>{<span class="st">"north"</span><span class="sc">:</span><span class="fl">45.61403741135093</span>,<span class="st">"east"</span><span class="sc">:-</span><span class="fl">68.02734375000001</span>,<span class="st">"south"</span><span class="sc">:</span><span class="fl">28.18824364185031</span>,<span class="st">"west"</span><span class="sc">:-</span><span class="fl">123.2666015625</span>}</span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>an_leaf_map_center<span class="ot">=</span>{<span class="st">"lng"</span><span class="sc">:-</span><span class="fl">95.64786455000001</span>,<span class="st">"lat"</span><span class="sc">:</span><span class="fl">37.40467238129763</span>}</span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>an_leaf_map_groups<span class="ot">=</span><span class="st">"circles"</span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>circleweight_in<span class="ot">=</span><span class="dv">4</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>an_leaf_map_zoom<span class="ot">=</span><span class="dv">5</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>an_leaf_map_bounds<span class="ot">=</span>{<span class="st">"north"</span><span class="sc">:</span><span class="fl">45.61403741135093</span>,<span class="st">"east"</span><span class="sc">:-</span><span class="fl">68.02734375000001</span>,<span class="st">"south"</span><span class="sc">:</span><span class="fl">28.18824364185031</span>,<span class="st">"west"</span><span class="sc">:-</span><span class="fl">123.2666015625</span>}</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>an_leaf_map_center<span class="ot">=</span>{<span class="st">"lng"</span><span class="sc">:-</span><span class="fl">95.64786455000001</span>,<span class="st">"lat"</span><span class="sc">:</span><span class="fl">37.40467238129763</span>}</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>an_leaf_map_groups<span class="ot">=</span><span class="st">"circles"</span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>circleweight_in<span class="ot">=</span><span class="dv">4</span></span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 id="inputs-test-mode">inputs: test mode<a class="anchor" aria-label="anchor" href="#inputs-test-mode"></a>
 </h5>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">testing</span><span class="op">=</span><span class="st">"FALSE"</span></span>
 <span><span class="va">shiny.testmode</span><span class="op">=</span><span class="st">"FALSE"</span></span>
 <span><span class="va">print_uploaded_points_to_log</span><span class="op">=</span><span class="va">true</span></span></code></pre></div>
@@ -1123,7 +1454,7 @@ settings, etc.<a class="anchor" aria-label="anchor" href="#inputs-more-ejamit-pa
 <div class="section level5">
 <h5 id="inputs-draft-reserved-for-a-long-wordpdf-report">inputs: draft / reserved for a long word/pdf report<a class="anchor" aria-label="anchor" href="#inputs-draft-reserved-for-a-long-wordpdf-report"></a>
 </h5>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># authors</span></span>
 <span></span>
@@ -1179,11 +1510,11 @@ settings, etc.<a class="anchor" aria-label="anchor" href="#inputs-more-ejamit-pa
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>June 2026</p>
+  <p>July 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.0</p>
+  <p>EJAM Version 3.2022.1</p>
 </div>
 
     </footer>
