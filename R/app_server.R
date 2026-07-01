@@ -31,6 +31,24 @@ app_server <- function(input, output, session) {
   data_processed <-  reactiveVal(NULL) # initialized so it can be set later in reaction to an event, using data_processed(newvalue)
   analysis_complete <- reactiveVal(FALSE)
 
+  # shinyjs::enable() does not clear aria-disabled/tabindex on Shiny 1.14
+  # download links that were created with enabled = FALSE.
+  download_button_selector <- function(id) {
+    jsonlite::toJSON(paste0("#", id), auto_unbox = TRUE)
+  }
+  download_button_disable_js <- function(id) {
+    shinyjs::runjs(sprintf(
+      "$(%s).addClass('disabled').attr({'aria-disabled':'true','tabindex':'-1','disabled':'disabled'}).prop('disabled', true);",
+      download_button_selector(id)
+    ))
+  }
+  download_button_enable_js <- function(id) {
+    shinyjs::runjs(sprintf(
+      "$(%s).removeClass('disabled').removeAttr('aria-disabled').removeAttr('tabindex').removeAttr('disabled').prop('disabled', false);",
+      download_button_selector(id)
+    ))
+  }
+
   sanitized_standard_analysis_title <- reactive({
     global_or_param("sanitize_text")(input$standard_analysis_title)
   })
@@ -2135,8 +2153,8 @@ app_server <- function(input, output, session) {
 
     analysis_complete(FALSE)
     # disable download buttons until finished analysis
-    shinyjs::disable(id = 'download_report_multisite')
-    shinyjs::disable(id = 'download_results_spreadsheet')
+    download_button_disable_js(id = 'download_report_multisite')
+    download_button_disable_js(id = 'download_results_spreadsheet')
     download_ready_for_report_header_and_tables(FALSE)
     download_ready_for_report_map(FALSE)
     download_ready_for_report_plot(FALSE)
@@ -2883,7 +2901,7 @@ app_server <- function(input, output, session) {
       download_ready_for_report_plot()
       # && download_ready_for_report_footer_version_date() # quick, assume ready
     ) {
-      shinyjs::enable(id = 'download_report_multisite')
+      download_button_enable_js(id = 'download_report_multisite')
     }
   })
   ####################################################### #
@@ -3211,7 +3229,7 @@ app_server <- function(input, output, session) {
                                  ## if NULL, uses all available from data_processed()
     )
     # enable download button only after DT::renderDT
-    shinyjs::enable(id = 'download_results_spreadsheet')
+    download_button_enable_js(id = 'download_results_spreadsheet')
     x
   })
   #############################################################################  #
