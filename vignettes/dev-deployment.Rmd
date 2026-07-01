@@ -64,13 +64,17 @@ guide to those files; edit the files themselves on the deploy branches.
 | DNS | Squarespace (CNAME → ALB) |
 
 ```
-                 GitHub                                   AWS (us-east-1)
-  main ──PR──► dev-deploy ──push──► deploy-dev.yaml ──► ECR (ejam)  ──► ECS Fargate: ejam-dev
-       ──PR──► prod-deploy ─push──► deploy.yaml     ──► image        ──► ECS Fargate: ejam-prod
-                                                        prod-<sha>          │
-                                                        dev-<sha>           ▼
-                                                                     ALB ──► Squarespace CNAME
-                                                                            ejam.publicenvirodata.org
+  Each deploy branch triggers its own GitHub Actions workflow, which builds the
+  image, pushes it to ECR, and updates that environment's ECS Fargate service:
+
+    dev-deploy   ──push──► deploy-dev.yaml ──► ECR (ejam) ──► ECS Fargate: ejam-dev   ──► dev ALB
+    prod-deploy  ──push──► deploy.yaml     ──► ECR (ejam) ──► ECS Fargate: ejam-prod  ──► prod ALB
+                                               image tags:                                 │
+                                               dev-<sha> / prod-<sha>                      ▼
+                                                                          Squarespace CNAME ──► ejam.publicenvirodata.org
+
+  How code gets onto dev-deploy / prod-deploy -- the main -> dev-deploy -> prod-deploy
+  promotion -- is described under "Branching and deploy model" below.
 ```
 
 **URLs**
@@ -206,9 +210,13 @@ aws ecr get-login-password --region us-east-1 \
   | docker login --username AWS --password-stdin \
     <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
 
-docker build -t ejam .
-docker tag  ejam:latest <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:latest
-docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:latest
+# The ECR repo is created with image_tag_mutability = IMMUTABLE, so every push
+# needs a UNIQUE tag -- re-pushing an existing tag (e.g. :latest) will fail.
+# Match the workflows' commit-SHA convention:
+TAG="manual-$(git rev-parse --short HEAD)"
+docker build -t ejam:$TAG .
+docker tag  ejam:$TAG <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:$TAG
+docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:$TAG
 ```
 
 The `.dockerignore` (on the deploy branch) excludes `.RData`, `.Rhistory`,
@@ -250,10 +258,11 @@ aws ecs update-service --cluster ejam-dev-cluster \
 aws ecs describe-services --cluster ejam-prod-cluster --services ejam-prod-service \
   --query 'services[0].{Status:status,Running:runningCount,Desired:desiredCount}'
 
-# Recent errors in the last 30 minutes (prod)
+# Recent errors in the last 30 minutes (prod). `date +%s` (current epoch) is
+# portable across macOS and Linux; 1800 s = 30 min. CloudWatch wants milliseconds.
 aws logs filter-log-events --log-group-name /ecs/ejam-prod \
   --filter-pattern "Error" \
-  --start-time $(($(date -v-30M +%s) * 1000)) \
+  --start-time $(( ($(date +%s) - 1800) * 1000 )) \
   --query 'events[*].message' --output text
 ```
 
