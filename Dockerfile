@@ -154,9 +154,12 @@ RUN R -e "remotes::install_github(paste0('Public-Environmental-Data-Partners/EJA
 
 # Download ejamdata arrow files from GitHub release
 # Must run AFTER the EJAM package install so the data/ folder is not overwritten by the installer
-# EJAMDATA_VERSION: leave unset (or pass empty string) to auto-resolve to the latest
-#   release of ejamdata, or pin to a specific tag (e.g. --build-arg EJAMDATA_VERSION=v2.32.8.001)
-ARG EJAMDATA_VERSION
+# EJAMDATA_VERSION: pinned by default to v3.2022.0 -- the ejamdata release that
+#   EJAM v3.2022.1 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
+#   sync with EJAM_VERSION when bumping releases; override with
+#   --build-arg EJAMDATA_VERSION=vX.Y.Z. (An explicit empty string falls back to the
+#   latest ejamdata release via the GitHub API below.)
+ARG EJAMDATA_VERSION=v3.2022.0
 RUN RESOLVED_VERSION="${EJAMDATA_VERSION:-$(curl -fsSL \
       -H "Authorization: token ${GITHUB_PAT}" \
       "https://api.github.com/repos/Public-Environmental-Data-Partners/ejamdata/releases/latest" \
