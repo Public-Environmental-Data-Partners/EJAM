@@ -106,7 +106,8 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
 
   if (NROW(shpout) == 0) {
     mymap <- leaflet::leaflet(width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
-      leaflet::addTiles()
+      leaflet::addTiles() %>%
+      leaflet::fitBounds(-115, 37, -65, 48)
   } else {
     # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
     pops <- popup_from_ejscreen(

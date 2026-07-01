@@ -197,6 +197,7 @@ test_that("map_ejam_plus_shp() handles all shapes being dropped as invalid", {
     )
   }, "There were 1 invalid polygons.", fixed = TRUE)
   expect_true("leaflet" %in% class(x))
+  expect_equal(unlist(x$x$fitBounds[1:4]), c(37, -115, 48, -65))
 })
 ############################################## #
 
