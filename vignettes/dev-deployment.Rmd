@@ -70,7 +70,7 @@ guide to those files; edit the files themselves on the deploy branches.
     dev-deploy   ──push──► deploy-dev.yaml ──► ECR (ejam) ──► ECS Fargate: ejam-dev   ──► dev ALB
     prod-deploy  ──push──► deploy.yaml     ──► ECR (ejam) ──► ECS Fargate: ejam-prod  ──► prod ALB
                                                image tags:                                 │
-                                               dev-<sha> / prod-<sha>                      ▼
+                                               dev = dev-<sha>, prod = <sha>               ▼
                                                                           Squarespace CNAME ──► ejam.publicenvirodata.org
 
   How code gets onto dev-deploy / prod-deploy -- the main -> dev-deploy -> prod-deploy
@@ -152,6 +152,11 @@ The workflows can also be run manually from **GitHub → Actions → (deploy wor
 > separately from the ejamdata GitHub release via the `EJAMDATA_VERSION` build-arg
 > (default `v3.2022.0` — the release that `v3.2022.1` requires, i.e. its
 > `ejamdata_required_tag`); keep the two in sync when bumping to a new release.
+>
+> *(These pinned build-args are set in the deploy-branch `Dockerfile`. A deploy
+> branch whose `Dockerfile` predates that update instead installs EJAM from the
+> build context via `remotes::install_local` and defaults `EJAMDATA_VERSION` to the
+> latest ejamdata release — so confirm the `Dockerfile` on the branch you deploy.)*
 
 ## First-time setup (manual / infrastructure)
 
