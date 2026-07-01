@@ -70,6 +70,7 @@ articles:
   - dev-app-settings
   - dev-api
   - dev-deploy-app
+  - dev-deployment
   - dev-run-shinytests
   - dev-run-unit-tests
   - dev-github-actions-install-tests

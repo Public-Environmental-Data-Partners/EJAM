@@ -40,6 +40,9 @@ Update the branch from which the app will be deployed, which could be a differen
 
 ### 1. Using Docker/AWS for hosting
 
+> For the current AWS ECS Fargate hosting architecture and the step-by-step deploy
+> procedure, see [Deploying the Web App to AWS (Infrastructure & Procedure)](dev-deployment.html).
+
 The live EJAM app in 2025 was being hosted via AWS and Docker using the Dockerfile now included with the EJAM package, and is hosted at a URL you can be directed to from this shortcut: https://ejanalysis.org/ejamapp The EJAM fork at https://github.com/Environmental-Policy-Innovation-Center/ejam-mc-pedp shows how the deployment works, but essentially it is based on the Dockerfile.
 
 The [EJAM-API](https://github.com/edgi-govdata-archiving/EJAM-API) is deployed via Docker as well, and that repository shows how the deployment works.
