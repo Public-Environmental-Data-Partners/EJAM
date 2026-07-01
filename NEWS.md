@@ -1,4 +1,4 @@
-# EJAM 3.2022.1 / 3.2023.1 / 3.2024.1 (unreleased)
+# EJAM 3.2022.1 (July 2026)
 
 Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1,
 v3.2024.1). Functionality is identical across all three ACS vintages
