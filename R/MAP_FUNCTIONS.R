@@ -104,27 +104,33 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   }
   shpout <- shpout[shpout$valid, ] # Drop invalid polygons, dont try to map
 
-  # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
-  pops <- popup_from_ejscreen(
-    shpout %>% sf::st_drop_geometry()
-  )
-  if (is.null(radius_buffer)) {
-    radius_buffer <- out$results_bysite$radius.miles[1]
-  }
-  if (!is.na(radius_buffer) && radius_buffer > 0) {
-    shpout <- sf::st_buffer(shpout, # was "ESRI:102005" but want 4269
-                            dist = units::set_units(radius_buffer, "mi"))
+  if (NROW(shpout) == 0) {
+    mymap <- leaflet::leaflet(width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
+      leaflet::addTiles() %>%
+      leaflet::fitBounds(-115, 37, -65, 48)
   } else {
-    ## why was it doing this ?
-    shpout <- shpout %>%
-      sf::st_zm() %>% sf::as_Spatial()
-  }
+    # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+    pops <- popup_from_ejscreen(
+      shpout %>% sf::st_drop_geometry()
+    )
+    if (is.null(radius_buffer)) {
+      radius_buffer <- out$results_bysite$radius.miles[1]
+    }
+    if (!is.na(radius_buffer) && radius_buffer > 0) {
+      shpout <- sf::st_buffer(shpout, # was "ESRI:102005" but want 4269
+                              dist = units::set_units(radius_buffer, "mi"))
+    } else {
+      ## why was it doing this ?
+      shpout <- shpout %>%
+        sf::st_zm() %>% sf::as_Spatial()
+    }
 
-  mymap <- leaflet::leaflet(shpout, width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
-    leaflet::addTiles()  %>%
-    leaflet::addPolygons(color = circle_color,
-                         popup = pops,
-                         popupOptions = leaflet::popupOptions(maxHeight = 200))
+    mymap <- leaflet::leaflet(shpout, width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
+      leaflet::addTiles()  %>%
+      leaflet::addPolygons(color = circle_color,
+                           popup = pops,
+                           popupOptions = leaflet::popupOptions(maxHeight = 200))
+  }
 
   # see in browser ### #
 

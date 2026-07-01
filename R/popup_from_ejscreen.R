@@ -69,6 +69,9 @@ popup_from_ejscreen <- function(out,
     out <- sf::st_drop_geometry(out) # or else popup is blown up by geometry points data
   }
   if (data.table::is.data.table(out)) {out <- data.table::copy(out); data.table::setDF(out)}
+  if (NROW(out) == 0) {
+    return(character(0))
+  }
 
   ############################################ #
   # SPECIFY indicators/VARIABLE NAMES  ####
