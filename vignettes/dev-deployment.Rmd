@@ -94,31 +94,29 @@ there if in doubt.
 
 ## Branching and deploy model
 
-Each environment has its own long-lived branch, and **each is updated by a
-separate pull request from `main` (or a feature branch)**:
+The two environments are promoted **in sequence** — code is validated on **dev**,
+then the *same commit* is promoted to **prod**:
 
 ```
-feature / fix  ──PR──►  main
-                         │
-                         ├──PR──►  dev-deploy    (deploys to dev; validate here)
-                         └──PR──►  prod-deploy   (deploys to prod, after validation)
+feature / fix  ──PR──►  main  ──PR──►  dev-deploy  ──PR──►  prod-deploy
+                                       (deploys dev;        (deploys prod)
+                                        validate here)
 ```
 
-- Merging a PR into `dev-deploy` triggers a **dev** deploy; merging a PR into
-  `prod-deploy` triggers a **prod** deploy.
-- `dev` is the **validation step**: deploy there, confirm it works, then open a
-  *separate* PR to `prod-deploy`. **Do not merge `dev-deploy` into `prod-deploy`** —
-  both deploy branches take their code from `main`/a feature branch, so their
-  histories stay clean and comparable.
+- Merging a PR into `dev-deploy` triggers a **dev** deploy; merging into
+  `prod-deploy` triggers a **prod** deploy. The environment is chosen by *which
+  branch you push to* — each branch's workflow uses its own `*.tfvars` and its own
+  AWS resources — so the same tree can deploy to either environment.
+- `dev` is the **validation step**: merge `main` → `dev-deploy`, confirm it works,
+  then promote by merging **`dev-deploy` → `prod-deploy`**. Promoting the validated
+  branch (rather than re-merging `main`) guarantees prod deploys the *exact* commit
+  that was tested on dev, with no chance of `main` having moved on in between.
+- **Hotfix exception:** for an urgent prod-only fix you can open a PR straight from
+  `main` (or a fix branch) → `prod-deploy`, skipping dev. Use sparingly — it bypasses
+  dev validation.
 - Both `dev-deploy` and `prod-deploy` are **protected**: a PR is required (direct
   pushes are blocked for everyone, including admins); no approvals are required
   (a maintainer may merge their own PR).
-
-> **Note on this model.** An earlier version of the deploy docs described a
-> sequential `main → dev-deploy → prod-deploy` merge chain. The current, supported
-> model is the one above — *separate* PRs from `main` to each deploy branch, with
-> `dev` used only for validation. If you maintain the deployment, confirm this is
-> still how you want it before relying on it.
 
 ## Routine deploy (GitHub Actions) — the normal path
 
@@ -128,8 +126,9 @@ feature / fix  ──PR──►  main
    On merge, GitHub Actions builds the image, pushes it to ECR, and updates the dev
    ECS service (~15 min).
 3. **Validate on dev** at the dev URL. A human must green-light before promoting.
-4. **Deploy to prod:** open a *separate* PR from `main` (or the same feature branch)
-   → `prod-deploy`. On merge, Actions deploys to production.
+4. **Promote to prod:** open a PR to merge **`dev-deploy` → `prod-deploy`**. On
+   merge, Actions deploys the *same validated commit* to production. (For an urgent
+   prod-only hotfix you can instead PR `main` → `prod-deploy` directly, skipping dev.)
 
 The workflows can also be run manually from **GitHub → Actions → (deploy workflow)
 → Run workflow**.
@@ -290,11 +289,13 @@ maintainer's call; it is noted here as the recommended target state.
 
 This article consolidates two documents that previously lived only on the deploy
 branches: `DEPLOY-GUIDE.md` (root) and `ejam-infra/README.md`. Where they
-disagreed, this article follows the newer `ejam-infra/README.md` and current
-practice: **GitHub Actions deploys are live** (not "coming soon"), the container
-**port is 3838** (an earlier draft said 2000/2001), and each deploy branch is
-updated by a **separate PR from `main`** (not a `dev-deploy → prod-deploy` merge
-chain). Concrete AWS account IDs and individual contact names have been replaced
-with `<ACCOUNT_ID>` and role descriptions; substitute the real values from the
-deploy branch files. If you own the deployment, treat this as the single source of
-truth and retire the two originals (or replace them with a pointer here).
+disagreed, it follows current practice: **GitHub Actions deploys are live** (the
+older `DEPLOY-GUIDE.md` said "coming soon") and the container **port is 3838** (an
+earlier draft said 2000/2001). For the branch model it follows the **sequential**
+`main → dev-deploy → prod-deploy` promotion (as in `DEPLOY-GUIDE.md`), which
+guarantees prod deploys the exact commit validated on dev; the `dev-deploy`/`prod-deploy`
+workflows themselves are branch-triggered, so either model works mechanically.
+Concrete AWS account IDs and individual contact names have been replaced with
+`<ACCOUNT_ID>` and role descriptions; substitute the real values from the deploy
+branch files. If you own the deployment, treat this as the single source of truth
+and retire the two originals (or replace them with a pointer here).
