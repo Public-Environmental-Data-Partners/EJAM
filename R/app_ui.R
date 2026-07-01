@@ -589,7 +589,10 @@ app_ui <- function(request) {
                                  downloadButton('download_report_multisite',
                                                 label = 'Download Multisite Summary Report',
                                                 class = 'usa-button',
-                                                enabled = TRUE), style = 'text-align: center;'
+                                                # start disabled; app_server.R enables it once the report is ready.
+                                                # enabled = FALSE opts out of Shiny 1.14 auto-enable so the manual
+                                                # shinyjs::disable/enable in app_server.R is respected.
+                                                enabled = FALSE), style = 'text-align: center;'
                                )
                              ),  # end report tab
 
@@ -632,7 +635,9 @@ app_ui <- function(request) {
                                                               downloadButton('download_results_spreadsheet',
                                                                              label = 'Download Results Table',
                                                                              class = 'usa-button',
-                                                                             enabled = TRUE)
+                                                                             # start disabled; app_server.R enables it after the table renders
+                                                                             # (enabled = FALSE opts out of Shiny 1.14 auto-enable).
+                                                                             enabled = FALSE)
                                                        )
                                                      ),
                                                      br(), ## vertical space
