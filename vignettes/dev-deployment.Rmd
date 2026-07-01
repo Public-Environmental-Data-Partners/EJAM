@@ -87,10 +87,10 @@ guide to those files; edit the files themselves on the deploy branches.
 | Prod | 2 vCPU / 7 GB | 2 | CloudWatch `/ecs/ejam-prod`, 30-day retention |
 | Dev | 1 vCPU / 6 GB | 1 | CloudWatch `/ecs/ejam-dev`, 7-day retention |
 
-The container listens on **port 3838** (the R Shiny default for the rocker image).
-The authoritative value is the container port in the ECS task definition
-(`ejam-infra/main.tf`) and the `EXPOSE`/app port in the `Dockerfile` — confirm
-there if in doubt.
+The container serves the app on **port 2000** and a health-check endpoint on
+**port 2001** (`app_port` / `health_check_port` in `ejam-infra/main.tf`, which
+default to 2000/2001; the `Dockerfile` `EXPOSE`s `2000 2001` and runs
+`run_app(port = 2000)` with a small health server on 2001).
 
 ## Branching and deploy model
 
@@ -138,15 +138,16 @@ The workflows can also be run manually from **GitHub → Actions → (deploy wor
 | Secret | Purpose |
 |---|---|
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | deploy credentials for ECR/ECS |
-| `PIGGYBACK_TOKEN` | fetch `ejamdata` release assets during the image build |
-| `GITHUB_TOKEN` | provided automatically by Actions |
+| `EJAMDATA_PAT` | a GitHub PAT, passed to the build as the `GITHUB_PAT` build-arg, used to download the `ejamdata` arrow files from the ejamdata GitHub release |
 
-> **Deploying a specific EJAM version:** the app image installs the EJAM package
-> during the Docker build. Which version it installs is determined by the
-> `Dockerfile` / deploy workflow on the deploy branch — **not** by anything in
-> `ejam-infra/` (that directory is pure infrastructure). To ship a specific
-> release (for example a new `v3.YYYY.x`), make sure the deploy branch's build
-> installs that tag before you deploy.
+> **Which EJAM version deploys:** the `Dockerfile` installs EJAM from the **local
+> build context** (`remotes::install_local(...)`), so the deployed version is
+> simply **whatever EJAM source is on the deploy branch** — there is no version tag
+> to set. To ship a specific release (for example `v3.2022.1`), make sure the deploy
+> branch holds that code (sync it from `main`) before deploying. The `ejamdata`
+> arrow files are fetched separately from the ejamdata GitHub release via the
+> `EJAMDATA_VERSION` build-arg (leave unset for the latest release, or pin it — e.g.
+> `v3.2022.0` — to match the release's `ejamdata_required_tag`).
 
 ## First-time setup (manual / infrastructure)
 
@@ -260,7 +261,7 @@ aws logs filter-log-events --log-group-name /ecs/ejam-prod \
 |---|---|
 | `UnauthorizedOperation` on an EC2/ECS/IAM action | add the missing action to the `ejam-terraform-deploy` IAM policy |
 | Docker build fails | confirm Docker Desktop is running and `.dockerignore` is present |
-| ECS tasks failing health checks | confirm the container serves HTTP 200 on the health path and the port matches the task definition (3838) |
+| ECS tasks failing health checks | confirm the container serves HTTP 200 on the health-check port (2001) and the app port (2000) matches the task definition |
 | Slow local Docker push | use GitHub Actions instead |
 
 ## Teardown
@@ -289,12 +290,14 @@ maintainer's call; it is noted here as the recommended target state.
 
 This article consolidates two documents that previously lived only on the deploy
 branches: `DEPLOY-GUIDE.md` (root) and `ejam-infra/README.md`. Where they
-disagreed, it follows current practice: **GitHub Actions deploys are live** (the
-older `DEPLOY-GUIDE.md` said "coming soon") and the container **port is 3838** (an
-earlier draft said 2000/2001). For the branch model it follows the **sequential**
-`main → dev-deploy → prod-deploy` promotion (as in `DEPLOY-GUIDE.md`), which
-guarantees prod deploys the exact commit validated on dev; the `dev-deploy`/`prod-deploy`
-workflows themselves are branch-triggered, so either model works mechanically.
+disagreed, it follows the **actual deploy-branch files** (`main.tf`, `Dockerfile`,
+the deploy workflows): **GitHub Actions deploys are live** (the older
+`DEPLOY-GUIDE.md` said "coming soon"), and the container serves on **ports
+2000/2001** (as in `DEPLOY-GUIDE.md` and the current `main.tf`/`Dockerfile` — the
+`ejam-infra/README.md` wireframe's "3838" was inaccurate). For the branch model it
+follows the **sequential** `main → dev-deploy → prod-deploy` promotion (as in
+`DEPLOY-GUIDE.md`), which guarantees prod deploys the exact commit validated on
+dev; the deploy workflows are branch-triggered, so either model works mechanically.
 Concrete AWS account IDs and individual contact names have been replaced with
 `<ACCOUNT_ID>` and role descriptions; substitute the real values from the deploy
 branch files. If you own the deployment, treat this as the single source of truth
