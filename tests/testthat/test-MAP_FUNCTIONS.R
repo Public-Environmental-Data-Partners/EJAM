@@ -42,6 +42,17 @@ test_that("popup_from_ejscreen() works even if 1 row or 1 indicator", {
 })
 ############################################## #
 
+test_that("popup_from_ejscreen() handles zero-row results after invalid shapes are dropped", {
+  zero_rows <- testoutput_ejamit_10pts_1miles$results_bysite[0, ]
+  popups <- NULL
+
+  expect_no_error({
+    popups <- popup_from_ejscreen(zero_rows)
+  })
+  expect_identical(popups, character(0))
+})
+############################################## #
+
 test_that("popup_from_any() works even if 1 row or 1 indicator", {
   expect_no_error({
     suppressMessages({
@@ -163,6 +174,29 @@ test_that("mapfastej() works", {
   })
   expect_true("leaflet" %in% class(x))
   expect_true("leaflet" %in% class(y))
+})
+############################################## #
+
+test_that("map_ejam_plus_shp() handles all shapes being dropped as invalid", {
+  out <- testoutput_ejamit_fips_counties
+  out$results_bysite <- out$results_bysite[1, ]
+  out$results_bysite$ejam_uniq_id <- "010039900000"
+  out$results_bysite$radius.miles <- 0
+
+  empty_shape <- sf::st_sf(
+    ejam_uniq_id = "010039900000",
+    geometry = sf::st_sfc(sf::st_geometrycollection(), crs = 4326)
+  )
+
+  expect_message({
+    x <- map_ejam_plus_shp(
+      shp = empty_shape,
+      out = out,
+      radius_buffer = 0,
+      launch_browser = FALSE
+    )
+  }, "There were 1 invalid polygons.", fixed = TRUE)
+  expect_true("leaflet" %in% class(x))
 })
 ############################################## #
 
