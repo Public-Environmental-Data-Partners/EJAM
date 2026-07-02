@@ -126,8 +126,8 @@
 <span></span>
 <span><span class="co"># Using package-specific test function</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="reference/test_ejam.html">test_ejam</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Test configuration:</strong> - Test framework: testthat (edition 3) - Parallel testing: DISABLED (Config/testthat/parallel: false) - Tests location: <code>tests/testthat/</code> - Special setup: <code>tests/testthat.R</code> installs package before running tests - Web app tests: Use shinytest2 (see below)</p>
-<p><strong>Important:</strong> Unit tests started using devtools::test() may use the INSTALLED version of the package, not local source. If you make changes, you MUST reinstall the package before tests will reflect those changes.</p>
+<p><strong>Test configuration:</strong> - Test framework: testthat (edition 3) - Parallel testing: DISABLED (Config/testthat/parallel: false) - Tests location: <code>tests/testthat/</code> - Special setup: <code>tests/testthat.R</code> itself does NOT reinstall the package – it just runs <code>test_check("EJAM")</code> against whichever version is currently INSTALLED. See the “Important” note below. - Web app tests: Use shinytest2 (see below)</p>
+<p><strong>Important:</strong> <code>devtools::test()</code> and <code>EJAM:::test_ejam()</code> (default <code>useloadall = TRUE</code>) call <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code>/<code>devtools::load_all()</code> first, so they test the CURRENT LOCAL SOURCE directly – no reinstall needed for those. It’s <code>testthat::test_check()</code>/<code>test_package()</code> – and therefore <code>R CMD check</code>, <code>devtools::check()</code>, and <code>rcmdcheck::rcmdcheck()</code>, which run <code>tests/testthat.R</code> – that test the INSTALLED package instead; reinstall first (<code>remotes::install_local(".", force = TRUE)</code>) if you need one of those to reflect recent changes.</p>
 </div>
 <div class="section level3">
 <h3 id="shiny-app-tests-shinytest2">Shiny App Tests (shinytest2)<a class="anchor" aria-label="anchor" href="#shiny-app-tests-shinytest2"></a></h3>
@@ -146,37 +146,35 @@
 <span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu">test_app</span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"NAICS-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Dependencies for shinytest2:</strong></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># webshot::install_phantomjs()  # Required for screenshots</span></span>
+<code class="sourceCode R"><span><span class="co"># shinytest2 itself drives a local headless Chrome/Chromium via its own</span></span>
+<span><span class="co"># chromote dependency -- no install_phantomjs() needed.</span></span>
+<span><span class="co"># (webshot2, also chromote-based, is a separate Imports dependency used</span></span>
+<span><span class="co"># elsewhere in EJAM for report/Excel map screenshots -- not part of shinytest2.)</span></span>
 <span><span class="co"># also needs pandoc probably</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="linting">Linting<a class="anchor" aria-label="anchor" href="#linting"></a></h2>
-<p><strong>Lintr is configured but runs in CI with continue-on-error: true</strong></p>
-<p>To run lintr locally:</p>
+<p><strong>Lintr is configured in <code>.github/workflows/lintr.yaml</code>, but as of 2026-07 that workflow (and <code>R CMD check</code> in <code>.github/workflows/check-standard.yaml</code>) is manually disabled in this repo’s GitHub Actions settings.</strong> Neither currently runs on PRs – re-check the repo’s Actions tab if you need current CI-enforcement status, since this can change. Separately, even if <code>lintr.yaml</code> is re-enabled, its <code>Run lintr</code> step has <code>continue-on-error: true</code> – lint findings alone won’t fail the workflow/block a PR unless that setting is also changed.</p>
+<p>To run lintr locally anyway:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">lintr</span><span class="fu">::</span><span class="fu">lint_dir</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># CI uses SARIF output</span></span>
+<span><span class="co"># CI (when enabled) uses SARIF output</span></span>
 <span><span class="fu">lintr</span><span class="fu">::</span><span class="fu">sarif_output</span><span class="op">(</span><span class="fu">lintr</span><span class="fu">::</span><span class="fu">lint_dir</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>, <span class="st">"lintr-results.sarif"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Important:</strong> Lintr violations won’t block PRs, but you should address them when reasonable.</p>
+<p><strong>Important:</strong> Lintr is not currently enforced by CI, but you should still address violations when reasonable.</p>
 </div>
 <div class="section level2">
 <h2 id="building-documentation">Building Documentation<a class="anchor" aria-label="anchor" href="#building-documentation"></a></h2>
 <p><strong>Update just the .Rd files of documentation (roxygen2):</strong></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Build pkgdown site (which also updates the .Rd files of documentation):</strong></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="reference/pkgdown_update.html">pkgdown_update</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># see documentation of this function for details</span></span>
-<span></span>
-<span><span class="co">## or:</span></span>
-<span><span class="co"># See the existing github actions workflow(s) related to build/deploy or just deploying the pkgdown website.</span></span></code></pre></div>
+<p><strong>Build pkgdown site:</strong> - <code>.github/workflows/pkgdown.yaml</code> is an active GitHub Actions workflow that automatically builds and deploys the pkgdown site (e.g. on pushes to relevant branches) – for most changes you don’t need to build it manually. - For manual/local builds, <code>EJAM:::pkgdown_update()</code> (see <code>R/utils_pkgdown_update.R</code>) is still a working utility function with more granular options (doc rebuild, tests, install, etc.).</p>
 </div>
 <div class="section level2">
 <h2 id="running-the-shiny-app">Running the Shiny App<a class="anchor" aria-label="anchor" href="#running-the-shiny-app"></a></h2>
 <p><strong>Running the app locally in RStudio:</strong></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ejamapp.html">ejamapp</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -184,21 +182,23 @@
 <span><span class="co"># especially the setting isPublic=TRUE that should be used for debugging or testing</span></span>
 <span><span class="fu"><a href="reference/ejamapp.html">ejamapp</a></span><span class="op">(</span>isPublic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Running the app on a server once deployed:</strong></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># one option is this:</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"app.R"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># another option is this:</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ejamapp.html">ejamapp</a></span><span class="op">(</span>isPublic<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Live web app</strong> - The app has been hosted at the site pointed to by <a href="https://ejanalysis.com/ejamapp" class="external-link uri">https://ejanalysis.com/ejamapp</a> - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.</p>
-<p><strong>API: Example of live hosted EJAM API that is not the same as the API drafted in the plumber folder of this package</strong> - There is an EJAM API hosted at the site pointed to by <a href="https://ejanalysis.com/ejamapi" class="external-link uri">https://ejanalysis.com/ejamapi</a> and/or (if different) at <a href="https://ejamapi-84652557241.us-central1.run.app/" class="external-link uri">https://ejamapi-84652557241.us-central1.run.app/</a> - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release. - Also, the code for that API is at <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/EJAM-API</a></p>
+<p><strong>Live EJAM web app</strong> - Don’t hardcode a URL for this in docs/code – it can change. Prefer <code><a href="reference/url_ejamapp.html">EJAM::url_ejamapp()</a></code> (note: the <code>URL</code> field in <code>DESCRIPTION</code> is the docs/code/org URLs, not the live app URL – use <code><a href="reference/url_ejamapp.html">url_ejamapp()</a></code>, not that field, for the app). - As of 2026-07, the live Shiny app is hosted on <strong>AWS ECS Fargate</strong> (not Cloud Run), reachable at <code>https://ejam.publicenvirodata.org</code> (prod, via a Squarespace CNAME to the prod Application Load Balancer) and also at <code><a href="reference/url_ejamapp.html">url_ejamapp()</a></code>’s default base URL <code>https://ejamapp.ejanalysis.com/</code> (a Cloudflare-fronted shortcut that 302-redirects there while preserving the query string, so launch-URL parameters survive – unlike the plain <code>https://ejanalysis.com/ejamapp</code> Squarespace 301, which drops them). See <code>vignettes/dev-deployment.Rmd</code> (companion: <code>vignettes/dev-deploy-app.Rmd</code>) for the full hosting/deploy procedure – the actual Terraform/Docker/deploy files live on the <code>dev-deploy</code>/<code>prod-deploy</code> branches, not on <code>main</code>/<code>development</code>. - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.</p>
+<p><strong>API: Live hosted EJAM REST API (separate from, and not the same as, the draft/inactive API code sitting in this package’s <code>inst/plumber/</code> folder)</strong> - Don’t hardcode a URL for this either. Use <code>EJAM::url_package("api", get_full_url = TRUE)</code> or <code><a href="reference/url_ejamapi.html">url_ejamapi()</a></code>, which read the <code>ejam_api_url</code> field in <code>DESCRIPTION</code>. - The API is a separate service hosted on <strong>Google Cloud Run</strong>, deployed from its own repo: <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/EJAM-API</a> (that repo’s README documents every endpoint/parameter and is the authoritative reference – see also <code>vignettes/dev-api.Rmd</code> here for a short overview from the EJAM-package side). - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.</p>
+<p><strong>EJScreen web app integration</strong> - Since the v3.2022.1 patch release, EJScreen can hand off multiple selected places to EJAM (deep-link/launch-URL parameters, plus a token-based <code>POST /handoff</code> on the API) so EJAM opens pre-loaded with those sites, or the API can return one combined “multisite” report directly. See <code>vignettes/dev-app-settings.Rmd</code> for the launch-URL parameters, and <code>NEWS.md</code> (top entry) for the full feature description. - The EJScreen app/repo is separate from EJAM; treat it (like EJAM-API) as a stricter-approval repo – see “Cross-Tool Working Conventions” below.</p>
 </div>
 <div class="section level2">
 <h2 id="github-actions--ci-workflows">GitHub Actions / CI Workflows<a class="anchor" aria-label="anchor" href="#github-actions--ci-workflows"></a></h2>
-<ul><li>Some of the github action workflows for this package might be disabled at any given time, because they are being debugged still or because they are time-consuming and non-essential, for example.</li>
-<li>See the main branch’s folder .github/workflows which has the .yaml files.</li>
-<li>See the repository to check which are currently enabled.</li>
+<ul><li>See <code>.github/workflows/</code> <strong>on this branch</strong> for most <code>.yaml</code> files. A workflow’s file can still be present even when it’s been manually disabled via the GitHub Actions UI (as with <code>lintr.yaml</code>/<code>check-standard.yaml</code> below) – check the repo’s Actions tab for the authoritative enabled/disabled state, since it changes over time.</li>
+<li>
+<strong><code>deploy.yaml</code>/<code>deploy-dev.yaml</code> are the exception:</strong> those two live only on the <code>dev-deploy</code>/<code>prod-deploy</code> branches (not on <code>main</code>/<code>development</code>), alongside the rest of the deploy-only files – see “Live EJAM web app” above and <code>vignettes/dev-deployment.Rmd</code>. Don’t expect to find them by browsing <code>.github/workflows/</code> on <code>main</code>/<code>development</code>.</li>
+<li>Snapshot as of 2026-07-02 (verify before relying on it): <strong>enabled</strong> – on <code>main</code>/<code>development</code>: <code>test-webapp-functionality.yaml</code> (Shiny app UI tests), <code>install-quick-check.yaml</code>, <code>install-release-user-check.yaml</code>, <code>pkgdown.yaml</code> (docs site build+deploy), plus a couple of narrowly-scoped debug/diagnostic workflows; on the deploy branches: <code>deploy.yaml</code> (prod AWS ECS Fargate deploy, triggered from <code>prod-deploy</code>), <code>deploy-dev.yaml</code> (dev AWS ECS Fargate deploy, triggered from <code>dev-deploy</code>). <strong>Disabled (manually, in GitHub UI)</strong> – <code>lintr.yaml</code> and <code>check-standard.yaml</code> (<code>R CMD check</code>); neither currently runs on PRs.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="common-issues-and-workarounds">Common Issues and Workarounds<a class="anchor" aria-label="anchor" href="#common-issues-and-workarounds"></a></h2>
@@ -207,7 +207,7 @@
 <ol style="list-style-type: decimal"><li>
 <strong>Package attachment fails (.onAttach errors):</strong> Reinstall from source: <code>remotes::install_local(".", force = TRUE)</code> when new functions are referenced in global_defaults_package.R.</li>
 <li>
-<strong>Tests don’t reflect code changes:</strong> Be sure to know whether tests use latest local source in the checked out branch versus the INSTALLED version which may be different. It is safest to always do <code>remotes::install_local(".", force = TRUE)</code> before testing, or do unit testing via the utility function <code><a href="reference/test_ejam.html">test_ejam()</a></code> and see more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd</li>
+<strong>Tests don’t reflect code changes:</strong> This mainly bites <code>R CMD check</code>/<code>devtools::check()</code>/<code>rcmdcheck::rcmdcheck()</code> (which test the INSTALLED package via <code>tests/testthat.R</code>) – reinstall first with <code>remotes::install_local(".", force = TRUE)</code> if you need one of those to reflect recent changes. <code>devtools::test()</code> and <code>EJAM:::test_ejam()</code> already test the current local source (via <code>load_all()</code>), so a reinstall isn’t required for those. See more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd</li>
 <li>
 <strong>shinytest2 timeouts:</strong> App init might take 2+ minutes. Use <code>load_timeout=2e+06</code> in tests.</li>
 <li>
@@ -224,7 +224,7 @@
 </div>
 <div class="section level2">
 <h2 id="key-files">Key Files<a class="anchor" aria-label="anchor" href="#key-files"></a></h2>
-<p><strong>Root:</strong> <code>DESCRIPTION</code> (metadata), <code>NAMESPACE</code> (auto-gen), <code>app.R</code> (deployment entry), <code>Dockerfile</code>, <code>.Rbuildignore</code> <strong>R/:</strong> <code>app_ui.R</code>/<code>app_server.R</code> (key code for the web app), <code>aaa_onAttach.R</code> (init), <code>MODULE_*</code> (Shiny modules), <code>*_FUNCTIONS</code> (grouped functions) <strong>inst/:</strong> <code>global_defaults_package.R</code> &amp; <code>global_defaults_shiny.R</code> (settings), <code>golem-config.yml</code>, <code>plumber/</code> (API), <code>report/</code> (templates) <strong>tests/:</strong> <code>testthat/test-*.R</code>, <code>test_ejam.R</code> (utility for interactively running groups of unit tests), <code>setup.R</code>, <code>setup-shinytest2.R</code> (shinytest2 testing of webapp functionality)</p>
+<p><strong>Root:</strong> <code>DESCRIPTION</code> (metadata), <code>NAMESPACE</code> (auto-gen), <code>app.R</code> (deployment entry), <code>Dockerfile</code>, <code>.Rbuildignore</code> <strong>R/:</strong> <code>app_ui.R</code>/<code>app_server.R</code> (key code for the web app), <code>aaa_onAttach.R</code> (init), <code>MODULE_*</code> (Shiny modules), <code>*_FUNCTIONS</code> (grouped functions) <strong>inst/:</strong> <code>global_defaults_package.R</code> &amp; <code>global_defaults_shiny.R</code> (settings), <code>golem-config.yml</code>, <code>plumber/</code> (draft/inactive API code – the <em>live</em> API is the separate EJAM-API repo, see below), <code>report/</code> (templates) <strong>tests/:</strong> <code>testthat/test-*.R</code>, <code>test_ejam.R</code> (utility for interactively running groups of unit tests), <code>setup.R</code>, <code>setup-shinytest2.R</code> (shinytest2 testing of webapp functionality)</p>
 </div>
 <div class="section level2">
 <h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a></h2>
@@ -243,21 +243,21 @@
 <ul><li>
 <strong>Protected sibling repos:</strong> <code>EJAM-API</code> and <code>EJScreen</code> are co-managed and co-maintained with, but primarily managed by, other people (PEDP / EPIC / EDGI / Eric / Gabe / others). Never edit, merge, push, close issues, or post comments/reviews in those two repos without explicit per-action approval from the primary maintainer. This repo (<code>EJAM</code>) itself is co-managed but does not have that restriction.</li>
 <li>
-<strong>Test file bookkeeping:</strong> Any time a <code>tests/testthat/test-*.R</code> file is added, removed, or renamed, also update <code>R/test_ejam.R</code> (the <code>testlist</code> group membership and <code>timebyfile</code> timing metadata) in the same change — it is not auto-discovered.</li>
+<strong>Test file bookkeeping:</strong> Any time a <code>tests/testthat/test-*.R</code> file is added, removed, or renamed, also update <code>R/test_ejam.R</code> (the <code>testlist</code> group membership and <code>timebyfile</code> timing metadata) in the same change – it is not auto-discovered.</li>
 <li>
 <strong>Cross-repo issue/PR references:</strong> In commit messages, PR descriptions, comments, and docs, write cross-repo issue/PR references as <code>owner/repo#NN</code> (e.g. <code>Public-Environmental-Data-Partners/EJAM-API#43</code>), not bare <code>#NN</code>. A bare <code>#NN</code> auto-links to whichever repo the text lives in, which is wrong when referring to one of the sibling repos.</li>
 <li>
-<strong>No local machine paths in commits:</strong> Never commit code, comments, or docs containing a local-machine path (e.g. anything with <code>/Users/&lt;name&gt;/...</code>). Check staged content before committing.</li>
+<strong>No local machine paths in commits:</strong> Never commit code, comments, or docs containing a local-machine path (e.g. a personal home-directory path, a personal folder name). Check staged content before committing; this repo has at least one pre-existing offender (a hardcoded local path in a <code>data-raw/</code> script) that should eventually be cleaned up.</li>
 <li>
 <strong>Resolve addressed PR review threads:</strong> When a PR review comment/thread has been fully addressed (fixed or confirmed obsolete), resolve the conversation rather than leaving it open.</li>
 <li>
-<strong>Live Shiny app deploy is AWS, not Cloud Run:</strong> The live Shiny web app (<code>ejam.publicenvirodata.org</code>, aliased from <code>ejanalysis.com/ejamapp</code>) runs on AWS ECS Fargate, deployed via PR flow <code>main</code> → <code>dev-deploy</code> → <code>prod-deploy</code> branches (GitHub Actions). This is separate from the EJAM-API, which runs on Google Cloud Run. See <code>ejam-infra/README.md</code> on the <code>dev-deploy</code> branch (and any vignette about deployment) for the full deploy doc.</li>
+<strong>Don’t hardcode live-service URLs in docs or code:</strong> The Shiny app URL, the API base URL, and related repo URLs can change (proxies, domain moves, etc.). Prefer reading them from <code>DESCRIPTION</code> via <code><a href="reference/url_package.html">url_package()</a></code>/<code><a href="reference/url_ejamapp.html">url_ejamapp()</a></code>/<code><a href="reference/url_ejamapi.html">url_ejamapi()</a></code> rather than hardcoding a URL string, per the “Live EJAM web app” / “API” sections above (which also have the current, verified specifics on AWS ECS Fargate vs. Cloud Run hosting).</li>
 <li>
 <strong>Obsolete worktree or branch cleanup:</strong> If it is clear that a worktree or local or remote branch is obsolete since it has already been used for a PR that is merged or issue that it closed, then it should be deleted, but if it is somewhat unclear or not easy to confirm then make a note of it asking for confirmation before deleting it.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="package-version-management">Package Version Management<a class="anchor" aria-label="anchor" href="#package-version-management"></a></h2>
-<p>Version of package and versions of critical data sources like ACS are tracked in multiple files and must be updated consistently: - <code>DESCRIPTION</code> (primary source) - <code>NEWS.md</code> (changelog) - <code>_pkgdown.yml</code> (documentation site) - <code>inst/golem-config.yml</code> - <code>CITATION.cff</code> or other CITATION files.</p>
+<p>Version of package and versions of critical data sources like ACS are tracked in multiple files and must be updated consistently: - <code>DESCRIPTION</code> (primary source) - <code>NEWS.md</code> (changelog) - <code>_pkgdown.yml</code> (documentation site) - <code>inst/golem-config.yml</code> - <code>CITATION.cff</code> and <code>inst/CITATION</code> (check for any other CITATION files too)</p>
 </div>
 <div class="section level2">
 <h2 id="additional-resources">Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources"></a></h2>
@@ -268,7 +268,7 @@
 </div>
 <div class="section level2">
 <h2 id="trust-these-instructions">Trust These Instructions<a class="anchor" aria-label="anchor" href="#trust-these-instructions"></a></h2>
-<p>These instructions have been carefully validated (at least as of May 1, 2026), except where they explicitly mention the latest updates or need for updates.</p>
+<p>These instructions have been carefully validated (originally as of May 1, 2026, and re-verified/corrected against the live repo, GitHub Actions state, and open PRs as of July 2, 2026), except where they explicitly mention the latest updates or need for updates.</p>
 <p>For most development tasks, following these instructions should allow you to work efficiently without extensive exploration outside this package or repository.</p>
 <p>Only search for additional information if:</p>
 <ol style="list-style-type: decimal"><li>These instructions are incomplete for your specific task, or they are unlikely to be sufficient to provide a high-confidence, accurate, clear, complete answer - In that case, see additional resources mentioned above, including any of the .Rmd files in the vignettes folder.</li>
