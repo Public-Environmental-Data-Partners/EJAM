@@ -81,6 +81,9 @@
 #' @param notes Text of additional notes to put in the notes tab, optional vector of character elements pasted in as one line each.
 #' @param custom_tab optional table to put in an extra tab
 #' @param custom_tab_name optional name of optional custom_tab
+#' @param flagged_areas_add logical, whether to include an "Area Features" tab with the
+#'   ejamitout$results_summarized$flagged_areas table (percent of analyzed residents with
+#'   each feature or area type in their blockgroup, vs the US and State averages)
 #' @param ejscreen_ejam_caveat optional text if you want to change this in the notes tab
 #'
 #' @param ... optional additional parameters passed to [table_xls_format()], currently unused
@@ -149,6 +152,7 @@ ejam2excel <- function(ejamitout,
                        notes = NULL,
                        custom_tab = ejamitout$results_summarized$cols,
                        custom_tab_name = "thresholds",
+                       flagged_areas_add = TRUE,
                        ejscreen_ejam_caveat = NULL,
                        ...
 ) {
@@ -216,6 +220,7 @@ ejam2excel <- function(ejamitout,
     notes = notes,
     custom_tab = custom_tab,
     custom_tab_name = custom_tab_name,
+    flagged_areas_add = flagged_areas_add,
     ejscreen_ejam_caveat = ejscreen_ejam_caveat,
     ...
   )

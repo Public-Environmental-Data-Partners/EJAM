@@ -2563,6 +2563,7 @@ app_server <- function(input, output, session) {
       extratable_title_top_row         = input$extratable_title_top_row,
       extratable_list_of_sections      = global_or_param("default_extratable_list_of_sections"),
       extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
+      flagged_areas_df = data_processed()$results_summarized$flagged_areas, # % of residents with each feature/area type in their blockgroup, vs US and State
       in_shiny = TRUE,
       filename = NULL
     )

@@ -63,6 +63,7 @@ table_xls_from_ejam <- function(ejamitout,
                                 notes = NULL,
                                 custom_tab = NULL,         # but default in ejam2excel is  ejamitout$results_summarized$cols
                                 custom_tab_name = "other", # but default in ejam2excel is  "thresholds"
+                                flagged_areas_add = TRUE,
                                 ejscreen_ejam_caveat = NULL,
                                 ...
 ) {
@@ -171,6 +172,13 @@ table_xls_from_ejam <- function(ejamitout,
     pathname <- fname
   }
   ######################################################### #
+  # flagged_areas tab (Area Features) ####
+  # % of analyzed residents with each feature or area type in their blockgroup, vs US and State
+  flagged_areas_tab <- NULL
+  if (isTRUE(flagged_areas_add)) {
+    flagged_areas_tab <- tryCatch(ejamitout$results_summarized$flagged_areas, error = function(e) NULL)
+  }
+  ######################################################### #
   # ** table_xls_format() does the work ** ####
 
   # also see the defaults in ejamit() and in table_xls_format()
@@ -230,6 +238,7 @@ table_xls_from_ejam <- function(ejamitout,
     notes = notes,
     custom_tab = custom_tab,
     custom_tab_name = custom_tab_name,
+    flagged_areas_tab = flagged_areas_tab,
     ejscreen_ejam_caveat = ejscreen_ejam_caveat,
     ...
   )
