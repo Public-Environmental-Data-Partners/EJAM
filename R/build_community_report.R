@@ -101,6 +101,12 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #' @param extratable_hide_missing_rows_for only for the indicators named in this vector,
 #'   leave out rows in table where raw value is NA,
 #'   as with many of names_d_language, in extra table of demog. subgroups, etc.'
+#' @param flagged_areas_df optional data.frame like ejamit()$results_summarized$flagged_areas
+#'   (see [calc_flagged_areas()]). If provided, a section of rows is added just below the
+#'   "Features and Location Information" section of the extra table, showing what percent of
+#'   the analyzed residents have each type of feature or area type in (or overlapping) their
+#'   blockgroup, with color-coded ratios to the US and State averages.
+#'   NULL (the default) omits that section, as for outputs of older EJAM versions.
 #'
 #' @param in_shiny whether the function is being called in or outside of shiny - affects location of header
 #' @param filename path to file to save HTML content to; if null, returns as string (used in Shiny app)
@@ -149,6 +155,8 @@ build_community_report <- function(
     ## all the indicators that are in extratable_list_of_sections:
     extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
 
+    flagged_areas_df = NULL, # data.frame like ejamit()$results_summarized$flagged_areas - if provided, adds rows showing % of residents with each feature/area type in their blockgroup, vs US and State
+
     in_shiny = FALSE,
     filename = NULL
 ) {
@@ -176,6 +184,15 @@ build_community_report <- function(
   # If done here, probably should switch to table_signif_round_x100() not format_ejamit_columns() ***
   output_df_rounded <-   as.data.frame(output_df)
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded))
+
+  # Show the avg resident's counts of features (schools etc.) rounded to 1 decimal place,
+  # not 0 decimal places, since e.g. a count of 0.4 would misleadingly show as 0
+  # even though it means 40% of residents have 1 of that feature in their blockgroup (issue #410)
+  countcols <- intersect(c(names_featuresinarea, names_sitesinarea), names(output_df_rounded))
+  countcols <- countcols[sapply(as.data.frame(output_df)[, countcols, drop = FALSE], is.numeric)]
+  if (length(countcols) > 0) {
+    output_df_rounded[, countcols] <- round(as.data.frame(output_df)[, countcols, drop = FALSE], 1)
+  }
 
   if (missing(totalpop) || is.null(totalpop)) {
     if ("pop" %in% names(output_df_rounded)) {
@@ -244,7 +261,8 @@ build_community_report <- function(
                             extratable_title_top_row = extratable_title_top_row, # inside table, e.g.,  'Additional Information' or 'Additional Indicators'
                             extratable_show_ratios_in_report = extratable_show_ratios_in_report,
                             list_of_sections      = extratable_list_of_sections,
-                            hide_missing_rows_for = extratable_hide_missing_rows_for
+                            hide_missing_rows_for = extratable_hide_missing_rows_for,
+                            flagged_areas_df      = flagged_areas_df
     ),
     ############################################################# #
 

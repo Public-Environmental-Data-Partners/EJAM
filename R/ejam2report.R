@@ -296,6 +296,20 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # but shp is all rows, remember, and popup can still be like for site by site
     rad <- ejamout1$radius.miles
 
+    ## > flagged areas summary (for new rows in report - see calc_flagged_areas()) ####
+    # normally already in results_summarized via batch.summarize(); recalculate as fallback if missing;
+    # NULL (as for outputs saved by very old EJAM versions) means the report just omits that section
+    junk <- capture.output({
+      flagged_areas_df <- tryCatch({
+        fa <- ejamitout$results_summarized$flagged_areas
+        if (is.null(fa) && !is.null(ejamitout$results_bysite) && !is.null(ejamitout$results_bybg_people)) {
+          fa <- calc_flagged_areas(sitestats = ejamitout$results_bysite,
+                                   popstats  = ejamitout$results_bybg_people)
+        }
+        fa
+      }, error = function(e) NULL)
+    })
+
     ## > filename needs no location name ####
     selected_location_name_react <- NULL
 
@@ -324,6 +338,19 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     }
     ejamout1 <- ejamitout$results_bysite[sitenumber, ]
     rad <- ejamout1$radius.miles
+
+    ## > flagged areas summary for this ONE site (for new rows in report - see calc_flagged_areas()) ####
+    # calculated here for just this site, using the blockgroups at this site only;
+    # NULL (e.g., if results_bybg_people is unavailable) means the report just omits that section
+    junk <- capture.output({
+      flagged_areas_df <- tryCatch({
+        id1 <- ejamitout$results_bysite$ejam_uniq_id[sitenumber]
+        calc_flagged_areas(
+          sitestats = ejamitout$results_bysite[sitenumber, ],
+          popstats  = ejamitout$results_bybg_people[ejamitout$results_bybg_people$ejam_uniq_id %in% id1, ]
+        )
+      }, error = function(e) NULL)
+    })
 
     ## > nsites
     nsites <- 1
@@ -470,6 +497,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       extratable_list_of_sections      = extratable_list_of_sections,
       extratable_show_ratios_in_report = extratable_show_ratios_in_report,
       extratable_hide_missing_rows_for = extratable_hide_missing_rows_for,
+
+      flagged_areas_df = flagged_areas_df, # for the multisite report this summarizes all the sites; for a 1-site report it is for that one site
 
       in_shiny = FALSE,
       filename = temp_comm_report_or_null  # passing NULL should make it return the html object
