@@ -79,10 +79,10 @@ EJAM:::test_ejam()
 - Test framework: testthat (edition 3)
 - Parallel testing: DISABLED (Config/testthat/parallel: false)
 - Tests location: `tests/testthat/`
-- Special setup: `tests/testthat.R` installs package before running tests
+- Special setup: `tests/testthat.R` itself does NOT reinstall the package -- it just runs `test_check("EJAM")` against whichever version is currently INSTALLED. See the "Important" note below.
 - Web app tests: Use shinytest2 (see below)
 
-**Important:** Unit tests started using devtools::test() may use the INSTALLED version of the package, not local source. If you make changes, you MUST reinstall the package before tests will reflect those changes.
+**Important:** `devtools::test()` and `EJAM:::test_ejam()` (default `useloadall = TRUE`) call `pkgload::load_all()`/`devtools::load_all()` first, so they test the CURRENT LOCAL SOURCE directly -- no reinstall needed for those. It's `testthat::test_check()`/`test_package()` -- and therefore `R CMD check`, `devtools::check()`, and `rcmdcheck::rcmdcheck()`, which run `tests/testthat.R` -- that test the INSTALLED package instead; reinstall first (`remotes::install_local(".", force = TRUE)`) if you need one of those to reflect recent changes.
 
 ### Shiny App Tests (shinytest2)
 
@@ -103,23 +103,31 @@ shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 
 **Dependencies for shinytest2:**
 ```r
-# webshot::install_phantomjs()  # Required for screenshots
+# shinytest2 itself drives a local headless Chrome/Chromium via its own
+# chromote dependency -- no install_phantomjs() needed.
+# (webshot2, also chromote-based, is a separate Imports dependency used
+# elsewhere in EJAM for report/Excel map screenshots -- not part of shinytest2.)
 # also needs pandoc probably
 ```
 
 ## Linting
 
-**Lintr is configured but runs in CI with continue-on-error: true**
+**Lintr is configured in `.github/workflows/lintr.yaml`, but as of 2026-07 that workflow (and
+`R CMD check` in `.github/workflows/check-standard.yaml`) is manually disabled in this repo's
+GitHub Actions settings.** Neither currently runs on PRs -- re-check the repo's Actions tab if
+you need current CI-enforcement status, since this can change. Separately, even if `lintr.yaml`
+is re-enabled, its `Run lintr` step has `continue-on-error: true` -- lint findings alone won't
+fail the workflow/block a PR unless that setting is also changed.
 
-To run lintr locally:
+To run lintr locally anyway:
 ```r
 lintr::lint_dir(".")
 
-# CI uses SARIF output
+# CI (when enabled) uses SARIF output
 lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
 ```
 
-**Important:** Lintr violations won't block PRs, but you should address them when reasonable.
+**Important:** Lintr is not currently enforced by CI, but you should still address violations when reasonable.
 
 ## Building Documentation
 
@@ -128,13 +136,12 @@ lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
 devtools::document()
 ```
 
-**Build pkgdown site (which also updates the .Rd files of documentation):**
-```r
-EJAM:::pkgdown_update() # see documentation of this function for details
-
-## or:
-# See the existing github actions workflow(s) related to build/deploy or just deploying the pkgdown website.
-```
+**Build pkgdown site:**
+- `.github/workflows/pkgdown.yaml` is an active GitHub Actions workflow that automatically
+  builds and deploys the pkgdown site (e.g. on pushes to relevant branches) -- for most changes
+  you don't need to build it manually.
+- For manual/local builds, `EJAM:::pkgdown_update()` (see `R/utils_pkgdown_update.R`) is still
+  a working utility function with more granular options (doc rebuild, tests, install, etc.).
 
 ## Running the Shiny App
 
@@ -158,20 +165,25 @@ library(EJAM)
 ejamapp(isPublic=TRUE)
 ```
 
-**Live web app**
-- The app has been hosted at the site pointed to by https://ejanalysis.com/ejamapp
+**Live EJAM web app**
+- Don't hardcode a URL for this in docs/code -- it can change. Prefer `EJAM::url_ejamapp()` (note: the `URL` field in `DESCRIPTION` is the docs/code/org URLs, not the live app URL -- use `url_ejamapp()`, not that field, for the app).
+- As of 2026-07, the live Shiny app is hosted on **AWS ECS Fargate** (not Cloud Run), reachable at `https://ejam.publicenvirodata.org` (prod, via a Squarespace CNAME to the prod Application Load Balancer) and also at `url_ejamapp()`'s default base URL `https://ejamapp.ejanalysis.com/` (a Cloudflare-fronted shortcut that 302-redirects there while preserving the query string, so launch-URL parameters survive -- unlike the plain `https://ejanalysis.com/ejamapp` Squarespace 301, which drops them). See `vignettes/dev-deployment.Rmd` (companion: `vignettes/dev-deploy-app.Rmd`) for the full hosting/deploy procedure -- the actual Terraform/Docker/deploy files live on the `dev-deploy`/`prod-deploy` branches, not on `main`/`development`.
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
 
-**API: Example of live hosted EJAM API that is not the same as the API drafted in the plumber folder of this package**
-- There is an EJAM API hosted at the site pointed to by https://ejanalysis.com/ejamapi  and/or (if different) at https://ejamapi-84652557241.us-central1.run.app/
+**API: Live hosted EJAM REST API (separate from, and not the same as, the draft/inactive API code sitting in this package's `inst/plumber/` folder)**
+- Don't hardcode a URL for this either. Use `EJAM::url_package("api", get_full_url = TRUE)` or `url_ejamapi()`, which read the `ejam_api_url` field in `DESCRIPTION`.
+- The API is a separate service hosted on **Google Cloud Run**, deployed from its own repo: https://github.com/Public-Environmental-Data-Partners/EJAM-API (that repo's README documents every endpoint/parameter and is the authoritative reference -- see also `vignettes/dev-api.Rmd` here for a short overview from the EJAM-package side).
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
-- Also, the code for that API is at https://github.com/Public-Environmental-Data-Partners/EJAM-API
+
+**EJScreen web app integration**
+- Since the v3.2022.1 patch release, EJScreen can hand off multiple selected places to EJAM (deep-link/launch-URL parameters, plus a token-based `POST /handoff` on the API) so EJAM opens pre-loaded with those sites, or the API can return one combined "multisite" report directly. See `vignettes/dev-app-settings.Rmd` for the launch-URL parameters, and `NEWS.md` (top entry) for the full feature description.
+- The EJScreen app/repo is separate from EJAM; treat it (like EJAM-API) as a stricter-approval repo -- see "Cross-Tool Working Conventions" below.
 
 ## GitHub Actions / CI Workflows
 
-- Some of the github action workflows for this package might be disabled at any given time, because they are being debugged still or because they are time-consuming and non-essential, for example.
-- See the main branch's folder .github/workflows which has the .yaml files.
-- See the repository to check which are currently enabled.
+- See `.github/workflows/` **on this branch** for most `.yaml` files. A workflow's file can still be present even when it's been manually disabled via the GitHub Actions UI (as with `lintr.yaml`/`check-standard.yaml` below) -- check the repo's Actions tab for the authoritative enabled/disabled state, since it changes over time.
+- **`deploy.yaml`/`deploy-dev.yaml` are the exception:** those two live only on the `dev-deploy`/`prod-deploy` branches (not on `main`/`development`), alongside the rest of the deploy-only files -- see "Live EJAM web app" above and `vignettes/dev-deployment.Rmd`. Don't expect to find them by browsing `.github/workflows/` on `main`/`development`.
+- Snapshot as of 2026-07-02 (verify before relying on it): **enabled** -- on `main`/`development`: `test-webapp-functionality.yaml` (Shiny app UI tests), `install-quick-check.yaml`, `install-release-user-check.yaml`, `pkgdown.yaml` (docs site build+deploy), plus a couple of narrowly-scoped debug/diagnostic workflows; on the deploy branches: `deploy.yaml` (prod AWS ECS Fargate deploy, triggered from `prod-deploy`), `deploy-dev.yaml` (dev AWS ECS Fargate deploy, triggered from `dev-deploy`). **Disabled (manually, in GitHub UI)** -- `lintr.yaml` and `check-standard.yaml` (`R CMD check`); neither currently runs on PRs.
 
 
 ## Common Issues and Workarounds
@@ -179,7 +191,7 @@ ejamapp(isPublic=TRUE)
 ### Common Failures and Solutions:
 
 1. **Package attachment fails (.onAttach errors):** Reinstall from source: `remotes::install_local(".", force = TRUE)` when new functions are referenced in global_defaults_package.R.
-2. **Tests don't reflect code changes:** Be sure to know whether tests use latest local source in the checked out branch versus the INSTALLED version which may be different. It is safest to always do `remotes::install_local(".", force = TRUE)` before testing, or do unit testing via the utility function `test_ejam()` and see more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd
+2. **Tests don't reflect code changes:** This mainly bites `R CMD check`/`devtools::check()`/`rcmdcheck::rcmdcheck()` (which test the INSTALLED package via `tests/testthat.R`) -- reinstall first with `remotes::install_local(".", force = TRUE)` if you need one of those to reflect recent changes. `devtools::test()` and `EJAM:::test_ejam()` already test the current local source (via `load_all()`), so a reinstall isn't required for those. See more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd
 3. **shinytest2 timeouts:** App init might take 2+ minutes. Use `load_timeout=2e+06` in tests.
 4. **"Cannot find file" in .onAttach():** Ensure `inst/global_defaults_package.R` exists when using `devtools::load_all()`.
 5. **Slow builds/tests:** In `R/aaa_onAttach.R`, set `asap_download <- asap_index <- asap_bg <- FALSE` when iterating. That might help somewhat.
@@ -191,7 +203,7 @@ ejamapp(isPublic=TRUE)
 
 **Root:** `DESCRIPTION` (metadata), `NAMESPACE` (auto-gen), `app.R` (deployment entry), `Dockerfile`, `.Rbuildignore`
 **R/:** `app_ui.R`/`app_server.R` (key code for the web app), `aaa_onAttach.R` (init), `MODULE_*` (Shiny modules), `*_FUNCTIONS` (grouped functions)
-**inst/:** `global_defaults_package.R` & `global_defaults_shiny.R` (settings), `golem-config.yml`, `plumber/` (API), `report/` (templates)
+**inst/:** `global_defaults_package.R` & `global_defaults_shiny.R` (settings), `golem-config.yml`, `plumber/` (draft/inactive API code -- the *live* API is the separate EJAM-API repo, see below), `report/` (templates)
 **tests/:**  `testthat/test-*.R`, `test_ejam.R` (utility for interactively running groups of unit tests), `setup.R`, `setup-shinytest2.R` (shinytest2 testing of webapp functionality)
 
 ## Architecture
@@ -240,11 +252,11 @@ ejamapp(isPublic=TRUE)
 These conventions are used consistently across the maintainer's AI tooling (Claude Code, Codex, and Copilot) for this repo. Follow them here too.
 
 - **Protected sibling repos:** `EJAM-API` and `EJScreen` are co-managed and co-maintained with, but primarily managed by, other people (PEDP / EPIC / EDGI / Eric / Gabe / others). Never edit, merge, push, close issues, or post comments/reviews in those two repos without explicit per-action approval from the primary maintainer. This repo (`EJAM`) itself is co-managed but does not have that restriction.
-- **Test file bookkeeping:** Any time a `tests/testthat/test-*.R` file is added, removed, or renamed, also update `R/test_ejam.R` (the `testlist` group membership and `timebyfile` timing metadata) in the same change — it is not auto-discovered.
+- **Test file bookkeeping:** Any time a `tests/testthat/test-*.R` file is added, removed, or renamed, also update `R/test_ejam.R` (the `testlist` group membership and `timebyfile` timing metadata) in the same change -- it is not auto-discovered.
 - **Cross-repo issue/PR references:** In commit messages, PR descriptions, comments, and docs, write cross-repo issue/PR references as `owner/repo#NN` (e.g. `Public-Environmental-Data-Partners/EJAM-API#43`), not bare `#NN`. A bare `#NN` auto-links to whichever repo the text lives in, which is wrong when referring to one of the sibling repos.
-- **No local machine paths in commits:** Never commit code, comments, or docs containing a local-machine path (e.g. anything with `/Users/<name>/...`). Check staged content before committing.
+- **No local machine paths in commits:** Never commit code, comments, or docs containing a local-machine path (e.g. a personal home-directory path, a personal folder name). Check staged content before committing; this repo has at least one pre-existing offender (a hardcoded local path in a `data-raw/` script) that should eventually be cleaned up.
 - **Resolve addressed PR review threads:** When a PR review comment/thread has been fully addressed (fixed or confirmed obsolete), resolve the conversation rather than leaving it open.
-- **Live Shiny app deploy is AWS, not Cloud Run:** The live Shiny web app (`ejam.publicenvirodata.org`, aliased from `ejanalysis.com/ejamapp`) runs on AWS ECS Fargate, deployed via PR flow `main` → `dev-deploy` → `prod-deploy` branches (GitHub Actions). This is separate from the EJAM-API, which runs on Google Cloud Run. See `ejam-infra/README.md` on the `dev-deploy` branch (and any vignette about deployment) for the full deploy doc.
+- **Don't hardcode live-service URLs in docs or code:** The Shiny app URL, the API base URL, and related repo URLs can change (proxies, domain moves, etc.). Prefer reading them from `DESCRIPTION` via `url_package()`/`url_ejamapp()`/`url_ejamapi()` rather than hardcoding a URL string, per the "Live EJAM web app" / "API" sections above (which also have the current, verified specifics on AWS ECS Fargate vs. Cloud Run hosting).
 - **Obsolete worktree or branch cleanup:** If it is clear that a worktree or local or remote branch is obsolete since it has already been used for a PR that is merged or issue that it closed, then it should be deleted, but if it is somewhat unclear or not easy to confirm then make a note of it asking for confirmation before deleting it.
 
 ## Package Version Management
@@ -254,7 +266,7 @@ Version of package and versions of critical data sources like ACS are tracked in
 - `NEWS.md` (changelog)
 - `_pkgdown.yml` (documentation site)
 - `inst/golem-config.yml`
-- `CITATION.cff` or other CITATION files.
+- `CITATION.cff` and `inst/CITATION` (check for any other CITATION files too)
 
 ## Additional Resources
 
@@ -275,7 +287,7 @@ And note it might be useful to look at the live web app and/or the hosted API, b
 
 ## Trust These Instructions
 
-These instructions have been carefully validated (at least as of May 1, 2026),
+These instructions have been carefully validated (originally as of May 1, 2026, and re-verified/corrected against the live repo, GitHub Actions state, and open PRs as of July 2, 2026),
 except where they explicitly mention the latest updates or need for updates.
 
 For most development tasks, following these instructions should allow you to work efficiently without extensive exploration outside this package or repository.
