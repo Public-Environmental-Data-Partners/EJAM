@@ -29,6 +29,7 @@ build_community_report(
     Climate = names_climate, `Critical Services` = names_criticalservice, Other =
     names_d_other_count),
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
+  flagged_areas_df = NULL,
   in_shiny = FALSE,
   filename = NULL
 )
@@ -72,6 +73,13 @@ to show in that section, in extra table of demog. subgroups, etc.}
 \item{extratable_hide_missing_rows_for}{only for the indicators named in this vector,
 leave out rows in table where raw value is NA,
 as with many of names_d_language, in extra table of demog. subgroups, etc.'}
+
+\item{flagged_areas_df}{optional data.frame like ejamit()$results_summarized$flagged_areas
+(see \code{\link[=calc_flagged_areas]{calc_flagged_areas()}}). If provided, a section of rows is added just below the
+"Features and Location Information" section of the extra table, showing what percent of
+the analyzed residents have each type of feature or area type in (or overlapping) their
+blockgroup, with color-coded ratios to the US and State averages.
+NULL (the default) omits that section, as for outputs of older EJAM versions.}
 
 \item{in_shiny}{whether the function is being called in or outside of shiny - affects location of header}
 

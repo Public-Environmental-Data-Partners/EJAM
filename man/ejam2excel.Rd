@@ -42,6 +42,7 @@ ejam2excel(
   notes = NULL,
   custom_tab = ejamitout$results_summarized$cols,
   custom_tab_name = "thresholds",
+  flagged_areas_add = TRUE,
   ejscreen_ejam_caveat = NULL,
   ...
 )
@@ -143,6 +144,10 @@ second color is for those >=2d cutpoint but <3d, etc.}
 \item{custom_tab}{optional table to put in an extra tab}
 
 \item{custom_tab_name}{optional name of optional custom_tab}
+
+\item{flagged_areas_add}{logical, whether to include an "Area Features" tab with the
+ejamitout$results_summarized$flagged_areas table (percent of analyzed residents with
+each feature or area type in their blockgroup, vs the US and State averages)}
 
 \item{ejscreen_ejam_caveat}{optional text if you want to change this in the notes tab}
 

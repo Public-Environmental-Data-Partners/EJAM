@@ -125,6 +125,24 @@ ejam2barplot_areafeatures <- function(ejamitout,
 #' - The "pctno" or % indicators are summarized as what % of the
 #'   residents analyzed lack the critical service.
 #'
+#' The columns of the table are:
+#'
+#' - `Indicator` - plain-English name of the indicator
+#' - `Percent_of_these_Sites` - % of the analyzed sites where the indicator is
+#'   present/flagged (or the sum of site percentages, for the two % indicators)
+#' - `Percent_of_these_People` - % of the analyzed residents living in a
+#'   blockgroup with the feature or overlap
+#' - `Percent_of_all_People_Nationwide` - the same % but among all US residents
+#' - `ratio` - Percent_of_these_People / Percent_of_all_People_Nationwide
+#' - `Percent_of_all_People_Statewide` - the same % but among all residents of the
+#'   state(s) analyzed. Where sites span multiple states, this is the average of
+#'   the state-level percentages weighted by the analyzed population in each state
+#'   (i.e., the average among all the residents at these sites, using the statewide
+#'   value in each resident's state), analogous to how ratios to State averages
+#'   are calculated for other indicators in `results_overall`.
+#' - `ratio_to_state_avg` - Percent_of_these_People / Percent_of_all_People_Statewide
+#' - `rname` - the variable name of the indicator, like "num_school" or "yesno_tribal"
+#'
 #' @return a data frame with the summary of flagged areas
 #' @seealso [ejam2barplot_areafeatures()] [batch.summarize()]
 #'

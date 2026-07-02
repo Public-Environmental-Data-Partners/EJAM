@@ -4,13 +4,22 @@
 \alias{generate_report_footnotes}
 \title{helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes}
 \usage{
-generate_report_footnotes(diesel_caveat = NULL, show_diesel_caveat = FALSE)
+generate_report_footnotes(
+  diesel_caveat = NULL,
+  show_diesel_caveat = FALSE,
+  areafeatures_note = NULL
+)
 }
 \arguments{
 \item{diesel_caveat}{text - see source code for default}
 
 \item{show_diesel_caveat}{logical, default FALSE so the diesel particulate-matter
 caveat is suppressed in reports; set TRUE to include it in the footnotes.}
+
+\item{areafeatures_note}{text explaining the Features and Location Information rows
+(counts are the average resident's count of the feature anywhere within their
+blockgroup) and the "\% of These Residents..." rows and their US/State ratios -
+see source code for default. Set to "" to omit.}
 }
 \description{
 helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes

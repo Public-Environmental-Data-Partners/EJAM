@@ -72,6 +72,15 @@ assert_pdf_report_available <- function() {
 #'
 #' @description Get the html text or the path to the html file with a multisite summary or community report
 #'
+#' @details The report also includes rows showing what percent of the analyzed residents
+#'   have each type of feature (school, hospital, place of worship) or area type
+#'   (Tribal, nonattainment, impaired waters, CEJST/IRA disadvantaged, etc.)
+#'   in (or overlapping) their blockgroup, with ratios to the US and State averages
+#'   (see [ejam2areafeatures()]). For a multisite report those come from
+#'   `ejamitout$results_summarized$flagged_areas`; for a 1-site report they are
+#'   calculated for just that site. The rows are omitted if that information
+#'   is unavailable (e.g., for outputs saved by older EJAM versions).
+#'
 #' @param ejamitout output as from [ejamit()], list with a table in [data.table](https://r-datatable.com) format called `results_bysite`
 #'   if sitenumber parameter is used, or a table in [data.table](https://r-datatable.com) format called `results_overall` otherwise
 #' @param sitenumber If a valid number is provided, the report is a "1-site" report, about

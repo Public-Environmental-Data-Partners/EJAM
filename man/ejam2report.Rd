@@ -132,6 +132,16 @@ and has side effect of launching browser to view it depending on return_html
 \description{
 Get the html text or the path to the html file with a multisite summary or community report
 }
+\details{
+The report also includes rows showing what percent of the analyzed residents
+have each type of feature (school, hospital, place of worship) or area type
+(Tribal, nonattainment, impaired waters, CEJST/IRA disadvantaged, etc.)
+in (or overlapping) their blockgroup, with ratios to the US and State averages
+(see \code{\link[=ejam2areafeatures]{ejam2areafeatures()}}). For a multisite report those come from
+\code{ejamitout$results_summarized$flagged_areas}; for a 1-site report they are
+calculated for just that site. The rows are omitted if that information
+is unavailable (e.g., for outputs saved by older EJAM versions).
+}
 \examples{
 #out <- ejamit(testpoints_10, radius = 3, include_ejindexes = TRUE)
 out <- testoutput_ejamit_10pts_1miles

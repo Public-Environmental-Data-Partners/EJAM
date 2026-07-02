@@ -1,3 +1,42 @@
+# EJAM (development version)
+
+## New Features
+
+### State versions of the flagged-areas stats, shown in the community report
+
+The "flagged areas" summary stats (% of analyzed residents who have a school,
+hospital, or place of worship in their blockgroup, or whose blockgroup overlaps
+a Tribal area, nonattainment area, impaired waters, CEJST or IRA disadvantaged
+community, housing burden community, food desert, or transportation
+disadvantaged community) now also have **State** versions, not just US ones,
+and are now shown in the community report
+(closes [#242](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/242);
+addresses [#156](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/156)
+and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410)):
+
+- `ejamit()$results_summarized$flagged_areas` (see `ejam2areafeatures()`) gains
+  `Percent_of_all_People_Statewide` and `ratio_to_state_avg` columns. Where an
+  analysis spans multiple states, the statewide baseline is the average of the
+  state-level percentages weighted by the analyzed population in each state,
+  analogous to how ratios to State averages are calculated for other indicators.
+- The community report (in the app and via `ejam2report()`) has a new set of rows,
+  "% of These Residents Who Have This Feature or Area Type in (or Overlapping)
+  Their Blockgroup," just below the "Features and Location Information" section,
+  with color-coded ratios to the US and State averages. Multisite reports
+  summarize all sites; 1-site reports now calculate these stats for that one site.
+  (The % without broadband / health insurance indicators remain in the
+  "Critical Services" section, where they already had US/State ratios.)
+- `ejam2barplot_areafeatures()` gains a `vs` parameter: `vs = "state"` plots the
+  ratios to State averages instead of US averages.
+- The spreadsheet from `ejam2excel()` gains an "Area Features" tab with this
+  summary table, ratio columns color-coded like the other ratio columns.
+- Also per [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410),
+  the report's Features and Location Information counts (average resident's count
+  of schools etc. within their blockgroup) are now shown with 1 decimal place
+  (0.4 no longer misleadingly displays as 0), and a report footnote now explains
+  what those counts mean and what the State average means for a multisite report
+  (part of [#403](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/403)).
+
 # EJAM 3.2022.1 (July 2026)
 
 Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1,
