@@ -220,7 +220,7 @@ url_xl_style <- function(urls, urltext = urls) {
 # ## for a more full featured approach, see  ?httr2::url_modify_query()
 ########################################################### #
 
-# url_and_other_query_terms <- function(..., baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?") {
+# url_and_other_query_terms <- function(..., baseurl = paste0(url_package("api"), "/report?")) {
 #
 #   # etc will look something like "&x=1,a=hello,y=3"
 #
