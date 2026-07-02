@@ -782,24 +782,8 @@ batch.summarize <- function(ejamitout,
   # flag/yesno: Overlaps w special areas, counts of features like schools, etc. ####
   junk = capture.output({
 
-    zsites = flagged_pct_sites(sitestats)
-    myrnames = names(zsites)
-    names(zsites) <- gsub("num_school", "Any schools", names(zsites))
-    names(zsites) <- gsub("num_hospital", "Any hospitals", names(zsites))
-    names(zsites) <- gsub("num_church", "Any places of worship", names(zsites))
-    longernames = fixcolnames(names(zsites), 'r', 'long')
-    longernames = gsub("Flag for ", "", longernames)
-    x$flagged_areas <- data.frame(
-
-      data.frame(Indicator = longernames),
-      data.frame(`Percent_of_these_Sites`  = t(zsites)),
-      data.frame(`Percent_of_these_People` = t(flagged_pct_pop(popstats))),
-      data.frame("Percent_of_all_People_Nationwide" = t(flagged_pct_pop_us()))
-      # it would be some work to do this for the states analyzed wtd by analyzed people from each state (as done to get overall ratios to State averages)
-    )
-    rownames(x$flagged_areas) <- NULL
-    x$flagged_areas$ratio <- round(x$flagged_areas$Percent_of_these_People / x$flagged_areas$Percent_of_all_People_Nationwide, 2)
-    x$flagged_areas$rname = myrnames
+    # includes US and Statewide baselines and ratios - see calc_flagged_areas()
+    x$flagged_areas <- calc_flagged_areas(sitestats = sitestats, popstats = popstats)
   })
 
   if (interactive() && !quiet) {
