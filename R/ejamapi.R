@@ -102,6 +102,7 @@
 #'
 #' @examples
 #' # also see ?EJAM::url_ejamapi()
+#' url_ejamapi()
 #' eg <- TRUE
 #'
 #' # one blockgroup
@@ -181,7 +182,8 @@
 #'
 #'    - if fileextension is "pdf", invisibly returns a list of file paths
 #'
-#' @param version optional EJAM version tag (e.g. "3.2024.0") passed to the API as
+#' @param version NOT YET IMPLEMENTED.
+#'   optional EJAM version tag (e.g. "3.2024.0") passed to the API as
 #'   version=<ver> via [url_ejamapi()] so it can serve the matching data vintage.
 #'   Default NULL resolves to the installed package Version (from DESCRIPTION).
 #'
