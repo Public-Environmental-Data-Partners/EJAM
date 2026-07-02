@@ -89,6 +89,11 @@ variable "health_check_port" {
   default = 2001
 }
 
+variable "health_check_grace_period_seconds" {
+  description = "How long ECS ignores ALB health-check failures after a task starts. The container CMD starts the port-2001 health endpoint in the same R process as the Shiny app, so it cannot answer until R finishes loading EJAM + arrow data; with the default of 0, the ALB (30s interval x 3 unhealthy = ~90s) kills slow-booting tasks before they are ready. Grace only suppresses health-check kills during startup - a crashed container still stops immediately."
+  default     = 300
+}
+
 variable "task_cpu" {
   description = "Fargate task CPU units (1024 = 1 vCPU)"
   default     = 2048
@@ -509,6 +514,8 @@ resource "aws_ecs_service" "app" {
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
+
+  health_check_grace_period_seconds = var.health_check_grace_period_seconds
 
   network_configuration {
     subnets          = aws_subnet.public[*].id
