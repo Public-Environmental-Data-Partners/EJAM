@@ -103,8 +103,10 @@ shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 
 **Dependencies for shinytest2:**
 ```r
-# Screenshots use webshot2 (not the older webshot/phantomjs), which drives a
-# local headless Chrome/Chromium via chromote -- no install_phantomjs() needed.
+# shinytest2 itself drives a local headless Chrome/Chromium via its own
+# chromote dependency -- no install_phantomjs() needed.
+# (webshot2, also chromote-based, is a separate Imports dependency used
+# elsewhere in EJAM for report/Excel map screenshots -- not part of shinytest2.)
 # also needs pandoc probably
 ```
 
@@ -162,8 +164,8 @@ ejamapp(isPublic=TRUE)
 ```
 
 **Live EJAM web app**
-- Don't hardcode a URL for this in docs/code -- it can change. Prefer `EJAM::url_ejamapp()`, or the `URL` field in `DESCRIPTION`.
-- As of 2026-07, the live Shiny app is hosted on **AWS ECS Fargate** (not Cloud Run), at `https://ejam.publicenvirodata.org` (prod) via a Squarespace CNAME to the prod Application Load Balancer. See `vignettes/dev-deployment.Rmd` (companion: `vignettes/dev-deploy-app.Rmd`) for the full hosting/deploy procedure -- the actual Terraform/Docker/deploy files live on the `dev-deploy`/`prod-deploy` branches, not on `main`/`development`.
+- Don't hardcode a URL for this in docs/code -- it can change. Prefer `EJAM::url_ejamapp()` (note: the `URL` field in `DESCRIPTION` is the docs/code/org URLs, not the live app URL -- use `url_ejamapp()`, not that field, for the app).
+- As of 2026-07, the live Shiny app is hosted on **AWS ECS Fargate** (not Cloud Run), reachable at `https://ejam.publicenvirodata.org` (prod, via a Squarespace CNAME to the prod Application Load Balancer) and also at `url_ejamapp()`'s default base URL `https://ejamapp.ejanalysis.com/` (a Cloudflare-fronted shortcut that 302-redirects there while preserving the query string, so launch-URL parameters survive -- unlike the plain `https://ejanalysis.com/ejamapp` Squarespace 301, which drops them). See `vignettes/dev-deployment.Rmd` (companion: `vignettes/dev-deploy-app.Rmd`) for the full hosting/deploy procedure -- the actual Terraform/Docker/deploy files live on the `dev-deploy`/`prod-deploy` branches, not on `main`/`development`.
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
 
 **API: Live hosted EJAM REST API (separate from, and not the same as, the draft/inactive API code sitting in this package's `inst/plumber/` folder)**
