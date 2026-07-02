@@ -82,7 +82,7 @@ EJAM:::test_ejam()
 - Special setup: `tests/testthat.R` itself does NOT reinstall the package -- it just runs `test_check("EJAM")` against whichever version is currently INSTALLED. See the "Important" note below.
 - Web app tests: Use shinytest2 (see below)
 
-**Important:** Unit tests started using devtools::test() may use the INSTALLED version of the package, not local source. If you make changes, you MUST reinstall the package before tests will reflect those changes.
+**Important:** `devtools::test()` and `EJAM:::test_ejam()` (default `useloadall = TRUE`) call `pkgload::load_all()`/`devtools::load_all()` first, so they test the CURRENT LOCAL SOURCE directly -- no reinstall needed for those. It's `testthat::test_check()`/`test_package()` -- and therefore `R CMD check`, `devtools::check()`, and `rcmdcheck::rcmdcheck()`, which run `tests/testthat.R` -- that test the INSTALLED package instead; reinstall first (`remotes::install_local(".", force = TRUE)`) if you need one of those to reflect recent changes.
 
 ### Shiny App Tests (shinytest2)
 
@@ -115,7 +115,9 @@ shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 **Lintr is configured in `.github/workflows/lintr.yaml`, but as of 2026-07 that workflow (and
 `R CMD check` in `.github/workflows/check-standard.yaml`) is manually disabled in this repo's
 GitHub Actions settings.** Neither currently runs on PRs -- re-check the repo's Actions tab if
-you need current CI-enforcement status, since this can change.
+you need current CI-enforcement status, since this can change. Separately, even if `lintr.yaml`
+is re-enabled, its `Run lintr` step has `continue-on-error: true` -- lint findings alone won't
+fail the workflow/block a PR unless that setting is also changed.
 
 To run lintr locally anyway:
 ```r
@@ -179,8 +181,9 @@ ejamapp(isPublic=TRUE)
 
 ## GitHub Actions / CI Workflows
 
-- See `.github/workflows/` for the `.yaml` files. A workflow's file can still be present in the repo even when it's been manually disabled via the GitHub Actions UI (as with `lintr.yaml`/`check-standard.yaml` below) -- check the repo's Actions tab for the authoritative enabled/disabled state, since it changes over time.
-- Snapshot as of 2026-07-02 (verify before relying on it): **enabled** -- `test-webapp-functionality.yaml` (Shiny app UI tests), `install-quick-check.yaml`, `install-release-user-check.yaml`, `pkgdown.yaml` (docs site build+deploy), `deploy.yaml` (prod AWS ECS Fargate deploy, triggered from the `prod-deploy` branch), `deploy-dev.yaml` (dev AWS ECS Fargate deploy, triggered from `dev-deploy`), plus a couple of narrowly-scoped debug/diagnostic workflows. **Disabled (manually, in GitHub UI)** -- `lintr.yaml` and `check-standard.yaml` (`R CMD check`); neither currently runs on PRs.
+- See `.github/workflows/` **on this branch** for most `.yaml` files. A workflow's file can still be present even when it's been manually disabled via the GitHub Actions UI (as with `lintr.yaml`/`check-standard.yaml` below) -- check the repo's Actions tab for the authoritative enabled/disabled state, since it changes over time.
+- **`deploy.yaml`/`deploy-dev.yaml` are the exception:** those two live only on the `dev-deploy`/`prod-deploy` branches (not on `main`/`development`), alongside the rest of the deploy-only files -- see "Live EJAM web app" above and `vignettes/dev-deployment.Rmd`. Don't expect to find them by browsing `.github/workflows/` on `main`/`development`.
+- Snapshot as of 2026-07-02 (verify before relying on it): **enabled** -- on `main`/`development`: `test-webapp-functionality.yaml` (Shiny app UI tests), `install-quick-check.yaml`, `install-release-user-check.yaml`, `pkgdown.yaml` (docs site build+deploy), plus a couple of narrowly-scoped debug/diagnostic workflows; on the deploy branches: `deploy.yaml` (prod AWS ECS Fargate deploy, triggered from `prod-deploy`), `deploy-dev.yaml` (dev AWS ECS Fargate deploy, triggered from `dev-deploy`). **Disabled (manually, in GitHub UI)** -- `lintr.yaml` and `check-standard.yaml` (`R CMD check`); neither currently runs on PRs.
 
 
 ## Common Issues and Workarounds
@@ -188,7 +191,7 @@ ejamapp(isPublic=TRUE)
 ### Common Failures and Solutions:
 
 1. **Package attachment fails (.onAttach errors):** Reinstall from source: `remotes::install_local(".", force = TRUE)` when new functions are referenced in global_defaults_package.R.
-2. **Tests don't reflect code changes:** Be sure to know whether tests use latest local source in the checked out branch versus the INSTALLED version which may be different. It is safest to always do `remotes::install_local(".", force = TRUE)` before testing, or do unit testing via the utility function `test_ejam()` and see more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd
+2. **Tests don't reflect code changes:** This mainly bites `R CMD check`/`devtools::check()`/`rcmdcheck::rcmdcheck()` (which test the INSTALLED package via `tests/testthat.R`) -- reinstall first with `remotes::install_local(".", force = TRUE)` if you need one of those to reflect recent changes. `devtools::test()` and `EJAM:::test_ejam()` already test the current local source (via `load_all()`), so a reinstall isn't required for those. See more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd
 3. **shinytest2 timeouts:** App init might take 2+ minutes. Use `load_timeout=2e+06` in tests.
 4. **"Cannot find file" in .onAttach():** Ensure `inst/global_defaults_package.R` exists when using `devtools::load_all()`.
 5. **Slow builds/tests:** In `R/aaa_onAttach.R`, set `asap_download <- asap_index <- asap_bg <- FALSE` when iterating. That might help somewhat.
