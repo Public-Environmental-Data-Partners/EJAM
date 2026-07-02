@@ -1,22 +1,32 @@
 
-
 #' Get URL, or just owner/reponame, for the package code, datasets, or documentation website
 #' as specified in the DESCRIPTION file or by redirects from aliases
 #'
-#' @param type Which type of URL is needed? Can be "data", "code", "docs", or "api".
+#' @param type Which type of URL is needed?
 #'
-#'   - "code" is for the github.com repository of R package code
-#'   - "data" is for the github.com repository of datasets
-#'   - "docs" is for the documentation website
-#'   - "api" is for the EJAM REST API base URL (DESCRIPTION field `ejam_api_url`,
-#'     falling back to the built-in production API base if that field is missing).
-#'     Always a full URL. This is the single source of the API endpoint: all
-#'     functions that call or build EJAM API URLs read it from here, so the
-#'     endpoint can be changed in one place (edit `ejam_api_url` in DESCRIPTION).
+#'
+#'   - "docs" or "ejamdocs" (`URL` field in the DESCRIPTION file contains this, in part) is for the EJAM (and EJScreen to some extent) documentation website.
+#'
+#'   - "code" or "ejamrepo" (`URL` field in the DESCRIPTION file contains this, in part) is for the github.com repository of EJAM R package code.
+#'
+#'   - "app" or "ejamapp" (`ejam_app_url` field in the DESCRIPTION file) is for the EJAM Shiny app.
+#'
+#'   - "ejscreenrepo" (`ejscreen_repo_url` field in the DESCRIPTION file) is for the EJScreen Shiny app.
+#'
+#'   - "ejscreen" or "ejscreenapp" (`ejscreen_app_url` field in the DESCRIPTION file) is for the EJScreen Shiny app.
+#'
+#'   - "api" (`ejam_api_url` field in the DESCRIPTION file) is for the EJAM REST API base URL.
+#'     Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
+#'     endpoint can be changed in one place (by editing `ejam_api_url` in DESCRIPTION).
 #'     A friendlier branded alias, `https://api.ejanalysis.com` (also
 #'     `https://ejamapi.ejanalysis.com`), proxies the same API via Cloudflare and
-#'     may be used as `ejam_api_url`. (The `ejam_api_repo` field names the API
-#'     source-code repo and is informational only -- it is not the API endpoint.)
+#'     may be used as a substitute.
+#'
+#'   - "apirepo" (`ejam_api_repo` field in the DESCRIPTION file) is for the API source-code
+#'     repository on github.com and is informational only -- it is not the API endpoint.
+#'
+#'   - "data" or "datarepo" (`ejam_data_repo` field in the DESCRIPTION file) is for the github.com repository of datasets.
+#'
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
 #'   Ignored if type = "docs" or "api", where a full URL is always returned.
@@ -27,9 +37,10 @@
 #'   - https://ejanalysis.org/code
 #'   - https://ejanalysis.org/data
 #'   - https://ejanalysis.org/docs
+#'   - etc.
 #'
 #' @param docs_version optional, only used when type = "docs". A docs subpath such as
-#'   "dev", "v3.2024.0", "v3.2023.0", or "v3.2022.0" to append to the canonical root
+#'   "dev" or "v3.2022.1" to append to the canonical root
 #'   docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
 #'   `EJAM_DOCS_BASE_URL` is set (as the pkgdown CI workflow does while building a
 #'   given version), that value overrides everything so rendered Rd/Rmd links stay
@@ -66,7 +77,20 @@
 #' @keywords internal
 #'
 url_package <- function(
-    type = c('code', 'data', 'docs', 'api')[1],
+    type = c(
+
+
+
+      'code', 'ejamrepo',
+      'app', 'ejamapp',
+      'ejscreen', 'ejscreenapp',
+      'api', 'apirepo',
+      'data', 'datarepo',
+      'docs'  # ejamdocs? ejscreendocs?
+
+
+
+    )[1], # could add 'apirepo' for convenience, but then to be consistent 'data' would be 'datarepo" and 'code' would be 'ejamrepo'
     get_full_url = FALSE,
     desc_or_alias = c("desc", "alias")[1],
     docs_version = NULL,
@@ -85,7 +109,16 @@ url_package <- function(
       }
     }
   }
-  stopifnot(length(type) == 1, type %in% c('code', 'data', 'docs', 'api'))
+  stopifnot(length(type) == 1,
+            type %in% c(
+              'code', 'ejamrepo',
+              'app', 'ejamapp',
+              'ejscreen', 'ejscreenapp',
+              'api', 'apirepo',
+              'data', 'datarepo',
+              'docs'  # ejamdocs? ejscreendocs?
+            )
+  )
   stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias"))
 
   # "api": full EJAM REST API base URL from DESCRIPTION (ejam_api_url). Returned
@@ -127,6 +160,12 @@ url_package <- function(
     if (type == "docs") {
       one_url <- "https://ejanalysis.org/docs"
     }
+    if (type %in% c("ejam", "ejamapp", "app")) {
+      one_url <- "https://ejanalysis.org/ejamapp" # like ejam_app_url from DESCRIPTION
+    }
+    if (type == c("ejscreen", "ejscreenapp")) {
+      one_url <- "https://ejanalysis.org/ejscreenapp" # like ejscreen_app_url from DESCRIPTION
+    }
 
   } else {
 
@@ -148,6 +187,9 @@ url_package <- function(
       both_urls <- desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("URL")
       both_urls <- as.vector(unlist(strsplit(gsub(" |\n", "", both_urls), ",")))
       one_url <- grep(domain, both_urls, value = T)
+    }
+    if (type == "app") {
+      one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_app_url"))
     }
   }
 

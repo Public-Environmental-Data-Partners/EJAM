@@ -15,10 +15,36 @@ Description: Actively maintained non-EPA version of EJAM, the web app
     indicators by site and overall (all sites as a whole), in maps/plots/reports.
     This version grew from a fork of the last version EPA released before it was archived.
 License: MIT + file LICENSE
+
 URL: https://public-environmental-data-partners.github.io/EJAM, https://github.com/Public-Environmental-Data-Partners/EJAM, https://ejanalysis.org
-ejam_data_repo: Public-Environmental-Data-Partners/ejamdata
+
+
+url_ejam_app  or url_ejamapp
+url_ejam_repo or url_ejamrepo
+
+ejam_app_url: https://ejam.publicenvirodata.org
+ejam_repo: https://github.com/Public-Environmental-Data-Partners/EJAM
+
+
+url_ejam_api       or  url_api_live  or url_api 
+url_ejam_api_repo  or  url_api_repo
+
 ejam_api_url: https://ejamapi-84652557241.us-central1.run.app
 ejam_api_repo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
+
+
+url_ejscreen_app    or   url_ejscreenapp
+url_ejscreen_repo   or   url_ejscreenrepo
+
+ejscreen_app_url: https://pedp-ejscreen.azurewebsites.net/index.html
+ejscreen_repo: https://github.com/Public-Environmental-Data-Partners/EJScreen
+
+
+url_ejam_data   or   url_ejamdata    or  url_ejam_data_repo 
+
+ejam_data_repo: Public-Environmental-Data-Partners/ejamdata
+
+
 Authors@R: person("Mark A.", "Corrales", , "ejam@ejanalysis.com", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-1696-5638"))
 Author: Mark A. Corrales <ejam@ejanalysis.com>
 Maintainer: Mark A. Corrales <ejam@ejanalysis.com>
