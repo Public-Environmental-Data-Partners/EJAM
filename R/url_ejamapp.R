@@ -59,7 +59,7 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                         fips = NULL, shapefile = NULL, shape = NULL,
                         radius = NULL, buffer = NULL,
                         handoff = NULL, dTolerance = 100,
-                        baseurl = "https://ejamapp.ejanalysis.com/",
+                        baseurl = url_package('ejamapp'), # "https://ejamapp.ejanalysis.com/", # https://ejam.publicenvirodata.org
                         browse = FALSE, shp = NULL) {
 
   # Back-compat: url_ejamapp() historically took `browse` as its first/only argument,

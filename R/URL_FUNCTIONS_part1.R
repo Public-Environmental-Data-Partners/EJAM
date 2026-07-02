@@ -57,7 +57,7 @@ url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fi
 #'
 #' @keywords internal
 #'
-url_online <- function(url = "https://ejam.publicenvirodata.org") {
+url_online <- function(url = url_package('ejamapp')) {
 
   if (length(url) > 1) {stop("can only check one URL at a time using url_online()")}
   url <- trimws(unname(as.character(url[1])))
