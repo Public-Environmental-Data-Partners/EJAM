@@ -235,6 +235,18 @@ ejamapp(isPublic=TRUE)
 - Non-critical issues related to code formatting
 
 
+## Cross-Tool Working Conventions
+
+These conventions are used consistently across the maintainer's AI tooling (Claude Code, Codex, and Copilot) for this repo. Follow them here too.
+
+- **Protected sibling repos:** `EJAM-API` and `EJScreen` are co-managed and co-maintained with, but primarily managed by, other people (PEDP / EPIC / EDGI / Eric / Gabe / others). Never edit, merge, push, close issues, or post comments/reviews in those two repos without explicit per-action approval from the primary maintainer. This repo (`EJAM`) itself is co-managed but does not have that restriction.
+- **Test file bookkeeping:** Any time a `tests/testthat/test-*.R` file is added, removed, or renamed, also update `R/test_ejam.R` (the `testlist` group membership and `timebyfile` timing metadata) in the same change — it is not auto-discovered.
+- **Cross-repo issue/PR references:** In commit messages, PR descriptions, comments, and docs, write cross-repo issue/PR references as `owner/repo#NN` (e.g. `Public-Environmental-Data-Partners/EJAM-API#43`), not bare `#NN`. A bare `#NN` auto-links to whichever repo the text lives in, which is wrong when referring to one of the sibling repos.
+- **No local machine paths in commits:** Never commit code, comments, or docs containing a local-machine path (e.g. anything with `/Users/<name>/...`). Check staged content before committing.
+- **Resolve addressed PR review threads:** When a PR review comment/thread has been fully addressed (fixed or confirmed obsolete), resolve the conversation rather than leaving it open.
+- **Live Shiny app deploy is AWS, not Cloud Run:** The live Shiny web app (`ejam.publicenvirodata.org`, aliased from `ejanalysis.com/ejamapp`) runs on AWS ECS Fargate, deployed via PR flow `main` → `dev-deploy` → `prod-deploy` branches (GitHub Actions). This is separate from the EJAM-API, which runs on Google Cloud Run. See `ejam-infra/README.md` on the `dev-deploy` branch (and any vignette about deployment) for the full deploy doc.
+- **Obsolete worktree or branch cleanup:** If it is clear that a worktree or local or remote branch is obsolete since it has already been used for a PR that is merged or issue that it closed, then it should be deleted, but if it is somewhat unclear or not easy to confirm then make a note of it asking for confirmation before deleting it.
+
 ## Package Version Management
 
 Version of package and versions of critical data sources like ACS are tracked in multiple files and must be updated consistently:
@@ -242,7 +254,7 @@ Version of package and versions of critical data sources like ACS are tracked in
 - `NEWS.md` (changelog)
 - `_pkgdown.yml` (documentation site)
 - `inst/golem-config.yml`
-- `CITATION.cff`
+- `CITATION.cff` or other CITATION files.
 
 ## Additional Resources
 
@@ -252,7 +264,8 @@ Version of package and versions of critical data sources like ACS are tracked in
 - See https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html for an article providing an overview of what the EJAM package and EJAM web app are.
 - See https://ejanalysis.com/ejam-code for key URLs for relevant repositories and documentation.
 
-**Documentation:** See the DESCRIPTION file URL field for the github.io documentation URL. That URL also can be obtained via EJAM::url_package("docs", get_full_url = T) - Also, https://ejanalysis.com/docs redirects to the package documentation site. However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch.
+**Documentation:** See the DESCRIPTION file URL field for the github.io documentation URL. That URL also can be obtained via EJAM::url_package("docs", get_full_url = T) - 
+Also, https://ejanalysis.com/docs redirects to the package documentation site. However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch.
   However, it is important to note that the most recent documentation for a given branch is in roxygen2 tags within the .R files in the given branch. Periodically those are converted to .Rd files in the man folder (via document()), and eventually may be converted to .html files in the docs folder via pkgdown_update()
 
 **Code Repository:** See the DESCRIPTION file URL field for the github.com R package code URL. That URL also can be obtained via EJAM::url_package("code", get_full_url = T)
