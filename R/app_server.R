@@ -492,6 +492,7 @@ app_server <- function(input, output, session) {
   url_sitepoints <- reactiveVal(NULL)
   url_shapefile  <- reactiveVal(NULL)
   url_fips       <- reactiveVal(NULL)
+  url_radius     <- reactiveVal(NULL)  # launch-URL ?radius=/?buffer=; read at radius_now slider render time (below)
 
   # Launch-URL precedence helper (single home for layer-2 precedence). url_param(name) maps a
   # parameter name to its launch-URL reactiveVal -- the only URL-provided params are these three
@@ -609,10 +610,15 @@ app_server <- function(input, output, session) {
         loaded <- TRUE
       }
     }
-    ## radius / buffer
+    ## radius / buffer -- store in a reactiveVal that the radius_now slider reads at
+    ## render time (see output$radius_slider_ui below). Do NOT updateSliderInput() here:
+    ## radius_now is a renderUI slider, so a post-hoc update races the (re)render and is
+    ## clobbered when the slider re-renders (e.g. after set_site_method() above changes
+    ## the upload method). Reading url_radius() inside the renderUI makes setting it here
+    ## re-render the slider with the launch value, which is reliable in both orderings.
     if (!is.null(spec$radius)) {
       radval <- suppressWarnings(as.numeric(spec$radius))
-      if (!is.na(radval)) {try(shiny::updateSliderInput(session, inputId = "radius_now", value = radval), silent = TRUE)}
+      if (!is.na(radval) && radval > 0) url_radius(radval)
     }
   }, priority = 1000)
 
@@ -1806,7 +1812,7 @@ app_server <- function(input, output, session) {
         label = "",
         min = current_slider_min[[current_upload_method()]],
         max = input$max_miles,
-        value = input$radius_default,
+        value = url_radius() %||% input$radius_default,  # launch-URL ?radius=/?buffer= wins at render time
         step = global_or_param("stepradius"),
         post = ' miles'
       )

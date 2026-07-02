@@ -77,6 +77,12 @@ web app with the sites already loaded and ready to analyze. The supporting piece
 
 ## Bug Fixes
 
+- Deep-link `?radius=` / `?buffer=` now reliably sets the analysis radius at app
+  launch. Previously the launch handler patched the `radius_now` slider via
+  `updateSliderInput()`, but that slider is built by `renderUI`, so the update raced
+  the (re)render and was clobbered when the site-selection method changed. The launch
+  radius is now stored in a reactive value the slider reads at render time. (The other
+  deep-link params -- `lat`/`lon`, `fips`, `shape`, `handoff` -- were unaffected.)
 - Census API key (tidycensus >= 1.8 breaking change): tidycensus now *errors*
   (no longer warns) without a key -- including for the `load_variables()`
   metadata lookup. `calc_blockgroupstats_acs()` and `acs_table_info()` now fail
