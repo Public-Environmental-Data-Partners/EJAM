@@ -238,8 +238,26 @@
 <p><strong>Avoid commenting on, unless asked to do a final check for any other issues after all the significant things have been reviewed:</strong> - Very minor issues that are nitpicking - Very minor issues that involve very rare or very unlikely cases - Very minor issues that are matters of preference - Non-critical issues related to code formatting</p>
 </div>
 <div class="section level2">
+<h2 id="cross-tool-working-conventions">Cross-Tool Working Conventions<a class="anchor" aria-label="anchor" href="#cross-tool-working-conventions"></a></h2>
+<p>These conventions are used consistently across the maintainer’s AI tooling (Claude Code, Codex, and Copilot) for this repo. Follow them here too.</p>
+<ul><li>
+<strong>Protected sibling repos:</strong> <code>EJAM-API</code> and <code>EJScreen</code> are co-managed and co-maintained with, but primarily managed by, other people (PEDP / EPIC / EDGI / Eric / Gabe / others). Never edit, merge, push, close issues, or post comments/reviews in those two repos without explicit per-action approval from the primary maintainer. This repo (<code>EJAM</code>) itself is co-managed but does not have that restriction.</li>
+<li>
+<strong>Test file bookkeeping:</strong> Any time a <code>tests/testthat/test-*.R</code> file is added, removed, or renamed, also update <code>R/test_ejam.R</code> (the <code>testlist</code> group membership and <code>timebyfile</code> timing metadata) in the same change — it is not auto-discovered.</li>
+<li>
+<strong>Cross-repo issue/PR references:</strong> In commit messages, PR descriptions, comments, and docs, write cross-repo issue/PR references as <code>owner/repo#NN</code> (e.g. <code>Public-Environmental-Data-Partners/EJAM-API#43</code>), not bare <code>#NN</code>. A bare <code>#NN</code> auto-links to whichever repo the text lives in, which is wrong when referring to one of the sibling repos.</li>
+<li>
+<strong>No local machine paths in commits:</strong> Never commit code, comments, or docs containing a local-machine path (e.g. anything with <code>/Users/&lt;name&gt;/...</code>). Check staged content before committing.</li>
+<li>
+<strong>Resolve addressed PR review threads:</strong> When a PR review comment/thread has been fully addressed (fixed or confirmed obsolete), resolve the conversation rather than leaving it open.</li>
+<li>
+<strong>Live Shiny app deploy is AWS, not Cloud Run:</strong> The live Shiny web app (<code>ejam.publicenvirodata.org</code>, aliased from <code>ejanalysis.com/ejamapp</code>) runs on AWS ECS Fargate, deployed via PR flow <code>main</code> → <code>dev-deploy</code> → <code>prod-deploy</code> branches (GitHub Actions). This is separate from the EJAM-API, which runs on Google Cloud Run. See <code>ejam-infra/README.md</code> on the <code>dev-deploy</code> branch (and any vignette about deployment) for the full deploy doc.</li>
+<li>
+<strong>Obsolete worktree or branch cleanup:</strong> If it is clear that a worktree or local or remote branch is obsolete since it has already been used for a PR that is merged or issue that it closed, then it should be deleted, but if it is somewhat unclear or not easy to confirm then make a note of it asking for confirmation before deleting it.</li>
+</ul></div>
+<div class="section level2">
 <h2 id="package-version-management">Package Version Management<a class="anchor" aria-label="anchor" href="#package-version-management"></a></h2>
-<p>Version of package and versions of critical data sources like ACS are tracked in multiple files and must be updated consistently: - <code>DESCRIPTION</code> (primary source) - <code>NEWS.md</code> (changelog) - <code>_pkgdown.yml</code> (documentation site) - <code>inst/golem-config.yml</code> - <code>CITATION.cff</code></p>
+<p>Version of package and versions of critical data sources like ACS are tracked in multiple files and must be updated consistently: - <code>DESCRIPTION</code> (primary source) - <code>NEWS.md</code> (changelog) - <code>_pkgdown.yml</code> (documentation site) - <code>inst/golem-config.yml</code> - <code>CITATION.cff</code> or other CITATION files.</p>
 </div>
 <div class="section level2">
 <h2 id="additional-resources">Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources"></a></h2>
