@@ -77,7 +77,6 @@ EJAM:::test_ejam()
 
 **Test configuration:**
 - Test framework: testthat (edition 3)
-- Parallel testing: DISABLED (Config/testthat/parallel: false)
 - Tests location: `tests/testthat/`
 - Special setup: `tests/testthat.R` installs package before running tests
 - Web app tests: Use shinytest2 (see below)
@@ -103,22 +102,20 @@ shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 
 **Dependencies for shinytest2:**
 ```r
-# webshot::install_phantomjs()  # Required for screenshots
+# webshot::install_phantomjs()  # had been Required for screenshots (might be different now?)
 # also needs pandoc probably
 ```
 
 ## Linting
 
 **Lintr is configured but runs in CI with continue-on-error: true**
-
+This is rarely used, however, in this repo.
 To run lintr locally:
 ```r
 lintr::lint_dir(".")
-
 # CI uses SARIF output
 lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
 ```
-
 **Important:** Lintr violations won't block PRs, but you should address them when reasonable.
 
 ## Building Documentation
@@ -128,13 +125,9 @@ lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
 devtools::document()
 ```
 
-**Build pkgdown site (which also updates the .Rd files of documentation):**
-```r
-EJAM:::pkgdown_update() # see documentation of this function for details
-
-## or:
-# See the existing github actions workflow(s) related to build/deploy or just deploying the pkgdown website.
-```
+**Build pkgdown site**
+Previously used EJAM:::pkgdown_update()
+but now that is done via the github action workflow.
 
 ## Running the Shiny App
 
@@ -149,6 +142,7 @@ ejamapp(isPublic = TRUE)
 ```
 
 **Running the app on a server once deployed:**
+see `url_ejamapp()`
 ```r
 # one option is this:
 source("app.R")
@@ -157,22 +151,26 @@ source("app.R")
 library(EJAM)
 ejamapp(isPublic=TRUE)
 ```
+Documentation of the package is on the pkgdown website ( see https://ejanalysis.com/docs and see variants specific to branches like main vs development vs other tags)
+and the source code version is within the vignettes folder and in roxygen tags on .R files in the R folder.
 
-**Live web app**
-- The app has been hosted at the site pointed to by https://ejanalysis.com/ejamapp
+**Live EJAM web app**
+- The app has been hosted at a site URL recorded in DESCRIPTION 
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
 
-**API: Example of live hosted EJAM API that is not the same as the API drafted in the plumber folder of this package**
-- There is an EJAM API hosted at the site pointed to by https://ejanalysis.com/ejamapi  and/or (if different) at https://ejamapi-84652557241.us-central1.run.app/
+**API: Live hosted EJAM API (not the same as the un-implemented API drafted in the plumber folder of this package)**
+- There is an EJAM API hosted at a site URL recorded in DESCRIPTION 
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
-- Also, the code for that API is at https://github.com/Public-Environmental-Data-Partners/EJAM-API
+- The code for that API is at a repo recorded whose URL is in DESCRIPTION
+
+**Live EJScreen web app**
+- The EJScreen app has been hosted at a site URL recorded in DESCRIPTION
+- The repository with code supporting that app is in a repo whose URL is recorded in DESCRIPTION
 
 ## GitHub Actions / CI Workflows
 
-- Some of the github action workflows for this package might be disabled at any given time, because they are being debugged still or because they are time-consuming and non-essential, for example.
 - See the main branch's folder .github/workflows which has the .yaml files.
 - See the repository to check which are currently enabled.
-
 
 ## Common Issues and Workarounds
 
@@ -191,8 +189,8 @@ ejamapp(isPublic=TRUE)
 
 **Root:** `DESCRIPTION` (metadata), `NAMESPACE` (auto-gen), `app.R` (deployment entry), `Dockerfile`, `.Rbuildignore`
 **R/:** `app_ui.R`/`app_server.R` (key code for the web app), `aaa_onAttach.R` (init), `MODULE_*` (Shiny modules), `*_FUNCTIONS` (grouped functions)
-**inst/:** `global_defaults_package.R` & `global_defaults_shiny.R` (settings), `golem-config.yml`, `plumber/` (API), `report/` (templates)
-**tests/:**  `testthat/test-*.R`, `test_ejam.R` (utility for interactively running groups of unit tests), `setup.R`, `setup-shinytest2.R` (shinytest2 testing of webapp functionality)
+**inst/:** `global_defaults_package.R` & `global_defaults_shiny.R` (settings), `golem-config.yml`, `report/` (templates)
+**tests/:**  `testthat/test-*.R`, `test_ejam.R` (utility for interactively running groups of unit tests), `setup.R` and others in that folder.
 
 ## Architecture
 
@@ -242,7 +240,7 @@ Version of package and versions of critical data sources like ACS are tracked in
 - `NEWS.md` (changelog)
 - `_pkgdown.yml` (documentation site)
 - `inst/golem-config.yml`
-- `CITATION.cff`
+- `CITATION.cff` and any other CITATION file.
 
 ## Additional Resources
 
@@ -262,7 +260,7 @@ And note it might be useful to look at the live web app and/or the hosted API, b
 
 ## Trust These Instructions
 
-These instructions have been carefully validated (at least as of May 1, 2026),
+These instructions have been carefully validated (at least as of May 1, 2026 and some updating was done July 2 2026),
 except where they explicitly mention the latest updates or need for updates.
 
 For most development tasks, following these instructions should allow you to work efficiently without extensive exploration outside this package or repository.
