@@ -107,7 +107,48 @@ test_that("batch.summarize rows Average Person ok", {
 
 ######################################## #
 
-# needs more tests here... tests for $flagged_areas_pop, $flagged_areas_sites 
+# $flagged_areas ####
+
+test_that("batch.summarize()$flagged_areas has 13 rows and expected columns incl. state versions", {
+
+  junk <- capture.output({
+    suppressWarnings({
+      x <- batch.summarize(
+        sitestats = data.table::copy(testoutput_ejamit_10pts_1miles$results_bysite),
+        popstats  = data.table::copy(testoutput_ejamit_10pts_1miles$results_bybg_people),
+        overall   = data.table::copy(testoutput_ejamit_10pts_1miles$results_overall),
+        quiet = TRUE
+      )
+    })
+  })
+  fa <- x$flagged_areas
+  expect_true(is.data.frame(fa))
+  expect_equal(NROW(fa), 13)
+  expect_equal(
+    names(fa),
+    c("Indicator", "Percent_of_these_Sites", "Percent_of_these_People",
+      "Percent_of_all_People_Nationwide", "ratio",
+      "Percent_of_all_People_Statewide", "ratio_to_state_avg", "rname")
+  )
+  # percentages are in 0-100, and the ratios are consistent with their components
+  pctcols <- c("Percent_of_these_Sites", "Percent_of_these_People",
+               "Percent_of_all_People_Nationwide", "Percent_of_all_People_Statewide")
+  for (pc in pctcols) {
+    expect_true(all(fa[[pc]] >= 0 & fa[[pc]] <= 100, na.rm = TRUE), info = pc)
+  }
+  ok <- is.finite(fa$ratio_to_state_avg)
+  expect_true(any(ok))
+  expect_equal(
+    fa$ratio_to_state_avg[ok],
+    round(fa$Percent_of_these_People[ok] / fa$Percent_of_all_People_Statewide[ok], 2)
+  )
+  okus <- is.finite(fa$ratio)
+  expect_equal(
+    fa$ratio[okus],
+    round(fa$Percent_of_these_People[okus] / fa$Percent_of_all_People_Nationwide[okus], 2)
+  )
+})
+######################################## #
 
 
 

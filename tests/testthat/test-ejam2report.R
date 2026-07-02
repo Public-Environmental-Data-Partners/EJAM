@@ -246,3 +246,84 @@ test_that("ejam2report normalizes default_format1pager fallback without a leadin
   )
   expect_match(basename(result), "\\.pdf$")
 })
+############################################################################## #
+
+# flagged-areas section of the report (% of residents with feature/area type in their blockgroup) ####
+
+flagged_section_title_text <- "Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup"
+
+test_that("build_community_report() includes flagged-areas section when df provided, omits when NULL", {
+
+  out <- testoutput_ejamit_10pts_1miles
+  junk <- capture.output({
+    fa <- EJAM:::calc_flagged_areas(out$results_bysite, out$results_bybg_people)
+  })
+
+  html_with <- build_community_report(
+    output_df = out$results_overall,
+    totalpop = 1234,
+    analysis_title = "test", report_title = "test",
+    flagged_areas_df = fa
+  )
+  txt <- as.character(html_with)
+  expect_true(grepl(flagged_section_title_text, txt, fixed = TRUE))
+  expect_true(grepl("Overlapping with Tribes", txt, fixed = TRUE))
+  # new section sits after the Features and Location Information section subheader
+  expect_true(regexpr(flagged_section_title_text, txt, fixed = TRUE) >
+                regexpr("Features and Location Information", txt, fixed = TRUE))
+  # the two percentage indicators are excluded from the new section (they stay under Critical Services):
+  # inspect just the new section = from its title to the next section subheader after it
+  section_start <- regexpr(flagged_section_title_text, txt, fixed = TRUE)
+  after_section <- substr(txt, section_start, nchar(txt))
+  next_subheader <- regexpr('class="color-alt-table-subheader"', after_section, fixed = TRUE)
+  section_txt <- substr(after_section, 1, next_subheader)
+  expect_true(grepl("Any schools", section_txt, fixed = TRUE))
+  expect_false(grepl("Broadband", section_txt, fixed = TRUE))
+  expect_false(grepl("Health Insurance", section_txt, fixed = TRUE))
+
+  html_without <- build_community_report(
+    output_df = out$results_overall,
+    totalpop = 1234,
+    analysis_title = "test", report_title = "test",
+    flagged_areas_df = NULL
+  )
+  expect_false(grepl(flagged_section_title_text, as.character(html_without), fixed = TRUE))
+})
+############################################################################## #
+
+test_that("ejam2report() shows flagged-areas section in multisite AND single-site reports", {
+
+  skip_if_not(
+    EJAM:::ensure_pandoc_available_for_ejam(),
+    message = "Pandoc is required to render the report"
+  )
+  out <- testoutput_ejamit_10pts_1miles
+
+  suppressWarnings({
+    html_multi <- ejam2report(out, return_html = TRUE, launch_browser = FALSE)
+  })
+  expect_true(grepl(flagged_section_title_text, html_multi, fixed = TRUE))
+
+  suppressWarnings({
+    html_1site <- ejam2report(out, sitenumber = 1, return_html = TRUE, launch_browser = FALSE)
+  })
+  expect_true(grepl(flagged_section_title_text, html_1site, fixed = TRUE))
+})
+############################################################################## #
+
+test_that("ejam2report() still works when flagged-areas info is unavailable (older saved outputs)", {
+
+  skip_if_not(
+    EJAM:::ensure_pandoc_available_for_ejam(),
+    message = "Pandoc is required to render the report"
+  )
+  out <- testoutput_ejamit_10pts_1miles
+  out$results_summarized <- NULL
+  out$results_bybg_people <- NULL
+
+  suppressWarnings({
+    html_multi <- ejam2report(out, return_html = TRUE, launch_browser = FALSE)
+  })
+  expect_false(grepl(flagged_section_title_text, html_multi, fixed = TRUE))
+  expect_true(grepl("Features and Location Information", html_multi, fixed = TRUE)) # rest of report still there
+})

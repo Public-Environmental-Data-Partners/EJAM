@@ -4,6 +4,9 @@ flagged_pct_sites <- EJAM:::flagged_pct_sites
 flagged_pct_pop <- EJAM:::flagged_pct_pop
 flagged_pct_pop_us <- EJAM:::flagged_pct_pop_us
 flagged_count_pop_st <- EJAM:::flagged_count_pop_st
+flagged_pct_pop_st <- EJAM:::flagged_pct_pop_st
+flagged_pct_pop_st_avg <- EJAM:::flagged_pct_pop_st_avg
+calc_flagged_areas <- EJAM:::calc_flagged_areas
 flagged_areas_from_ejam <- EJAM:::flagged_areas_from_ejam
 flagged_areas_ratiosvector_from_flagged_areas <- EJAM:::flagged_areas_ratiosvector_from_flagged_areas
 flagged_areas_ratios_from_ejam <- EJAM:::flagged_areas_ratios_from_ejam
@@ -264,6 +267,140 @@ test_that("flagged_areas_shortlabels_from_ejam", {
         "Housing Burden Community", "Transportation Disadvantaged", "Food Desert",
         "% hhlds no Broadband Internet", "% no health insurance")
     )
+  })
+})
+################################################################# #
+
+# state versions of the stats (Percent_of_all_People_Statewide, ratio_to_state_avg) ####
+################################################################# #
+
+test_that("flagged_pct_pop_st_avg: single-state analysis equals flagged_pct_pop_st for that state", {
+  bybg_onestate <- tout$results_bybg_people[tout$results_bybg_people$ST %in% "TX", ]
+  skip_if(NROW(bybg_onestate) == 0)
+  capture.output({
+    a <- as.numeric(flagged_pct_pop_st_avg(bybg_onestate))
+    b <- as.numeric(flagged_pct_pop_st("tx"))
+  })
+  expect_equal(a, b)
+})
+################################################################# #
+
+test_that("flagged_pct_pop_st_avg: multi-state is weighted by ANALYZED pop per state, not pooled", {
+  mycols <- c(names_featuresinarea, names_flag, names_criticalservice)
+  bybg <- data.table::as.data.table(tout$results_bybg_people)
+  sts_present <- names(sort(table(bybg$ST), decreasing = TRUE))
+  skip_if(length(sts_present) < 2)
+
+  capture.output({
+    got <- as.numeric(flagged_pct_pop_st_avg(bybg))
+
+    # manual weighted mean of per-state baselines, weighted by analyzed pop by state
+    wts <- bybg[!is.na(ST), .(w = sum(pop * bgwt, na.rm = TRUE)), keyby = ST]
+    wts <- wts[w > 0, ]
+    perst <- t(sapply(wts$ST, function(st1) as.numeric(flagged_pct_pop_st(st1, digits = 8))))
+    manual <- round(apply(perst, 2, function(colvals) weighted.mean(colvals, w = wts$w)), 1)
+  })
+  expect_equal(got, as.numeric(manual), tolerance = 0.11) # small tolerance since per-state values rounding differs slightly
+
+  # and it is NOT the same as pooling all those states into one combined denominator
+  capture.output({
+    pooled <- as.numeric(flagged_pct_pop_st(wts$ST))
+  })
+  expect_false(isTRUE(all.equal(got, pooled, tolerance = 1e-6)))
+})
+################################################################# #
+
+test_that("flagged_pct_pop_st_avg: pct indicators use popwtd mean, not the >0 flag logic", {
+  # regression guard: treating pctnobroadband like a 0/1 flag would give ~90-100 percent;
+  # the correct popwtd mean of a percentage is far lower
+  capture.output({
+    x <- flagged_pct_pop_st_avg(tout$results_bybg_people)
+  })
+  expect_lt(x$pctnobroadband, 50)
+  expect_lt(x$pctnohealthinsurance, 50)
+})
+################################################################# #
+
+test_that("flagged_pct_pop_st_avg: NA row plus warning when ST info unusable", {
+  expect_warning({
+    x <- flagged_pct_pop_st_avg(data.frame(pop = 1, bgwt = 1))
+  })
+  expect_true(all(is.na(as.numeric(x))))
+  expect_equal(ncol(x), 13)
+
+  expect_warning({
+    x2 <- flagged_pct_pop_st_avg(data.frame(pop = 1, bgwt = 1, ST = NA))
+  })
+  expect_true(all(is.na(as.numeric(x2))))
+})
+################################################################# #
+
+test_that("calc_flagged_areas: structure and consistency with batch.summarize output", {
+  capture.output({
+    fa <- calc_flagged_areas(tout$results_bysite, tout$results_bybg_people)
+  })
+  expect_equal(
+    names(fa),
+    c("Indicator", "Percent_of_these_Sites", "Percent_of_these_People",
+      "Percent_of_all_People_Nationwide", "ratio",
+      "Percent_of_all_People_Statewide", "ratio_to_state_avg", "rname")
+  )
+  expect_equal(NROW(fa), 13)
+  # same as what batch.summarize() put into results_summarized (tout was just computed by ejamit)
+  expect_equal(fa, tout$results_summarized$flagged_areas)
+  # internal consistency of the state ratio
+  ok <- is.finite(fa$ratio_to_state_avg)
+  expect_true(any(ok))
+  expect_equal(
+    fa$ratio_to_state_avg[ok],
+    round(fa$Percent_of_these_People[ok] / fa$Percent_of_all_People_Statewide[ok], 2)
+  )
+})
+################################################################# #
+
+test_that("calc_flagged_areas: works for a single site (1-row sitestats)", {
+  id1 <- tout$results_bysite$ejam_uniq_id[1]
+  capture.output({
+    fa1 <- calc_flagged_areas(
+      sitestats = tout$results_bysite[1, ],
+      popstats  = tout$results_bybg_people[tout$results_bybg_people$ejam_uniq_id %in% id1, ]
+    )
+  })
+  expect_equal(NROW(fa1), 13)
+  # 1 site: it has the feature/overlap or not, so 0 or 100 - except the two percentage
+  # indicators, for which Percent_of_these_Sites is the site's percentage value itself
+  presence <- !(fa1$rname %in% c("pctnobroadband", "pctnohealthinsurance"))
+  expect_true(all(fa1$Percent_of_these_Sites[presence] %in% c(0, 100)))
+  expect_true(all(fa1$Percent_of_these_People >= 0 & fa1$Percent_of_these_People <= 100, na.rm = TRUE))
+})
+################################################################# #
+
+test_that("ratiosvector and barplot work with ratio_to_state_avg", {
+  fa <- tout$results_summarized$flagged_areas
+  skip_if_not("ratio_to_state_avg" %in% names(fa)) # only if test data has the new column
+  v <- flagged_areas_ratiosvector_from_flagged_areas(fa, ratiocolname = "ratio_to_state_avg")
+  expect_equal(length(v), 13)
+  expect_true(!is.null(names(v)))
+
+  expect_no_error({
+    p <- ejam2barplot_areafeatures(tout, vs = "state")
+  })
+  expect_true("ggplot" %in% class(p))
+})
+################################################################# #
+
+test_that("ejam2barplot_areafeatures vs='state' errors informatively on outputs lacking state ratios", {
+  fa_old6col <- tout$results_summarized$flagged_areas[
+    , c("Indicator", "Percent_of_these_Sites", "Percent_of_these_People",
+        "Percent_of_all_People_Nationwide", "ratio", "rname")]
+  out_oldstyle <- list(results_summarized = list(flagged_areas = fa_old6col))
+  expect_error(
+    ejam2barplot_areafeatures(out_oldstyle, vs = "state"),
+    "ratio_to_state_avg"
+  )
+  # but the default US-based plot still works on such outputs
+  expect_no_error({
+    p <- ejam2barplot_areafeatures(out_oldstyle)
   })
 })
 ################################################################# #
