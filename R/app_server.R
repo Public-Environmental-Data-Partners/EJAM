@@ -1930,9 +1930,16 @@ app_server <- function(input, output, session) {
   }) %>% bindEvent(input$radius_default_shapefile)
 
   ## update/restore previous radius (and reset the min value) when site selection type changes/changes back
+  ## A launch-URL ?radius=/?buffer= (url_radius) wins over the per-method remembered
+  ## value until the user moves the slider: the launch handler itself switches the
+  ## site method, which fires this observer -- without the url_radius() override it
+  ## would immediately overwrite the launch radius with the per-method placeholder,
+  ## and the releasing observer would then mistake that programmatic write for a
+  ## user action and unpin the launch value. (bindEvent limits the trigger to
+  ## current_upload_method(), so reading url_radius() here adds no reactive edge.)
   observe({
     updateSliderInput(session = session, inputId = 'radius_now',
-                      value = current_slider_val[[current_upload_method()]])
+                      value = url_radius() %||% current_slider_val[[current_upload_method()]])
   }) %>% bindEvent(current_upload_method())
 
   ## update stored radius when slider changes
