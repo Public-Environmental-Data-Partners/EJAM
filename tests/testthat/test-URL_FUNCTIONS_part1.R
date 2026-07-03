@@ -97,7 +97,7 @@ test_that("url_from_keylist for args not in a list", {
 
   expect_equal(
     url_from_keylist(lat = c(35,36), lon = c(-100,-99), radius = 3.14),
-    "https://ejamapi-84652557241.us-central1.run.app/report?lat=35,36&lon=-100,-99&radius=3.14"
+    paste0(url_package("api"), "/report?lat=35,36&lon=-100,-99&radius=3.14")
   )
 })
 

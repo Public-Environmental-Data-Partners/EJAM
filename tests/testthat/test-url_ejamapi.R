@@ -217,10 +217,10 @@ test_that("url_ejamapi falls back to app URL for polygon one-site report links",
     url_ejamapi(shapefile = testinput_shapes_2, as_html = FALSE),
     rep(fallback_url, NROW(testinput_shapes_2))
   )
-  expect_match(
+  expect_true(startsWith(
     url_ejamapi(shapefile = testinput_shapes_2, sitenumber = "overall", as_html = FALSE),
-    "^https://ejamapi-84652557241\\.us-central1\\.run\\.app/report\\?"
-  )
+    paste0(url_package("api"), "/report?")
+  ))
 })
 
 # sitenumber (overall vs 1-site) ####
