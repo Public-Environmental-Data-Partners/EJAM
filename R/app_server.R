@@ -618,7 +618,11 @@ app_server <- function(input, output, session) {
     ## re-render the slider with the launch value, which is reliable in both orderings.
     if (!is.null(spec$radius)) {
       radval <- suppressWarnings(as.numeric(spec$radius))
-      if (!is.na(radval) && radval > 0) url_radius(radval)
+      # 0 is a valid buffer for polygon/FIPS methods (minradius_shapefile is 0,
+      # meaning analyze inside the boundary with no buffer); the slider renderUI
+      # clamps the value into the current method's [min, max], so e.g. 0 becomes
+      # the point-method minimum when points were supplied. Negatives are ignored.
+      if (!is.na(radval) && radval >= 0) url_radius(radval)
     }
   }, priority = 1000)
 
@@ -1846,9 +1850,21 @@ app_server <- function(input, output, session) {
   ## pre-existing behavior (input$radius_default).
   observeEvent(input$radius_now, {
     launch_val <- url_radius()
-    if (!is.null(launch_val) && is.numeric(input$radius_now) &&
-        !isTRUE(all.equal(input$radius_now, launch_val))) {
-      url_radius(NULL)
+    if (!is.null(launch_val) && is.numeric(input$radius_now)) {
+      # Compare against the launch value AS CLAMPED into the slider's current
+      # [min, max] (the renderUI clamps it the same way): for an out-of-range
+      # deep link like ?radius=999 the slider legitimately shows max_miles, and
+      # that programmatic clamp must not be mistaken for a user change (which
+      # would unpin the launch radius on the very first render).
+      slider_min <- current_slider_min[[current_upload_method()]]
+      launch_clamped <- if (is.numeric(input$max_miles) && is.numeric(slider_min)) {
+        min(max(launch_val, slider_min), input$max_miles)
+      } else {
+        launch_val
+      }
+      if (!isTRUE(all.equal(input$radius_now, launch_clamped))) {
+        url_radius(NULL)
+      }
     }
   }, ignoreInit = TRUE)
 
@@ -1930,9 +1946,16 @@ app_server <- function(input, output, session) {
   }) %>% bindEvent(input$radius_default_shapefile)
 
   ## update/restore previous radius (and reset the min value) when site selection type changes/changes back
+  ## A launch-URL ?radius=/?buffer= (url_radius) wins over the per-method remembered
+  ## value until the user moves the slider: the launch handler itself switches the
+  ## site method, which fires this observer -- without the url_radius() override it
+  ## would immediately overwrite the launch radius with the per-method placeholder,
+  ## and the releasing observer would then mistake that programmatic write for a
+  ## user action and unpin the launch value. (bindEvent limits the trigger to
+  ## current_upload_method(), so reading url_radius() here adds no reactive edge.)
   observe({
     updateSliderInput(session = session, inputId = 'radius_now',
-                      value = current_slider_val[[current_upload_method()]])
+                      value = url_radius() %||% current_slider_val[[current_upload_method()]])
   }) %>% bindEvent(current_upload_method())
 
   ## update stored radius when slider changes
