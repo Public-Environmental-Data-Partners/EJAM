@@ -39,11 +39,18 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws
 
 ARG GITHUB_PAT
 
-RUN mkdir -p /home/epic
-WORKDIR /home/epic
+# EJAM package version to install: a released git tag. Pinned by default to the
+# current release; override with --build-arg EJAM_VERSION=vX.Y.Z. Mirrors the
+# EJAM-API image's EJAM_VERSION build-arg so both deploys pin EJAM the same way,
+# and makes the deployed version EXPLICIT (rather than implicitly tied to whatever
+# source happens to be checked out on this deploy branch).
+ARG EJAM_VERSION=v3.2022.1
+ENV EJAM_VERSION=${EJAM_VERSION}
+
+WORKDIR /root
 
 # Install R packages — sourced from DESCRIPTION Imports + runtime-relevant Suggests
-# Explicit pre-install avoids install_local having to resolve everything from scratch
+# Explicit pre-install avoids the EJAM install having to resolve everything from scratch
 # and improves Docker layer caching (this layer only rebuilds if the list changes).
 RUN install2.r --error \
     \
@@ -136,18 +143,23 @@ RUN R -e "remotes::install_github('mikejohnson51/AOI')" && \
     R -e "remotes::install_github('hrbrmstr/hrbrthemes')" && \
     rm -rf /tmp/downloaded_packages /tmp/*.rds
 
-# Copy app files
-ADD . /home/epic/
-
-# Install local package
-RUN R -e "remotes::install_local('/home/epic/', dependencies = TRUE)" && \
+# Install the EJAM package from its pinned GitHub release tag (EJAM is a public
+# repo, so no token is needed). Installing a released tag -- rather than the local
+# build context -- makes the deployed version explicit and reproducible. The
+# package's data/*.rda ship in the release tarball; the large ejamdata arrow files
+# are fetched separately below. (Container entrypoint runs the installed
+# EJAM::ejamapp(), so no local app source is needed in the image.)
+RUN R -e "remotes::install_github(paste0('Public-Environmental-Data-Partners/EJAM@', Sys.getenv('EJAM_VERSION')), dependencies = TRUE, upgrade = 'never')" && \
     rm -rf /tmp/downloaded_packages /tmp/*.rds
 
 # Download ejamdata arrow files from GitHub release
-# Must run AFTER install_local so the data/ folder is not overwritten by the installer
-# EJAMDATA_VERSION: leave unset (or pass empty string) to auto-resolve to the latest
-#   release of ejamdata, or pin to a specific tag (e.g. --build-arg EJAMDATA_VERSION=v2.32.8.001)
-ARG EJAMDATA_VERSION
+# Must run AFTER the EJAM package install so the data/ folder is not overwritten by the installer
+# EJAMDATA_VERSION: pinned by default to v3.2022.0 -- the ejamdata release that
+#   EJAM v3.2022.1 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
+#   sync with EJAM_VERSION when bumping releases; override with
+#   --build-arg EJAMDATA_VERSION=vX.Y.Z. (An explicit empty string falls back to the
+#   latest ejamdata release via the GitHub API below.)
+ARG EJAMDATA_VERSION=v3.2022.0
 RUN RESOLVED_VERSION="${EJAMDATA_VERSION:-$(curl -fsSL \
       -H "Authorization: token ${GITHUB_PAT}" \
       "https://api.github.com/repos/Public-Environmental-Data-Partners/ejamdata/releases/latest" \
@@ -165,5 +177,9 @@ RUN RESOLVED_VERSION="${EJAMDATA_VERSION:-$(curl -fsSL \
 
 EXPOSE 2000 2001
 
-WORKDIR /home/epic
-CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::run_app(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
+WORKDIR /root
+# EJAM v3.x exports ejamapp() as the app launcher; run_app() is no longer exported
+# (calling it here made every ECS task exit 1 with "'run_app' is not an exported
+# object from 'namespace:EJAM'"). ejamapp(isPublic=...) is supported and its
+# options= list is passed to shinyApp() for host/port.
+CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
