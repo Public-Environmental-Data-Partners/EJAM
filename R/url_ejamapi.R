@@ -114,6 +114,18 @@
 #'   version=<ver> so the API can serve the matching data vintage. Default NULL
 #'   resolves to the installed package Version (from DESCRIPTION).
 #'
+#' @param fileextension report format requested from the API, sent as
+#'   fileextension=<ext> on each generated report URL. Default "auto" picks the
+#'   format by report type: "html" for an aggregate *multisite* report URL
+#'   (sitenumber 0/"overall" covering more than one site) since HTML renders
+#'   several times faster and displays directly in the browser tab, but "pdf"
+#'   for *single-site* report URLs (the traditional printable community report).
+#'   Use "html" or "pdf" to force one format for all URLs, or NULL/"" to omit
+#'   the parameter and get the API's own default. Case/whitespace are
+#'   normalized; any other value is an error (values are placed in a URL, so
+#'   arbitrary text is rejected rather than encoded). Only applied to actual
+#'   API /report URLs, never to app-fallback or ifna links.
+#'
 #' @export
 #'
 url_ejamapi = function(
@@ -170,6 +182,8 @@ url_ejamapi = function(
   sitenumber = "each",
 
   version = NULL,
+
+  fileextension = "auto",
 
   ...,
 
@@ -454,6 +468,31 @@ url_ejamapi = function(
         url_of_report <- NA # later will convert to ifna
       }
     }
+  }
+  ###################### #
+  # fileextension (report format) ####
+  # Appended here, after the branches above, because "auto" depends on the kind
+  # of report each URL requests: at this point sitenumber is 0 only for an
+  # aggregate MULTISITE report over >1 site (single-site and "each" links have
+  # cleared it), so auto = html for the multisite summary (renders several
+  # times faster; the link opens in a browser tab) and pdf for single-site
+  # reports (the traditional printable community report). Applied only to
+  # actual API /report URLs -- never to the app-fallback links used for
+  # single-polygon sites, nor to NA entries that become ifna below. Validated
+  # strictly rather than URL-encoded: these can be raw URLs (as_html = FALSE),
+  # so unvalidated text could inject extra query parameters or break the URL.
+  if (!is.null(fileextension) && !identical(fileextension, "")) {
+    fileextension <- tolower(trimws(as.character(fileextension)))
+    # Note %in% returns FALSE (not NA) for NA input, so NA already failed this
+    # validation with the intended message; is.na() just makes that explicit.
+    if (length(fileextension) != 1 || is.na(fileextension) || !fileextension %in% c("auto", "html", "pdf")) {
+      stop("fileextension must be 'auto', 'html', or 'pdf' (or NULL or '' to omit it from the URL)")
+    }
+    if (fileextension == "auto") {
+      fileextension <- if (identical(sitenumber, 0)) "html" else "pdf"
+    }
+    is_api_report_url <- !is.na(url_of_report) & startsWith(as.character(url_of_report), baseurl)
+    url_of_report[is_api_report_url] <- paste0(url_of_report[is_api_report_url], "&fileextension=", fileextension)
   }
   ###################### #
 

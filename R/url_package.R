@@ -96,7 +96,7 @@ url_package <- function(
   if (type == "api") {
     one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_api_url"))
     if (length(one_url) == 0 || is.na(one_url) || !nzchar(one_url)) {
-      one_url <- "https://ejamapi-84652557241.us-central1.run.app"
+      one_url <- "https://api.ejanalysis.com"
     }
     return(sub("/+$", "", one_url[1]))
   }

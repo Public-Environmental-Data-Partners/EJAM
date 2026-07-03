@@ -31,6 +31,24 @@ app_server <- function(input, output, session) {
   data_processed <-  reactiveVal(NULL) # initialized so it can be set later in reaction to an event, using data_processed(newvalue)
   analysis_complete <- reactiveVal(FALSE)
 
+  # shinyjs::enable() does not clear aria-disabled/tabindex on Shiny 1.14
+  # download links that were created with enabled = FALSE.
+  download_button_selector <- function(id) {
+    jsonlite::toJSON(paste0("#", id), auto_unbox = TRUE)
+  }
+  download_button_disable_js <- function(id) {
+    shinyjs::runjs(sprintf(
+      "$(%s).addClass('disabled').attr({'aria-disabled':'true','tabindex':'-1','disabled':'disabled'}).prop('disabled', true);",
+      download_button_selector(id)
+    ))
+  }
+  download_button_enable_js <- function(id) {
+    shinyjs::runjs(sprintf(
+      "$(%s).removeClass('disabled').removeAttr('aria-disabled').removeAttr('tabindex').removeAttr('disabled').prop('disabled', false);",
+      download_button_selector(id)
+    ))
+  }
+
   sanitized_standard_analysis_title <- reactive({
     global_or_param("sanitize_text")(input$standard_analysis_title)
   })
@@ -474,6 +492,7 @@ app_server <- function(input, output, session) {
   url_sitepoints <- reactiveVal(NULL)
   url_shapefile  <- reactiveVal(NULL)
   url_fips       <- reactiveVal(NULL)
+  url_radius     <- reactiveVal(NULL)  # launch-URL ?radius=/?buffer=; read at radius_now slider render time (below)
 
   # Launch-URL precedence helper (single home for layer-2 precedence). url_param(name) maps a
   # parameter name to its launch-URL reactiveVal -- the only URL-provided params are these three
@@ -591,10 +610,15 @@ app_server <- function(input, output, session) {
         loaded <- TRUE
       }
     }
-    ## radius / buffer
+    ## radius / buffer -- store in a reactiveVal that the radius_now slider reads at
+    ## render time (see output$radius_slider_ui below). Do NOT updateSliderInput() here:
+    ## radius_now is a renderUI slider, so a post-hoc update races the (re)render and is
+    ## clobbered when the slider re-renders (e.g. after set_site_method() above changes
+    ## the upload method). Reading url_radius() inside the renderUI makes setting it here
+    ## re-render the slider with the launch value, which is reliable in both orderings.
     if (!is.null(spec$radius)) {
       radval <- suppressWarnings(as.numeric(spec$radius))
-      if (!is.na(radval)) {try(shiny::updateSliderInput(session, inputId = "radius_now", value = radval), silent = TRUE)}
+      if (!is.na(radval) && radval > 0) url_radius(radval)
     }
   }, priority = 1000)
 
@@ -1783,12 +1807,21 @@ app_server <- function(input, output, session) {
     valid_max_miles <- is.numeric(input$max_miles) && input$max_miles > 0
 
     if (valid_radius_default && valid_max_miles) {
+      slider_min <- current_slider_min[[current_upload_method()]]
+      # launch-URL ?radius=/?buffer= wins until the user moves the slider (see the
+      # releasing observer below). The URL value is unvalidated, so clamp it to the
+      # slider's current [min, max] -- a malformed or stale deep link (e.g.
+      # ?radius=999) must not hand sliderInput() an out-of-range value.
+      launch_radius <- url_radius()
+      if (!is.null(launch_radius)) {
+        launch_radius <- min(max(launch_radius, slider_min), input$max_miles)
+      }
       shiny::sliderInput(
         inputId = 'radius_now',
         label = "",
-        min = current_slider_min[[current_upload_method()]],
+        min = slider_min,
         max = input$max_miles,
-        value = input$radius_default,
+        value = launch_radius %||% input$radius_default,
         step = global_or_param("stepradius"),
         post = ' miles'
       )
@@ -1803,6 +1836,21 @@ app_server <- function(input, output, session) {
       tags$p(error_message, style = "color: red; font-weight: bold;")
     }
   })
+
+  ## Release the launch-URL radius once the user moves the slider away from it.
+  ## Without this, url_radius() would pin every later re-render of the slider
+  ## (e.g. after an upload-method change) back to the launch value, overriding
+  ## the user's current selection. While the slider is untouched, the launch
+  ## value deliberately persists across re-renders (the user asked for that
+  ## radius in the URL); after the user moves it, re-renders revert to the
+  ## pre-existing behavior (input$radius_default).
+  observeEvent(input$radius_now, {
+    launch_val <- url_radius()
+    if (!is.null(launch_val) && is.numeric(input$radius_now) &&
+        !isTRUE(all.equal(input$radius_now, launch_val))) {
+      url_radius(NULL)
+    }
+  }, ignoreInit = TRUE)
 
   ## disable radius slider when FIPS is selected
   observe({
@@ -2135,8 +2183,8 @@ app_server <- function(input, output, session) {
 
     analysis_complete(FALSE)
     # disable download buttons until finished analysis
-    shinyjs::disable(id = 'download_report_multisite')
-    shinyjs::disable(id = 'download_results_spreadsheet')
+    download_button_disable_js(id = 'download_report_multisite')
+    download_button_disable_js(id = 'download_results_spreadsheet')
     download_ready_for_report_header_and_tables(FALSE)
     download_ready_for_report_map(FALSE)
     download_ready_for_report_plot(FALSE)
@@ -2883,7 +2931,7 @@ app_server <- function(input, output, session) {
       download_ready_for_report_plot()
       # && download_ready_for_report_footer_version_date() # quick, assume ready
     ) {
-      shinyjs::enable(id = 'download_report_multisite')
+      download_button_enable_js(id = 'download_report_multisite')
     }
   })
   ####################################################### #
@@ -3211,7 +3259,7 @@ app_server <- function(input, output, session) {
                                  ## if NULL, uses all available from data_processed()
     )
     # enable download button only after DT::renderDT
-    shinyjs::enable(id = 'download_results_spreadsheet')
+    download_button_enable_js(id = 'download_results_spreadsheet')
     x
   })
   #############################################################################  #

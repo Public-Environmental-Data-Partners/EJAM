@@ -217,9 +217,53 @@ test_that("url_ejamapi falls back to app URL for polygon one-site report links",
     url_ejamapi(shapefile = testinput_shapes_2, as_html = FALSE),
     rep(fallback_url, NROW(testinput_shapes_2))
   )
-  expect_match(
+  expect_true(startsWith(
     url_ejamapi(shapefile = testinput_shapes_2, sitenumber = "overall", as_html = FALSE),
-    "^https://ejamapi-84652557241\\.us-central1\\.run\\.app/report\\?"
+    paste0(url_package("api"), "/report?")
+  ))
+})
+
+test_that("url_ejamapi fileextension: auto = pdf for single-site, html for multisite; overridable; validated", {
+  fips1 <- testinput_fips_counties[1]
+  fips2 <- testinput_fips_counties[1:2]
+
+  # default "auto": a single-site report link asks the API for pdf
+  # (the traditional printable community report)
+  expect_true(grepl("&fileextension=pdf", url_ejamapi(fips = fips1), fixed = TRUE))
+
+  # default "each" mode returns a vector of single-site links -> pdf on every URL
+  each_urls <- url_ejamapi(fips = fips2)
+  expect_equal(length(each_urls), 2)
+  expect_true(all(grepl("&fileextension=pdf", each_urls, fixed = TRUE)))
+
+  # aggregate MULTISITE report (sitenumber = 0 covering >1 site) -> html (much faster render)
+  expect_true(grepl("&fileextension=html", url_ejamapi(fips = fips2, sitenumber = 0), fixed = TRUE))
+
+  # but sitenumber = 0 with a single site is coerced to a single-site report -> pdf
+  expect_true(grepl("&fileextension=pdf", url_ejamapi(fips = fips1, sitenumber = 0), fixed = TRUE))
+
+  # explicit override wins in either direction; case/whitespace normalized
+  expect_true(grepl("&fileextension=html", url_ejamapi(fips = fips1, fileextension = "html"), fixed = TRUE))
+  expect_true(grepl("&fileextension=pdf", url_ejamapi(fips = fips2, sitenumber = 0, fileextension = " PDF "), fixed = TRUE))
+
+  # NULL or "" omits the parameter entirely (the API's own default applies)
+  expect_false(grepl("fileextension", url_ejamapi(fips = fips1, fileextension = NULL), fixed = TRUE))
+  expect_false(grepl("fileextension", url_ejamapi(fips = fips1, fileextension = ""), fixed = TRUE))
+
+  # anything else is rejected, not URL-encoded into a raw link
+  expect_error(url_ejamapi(fips = fips1, fileextension = "exe"), regexp = "fileextension")
+  expect_error(url_ejamapi(fips = fips1, fileextension = "html&sitenumber=0"), regexp = "fileextension")
+  expect_error(url_ejamapi(fips = fips2, fileextension = c("html", "pdf")), regexp = "fileextension")
+
+  # NA gets the same clear validation message, not a bare
+  # "missing value where TRUE/FALSE needed" condition error
+  expect_error(url_ejamapi(fips = fips1, fileextension = NA), regexp = "fileextension")
+  expect_error(url_ejamapi(fips = fips1, fileextension = NA_character_), regexp = "fileextension")
+
+  # the single-polygon app-fallback link is not an API /report URL and is untouched
+  expect_equal(
+    url_ejamapi(shapefile = testinput_shapes_2[1, ], as_html = FALSE),
+    "https://ejanalysis.com/ejamapp"
   )
 })
 
