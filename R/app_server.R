@@ -1807,12 +1807,21 @@ app_server <- function(input, output, session) {
     valid_max_miles <- is.numeric(input$max_miles) && input$max_miles > 0
 
     if (valid_radius_default && valid_max_miles) {
+      slider_min <- current_slider_min[[current_upload_method()]]
+      # launch-URL ?radius=/?buffer= wins until the user moves the slider (see the
+      # releasing observer below). The URL value is unvalidated, so clamp it to the
+      # slider's current [min, max] -- a malformed or stale deep link (e.g.
+      # ?radius=999) must not hand sliderInput() an out-of-range value.
+      launch_radius <- url_radius()
+      if (!is.null(launch_radius)) {
+        launch_radius <- min(max(launch_radius, slider_min), input$max_miles)
+      }
       shiny::sliderInput(
         inputId = 'radius_now',
         label = "",
-        min = current_slider_min[[current_upload_method()]],
+        min = slider_min,
         max = input$max_miles,
-        value = url_radius() %||% input$radius_default,  # launch-URL ?radius=/?buffer= wins until the user moves the slider (see the releasing observer below)
+        value = launch_radius %||% input$radius_default,
         step = global_or_param("stepradius"),
         post = ' miles'
       )
