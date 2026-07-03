@@ -1,0 +1,50 @@
+# TEMPORARY *read-only* diagnostic workflow for the ejam-dev ECS
+# stabilization failure ("Waiter ServicesStable failed", see PR #438).
+# Runs only describe/list/read commands — it does NOT modify any AWS resource.
+# Delete this file once the dev deploy is healthy.
+name: ECS dev diagnostics (read-only, temporary)
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  CLUSTER: ejam-dev-cluster
+  SERVICE: ejam-dev-service
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Service state + recent events (crash vs health-check verdict)
+        run: |
+          echo "===== SERVICE OVERVIEW ====="
+          aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" \
+            --query 'services[0].{status:status,desired:desiredCount,running:runningCount,pending:pendingCount,grace:healthCheckGracePeriodSeconds,taskDef:taskDefinition,rollout:deployments[].{status:status,taskDef:taskDefinition,desired:desiredCount,running:runningCount,failed:failedTasks,rolloutState:rolloutState,rolloutReason:rolloutStateReason}}' \
+            --output json || echo "(describe-services not permitted)"
+          echo "===== LAST 25 SERVICE EVENTS ====="
+          aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" \
+            --query 'services[0].events[0:25].[createdAt,message]' --output table || true
+
+      - name: Stopped tasks + stop reasons
+        run: |
+          STOPPED=$(aws ecs list-tasks --cluster "$CLUSTER" --desired-status STOPPED \
+            --query 'taskArns[0:8]' --output text 2>/dev/null || true)
+          echo "stopped task ARNs: ${STOPPED:-none}"
+          if [ -n "$STOPPED" ] && [ "$STOPPED" != "None" ]; then
+            aws ecs describe-tasks --cluster "$CLUSTER" --tasks $STOPPED \
+              --query 'tasks[].{startedAt:startedAt,stoppedAt:stoppedAt,stopCode:stopCode,stoppedReason:stoppedReason,containers:containers[].{name:name,exitCode:exitCode,reason:reason}}' \
+              --output json || echo "(describe-tasks not permitted)"
+          fi
+
+      - name: CloudWatch logs from the app (if permitted)
+        run: |
+          aws logs tail /ecs/ejam-dev --since 8h --format short 2>&1 | tail -250 \
+            || echo "(no CloudWatch logs permission with these credentials)"
