@@ -255,6 +255,11 @@ test_that("url_ejamapi fileextension: auto = pdf for single-site, html for multi
   expect_error(url_ejamapi(fips = fips1, fileextension = "html&sitenumber=0"), regexp = "fileextension")
   expect_error(url_ejamapi(fips = fips2, fileextension = c("html", "pdf")), regexp = "fileextension")
 
+  # NA gets the same clear validation message, not a bare
+  # "missing value where TRUE/FALSE needed" condition error
+  expect_error(url_ejamapi(fips = fips1, fileextension = NA), regexp = "fileextension")
+  expect_error(url_ejamapi(fips = fips1, fileextension = NA_character_), regexp = "fileextension")
+
   # the single-polygon app-fallback link is not an API /report URL and is untouched
   expect_equal(
     url_ejamapi(shapefile = testinput_shapes_2[1, ], as_html = FALSE),

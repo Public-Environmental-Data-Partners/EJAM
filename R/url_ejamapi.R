@@ -483,7 +483,9 @@ url_ejamapi = function(
   # so unvalidated text could inject extra query parameters or break the URL.
   if (!is.null(fileextension) && !identical(fileextension, "")) {
     fileextension <- tolower(trimws(as.character(fileextension)))
-    if (length(fileextension) != 1 || !fileextension %in% c("auto", "html", "pdf")) {
+    # Note %in% returns FALSE (not NA) for NA input, so NA already failed this
+    # validation with the intended message; is.na() just makes that explicit.
+    if (length(fileextension) != 1 || is.na(fileextension) || !fileextension %in% c("auto", "html", "pdf")) {
       stop("fileextension must be 'auto', 'html', or 'pdf' (or NULL or '' to omit it from the URL)")
     }
     if (fileextension == "auto") {
