@@ -1812,7 +1812,7 @@ app_server <- function(input, output, session) {
         label = "",
         min = current_slider_min[[current_upload_method()]],
         max = input$max_miles,
-        value = url_radius() %||% input$radius_default,  # launch-URL ?radius=/?buffer= wins at render time
+        value = url_radius() %||% input$radius_default,  # launch-URL ?radius=/?buffer= wins until the user moves the slider (see the releasing observer below)
         step = global_or_param("stepradius"),
         post = ' miles'
       )
@@ -1827,6 +1827,21 @@ app_server <- function(input, output, session) {
       tags$p(error_message, style = "color: red; font-weight: bold;")
     }
   })
+
+  ## Release the launch-URL radius once the user moves the slider away from it.
+  ## Without this, url_radius() would pin every later re-render of the slider
+  ## (e.g. after an upload-method change) back to the launch value, overriding
+  ## the user's current selection. While the slider is untouched, the launch
+  ## value deliberately persists across re-renders (the user asked for that
+  ## radius in the URL); after the user moves it, re-renders revert to the
+  ## pre-existing behavior (input$radius_default).
+  observeEvent(input$radius_now, {
+    launch_val <- url_radius()
+    if (!is.null(launch_val) && is.numeric(input$radius_now) &&
+        !isTRUE(all.equal(input$radius_now, launch_val))) {
+      url_radius(NULL)
+    }
+  }, ignoreInit = TRUE)
 
   ## disable radius slider when FIPS is selected
   observe({
