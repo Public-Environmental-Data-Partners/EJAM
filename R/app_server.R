@@ -618,7 +618,11 @@ app_server <- function(input, output, session) {
     ## re-render the slider with the launch value, which is reliable in both orderings.
     if (!is.null(spec$radius)) {
       radval <- suppressWarnings(as.numeric(spec$radius))
-      if (!is.na(radval) && radval > 0) url_radius(radval)
+      # 0 is a valid buffer for polygon/FIPS methods (minradius_shapefile is 0,
+      # meaning analyze inside the boundary with no buffer); the slider renderUI
+      # clamps the value into the current method's [min, max], so e.g. 0 becomes
+      # the point-method minimum when points were supplied. Negatives are ignored.
+      if (!is.na(radval) && radval >= 0) url_radius(radval)
     }
   }, priority = 1000)
 
