@@ -3,7 +3,7 @@
 # no folder in testdata for this type
 # since cannot upload table of that type to app and they cannot be direct inputs to ejamit()
 #  but may want testdata objects to try out relevant functions that turn these into latlon
-
+# Update/check this in case NAICS code universe changes (every 3 years?)
 
 testinput_naics <- c(3366, 33661, 336611)
 

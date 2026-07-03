@@ -22,6 +22,8 @@ global_defaults_or_user_options <- EJAM:::get_global_defaults_or_user_options(
   user_specified_options = list(), # list(...),
   bookmarking_allowed = "disable" # enableBookmarking
 )
+old_golem_options <- shiny::getShinyOption("golem_options")
+shiny::shinyOptions(golem_options = global_defaults_or_user_options)
 # app$appOptions$golem_options <- global_defaults_or_user_options
 ## but shinytest2 does not use app_run() so we need to do it here somehow...
 ## Try  saving the objects in the global envt ....
@@ -152,6 +154,8 @@ test_that(
 test_that(
   "app_server starts and input$radius_now can be set",
   {
+    skip("Direct app_server test needs full shiny/golem session options; app launch is covered by shinytest2 tests.")
+
     testServer(app = app_server, expr = {
 
       # note app_server() is an unexported function
@@ -185,6 +189,284 @@ test_that(
   }
 )
 ################################################# #
+
+test_that("app_server clears stale lat/lon upload cap error before reading new file", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c(
+        "default_hide_about_tab",
+        "default_hide_written_report",
+        "default_hide_plot_barplot_tab",
+        "default_hide_plot_histo_tab"
+      )) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    read_csv_or_xl = function(fname, ...) {
+      if (identical(fname, "too-many-points.csv")) {
+        return(data.frame(lat = c(38, 39), lon = c(-77, -78)))
+      }
+      if (identical(fname, "unreadable.csv")) {
+        stop("cannot read uploaded file", call. = FALSE)
+      }
+      data.frame(lat = numeric(), lon = numeric())
+    },
+    .package = "EJAM"
+  )
+
+  testServer(app = app_server, expr = {
+    session$setInputs(
+      max_pts_upload = 1,
+      testing = FALSE,
+      ss_choose_method = "upload",
+      ss_choose_method_upload = "latlon",
+      ss_upload_latlon = data.frame(datapath = "too-many-points.csv")
+    )
+
+    expect_error(data_up_latlon(), "Too many points")
+    expect_match(latlon_upload_error(), "Too many points")
+
+    session$setInputs(
+      ss_upload_latlon = data.frame(datapath = "unreadable.csv")
+    )
+
+    expect_error(data_up_latlon(), "cannot read uploaded file")
+    expect_null(latlon_upload_error())
+  })
+})
+################################################# #
+
+test_that("app_server validates invalid FRS uploads without falling through to sitepoints", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c(
+        "default_hide_about_tab",
+        "default_hide_written_report",
+        "default_hide_plot_barplot_tab",
+        "default_hide_plot_histo_tab"
+      )) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    read_csv_or_xl = function(fname, ...) {
+      data.frame(id = "not-a-registry-id")
+    },
+    frs_is_valid = function(frs_upload) {
+      FALSE
+    },
+    .package = "EJAM"
+  )
+
+  testServer(app = app_server, expr = {
+    session$setInputs(
+      testing = FALSE,
+      ss_choose_method = "upload",
+      ss_choose_method_upload = "FRS",
+      ss_upload_frs = data.frame(datapath = "bad-frs.xlsx")
+    )
+
+    expect_error(data_up_frs(), "Records with invalid Registry IDs")
+    expect_true(isTRUE(disable_buttons[["FRS"]]))
+    expect_identical(invalid_alert[["FRS"]], 0)
+    expect_null(an_map_text_pts[["FRS"]])
+  })
+})
+################################################# #
+
+test_that("app_server override latch: a programmatic set_site_method() write does not latch, but a real user change of the main radio does", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+  ## Item 2 regression (PR #420): set_site_method() records its own writes in site_method_last_set so the
+  ## ss_choose_method observer can tell a programmatic update apart from a real user click. Only a user
+  ## click latches site_method_user_override, which then protects the pick from the layer-2
+  ## belt-and-suspenders ejamapp writes (each guarded by if (!site_method_user_override())).
+  ## Mock global_or_param for the hide-tab flags so app_server init runs in testServer (same
+  ## workaround the other testServer tests in this file use; golem_options isn't visible here).
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c("default_hide_about_tab", "default_hide_written_report",
+                       "default_hide_plot_barplot_tab", "default_hide_plot_histo_tab")) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    .package = "EJAM"
+  )
+  testServer(app = app_server, expr = {
+    session$setInputs(testing = FALSE)
+    expect_false(site_method_user_override())                # no override at start
+
+    set_site_method("upload", source = "test-programmatic")  # our own write -> records site_method_last_set("upload")
+    session$setInputs(ss_choose_method = "upload")           # simulated radio round-trip to that same value
+    expect_false(site_method_user_override())                # value == last_set -> NOT treated as a user change
+
+    session$setInputs(ss_choose_method = "dropdown")         # user changes the MAIN radio to a different value
+    expect_true(site_method_user_override())                 # latched -> now protected from layer-2 clobber
+  })
+})
+################################################# #
+
+test_that("app_server override latch: an advanced-tab Site Selection Method pick latches the override", {
+  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c("default_hide_about_tab", "default_hide_written_report",
+                       "default_hide_plot_barplot_tab", "default_hide_plot_histo_tab")) {
+        return(FALSE)
+      }
+      orig_global_or_param(vname)
+    },
+    .package = "EJAM"
+  )
+  testServer(app = app_server, expr = {
+    session$setInputs(testing = FALSE)
+    expect_false(site_method_user_override())
+    session$setInputs(default_ss_choose_method = "upload")   # advanced-tab radio = explicit runtime choice (layer 3)
+    expect_true(site_method_user_override())
+  })
+})
+################################################# #
+
+test_that("shinytest category selection waits for input values and saves failure logs", {
+  setup_file <- testthat::test_path("setup-shinytest2.R")
+  setup_lines <- readLines(setup_file, warn = FALSE)
+  setup_text <- paste(setup_lines, collapse = "\n")
+
+  expect_match(
+    setup_text,
+    "wait_for_input_value <- function\\(input_id, expected = NULL",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "wait_for_input_value(input_id, expected = expected)",
+    fixed = TRUE ##
+  )
+  expect_match(
+    setup_text,
+    "select_upload_method <- function\\(upload_method\\)",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "wait_for_upload_input_ready <- function\\(input_id",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "upload_test_file <- function\\(input_id, paths",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "upload_log_has_files <- function\\(input_id, expected_names\\)",
+    perl = TRUE
+  )
+  upload_helper_match <- regexpr(
+    paste0(
+      "(?s)expect_uploaded_file <- function\\(input_id, expected_names\\).*?",
+      "wait_for_upload_input_ready <- function"
+    ),
+    setup_text,
+    perl = TRUE
+  )
+  expect_gt(upload_helper_match[1], 0)
+  upload_helper_text <- regmatches(setup_text, upload_helper_match)
+  expect_match(
+    upload_helper_text,
+    "upload_log_has_files(input_id, expected_names)",
+    fixed = TRUE
+  )
+  expect_match(
+    upload_helper_text,
+    "wait_for_start_analysis_enabled()",
+    fixed = TRUE
+  )
+  expect_false(grepl(
+    "app\\$wait_for_value\\(",
+    upload_helper_text,
+    perl = TRUE
+  ))
+  expect_false(grepl(
+    "shinyapp\\.\\$inputValues\\[id\\]",
+    upload_helper_text,
+    perl = TRUE
+  ))
+  expect_match(
+    setup_text,
+    "ejam_shinytest2_make_app_dir <- function\\(sourcefolder",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "# Use installed EJAM by default; set EJAM_SHINYTEST2_USE_SOURCE=true to use source-tree loading.",
+    fixed = TRUE
+  )
+  expect_match(
+    setup_text,
+    "use_source <- ejam_shinytest2_truthy_env\\(\"EJAM_SHINYTEST2_USE_SOURCE\"\\)",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "select_upload_method\\(\"FRS\"\\)\\s*\\n\\s*upload_test_file\\(\"ss_upload_frs\"",
+    perl = TRUE
+  )
+  expect_match(
+    setup_text,
+    "save_log\\(paste0\\(test_category, \"-category-selection-log\\.txt\"\\)\\)",
+    fixed = FALSE
+  )
+  expect_match(
+    setup_text,
+    "test_log_dir <- file.path(tempdir(), \"ejam-shinytest2-logs\")",
+    fixed = TRUE
+  )
+  expect_false(grepl(
+    "test_log_dir <- testthat::test_path(\"_logs\")",
+    setup_text,
+    fixed = TRUE
+  ))
+  expect_false(grepl(
+    paste0(
+      "ss_upload_frs = EJAM:::app_sys\\(\"testdata/registryid/frs_testpoints_10\\.xlsx\"\\)\\)",
+      "\\s*\\n\\s*app\\$wait_for_idle\\(timeout = 60 \\* 1000\\)"
+    ),
+    setup_text,
+    perl = TRUE
+  ))
+})
+################################################# #
+
+test_that("shinytest upload log detection accepts AppDriver upload messages", {
+  expect_true(exists("shinytest2_upload_log_has_files"))
+
+  logs <- data.frame(
+    message = c(
+      "{shinytest2} R info Uploading file(s) for id: /tmp/counties_in_Delaware.xlsx",
+      "{shinytest2} R info Finished uploading file"
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_true(
+    shinytest2_upload_log_has_files(
+      logs,
+      input_id = "ss_upload_fips",
+      expected_names = "counties_in_Delaware.xlsx"
+    )
+  )
+})
+################################################# #
 #
 
 # do tests of MODULES? ####
@@ -197,7 +479,33 @@ test_that(
 #   DELETE EACH VARIABLE THAT WAS PUT IN GLOBAL ENVIRONMENT
 
 rm(list = names(global_defaults_or_user_options))
+shiny::shinyOptions(golem_options = old_golem_options)
+rm(old_golem_options)
 rm(global_defaults_or_user_options)
 
+
+################################################# #
+# Item 4: default_site_method back-compat alias (param renamed from default_upload_dropdown) #
+
+test_that("global_or_param() resolves default_upload_dropdown as a back-compat alias for default_site_method", {
+  prev <- shiny::getShinyOption("golem_options")
+  on.exit(shiny::shinyOptions(golem_options = prev), add = TRUE)
+
+  # only the OLD key is set -> the new name still resolves (alias fallback)
+  shiny::shinyOptions(golem_options = list(default_upload_dropdown = "dropdown"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "dropdown")
+
+  # the NEW key is set -> resolves directly
+  shiny::shinyOptions(golem_options = list(default_site_method = "upload"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "upload")
+
+  # both set -> the new (canonical) key wins over the old alias
+  shiny::shinyOptions(golem_options = list(default_site_method = "mapclick", default_upload_dropdown = "dropdown"))
+  expect_equal(EJAM:::global_or_param("default_site_method"), "mapclick")
+
+  # a name with no alias is unaffected (no spurious fallback) -> NULL when unset
+  shiny::shinyOptions(golem_options = list())
+  expect_null(EJAM:::global_or_param("a_param_with_no_such_name_xyz"))
+})
 
 ################################################# #

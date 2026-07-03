@@ -27,6 +27,7 @@ jobs:
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ github.token }}
       GH_TOKEN: ${{ github.token }}
       NOT_CRAN: true
       SHINYTEST2_APP_DRIVER_TEST_ON_CRAN: 1
@@ -44,6 +45,10 @@ jobs:
             any::pak
             any::shinytest2
             any::testthat
+
+      - name: Verify Arrow/curl dependencies
+        run: source(".github/scripts/check-arrow-curl-deps.R")
+        shell: Rscript {0}
 
       # this ensures latest Pandoc is installed+used
       # setup-r-dependencies@v2 will try to install pandoc from Ubuntu repo, which might be older

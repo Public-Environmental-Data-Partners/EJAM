@@ -17,7 +17,7 @@ test_ejam(
   y_runall = TRUE,
   y_runsome = FALSE,
   run_these = NULL,
-  skip_these = NULL,
+  skip_these = c("live_url", "live_api", "local_api"),
   y_stopif = FALSE,
   y_seeresults = TRUE,
   y_save = TRUE,
@@ -31,15 +31,15 @@ test_ejam(
 \item{noquestions}{logical, whether to avoid questions later on about where to save shapefiles}
 
 \item{useloadall}{logical, TRUE means use \code{\link[pkgload:load_all]{pkgload::load_all()}}, FALSE means use \code{\link[=library]{library()}}.
-But useloadall=T is essential actually, for unexported functions to be found when they are tested!}
+But useloadall = TRUE is essential actually, for unexported functions to be found when they are tested!}
 
 \item{y_skipbasic}{logical, if FALSE, runs some basic \code{\link[=ejamit]{ejamit()}} functions, but NOT any unit tests.}
 
-\item{y_latlon}{logical, if y_skipbasic=F, whether to run the basic \code{\link[=ejamit]{ejamit()}} using points}
+\item{y_latlon}{logical, if y_skipbasic = FALSE, whether to run the basic \code{\link[=ejamit]{ejamit()}} using points}
 
-\item{y_shp}{logical, if y_skipbasic=F, whether to run the basic \code{\link[=ejamit]{ejamit()}} using shapefile}
+\item{y_shp}{logical, if y_skipbasic = FALSE, whether to run the basic \code{\link[=ejamit]{ejamit()}} using shapefile}
 
-\item{y_fips}{logical, if y_skipbasic=F, whether to run the basic \code{\link[=ejamit]{ejamit()}} using FIPS}
+\item{y_fips}{logical, if y_skipbasic = FALSE, whether to run the basic \code{\link[=ejamit]{ejamit()}} using FIPS}
 
 \item{y_coverage_check}{logical, whether to show simple lists of
 which functions might not have unit tests, just based on matching source file and test file names.}
@@ -49,10 +49,15 @@ which functions might not have unit tests, just based on matching source file an
 
 \item{y_runsome}{logical, whether to run only some groups of tests (so y_runall is FALSE)}
 
-\item{run_these}{if y_runsome = T, a vector of group names to test, like 'fips', 'naics', etc.
-see source code for list}
+\item{run_these}{if y_runsome = TRUE, a vector of group names to test, like
+'fips', 'naics', 'webapp', etc. The 'webapp' group runs the combined
+shinytest2 functionality suite; use 'webapp_individual' only when debugging
+one-category web app test files.}
 
-\item{skip_these}{if y_runall = T, a vector of group names to skip, like 'fips', 'naics', etc.}
+\item{skip_these}{if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.
+By default, live URL/API integration groups and local draft API tests are
+skipped so routine unit testing does not depend on network/API availability
+or a locally running draft Plumber API.}
 
 \item{y_seeresults}{logical, whether to show results in console}
 
@@ -73,7 +78,7 @@ run tests of local source pkg EJAM, by group of functions, quietly, interactivel
 \details{
 Note these require installing the package \href{https://testthat.r-lib.org}{testthat} first:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{[EJAM:::test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{[test_ejam()]         to test this local source pkg, by group of functions, quietly, summarized.
 
 [devtools::test()]           is just a shortcut for [testthat::test_dir()], to run all tests in package.
 
@@ -83,16 +88,28 @@ Note these require installing the package \href{https://testthat.r-lib.org}{test
 
 [testthat::test_check()]     to test the installed version of a package, in the way used by R CMD check or [utils::check()]
 }\if{html}{\out{</div>}}
+
+Note: shinytest2 diagnostics are saved on failure, under
+\code{file.path(tempdir(), "ejam-shinytest2-logs")}
 }
 \examples{
 \dontrun{
-biglist <- EJAM:::test_ejam()
+biglist <- test_ejam()
 
-biglist <- EJAM:::test_ejam(ask=F, mydir = rstudioapi::selectDirectory())
-biglist <- EJAM:::test_ejam(ask = F,
-      y_runsome = T, run_these = c('test', 'maps'),
+biglist <- test_ejam(ask = FALSE, mydir = rstudioapi::selectDirectory())
+biglist <- test_ejam(ask = FALSE,
+      y_runsome = TRUE, run_these = c('test', 'maps'),
       mydir = "~/../Downloads/unit testing") # for example
 
+# To run slower tests, live api/url tests for a pre-release check:
+
+Sys.setenv(NOT_CRAN = "true")
+EJAM:::test_ejam(
+  ask = FALSE,
+  y_runsome = TRUE,
+  run_these = c("live_url", "live_api"),
+  skip_these = NULL
+  )
   }
 
 }

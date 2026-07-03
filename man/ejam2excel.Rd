@@ -18,7 +18,7 @@ ejam2excel(
   radius_or_buffer_in_miles = NULL,
   radius_or_buffer_description = NULL,
   buffer_desc = "Selected Locations",
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   ok2plot = TRUE,
   report_plot = NULL,
   plot_distance_by_group = FALSE,
@@ -33,7 +33,7 @@ ejam2excel(
   heatmap_cuts = c(80, 90, 95),
   heatmap_colors = c("yellow", "orange", "red"),
   heatmap2_colnames = NULL,
-  heatmap2_cuts = c(1.009, 2, 3),
+  heatmap2_cuts = c(1.05, 2, 3),
   heatmap2_colors = c("yellow", "orange", "red"),
   graycolnames = NULL,
   graycolor = "gray",
@@ -158,11 +158,11 @@ creates a spreadsheet with an overall summary tab, a site by site table tab,
 as well as other tabs such as map, plot, notes, etc.
 }
 \examples{
-\donttest{
+\dontrun{
 # Add purple to flag indicators at 99th percentile
 ejam2excel(testoutput_ejamit_10pts_1miles,
   # View spreadsheet 1st without saving it as a file
-  launchexcel = T, save_now = F,
+  launchexcel = TRUE, save_now = FALSE,
   heatmap_cuts = c(80, 90, 95, 99),
   heatmap_colors  = c("yellow", "orange", "red", "purple"),
   # Apply heatmap to only a few of the ratio columns

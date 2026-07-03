@@ -15,7 +15,9 @@ custom_ejamit(
   wtcols = names_wts,
   custom_formulas = NULL,
   custom_cols = NULL,
-  custom_map_headernames = map_headernames
+  custom_map_headernames = map_headernames,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -39,12 +41,15 @@ aggregated as weighted means, population weighted or with other weights}
 \item{wtcols}{vector of colnames to use as the weights for wtd means,
 same length as popmeancols, but not used yet}
 
-\item{custom_formulas}{like formulas_all,  not used yet}
+\item{custom_formulas}{character vector of formulas, like
+\code{formulas_ejscreen_acs$formula}, not used yet}
 
 \item{custom_cols}{not used yet}
 
 \item{custom_map_headernames}{like map_headernames but for the
 custom indicators}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 returns the output of \code{\link[=custom_doaggregate]{custom_doaggregate()}}
@@ -52,3 +57,4 @@ returns the output of \code{\link[=custom_doaggregate]{custom_doaggregate()}}
 \description{
 custom version of ejamit() for calculating user-provided indicators
 }
+\keyword{internal}

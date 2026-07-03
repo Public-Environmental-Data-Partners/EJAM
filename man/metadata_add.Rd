@@ -12,7 +12,8 @@ metadata_add(
 )
 }
 \arguments{
-\item{x}{dataset (or any object) whose metadata (stored as attributes) you want to update or create
+\item{x}{dataset (or any object, unquoted, i.e., not its name but the object itself)
+whose metadata (stored as attributes) you want to update or create
 EJAM, EJSCREEN, and other dataset versions and release dates are tracked in DESCRIPTION}
 
 \item{metadata}{optional - when omitted, it checks metadata_mapping using get_metadata_mapping().
@@ -38,13 +39,13 @@ to update only the ejam_package_version attribute of every data item:
 \code{\link[=metadata_update_attr]{metadata_update_attr()}}
 
 This utility would be used in scripts in EJAM/data-raw/ to
-add metadata to objects like x before use_data(x, overwrite=T)
+add metadata to objects like x before use_data(x, overwrite = TRUE)
 
 Note that by adding attributes, this function changes a vector
 so that is.vector() will no longer be true!
 }
 \examples{
-  # EJAM:::metadata_check() # internal function
+  # metadata_check() # internal function
   x <- data.frame(a=1:10,b=1001:1010)
   # x <- EJAM:::metadata_add(x) # internal function
   attributes(x)

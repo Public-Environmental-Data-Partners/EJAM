@@ -5,8 +5,9 @@
 #'
 #' @inheritParams ejam2excel
 #'
-#' @examples \donttest{
-#'   EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles, fname = tempfile(fileext = ".xlsx"))
+#' @examples \dontrun{
+#'   EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles,
+#'     fname = tempfile(fileext = ".xlsx"))
 #'   }
 #' @return returns a workbook object for use by openxlsx::saveWorkbook(wb_out, pathname)
 #'   or returns just the full path/file name of where it was saved if save_now = TRUE
@@ -32,7 +33,7 @@ table_xls_from_ejam <- function(ejamitout,
                                 buffer_desc = "Selected Locations",
 
                                 # specify columns with URLs/links to 1-site reports, etc.
-                                reports = EJAM:::global_or_param("default_reports"),
+                                reports = global_or_param("default_reports"),
 
                                 # plot
                                 ok2plot = TRUE,
@@ -54,7 +55,7 @@ table_xls_from_ejam <- function(ejamitout,
 
                                 # column formatting
                                 heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
-                                heatmap2_colnames = NULL, heatmap2_cuts = c(1.009, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
+                                heatmap2_colnames = NULL, heatmap2_cuts = c(1.05, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
                                 graycolnames = NULL, graycolor = 'gray',
                                 narrowcolnames = NULL, narrow6 = 6,
 

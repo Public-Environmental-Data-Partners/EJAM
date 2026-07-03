@@ -6,7 +6,8 @@
 \usage{
 fixcolnames_anyoldtype(
   namesnow,
-  oldtypes = c("longname", "apiname", "api_synonym", "csvname", "acsname", "oldname"),
+  oldtypes = c("longname", "ejscreen_apinames_old", "api_synonym", "csvname", "acsname",
+    "oldname"),
   newtype = "r"
 )
 }
@@ -23,3 +24,4 @@ Vector or new column names same length as input
 \description{
 like fixcolnames() but can try multiple values as oldtypes
 }
+\keyword{internal}

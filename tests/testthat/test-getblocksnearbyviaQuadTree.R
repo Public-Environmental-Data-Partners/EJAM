@@ -12,7 +12,7 @@ testthat::test_that("distance gets adjusted up if radius zero", {
   # zero radius so distance always has to get adjusted
   radius <- 0
   x <- getblocksnearbyviaQuadTree(sitepoints = pts, radius = radius,
-                                  quadtree = localtree, quiet = T, report_progress_every_n = 2000)
+                                  quadtree = EJAM:::localtree_get(), quiet = T, report_progress_every_n = 2000)
   testthat::expect_true(all(x$distance >= x$distance_unadjusted, na.rm = TRUE))
   testthat::expect_true(all(x$distance > x$distance_unadjusted | x$distance == 0, na.rm = TRUE))
   testthat::expect_true(all(x$distance_unadjusted <= x$radius, na.rm = TRUE))

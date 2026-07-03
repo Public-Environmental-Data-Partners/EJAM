@@ -5,7 +5,7 @@
 \alias{usastats}
 \title{usastats (DATA) data.frame of 100 percentiles and means}
 \format{
-An object of class \code{data.frame} with 102 rows and 67 columns.
+An object of class \code{data.frame} with 102 rows and 114 columns.
 }
 \usage{
 usastats
@@ -19,9 +19,13 @@ Each column is one indicator (or specifies the percentile).
 This should be similar to the lookup tables in the gdb on the FTP site of EJSCREEN,
 except it also has data for additional population subgroups.
 
-For details on how the table was made, see source package files
-EJAM/data-raw/datacreate_usastats2.32_add_dsubgroups.R and
-EJAM/data-raw/datacreate_usastats2.32.R
+For EJAM v3, \link{blockgroupstats} may include AS/GU/MP/VI at the
+blockgroup dataset, EJSCREEN export, and map-data visibility level. Those
+Island Areas normally have \code{NA} demographic values because ACS does not
+cover them; available environmental values can still contribute to the
+relevant non-demographic lookup columns.
+
+For details on how the table was made, see source package files in data-raw folder.
 
 See also \link{statestats}
 }

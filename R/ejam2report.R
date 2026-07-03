@@ -8,7 +8,9 @@ ensure_pandoc_available_for_ejam <- function() {
   }
   candidate_pandoc_paths <- c(
     file.path(Sys.getenv("RSTUDIO_PANDOC", unset = ""), "pandoc"),
+    Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/*/pandoc"),
     Sys.glob("/Applications/RStudio*.app/Contents/Resources/app/quarto/bin/tools/pandoc"),
+    Sys.glob("/Applications/RStudio*.app/Contents/MacOS/quarto/bin/tools/*/pandoc"),
     Sys.glob("/Applications/RStudio*.app/Contents/MacOS/quarto/bin/tools/pandoc")
   )
   candidate_pandoc_paths <- unique(candidate_pandoc_paths[nzchar(candidate_pandoc_paths)])
@@ -78,11 +80,11 @@ assert_pdf_report_available <- function() {
 #'   But note that it is treated / titled like a 1-site report if only
 #'   one site was analyzed (or only one had valid results).
 #'
-#' @param analysis_title optional title of analysis, default is EJAM:::global_or_param("default_standard_analysis_title")
+#' @param analysis_title optional title of analysis, default is global_or_param("default_standard_analysis_title")
 #'
 #' @param report_title optional generic name of this type of report, to be shown at top,
 #'   like "EJSCREEN Multisite Report" or "EJSCREEN Community Report".
-#'   Default is EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
+#'   Default is global_or_param("report_title") or global_or_param("report_title_multisite")
 #'   depending on number of sites analyzed and the sitenumber parameter.
 #'
 #' @param logo_path optional relative path to a logo for the upper right of the overall header.
@@ -109,6 +111,8 @@ assert_pdf_report_available <- function() {
 #'
 #' @param shp provide the sf spatial data.frame of polygons that were analyzed so you can map them since
 #'   they are not in ejamitout
+#' @param shape alias (synonym) for shp
+#' @param shapefile alias (synonym) for shp
 #' @param launch_browser set TRUE to have it launch browser and show report.
 #' @param return_html set TRUE to have function return HTML object instead of URL of local file
 #' @param fileextension html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
@@ -142,13 +146,13 @@ assert_pdf_report_available <- function() {
 #'    and has side effect of launching browser to view it depending on return_html
 #'
 #' @examples
-#' #out <- ejamit(testpoints_10, radius = 3, include_ejindexes = T)
+#' #out <- ejamit(testpoints_10, radius = 3, include_ejindexes = TRUE)
 #' out <- testoutput_ejamit_10pts_1miles
 #'
-#' ejam2report(out)
 #' ejam2table_tall(out$results_overall)
 #' if (interactive()) {
-#'  x <- ejam2report(out, sitenumber = 1, launch_browser = T)
+#'  ejam2report(out)
+#'  x <- ejam2report(out, sitenumber = 1, launch_browser = TRUE)
 #'  table_gt_from_ejamit_overall(out$results_overall)
 #'  table_gt_from_ejamit_1site(out$results_bysite[1, ])
 #' }
@@ -159,8 +163,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         sitenumber = NULL,
                         logo_path = NULL,
                         logo_html = NULL, # defined downstream
-                        report_title = NULL, # EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
-                        analysis_title = NULL, # EJAM:::global_or_param("default_standard_analysis_title")
+                        report_title = NULL, # global_or_param("report_title") or global_or_param("report_title_multisite")
+                        analysis_title = NULL, # global_or_param("default_standard_analysis_title")
                         addlatlon = TRUE,
 
                         site_method = NULL, # c("latlon", "SHP", "FIPS")[1],
@@ -202,8 +206,13 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         fileextension = c("html", "pdf")[1],
                         filename = NULL,
                         return_html = FALSE,
-                        launch_browser = TRUE
+                        launch_browser = TRUE,
+                        shape = NULL,     # alias (synonym) for shp (name-only, at end to avoid arg shift)
+                        shapefile = NULL  # alias (synonym) for shp
 ) {
+  # Aliases (synonyms) for shp, for naming consistency with ejamit()/ejamapp() etc.
+  if (is.null(shp) && !is.null(shape))     {shp <- shape}
+  if (is.null(shp) && !is.null(shapefile)) {shp <- shapefile}
 
   # analysis title default and report_title default depend on if this is 1-site or multisite
 
@@ -275,11 +284,11 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   if (sitenumber %in% 0) {
 
     if (is.null(report_title)) {
-      report_title <- EJAM:::global_or_param("report_title_multisite")
+      report_title <- global_or_param("report_title_multisite")
     }
     ## > analysis_title if multisite ####
     if (is.null(analysis_title)) {
-      analysis_title <- EJAM:::global_or_param("default_standard_analysis_title")
+      analysis_title <- global_or_param("default_standard_analysis_title")
     }
 
     ejamout1 <- ejamitout$results_overall # one row
@@ -293,8 +302,9 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > fips polygons ####
     if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(ejamitout$results_bysite$ejam_uniq_id)
-      if (!is.na(rad) && rad > 0) warning("Downloading fips bounds but NOT adding radius as buffer for mapping purposes here!")
-      # radius would have to be used here to add any buffer ! ***
+      if (!is.na(rad) && rad > 0 && rad != 999) {
+        shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
+      }
     }
   } else {
 
@@ -302,7 +312,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     ## > report_title if 1-site ####
     if (is.null(report_title)) {
-      report_title <- EJAM:::global_or_param("report_title")
+      report_title <- global_or_param("report_title")
     }
     ## > analysis_title if 1-site ####
     if (is.null(analysis_title)) {
@@ -324,8 +334,9 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > fips polygons ####
     if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
-      if (!is.na(rad) && rad > 0) warning("Downloading fips bounds but NOT adding radius as buffer for mapping purposes here!")
-      # radius would have to be used here to add any buffer ! ***
+      if (!is.na(rad) && rad > 0 && rad != 999) {
+        shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
+      }
     } else {
       if (!is.null(shp)) {
         shp <- shp[sitenumber, ]
@@ -384,7 +395,19 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     fileextensions_implemented <- c(".html", ".pdf")
     if (!(fileextension %in% fileextensions_implemented)) {
       warning("fileextension must be one of", fileextensions_implemented)
-      fileextension <- ".html"
+      ## Fall back to the global default. global_or_param("default_format1pager") can be NULL
+      ## (e.g. when EJAM is used via :: without attaching, so .onAttach() never built the package
+      ## defaults), so guard against NULL/empty before normalizing - otherwise gsub()/`%in%` operate
+      ## on a length-0 value and the `if` below errors ("argument is of length zero").
+      gdef <- global_or_param("default_format1pager")  # normally "html"/"pdf"; could be ".pdf", "PDF", or NULL
+      if (length(gdef) == 0 || is.na(gdef[1]) || !nzchar(gdef[1])) {
+        fileextension <- ".html" # fallback if global default is missing/blank
+      } else {
+        fileextension <- paste0(".", gsub("^\\.", "", tolower(gdef[1])))
+        if (!(fileextension %in% fileextensions_implemented)) {
+          fileextension <- ".html" # fallback if problem with global
+        }
+      }
     }
 
     ## > filename ####
@@ -401,11 +424,19 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         buffer_dist = rad,
         site_method = site_method, # can be latlon, shp, SHP, fips, FIPS, MACT, etc. (just used as-is in filename)
         with_datetime = FALSE,
-        ext = fileextension # in server,  ifelse(input$format1pager == 'pdf', '.pdf', '.html')
+        ext = fileextension
       )
       temp_comm_report <- file.path(tempdir(), filename)
     } else {
-      temp_comm_report <- filename
+      # Make a relative or "./"-prefixed filename absolute (relative to the working
+      # directory) before rendering. normalizePath(mustWork = FALSE) does not
+      # absolutize a path whose file does not exist yet on all platforms, which left
+      # rmarkdown::render() writing to an unexpected location and returning a relative
+      # path (incomplete #370 fix).
+      if (!grepl("^(/|[A-Za-z]:)", filename)) {
+        filename <- file.path(getwd(), filename)
+      }
+      temp_comm_report <- normalizePath(filename, mustWork = FALSE)
     }
     output_file      <- temp_comm_report
 

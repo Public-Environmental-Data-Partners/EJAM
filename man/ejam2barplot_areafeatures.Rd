@@ -6,8 +6,8 @@
 \usage{
 ejam2barplot_areafeatures(
   ejamitout,
-  main =
-    "\% of analyzed population that lives in blockgroups with given features or that overlap given area type",
+  main = paste0("\% of analyzed population",
+    " that lives in blockgroups with given features", " or that overlap given area type"),
   ylab = "Ratio of Indicator in Analyzed Locations / in US Overall",
   shortlabels = NULL
 )

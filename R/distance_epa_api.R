@@ -27,9 +27,13 @@
 #' @examples
 #' pts <- testpoints_10[c(3,10),]
 #' distances.all(pts[1,],pts[2,])
+#' \dontrun{
+#' # Calls EPA's live ArcGIS GeometryServer API, so it can fail if that
+#' # service is unavailable.
 #' d <- distance_epa_api(pts = pts)
 #' print(d)
 #' mapfast(pts, radius = d/2)
+#' }
 #'
 #'
 #' @keywords internal

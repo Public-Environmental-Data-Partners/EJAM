@@ -4,6 +4,7 @@
 #' @param sitepoints optional data.frame with colnames lat,lon
 #' @param lat,lon optional vectors of latitudes and longitudes
 #' @param shapefile  optional polygons in a spatial data.frame
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param fips  optional Census units as a fips code vector
 #' @seealso [sites_from_file()]
 #' @return a list with names sitetype, sitepoints, fips, and shapefile.
@@ -39,7 +40,12 @@
 #'
 sites_from_input <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                              shapefile = NULL,
-                             fips = NULL) {
+                             fips = NULL,
+                             shape = NULL, shp = NULL) {
+
+  # Aliases (synonyms): shape and shp for shapefile.
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   # reconcile latlon vs sitepoints as input method for points
   sitepoints <- sitepoints_from_latlon_or_sitepoints(sitepoints = sitepoints, lat = lat, lon = lon)

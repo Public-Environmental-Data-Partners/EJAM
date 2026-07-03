@@ -51,7 +51,9 @@ pkg_update_testpoints_testoutputs <- function(
 
   myrad = 1 ,# radius in miles. Larger would create MUCH larger versions of sites2blocks example objects
 
-  resaving_testpoints_overlap3 = TRUE,
+  ## resaving these also updates their metadata on date saved, package version etc.
+
+  resaving_testpoints_overlap3 = TRUE, # example of 3 points with overlapping circles, for testing functions that need that
   creatingnew_testpoints_data   = FALSE, # TO REPLACE THE ACTUAL TEST POINTS (can be false and still do other steps below)
 
   resaving_testpoints_rda       = TRUE, ## WARNING: it will NOT resave if they are found, so edit the code here to force overwrite
@@ -79,8 +81,8 @@ pkg_update_testpoints_testoutputs <- function(
 ) {
   ######################################################## ######################################################### #
   if (recreating_doaggregate_output) {recreating_getblocksnearby <- TRUE}  # needed in that case
-
-  if (basename(getwd()) != "EJAM") {stop('do this from EJAM source package folder')}
+  if (!file.exists(file.path(getwd(), "DESCRIPTION")) || desc::desc_get(file = "DESCRIPTION", keys = "Package") != "EJAM") {stop('do this from EJAM source package folder')}
+  # if (basename(getwd()) != "EJAM") {stop('do this from EJAM source package folder')} # fails if you put the source in a worktree like one named after a branch
   # library(EJAM) # does this need to be here? will it possibly be a problem in some situation like before the package is installed but source can be loaded, or while changes are being made and not yet reinstalled with updates, etc.?
   #  EJAM package must be loaded or at least the functions available
 
@@ -370,7 +372,7 @@ pkg_update_testpoints_testoutputs <- function(
 '",out_varname_doagg,"'"
           )
           # prefix documentation file names with "data_"
-          writeChar(filecontents, con = paste0("./R/data_", out_varname_doagg, ".R"))       ############# #
+          writeLines(filecontents, con = paste0("./R/data_", out_varname_doagg, ".R"), useBytes = TRUE)       ############# #
         }
 
       }
@@ -494,7 +496,7 @@ if (n == 100) {
   postdoc::render_package_manual()  # for html manual (optional)
 
 
-  See also EJAM/data-raw/datacreate_0_UPDATE_ALL_DOCUMENTATION_pkgdown.R  for the documentation website
+  See also EJAM:::pkgdown_update()  for the documentation website
   See also
 
   EJAM:::metadata_check() # to see large table of which attributes provide metadata on dataset objects
@@ -506,7 +508,7 @@ if (n == 100) {
 
   EJAM:::metadata_update_attr() # to update attributes like package version in all datasets (other than atomic vectors, and optionally only if version attr was already set for that object)
 
-  devtools::install_local(build = FALSE, upgrade = "never")
+  pak::local_install(".", dependencies = TRUE, upgrade = FALSE)
 
   rstudioapi::restartSession(clean = TRUE)
 

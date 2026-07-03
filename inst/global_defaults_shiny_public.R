@@ -58,6 +58,10 @@ global_defaults_shiny_public <- list(
   ############################################################################## #
 
   ## SITE SELECTION  ####
+  ## The top-level method is chosen by default_site_method: "dropdown" (select a category),
+  ## "upload" (upload a file), or "mapclick" (click or draw on the map to specify points).
+  ## The default_choices_* settings below configure the sub-options for the "dropdown" and
+  ## "upload" methods only; the "mapclick" method has no sub-options.
 
   # 'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',  # but NOT all fips of one category (unlike for NAICS etc.)
 
@@ -66,7 +70,7 @@ global_defaults_shiny_public <- list(
   ## default_choices_for_type_of_site_category defines the range of options
   ## If you want all the options available but want the app to default to NAICS, in ejamapp() use these params:
   # ejamapp(
-  #   default_upload_dropdown = "dropdown",
+  #   default_site_method = "dropdown",
   #   default_choices_for_type_of_site_category = c(
   #     'by Industry (NAICS) Code' = 'NAICS',
   #     'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
@@ -105,7 +109,7 @@ global_defaults_shiny_public <- list(
   ## If you want all the options available but want the app to default to polygons, in ejamapp() use these params:
   #
   # ejamapp(
-  #   default_upload_dropdown = "upload",
+  #   default_site_method = "upload",
   #   default_choices_for_type_of_site_upload = c(
   #     'Shapefile of polygons file upload'              = 'SHP',
   #     'Latitude/Longitude file upload'                 = 'latlon',
@@ -139,7 +143,33 @@ global_defaults_shiny_public <- list(
   ## ------------------------ Short report options ####
 
   default_show_ratios_in_report = !isTRUE(isPublic), # used by app_ui to affect input$show_ratios_in_report which server uses in ejam2report(), etc.
-  default_extratable_show_ratios_in_report = !isTRUE(isPublic) # same
+
+  default_extratable_show_ratios_in_report = !isTRUE(isPublic), # same
+
+  ## normally would be the same as the defaults in ejam2report() or defaults in build_community_report()
+
+  default_extratable_list_of_sections = list(
+    # see build_community_report defaults and see global_defaults_*.R
+    `Breakdown by Population Group` = names_d_subgroups,
+    `Language Spoken at Home` = names_d_language,
+    `Language in Limited English Speaking Households` = names_d_languageli,
+    `Breakdown by Sex` = c('pctmale','pctfemale'),
+    `Health` = names_health,
+    `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
+    `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
+    `Poverty` = names_d_extra,
+    `Features and Location Information` = c(
+      names_e_other,
+      names_sitesinarea,
+      names_featuresinarea,
+      names_flag
+    ),
+    `Climate` = names_climate,
+    `Critical Services` = names_criticalservice,
+    `Other` = names_d_other_count
+    # , `Count above threshold` = names_countabove  # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
+  )
+
 )
 ######################################################################################################## #
 

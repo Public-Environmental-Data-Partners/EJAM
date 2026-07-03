@@ -50,9 +50,9 @@
 #' @examples
 #' fixnames_aliases(c("km", "kilometer", "miles", "statename", 'X', "y"))
 #' fixnames_aliases("LATITUDE")
-#' fixnames_aliases("LATITUDE", ignore.case = F)
-#' fixnames_aliases("LATITUDE", na_if_no_match = T)
-#' fixnames_aliases("LATITUDE", na_if_no_match = T, ignore.case = F)
+#' fixnames_aliases("LATITUDE", ignore.case = FALSE)
+#' fixnames_aliases("LATITUDE", na_if_no_match = TRUE)
+#' fixnames_aliases("LATITUDE", na_if_no_match = TRUE, ignore.case = FALSE)
 #' fixnames_aliases(c(NA, 1, "typo", 1:2))
 #'
 #' fixnames_aliases(c(1:4, "na", "tbd"),
@@ -117,7 +117,7 @@ fixnames_aliases <- function(x, na_if_no_match = FALSE, alias_list = NULL, ignor
         "longname", "longnames", "full", "description", "header"),
 
       shortlabel = c("short", "shortname", "shortnames", "shortlabel", "shortlabels", "label", "labels"),
-      apiname = c('api', 'apiname', 'apinames'),
+      ejscreen_apinames_old = c('api', 'old_api'),
       csvname = c("csv", "csvname", "csvnames"),
       acsname = c('acs', 'acsname', 'acsnames'),
       oldname = c("old", "oldname", "oldnames", 'original')

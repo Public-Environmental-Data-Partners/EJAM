@@ -3,7 +3,7 @@
 \docType{data}
 \name{testinput_program_sys_id}
 \alias{testinput_program_sys_id}
-\title{test data, EPA program names and program system ID numbers to try using}
+\title{test data, EPA program system ID numbers to try using}
 \format{
 An object of class \code{data.frame} with 8 rows and 2 columns.
 }
@@ -11,7 +11,7 @@ An object of class \code{data.frame} with 8 rows and 2 columns.
 testinput_program_sys_id
 }
 \description{
-test data, EPA program names and program system ID numbers to try using
+test data, EPA program system ID numbers to try using
 }
 \details{
 Just for convenience, installed with the package

@@ -38,6 +38,31 @@ if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if 
 ```
 
 
+# Deep links: launch the app pre-loaded via URL parameters
+
+Besides the deploy-time settings described below, an already-running EJAM app can be
+**launched pre-loaded with a set of places** by opening it with launch query parameters in
+the URL. This is how the EJScreen Report tool's "Send to EJAM" button opens EJAM ready to
+run, and what `url_ejamapp()` builds as shareable deep links.
+
+The app reads these at startup (one place-type per launch -- points, else FIPS, else
+polygons):
+
+- `?lat=33,34&lon=-112,-114` -- one or more points, each treated as a site
+- `?fips=10001,10003` -- one or more FIPS codes, each a separate site
+- `?shape=<url-encoded GeoJSON>` -- a polygon or FeatureCollection
+- `?radius=` (or `?buffer=`) -- analysis radius in miles
+- `?handoff=<token>` -- a token minted by the EJAM API `POST /handoff` and fetched back at
+  startup, for large polygon sets that exceed URL-length limits
+
+Build such a link with `url_ejamapp()`; its query vocabulary matches `url_ejamapi()` (which
+builds *API* request URLs rather than *app* links). The default app base is
+`https://ejamapp.ejanalysis.com/`, a Cloudflare-fronted shortcut on the `ejanalysis.com`
+domain that forwards the query string to the live app (a plain redirect that dropped the
+query would open the app empty). For the API side -- including the friendlier
+`https://api.ejanalysis.com/` base and parameter details -- see the `dev-api` article, the
+help for `ejamapi()`/`url_ejamapi()`, and the EJAM-API repository's README.
+
 # NOTES ON GLOBAL DEFAULTS, SHINY INPUTS, BOOKMARKS, AND FUNCTION PARAMETERS
 
 This document provides technical notes on how defaults and custom settings are defined for the EJAM web app.
@@ -47,7 +72,7 @@ Most of what you might want to do is shown in documentation showing examples of 
 
 ## HOW SETTINGS GET PASSED TO THE WEB APP
 
-Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `ejamapp()` aka `run_app()` as parameters, to override those global default settings for the duration of the app. Using `ejamapp()` parameters allows experienced analysts to customize how the web app works without having to edit any files. It can be used on a laptop, for example interactively with custom settings. For example, one can change the radius, the type of sites to analyze, default name of the analysis, report title/logo, etc., or to override caps such as limits on file upload size or number of points:
+Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `ejamapp()` as parameters, to override those global default settings for the duration of the app. Using `ejamapp()` parameters allows experienced analysts to customize how the web app works without having to edit any files. It can be used on a laptop, for example interactively with custom settings. For example, one can change the radius, the type of sites to analyze, default name of the analysis, report title/logo, etc., or to override caps such as limits on file upload size or number of points:
 
 ```{r run-app1, eval=FALSE}
 ejamapp(
@@ -122,6 +147,31 @@ Just before launching the app, `ejamapp()` calls `get_global_defaults_or_user_op
 gets the global defaults and then overrides/replaces them with
 any user-specified versions of those options given as arguments in `ejamapp()`.
 
+### ejamapp() convenience aliases
+
+`ejamapp()` also accepts a number of short **aliases** for parameters and, for site selection,
+infers related defaults. For example `pts` (or `lat`+`lon`) is an alias for `sitepoints`, `shp` is
+an alias for `shapefile`, and `naics`/`sic`/`mact` are aliases for `default_naics`/etc. Some of these
+also set the method automatically -- e.g. passing `fips`, `shapefile`, or `sitepoints` sets
+`default_site_method = "upload"` (and the upload sub-type), while `default_naics` sets
+`default_site_method = "dropdown"`. See `?ejamapp` and the alias-handling block near the top of
+`R/ejamapp.R`.
+
+The aliases and the defaults they cross-set (kept in sync with the alias block near the top of `R/ejamapp.R`):
+
+| You pass to `ejamapp()` | Canonical param | Also cross-sets |
+|---|---|---|
+| `pts`, or `lat`+`lon` | `sitepoints` | `default_site_method="upload"`, `default_selected_type_of_site_upload="latlon"` |
+| `shp` or `shape` | `shapefile` | `default_site_method="upload"`, `default_selected_type_of_site_upload="SHP"` |
+| `shapefile` | `shapefile` | `default_site_method="upload"`, `default_selected_type_of_site_upload="SHP"` |
+| `fips` | `fips` | `default_site_method="upload"`, `default_selected_type_of_site_upload="FIPS"` |
+| `naics` | `default_naics` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="NAICS"`, `default_naics_digits_shown="detailed"` |
+| `sic` | `default_sic` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="SIC"` |
+| `mact` | `default_mact` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="MACT"` |
+
+The site-selection method param `default_site_method` was formerly named `default_upload_dropdown`;
+the old name still works as a back-compat alias (normalized to the new name inside `ejamapp()`).
+
 ### app launch
 
 `ejamapp()` launches the app -- it uses a function called `golem::with_golem_options()`, 
@@ -147,6 +197,49 @@ there by someone using the app's Advanced Tab,
 so what ui or server ends up using could be an input$ that is adjustable in the Advanced Tab
 and therefore can be bookmarked (since inputs can be bookmarked unless specifically excluded from that).
 
+An Advanced-Tab setting that should change a *main* control (e.g. the "Site Selection Method"
+radio `default_ss_choose_method` setting the main `ss_choose_method` radio) is applied from the
+**server** via `updateRadioButtons()` -- you cannot reference `input$...` from `app_ui()`.
+
+### Launch-URL parameters (in addition to the above)
+
+Beyond `ejamapp()` params and the global_defaults_ files, the app can also read settings from the
+**launch URL**, via two distinct mechanisms:
+
+- Shiny's native **bookmarking** restores any `input$` value from a `?_inputs_&id=value...` URL
+  (see the bookmarking notes above).
+- The EJScreen / multisite handoff work adds **custom launch-URL parameters** (e.g. `?lat=&lon=`,
+  `?fips=`, `?shape=`, `?handoff=`) that take precedence over the matching `ejamapp()`/global default
+  via `url_x() %||% global_or_param("x")`. (See PR #413 on the `ejscreen-multisite-selection` branch.)
+
+### how an input control actually gets its default
+
+Two orthogonal things determine an input control: **(Axis 1) how the widget is built**, and
+**(Axis 2) where its value comes from**.
+
+**Axis 1 -- how the widget is built** (a UI-mechanics choice, almost always forced by the widget, not stylistic):
+
+| Pattern | Use when | Example |
+|---|---|---|
+| **A. static UI default** -- `selected=`/`value=` set in `app_ui.R` to `global_or_param("...")` | the default is a plain value known at page-load, with a fixed choice set | most controls |
+| **B. server `renderUI`** (`uiOutput()` in UI + `output$x <- renderUI({...})`) | the widget's *structure* (which choices exist, min/max, conditional sub-controls) depends on reactive state | radius slider (`radius_now`) |
+| **C. static-empty UI + server `update*Input()`** | choices load server-side (large selectize lists) OR the value must change on a later event | NAICS/SIC/MACT selectize; advanced-tab -> main-control sync |
+
+Because the UI is built once before any reactive `input$` exists, an Axis-1-A control's `selected=`/`value=`
+must be a **non-reactive** value -- `global_or_param("...")` -- never `input$...` (that errors at UI build).
+To make an advanced-tab setting change a main control, sync it server-side via `update*Input()` (Axis-1-C).
+
+**Axis 2 -- where the value comes from** (the precedence stack, highest wins):
+
+1. **Shiny bookmark** `?_inputs_&...` -- restores saved `input$` values on load (framework-level; orthogonal to the rest).
+2. **Launch-URL custom params** `?lat=&lon=`, `?fips=`, `?shape=`, `?handoff=`, `?radius=` -- read via the `url_*`
+   reactives and resolved by `global_or_shinyparam_or_urlparam(name)`, so a launch-URL value wins over the default.
+3. **`ejamapp()` params** (after alias normalization) -- override the global-default files.
+4. **`global_defaults_*.R`** files (package < shiny < shiny_public).
+
+The advanced-tab -> main-control sync sits *alongside* this stack: it applies a user's runtime change after load
+(e.g. the "Site Selection Method" radio updates `ss_choose_method` via `update*Input()`).
+
 To view the Advanced tab in the web app, click the About tab and then the Show advanced button on that page. If that button is not visible, use ejamapp(default_can_show_advanced_settings=TRUE). To show the advanced tab at launch, use ejamapp(default_show_advanced_settings=TRUE).
 
 ### web app reactives and interactive inputs
@@ -169,10 +262,57 @@ of UI inputs, not other reactive values (unless the server code specifies otherw
 using the `shiny::onBookmark()` and `shiny::onRestore()` functions to make 
 bookmarks store other information, beyond just inputs).
 Some important global defaults affect the app but not by providing
-initial values for inputs in the shiny app, so some useful information 
+initial values for inputs in the shiny app, so some useful information
 including some that is controlled by global defaults or user parameters in ejamapp()
 cannot be bookmarked because it is stored in reactives
-but not as shiny app inputs. 
+but not as shiny app inputs.
+To pass a set of *sites* (points, FIPS codes, or polygons) into an already-deployed
+app through a URL — which the file-upload inputs cannot do through a url-bookmark —
+use the custom launch query parameters described next.
+
+### Launch URL with pre-selected sites (handoff from an external app)
+
+Separately from Shiny's `?_inputs_&...` bookmark mechanism, the app server reads a
+small set of **custom launch query parameters** so an external app (e.g. EJScreen)
+can open EJAM already pre-loaded with a set of places. This is the way to pass in
+**points or polygons**, which are file uploads and therefore cannot travel in a
+url-encoded bookmark. The vocabulary matches `url_ejamapi()`:
+
+- `?lat=33,34&lon=-112,-114` — one or more points (comma-separated), each a site
+- `?fips=10001,10003` — one or more FIPS codes, **each a separate site**
+- `?shape=<url-encoded GeoJSON>` — a polygon / FeatureCollection (read by `shapefile_from_any()`)
+- `?radius=3` (or `?buffer=3`) — analysis radius in miles
+- `?handoff=<token>` — a token previously minted by the EJAM API `POST /handoff`;
+  the app fetches `GET /handoff/<token>` and pre-loads whatever places it holds.
+  Use this for large polygon sets that would not fit in a URL.
+
+Only one place-type is loaded per launch (points, then FIPS, then polygons),
+matching the one-method-per-analysis model. Internally the launch handler stores
+the parsed places in three per-session reactives — `url_sitepoints`, `url_fips`,
+and `url_shapefile` — which `data_up_tablepassed_latlon()`/`data_up_latlon()`,
+`data_up_fips()`, and `data_up_shp()` prefer over the `ejamapp()`/global defaults.
+It also updates `ss_choose_method` and `ss_choose_method_upload` so the matching
+upload tab is shown, so the app opens with those sites selected and ready to run.
+The handler is the `observe()` near the top of the SELECT SITES section in
+`R/app_server.R`.
+
+For example, this opens the hosted app pre-loaded with two counties (two sites):
+
+    https://ejamapp.ejanalysis.com/?fips=10001,10003
+
+and this pre-loads two points with a 3-mile radius:
+
+    https://ejamapp.ejanalysis.com/?lat=33,34&lon=-112,-114&radius=3
+
+Because the query vocabulary matches `url_ejamapi()` (which builds EJAM API report
+URLs), the helper `url_ejamapp()` builds these app-launch URLs with the same
+vocabulary -- for example `url_ejamapp(fips = c("10001","10003"))` or
+`url_ejamapp(handoff = "<token>")`. The `?handoff=<token>` form is how EJScreen's
+"Send to EJAM" button passes a large set of drawn polygons without hitting
+URL-length limits:
+EJScreen `POST`s the GeoJSON to the EJAM API `/handoff`, gets a token, and opens
+the EJAM app at `?handoff=<token>` (e.g. `https://ejamapp.ejanalysis.com/?handoff=<token>`);
+the app then fetches those places back from the API's `GET /handoff/<token>` at startup.
 
 --------------
 --------------
@@ -188,7 +328,7 @@ One such example:
 ```{r run-app, eval=FALSE}
 ejamapp(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -230,7 +370,7 @@ Launch using parameters that are saved in a named vector or list
 ```{r run-with-paramlist, eval=FALSE}
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -247,7 +387,7 @@ Save a custom reusable function you can use to launch with preset parameters
 
 myparams <- c(
   default_standard_analysis_title="Custom NAICS Analysis",
-  default_upload_dropdown="dropdown",
+  default_site_method="dropdown",
   default_selected_type_of_site_category="NAICS",
   default_naics_digits_shown="detailed",
   default_naics="562211",
@@ -312,7 +452,7 @@ browseURL(urlx)
 Using a custom URL to go to a web app with custom settings
 
 ```{r browseURL, eval=FALSE}
-urlbase <- "https://ejam.policyinnovation.info/?_inputs_&"
+urlbase <- "https://ejam.publicenvirodata.org/?_inputs_&"
 
 myparams <- c(
   standard_analysis_title="Custom NAICS Analysis",
@@ -325,7 +465,7 @@ myparams <- c(
 )
 
 params <- c('standard_analysis_title="Custom NAICS Analysis"',
-            'ss_choose_method="dropdown"',   # like ejamapp( default_upload_dropdown="dropdown" )
+            'ss_choose_method="dropdown"',   # like ejamapp( default_site_method="dropdown" )
             'ss_choose_method_drop="NAICS"', # see ?ejamapp()
             'naics_digits_shown="detailed"', # like ejamapp( default_naics_digits_shown = "detailed")
             # 'ss_select_naics=313',           # like ejamapp(default_naics=313)
@@ -405,8 +545,8 @@ inputnames = c("add_naics_subcategories", "all_tabs", "allow_median_in_barplot_i
 "fipspicker_done_button", "format1pager", "frs_help", "fundingsource", 
 "go", "in_areas_where_enter", "in_the_x_zone", "in_the_x_zone_enter", 
 "include_ejindexes", "latlon_help", "latlontypedin_submit_button", 
-"max_mb_upload", "max_miles", "max_pts_map", "max_pts_run", "max_pts_select", 
-"max_pts_upload", "max_shapes_map", "maxradius", "naics_digits_shown", 
+"max_mb_upload", "max_miles", "max_pts_click", "max_pts_map", "max_pts_run", "max_pts_select",
+"max_pts_upload", "max_shapes_map", "maxradius", "naics_digits_shown",
 "need_proximityscore", "ok2plot", "plotkind_1pager", "radius_default", 
 "radius_default_shapefile", "radius_now", "radius_units", "results_tabs", 
 "return_to_results", "rg_author_email", "rg_author_name", "rg_enter_miles", 
@@ -527,7 +667,7 @@ EJAM:::args2(ejamit)
 
 # updateProgress           NULL      ** shiny default NOT specified here
 # updateProgress_getblocks NULL      ** shiny default NOT specified here
-# in_shiny                 FALSE     for ejamit(), build_community_report(), and related functions
+# in_shiny                 FALSE     for ejamit(), internal report builders, and related functions
 # quiet                    TRUE      for getblocksnearby() and batch.summarize(), na
 
 # testing                  FALSE    for doaggregate(), shiny default is set in global
@@ -580,9 +720,10 @@ bt_get_results=0
 
 ```{r, eval=FALSE}
 
-default_ss_choose_method="upload" # or "dropdown"
-ss_choose_method="upload"         # or "dropdown"
+default_ss_choose_method="upload" # or "dropdown" or "mapclick" (click/draw on map)
+ss_choose_method="upload"         # or "dropdown" or "mapclick"
 ss_choose_method_upload="latlon"   # see global_defaults_*.R for options
+mapclick_clear=0                   # "Clear all points" button for the mapclick method
 ss_choose_method_drop="FIPS_PLACE" # see global_defaults_*.R for options
 ss_upload_shp=null
 ss_upload_fips=null
@@ -624,6 +765,7 @@ max_miles=10
 maxradius=31.06856
 max_pts_upload=5000
 max_pts_select=5000
+max_pts_click=30
 max_pts_map=5000
 max_pts_showtable=1000
 max_pts_run=10000

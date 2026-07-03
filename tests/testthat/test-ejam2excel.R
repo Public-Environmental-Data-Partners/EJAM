@@ -29,6 +29,10 @@
 # )
 
 test_that("ejam2excel saves key tables, tabs, saved numbers match original", {
+  testthat::skip_if_not(
+    EJAM:::ensure_pandoc_available_for_ejam(),
+    message = "Pandoc is required to render the community report sheet"
+  )
 
   expect_no_error({
     junk <- capture.output({
@@ -53,6 +57,17 @@ test_that("ejam2excel saves key tables, tabs, saved numbers match original", {
   )
 
   tab_bysite <- readxl::read_excel(fname, sheet = "Each Site") %>% as.data.frame()
+  expect_equal(
+    names(tab_bysite)[1:4],
+    c("EJAM Report", "EJSCREEN Map", "ejam_uniq_id", "valid")
+  )
+
+  bysite_sheet_xml <- paste(readLines(unz(fname, "xl/worksheets/sheet1.xml"), warn = FALSE), collapse = "")
+  bysite_pane_xml <- regmatches(bysite_sheet_xml, gregexpr("<pane[^>]+", bysite_sheet_xml))[[1]]
+  expect_length(bysite_pane_xml, 1)
+  expect_match(bysite_pane_xml, 'xSplit="3"')
+  expect_match(bysite_pane_xml, 'topLeftCell="D2"')
+
   expect_equal(NROW(tab_bysite),
                NROW(testoutput_ejamit_10pts_1miles$results_bysite))
 

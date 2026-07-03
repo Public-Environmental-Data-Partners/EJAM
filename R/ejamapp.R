@@ -18,6 +18,14 @@
 #'  ```
 #'  See details and examples.
 #'
+#'  These parameters are fixed when the app is launched (or deployed). To pre-load
+#'  an already-running/deployed app with a set of sites at runtime instead, open it
+#'  with launch query parameters in the URL: the app reads `?lat=&lon=`, `?fips=`,
+#'  `?shape=` (GeoJSON), `?radius=`, or `?handoff=<token>` at startup and
+#'  pre-selects those places. Use [url_ejamapp()] to build such a URL (its query
+#'  vocabulary matches [url_ejamapi()]). See the "Defaults and Custom Settings for
+#'  the Web App" vignette.
+#'
 #' @param enableBookmarking see [shiny::shinyApp]
 #' This parameter lets a user click the [shiny::bookmarkButton()] in the app
 #' to save the state of all  input$  settings.
@@ -144,7 +152,7 @@
 #'   ## Cities dropdown list as default shown at launch:
 #'
 #' ejamapp(
-#'   default_upload_dropdown = "dropdown",
+#'   default_site_method = "dropdown",
 #'   default_selected_type_of_site_category = "FIPS_PLACE",
 #'   fipspicker_fips_type2pick_default = "Cities or Places"
 #' )
@@ -152,7 +160,7 @@
 #'   ## Specific cities are preselected at launch
 #'
 #'   ejamapp(
-#'   default_upload_dropdown = "dropdown",
+#'   default_site_method = "dropdown",
 #'   default_selected_type_of_site_category = "FIPS_PLACE",
 #'   fipspicker_fips_type2pick_default = "Cities or Places",
 #'   default_cities_picked = name2fips(c("akutan,ak", "syracuse city,ny") )
@@ -173,7 +181,7 @@
 #'   ## Polygons upload as the default shown at launch:
 #'
 #' ejamapp(
-#'   default_upload_dropdown = "upload",
+#'   default_site_method = "upload",
 #'   default_selected_type_of_site_upload = "SHP"
 #' )
 #'   #default_choices_for_type_of_site_upload = c(
@@ -183,6 +191,15 @@
 #'   #  'EPA Program IDs file upload'                    = 'EPA_PROGRAM',
 #'   #  'Census place FIPS Codes file upload'            = 'FIPS'
 #'   #)
+#'
+#'   ## Click-or-draw-on-map as the default site-selection method shown at launch.
+#'   ## The user clicks the map to specify one or more lat/lon points to analyze.
+#'   ## (default_site_method accepts "dropdown", "upload", or "mapclick".
+#'   ##  It was formerly named default_upload_dropdown, which still works as an alias.)
+#'
+#' ejamapp(
+#'   default_site_method = "mapclick"
+#' )
 #'
 #'  ## Count how many of some indicator are >= some cutoff
 #'
@@ -222,7 +239,7 @@
 #'  ejamapp(
 #'   isPublic = FALSE, # to allow full set of features (menus)
 #'   default_can_show_advanced_settings = FALSE, # removes user's ability to show Advanced tab
-#'   default_show_advanced_settings = FALSE, # just confirms default -- hiding Advanced tab when app launches
+#'   default_show_advanced_settings = FALSE, # the default, hide Advanced tab at app launch
 #'   default_hide_plot_histo_tab = TRUE # to hide just this feature
 #'   )
 #'
@@ -245,7 +262,7 @@
 #' }
 #' @return An object that represents the app. Printing the object or
 #'   passing it to [runApp()] will run the app, as would just typing
-#'   [run_app()] or [ejamapp()] in the console.
+#'   [ejamapp()] in the console.
 #'
 #'
 #' @export
@@ -268,10 +285,19 @@ ejamapp <- function(
 
   dots = rlang::list2(...)
 
+  # Back-compat: default_upload_dropdown was renamed to default_site_method (it now selects
+  # dropdown/upload/mapclick, not just upload). Normalize the OLD name to the new one BEFORE the
+  # alias blocks below run, so existing ejamapp(default_upload_dropdown=...) calls keep working and
+  # everything downstream (this function, global_or_param(), the UI) only sees default_site_method.
+  if ('default_upload_dropdown' %in% names(dots) && !('default_site_method' %in% names(dots))) {
+    dots$default_site_method <- dots$default_upload_dropdown
+  }
+  dots$default_upload_dropdown <- NULL  # drop the old key so only the new name flows downstream
+
   if ("fips" %in% names(dots)) {
     # dots$fips will be used
-    if (!('default_upload_dropdown' %in% names(dots))) {
-      dots$default_upload_dropdown <- "upload"
+    if (!('default_site_method' %in% names(dots))) {
+      dots$default_site_method <- "upload"
     }
     if (!('default_selected_type_of_site_upload' %in% names(dots))) {
       dots$default_selected_type_of_site_upload <- "FIPS"
@@ -279,15 +305,18 @@ ejamapp <- function(
     cat("launching with specified fips =", paste0(dots$fips, collapse = ", "), "\n")
   }
 
-  if ("shp" %in% names(dots) && !("shapefile" %in% names(dots))) {
+  if ("shp" %in% names(dots) && is.null(dots$shapefile)) {   # is.null() so an explicit shapefile=NULL still lets the alias apply
     # dots$shp will be used
     dots$shapefile <- dots$shp # convenient alias
-    dots$default_upload_dropdown = "upload"
+    dots$default_site_method = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
   }
-  if ("shapefile" %in% names(dots)) {
+  if ("shape" %in% names(dots) && is.null(dots$shapefile)) {
+    dots$shapefile <- dots$shape # convenient alias (synonym) for shapefile
+  }
+  if (!is.null(dots$shapefile)) {
     # dots$shapefile will be used
-    dots$default_upload_dropdown = "upload"
+    dots$default_site_method = "upload"
     dots$default_selected_type_of_site_upload = "SHP"
     cat("launching with specified shapefile", "\n")
   }
@@ -299,27 +328,27 @@ ejamapp <- function(
     dots$sitepoints = data.frame(lat=dots$lat, lon = dots$lon)
   }
   if ("sitepoints" %in% names(dots)) {
-    dots$default_upload_dropdown = "upload"
+    dots$default_site_method = "upload"
     dots$default_selected_type_of_site_upload = "latlon"
     cat("launching with specified sitepoints", "\n")
   }
 
   if ("naics" %in% names(dots)) {dots$default_naics <- dots$naics}
   if ("default_naics" %in% names(dots)) {
-    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_site_method   <- "dropdown"
     dots$default_selected_type_of_site_category <- "NAICS"
     dots$default_naics_digits_shown <- "detailed"  # if default_naics is >3 digits, this has to be "detailed" not "basic"
     cat("launching with specified default_naics =", paste0(dots$default_naics, collapse = ", "), "\n")
   }
   if ("sic" %in% names(dots)) {dots$default_sic <- dots$sic}
   if ("default_sic" %in% names(dots)) {
-    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_site_method   <- "dropdown"
     dots$default_selected_type_of_site_category <- "SIC"
     cat("launching with specified default_sic =", paste0(dots$default_sic, collapse = ", "), "\n")
     }
   if ("mact" %in% names(dots)) {dots$default_mact <- dots$mact}
   if ("default_mact" %in% names(dots)) {
-    dots$default_upload_dropdown   <- "dropdown"
+    dots$default_site_method   <- "dropdown"
     dots$default_selected_type_of_site_category <- "MACT"
     cat("launching with specified default_mact =", paste0(dots$default_mact, collapse = ", "), "\n")
   }
@@ -327,9 +356,13 @@ ejamapp <- function(
   if ("default_radius" %in% names(dots)) {
     dots$radius_default <- dots$default_radius
   }
-  if ("radius" %in% names(dots)) {
+  if (!is.null(dots$radius)) {   # is.null() so an explicit radius=NULL does not clobber radius_default or block the buffer alias
     dots$radius_default <- dots$radius
     cat("launching with specified radius =", dots$radius_default, "\n")
+  }
+  if (!is.null(dots$buffer) && is.null(dots$radius)) {
+    dots$radius_default <- dots$buffer # buffer is a synonym (alias) for radius (used only if radius not given)
+    cat("launching with specified buffer (radius) =", dots$radius_default, "\n")
   }
 
   # more aliases
@@ -382,7 +415,6 @@ ejamapp <- function(
 
 #' @inherit ejamapp
 #'
-#' @export
 #' @keywords internal
 #'
 run_app <- function(
@@ -398,7 +430,6 @@ run_app <- function(
 
 #' @inherit ejamapp
 #'
-#' @export
 #' @keywords internal
 #'
 app_run_EJAM <- function(

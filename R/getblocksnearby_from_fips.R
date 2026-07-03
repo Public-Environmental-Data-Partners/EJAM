@@ -16,13 +16,17 @@
 #'   much like output of [getblocksnearby()] or  [get_blockpoints_in_shape()]
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
 #'
-#' @param radius CURRENTLY NOT IMPLEMENTED - NO BUFFER IS ADDED
+#' @param radius miles of buffer to add around each FIPS boundary before finding blocks.
+#'   Default is 0 (no buffer: only blocks within the FIPS boundaries are analyzed).
+#'   When radius > 0, the FIPS boundaries are downloaded, a buffer of that size is added
+#'   around each boundary, and blocks within the buffered area are analyzed.
+#'   Use 999 to signal FIPS analysis mode without a buffer (same as 0 for buffering purposes).
 #'
 #' @return
-#' - if return_shp=F, returns just a sites2blocks table in [data.table](https://r-datatable.com) format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
+#' - if return_shp = FALSE, returns just a sites2blocks table in [data.table](https://r-datatable.com) format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
 #'  This is like the [getblocksnearby()] and [get_blockpoints_in_shape()] outputs.
 #'
-#' - if return_shp=T, returns a named list where pts is the table in [data.table](https://r-datatable.com) format of sites2blocks,
+#' - if return_shp = TRUE, returns a named list where pts is the table in [data.table](https://r-datatable.com) format of sites2blocks,
 #'   and polys is the spatial data.frame with one row per input fips (including invalid ones).
 #'
 #'   The ejam_uniq_id represents which of the input sites is being referred to, and the table
@@ -30,12 +34,14 @@
 #'   were valid and had blocks identified, then the data.table here will only include ejam_uniq_id values of 5 and 8.
 #'
 #' @examples
+#' \dontrun{
 #'   x <- getblocksnearby_from_fips(fips_counties_from_state_abbrev("DE"))
 #'   y <- doaggregate(x)
 #'   z <- ejamit(fips = fips_counties_from_statename("Delaware"))
 #'
 #'   # x2 <- getblocksnearby_from_fips("482011000011") # one blockgroup only
 #'   # y2 <- doaggregate(x2)
+#' }
 #' @seealso [getblocksnearby()] [fips_bgs_in_fips()] [fips_lead_zero()] [getblocksnearby_from_fips()] [fips_from_table()]
 #'
 #' @export
@@ -44,8 +50,63 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
                                       return_shp = FALSE, allow_multiple_fips_types = TRUE,
                                       radius = 0) {
 
-  if (!is.null(radius) && radius > 0 && radius != 999) {
-    warning("adding buffer around fips is not yet implemented")
+  if (!is.null(radius) && !is.na(radius) && radius > 0 && radius != 999) {
+    # Buffer case: download FIPS shapes and apply buffer around each boundary
+    suppressWarnings({
+      fips <- fips_lead_zero(fips)
+    })
+
+    # Download shapes for all fips; returns one row per fips even for invalid ones
+    shp <- shapes_from_fips(fips, allow_multiple_fips_types = allow_multiple_fips_types)
+
+    # Assign sequential ejam_uniq_id matching original fips input position (1:N)
+    shp$ejam_uniq_id <- seq_len(NROW(shp))
+
+    # Filter to valid (non-empty) geometry for buffering
+    valid_geom <- !sf::st_is_empty(sf::st_geometry(shp))
+    shp_valid <- shp[valid_geom, ]
+
+    empty_pts <- data.table(ejam_uniq_id = integer(0), blockid = character(0),
+                            distance = numeric(0), blockwt = numeric(0),
+                            bgid = numeric(0), fips = character(0))
+
+    if (NROW(shp_valid) == 0) {
+      if (return_shp) {
+        return(list(pts = empty_pts, polys = shp))
+      } else {
+        return(empty_pts)
+      }
+    }
+
+    # Apply buffer around valid shapes
+    shp_buffered <- shape_buffered_from_shapefile(shp_valid, radius.miles = radius)
+
+    # Find blocks in buffered shapes
+    s2b <- suppressWarnings(get_blockpoints_in_shape(polys = shp_buffered))
+    pts <- s2b$pts
+
+    # Add fips column: map ejam_uniq_id (sequential position) back to FIPS codes
+    fips_lookup <- data.table(ejam_uniq_id = shp$ejam_uniq_id, site_fips = shp$FIPS)
+    pts[fips_lookup, fips := site_fips, on = "ejam_uniq_id"]
+
+    # Clean up extra columns added by get_blockpoints_in_shape if present
+    suppressWarnings({
+      if ("lat" %in% names(pts)) pts[, lat := NULL]
+      if ("lon" %in% names(pts)) pts[, lon := NULL]
+    })
+    # Set distance to 0 for consistency with the non-buffered FIPS case (where all blocks are
+    # inside the boundary). doaggregate() uses all(distances == 0) to detect FIPS analysis mode.
+    pts[, distance := 0]
+
+    if (return_shp) {
+      # Merge buffered geometry back into shp so polys preserves one row per input fips,
+      # including invalid/empty rows (function contract matches the non-buffered path).
+      shp_out <- shp
+      sf::st_geometry(shp_out)[valid_geom] <- sf::st_geometry(shp_buffered)
+      return(list(pts = pts, polys = shp_out))
+    } else {
+      return(pts)
+    }
   }
   ## NOTE       getblocksnearby_from_fips()           was using fips as the output ejam_uniq_id but now will use 1:NROW() like other getblock... functions do
   ## AND NOW,   getblocksnearby_from_fips_noncity()   same
@@ -130,7 +191,7 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
     ##  2. combine city & noncity ####
     if (is.null(output_city) && is.null(output_noncity)) {
       pts = data.table(ejam_uniq_id = integer(0), blockid = character(0),
-                       distance = numeric(0), blockwt = numeric(0), bgid = character(0), fips = character(0))
+                       distance = numeric(0), blockwt = numeric(0), bgid = numeric(0), fips = character(0))
       polys = sf::st_as_sf(data.frame(FIPS = original_order$fips, fipstype=fipstype(original_order$fips),
                                       NAME=NA, STATE_ABBR=NA, STATE_NAME=NA,  pop= NA,   SQMI=NA, POP_SQMI=NA, n = 1:length(original_order$fips),
                                       ejam_uniq_id = original_order$ejam_uniq_id,
@@ -179,7 +240,7 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
     ##  2. combine city & noncity ####
     if (is.null(output_city) && is.null(output_noncity)) {
       output <- data.table(ejam_uniq_id = integer(0), blockid = character(0),
-                           distance = numeric(0), blockwt = numeric(0), bgid = character(0), fips = character(0))
+                           distance = numeric(0), blockwt = numeric(0), bgid = numeric(0), fips = character(0))
     } else {
       ##    use rbindlist() to combine spatial data.frames that do not all have the same columns:
       output <- data.table::rbindlist(list(output_city, output_noncity), fill = TRUE,
@@ -351,7 +412,9 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
                                            ## create 12-digit column inline (original table not altered)
                                            ## do not actually need blockfips here except to join on its first 12 chars *** try to remove need for large blockid2fips file (and/or store fips as integer?)
                                            blockid2fips[, .(blockid, blockfips, blockfips12 = substr(blockfips,1,12))],
-                                           by = c('bgfips' = 'blockfips12'), multiple = 'all') |>
+                                           by = c('bgfips' = 'blockfips12'),
+                                           multiple = 'all',
+                                           relationship = 'many-to-many') |>
         dplyr::left_join(blockpoints) |>
         dplyr::mutate(distance = 0) |>     # or do I want distance to be null, or missing or NA or 0.001, or what? note approximated block_radius_miles is sometimes zero, in blockwts
         data.table::as.data.table()        # makes it a data.table

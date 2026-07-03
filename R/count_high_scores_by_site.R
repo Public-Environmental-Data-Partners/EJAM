@@ -21,8 +21,8 @@
 #' EJAM:::colcounter_summary_cum_pct(pdata, pcuts)
 #' EJAM:::colcounter_summary_cum_pct(pdata, 5 * (10:20))
 #'
-#' x80 <- EJAM:::colcounter(pdata, threshold = 80, or.tied = T)
-#' x95 <- EJAM:::colcounter(pdata, threshold = 95, or.tied = T)
+#' x80 <- EJAM:::colcounter(pdata, threshold = 80, or.tied = TRUE)
+#' x95 <- EJAM:::colcounter(pdata, threshold = 95, or.tied = TRUE)
 #' table(x95)
 #' EJAM:::tablefixed(x95, NCOL(pdata))
 #' cbind(at80=EJAM:::tablefixed(x80, NCOL(pdata)),
@@ -45,6 +45,11 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
     }
   } else {
     numcols <- dim(x)[2]
+    # Coerce to a numeric matrix once. For numeric input this is identical to the
+    # element-wise comparison below but faster, and it makes the function robust to
+    # data.table / tibble inputs (e.g. bg[, ..names_ej_pctile]) rather than relying
+    # on data.frame comparison/recycling behavior.
+    if (!is.matrix(x)) x <- as.matrix(x)
   }
   if (missing(threshold)) {
     if (one.cut.per.col) {
@@ -120,8 +125,8 @@ colcounter <- function(x, threshold, or.tied=TRUE, na.rm=TRUE, below=FALSE, one.
 #' EJAM:::colcounter_summary_cum_pct(pdata, 5 * (10:20))
 #' a3 <- colcounter_summary_all(    pdata, pcuts)
 #'
-#' x80 <- colcounter(pdata, threshold = 80, or.tied = T)
-#' x95 <- colcounter(pdata, threshold = 95, or.tied = T)
+#' x80 <- colcounter(pdata, threshold = 80, or.tied = TRUE)
+#' x95 <- colcounter(pdata, threshold = 95, or.tied = TRUE)
 #' table(x95)
 #' EJAM:::tablefixed(x95, NCOL(pdata))
 #' cbind(at80=EJAM:::tablefixed(x80, NCOL(pdata)), at95=EJAM:::tablefixed(x95, NCOL(pdata)))
@@ -242,8 +247,9 @@ colcounter_summary_cum_pct <- function(x, thresholdlist, ...) {
 #'
 #'  pcuts <- c(80,90,95)
 #'  dataload_dynamic("bgej")
-#'  usdata = calc_pctile_columns(mytable = bgej, varnames = names_ej,
-#'                               varnames_pctile = names_ej_pctile, varnames_state_pctile = names_ej_state_pctile)
+#'  usdata = EJAM:::calc_pctile_columns(mytable = bgej, varnames = names_ej,
+#'    varnames_pctile = names_ej_pctile,
+#'    varnames_state_pctile = names_ej_state_pctile)
 #'  EJAM:::colcounter_summary_cum_pct(usdata, c(50,80,90,95))
 #'  xs <- 1:13
 #'  plot(x=xs, y=EJAM:::colcounter_summary_cum_pct(usdata, 50)[xs+1],
@@ -275,7 +281,7 @@ colcounter_summary_cum_pct <- function(x, thresholdlist, ...) {
 #'
 #'  # frequency of multiple high percentile scores, over entire US, not just analyzed places:
 #'  dataload_dynamic("bgej")
-#'  usdata = calc_pctile_columns(mytable = bgej, varnames = names_ej,
+#'  usdata = EJAM:::calc_pctile_columns(mytable = bgej, varnames = names_ej,
 #'    varnames_pctile = names_ej_pctile, varnames_state_pctile = names_ej_state_pctile)
 #'   EJAM:::colcounter_summary_cum_pct(usdata, c(50,80,90,95))
 #'   xs <- 1:13

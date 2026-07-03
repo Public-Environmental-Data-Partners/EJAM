@@ -44,7 +44,7 @@ shapefile2blockpoints <- function(polys, addedbuffermiles = 0, blocksnearby = NU
 #' @param oldway whether to use older method that works but may be slower vs newer/draft
 #' @return Block points table for those blocks whose internal point is inside the buffer
 #'   which is just a circular buffer of specified radius if polys are just points.
-#'   This is like the output of  [getblocksnearby()], or [getblocksnearby_from_fips()] if return_shp=F.
+#'   This is like the output of  [getblocksnearby()], or [getblocksnearby_from_fips()] if return_shp = FALSE.
 #'
 #'   The ejam_uniq_id represents which of the input sites is being referred to, and the table
 #'   will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8
@@ -102,9 +102,10 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
 } else {
   earthRadius_miles <- 3959
   radians_per_degree <- pi / 180
+  quadtree <- localtree_get()
 
   blockpoints_filt <- lapply(bbox_polys, function(a) {
-    SearchTrees::rectLookup(localtree,
+    SearchTrees::rectLookup(quadtree,
                             xlims = c(earthRadius_miles * cos(a$ymin * radians_per_degree) * cos(a$xmin * radians_per_degree),
                                       earthRadius_miles * cos(a$ymax * radians_per_degree) * cos(a$xmax * radians_per_degree)),
                             ylims = c(earthRadius_miles * sin(a$ymin * radians_per_degree), earthRadius_miles * sin(a$ymax * radians_per_degree)))
@@ -120,7 +121,8 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
     updateProgress(message_main = boldtext, value = 0.3)
   }
 
-  blockpoints_sf <- sf::st_as_sf(blockpoints[blockpoints_filt,], coords = c('lon','lat'), crs = crs)
+  blockpoints_now <- ejam_cached_data_get("blockpoints")
+  blockpoints_sf <- sf::st_as_sf(blockpoints_now[blockpoints_filt,], coords = c('lon','lat'), crs = crs)
   if (!exists("blockpoints_sf")) {
     warning("requires the blockpoints   called blockpoints_sf  you can make like this: \n blockpoints_sf <-  blockpoints |> sf::st_as_sf(coords = c('lon', 'lat'), crs= 4269) \n # Geodetic CRS:  NAD83 ")
     return(NULL)
@@ -162,7 +164,7 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
     # get blockid of each nearby block
     blocksnearby <- getblocksnearby(pts, addedbuffermiles * safety_margin_ratio)  # blockid, distance, ejam_uniq_id # don't care which site  was how this block got included in the filtered list
     # get lat,lon of each nearby block
-    blocksnearby <- (blockpoints[blocksnearby, .(lat,lon,blockid), on = "blockid"])  # blockid,      lat ,      lon
+    blocksnearby <- (blockpoints_now[blocksnearby, .(lat,lon,blockid), on = "blockid"])  # blockid,      lat ,      lon
 
     # is this needed here??
     if (dissolved) {

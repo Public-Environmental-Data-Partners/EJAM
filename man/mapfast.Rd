@@ -62,7 +62,7 @@ out = testoutput_ejamit_100pts_1miles
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
-\donttest{
+\dontrun{
 
 # See in local browser instead
 ejam2map(out)

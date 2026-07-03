@@ -43,8 +43,9 @@ For another view and text explanations of the findings, see
 
  pcuts <- c(80,90,95)
  dataload_dynamic("bgej")
- usdata = calc_pctile_columns(mytable = bgej, varnames = names_ej,
-                              varnames_pctile = names_ej_pctile, varnames_state_pctile = names_ej_state_pctile)
+ usdata = EJAM:::calc_pctile_columns(mytable = bgej, varnames = names_ej,
+   varnames_pctile = names_ej_pctile,
+   varnames_state_pctile = names_ej_state_pctile)
  EJAM:::colcounter_summary_cum_pct(usdata, c(50,80,90,95))
  xs <- 1:13
  plot(x=xs, y=EJAM:::colcounter_summary_cum_pct(usdata, 50)[xs+1],
@@ -76,7 +77,7 @@ For another view and text explanations of the findings, see
 
  # frequency of multiple high percentile scores, over entire US, not just analyzed places:
  dataload_dynamic("bgej")
- usdata = calc_pctile_columns(mytable = bgej, varnames = names_ej,
+ usdata = EJAM:::calc_pctile_columns(mytable = bgej, varnames = names_ej,
    varnames_pctile = names_ej_pctile, varnames_state_pctile = names_ej_state_pctile)
   EJAM:::colcounter_summary_cum_pct(usdata, c(50,80,90,95))
   xs <- 1:13

@@ -24,4 +24,20 @@ data.frame of state averages for those, one row per ST provided (can have repeat
 Given a vector of 2-char ST abbrevs, and vector of colnames in statestats table (indicator names),
 return data.frame of state averages
 }
+\examples{
+\donttest{
+# one row per state requested, columns are the indicators
+statestats_means_bystates(ST = c("MD", "VA"), varnames = EJAM::names_e[1:3])
+
+# ST may contain repeats (e.g. one entry per site) - rows are kept, not collapsed
+statestats_means_bystates(ST = c("MD", "MD", "VA"), varnames = EJAM::names_e[1:3])
+
+# all "USA" gives duplicate rows of US averages, like ejamit()$results_bysite[, names_d_avg]
+statestats_means_bystates(ST = c("USA", "USA"), varnames = EJAM::names_d[1:3])
+
+# a single indicator still returns a 1-column data.frame
+statestats_means_bystates(ST = c("MD", "VA"), varnames = "pm")
+}
+
+}
 \keyword{internal}

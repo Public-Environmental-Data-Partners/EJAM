@@ -4,7 +4,14 @@
 \alias{shape_buffered_from_shapefile}
 \title{shape_buffered_from_shapefile - add buffer around shape}
 \usage{
-shape_buffered_from_shapefile(shapefile, radius.miles, crs = 4269, ...)
+shape_buffered_from_shapefile(
+  shapefile = NULL,
+  radius.miles,
+  crs = 4269,
+  ...,
+  shape = NULL,
+  shp = NULL
+)
 }
 \arguments{
 \item{shapefile}{spatial object like areas at high risk or areas with facilities to be analyzed}
@@ -17,6 +24,8 @@ and to st_crs(x)$units otherwise)}
 \item{crs}{used in st_transform()  default is crs = 4269 or Geodetic CRS NAD83}
 
 \item{...}{passed to st_buffer()}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 a simple feature \link[sf:sf]{sf::sf} class spatial data.frame, same format as \code{\link[sf:st_buffer]{sf::st_buffer()}} returns
@@ -28,12 +37,13 @@ shape_buffered_from_shapefile - add buffer around shape
 Just a wrapper for \code{\link[sf:st_buffer]{sf::st_buffer()}}
 }
 \examples{
+\dontrun{
 # Within 3 miles of the county borders
 fips_counties_from_state_abbrev("DE")[1]
 x = shapes_from_fips("10001")
 xtra = shape_buffered_from_shapefile(x, radius.miles = 3)
-map_shapes_leaflet(x) \%>\%
-  EJAM:::map_shapes_leaflet_proxy(xtra, color = "black")
+EJAM:::map_shapes_leaflet_proxy(map_shapes_leaflet(x), xtra, color = "black")
+}
 
 }
 \seealso{

@@ -13,7 +13,7 @@ url_columns_bysite(
   wherestr = "",
   regid = NULL,
   radius = NULL,
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   sitetype = NULL,
   as_html = TRUE,
   validate_regids = FALSE,

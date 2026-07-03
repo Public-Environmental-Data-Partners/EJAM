@@ -20,12 +20,12 @@ address_from_table(testinput_address_table)
 
 ## see available test data objects and files:
 
-# cbind(data.in.package  = sort(grep("address", pkg_data()$Item, value = T)))
-# cbind(files.in.package = sort(basename(testdata('address', quiet = T))))
+# cbind(data.in.package  = sort(grep("address", pkg_data()$Item, value = TRUE)))
+# cbind(files.in.package = sort(basename(testdata('address', quiet = TRUE))))
 
 \donttest{
 
-# This requires first attaching the AOI package.
+# This requires the optional AOI package.
 
 pts <- latlon_from_address(testinput_address_9[1:2])
 ## out <- ejamit(pts, radius = 1)

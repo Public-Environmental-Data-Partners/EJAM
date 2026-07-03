@@ -6,10 +6,10 @@
 \usage{
 shapes_from_fips(
   fips,
-  myservice_blockgroup =
-    "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query",
-  myservice_tract =
-    "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query",
+  myservice_blockgroup = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"),
+  myservice_tract = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
   myservice_place = "tiger",
   myservice_county = "cartographic",
   allow_multiple_fips_types = TRUE,
@@ -49,11 +49,11 @@ So the output table might not have the same number of rows as the input fips vec
 
 When using tigris package ("tiger" as service-related parameter here),
 it uses the year that is the default in the version of the tigris package that is installed.
-You can use options(tigris_year = 2022) for example to specify it explicitly.
+You can use options(tigris_year = 2023) for example to specify it explicitly.
 
 Blocks are not implemented yet here. For info on blocks bounds, see  \code{\link[tigris:block_groups]{tigris::block_groups()}}
-Also note the \link{blockwts} dataset had a placeholder column block_radius_miles that as of
-v2.32.5 was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it could be obtained.
+Also note the \link{blockwts} dataset had a placeholder column block_radius_miles that
+was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it could be obtained.
 If it were used, it could be a way to quickly get the area of each block,
 using the formula  area = pi * (block_radius_miles^2)
 

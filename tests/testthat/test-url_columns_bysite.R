@@ -59,6 +59,22 @@ test_that("url_columns_bysite all url types BASIC OK", {
 })
 ############# ############## ############## ############## ############## #
 
+test_that("url_columns_bysite uses app fallback for polygon EJAM Report links", {
+  x <- url_columns_bysite(
+    shapefile = testinput_shapes_2,
+    as_html = FALSE,
+    reports = list(
+      list(header = "EJAM Report", text = "Report", FUN = url_ejamapi)
+    )
+  )
+
+  expect_equal(
+    x$results_bysite$`EJAM Report`,
+    rep("https://ejanalysis.com/ejamapp", NROW(testinput_shapes_2))
+  )
+})
+############# ############## ############## ############## ############## #
+
 allreports = list(
 
   list(header = "EJAM Report",     text = "EJAM Site Report",   FUN = url_ejamapi)   # EJAM summary report (HTML via API)
@@ -118,5 +134,4 @@ for (i in seq_along(allreports)) {
 
 rm(allreports)
 rm(x)
-
 

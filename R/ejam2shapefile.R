@@ -5,11 +5,11 @@
 #' @param ejamitout output of EJAM such as from [ejamit()]
 #' @param file optional filename with no path, with extension one of "geojson"/"json", "shp", "zip", "kml"
 #'   (where zip and shp both mean a .zip file that is a zipped set of .shp format files)
-#'   Ignored if save=F.
+#'   Ignored if save = FALSE.
 #' @param folder optional - If omitted (and not running in shiny and if interactive() mode),
 #'   this function prompts you to specify the folder where the file should be saved.
 #'   If omitted and not running in shiny or not interactive() mode, it uses tempdir().
-#'   Ignored if save=F.
+#'   Ignored if save = FALSE.
 #' @param save whether to save file - if FALSE, it returns the object not the file path
 #' @param crs optional coord ref system
 #' @param shortcolnames Whether to cut colnames to 10 characters only if using .shp format
@@ -279,7 +279,7 @@ To include specific columns provides those as a character vector of varnames.")
       if (file.exists(zipfullpath)) {file.remove(zipfullpath)}
       # write zip to folder, using shp files in temp dir
       junk <- capture.output({
-        zip(zipfullpath, files = file.path(tds, fnames), extras = c('-j', '-D'))
+        zip(zipfullpath, files = file.path(tds, fnames), flags = "-q", extras = c('-j', '-D'))
       })
       # Note:
       # -D should prevent storing Directory info,

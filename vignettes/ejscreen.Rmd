@@ -40,7 +40,7 @@ EJAM-related repositories.
         archive.org](https://web.archive.org/web/20250203174905/https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf){target="_blank"}
 
     -   [EJSCREEN Multisite Tool User
-        Guide](https://ejam.policyinnovation.info/www/user-guide-2025-02.pdf){target="_blank"}
+        Guide](https://ejam.publicenvirodata.org/www/user-guide-2025-02.pdf){target="_blank"}
         (aka EJAM walkthrough). Also [saved in repo](`r paste0(EJAM::url_package(get_full_url = TRUE), "/blob/main/inst/app/www/user-guide-2025-02.pdf")`){target="_blank"}
 
 ## Documentation of Data Sources and Technical Methods
@@ -56,6 +56,11 @@ EJAM-related repositories.
         definitions**](ejscreen-map-descriptions.html){target="_blank"}.
         Also [at
         archive.org](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions){target="_blank"}
+
+    -   [Island Areas in EJAM v3](island-areas.html){target="_blank"}:
+        notes on AS/GU/MP/VI dataset visibility, missing ACS demographics,
+        block/radius limits, and live EJSCREEN layer availability observed in
+        May 2026.
 
     -   [**Key environmental indicators with year and source of
         each**](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="overview-environmental-indicators-ejscreen.html", launch_browser = FALSE)`){target="_blank"}.
@@ -81,8 +86,8 @@ EJAM-related repositories.
             files](`r paste0(EJAM::url_package(get_full_url = TRUE),"/tree/main/data")`){target="_blank"}
         -   Datasets used by EJAM but stored separately (large .arrow files):
             [Documentation](../articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files){target="_blank"}
-            and [Data
-            files](`r paste0(EJAM::url_package(type = "data", get_full_url = TRUE), "/tree/main/data")`){target="_blank"}
+            and [release assets with data
+            files](`r paste0(EJAM::url_package(type = "data", get_full_url = TRUE), "/releases")`){target="_blank"}
 
 -   Methods (development of indicators, calculations for community reports,
     etc.)

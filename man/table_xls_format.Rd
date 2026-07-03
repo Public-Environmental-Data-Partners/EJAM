@@ -21,7 +21,7 @@ table_xls_format(
   radius_or_buffer_description =
     "Miles radius of circular buffer (or distance used if buffering around polygons)",
   buffer_desc = "Selected Locations",
-  reports = EJAM:::global_or_param("default_reports"),
+  reports = global_or_param("default_reports"),
   ok2plot = TRUE,
   report_plot = NULL,
   plot_distance_by_group = FALSE,
@@ -35,7 +35,7 @@ table_xls_format(
   heatmap_cuts = c(80, 90, 95),
   heatmap_colors = c("yellow", "orange", "red"),
   heatmap2_colnames = NULL,
-  heatmap2_cuts = c(1.009, 2, 3),
+  heatmap2_cuts = c(1.05, 2, 3),
   heatmap2_colors = c("yellow", "orange", "red"),
   graycolnames = NULL,
   graycolor = "gray",
@@ -143,14 +143,14 @@ a workbook, ready to be saved in spreadsheet format, with tabs like "Overall" an
 Used by table_xls_from_ejam(), and see ejam2excel()
 }
 \examples{
-\donttest{
+\dontrun{
   EJAM:::table_xls_format(
-    testoutput_ejamit_100pts_1miles$results_overall,
-    testoutput_ejamit_100pts_1miles$results_bysite,
-    saveas =  "out1.xlsx")
+    overall = testoutput_ejamit_100pts_1miles$results_overall,
+    eachsite = testoutput_ejamit_100pts_1miles$results_bysite,
+    saveas = tempfile(fileext = ".xlsx"))
  # can just pass the whole results of ejamit(), for convenience
  wb <- EJAM:::table_xls_format(testoutput_ejamit_100pts_1miles)
- openxlsx::saveWorkbook(wb, file = "out2.xlsx", overwrite = T)
+ openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"), overwrite = TRUE)
 }
 
 }

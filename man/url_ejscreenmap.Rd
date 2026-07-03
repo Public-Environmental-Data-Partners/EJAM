@@ -15,7 +15,9 @@ url_ejscreenmap(
   linktext = "EJSCREEN",
   ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
   baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
-  ...
+  ...,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -55,6 +57,8 @@ but using the fips parameter is probably a better idea.}
 \item{baseurl}{do not change unless endpoint actually changed}
 
 \item{...}{unused}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 URL(s)
@@ -72,6 +76,6 @@ shp = testinput_shapes_2[1,]
 
 }
 \seealso{
-\code{\link[=url_ejamapi]{url_ejamapi()}}  \code{\link[=url_ejscreenmap]{url_ejscreenmap()}}
+\link{url_ejamapp} \code{\link[=url_ejamapi]{url_ejamapi()}}  \code{\link[=url_ejscreenmap]{url_ejscreenmap()}}
 \code{\link[=url_echo_facility]{url_echo_facility()}} \code{\link[=url_frs_facility]{url_frs_facility()}}  \code{\link[=url_enviromapper]{url_enviromapper()}}
 }

@@ -8,9 +8,10 @@ shapes_counties_from_countyfips(
   countyfips = "10001",
   outFields = c("NAME", "FIPS", "STATE_ABBR", "STATE_NAME"),
   myservice =
-    c("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/2/query",
-    "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Counties_and_States_with_PR/FeatureServer/0/query",
-    "cartographic", "tiger")[3]
+    c(paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
+    "USA_Boundaries_2022/FeatureServer/2/query"),
+    paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
+    "USA_Counties_and_States_with_PR/FeatureServer/0/query"), "cartographic", "tiger")[3]
 )
 }
 \arguments{

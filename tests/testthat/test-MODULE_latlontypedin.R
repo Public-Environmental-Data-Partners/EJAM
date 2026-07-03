@@ -1,0 +1,61 @@
+
+
+# these are not exported functions in EJAM pkg, just internal
+# test passes but
+# can run this test only if source those functions or load_all() or if testing whole pkg maybe testthat can use internal functions
+
+test_that("module server works", {
+  # skip_if_not(exists("MODULE_SERVER_latlontypedin"), message = "MODULE_SERVER_latlontypedin is not present")
+  skip_if_not(requireNamespace("rhandsontable", quietly = TRUE))
+  typed_points <- testpoints_10[1:2, ]
+
+  shiny::testServer(
+    EJAM:::MODULE_SERVER_latlontypedin,
+    # Add here your module params
+    args = list(
+      id = "TESTID",
+      reactdat = shiny::reactiveVal(typed_points),
+      allowColumnEdit = FALSE,
+      allowRowEdit    = TRUE,
+      manualRowMove   = TRUE
+    ),
+    {
+      ns <- session$ns
+      expect_true(
+        inherits(ns, "function")
+      )
+      expect_true(
+        grepl(id, ns(""))
+      )
+      expect_true(
+        grepl("test", ns("test"))
+      )
+      expect_s3_class(reactdat, "reactiveVal")
+      expect_equal(reactdat(), typed_points)
+
+      # Here are some examples of tests you can
+      # run on your module
+      # - Testing the setting of inputs
+      # session$setInputs(x = 1)
+      # expect_true(input$x == 1)
+      # - If ever your input updates a reactiveValues
+      # - Note that this reactiveValues must be passed
+      # - to the testServer function via args = list()
+      # expect_true(r$x == 1)
+      # - Testing output
+      # expect_true(inherits(output$tbl$html, "html"))
+    })
+})
+
+test_that("module ui works", {
+  # skip_if_not(exists("MODULE_UI_latlontypedin"), message = "MODULE_UI_latlontypedin is not present")
+  skip_if_not(requireNamespace("rhandsontable", quietly = TRUE))
+
+  ui <- EJAM:::MODULE_UI_latlontypedin(id = "TESTID")
+  golem::expect_shinytaglist(ui)
+  # Check that formals have not been removed
+  fmls <- formals(EJAM:::MODULE_UI_latlontypedin)
+  for (i in c("id")) {
+    expect_true(i %in% names(fmls))
+  }
+})

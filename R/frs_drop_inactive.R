@@ -36,7 +36,7 @@
 #'   # frs <- frs_get()
 #'   # closedid <- frs_inactive_ids()
 #'   # frs <- frs_drop_inactive(frs, closedid = closedid)
-#'   # usethis::use_data(frs, overwrite = TRUE)
+#'   # Save/publish frs.arrow through the data repository workflow.
 #'
 #' @keywords internal
 #'

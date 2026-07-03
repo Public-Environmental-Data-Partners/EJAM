@@ -20,15 +20,16 @@ pkgdown_update(
 \arguments{
 \item{doask}{whether to ask about each input parameter, for interactively picking settings}
 
-\item{dotests}{run unit tests first? uses EJAM:::test_ejam()}
+\item{dotests}{run unit tests first? uses test_ejam()}
 
 \item{testinteractively}{related to unit testing}
 
-\item{doyamlcheck}{report on the yaml file via EJAM:::dataset_pkgdown_yaml_check() ?}
+\item{doyamlcheck}{report on the yaml file via dataset_pkgdown_yaml_check() ?}
 
-\item{dodocument}{use devtools::document() ? usually should leave TRUE}
+\item{dodocument}{use \code{roxygen2::roxygenise()} to regenerate documentation?
+Usually should leave TRUE.}
 
-\item{doinstall}{use devtools::install() ? usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky}
+\item{doinstall}{TRUE would mean reinstall package from local source. usually should leave FALSE and maybe do install separately before using this function; would take about 5 minutes and may need to restart R after installing - this is quirky}
 
 \item{doloadall_not_library}{use devtools::load_all() ? usually should leave this TRUE}
 
@@ -36,7 +37,8 @@ pkgdown_update(
 
 \item{doclean_docs}{delete all files in /docs/ folder, essentially ? useful if functions were renamed or deleted or you added a noRd roxygen tag to stop documenting them}
 
-\item{dobuild_site}{should leave this TRUE}
+\item{dobuild_site}{should leave this TRUE for a local preview build, not
+for publishing the public site. Publishing is handled by GitHub Actions.}
 }
 \description{
 Package-maintainer utility - Rebuilds website of package help docs and vignettes (articles) using pkgdown

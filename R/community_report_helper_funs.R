@@ -63,7 +63,7 @@ fill_tbl_row <- function(output_df, Rname, longname, show_ratios_in_report) {
           "red"
         } else if (num_val > 1.9) {
           "orange"
-        } else if (num_val > .9) {
+        } else if (num_val >= 1.05) {
           "yellow"
         } else {
           NULL
@@ -373,7 +373,7 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
           "red"
         } else if (val > 1.9) {
           "orange"
-        } else if (val > 0.9) {
+        } else if (val >= 1.05) {
           "yellow"
         } else {
           NULL
@@ -555,27 +555,46 @@ fill_tbl_full_subgroups <- function(output_df,
 
 #' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
 #' @seealso used by [build_community_report()]
-#' @param diesel_caveat text
+#' @param diesel_caveat text - see source code for default
+#' @param show_diesel_caveat logical, default FALSE so the diesel particulate-matter
+#'   caveat is suppressed in reports; set TRUE to include it in the footnotes.
 #'
 #' @keywords internal
 #'
 generate_report_footnotes <- function(
-    # ejscreen_versus_ejam_caveat = "Note: Some numbers as shown on the EJSCREEN report for a single location will in some cases appear very slightly different than in EJSCREEN's multisite reports. All numbers shown in both types of reports are estimates, and any differences are well within the range of uncertainty inherent in the American Community Survey data as used in EJSCREEN. Slight differences are inherent in very quickly calculating results for multiple locations.",
-  diesel_caveat = paste0("Note: Diesel particulate matter index is from the EPA's Air Toxics Data Update, which is the Agency's ongoing, comprehensive evaluation of air toxics in the United States. This effort aims to prioritize air toxics, emission sources, and locations of interest for further study. It is important to remember that the air toxics data presented here provide broad estimates of health risks over geographic areas of the country, not definitive risks to specific individuals or locations. More information on the Air Toxics Data Update can be found at: ",
-                         url_linkify("https://www.epa.gov/haps/air-toxics-data-update", "https://www.epa.gov/haps/air-toxics-data-update"))
+    diesel_caveat = NULL,
+    show_diesel_caveat = FALSE
 ) {
 
+  if (is.null(diesel_caveat)) {
+    diesel_caveat <-  paste0(
+      "Note: Diesel particulate matter index is from the EPA's Air Toxics Data Update,",
+      " which is the Agency's ongoing, comprehensive evaluation of air toxics in the United States.",
+      " This effort aims to prioritize air toxics, emission sources,",
+      " and locations of interest for further study.",
+      " It is important to remember that the air toxics data presented here provide",
+      " broad estimates of health risks over geographic areas of the country,",
+      " not definitive risks to specific individuals or locations.",
+      " More information on the Air Toxics Data Update can be found at: ",
+      url_linkify("https://www.epa.gov/haps/air-toxics-data-update",
+                  "https://www.epa.gov/haps/air-toxics-data-update"))
+  }
   # This function gets called by
   # build_community_report() in
   #  app_server,
   #  ejam2report(), and
   #  community_report_template.Rmd
 
-  dieselnote = paste0("
+  # Diesel PM caveat is suppressed by default; pass show_diesel_caveat = TRUE to include it.
+  if (isTRUE(show_diesel_caveat)) {
+    dieselnote = paste0("
   <span style= 'font-size: 9pt'>
   <p tabindex=\'13\' style='font-size: 9pt'><small>", diesel_caveat, "</small></p>
   </span>"
-  )
+    )
+  } else {
+    dieselnote = ""
+  }
 
   ejamnote = ""
   # ejamnote <- paste0("
@@ -622,11 +641,11 @@ generate_report_footnotes <- function(
 generate_report_footer <- function(footer_version_number = NULL, footer_date = NULL, footer_text = NULL, footer_html = NULL) {
 
   if (missing(footer_version_number) || is.null(footer_version_number)) {
-    footer_version_number <- as.vector(global_or_param("app_version"))
+    footer_version_number <- as.vector(global_or_param("app_version_info"))
   }
 
   if (isTRUE(getOption("shiny.testmode"))) {
-    footer_date <- "[SHINYTEST DATE]" # so the snapshot of the report is consistent, not diff date each time tested
+    footer_date <- "[SHINYTEST DATE]" # fixed placeholder date in shiny.testmode so app test runs are deterministic (not date-dependent)
   } else {
     if (missing(footer_date) || is.null(footer_date)) {
       # if footer_date not specified, it is based on date right now in local user timezone, based on wherever the server happens to be
@@ -635,7 +654,7 @@ generate_report_footer <- function(footer_version_number = NULL, footer_date = N
   }
 
   if (missing(footer_text) || is.null(footer_text)) {
-    footer_text <- paste0('Report created by EJAM version ', footer_version_number, ' on ', footer_date)
+    footer_text <- paste0('Report created on ', footer_date, ' (by ', footer_version_number, ')')
   }
 
   if (missing(footer_html) || is.null(footer_html)) {
@@ -678,9 +697,9 @@ resolve_report_logo_path <- function(logo_path = NULL) {
   }
 
   candidates <- c(
-    EJAM:::global_or_param("report_logo"),
+    global_or_param("report_logo"),
     system.file("report/community_report/ejamhex4.png", package = "EJAM"),
-    EJAM:::app_sys("report/community_report/ejamhex4.png")
+    app_sys("report/community_report/ejamhex4.png")
   )
   candidates <- candidates[
     !is.na(candidates) &
@@ -787,9 +806,9 @@ generate_html_header <- function(analysis_title = NULL, # defaults of NULL here 
   ########## #  ########## #  ########## #  ########## #
   if (is.null(report_title)) {
     if (shiny::isRunning() || isTRUE(in_shiny)) {
-      report_title <- EJAM:::global_or_param("report_title")
+      report_title <- global_or_param("report_title")
     } else {
-      report_title <- EJAM:::global_or_param("report_title")
+      report_title <- global_or_param("report_title")
     }
   }
   ########## #  ########## #  ########## #  ########## #
@@ -1014,7 +1033,7 @@ site_method2text =  function(site_method) {
     if (site_method %in% tolower("SHP")) {
       return("shapefile")
     }
-    if (site_method %in% tolower("latlon")) {
+    if (site_method %in% tolower(c("latlon", "mapclick"))) {  # mapclick = lat/lon points the user clicked on the map
       return("coordinates")
     }
     if (site_method %in% tolower("FIPS")) {
@@ -1090,7 +1109,7 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   }
   if (is.null(nsites) || any(is.na(nsites))) {
     nsites <- 99 # just makes it plural, e.g., "places"
-    }
+  }
   if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
   if (is.null(site_method)) {site_method <- sitetype}
 
@@ -1409,10 +1428,11 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
 #'  x <- EJAM:::report_residents_within_xyz(
 #'    sitetype = out$sitetype,
 #'    radius = out$results_overall$radius.miles,
-#'    nsites = NROW(out$results_bysite[out$results_bysite$valid == T, ]),
+#'    nsites = NROW(out$results_bysite[out$results_bysite$valid == TRUE, ]),
 #'    area_in_square_miles = out$results_overall$area_sqmi,
 #'    # sitenumber = 6,  # only relevant for 1-site report
-#'    # ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id], # only relevant for 1-site report
+#'    # ejam_uniq_id = out$results_bysite[sitenumber, ejam_uniq_id],
+#'    # only relevant for 1-site report
 #'    linefeed = ". ",
 #'    lat = out$results_bysite$lat, lon = out$results_bysite$lon
 #'  )
@@ -1443,7 +1463,14 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
     xmilesof <- report_xmilesof(unitsingular = unitsingular)
   } else {
     if (length(radius) > 1) {stop("radius must be a single value")}
-    if (is.na(radius) || radius == "") {warning("radius should not be NA or '' "); radius <- NULL}
+    if (is.na(radius) || radius == "") {
+      # Only warn in point-buffer (e.g., latlon) or unknown/NA contexts; FIPS/shapefile analyses have no radius by design.
+      # isTRUE() preserves the warning when sitetype is NA or an unrecognised value.
+      if (!isTRUE(sitetype[1] %in% c("fips", "shp"))) {
+        warning("radius should not be NA or '' ")
+      }
+      radius <- NULL
+    }
     if (is.numerictext(radius)) {radius <- as.numeric(radius)}
     if (is.numeric(radius)) {
       digits <- table_rounding_info("radius.miles")
@@ -1549,8 +1576,8 @@ report_residents_within_xyz <- function(text1 = 'Residents within ',
   if (nchar(nsites) == 0) {
     ntxt <- ''
   } else {
-      ntxt <- paste0(nsites, ' ')
-      }
+    ntxt <- paste0(nsites, ' ')
+  }
   anyoftheplaces <- ifelse(
     nsites %in% 1,
     paste0('this', ' ', location_type, siteidtext_in_parens, ''),

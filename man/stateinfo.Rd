@@ -28,14 +28,14 @@ Many datasets lack these:  AS, GU, MP, VI (codes '60' '66' '69' '78')
 Almost all datasets lack UM. (74)
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{    72 PR                 Puerto Rico
-    
-    66 GU                        Guam 
-    
-    69 MP    Northern Mariana Islands  
-    
-    78 VI         U.S. Virgin Islands 
-    
-    74 UM U.S. Minor Outlying Islands  
+
+    66 GU                        Guam
+
+    69 MP    Northern Mariana Islands
+
+    78 VI         U.S. Virgin Islands
+
+    74 UM U.S. Minor Outlying Islands
 }\if{html}{\out{</div>}}
 }
 \seealso{

@@ -28,7 +28,15 @@ For example:
 )
 }\if{html}{\out{</div>}}
 
-See details and examples.}
+See details and examples.
+
+These parameters are fixed when the app is launched (or deployed). To pre-load
+an already-running/deployed app with a set of sites at runtime instead, open it
+with launch query parameters in the URL: the app reads \verb{?lat=&lon=}, \verb{?fips=},
+\verb{?shape=} (GeoJSON), \verb{?radius=}, or \verb{?handoff=<token>} at startup and
+pre-selects those places. Use \code{\link[=url_ejamapp]{url_ejamapp()}} to build such a URL (its query
+vocabulary matches \code{\link[=url_ejamapi]{url_ejamapi()}}). See the "Defaults and Custom Settings for
+the Web App" vignette.}
 
 \item{enableBookmarking}{see \link[shiny:shinyApp]{shiny::shinyApp}
 This parameter lets a user click the \code{\link[shiny:bookmarkButton]{shiny::bookmarkButton()}} in the app
@@ -53,7 +61,7 @@ or (https://mastering-shiny.org/action-bookmark.html)}
 \value{
 An object that represents the app. Printing the object or
 passing it to \code{\link[shiny:runApp]{runApp()}} will run the app, as would just typing
-\code{\link[=run_app]{run_app()}} or \code{\link[=ejamapp]{ejamapp()}} in the console.
+\code{\link[=ejamapp]{ejamapp()}} in the console.
 }
 \description{
 Launch the web app
@@ -165,7 +173,7 @@ ejamapp(
   ## Cities dropdown list as default shown at launch:
 
 ejamapp(
-  default_upload_dropdown = "dropdown",
+  default_site_method = "dropdown",
   default_selected_type_of_site_category = "FIPS_PLACE",
   fipspicker_fips_type2pick_default = "Cities or Places"
 )
@@ -173,7 +181,7 @@ ejamapp(
   ## Specific cities are preselected at launch
 
   ejamapp(
-  default_upload_dropdown = "dropdown",
+  default_site_method = "dropdown",
   default_selected_type_of_site_category = "FIPS_PLACE",
   fipspicker_fips_type2pick_default = "Cities or Places",
   default_cities_picked = name2fips(c("akutan,ak", "syracuse city,ny") )
@@ -194,7 +202,7 @@ ejamapp(
   ## Polygons upload as the default shown at launch:
 
 ejamapp(
-  default_upload_dropdown = "upload",
+  default_site_method = "upload",
   default_selected_type_of_site_upload = "SHP"
 )
   #default_choices_for_type_of_site_upload = c(
@@ -204,6 +212,15 @@ ejamapp(
   #  'EPA Program IDs file upload'                    = 'EPA_PROGRAM',
   #  'Census place FIPS Codes file upload'            = 'FIPS'
   #)
+
+  ## Click-or-draw-on-map as the default site-selection method shown at launch.
+  ## The user clicks the map to specify one or more lat/lon points to analyze.
+  ## (default_site_method accepts "dropdown", "upload", or "mapclick".
+  ##  It was formerly named default_upload_dropdown, which still works as an alias.)
+
+ejamapp(
+  default_site_method = "mapclick"
+)
 
  ## Count how many of some indicator are >= some cutoff
 
@@ -243,7 +260,7 @@ ejamapp(
  ejamapp(
   isPublic = FALSE, # to allow full set of features (menus)
   default_can_show_advanced_settings = FALSE, # removes user's ability to show Advanced tab
-  default_show_advanced_settings = FALSE, # just confirms default -- hiding Advanced tab when app launches
+  default_show_advanced_settings = FALSE, # the default, hide Advanced tab at app launch
   default_hide_plot_histo_tab = TRUE # to hide just this feature
   )
 

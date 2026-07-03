@@ -12,6 +12,10 @@
 #' @param column_names can be "ej", passed to [mapfast()]
 #' @param launch_browser logical optional whether to open the web browser to view the map
 #' @param shp shapefile it can map if analysis was for polygons, for example
+#' @param shape alias (synonym) for shp
+#' @param shapefile alias (synonym) for shp
+#' @param radius optional radius in miles
+#' @param buffer alias (synonym) for radius
 #'
 #' @param sitenumber as used in [ejam2report()]
 #'
@@ -26,7 +30,7 @@
 #' # See in RStudio viewer pane
 #' ejam2map(out, launch_browser = FALSE)
 #' mapfastej(out$results_bysite[c(12,31),])
-#' \donttest{
+#' \dontrun{
 #'
 #' # See in local browser instead
 #' ejam2map(out)
@@ -43,7 +47,15 @@
 #'
 ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp = NULL,
                      radius = NULL,
-                     sitenumber = NULL) {
+                     sitenumber = NULL,
+                     shape = NULL,     # alias (synonym) for shp
+                     shapefile = NULL, # alias (synonym) for shp
+                     buffer = NULL) {  # alias (synonym) for radius
+
+  # Aliases (synonyms) for naming consistency with ejamit()/ejamapp() etc.
+  if (is.null(shp) && !is.null(shape))     {shp <- shape}
+  if (is.null(shp) && !is.null(shapefile)) {shp <- shapefile}
+  if (is.null(radius)) {radius <- buffer}
 
   if (is.data.frame(ejamitout)) {
     # if it's a data.frame not the whole list output of ejamit(), assume it's the results_bysite, so make it look like we expected
@@ -106,10 +118,9 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     fips <- ejamitout$results_bysite$ejam_uniq_id # fips should be stored here in this case
     shp <- shapes_from_fips(fips)
 
-    ## ONCE WE IMPLEMENT BUFFERING radius IN FIPS CASE, since we just downloaded bounds, we have to add the buffering
+    # Apply buffer around FIPS boundaries if a buffer radius was used during analysis
     if (!is.null(radius) && !is.na(radius) && radius > 0 && radius != 999) {
-      warning("adding buffer around fips is not yet implemented")
-      # shp <- shape_buffered_from_shapefile(shp, radius.miles = radius)
+      shp <- shape_buffered_from_shapefile(shp, radius.miles = radius)
     }
   }
   ################################################## #
@@ -121,7 +132,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     # we have to assume that buffer was already added to polygons passed here - do not add them again
     map_ejam_plus_shp(shp = shp,
                       out = ejamitout,
-                      radius = radius,
+                      radius_buffer = radius,
                       launch_browser = launch_browser)
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {

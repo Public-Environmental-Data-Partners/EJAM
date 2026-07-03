@@ -4,14 +4,31 @@
 
 #' @name statestats
 #' @docType data
-#' @title statestats (DATA) data.frame of 100 percentiles and means for each US State and PR and DC.
+#' @title statestats (DATA) data.frame of 100 percentiles and means for each state/territory region
 #' @description data.frame of 100 percentiles and means
-#'   for each US State and PR and DC
+#'   for each state/territory region represented in [blockgroupstats]
 #'   for all the blockgroups in that zone (e.g., blockgroups in [blockgroupstats])
 #'   for a set of indicators such as percent low income.
 #'   Each column is one indicator (or specifies the percentile).
 #'
-#'   This should be similar to the lookup tables in the gdb on the FTP site of EJSCREEN,
-#'   except it also has data for additional population subgroups.
+#'   For EJAM v3, [blockgroupstats] may include AS/GU/MP/VI at the
+#'   blockgroup dataset, EJSCREEN export, and map-data visibility level.
+#'   Demographic values for those Island Areas are normally `NA` because ACS
+#'   does not cover them. Environmental lookup values may be present where EPA
+#'   environmental fields are available.
+#'
+#'   Because every row in `statestats` is a state-specific lookup row, most
+#'   columns use the usual indicator names even when the values are used for
+#'   state percentiles. The demographic index columns are a special
+#'   compatibility case: `Demog.Index` and `Demog.Index.Supp` contain
+#'   state-specific cutoffs calculated from `Demog.Index.State` and
+#'   `Demog.Index.Supp.State`, respectively, so code that uses `names_d` or
+#'   older EJSCREEN-style lookup names gets the correct state lookup values.
+#'   The explicit `Demog.Index.State` and `Demog.Index.Supp.State` columns are
+#'   also included and contain those same state-specific cutoff values for code
+#'   that uses the clearer state-specific names.
+#'
+#'   For details on how the table was made, see source package files in data-raw folder.
+#'
 #'   See also [usastats] for more details.
 'statestats'

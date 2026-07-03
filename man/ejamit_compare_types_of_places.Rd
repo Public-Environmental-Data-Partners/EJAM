@@ -10,7 +10,9 @@ ejamit_compare_types_of_places(
   shapefile = NULL,
   fips = NULL,
   silentinteractive = TRUE,
-  ...
+  ...,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -26,13 +28,17 @@ each unique value defines a group of sites}
 \item{silentinteractive}{passed to \code{\link[=ejamit]{ejamit()}}}
 
 \item{...}{see \code{\link[=ejamit]{ejamit()}}}
+
+\item{shape}{alias (synonym) for shapefile}
+
+\item{shp}{alias (synonym) for shapefile}
 }
 \value{
 similar to ejamit output but results_overall has one row per unique typeofsite
 }
 \description{
-*** DRAFT - May change but works as currently drafted.
-e.g., change output formats of results_bytype vs results_overall
+This function may change but works as currently designed
+e.g., may change output formats of results_bytype vs results_overall
 }
 \examples{
   out <- ejamit_compare_types_of_places(testpoints_10[1:4, ],
@@ -41,9 +47,9 @@ e.g., change output formats of results_bytype vs results_overall
 
   ejam2barplot_sitegroups(out, names_these_ratio_to_avg[1], topn = 3)
 
-  ejam2barplot_sitegroups(out, "sitecount_unique", topn=3, sortby = F)
+  ejam2barplot_sitegroups(out, "sitecount_unique", topn=3, sortby = FALSE)
 
-  ejam2barplot_sitegroups(out, "pop", topn = 3, sortby = F)
+  ejam2barplot_sitegroups(out, "pop", topn = 3, sortby = FALSE)
 
   # use calculated variable not in original table
   df <- out$results_bytype
@@ -52,12 +58,12 @@ e.g., change output formats of results_bytype vs results_overall
 
   plot_barplot_sites(df,
     "share", ylab = "Share of Total Population",
-    topn = 3, names.arg = out$types , sortby = F)
+    topn = 3, names.arg = out$types , sortby = FALSE)
 
   plot_barplot_sites(df,
     "pop_per_site", ylab = "Pop. at Avg. Site in Group",
     topn = 3, main = "Nearby Residents per Site, by Site Type",
-    names.arg = out$types , sortby = F)
+    names.arg = out$types , sortby = FALSE)
 
   \donttest{
 

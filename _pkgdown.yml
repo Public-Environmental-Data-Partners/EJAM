@@ -1,8 +1,17 @@
 url: https://public-environmental-data-partners.github.io/EJAM/
+repo:
+  # Pin the branch used in "Source: R/..." (blob) links. Without this, pkgdown
+  # falls back to GITHUB_REF_NAME (the ref the workflow run was triggered on), so
+  # a docs build dispatched from a feature branch bakes that branch name into
+  # every source link -- which 404s once the branch is deleted (see the dead
+  # blob/fix/pkgdown-docs-deps/ links from the 2026-06-03 build). "HEAD" always
+  # resolves to the repo default branch on GitHub, so these links never go dead.
+  branch: HEAD
 template:
   bootstrap: 5
   params:
   noindex: true
+  assets: pkgdown/assets/files
 deploy:
   install_metadata: true
 navbar:
@@ -16,11 +25,11 @@ footer:
     left: [datefooter]
     right: [package, versionmsg]
   components:
-    datefooter: May 2026
-    versionmsg: Version 2.32.8.001
+    datefooter: July 2026
+    versionmsg: Version 3.2022.1
 development:
   mode: release
-  destination:
+  destination: dev
   version_label: warning
 home:
   title: EJAM Environmental Justice Analysis Multisite tool
@@ -39,6 +48,7 @@ articles:
   navbar: Overview for EJAM Users
   contents:
   - '`whatis`'
+  - '`island-areas`'
   - '`webapp`'
 - title: The EJAM R Package
   desc: For analysts using R
@@ -58,11 +68,14 @@ articles:
   contents:
   - dev-speed
   - dev-app-settings
+  - dev-api
   - dev-deploy-app
+  - dev-deployment
   - dev-run-shinytests
   - dev-run-unit-tests
   - dev-github-actions-install-tests
   - dev-update-datasets
+  - dev-update-ejscreen-datasets-yearly
   - dev-update-documentation
   - dev-update-package
   - dev-future-plans
@@ -260,9 +273,6 @@ reference:
   - bgej
   - bgpts
   - bg_cenpop2020
-  - acs_bybg
-  - acs_table_info
-  - tables_ejscreen_acs
   - avg.in.us
   - usastats
   - stateinfo
@@ -270,7 +280,17 @@ reference:
   - statestats
   - modelDoaggregate
   - modelEjamit
-- title: "Calculations & Aggregation"
+- subtitle: "Using ACS Data to Calculate New Indicators"
+  contents:
+  - url_acs_table_info
+  - acs_table_info
+  - acs_endyear
+  - tables_ejscreen_acs
+  - formulas_ejscreen_acs
+  - acs_bybg
+  - calc_ejam
+  - calc_byformula
+- title: "Calculating and Aggregating"
   desc: >
     Tools that Create or Aggregate Indicators
     at each Place & Overall, & Report Percentiles or Means
@@ -353,7 +373,6 @@ reference:
   contents:
   - ejam2barplot_sites
   - plot_barplot_sites
-  - plot_lorenz_popcount_by_site
   - ejam2barplot_sitegroups
   - plot_barplot_sitegroups
 - subtitle: "Plots: Mean of each indicator as ratio to average (comparing populations/groups, comparing environmental factors, etc.)"
@@ -380,7 +399,6 @@ reference:
   - plot_distance_mean_by_group
   - plot_distance_cdf_by_group
   - plot_demogshare_by_distance
-  - plot_lorenz_distance_by_dcount
 - title: "Examples of Input & Output Data"
 - subtitle: "Finding Examples of Inputs/Outputs"
   contents:
@@ -428,9 +446,10 @@ reference:
   - testoutput_ejamit_fips_counties
 - title: "Utilities providing URL or API info"
   contents:
+  - url_ejscreenmap
+  - url_ejamapp
   - ejamapi
   - url_ejamapi
-  - url_ejscreenmap
   - url_enviromapper
   - url_echo_facility
   - url_frs_facility
@@ -444,13 +463,27 @@ reference:
   desc: "Utilities to handle variable names, indicator metadata, formulas, etc."
   contents:
   - fixcolnames
-  - fixcolnames_anyoldtype
   - names_d
   - names_e
   - map_headernames
 - title: internal
   contents:
+  - calc_acs_by_geography
+  - calc_ejscreen_threshold_layers
+  - calc_ejscreen_threshold_layers_from_exports
+  - ejscreen_compare_geography_to_epa
+  - ejamdata_version
   - calc_avg_columns
+  - acs_table_info
+  - validate_map_headernames_ejscreen_names
+  - attributes2
+  - calc_bg_acsdata
+  - calc_bg_extra_indicators
+  - calc_blockgroupstats_acs
+  - calc_blockgroupstats_from_tract_data
+  - calc_ejscreen_blockgroupstats
+  - calc_ejscreen_stats
+  - calc_formulas_from_varname
   - calc_ratio_columns
   - calc_pctile_columns
   - batch.summarize
@@ -469,8 +502,8 @@ reference:
   - testoutput_doaggregate_10pts_1miles
   - testoutput_doaggregate_100pts_1miles
   - testoutput_doaggregate_1000pts_1miles
-  - acs_endyear
   - app_run_EJAM
+  - run_app
   - app_server
   - app_ui
   - bgid2fips
@@ -506,20 +539,22 @@ reference:
   - out_bydistance2results_bysite_bydistance
   - meters_per_mile
   - format_ejamit_columns
+  - found_in_files
+  - grepn
+  - getblocks_predict_blocks_per_site
+  - getblocks_summarize_blocks_per_site
   - table_order_variables
   - custom_ejamit
   - custom_doaggregate
   - custom
-  - formula_varname
-  - formulas_all
-  - formulas_ejscreen_acs
-  - formulas_d
+  - calc_varname_from_formula
   - batch.clean
   - rowMaxs2
   - colMins2
   - colMaxs2
   - change.fieldnames
   - rmost
+  - speedreport
   - map_shapes_leaflet_proxy
   - map_facilities_proxy
   - popup_from_df
@@ -548,6 +583,10 @@ reference:
   - table_validated_ejamit_row
   - table_xls_from_ejam
   - table4gt_from_scorevectors
+  - build_barplot_report
+  - build_community_report
+  - latloncsv2nexus
+  - latlon2nexus
   - table_gt_format_step1
   - table_gt_format_step2
   - x_anyother
@@ -555,11 +594,19 @@ reference:
   - enurl
   - create_filename
   - fixnames_aliases
+  - fixcolnames_anyoldtype
   - fixcolnames_infer
+  - ejscreen_default_extra_indicator_vars
+  - ejscreen_default_extra_indicator_varlists
+  - ejscreen_pipeline_validate
   - varname2color_ejam
   - varname2varcategory_ejam
   - varname2vartype_ejam
   - vartype_cat2color_ejam
+  - expand_gridMatrix
+  - xls_varname2color
+  - xls_varname2vartype
+  - xls_vartype2color
   - sitepoints_from_anything
   - ejampackages
   - testpoints_bad
@@ -667,3 +714,4 @@ reference:
   - names_wts
   - formulas_ejscreen_acs_disability
   - formulas_ejscreen_demog_index
+  - modelEjamitByAnalysisType

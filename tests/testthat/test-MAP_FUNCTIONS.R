@@ -42,6 +42,17 @@ test_that("popup_from_ejscreen() works even if 1 row or 1 indicator", {
 })
 ############################################## #
 
+test_that("popup_from_ejscreen() handles zero-row results after invalid shapes are dropped", {
+  zero_rows <- testoutput_ejamit_10pts_1miles$results_bysite[0, ]
+  popups <- NULL
+
+  expect_no_error({
+    popups <- popup_from_ejscreen(zero_rows)
+  })
+  expect_identical(popups, character(0))
+})
+############################################## #
+
 test_that("popup_from_any() works even if 1 row or 1 indicator", {
   expect_no_error({
     suppressMessages({
@@ -76,6 +87,21 @@ test_that("popup_from_any() works even if 1 row or 1 indicator", {
   })
 })
 ############################################## #
+
+test_that("popup_from_any() coerces non-data-frame objects via as.data.frame()", {
+  mat <- matrix(c("A", "B", 1, 2), ncol = 2)
+  colnames(mat) <- c("name", "value")
+
+  expect_no_error({
+    x <- popup_from_any(mat)
+  })
+
+  expect_equal(2, length(x))
+  expect_true(all(grepl("name: ", x, fixed = TRUE)))
+  expect_true(all(grepl("value: ", x, fixed = TRUE)))
+})
+############################################## #
+
 if (exists("popup_from_df")) { # will likely deprecate
   test_that("popup_from_df() works but popup_from_any() may replace it", {
     expect_no_error({
@@ -148,6 +174,30 @@ test_that("mapfastej() works", {
   })
   expect_true("leaflet" %in% class(x))
   expect_true("leaflet" %in% class(y))
+})
+############################################## #
+
+test_that("map_ejam_plus_shp() handles all shapes being dropped as invalid", {
+  out <- testoutput_ejamit_fips_counties
+  out$results_bysite <- out$results_bysite[1, ]
+  out$results_bysite$ejam_uniq_id <- "010039900000"
+  out$results_bysite$radius.miles <- 0
+
+  empty_shape <- sf::st_sf(
+    ejam_uniq_id = "010039900000",
+    geometry = sf::st_sfc(sf::st_geometrycollection(), crs = 4326)
+  )
+
+  expect_message({
+    x <- map_ejam_plus_shp(
+      shp = empty_shape,
+      out = out,
+      radius_buffer = 0,
+      launch_browser = FALSE
+    )
+  }, "There were 1 invalid polygons.", fixed = TRUE)
+  expect_true("leaflet" %in% class(x))
+  expect_equal(unlist(x$x$fitBounds[1:4]), c(37, -115, 48, -65))
 })
 ############################################## #
 
@@ -402,10 +452,9 @@ test_that("shapes_blockgroups_from_bgfips() works", {
 })
 ############################################## #
 test_that("mapfast_gg() works", {
-suppressWarnings({  if (!pkg_available('maps')) {
-    message("maps package is needed for unit test of mapfast_gg()")
-    skip("maps package is needed for unit test of mapfast_gg()")
-    }})
+  testthat::skip_if_not_installed("maps")
+  withr::local_package("maps")
+
   expect_no_error({
     x = mapfast_gg(testpoints_10)
     x

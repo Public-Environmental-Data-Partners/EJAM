@@ -62,4 +62,4 @@ The Multisite Tool configuration is available via `ejamapp(isPublic=T)` and the 
 
 See documentation of optional parameters via `?ejamapp()`
 
-Note this is different than running a simple shiny app that is not also a package via the [golem](https://golemverse.org/) package. You should use the EJAM package function `ejamapp()` or `run_app()` not `shiny::runApp()`.
+Note this is different than running a simple shiny app that is not also a package via the [golem](https://golemverse.org/) package. You should use the EJAM package function `ejamapp()` rather than `shiny::runApp()`.

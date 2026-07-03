@@ -630,7 +630,7 @@ Find all blocks nearby each site
 ```{r getblocksnearby2, eval=TRUE, echo=TRUE}
 radius <- 3
 sitepoints <- testpoints_100
-sites2blocks <- getblocksnearby(sitepoints, radius, quadtree = localtree, quiet = TRUE)
+sites2blocks <- getblocksnearby(sitepoints, radius, quiet = TRUE)
 # testoutput_getblocksnearby_10pts_1miles is also available as an example
 names(sites2blocks)
 ```

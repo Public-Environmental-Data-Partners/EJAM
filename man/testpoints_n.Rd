@@ -24,12 +24,14 @@ Note the default is frs, but you may want to use pop even though it is slower.
 \item frs or facility = Average Facility: random EPA-regulated facility from actives in Facility Registry Service (FRS)
 \item bg = Average Blockgroup: random US Census blockgroup (internal point like a centroid)
 \item block = Average Block: random US Census block (internal point like a centroid)
-\item area or place = Average Place: random point on a map (internal point of avg blockgroup weighted by its square meters size)
+\item area or place = Average Place: random point on a map (internal point of avg blockgroup weighted by its square meters size).
+If blockgroup \code{arealand} and \code{areawater} values are missing, all NA, or all zero,
+this warns and falls back to the default \code{frs} weighting.
 }}
 
 \item{region}{optional vector of EPA Regions (1-10) to pick from only some regions.}
 
-\item{ST}{optional, can be a character vector of 2 letter State abbreviations to pick from only some States.}
+\item{ST}{optional vector of State abbreviations like "NC" to pick from only some States.}
 
 \item{validonly}{return only points with valid lat/lon coordinates. Defaults to TRUE.}
 
@@ -45,11 +47,11 @@ The weighting can be specified so that each point reflects the average EPA-regul
 facility, blockgroup, block, place on the map, or US resident.
 }
 \examples{
-mapfast(testpoints_n(300, ST = c('LA','MS')) )
-\donttest{
+mapfast(testpoints_n(30, weighting = "bg", ST = c("LA", "MS")))
+\dontrun{
 n=2
 for (d in c(TRUE,FALSE)) {
-  for (w in c('frs', 'pop', 'area', 'bg', 'block')) {
+  for (w in c('frs', 'pop', 'bg', 'block')) {
     cat("n=",n,"  weighting=",w, "  dt=",d,"\n\n")
     print(x <- testpoints_n(n, weighting = w, dt = d)); print(class(x))
     cat('\n')

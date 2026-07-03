@@ -2,7 +2,7 @@
 % Please edit documentation in R/batch.summarize.helpers.R
 \name{batch.clean}
 \alias{batch.clean}
-\title{Clean raw output of doaggregate() from the EJAM package}
+\title{Clean raw output of \code{\link[=doaggregate]{doaggregate()}} from the EJAM package}
 \usage{
 batch.clean(x, namesfile = "keepnames", oldcolnames, newcolnames)
 }
@@ -22,7 +22,7 @@ ignored if namesfile specified.}
 }
 \description{
 Takes the raw output version of batch buffer results and cleans it up
-to make it ready for batch.summarize function
+to make it ready for \code{\link[=batch.summarize]{batch.summarize()}} function
 Note this drops rows with no pop data - assumes those lack EJSCREEN batch results
 }
 \keyword{internal}
