@@ -509,3 +509,21 @@ test_that("global_or_param() resolves default_upload_dropdown as a back-compat a
 })
 
 ################################################# #
+
+test_that("upload-type choices include FIPS in public and non-public configs", {
+  # ?fips= deep links (and the EJScreen "Send to EJAM" handoff of FIPS place
+  # selections) programmatically select the FIPS upload type via
+  # updateSelectInput(), which silently keeps the old selection when the
+  # requested value is not among the configured choices. So FIPS must be
+  # present in default_choices_for_type_of_site_upload even when isPublic =
+  # TRUE (regression test: the public config used to omit it, which made
+  # ?fips= deep links a silent no-op on the hosted app).
+  old_golem <- shiny::getShinyOption("golem_options")
+  on.exit(shiny::shinyOptions(golem_options = old_golem), add = TRUE)
+  g_public <- EJAM:::get_global_defaults_or_user_options(
+    user_specified_options = list(isPublic = TRUE), bookmarking_allowed = "disable")
+  expect_true("FIPS" %in% g_public$default_choices_for_type_of_site_upload)
+  g_private <- EJAM:::get_global_defaults_or_user_options(
+    user_specified_options = list(isPublic = FALSE), bookmarking_allowed = "disable")
+  expect_true("FIPS" %in% g_private$default_choices_for_type_of_site_upload)
+})
