@@ -20,7 +20,7 @@ knitr::opts_chunk$set(eval = FALSE, comment = "#>")
 This is a short overview. For the authoritative and most current details, see:
 
 - the **[EJAM-API repository](https://github.com/Public-Environmental-Data-Partners/EJAM-API)**
-  and its README -- it documents every endpoint, parameter, and example;
+  and its [README](https://github.com/Public-Environmental-Data-Partners/EJAM-API?tab=readme-ov-file#ejam-api) -- it documents every endpoint, parameter, and example;
 - the help for **`?ejamapi`** and **`?url_ejamapi`**; and
 - the [Defaults and Custom Settings for the Web App](dev-app-settings.html) article, for the
   *deep links* (launch-URL parameters + token handoff) that pre-load the EJAM web app.
@@ -33,6 +33,14 @@ points, a polygon, or US Census areas (FIPS). It runs the same engine as the pac
 API report matches what `ejamit()` / `ejam2report()` would produce locally.
 
 ## Reaching it from R
+
+```{r api, eval=FALSE}
+## API - multisite report fails until redeploy API to use v3.2022.1
+urlx = url_ejamapi(fips=c(3650617,'0973000'), sitenumber = 0)
+urlx
+# "https://api.ejanalysis.com/report?fips=3650617,0973000&buffer=0&sitenumber=0&version=3.2022.1&fileextension=html"
+# browseURL(urlx)
+```
 
 Two functions wrap the API:
 
