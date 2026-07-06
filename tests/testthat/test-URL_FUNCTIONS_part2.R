@@ -139,6 +139,75 @@ for (func in funcnames) {
 
 # url_github_preview()
 
+############## TESTS FOR url_ejscreenmap() DEEP LINKS ############## #
+
+test_that("url_ejscreenmap makes ?fips= deep links for county/tract/blockgroup", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  expect_equal(url_ejscreenmap(fips = "10001"), paste0(base, "?fips=10001"))
+  expect_equal(url_ejscreenmap(fips = c("10001", "10003")),
+               paste0(base, "?fips=", c("10001", "10003")))
+  expect_equal(url_ejscreenmap(fips = "10001040100"), paste0(base, "?fips=10001040100"))   # tract
+  expect_equal(url_ejscreenmap(fips = "100010401001"), paste0(base, "?fips=100010401001")) # blockgroup
+  # numeric fips gets its leading zero restored
+  expect_equal(url_ejscreenmap(fips = 6037), paste0(base, "?fips=06037"))
+})
+
+test_that("url_ejscreenmap combined=TRUE returns one multisite URL", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  expect_equal(url_ejscreenmap(fips = c("10001", "10003"), combined = TRUE),
+               paste0(base, "?fips=10001,10003"))
+  expect_equal(url_ejscreenmap(lat = c(39, 39.7), lon = c(-75.5, -75.6), combined = TRUE, radius = 2),
+               paste0(base, "?lat=39,39.7&lon=-75.5,-75.6&radius=2"))
+  # combined with a non-deep-linkable fips type falls back to one URL per site, with a warning
+  expect_warning({x <- url_ejscreenmap(fips = c("10001", "10"), combined = TRUE)})
+  expect_equal(length(x), 2)
+})
+
+test_that("url_ejscreenmap state/city fips fall back to ?wherestr= place name", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  u <- url_ejscreenmap(fips = "10") # Delaware
+  expect_true(startsWith(u, paste0(base, "?wherestr=")))
+  expect_false(grepl("fips=", u, fixed = TRUE))
+  u2 <- url_ejscreenmap(fips = "4748000") # Memphis city/CDP
+  expect_true(startsWith(u2, paste0(base, "?wherestr=")))
+})
+
+test_that("url_ejscreenmap points: legacy wherestr by default, lat/lon/radius when radius given", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  expect_equal(url_ejscreenmap(lat = 39, lon = -75.5),
+               paste0(base, "?wherestr=39,-75.5"))
+  expect_equal(url_ejscreenmap(lat = 39, lon = -75.5, radius = 3),
+               paste0(base, "?lat=39&lon=-75.5&radius=3"))
+  # NA points use the ifna URL
+  expect_equal(url_ejscreenmap(lat = c(39, NA), lon = c(-75.5, -75.6)),
+               c(paste0(base, "?wherestr=39,-75.5"), base))
+})
+
+test_that("url_ejscreenmap wherestr-only calls now produce a wherestr link", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  expect_equal(url_ejscreenmap(wherestr = "10001"), paste0(base, "?wherestr=10001"))
+})
+
+test_that("url_ejscreenmap shapefile makes ?polygon= deep links, drawing the outline", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  u <- url_ejscreenmap(shapefile = testinput_shapes_2[1, ])
+  expect_true(startsWith(u, paste0(base, "?polygon=")))
+  # the polygon= value is lat,lon pairs separated by ;
+  val <- sub(".*polygon=", "", u)
+  pairs <- strsplit(val, ";")[[1]]
+  expect_true(length(pairs) >= 3)
+  expect_true(all(grepl("^-?[0-9.]+,-?[0-9.]+$", pairs)))
+  # one URL per polygon by default
+  u2 <- url_ejscreenmap(shapefile = testinput_shapes_2)
+  expect_equal(length(u2), NROW(testinput_shapes_2))
+})
+
+test_that("url_ejscreenmap as_html returns hyperlinks for fips deep links", {
+  x <- url_ejscreenmap(fips = "10001", as_html = TRUE)
+  expect_true(grepl("^<a ", x))
+  expect_true(grepl("fips=10001", x))
+})
+
 ############## TESTS FOR FACILITY-NEARBY URL FUNCTIONS ############## #
 
 test_that("url_efpoints builds correct base URL for each sitecategory layer number", {

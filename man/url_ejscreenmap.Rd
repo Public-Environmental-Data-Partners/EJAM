@@ -2,7 +2,7 @@
 % Please edit documentation in R/URL_FUNCTIONS_part2.R
 \name{url_ejscreenmap}
 \alias{url_ejscreenmap}
-\title{Get URL(s) for (new) EJSCREEN app with map centered at given point(s)}
+\title{Get URL(s) for (new) EJSCREEN app with the given place(s) selected on the map}
 \usage{
 url_ejscreenmap(
   sitepoints = NULL,
@@ -11,6 +11,8 @@ url_ejscreenmap(
   shapefile = NULL,
   fips = NULL,
   wherestr = NULL,
+  radius = NULL,
+  combined = FALSE,
   as_html = FALSE,
   linktext = "EJSCREEN",
   ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
@@ -25,11 +27,19 @@ url_ejscreenmap(
 
 \item{lat, lon}{vectors of coordinates, ignored if sitepoints provided, can be used otherwise, if shapefile and fips not used}
 
-\item{shapefile}{shows URL of a EJSCREEN app map centered on the centroid of a given polygon,
-but does not actually show the polygon.}
+\item{shapefile}{polygon(s) as from \code{\link[=shapefile_from_any]{shapefile_from_any()}}. The outline of each
+polygon (exterior ring, simplified as needed to fit in a URL) is passed via
+the app's \verb{?polygon=} parameter so EJScreen draws and selects it. If an
+outline is too complex to fit even after simplification, that site falls
+back to the old behavior: a \verb{?wherestr=lat,lon} link centered on the
+polygon's centroid (no boundary drawn).}
 
-\item{fips}{The FIPS code of a place to center map on (blockgroup, tract, city/cdp, county, state FIPS).
-It gets translated into the right wherestr parameter if fips is provided.}
+\item{fips}{FIPS code(s) of place(s) to select on the map.
+County (5-digit), tract (11), and blockgroup (12) codes become \verb{?fips=}
+deep links that make the EJScreen app draw and select the boundary.
+State (2-digit) and city/CDP (7-digit) codes are not supported by the app's
+boundary services, so those are translated via \code{\link[=fips2name]{fips2name()}} into a
+\verb{?wherestr=} place-name search (map centers there without a boundary).}
 
 \item{wherestr}{If fips and sitepoints (or lat and lon) are not provided,
 wherestr should be the street address, zip code, or place name (not FIPS code!).
@@ -41,12 +51,23 @@ For zipcode 10001, use url_ejscreenmap(wherestr =  '10001')
 
 For County FIPS code 10001, use url_ejscreenmap(fips = "10001")
 
-This parameter is passed to the API as wherestr= , if point and fips are not specified.
+This parameter is passed to the app as wherestr= , if point and fips are not specified.
 
 Can be State abbrev like "NY" or full state name,
 or city like "New Rochelle, NY" as from fips2name() -- using fips2name()
 works for state, county, or city FIPS code converted to name,
 but using the fips parameter is probably a better idea.}
+
+\item{radius}{optional buffer distance in miles for the EJScreen report around
+each point (or polygon). When provided, point links use the app's
+\verb{?lat=&lon=&radius=} parameters (instead of \verb{?wherestr=lat,lon}) so the
+report buffer is prefilled.}
+
+\item{combined}{set TRUE to get ONE URL that loads ALL of the sites together
+in a single EJScreen session (drawn on the map and accumulated into the
+app's Multisite list, ready for a Multisite Report or Send to EJAM),
+instead of the default of one URL per site. Works when all sites are
+county/tract/blockgroup fips, or all are points, or all are small polygons.}
 
 \item{as_html}{Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example}
 
@@ -56,17 +77,34 @@ but using the fips parameter is probably a better idea.}
 
 \item{baseurl}{do not change unless endpoint actually changed}
 
-\item{...}{unused}
+\item{...}{regid can be provided (used to look up lat,lon as a last resort if no sites provided); other arguments ignored}
 
 \item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
-URL(s)
+URL(s), or a single URL if combined = TRUE
 }
 \description{
-Get URL(s) for (new) EJSCREEN app with map centered at given point(s)
+Get URL(s) for (new) EJSCREEN app with the given place(s) selected on the map
+}
+\details{
+These are deep links into the EJScreen map app. For county, tract, or
+blockgroup FIPS codes, for points (with a radius), and for small polygons,
+the URL makes EJScreen actually draw and select the place(s) for analysis
+(boundary drawn, report popup or multisite list ready), using the
+\verb{?fips=}, \verb{?lat=&lon=&radius=}, and \verb{?polygon=} parameters of the app.
+
+Note the selection-drawing parameters require the version of the EJScreen app
+that supports deep links (PEDP EJScreen as of mid-2026 or later); older
+deployments ignore them and just open the map. The \verb{wherestr=} style links
+(the default for points when no radius is given, and the fallback for state
+or city/CDP FIPS) work on all versions of the app.
 }
 \examples{
+url_ejscreenmap(fips = "10001")
+url_ejscreenmap(fips = c("10001", "10003"))
+url_ejscreenmap(fips = c("10001", "10003"), combined = TRUE)
+url_ejscreenmap(lat = c(39, 39.7), lon = c(-75.5, -75.6), radius = 3, combined = TRUE)
 # browseURL(url_ejscreenmap(fips = '10001'))
 # browseURL(url_ejscreenmap(sitepoints = testpoints_10[1,]))
 # shp = shapefile_from_any(  testdata("portland.*zip")[1])[1, ]
