@@ -208,6 +208,40 @@ test_that("url_ejscreenmap shapefile makes ?polygon= deep links, drawing the out
   expect_equal(length(u2), NROW(testinput_shapes_2))
 })
 
+test_that("url_ejscreenmap combined=TRUE falls back to one URL per site when too long", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  # ~400 five-digit codes is far over the ~1900-character combined-URL cap
+  manyfips <- sprintf("%05d", 10001:10400)
+  expect_warning({x <- url_ejscreenmap(fips = manyfips, combined = TRUE)}, "one URL per site")
+  expect_equal(length(x), length(manyfips))
+  expect_true(all(startsWith(x, paste0(base, "?fips="))))
+  # same guard for combined points
+  manylat <- rep(39.123456, 150)
+  manylon <- rep(-75.123456, 150)
+  expect_warning({p <- url_ejscreenmap(lat = manylat, lon = manylon, combined = TRUE, radius = 1)},
+                 "one URL per site")
+  expect_equal(length(p), 150)
+  expect_true(all(grepl("radius=1", p, fixed = TRUE)))
+})
+
+test_that("url_ejscreenmap polygon centroid fallback keeps the radius", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  # a star polygon with many deep teeth survives simplification with too many
+  # vertices to fit in a URL, forcing the centroid fallback
+  n <- 400
+  ang <- seq(0, 2 * pi, length.out = n + 1)[-(n + 1)]
+  r <- rep(c(0.6, 0.3), length.out = n)
+  ring <- cbind(-75 + r * cos(ang), 39.5 + r * sin(ang))
+  ring <- rbind(ring, ring[1, ])
+  star <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(ring)), crs = 4326))
+  u <- url_ejscreenmap(shapefile = star, radius = 2)
+  expect_true(startsWith(u, paste0(base, "?lat=")))
+  expect_true(grepl("&radius=2", u, fixed = TRUE))
+  # without a radius, the fallback stays the legacy centroid wherestr link
+  u2 <- url_ejscreenmap(shapefile = star)
+  expect_true(startsWith(u2, paste0(base, "?wherestr=")))
+})
+
 test_that("url_ejscreenmap as_html returns hyperlinks for fips deep links", {
   x <- url_ejscreenmap(fips = "10001", as_html = TRUE)
   expect_true(grepl("^<a ", x))

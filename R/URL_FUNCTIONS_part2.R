@@ -600,8 +600,9 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'   polygon (exterior ring, simplified as needed to fit in a URL) is passed via
 #'   the app's `?polygon=` parameter so EJScreen draws and selects it. If an
 #'   outline is too complex to fit even after simplification, that site falls
-#'   back to the old behavior: a `?wherestr=lat,lon` link centered on the
-#'   polygon's centroid (no boundary drawn).
+#'   back to a link centered on the polygon's centroid (no boundary drawn):
+#'   `?wherestr=lat,lon`, or `?lat=&lon=&radius=` when radius is provided so
+#'   the report buffer is still prefilled.
 #' @param shape,shp aliases (synonyms) for shapefile
 #' @param radius optional buffer distance in miles for the EJScreen report around
 #'   each point (or polygon). When provided, point links use the app's
@@ -612,6 +613,8 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'   app's Multisite list, ready for a Multisite Report or Send to EJAM),
 #'   instead of the default of one URL per site. Works when all sites are
 #'   county/tract/blockgroup fips, or all are points, or all are small polygons.
+#'   If the combined URL would be too long to be reliable (over roughly 1900
+#'   characters), it falls back to one URL per site, with a warning.
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values
@@ -725,7 +728,9 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     linkable <- !is.na(fips) & ftype %in% c("county", "tract", "blockgroup")
     if (combined) {
       if (all(linkable) && length(fips) > 0) {
-        return(finish_urls(paste0(baseurl, "?fips=", paste(fips, collapse = ","))))
+        urlx <- paste0(baseurl, "?fips=", paste(fips, collapse = ","))
+        if (nchar(urlx) <= 1900) {return(finish_urls(urlx))} # keep combined URLs a safe length for servers/browsers
+        warning("combined = TRUE but too many fips to fit in one URL - returning one URL per site")
       } else {
         warning("combined = TRUE needs all fips to be county/tract/blockgroup codes - returning one URL per site")
       }
@@ -758,9 +763,14 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     if (anyNA(polystr)) {
       ## latlon_from_shapefile_centroids ####
       cpts <- latlon_from_shapefile_centroids(sites$shapefile[is.na(polystr), , drop = FALSE])
-      centroidq <- paste(cpts$lat, cpts$lon, sep = ",")
+      if (is.null(radius)) {
+        centroidq <- paste0("?wherestr=", paste(cpts$lat, cpts$lon, sep = ","))
+      } else {
+        # keep the radius prefill even when falling back to the polygon's centroid
+        centroidq <- paste0("?lat=", cpts$lat, "&lon=", cpts$lon, radpart)
+      }
       centroidq[is.na(cpts$lat) | is.na(cpts$lon)] <- NA
-      urlx[is.na(polystr)] <- ifelse(is.na(centroidq), NA, paste0(baseurl, "?wherestr=", centroidq))
+      urlx[is.na(polystr)] <- ifelse(is.na(centroidq), NA, paste0(baseurl, centroidq))
     }
     return(finish_urls(urlx))
   }
@@ -794,7 +804,8 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     # Note slight changes can occur in lat,lon values if using paste() instead of format() as per ?as.character()
     urlx <- paste0(baseurl, "?lat=", paste(lat[!badpt], collapse = ","),
                    "&lon=", paste(lon[!badpt], collapse = ","), radpart)
-    return(finish_urls(urlx))
+    if (nchar(urlx) <= 1900) {return(finish_urls(urlx))} # keep combined URLs a safe length for servers/browsers
+    warning("combined = TRUE but too many points to fit in one URL - returning one URL per site")
   }
   if (!is.null(radius)) {
     # newer form: the app drops a pin AND prefills the report buffer radius

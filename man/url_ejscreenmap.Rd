@@ -31,8 +31,9 @@ url_ejscreenmap(
 polygon (exterior ring, simplified as needed to fit in a URL) is passed via
 the app's \verb{?polygon=} parameter so EJScreen draws and selects it. If an
 outline is too complex to fit even after simplification, that site falls
-back to the old behavior: a \verb{?wherestr=lat,lon} link centered on the
-polygon's centroid (no boundary drawn).}
+back to a link centered on the polygon's centroid (no boundary drawn):
+\verb{?wherestr=lat,lon}, or \verb{?lat=&lon=&radius=} when radius is provided so
+the report buffer is still prefilled.}
 
 \item{fips}{FIPS code(s) of place(s) to select on the map.
 County (5-digit), tract (11), and blockgroup (12) codes become \verb{?fips=}
@@ -67,7 +68,9 @@ report buffer is prefilled.}
 in a single EJScreen session (drawn on the map and accumulated into the
 app's Multisite list, ready for a Multisite Report or Send to EJAM),
 instead of the default of one URL per site. Works when all sites are
-county/tract/blockgroup fips, or all are points, or all are small polygons.}
+county/tract/blockgroup fips, or all are points, or all are small polygons.
+If the combined URL would be too long to be reliable (over roughly 1900
+characters), it falls back to one URL per site, with a warning.}
 
 \item{as_html}{Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example}
 
