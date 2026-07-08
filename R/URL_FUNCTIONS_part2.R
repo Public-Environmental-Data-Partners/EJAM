@@ -863,7 +863,10 @@ polygons_as_deeplink_strings <- function(shp, digits = 4, maxchars = 1500) {
         if (length(gs) == 0 || any(sf::st_is_empty(gs))) {next}
         coords <- sf::st_coordinates(sf::st_transform(gs, 4326))
         if (NROW(coords) < 4) {next} # a closed ring repeats its 1st point, so 3 vertices = 4 rows
-        # use the ring with the most vertices (the main exterior ring)
+        # keep only exterior rings (ring index L1 == 1; higher values are holes),
+        # then use the exterior ring with the most vertices (the main part)
+        if ("L1" %in% colnames(coords)) {coords <- coords[coords[, "L1"] == 1, , drop = FALSE]}
+        if (NROW(coords) < 4) {next}
         ringid <- apply(coords[, -(1:2), drop = FALSE], 1, paste, collapse = "_")
         coords <- coords[ringid == names(which.max(table(ringid))), , drop = FALSE]
         if (NROW(coords) < 4) {next}
