@@ -53,7 +53,9 @@ The original (pre-2025) EJSCREEN API did not handle zip codes. It can show where
 
 ```{r, eval=FALSE, include=TRUE}
 # Just see where the zipcode is, not its boundaries
-browseURL(url_ejscreenmap(wherestr =  '10001'))
+# (use zip= , not wherestr= : a bare 5-digit wherestr is now read as a county FIPS first,
+#  so wherestr = '10001' would open Kent County, DE instead of this Manhattan zip code)
+browseURL(url_ejscreenmap(zip = '10001'))
 ```
 
 **To map and analyze zip codes you can download shapefiles for them and analyze or map them in EJAM as shown below.**
