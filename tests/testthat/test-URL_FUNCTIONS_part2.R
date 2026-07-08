@@ -294,6 +294,19 @@ test_that("polygons_as_deeplink_strings uses exterior rings without repeated clo
   expect_equal(length(pairs), 4)
   expect_false(identical(pairs[1], pairs[length(pairs)]))
   expect_true(all(pairs %in% c("0,0", "10,0", "10,10", "0,10")))
+
+  outer2 <- matrix(
+    c(20, 20,
+      20, 25,
+      25, 25,
+      25, 20,
+      20, 20),
+    ncol = 2, byrow = TRUE
+  )
+  mpoly <- sf::st_sf(geometry = sf::st_sfc(sf::st_multipolygon(list(list(outer, hole), list(outer2))), crs = 4326))
+  mpairs <- strsplit(EJAM:::polygons_as_deeplink_strings(mpoly, digits = 1), ";", fixed = TRUE)[[1]]
+  expect_equal(length(mpairs), 4)
+  expect_false(any(grepl("^5", mpairs)))
 })
 
 test_that("url_ejscreenmap as_html returns hyperlinks for fips deep links", {
