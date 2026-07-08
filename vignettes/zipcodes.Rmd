@@ -104,7 +104,8 @@ The EJScreen map app can be opened at zip code(s) via a deep link, using its `?z
 launch-URL parameter -- the explicit way to pass a zip code. That matters because a bare
 5-digit number is ambiguous: 10001 is both a Manhattan zip code and Kent County, DE's
 county FIPS, and EJScreen deep links read a bare 5-digit `wherestr=` as a county FIPS
-first (EJAM's convention). `url_ejscreenmap(zip = )` builds the unambiguous zip links:
+first (EJAM's convention). The `zip` argument of `url_ejscreenmap()` builds the
+unambiguous zip links:
 
 ```{r url_ejscreenmap_zip, eval=FALSE, include=TRUE}
 # one zip code: EJScreen opens centered there, with a pin and the site report popup

@@ -90,8 +90,11 @@ anyone can construct:
   parameter: geocodes a place name / address / zipcode (or centers on a `lat,lon`) and
   drops a pin, without selecting a boundary -- except a bare 5-digit value, see below.
 
-One kind of place is used per link, in the order above (`fips` beats `lat`/`lon`, which
-beat polygons, which beat `zip`, which beats `wherestr`). A single place opens the site
+One kind of place is used per link: the EJScreen app reads these URL parameters in the
+order above, so a link's `fips=` beats its `lat=`/`lon=`, which beat polygons, which
+beat `zip=`, which beats `wherestr=`. (That describes how the app reads a URL -- the
+`url_ejscreenmap()` R helper arbitrates its *arguments* in its own order when several
+are passed, so give it only one input type per call.) A single place opens the site
 report popup on it; several places are all drawn and (other than zips) added to
 EJScreen's Multisite list, ready for a Multisite Report or the "Send to EJAM" handoff
 back into EJAM.
@@ -101,8 +104,8 @@ Manhattan zip code and Kent County, DE's county FIPS. The deep links resolve it
 explicitly: `fips=` is always county/tract/blockgroup FIPS, and `zip=` is always a zip
 code. A bare 5-digit `wherestr=` follows EJAM's convention: it is tried as a county FIPS
 first (drawing and selecting that county), and only geocoded as a zip code if no county
-has that code. So prefer `fips=` and `zip=` (i.e., `url_ejscreenmap(fips = )` and
-`url_ejscreenmap(zip = )`); adding context like `?wherestr=10001,NY` also still forces
+has that code. So prefer `fips=` and `zip=` -- the `fips` and `zip` arguments of
+`url_ejscreenmap()` -- while adding context like `?wherestr=10001,NY` also still forces
 the zip reading. The interactive search box inside the EJScreen app is unchanged:
 typing a bare 5-digit number there still searches it as a zip code.
 
