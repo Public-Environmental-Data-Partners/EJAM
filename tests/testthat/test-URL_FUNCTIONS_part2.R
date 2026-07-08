@@ -252,6 +252,10 @@ test_that("url_ejscreenmap polygon centroid fallback keeps the radius", {
   # without a radius, the fallback stays the legacy centroid wherestr link
   u2 <- url_ejscreenmap(shapefile = star)
   expect_true(startsWith(u2, paste0(base, "?wherestr=")))
+  # the same fallback works for a bare geometry column (sfc) input
+  u3 <- url_ejscreenmap(shapefile = sf::st_geometry(star), radius = 2)
+  expect_true(startsWith(u3, paste0(base, "?lat=")))
+  expect_true(grepl("&radius=2", u3, fixed = TRUE))
 })
 
 test_that("url_ejscreenmap as_html returns hyperlinks for fips deep links", {

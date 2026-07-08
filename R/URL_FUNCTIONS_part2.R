@@ -771,7 +771,13 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     urlx[!is.na(polystr)] <- paste0(baseurl, "?polygon=", polystr[!is.na(polystr)], radpart)
     if (anyNA(polystr)) {
       ## latlon_from_shapefile_centroids ####
-      cpts <- latlon_from_shapefile_centroids(sites$shapefile[is.na(polystr), , drop = FALSE])
+      # subset by row for sf, by element for a bare geometry column (sfc)
+      shpneedingcentroid <- if (inherits(sites$shapefile, "sfc")) {
+        sites$shapefile[is.na(polystr)]
+      } else {
+        sites$shapefile[is.na(polystr), , drop = FALSE]
+      }
+      cpts <- latlon_from_shapefile_centroids(shpneedingcentroid)
       if (is.null(radius)) {
         centroidq <- paste0("?wherestr=", paste(cpts$lat, cpts$lon, sep = ","))
       } else {
