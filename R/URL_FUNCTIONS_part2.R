@@ -691,7 +691,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
 
   ## if new API is down, return general links to info page ### #
   if (isTRUE(global_or_param("ejamapi_is_down"))) {
-    n <- max(1, NROW(sitepoints), length(lat), length(fips), NROW(shapefile), length(wherestr))
+    n <- max(1, NROW(sitepoints), length(lat), length(lon), length(fips), NROW(shapefile), length(wherestr))
     if (combined) {n <- 1}
     urlx <- rep('https://ejanalysis.org', n)
     if (as_html) {
@@ -870,6 +870,10 @@ polygons_as_deeplink_strings <- function(shp, digits = 4, maxchars = 1500) {
         ringid <- apply(coords[, -(1:2), drop = FALSE], 1, paste, collapse = "_")
         coords <- coords[ringid == names(which.max(table(ringid))), , drop = FALSE]
         if (NROW(coords) < 4) {next}
+        if (all(coords[1, c("X", "Y")] == coords[NROW(coords), c("X", "Y")])) {
+          coords <- coords[-NROW(coords), , drop = FALSE]
+        }
+        if (NROW(coords) < 3) {next}
         candidate <- paste(round(coords[, "Y"], digits), round(coords[, "X"], digits), sep = ",", collapse = ";")
         if (nchar(candidate) <= maxchars) {result <- candidate; break}
       }

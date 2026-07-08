@@ -260,6 +260,42 @@ test_that("url_ejscreenmap polygon centroid fallback keeps the radius", {
   expect_true(grepl("&radius=2", u3, fixed = TRUE))
 })
 
+test_that("url_ejscreenmap API-down fallback counts lon-only inputs", {
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (identical(vname, "ejamapi_is_down")) {return(TRUE)}
+      orig_global_or_param(vname)
+    },
+    .package = "EJAM"
+  )
+
+  x <- url_ejscreenmap(lon = c(-75.5, -75.6, -75.7))
+  expect_equal(length(x), 3)
+  expect_equal(x, rep("https://ejanalysis.org", 3))
+})
+
+test_that("polygons_as_deeplink_strings uses exterior rings without repeated closing point", {
+  outer <- matrix(
+    c(0, 0,
+      0, 10,
+      10, 10,
+      10, 0,
+      0, 0),
+    ncol = 2, byrow = TRUE
+  )
+  theta <- seq(0, 2 * pi, length.out = 25)
+  hole <- cbind(5 + cos(theta), 5 + sin(theta))
+  poly <- sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(outer, hole)), crs = 4326))
+
+  polystr <- EJAM:::polygons_as_deeplink_strings(poly, digits = 1)
+  pairs <- strsplit(polystr, ";", fixed = TRUE)[[1]]
+
+  expect_equal(length(pairs), 4)
+  expect_false(identical(pairs[1], pairs[length(pairs)]))
+  expect_true(all(pairs %in% c("0,0", "10,0", "10,10", "0,10")))
+})
+
 test_that("url_ejscreenmap as_html returns hyperlinks for fips deep links", {
   x <- url_ejscreenmap(fips = "10001", as_html = TRUE)
   expect_true(grepl("^<a ", x))
