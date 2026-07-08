@@ -186,6 +186,12 @@ test_that("url_ejscreenmap points: legacy wherestr by default, lat/lon/radius wh
 test_that("url_ejscreenmap wherestr-only calls now produce a wherestr link", {
   base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
   expect_equal(url_ejscreenmap(wherestr = "10001"), paste0(base, "?wherestr=10001"))
+  # free text is percent-encoded once (the app unescape()s it), and
+  # as_html's re-encode (reserved = FALSE) must not double-encode it
+  expect_equal(url_ejscreenmap(wherestr = "Dover, DE"), paste0(base, "?wherestr=Dover%2C%20DE"))
+  xh <- url_ejscreenmap(wherestr = "Dover, DE", as_html = TRUE)
+  expect_true(grepl("wherestr=Dover%2C%20DE", xh, fixed = TRUE))
+  expect_false(grepl("%25", xh, fixed = TRUE))
 })
 
 test_that("url_ejscreenmap shapefile makes ?polygon= deep links, drawing the outline", {
