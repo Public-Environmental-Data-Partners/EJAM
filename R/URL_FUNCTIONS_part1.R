@@ -248,7 +248,7 @@ url_xl_style <- function(urls, urltext = urls) {
 # this also drops any keys whose value is NA, NULL, or ""
 
 url_from_keylist <- function(..., keylist = NULL,
-                             baseurl = paste0(url_package("api"), "/report?"),  # canonical API base from DESCRIPTION (ejam_api_url)
+                             baseurl = paste0(url_package("api"), "/report?"),  # canonical API base from DESCRIPTION
                              ifna = url_package("api"),
                              encode = TRUE
 ) {

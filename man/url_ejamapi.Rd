@@ -48,10 +48,10 @@ hyperlinks (via \code{\link[=url_linkify]{url_linkify()}}) suitable for use in a
 
 \item{ifna}{URL shown for missing, NA, NULL, bad input values. Default NULL
 (and an explicitly passed NULL) resolves to the EJAM API base URL from
-DESCRIPTION (\code{ejam_api_url}), via \code{\link[=url_package]{url_package()}} with type="api".}
+DESCRIPTION (\code{url_api}), via \code{\link[=url_package]{url_package()}} with type="api".}
 
 \item{baseurl}{do not change unless endpoint actually changed. Default NULL
-(and an explicitly passed NULL) resolves to the DESCRIPTION \code{ejam_api_url}
+(and an explicitly passed NULL) resolves to the DESCRIPTION \code{url_api}
 followed by "/report?". See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
 
 \item{sitenumber}{controls how many URLs are returned and which site(s) each covers:
@@ -102,7 +102,7 @@ Get URL(s) of HTML summary reports for use with EJAM-API
 \itemize{
 \item Relies on the EJAM REST API, whose source code is at
 https://github.com/Public-Environmental-Data-Partners/EJAM-API
-(the API base URL itself comes from \code{url_package("api")}; see the \code{ejam_api_url}
+(the API base URL itself comes from \code{url_package("api")}; see the \code{url_api}
 field in DESCRIPTION).
 \item To construct a "deep link" that launches the live EJAM \emph{app} (not the API)
 pre-loaded with sites, see \code{\link[=url_ejamapp]{url_ejamapp()}}, which uses the same query

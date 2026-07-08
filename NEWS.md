@@ -47,7 +47,7 @@ web app with the sites already loaded and ready to analyze. The supporting piece
   (302 redirect) to the live app so launch parameters arrive intact.
 
 - The EJAM API base URL is now **single-sourced**: functions read it from
-  `DESCRIPTION` (`ejam_api_url`) via `url_package("api")`, so the endpoint can be
+  `DESCRIPTION` via `url_package("api")`, so the endpoint can be
   changed in one place instead of being hardcoded in several. The default is now
   the branded alias **`https://api.ejanalysis.com`** (equivalently
   `https://ejamapi.ejanalysis.com`), a Cloudflare edge proxy in front of the Cloud

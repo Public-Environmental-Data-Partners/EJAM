@@ -518,7 +518,7 @@ app_server <- function(input, output, session) {
     q <- shiny::parseQueryString(search)
 
     # base URL of the EJAM API that mints/resolves handoff tokens. Single source of
-    # truth is the DESCRIPTION field ejam_api_url; read it via url_package("api"),
+    # truth is in the DESCRIPTION file; read it via url_package("api"),
     # and if that is unavailable derive it from url_ejamapi()'s resolved base (its
     # /report? endpoint minus the path). Override via global_or_param("ejamapi_baseurl").
     # A usable base is a single non-NA, non-empty string; each fallback is tried only

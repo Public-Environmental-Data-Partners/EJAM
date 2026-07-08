@@ -9,20 +9,20 @@
 #'
 #'   - "code" or "ejamrepo" (`URL` field in the DESCRIPTION file contains this, in part) is for the github.com repository of EJAM R package code.
 #'
-#'   - "app" or "ejamapp" (`ejam_app_url` field in the DESCRIPTION file) is for the EJAM Shiny app.
+#'   - "app" or "ejamapp" (`url_ejamapp` field in the DESCRIPTION file) is for the EJAM Shiny app.
 #'
-#'   - "ejscreenrepo" (`ejscreen_repo_url` field in the DESCRIPTION file) is for the EJScreen Shiny app.
+#'   - "ejscreenrepo" (`url_ejscreenrepo` field in the DESCRIPTION file) is for the EJScreen Shiny app.
 #'
-#'   - "ejscreen" or "ejscreenapp" (`ejscreen_app_url` field in the DESCRIPTION file) is for the EJScreen Shiny app.
+#'   - "ejscreen" or "ejscreenapp" (`url_ejscreenapp` field in the DESCRIPTION file) is for the EJScreen Shiny app.
 #'
-#'   - "api" (`ejam_api_url` field in the DESCRIPTION file) is for the EJAM REST API base URL.
+#'   - "api" (`url_api` field in the DESCRIPTION file) is for the EJAM REST API base URL.
 #'     Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
-#'     endpoint can be changed in one place (by editing `ejam_api_url` in DESCRIPTION).
+#'     endpoint can be changed in one place (by editing `url_api` in DESCRIPTION).
 #'     A friendlier branded alias, `https://api.ejanalysis.com` (also
 #'     `https://ejamapi.ejanalysis.com`), proxies the same API via Cloudflare and
 #'     may be used as a substitute.
 #'
-#'   - "apirepo" (`ejam_api_repo` field in the DESCRIPTION file) is for the API source-code
+#'   - "apirepo" (`url_apirepo` field in the DESCRIPTION file) is for the API source-code
 #'     repository on github.com and is informational only -- it is not the API endpoint.
 #'
 #'   - "data" or "datarepo" (`ejam_data_repo` field in the DESCRIPTION file) is for the github.com repository of datasets.
@@ -83,7 +83,7 @@ url_package <- function(
 
       'code', 'ejamrepo',
       'app', 'ejamapp',
-      'ejscreen', 'ejscreenapp',
+      'ejscreen', 'ejscreenapp', 'ejscreenrepo',
       'api', 'apirepo',
       'data', 'datarepo',
       'docs'  # ejamdocs? ejscreendocs?
@@ -113,7 +113,7 @@ url_package <- function(
             type %in% c(
               'code', 'ejamrepo',
               'app', 'ejamapp',
-              'ejscreen', 'ejscreenapp',
+              'ejscreen', 'ejscreenapp', 'ejscreenrepo',
               'api', 'apirepo',
               'data', 'datarepo',
               'docs'  # ejamdocs? ejscreendocs?
@@ -121,13 +121,13 @@ url_package <- function(
   )
   stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias"))
 
-  # "api": full EJAM REST API base URL from DESCRIPTION (ejam_api_url). Returned
+  # "api": full EJAM REST API base URL from DESCRIPTION. Returned
   # as-is (a full URL, like "docs"), so it bypasses the github owner/repo handling
   # below. If the field is somehow missing, fall back to the built-in production API
-  # base -- NOT ejam_api_repo, which names the API source-code repo (a github URL),
+  # base -- NOT url_apirepo, which names the API source-code repo (a github URL),
   # not an API endpoint.
   if (type == "api") {
-    one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_api_url"))
+    one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("url_api"))
     if (length(one_url) == 0 || is.na(one_url) || !nzchar(one_url)) {
       one_url <- "https://api.ejanalysis.com"
     }
@@ -152,19 +152,22 @@ url_package <- function(
 
     get_full_url <- TRUE # already handled but just in case
     if (type == "data") {
-      one_url <- "https://ejanalysis.org/data"
+      one_url <-  as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("url_ejamdata_alias")) # "https://ejanalysis.org/data"
     }
     if (type == "code") {
-      one_url <- "https://ejanalysis.org/code"
+      one_url <-  as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("url_ejamrepo_alias")) # "https://ejanalysis.org/code"
     }
     if (type == "docs") {
-      one_url <- "https://ejanalysis.org/docs"
+      one_url <-  as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("url_ejamdocs_alias")) # "https://ejanalysis.org/docs"
     }
     if (type %in% c("ejam", "ejamapp", "app")) {
-      one_url <- "https://ejanalysis.org/ejamapp" # like ejam_app_url from DESCRIPTION
+      one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("url_ejamapp_alias")) # "https://ejanalysis.org/ejamapp" # like url_ejamapp from DESCRIPTION
     }
     if (type == c("ejscreen", "ejscreenapp")) {
-      one_url <- "https://ejanalysis.org/ejscreenapp" # like ejscreen_app_url from DESCRIPTION
+      one_url <-as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("url_ejscreenapp_alias"))  #  # "https://ejanalysis.org/ejscreenapp" # like url_ejscreenapp from DESCRIPTION
+    }
+    if (type == c("ejscreenrepo")) {
+      one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("url_ejscreenrepo_alias"))  #
     }
 
   } else {
@@ -189,7 +192,7 @@ url_package <- function(
       one_url <- grep(domain, both_urls, value = T)
     }
     if (type == "app") {
-      one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_app_url"))
+      one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("url_ejamapp"))
     }
   }
 
