@@ -800,6 +800,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   if (is.null(lat) || is.null(lon) || length(lat) == 0 || length(lon) == 0) {
     ## wherestr-only, or nothing usable ####
     if (!is.null(wherestr) && length(wherestr) > 0 && any(!is.na(wherestr) & nzchar(wherestr))) {
+      wherestr <- as.character(wherestr) # e.g., a zip code passed as a number
       ok <- !is.na(wherestr) & nzchar(wherestr)
       whereq <- rep(NA_character_, length(wherestr))
       # encode the free-text value once here; the app unescape()s it
