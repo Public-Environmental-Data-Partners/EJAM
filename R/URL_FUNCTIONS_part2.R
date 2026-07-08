@@ -591,9 +591,10 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'
 #'   For County FIPS code 10001, use url_ejscreenmap(fips = "10001") - unambiguous.
 #'
-#'   For zipcode 10001, include more context, like url_ejscreenmap(wherestr = "10001, NY") -
-#'   a bare wherestr = "10001" would open Kent County, DE, since 10001 happens
-#'   to be a county fips as well as a zip code.
+#'   For zipcode 10001, use url_ejscreenmap(zip = "10001") - unambiguous - since
+#'   a bare wherestr = "10001" would open Kent County, DE (10001 happens
+#'   to be a county fips as well as a zip code). Adding context also works,
+#'   like url_ejscreenmap(wherestr = "10001, NY").
 #'
 #'   (The interactive search box inside the EJScreen app is different from
 #'   these launch-URL deep links: it still reads a bare 5-digit number as a zip.)
@@ -613,6 +614,14 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'   `?wherestr=lat,lon`, or `?lat=&lon=&radius=` when radius is provided so
 #'   the report buffer is still prefilled.
 #' @param shape,shp aliases (synonyms) for shapefile
+#' @param zip 5-digit zip code(s) - the unambiguous way to open EJScreen at zip
+#'   code(s), via the app's `?zip=` parameter: always geocoded as zips, never
+#'   read as county fips (unlike a bare 5-digit wherestr). Each zip gets a pin
+#'   with the report popup; one zip centers the map, several fit the view to
+#'   all of them (or use combined = FALSE, the default, for one URL per zip).
+#'   Used only if sitepoints (or lat,lon), shapefile, and fips are not provided;
+#'   takes precedence over wherestr. A zip passed as a number gets its leading
+#'   zeroes restored.
 #' @param radius optional buffer distance in miles for the EJScreen report around
 #'   each point (or polygon). When provided, point links use the app's
 #'   `?lat=&lon=&radius=` parameters (instead of `?wherestr=lat,lon`) so the
@@ -634,7 +643,8 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #' @seealso [url_ejamapp] [url_ejamapi()]  [url_ejscreenmap()]
 #'   [url_echo_facility()] [url_frs_facility()]  [url_enviromapper()]
 #' @examples
-#' url_ejscreenmap(fips = "10001")
+#' url_ejscreenmap(fips = "10001") # county FIPS 10001 = Kent County, DE
+#' url_ejscreenmap(zip = "10001")  # zip code 10001 = Manhattan, NY
 #' url_ejscreenmap(fips = c("10001", "10003"))
 #' url_ejscreenmap(fips = c("10001", "10003"), combined = TRUE)
 #' url_ejscreenmap(lat = c(39, 39.7), lon = c(-75.5, -75.6), radius = 3, combined = TRUE)
@@ -650,6 +660,7 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                             shapefile = NULL,
                             fips = NULL, wherestr = NULL,
+                            zip = NULL,
                             radius = NULL,
                             combined = FALSE,
                             as_html = FALSE,
@@ -691,7 +702,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
 
   ## if new API is down, return general links to info page ### #
   if (isTRUE(global_or_param("ejamapi_is_down"))) {
-    n <- max(1, NROW(sitepoints), length(lat), length(lon), length(fips), NROW(shapefile), length(wherestr))
+    n <- max(1, NROW(sitepoints), length(lat), length(lon), length(fips), NROW(shapefile), length(wherestr), length(zip))
     if (combined) {n <- 1}
     urlx <- rep('https://ejanalysis.org', n)
     if (as_html) {
@@ -798,6 +809,28 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   lon = sitepoints$lon
 
   if (is.null(lat) || is.null(lon) || length(lat) == 0 || length(lon) == 0) {
+    ## > ZIP CODES ####
+    # ?zip= is the app's explicit way to take zip code(s): always geocoded as
+    # zips, never read as county fips (used when no points/fips/shapefile given)
+    if (!is.null(zip) && length(zip) > 0 && any(!is.na(zip))) {
+      zip <- as.character(zip)
+      needpad <- !is.na(zip) & grepl("^[0-9]{3,4}$", zip) # a zip passed as a number can lose leading zeroes
+      zip[needpad] <- sprintf("%05d", as.integer(zip[needpad]))
+      okzip <- !is.na(zip) & grepl("^[0-9]{5}$", zip)
+      if (any(!okzip & !is.na(zip))) {
+        warning("zip should be 5-digit zip code(s); using the generic URL for: ",
+                paste(zip[!okzip & !is.na(zip)], collapse = ", "))
+      }
+      if (combined) {
+        if (any(okzip)) {
+          return(finish_urls(paste0(baseurl, "?zip=", paste(zip[okzip], collapse = ","), radpart)))
+        }
+        return(finish_urls(NA_character_))
+      }
+      urlx <- rep(NA_character_, length(zip))
+      urlx[okzip] <- paste0(baseurl, "?zip=", zip[okzip], radpart)
+      return(finish_urls(urlx))
+    }
     ## wherestr-only, or nothing usable ####
     if (!is.null(wherestr) && length(wherestr) > 0 && any(!is.na(wherestr) & nzchar(wherestr))) {
       wherestr <- as.character(wherestr) # e.g., a zip code passed as a number

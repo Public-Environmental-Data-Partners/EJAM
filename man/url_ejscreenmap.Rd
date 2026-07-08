@@ -11,6 +11,7 @@ url_ejscreenmap(
   shapefile = NULL,
   fips = NULL,
   wherestr = NULL,
+  zip = NULL,
   radius = NULL,
   combined = FALSE,
   as_html = FALSE,
@@ -54,9 +55,10 @@ zip code if no county has that code. So:
 
 For County FIPS code 10001, use url_ejscreenmap(fips = "10001") - unambiguous.
 
-For zipcode 10001, include more context, like url_ejscreenmap(wherestr = "10001, NY") -
-a bare wherestr = "10001" would open Kent County, DE, since 10001 happens
-to be a county fips as well as a zip code.
+For zipcode 10001, use url_ejscreenmap(zip = "10001") - unambiguous - since
+a bare wherestr = "10001" would open Kent County, DE (10001 happens
+to be a county fips as well as a zip code). Adding context also works,
+like url_ejscreenmap(wherestr = "10001, NY").
 
 (The interactive search box inside the EJScreen app is different from
 these launch-URL deep links: it still reads a bare 5-digit number as a zip.)
@@ -67,6 +69,15 @@ Can be State abbrev like "NY" or full state name,
 or city like "New Rochelle, NY" as from fips2name() -- using fips2name()
 works for state, county, or city FIPS code converted to name,
 but using the fips parameter is probably a better idea.}
+
+\item{zip}{5-digit zip code(s) - the unambiguous way to open EJScreen at zip
+code(s), via the app's \verb{?zip=} parameter: always geocoded as zips, never
+read as county fips (unlike a bare 5-digit wherestr). Each zip gets a pin
+with the report popup; one zip centers the map, several fit the view to
+all of them (or use combined = FALSE, the default, for one URL per zip).
+Used only if sitepoints (or lat,lon), shapefile, and fips are not provided;
+takes precedence over wherestr. A zip passed as a number gets its leading
+zeroes restored.}
 
 \item{radius}{optional buffer distance in miles for the EJScreen report around
 each point (or polygon). When provided, point links use the app's
@@ -113,7 +124,8 @@ deployments ignore them and just open the map. The \verb{wherestr=} style links
 or city/CDP FIPS) work on all versions of the app.
 }
 \examples{
-url_ejscreenmap(fips = "10001")
+url_ejscreenmap(fips = "10001") # county FIPS 10001 = Kent County, DE
+url_ejscreenmap(zip = "10001")  # zip code 10001 = Manhattan, NY
 url_ejscreenmap(fips = c("10001", "10003"))
 url_ejscreenmap(fips = c("10001", "10003"), combined = TRUE)
 url_ejscreenmap(lat = c(39, 39.7), lon = c(-75.5, -75.6), radius = 3, combined = TRUE)

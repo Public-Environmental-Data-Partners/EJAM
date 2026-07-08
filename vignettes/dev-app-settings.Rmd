@@ -83,23 +83,28 @@ anyone can construct:
   vertices (at least 3); repeat the parameter for more than one polygon. `shape=`, `shp=`,
   and `shapefile=` are aliases (synonyms) for `polygon=`, matching the parameter aliases
   EJAM functions like `ejamit()` accept.
+- `?zip=10001` or `?zip=10001,99501` -- the explicit way to pass zip code(s),
+  comma-separated: each is geocoded as a zip (never read as a county FIPS) and pinned
+  with the report popup; one zip centers the map, several fit the view to all of them.
 - `?wherestr=Dover%2C%20DE` or `?wherestr=39.157,-75.52` -- the original EJScreen
   parameter: geocodes a place name / address / zipcode (or centers on a `lat,lon`) and
   drops a pin, without selecting a boundary -- except a bare 5-digit value, see below.
 
 One kind of place is used per link, in the order above (`fips` beats `lat`/`lon`, which
-beat polygons, which beat `wherestr`). A single place opens the site report popup on it;
-several places are all drawn and added to EJScreen's Multisite list, ready for a Multisite
-Report or the "Send to EJAM" handoff back into EJAM.
+beat polygons, which beat `zip`, which beats `wherestr`). A single place opens the site
+report popup on it; several places are all drawn and (other than zips) added to
+EJScreen's Multisite list, ready for a Multisite Report or the "Send to EJAM" handoff
+back into EJAM.
 
 **ZIP code vs county FIPS:** a bare 5-digit number is ambiguous -- 10001 is both a
-Manhattan zip code and Kent County, DE's county FIPS. EJAM treats a 5-digit place code as
-a county FIPS, and EJScreen's deep links now follow the same convention:
-`?wherestr=10001` is tried as a county FIPS first (drawing and selecting that county),
-and only geocoded as a zip code if no county has that code. To be unambiguous, pass FIPS
-codes with `fips=` (what `url_ejscreenmap()` does), and force a zip by adding context,
-e.g. `?wherestr=10001,NY`. The interactive search box inside the EJScreen app is
-unchanged: typing a bare 5-digit number there still searches it as a zip code.
+Manhattan zip code and Kent County, DE's county FIPS. The deep links resolve it
+explicitly: `fips=` is always county/tract/blockgroup FIPS, and `zip=` is always a zip
+code. A bare 5-digit `wherestr=` follows EJAM's convention: it is tried as a county FIPS
+first (drawing and selecting that county), and only geocoded as a zip code if no county
+has that code. So prefer `fips=` and `zip=` (i.e., `url_ejscreenmap(fips = )` and
+`url_ejscreenmap(zip = )`); adding context like `?wherestr=10001,NY` also still forces
+the zip reading. The interactive search box inside the EJScreen app is unchanged:
+typing a bare 5-digit number there still searches it as a zip code.
 
 URL-encoding: percent-encode free-text values (a space becomes `%20`, a comma can be
 `%2C`); the digits, commas, and semicolons in the numeric parameters can be left as is.
@@ -109,8 +114,13 @@ back to a centroid `wherestr=` link if an outline cannot fit):
 
 ```{r url_ejscreenmap_examples}
 # One county: boundary drawn & selected, site report popup open
+# (10001 as a FIPS is Kent County, DE; as a zip code it is in Manhattan, NY)
 url_ejscreenmap(fips = "10001")
 #> "https://pedp-ejscreen.azurewebsites.net/index.html?fips=10001"
+
+# The same 5 digits as a zip code: pinned in Manhattan, never read as a FIPS
+url_ejscreenmap(zip = "10001")
+#> "https://pedp-ejscreen.azurewebsites.net/index.html?zip=10001"
 
 # One URL per site (the default; used for per-site link columns in EJAM result tables)
 url_ejscreenmap(fips = c("10001", "10003"))

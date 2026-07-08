@@ -196,6 +196,23 @@ test_that("url_ejscreenmap wherestr-only calls now produce a wherestr link", {
   expect_false(grepl("%25", xh, fixed = TRUE))
 })
 
+test_that("url_ejscreenmap zip= is the explicit way to link zip codes", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  expect_equal(url_ejscreenmap(zip = "10001"), paste0(base, "?zip=10001"))
+  # a zip passed as a number gets its leading zeroes restored
+  expect_equal(url_ejscreenmap(zip = 1001), paste0(base, "?zip=01001"))
+  # one URL per zip by default; combined = one URL for all; radius passes through
+  expect_equal(url_ejscreenmap(zip = c("10001", "99501")),
+               paste0(base, "?zip=", c("10001", "99501")))
+  expect_equal(url_ejscreenmap(zip = c("10001", "99501"), combined = TRUE, radius = 2),
+               paste0(base, "?zip=10001,99501&radius=2"))
+  # zip takes precedence over wherestr
+  expect_equal(url_ejscreenmap(zip = "10001", wherestr = "Dover, DE"), paste0(base, "?zip=10001"))
+  # non-5-digit values get the generic URL, with a warning
+  expect_warning({x <- url_ejscreenmap(zip = c("10001", "123456"))}, "5-digit")
+  expect_equal(x, c(paste0(base, "?zip=10001"), base))
+})
+
 test_that("url_ejscreenmap shapefile makes ?polygon= deep links, drawing the outline", {
   base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
   u <- url_ejscreenmap(shapefile = testinput_shapes_2[1, ])
