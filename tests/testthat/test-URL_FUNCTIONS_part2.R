@@ -224,6 +224,18 @@ test_that("url_ejscreenmap combined=TRUE falls back to one URL per site when too
   expect_true(all(grepl("radius=1", p, fixed = TRUE)))
 })
 
+test_that("url_ejscreenmap combined=TRUE for shapefile returns one URL with repeated polygon=", {
+  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  u <- url_ejscreenmap(shapefile = testinput_shapes_2, combined = TRUE, radius = 1)
+  expect_equal(length(u), 1)
+  expect_true(startsWith(u, paste0(base, "?polygon=")))
+  # one polygon= value per row of the shapefile, plus the shared radius
+  expect_equal(lengths(regmatches(u, gregexpr("polygon=", u, fixed = TRUE))),
+               NROW(testinput_shapes_2))
+  expect_true(grepl("&radius=1", u, fixed = TRUE))
+  expect_true(nchar(u) <= 1900)
+})
+
 test_that("url_ejscreenmap polygon centroid fallback keeps the radius", {
   base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
   # a star polygon with many deep teeth survives simplification with too many

@@ -583,11 +583,20 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'   wherestr should be the street address, zip code, or place name (not FIPS code!).
 #'
 #'   Note that nearly half of all county fips codes are impossible to distinguish from
-#'   5-digit zipcodes because the same numbers are used for both purposes.
+#'   5-digit zipcodes because the same numbers are used for both purposes, so a
+#'   bare 5-digit wherestr is ambiguous. The EJScreen app's deep links resolve
+#'   the ambiguity the way EJAM does: a bare 5-digit wherestr is tried as a
+#'   county FIPS first (drawing that county's boundary), and only geocoded as a
+#'   zip code if no county has that code. So:
 #'
-#'   For zipcode 10001, use url_ejscreenmap(wherestr =  '10001')
+#'   For County FIPS code 10001, use url_ejscreenmap(fips = "10001") - unambiguous.
 #'
-#'   For County FIPS code 10001, use url_ejscreenmap(fips = "10001")
+#'   For zipcode 10001, include more context, like url_ejscreenmap(wherestr = "10001, NY") -
+#'   a bare wherestr = "10001" would open Kent County, DE, since 10001 happens
+#'   to be a county fips as well as a zip code.
+#'
+#'   (The interactive search box inside the EJScreen app is different from
+#'   these launch-URL deep links: it still reads a bare 5-digit number as a zip.)
 #'
 #'   This parameter is passed to the app as wherestr= , if point and fips are not specified.
 #'

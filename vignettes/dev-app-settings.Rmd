@@ -84,13 +84,22 @@ anyone can construct:
   and `shapefile=` are aliases (synonyms) for `polygon=`, matching the parameter aliases
   EJAM functions like `ejamit()` accept.
 - `?wherestr=Dover%2C%20DE` or `?wherestr=39.157,-75.52` -- the original EJScreen
-  parameter, unchanged: geocodes a place name / address / zipcode (or centers on a
-  `lat,lon`) and drops a pin, without selecting a boundary.
+  parameter: geocodes a place name / address / zipcode (or centers on a `lat,lon`) and
+  drops a pin, without selecting a boundary -- except a bare 5-digit value, see below.
 
 One kind of place is used per link, in the order above (`fips` beats `lat`/`lon`, which
 beat polygons, which beat `wherestr`). A single place opens the site report popup on it;
 several places are all drawn and added to EJScreen's Multisite list, ready for a Multisite
 Report or the "Send to EJAM" handoff back into EJAM.
+
+**ZIP code vs county FIPS:** a bare 5-digit number is ambiguous -- 10001 is both a
+Manhattan zip code and Kent County, DE's county FIPS. EJAM treats a 5-digit place code as
+a county FIPS, and EJScreen's deep links now follow the same convention:
+`?wherestr=10001` is tried as a county FIPS first (drawing and selecting that county),
+and only geocoded as a zip code if no county has that code. To be unambiguous, pass FIPS
+codes with `fips=` (what `url_ejscreenmap()` does), and force a zip by adding context,
+e.g. `?wherestr=10001,NY`. The interactive search box inside the EJScreen app is
+unchanged: typing a bare 5-digit number there still searches it as a zip code.
 
 URL-encoding: percent-encode free-text values (a space becomes `%20`, a comma can be
 `%2C`); the digits, commas, and semicolons in the numeric parameters can be left as is.
