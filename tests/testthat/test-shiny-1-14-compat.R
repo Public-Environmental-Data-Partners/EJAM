@@ -23,7 +23,11 @@ test_that("manually-enabled download buttons opt out of Shiny auto-enable", {
 
   manual_download_calls <- regmatches(
     app_server_source,
-    gregexpr("shinyjs::(?:disable|enable)\\(id = 'download_[^']+'", app_server_source, perl = TRUE)
+    gregexpr(
+      "(?:shinyjs::(?:disable|enable)|download_button_(?:disable|enable)_js)\\(id = 'download_[^']+'",
+      app_server_source,
+      perl = TRUE
+    )
   )[[1]]
   manually_managed_download_ids <- unique(
     sub(".*id = '([^']+)'.*", "\\1", manual_download_calls)
@@ -41,4 +45,37 @@ test_that("manually-enabled download buttons opt out of Shiny auto-enable", {
       perl = TRUE
     )
   }
+})
+
+test_that("manual download-button enable clears Shiny disabled accessibility state", {
+  app_server_source <- paste(
+    readLines(testthat::test_path("../../R/app_server.R"), warn = FALSE),
+    collapse = "\n"
+  )
+
+  expect_match(
+    app_server_source,
+    "download_button_enable_js\\s*<-\\s*function\\s*\\(",
+    perl = TRUE
+  )
+  expect_match(app_server_source, "removeClass\\(['\"]disabled['\"]\\)", perl = TRUE)
+  expect_match(app_server_source, "removeAttr\\(['\"]aria-disabled['\"]\\)", perl = TRUE)
+  expect_match(app_server_source, "removeAttr\\(['\"]tabindex['\"]\\)", perl = TRUE)
+  expect_match(app_server_source, "removeAttr\\(['\"]disabled['\"]\\)", perl = TRUE)
+  expect_match(app_server_source, "prop\\(['\"]disabled['\"],\\s*false\\)", perl = TRUE)
+
+  expect_false(
+    grepl(
+      "shinyjs::enable\\(id = 'download_report_multisite'\\)",
+      app_server_source,
+      perl = TRUE
+    )
+  )
+  expect_false(
+    grepl(
+      "shinyjs::enable\\(id = 'download_results_spreadsheet'\\)",
+      app_server_source,
+      perl = TRUE
+    )
+  )
 })

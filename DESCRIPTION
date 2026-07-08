@@ -15,36 +15,34 @@ Description: Actively maintained non-EPA version of EJAM, the web app
     indicators by site and overall (all sites as a whole), in maps/plots/reports.
     This version grew from a fork of the last version EPA released before it was archived.
 License: MIT + file LICENSE
-
 URL: https://public-environmental-data-partners.github.io/EJAM, https://github.com/Public-Environmental-Data-Partners/EJAM, https://ejanalysis.org
-
-
-url_ejam_app  or url_ejamapp
-url_ejam_repo or url_ejamrepo
-
-ejam_app_url: https://ejam.publicenvirodata.org
-ejam_repo: https://github.com/Public-Environmental-Data-Partners/EJAM
-
-
-url_ejam_api       or  url_api_live  or url_api 
-url_ejam_api_repo  or  url_api_repo
-
-ejam_api_url: https://ejamapi-84652557241.us-central1.run.app
-ejam_api_repo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
-
-
-url_ejscreen_app    or   url_ejscreenapp
-url_ejscreen_repo   or   url_ejscreenrepo
-
-ejscreen_app_url: https://pedp-ejscreen.azurewebsites.net/index.html
-ejscreen_repo: https://github.com/Public-Environmental-Data-Partners/EJScreen
-
-
-url_ejam_data   or   url_ejamdata    or  url_ejam_data_repo 
-
+url_api: https://ejamapi-84652557241.us-central1.run.app
+url_api_alias: https://api.ejanalysis.com
+url_api_dev: https://ejanalysis.org
+url_api_dev_alias: https://apidev.ejanalysis.com
+url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
+url_apirepo_alias: https://ejanalysis.com/apirepo
+url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
+url_ejamapp: https://ejam.publicenvirodata.org
+url_ejamapp_alias: https://ejam.ejanalysis.com
+url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
+url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
+url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
+url_ejamrepo_alias: https://ejanalysis.com/ejamrepo
+url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM/
+url_ejamdocs_alias: https://ejanalysis.com/ejamdocs
+url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
+url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
+url_ejscreenapp_dev: https://NOT-SET-UP-YET-TBD.com
+url_ejscreenapp_dev_alias: https://ejscreendev.ejanalysis.com
+url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
+url_ejscreenrepo_alias: https://ejanalysis.com/ejscreenrepo
+url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
+url_ejscreendocs: https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html
+url_ejscreendocs_alias: https://ejanalysis.com/ejscreendocs
+url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
+url_ejamdata_alias: https://ejanalysis.com/data
 ejam_data_repo: Public-Environmental-Data-Partners/ejamdata
-
-
 Authors@R: person("Mark A.", "Corrales", , "ejam@ejanalysis.com", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-1696-5638"))
 Author: Mark A. Corrales <ejam@ejanalysis.com>
 Maintainer: Mark A. Corrales <ejam@ejanalysis.com>

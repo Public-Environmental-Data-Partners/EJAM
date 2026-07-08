@@ -123,7 +123,12 @@ global_defaults_shiny_public <- list(
     c(
       'Latitude/Longitude file upload'                = 'latlon',
       'EPA Facility IDs (FRS Identifiers)'            = 'FRS',
-      'Shapefile of polygons'                         = 'SHP'
+      'Shapefile of polygons'                         = 'SHP',
+      # FIPS is included in the public app too: ?fips= deep links (and the
+      # EJScreen "Send to EJAM" handoff of FIPS place selections) select this
+      # option programmatically, and updateSelectInput() cannot select a value
+      # that is not among the choices.
+      'Census place FIPS Codes file upload'           = 'FIPS'
     )
   } else {
     c(

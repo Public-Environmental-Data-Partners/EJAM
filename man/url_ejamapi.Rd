@@ -18,6 +18,7 @@ url_ejamapi(
   baseurl = NULL,
   sitenumber = "each",
   version = NULL,
+  fileextension = "auto",
   ...,
   shape = NULL,
   shp = NULL
@@ -73,6 +74,18 @@ was requested, so a lone place yields a single-site report URL.}
 \item{version}{optional EJAM version tag (e.g. "3.2024.0") sent to the API as
 version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
 resolves to the installed package Version (from DESCRIPTION).}
+
+\item{fileextension}{report format requested from the API, sent as
+fileextension=\if{html}{\out{<ext>}} on each generated report URL. Default "auto" picks the
+format by report type: "html" for an aggregate \emph{multisite} report URL
+(sitenumber 0/"overall" covering more than one site) since HTML renders
+several times faster and displays directly in the browser tab, but "pdf"
+for \emph{single-site} report URLs (the traditional printable community report).
+Use "html" or "pdf" to force one format for all URLs, or NULL/"" to omit
+the parameter and get the API's own default. Case/whitespace are
+normalized; any other value is an error (values are placed in a URL, so
+arbitrary text is rejected rather than encoded). Only applied to actual
+API /report URLs, never to app-fallback or ifna links.}
 
 \item{...}{a named list of other query parameters passed to the API,
 to allow for expansion of allowed parameters}

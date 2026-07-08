@@ -143,7 +143,10 @@ jobs:
 
       - name: Install EJAM (${{ matrix.install-method }})
         run: |
-          install_opts <- c("--with-keep.source", "--install-tests")
+          # Load is checked in the next workflow step. Skipping R CMD INSTALL's
+          # temporary load check keeps failed installs from deleting EJAM before
+          # the explicit Load EJAM step can report the real startup error.
+          install_opts <- c("--with-keep.source", "--install-tests", "--no-test-load")
           method <- "${{ matrix.install-method }}"
           repo <- Sys.getenv("EJAM_INSTALL_REPO")
           ref <- Sys.getenv("EJAM_INSTALL_REF")
