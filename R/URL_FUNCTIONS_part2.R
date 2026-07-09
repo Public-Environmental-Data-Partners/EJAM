@@ -630,9 +630,10 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'   in a single EJScreen session (drawn on the map and accumulated into the
 #'   app's Multisite list, ready for a Multisite Report or Send to EJAM),
 #'   instead of the default of one URL per site. Works when all sites are
-#'   county/tract/blockgroup fips, or all are points, or all are small polygons.
-#'   If the combined URL would be too long to be reliable (over roughly 1900
-#'   characters), it falls back to one URL per site, with a warning.
+#'   county/tract/blockgroup fips, or all are points, or all are zip codes, or
+#'   all are small polygons. If the combined URL would be too long to be
+#'   reliable (over roughly 1900 characters), it falls back to one URL per
+#'   site, with a warning.
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values
@@ -660,14 +661,17 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                             shapefile = NULL,
                             fips = NULL, wherestr = NULL,
-                            zip = NULL,
-                            radius = NULL,
-                            combined = FALSE,
                             as_html = FALSE,
                             linktext = "EJSCREEN",
                             ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
                             baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
                             ...,
+                            # new params are after ... so they must be passed by name -
+                            # this keeps the original positional order (as_html, linktext,
+                            # ifna, baseurl) working for any existing positional callers
+                            zip = NULL,
+                            radius = NULL,
+                            combined = FALSE,
                             shape = NULL, shp = NULL) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}

@@ -11,14 +11,14 @@ url_ejscreenmap(
   shapefile = NULL,
   fips = NULL,
   wherestr = NULL,
-  zip = NULL,
-  radius = NULL,
-  combined = FALSE,
   as_html = FALSE,
   linktext = "EJSCREEN",
   ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
   baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
   ...,
+  zip = NULL,
+  radius = NULL,
+  combined = FALSE,
   shape = NULL,
   shp = NULL
 )
@@ -70,6 +70,16 @@ or city like "New Rochelle, NY" as from fips2name() -- using fips2name()
 works for state, county, or city FIPS code converted to name,
 but using the fips parameter is probably a better idea.}
 
+\item{as_html}{Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example}
+
+\item{linktext}{used as text for hyperlinks, if supplied and as_html=TRUE}
+
+\item{ifna}{URL shown for missing, NA, NULL, bad input values}
+
+\item{baseurl}{do not change unless endpoint actually changed}
+
+\item{...}{regid can be provided (used to look up lat,lon as a last resort if no sites provided); other arguments ignored}
+
 \item{zip}{5-digit zip code(s) - the unambiguous way to open EJScreen at zip
 code(s), via the app's \verb{?zip=} parameter: always geocoded as zips, never
 read as county fips (unlike a bare 5-digit wherestr). Each zip gets a pin
@@ -88,19 +98,10 @@ report buffer is prefilled.}
 in a single EJScreen session (drawn on the map and accumulated into the
 app's Multisite list, ready for a Multisite Report or Send to EJAM),
 instead of the default of one URL per site. Works when all sites are
-county/tract/blockgroup fips, or all are points, or all are small polygons.
-If the combined URL would be too long to be reliable (over roughly 1900
-characters), it falls back to one URL per site, with a warning.}
-
-\item{as_html}{Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example}
-
-\item{linktext}{used as text for hyperlinks, if supplied and as_html=TRUE}
-
-\item{ifna}{URL shown for missing, NA, NULL, bad input values}
-
-\item{baseurl}{do not change unless endpoint actually changed}
-
-\item{...}{regid can be provided (used to look up lat,lon as a last resort if no sites provided); other arguments ignored}
+county/tract/blockgroup fips, or all are points, or all are zip codes, or
+all are small polygons. If the combined URL would be too long to be
+reliable (over roughly 1900 characters), it falls back to one URL per
+site, with a warning.}
 
 \item{shape, shp}{aliases (synonyms) for shapefile}
 }
