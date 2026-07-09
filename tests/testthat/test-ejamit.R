@@ -394,14 +394,22 @@ test_that("ejamit() still returns results_bysite identical to numbers it used to
     suppressMessages({
       # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
+      ## Compare all columns except the two hyperlink columns ("EJAM Report" =
+      ## column 1, and "EJSCREEN Map"): link formats legitimately change (e.g.,
+      ## EJSCREEN links now use lat/lon/radius deep-link parameters instead of
+      ## wherestr=), the stored reference is deliberately NOT regenerated for
+      ## URL-format-only changes, and link formats are covered by the dedicated
+      ## URL tests (test-URL_FUNCTIONS_part2.R etc.). This check is about the
+      ## data values.
+      linkcols <- c("EJAM Report", "EJSCREEN Map")
+      keptcols <- setdiff(names(testoutput_ejamit_10pts_1miles$results_bysite), linkcols)
       expect_equal(
-        ## Compare all columns expect column 1, the url of the EJAM Report
-        ejamitoutnow$results_bysite[,-1],
-        testoutput_ejamit_10pts_1miles$results_bysite[,-1]
-        ,
-        ignore_attr = ".internal.selfref" # intended to ignore attribute
-        # but does not ignore attributes that are metadata like date saved to package, ACS version, etc. that are part of testoutput_ejamit_10pts_1miles, etc.
+        as.data.frame(ejamitoutnow$results_bysite)[, keptcols],
+        as.data.frame(testoutput_ejamit_10pts_1miles$results_bysite)[, keptcols]
       )
+      ## sanity check the links column still holds links (format details are
+      ## checked by the URL function tests, not against the stored copy)
+      expect_true(all(grepl('^<a href="https://', ejamitoutnow$results_bysite[["EJSCREEN Map"]])))
       # all.equal(    ejamitoutnow$results_bysite,
       #               testoutput_ejamit_10pts_1miles$results_bysite)
     } )
@@ -418,10 +426,20 @@ test_that("ejamit() still returns results_bysite with same EJAM Report column", 
       ## version (version=X.Y.Z), which legitimately changes every release, so
       ## normalize it before comparing -- otherwise this structural check breaks on
       ## each version bump (the saved reference was built at an earlier version).
-      norm_report_version <- function(x) gsub("version=[0-9]+\\.[0-9]+\\.[0-9]+", "version=VER", x)
+      ## Likewise normalize the API base URL and the fileextension= parameter,
+      ## which legitimately changed (branded api.ejanalysis.com base URL, explicit
+      ## fileextension=pdf) without regenerating the stored reference: this check
+      ## is about the per-site query values (lat/lon/buffer/sitetype), while the
+      ## URL base and format are covered by the URL function tests.
+      norm_report_url <- function(x) {
+        x <- gsub("version=[0-9]+\\.[0-9]+\\.[0-9]+", "version=VER", x)
+        x <- gsub("https://[^/\"]+/report\\?", "https://HOST/report?", x)
+        x <- gsub("&fileextension=[[:alnum:]]+", "", x)
+        x
+      }
       expect_equal(
-        norm_report_version(as.vector(unlist(ejamitoutnow$results_bysite[,1]))),
-        norm_report_version(as.vector(unlist(testoutput_ejamit_10pts_1miles$results_bysite[,1])))
+        norm_report_url(as.vector(unlist(ejamitoutnow$results_bysite[,1]))),
+        norm_report_url(as.vector(unlist(testoutput_ejamit_10pts_1miles$results_bysite[,1])))
       )
       # all.equal(    ejamitoutnow$results_bysite,
       #               testoutput_ejamit_10pts_1miles$results_bysite)

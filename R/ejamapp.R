@@ -58,7 +58,9 @@
 #' some (the ones that are inputs in the ui / server)
 #' can be bookmarked (saved in a URL) for later use.
 #'
-#' For more details, see the article on "Defaults and Custom Settings for the Web App"
+#' For more details, see the article on
+#' `r paste0("[Defaults and Custom Settings for the Web App](", url_package('docs'), "/articles/dev-app-settings.html)")`
+#'
 #'
 #' **Examples of custom parameters that you could pass to ejamapp() are shown below.**
 #'
@@ -158,6 +160,9 @@
 #' )
 #'
 #'   ## Specific cities are preselected at launch
+#'
+#'   ejamapp(fips=3673000)
+#'   ejamapp(fips=name2fips(c("akutan,ak", "syracuse city,ny")))
 #'
 #'   ejamapp(
 #'   default_site_method = "dropdown",
@@ -263,6 +268,7 @@
 #' @return An object that represents the app. Printing the object or
 #'   passing it to [runApp()] will run the app, as would just typing
 #'   [ejamapp()] in the console.
+#' @seealso  [url_ejamapp()] [url_ejscreenmap()] [url_ejamapi()] [ejamapi()]
 #'
 #'
 #' @export
