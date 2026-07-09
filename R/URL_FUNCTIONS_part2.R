@@ -695,7 +695,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     ok <- !is.na(urlx)  # now !ok mean it was a bad input and also  ifna=NA
     if (as_html) {
       urlx[ok] <- URLencode(urlx[ok]) # consider if we want  reserved = TRUE
-      urlx[ok] <- url_linkify(urlx[ok], text = linktext)
+      urlx[ok] <- url_linkify(urlx[ok], text = linktext, encode = FALSE) # already encoded just above
     }
     ## use generic URL if site is NA, ifna  again in case linkified an NA
     urlx[!ok] <- ifna # only use non-linkified ifna for the ones where user set ifna=NA and it had to use ifna
@@ -711,7 +711,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     urlx <- rep('https://ejanalysis.org', n)
     if (as_html) {
       urlx <- URLencode(urlx)
-      urlx <- url_linkify(urlx, text = linktext)
+      urlx <- url_linkify(urlx, text = linktext, encode = FALSE) # already encoded just above
     }
     return(urlx)
   }
