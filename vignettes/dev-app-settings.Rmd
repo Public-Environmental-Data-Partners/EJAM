@@ -86,14 +86,13 @@ Deep links based on FIPS code of Census unit like county:
 - http://ejamdev.ejanalysis.com/?fips=24029,24031
 
 ```{r url_ejamapp, eval=FALSE}
-## EJAM app on production server - fails until deployed to production 
-urlx = url_ejamapp(fips=c(3650617,'0973000') )
+## EJAM app deep link (default base URL)
+urlx <- url_ejamapp(fips = c(3650617, "0973000"))
 urlx
-#           "https://ejamapp.ejanalysis.com/?fips=3650617,0973000"
-# browseURL("https://ejamapp.ejanalysis.com/?fips=3650617,0973000")
+# browseURL(urlx)
 
-## EJAM app dev - ok
-browseURL("https://ejamdev.ejanalysis.com/?fips=3650617,0973000")
+## For a non-default deployment, override the base URL:
+# browseURL(url_ejamapp(fips = c(3650617, "0973000"), baseurl = "<staging-app-baseurl>"))
 ```
 
 Build such a link with `url_ejamapp()`; its query vocabulary matches `url_ejamapi()` (which
