@@ -68,22 +68,23 @@ the production server hosting the live EJAM shiny app
 at https://ejam.publicenvirodata.org,
 and it provides a way to pass through URL-encoded parameters.
 
-The URL http://ejamdev.ejanalysis.com is an alias for
-the development / staging server hosting a live EJAM shiny app 
-at http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com 
-and it also provides a way to pass through URL-encoded parameters.
+The URL https://ejamdev.ejanalysis.com is an alias for
+the development / staging server hosting a live EJAM shiny app.
+(It redirects to an AWS load balancer whose literal hostname can change when the
+infrastructure is rebuilt -- one reason the stable alias is the address to share --
+and it also provides a way to pass through URL-encoded parameters.)
 
 Deep links based on lat and lon and radius
-for one or more points:
+for one or more points (staging examples; links for the production app are the
+same but with the production base, which is `url_ejamapp()`'s default):
 
-- http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com/?lat=33&lon=-112&radius=2
-- http://ejamdev.ejanalysis.com/?lat=33&lon=-112&radius=2
-- http://ejamdev.ejanalysis.com/?lat=33,33.1&lon=-112,-112.2&radius=2
+- https://ejamdev.ejanalysis.com/?lat=33&lon=-112&radius=2
+- https://ejamdev.ejanalysis.com/?lat=33,33.1&lon=-112,-112.2&radius=2
 
 Deep links based on FIPS code of Census unit like county:
-  
-- http://ejamdev.ejanalysis.com/?fips=24029&buffer=0
-- http://ejamdev.ejanalysis.com/?fips=24029,24031
+
+- https://ejamdev.ejanalysis.com/?fips=24029&buffer=0
+- https://ejamdev.ejanalysis.com/?fips=24029,24031
 
 ```{r url_ejamapp, eval=FALSE}
 ## EJAM app deep link (default base URL)
@@ -105,11 +106,12 @@ help for `ejamapi()`/`url_ejamapi()`, and the EJAM-API repository's README.
 
 ## Deep links into EJScreen (the mapping tool)
 
-The PEDP EJScreen map app (`https://pedp-ejscreen.azurewebsites.net/index.html`) accepts a
-symmetric set of launch-URL parameters, so a link can open EJScreen with place(s) already
-drawn and **selected for analysis** -- the reverse direction of the "Send to EJAM" handoff
-described above. `url_ejscreenmap()` builds these links for you, but they are plain URLs
-anyone can construct:
+The PEDP EJScreen map app accepts a symmetric set of launch-URL parameters, so a link can
+open EJScreen with place(s) already drawn and **selected for analysis** -- the reverse
+direction of the "Send to EJAM" handoff described above. Build these links with
+`url_ejscreenmap()`, whose default `baseurl=` points at the current live EJScreen
+deployment (override `baseurl=` for a different one); they are plain URLs anyone can
+construct:
 
 - `?fips=10001` or `?fips=10001,10003,10001040100` -- one or more FIPS codes,
   comma-separated: 5-digit county, 11-digit tract, or 12-digit block group (mixes allowed).
