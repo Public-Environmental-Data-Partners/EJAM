@@ -92,7 +92,10 @@ zeroes restored.}
 \item{radius}{optional buffer distance in miles for the EJScreen report around
 each point (or polygon). When provided, point links use the app's
 \verb{?lat=&lon=&radius=} parameters (instead of \verb{?wherestr=lat,lon}) so the
-report buffer is prefilled.}
+report buffer is prefilled. Must be a single number greater than zero:
+zero (or a negative or non-numeric value) means no buffer is prefilled,
+so it is left out of the URL, which EJScreen treats the same way
+(its deep links only apply a \verb{radius=} that is greater than zero).}
 
 \item{combined}{set TRUE to get ONE URL that loads ALL of the sites together
 in a single EJScreen session (drawn on the map and accumulated into the
