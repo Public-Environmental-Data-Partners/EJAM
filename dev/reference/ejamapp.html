@@ -152,7 +152,8 @@ to override those settings for the duration of the app.
 Some of them can also be adjusted in the web app's Advanced tab, and
 some (the ones that are inputs in the ui / server)
 can be bookmarked (saved in a URL) for later use.</p>
-<p>For more details, see the article on "Defaults and Custom Settings for the Web App"</p>
+<p>For more details, see the article on
+<a href="https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></p>
 <p><strong>Examples of custom parameters that you could pass to ejamapp() are shown below.</strong></p>
 <p>More about how the app launches:</p>
 <p>Typically R Shiny apps are not distributed as R packages and
@@ -170,6 +171,10 @@ used when the shiny app is started,
 to tell the server to NOT source all the .R files,
 since they are already loaded as part of the EJAM package when someone does <code><a href="https://public-environmental-data-partners.github.io/EJAM">require(EJAM)</a></code>,
 i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-link">require()</a></code> or <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="url_ejamapp.html">url_ejamapp()</a></code> <code><a href="url_ejscreenmap.html">url_ejscreenmap()</a></code> <code><a href="url_ejamapi.html">url_ejamapi()</a></code> <code><a href="ejamapi.html">ejamapi()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -248,6 +253,9 @@ i.e., via <code><a href="https://rdrr.io/r/base/library.html" class="external-li
 <span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co">## Specific cities are preselected at launch</span></span>
+<span></span>
+<span>  <span class="fu">ejamapp</span><span class="op">(</span>fips<span class="op">=</span><span class="fl">3673000</span><span class="op">)</span></span>
+<span>  <span class="fu">ejamapp</span><span class="op">(</span>fips<span class="op">=</span><span class="fu"><a href="name2fips.html">name2fips</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"akutan,ak"</span>, <span class="st">"syracuse city,ny"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="fu">ejamapp</span><span class="op">(</span></span>
 <span>  default_site_method <span class="op">=</span> <span class="st">"dropdown"</span>,</span>
