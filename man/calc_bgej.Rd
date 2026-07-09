@@ -17,7 +17,9 @@ calc_bgej(
   vnames_d_demogindex_supp = "Demog.Index.Supp",
   vnames_d_demogindex_state = "Demog.Index.State",
   vnames_d_demogindex_supp_state = "Demog.Index.Supp.State",
-  vnames_ST = "ST"
+  vnames_ST = "ST",
+  usastats_lookup = NULL,
+  statestats_lookup = NULL
 )
 }
 \arguments{
@@ -50,6 +52,12 @@ and the 4 types of demographic indexes.}
 
 \item{vnames_ST}{name of column in bgstats that has the 2-character State abbreviation to use in
 finding envt percentiles in the \link{statestats} table used by \code{\link[=calc_pctile_columns]{calc_pctile_columns()}}}
+
+\item{usastats_lookup}{optional percentile lookup table to use for national
+environmental percentiles. Defaults to \link{usastats}.}
+
+\item{statestats_lookup}{optional percentile lookup table to use for state
+environmental percentiles. Defaults to \link{statestats}.}
 }
 \value{
 data.table like \link{bgej}

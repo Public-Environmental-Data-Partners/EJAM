@@ -34,6 +34,8 @@ that can be printed to the console or shown in the RStudio viewer pane
 See ejamit()$results_bysite in interactive table in RStudio viewer pane
 }
 \examples{
+\dontrun{
 ejam2tableviewer(testoutput_ejamit_10pts_1miles)
+}
 
 }

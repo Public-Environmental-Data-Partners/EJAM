@@ -1,4 +1,11 @@
 
+
+
+### gets used by calc_blockgroup_demog_index(), now orchestrated by the staged
+### pipeline and calc_ejscreen_dataset(); archived formula notes are reference only.
+
+
+
 ############################################################## ############################################################### #
 
 # special case of Demog.Index creation yearly for entire US, all blockgroups
@@ -44,23 +51,27 @@ formulas_ejscreen_demog_index <- data.frame(
     "z.pctdisability = (pctdisability - avg.pctdisability) / sd.pctdisability",
 
     "Demog.Index = (z.pctlowinc + z.pctmin) / 2",
-    "Demog.Index.Supp = (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5",
+    "Demog.Index.Supp = ifelse(is.na(z.pctlowlifex), (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctdisability) / 4, (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5)",
 
     "Demog.Index.State      = (z.pctlowinc + z.pctmin) / 2", # # ??
-    "Demog.Index.Supp.State = (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5" # ???
+    "Demog.Index.Supp.State = ifelse(is.na(z.pctlowlifex), (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctdisability) / 4, (z.pctlowinc + z.pctlingiso + z.pctlths + z.pctlowlifex + z.pctdisability) / 5)"
   ),
-  longname_old = NA,
+  # longname_old = NA,
   longname = NA
 )
-formulas_ejscreen_demog_index$rname = EJAM:::formula_varname(formulas_ejscreen_demog_index$formula)
+formulas_ejscreen_demog_index$rname = EJAM:::calc_varname_from_formula(formulas_ejscreen_demog_index$formula)
 formulas_ejscreen_demog_index$longname <- fixcolnames(formulas_ejscreen_demog_index$rname, 'rname', 'long')
 
 ########################################################## #
 
+# formulas_ejscreen_demog_index <- EJAM:::metadata_add(formulas_ejscreen_demog_index)
+# usethis::use_data(formulas_ejscreen_demog_index, overwrite = T)
 EJAM:::metadata_add_and_use_this("formulas_ejscreen_demog_index")
+
 EJAM:::dataset_documenter(
   "formulas_ejscreen_demog_index",
-  title = "formulas_ejscreen_demog_index (DATA) special formulas for annually recalculating the Demog.Index annual update"
+  title = "formulas_ejscreen_demog_index (DATA) special formulas for annually recalculating the Demog.Index annual update",
+  seealso = "[formulas_ejscreen_acs] [formulas_ejscreen_acs_disability]"
 )
 
 ########################################################## ########################################################### #

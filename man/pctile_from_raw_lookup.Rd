@@ -10,14 +10,16 @@ pctile_from_raw_lookup(
   varname.in.lookup.table,
   lookup = usastats,
   zone = "USA",
-  quiet = TRUE
+  quiet = TRUE,
+  signif_digits = NULL
 )
 
 lookup_pctile(
   myvector,
   varname.in.lookup.table,
   lookup = usastats,
-  zone = "USA"
+  zone = "USA",
+  signif_digits = NULL
 )
 }
 \arguments{
@@ -42,6 +44,12 @@ or NA returned for each item looked up and warning given.
 For example, it could be "NY" for New York State, "USA" for national percentiles.}
 
 \item{quiet}{set to FALSE to see details on where certain scores were all NA values like in 1 state}
+
+\item{signif_digits}{optional integer. If supplied, round both the raw values
+and the matching lookup-table column to this many significant digits before
+assigning percentiles. This is mainly for reference-replication workflows
+such as the ACS22 \code{P_DISABILITYPCT} boundary issue, where tiny binary
+floating-point differences otherwise put values just below a lookup cutoff.}
 }
 \value{
 By default, returns numeric vector length of myvector.

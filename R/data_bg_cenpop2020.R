@@ -5,8 +5,9 @@
 #' @name bg_cenpop2020
 #' @docType data
 #' @title bg_cenpop2020 (DATA) data.table with all US Census 2020 blockgroups
-#' @description data.table with all US Census 2020 blockgroups, Census 2020 population count,
-#'   and lat/lon of Census2020-population-weighted centroid of blockgroup
+#' @description data.table with all US Census 2020 blockgroups, 12-character
+#'   blockgroup FIPS, Census 2020 population count, and lat/lon of
+#'   Census 2020 population-weighted centroid of blockgroup.
 #' @details also see attributes(bg_cenpop2020) for source URL and date
 #' @seealso   [blockgroupstats]
 'bg_cenpop2020'

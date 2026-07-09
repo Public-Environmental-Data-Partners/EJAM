@@ -2,7 +2,7 @@
 % Please edit documentation in R/dataload_dynamic.R
 \name{dataload_dynamic}
 \alias{dataload_dynamic}
-\title{Utility to download / load datasets}
+\title{Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)}
 \usage{
 dataload_dynamic(
   varnames = .arrow_ds_names[1:3],
@@ -43,10 +43,15 @@ returns vector of names of objects now in memory in specified envir, either beca
 }
 }
 \description{
-Utility to download / load datasets
+Utility to download / load datasets (other than typical datasets, which get lazy-loaded from the data folder)
 }
 \details{
-First checks memory, then installed package's data folder
-When package is first loaded, all arrow files are downloaded from a repository called ejamdata
-into package's data directory
+First checks memory, then the installed package's data folder. When the
+package is first loaded, Arrow files are downloaded from the package's data
+repository, normally called \code{ejamdata}, into the package's data directory.
+
+By default, Arrow files are loaded from the \code{ejamdata} release tag recorded
+in DESCRIPTION as \code{ejamdata_required_tag}. The local
+\code{ejamdata_version.txt} marker records which \code{ejamdata} release tag is
+currently saved in the installed package's data folder.
 }

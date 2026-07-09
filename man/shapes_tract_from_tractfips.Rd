@@ -7,9 +7,9 @@
 shapes_tract_from_tractfips(
   fips,
   outFields = c("FIPS", "STATE_ABBR", "SQMI"),
-  myservice =
-    c("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query",
-    "cartographic", "tigris")[1]
+  myservice = c(paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
+    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"), "cartographic",
+    "tigris")[1]
 )
 }
 \arguments{

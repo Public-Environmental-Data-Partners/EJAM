@@ -105,12 +105,12 @@ if (!requireNamespace("pak", quietly = TRUE)) {
 parentfolder <- rstudioapi::readRStudioPreference(
   "default_open_project_location", ".")
 ejamroot <- file.path(parentfolder, "EJAM")
-# or maybe ejamroot <- "."
-if (!(basename(ejamroot) == "EJAM" &&
+# or maybe ejamroot <- "." 
+if (!(basename(ejamroot) == "EJAM" && 
       file.exists(file.path(ejamroot, "DESCRIPTION")))) {
   stop("must set ejamroot to root folder of EJAM source package")}
 
-pak::pkg_install(pkg = ejamroot,
+pak::pkg_install(pkg = ejamroot, 
                  dependencies = NA, upgrade = FALSE)
 
 library(EJAM)
@@ -150,7 +150,7 @@ pkg <- "Public-Environmental-Data-Partners/EJAM@*release"
 # pkg <- "Public-Environmental-Data-Partners/EJAM@ACS2024"
 
 # a specific release (version):
-# pkg <- "Public-Environmental-Data-Partners/EJAM@v2.32.8.1"
+# pkg <- "Public-Environmental-Data-Partners/EJAM@v2.32.8.001"
 
 pak::pkg_install(pkg = pkg,
                  dependencies = NA, upgrade = FALSE)

@@ -5,7 +5,7 @@
 \alias{testshapes_2}
 \title{testshapes_2 dataset}
 \format{
-An object of class \code{sf} (inherits from \code{data.frame}) with 2 rows and 18 columns.
+An object of class \code{sf} (inherits from \code{data.frame}) with 2 rows and 11 columns.
 }
 \usage{
 testshapes_2

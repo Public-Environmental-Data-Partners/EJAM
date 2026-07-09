@@ -13,9 +13,106 @@ if (!exists('blockwts')) {
 }
 ################# #  ################# #  ################# #
 
+doaggregate_warning_messages <- function(expr) {
+  warnings <- character()
+  value <- withCallingHandlers(
+    expr,
+    warning = function(w) {
+      warnings <<- c(warnings, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    }
+  )
+  list(value = value, warnings = warnings)
+}
+
+doaggregate_messages <- function(expr) {
+  messages <- character()
+  value <- withCallingHandlers(
+    expr,
+    message = function(m) {
+      messages <<- c(messages, conditionMessage(m))
+      invokeRestart("muffleMessage")
+    }
+  )
+  list(value = value, messages = messages)
+}
+
+expect_no_radius_warning <- function(expr) {
+  out <- doaggregate_warning_messages(expr)
+  expect_false(
+    any(grepl("radius|32 miles|1/1\\.5x|1\\.5x", out$warnings, ignore.case = TRUE)),
+    info = paste(out$warnings, collapse = "\n")
+  )
+  out$value
+}
+
+fips2state_abbrev <- EJAM:::fips2state_abbrev
+fips2state_fips <- EJAM:::fips2state_fips
+pctile_from_raw_lookup <- EJAM:::pctile_from_raw_lookup
+state_from_sitetable <- EJAM:::state_from_sitetable
+
 ################# #
 # DOES IT STILL RETURN WHAT IT USED TO, OR HAS FUNCTION CHANGED SO THAT OUTPUTS NO LONGER MATCH ARCHIVED OUTPUTS? ####
 ################# #
+
+test_that("doaggregate drops unsupported blockgroups before counting and aggregating", {
+  skip_if_not(exists("bgid2fips"))
+
+  bgstats <- data.table::as.data.table(blockgroupstats)
+  valid_bg <- bgstats[!is.na(bgid) & !is.na(pop) & pop > 0][1]
+  unsupported_bg <- bgid2fips[!(bgid %in% bgstats$bgid)][1]
+  skip_if(nrow(valid_bg) == 0 || nrow(unsupported_bg) == 0)
+
+  s2b <- data.table::data.table(
+    ejam_uniq_id = c(1L, 1L),
+    blockid = c(100000001L, 100000002L),
+    bgid = c(valid_bg$bgid, unsupported_bg$bgid),
+    blockwt = c(1, 1),
+    distance = c(0, 0)
+  )
+  s2st <- data.table::data.table(ejam_uniq_id = 1L, ST = valid_bg$ST)
+
+  out <- doaggregate_messages(
+    doaggregate(s2b, sites2states_or_latlon = s2st)
+  )
+
+  expect_match(
+    paste(out$messages, collapse = "\n"),
+    "Dropping 1 block row.*1 unsupported blockgroup"
+  )
+  expect_match(paste(out$messages, collapse = "\n"), unsupported_bg$bgfips)
+  expect_equal(out$value$results_bysite$pop, valid_bg$pop)
+  expect_equal(out$value$results_bysite$blockcount_near_site, 1)
+  expect_equal(out$value$results_bysite$bgcount_near_site, 1)
+  expect_false(unsupported_bg$bgid %in% out$value$results_bybg_people$bgid)
+})
+
+test_that("doaggregate returns no normal output when every blockgroup is unsupported", {
+  skip_if_not(exists("bgid2fips"))
+
+  bgstats <- data.table::as.data.table(blockgroupstats)
+  unsupported_bg <- bgid2fips[!(bgid %in% bgstats$bgid)][1]
+  skip_if(nrow(unsupported_bg) == 0)
+
+  s2b <- data.table::data.table(
+    ejam_uniq_id = 77L,
+    blockid = 100000003L,
+    bgid = unsupported_bg$bgid,
+    blockwt = 1,
+    distance = 0
+  )
+  s2st <- data.table::data.table(ejam_uniq_id = 77L, ST = fips2state_abbrev(unsupported_bg$bgfips))
+
+  out <- doaggregate_messages(
+    doaggregate(s2b, sites2states_or_latlon = s2st)
+  )
+
+  expect_match(
+    paste(out$messages, collapse = "\n"),
+    "No block rows remain after dropping unsupported blockgroups"
+  )
+  expect_null(out$value)
+})
 
 test_that("still returns same results_overall as saved", {
 
@@ -205,7 +302,7 @@ stavgcols = grep("state.avg", avgcols, value = T)
 ################### #
 test_that("replicate US AVG", {
 
-  x_calculated_here = as.vector(EJAM:::usastats_means(gsub("avg.", "", usavgcols)) )
+  x_calculated_here = as.vector(EJAM::usastats_means(gsub("avg.", "", usavgcols)) )
   x_doag = as.vector(unlist(bysite[, ..usavgcols]))
   expect_equal(x_calculated_here, x_doag)
 })
@@ -213,10 +310,11 @@ test_that("replicate US AVG", {
 test_that("replicate STATE AVG", {
 
   x_calculated_here =  as.vector(unlist(statestats[statestats$PCTILE %in% "mean" & statestats$REGION  %in% "AL", gsub("state.avg.", "", stavgcols)]))
-  # x_calculated_here_approx =  as.numeric(as.vector(EJAM:::statestats_means(ST = bysite$ST, gsub("state.avg.", "", stavgcols))[gsub("state.avg.", "", stavgcols),] ))
+  statevarnames = gsub("state.avg.", "", stavgcols)
+  x_calculated_here_means =  as.numeric(as.vector(EJAM::statestats_means(ST = bysite$ST, varnames = statevarnames)[statevarnames, ]))
   x_doag = as.vector(unlist(bysite[, ..stavgcols]))
   expect_equal(round(x_calculated_here, 3), round(x_doag, 3))
-  # expect_equal(round(x_calculated_here_approx, 2), round(x_doag, 2))
+  expect_equal(round(x_calculated_here_means, 2), round(x_doag, 2))
 })
 ################### #
 othercols = setdiff(othercols, c(pctilecols, avg.or.ratio.cols))
@@ -225,12 +323,15 @@ othercols = setdiff(othercols, c(pctilecols, avg.or.ratio.cols))
 
 otherwtdmeancols = othercols[calctype(othercols) %in% "wtdmean" ]
 # > sort(table(calcweight(otherwtdmeancols)), decreasing = T)
-# lan_universe          hhlds        lingiso        age25up     builtunits disab_universe  occupiedunits  povknownratio unemployedbase
-#          12              4              4              1              1              1              1              1              1
+
+
 ################### #
 test_that("***replicate other wtdmeans?", {
 
-  wts = bgstats[ , calcweight(otherwtdmeancols), with = F]
+  weight_cols <- unique(calcweight(otherwtdmeancols))
+  missing_weight_cols <- setdiff(weight_cols, names(bgstats))
+  expect_true(all(missing_weight_cols %in% "healthinsurance_universe"))
+  wts = bgstats[ , intersect(weight_cols, names(bgstats)), with = F]
   ## these could be checked also
   expect_equal(sum(bgstats$povknownratio * bgstats$pctlowinc) / sum(bgstats$povknownratio),
                bysite$pctlowinc)
@@ -533,9 +634,11 @@ test_that('error if input has column not named distance', {
 
 test_that('warning if ask for radius < 0', {
   junk = capture_output({
-    expect_no_warning(
+    expect_no_error(
       suppressMessages({
-        doaggregate(sites2blocks = testoutput_getblocksnearby_10pts_1miles , radius = 0)
+        suppressWarnings({
+          doaggregate(sites2blocks = testoutput_getblocksnearby_10pts_1miles , radius = 0)
+        })
       })
     )
     expect_warning({
@@ -568,10 +671,10 @@ testthat::test_that("same result if radius requested is 32 or 50, since >32 gets
 
 test_that("no warning if radius = 32 exactly IF original analysis was for AT LEAST 1/1.5x that radius", {
   x = getblocksnearby(testpoints_10[1,], radius = 1.01 * (32 / 1.5), quiet = TRUE) # 1.5x is where it starts to warn now in doag
-  testthat::expect_no_warning({
-    junk = capture_output({
+  junk = capture_output({
+    y <- expect_no_radius_warning({
       suppressMessages({
-        y <- doaggregate(sites2blocks = x, radius = 32, silentinteractive = TRUE)
+        doaggregate(sites2blocks = x, radius = 32, silentinteractive = TRUE)
       })
     })
   })
@@ -657,8 +760,10 @@ test_that(paste0("radius param to doagg with input below should not warn or err!
   cause_no_warn_no_err <- list(normalnumber = 1.3)
   cat('\n  Trying radius that is', names(cause_no_warn_no_err)[1], '- Testing to ensure it works... ')
   try({
-    expect_no_condition({
-      x <- doaggregate(sites2blocks =  testoutput_getblocksnearby_10pts_1miles, radius = cause_no_warn_no_err[[1]])
+    x <- expect_no_radius_warning({
+      suppressMessages({
+        doaggregate(sites2blocks =  testoutput_getblocksnearby_10pts_1miles, radius = cause_no_warn_no_err[[1]])
+      })
     })
   })
   expect_true(
@@ -763,7 +868,9 @@ test_that(paste0("doaggregate radius like with the input below should report err
 #
 # cause_something_else <- bad_numbers[c("matrix_1x1", "array1", "character1", "df1")]  # ????
 
-rm(cause_no_warn_no_err)
+if (exists("cause_no_warn_no_err")) {
+  rm(cause_no_warn_no_err)
+}
 ################# #  ################# #  ################# #
 
 
@@ -792,7 +899,9 @@ rm(cause_no_warn_no_err)
 
 # cat('still need to test cases where input table is valid class, type, but too many rows or columns\n')
 
-
-
-
-
+rm(
+  fips2state_abbrev ,
+  fips2state_fips ,
+  pctile_from_raw_lookup ,
+  state_from_sitetable
+)

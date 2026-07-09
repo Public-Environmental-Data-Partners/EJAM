@@ -23,14 +23,14 @@
 #  stored at
 #  https://github.com/ejanalysis/analyze.stuff
 #  https://github.com/ejanalysis/analyze.stuff/blob/36afe6b102cb2cef90b87a48dfea9479b1a2447a/R/calc.fields.R
-#  devtools::install_github("ejanalysis/analyze.stuff")
+#  pak::pkg_install("ejanalysis/analyze.stuff")
 #  ?analyze.stuff::calc.fields()
 ######################################### #
 # example using just 10 blockgroups from 1 county in Delaware
 if (FALSE) {
   c1 <- fips2countyname(fips_counties_from_state_abbrev('DE'), includestate = F)[1]
   bgdf = data.frame(EJAM::blockgroupstats[ST == "DE" & countyname == c1, ..names_d])[1:10, ]
-  newdf <-  ejscreen::ejscreen.acs.calc(
+  newdf <-  calc_ejam(
     bgdf, keep.old = "", keep.new = c("my_custom_stat", "mystat2"),
     formulas = c(
       "my_custom_stat <- (pctlowinc + pctmin)/2",
@@ -41,12 +41,15 @@ if (FALSE) {
 ################################################################ #
 
 
-#' DRAFT utility to use formulas provided as text, to calculate indicators
+#' DRAFT  utility to use formulas provided as text, to calculate indicators
 #'
 #' @param bg data.frame//table of indicators or variables to use
 #' @param keep.old names of columns (variables) to retain from among those provided in bg
 #' @param keep.new names of calculated variables to retain in output
-#' @param formulas text strings of formulas
+#' @param formulas text strings of formulas, or a data.frame with columns
+#'   `"rname"` and `"formula"`. Formula dependencies are sorted before
+#'   evaluation so intermediate variables are calculated before formulas that
+#'   use them.
 #' @param quiet if FALSE, prints to console success/failure of each formula
 #' @details
 #' - [custom_doaggregate()] may use [calc_ejam()]
@@ -69,20 +72,24 @@ if (FALSE) {
 #'      "mystat2  = 100 * pctlowinc"))
 #' cbind(Demog.Index = bgdf$Demog.Index, newdf, pctlowinc = bgdf$pctlowinc)
 #'
-#' newdf <- calc_ejam(bgdf, formulas = formulas_d)
+#' acs_formula_subset <- EJAM:::calc_formulas_from_varname(
+#'     c("pcthisp", "pctmin", "pctlowinc")
+#'   )$formula
+#'
+#' newdf <- calc_ejam(bgdf, formulas = acs_formula_subset)
 #' newdf
 #'
 #'
 #' ##  example of entire US
 #' #
-#' newdf1  <- calc_ejam(as.data.frame(bgdf), formulas = formulas_d)
+#' newdf1  <- calc_ejam(as.data.frame(bgdf), formulas = acs_formula_subset)
 #'   t(summary(newdf1))
 #'
 #' bgdf <- data.frame(blockgroupstats)
 #' newdf <- calc_ejam(bgdf,
 #'                    keep.old = c('bgid', 'pop', 'hisp'),
 #'                    keep.new = "all",
-#'                    formulas = formulas_d
+#'                    formulas = acs_formula_subset
 #' )
 #' round(t(newdf[1001:1002, ]), 3)
 #' cbind(
@@ -93,7 +100,7 @@ if (FALSE) {
 #' cbind(round(sapply(newdf, max, na.rm=TRUE),2),
 #' names(newdf) %in% names_pct_as_fraction_blockgroupstats)
 #'
-#' EJAM:::calc_varname_from_formula(formulas_d)
+#' EJAM:::calc_varname_from_formula(acs_formula_subset)
 #'
 #' rm(bgdf)
 #' }
@@ -143,7 +150,7 @@ calc_ejam <- function(bg,
   # }
 
   # if (missing(formulafile) & !missing(formulas)) {
-  myformulas <- formulas
+  myformulas <- calc_formulas_for_evaluation(formulas)
   ## could add error checking here
   # }
 
@@ -162,11 +169,14 @@ calc_ejam <- function(bg,
 ################################################################ #
 
 
-#' DRAFT utility to use formulas provided as text, to calculate indicators
+#' DRAFT  utility to use formulas provided as text, to calculate indicators
 #'
 #' @param mydf data.frame of indicators or variables to use
-#' @param formulas text strings of formulas - WARNING: this should not really be used on user-provided, untrusted formula strings,
-#'   since the contents could potentially be a security risk
+#' @param formulas text strings of formulas, or a data.frame with columns
+#'   `"rname"` and `"formula"`. Formula dependencies are sorted before
+#'   evaluation. WARNING: this should not really be used on user-provided,
+#'   untrusted formula strings, since the contents could potentially be a
+#'   security risk
 #' @param keep useful if some of the formulas are just interim steps
 #'   creating evanescent variables created only for use in later formulas
 #'   and not needed after that
@@ -176,10 +186,10 @@ calc_ejam <- function(bg,
 #' @return data.frame of results, but
 #'   if mydf was a data.table, returns a table in [data.table](https://r-datatable.com) format
 #'
-calc_byformula <- function(mydf, formulas = NULL, keep = calc_varname_from_formula(formulas), quiet = FALSE) {
+calc_byformula <- function(mydf, formulas = NULL, keep = NULL, quiet = FALSE) {
 
 
-  # DRAFT WORK NOT COMPLETED
+  # DRAFT WORK NOT COMPLETE
 
   if (is.data.table(mydf)) {
     wasdt = TRUE
@@ -192,8 +202,10 @@ calc_byformula <- function(mydf, formulas = NULL, keep = calc_varname_from_formu
   if (is.null(formulas)) {
     stop("no formulas specified or found, so no calculation done")
   }
-  formulas <- trimws(formulas)
-  formulas <- formulas[!is.na(formulas)]
+  formulas <- calc_formulas_for_evaluation(formulas)
+  if (is.null(keep)) {
+    keep <- calc_varname_from_formula(formulas)
+  }
   #  cat('\n formulas: ', formulas,'\n\n')
   #  cat('\n keep: ', keep,'\n\n')
 
@@ -280,7 +292,7 @@ calc_byformula <- function(mydf, formulas = NULL, keep = calc_varname_from_formu
 #' EJAM:::calc_varname_from_formula(c("z=10", "b<- 1", "c <- 34", " h = 1+1", "   q=2+2"))
 #' head(cbind(
 #'   EJAM:::calc_varname_from_formula(formulas_ejscreen_acs$formula),
-#'   formulas_ejscreen_acs$formula$formula)
+#'   formulas_ejscreen_acs$formula)
 #'   )
 #'
 #' @return a vector as long as myforms input vector

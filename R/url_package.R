@@ -3,14 +3,23 @@
 #' Get URL, or just owner/reponame, for the package code, datasets, or documentation website
 #' as specified in the DESCRIPTION file or by redirects from aliases
 #'
-#' @param type Which type of URL is needed? Can be "data", "code", or "docs".
+#' @param type Which type of URL is needed? Can be "data", "code", "docs", or "api".
 #'
 #'   - "code" is for the github.com repository of R package code
 #'   - "data" is for the github.com repository of datasets
 #'   - "docs" is for the documentation website
+#'   - "api" is for the EJAM REST API base URL (DESCRIPTION field `ejam_api_url`,
+#'     falling back to the built-in production API base if that field is missing).
+#'     Always a full URL. This is the single source of the API endpoint: all
+#'     functions that call or build EJAM API URLs read it from here, so the
+#'     endpoint can be changed in one place (edit `ejam_api_url` in DESCRIPTION).
+#'     A friendlier branded alias, `https://api.ejanalysis.com` (also
+#'     `https://ejamapi.ejanalysis.com`), proxies the same API via Cloudflare and
+#'     may be used as `ejam_api_url`. (The `ejam_api_repo` field names the API
+#'     source-code repo and is informational only -- it is not the API endpoint.)
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
-#'   Ignored if type = "docs", where full URL is always returned.
+#'   Ignored if type = "docs" or "api", where a full URL is always returned.
 #'
 #' @param desc_or_alias must be "desc" or "alias" to use info from DESCRIPTION file
 #'   or the URL based on a redirect from the aliases at
@@ -19,7 +28,16 @@
 #'   - https://ejanalysis.org/data
 #'   - https://ejanalysis.org/docs
 #'
+#' @param docs_version optional, only used when type = "docs". A docs subpath such as
+#'   "dev", "v3.2024.0", "v3.2023.0", or "v3.2022.0" to append to the canonical root
+#'   docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
+#'   `EJAM_DOCS_BASE_URL` is set (as the pkgdown CI workflow does while building a
+#'   given version), that value overrides everything so rendered Rd/Rmd links stay
+#'   within the version being built. `desc_or_alias = "alias"` shortcuts always point
+#'   to the root docs site only.
 #' @param domain obsolete parameter - do not use
+#' @seealso [url_ejamapi()] [ejamapi()] [url_ejamapp()] -- the functions that build/call EJAM API
+#'   and app URLs; `url_package("api")` is their single source for the API base URL.
 #' @details
 #' See https://ejanalysis.com/ejam-code   for a list of URLs
 #'
@@ -31,10 +49,12 @@
 #'  url_package("docs")
 #'
 #'  url_package("code")
-#'  url_package("code", get_full_url=T)
+#'  url_package("code", get_full_url = TRUE)
 #'
 #'  url_package("data")
-#'  url_package("data", get_full_url=T)
+#'  url_package("data", get_full_url = TRUE)
+#'
+#'  url_package("api")
 #'
 #'  url_package("docs", desc_or_alias="alias")
 #'  url_package("code", desc_or_alias="alias")
@@ -46,9 +66,10 @@
 #' @keywords internal
 #'
 url_package <- function(
-    type = c('code', 'data', 'docs')[1],
+    type = c('code', 'data', 'docs', 'api')[1],
     get_full_url = FALSE,
     desc_or_alias = c("desc", "alias")[1],
+    docs_version = NULL,
     domain = NULL
 ) {
 
@@ -64,8 +85,21 @@ url_package <- function(
       }
     }
   }
-  stopifnot(length(type) == 1, type %in% c('code', 'data', 'docs'))
+  stopifnot(length(type) == 1, type %in% c('code', 'data', 'docs', 'api'))
   stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias"))
+
+  # "api": full EJAM REST API base URL from DESCRIPTION (ejam_api_url). Returned
+  # as-is (a full URL, like "docs"), so it bypasses the github owner/repo handling
+  # below. If the field is somehow missing, fall back to the built-in production API
+  # base -- NOT ejam_api_repo, which names the API source-code repo (a github URL),
+  # not an API endpoint.
+  if (type == "api") {
+    one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_api_url"))
+    if (length(one_url) == 0 || is.na(one_url) || !nzchar(one_url)) {
+      one_url <- "https://api.ejanalysis.com"
+    }
+    return(sub("/+$", "", one_url[1]))
+  }
   if (desc_or_alias == "alias" && get_full_url == FALSE) {
     if (!missing(get_full_url)) {
       warning("cannot use desc_or_alias='alias' if get_full_url=FALSE, so just using get_full_url=TRUE ")
@@ -115,6 +149,22 @@ url_package <- function(
       both_urls <- as.vector(unlist(strsplit(gsub(" |\n", "", both_urls), ",")))
       one_url <- grep(domain, both_urls, value = T)
     }
+  }
+
+  # Versioned docs support (type = "docs", desc path only). Within a pkgdown CI build,
+  # EJAM_DOCS_BASE_URL overrides the docs base so rendered Rd/Rmd links stay inside the
+  # version being built. Otherwise docs_version (e.g. "dev", "v3.2024.0") appends a
+  # subpath to the canonical root docs URL. Alias shortcuts always point to root only.
+  if (type == "docs" && desc_or_alias == "desc") {
+    env_base <- Sys.getenv("EJAM_DOCS_BASE_URL")
+    if (nzchar(env_base)) {
+      return(sub("/+$", "", env_base))
+    }
+    base <- sub("/+$", "", one_url[1])
+    if (!is.null(docs_version) && nzchar(docs_version)) {
+      base <- paste0(base, "/", sub("^/+|/+$", "", docs_version))
+    }
+    return(base)
   }
 
   if (get_full_url) {

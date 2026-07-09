@@ -37,7 +37,9 @@ ejam2report(
   fileextension = c("html", "pdf")[1],
   filename = NULL,
   return_html = FALSE,
-  launch_browser = TRUE
+  launch_browser = TRUE,
+  shape = NULL,
+  shapefile = NULL
 )
 }
 \arguments{
@@ -58,10 +60,10 @@ If specified, it overrides logo_path. If omitted, gets created based on logo_pat
 
 \item{report_title}{optional generic name of this type of report, to be shown at top,
 like "EJSCREEN Multisite Report" or "EJSCREEN Community Report".
-Default is EJAM:::global_or_param("report_title") or EJAM:::global_or_param("report_title_multisite")
+Default is global_or_param("report_title") or global_or_param("report_title_multisite")
 depending on number of sites analyzed and the sitenumber parameter.}
 
-\item{analysis_title}{optional title of analysis, default is EJAM:::global_or_param("default_standard_analysis_title")}
+\item{analysis_title}{optional title of analysis, default is global_or_param("default_standard_analysis_title")}
 
 \item{addlatlon}{optional, whether to include lat,lon coordinates in header (for "latlon" sitetype)}
 
@@ -118,6 +120,10 @@ PDF output is required when this option is selected; it is not optional.}
 \item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
 
 \item{launch_browser}{set TRUE to have it launch browser and show report.}
+
+\item{shape}{alias (synonym) for shp}
+
+\item{shapefile}{alias (synonym) for shp}
 }
 \value{
 URL of temp file or object depending on return_html,
@@ -127,13 +133,13 @@ and has side effect of launching browser to view it depending on return_html
 Get the html text or the path to the html file with a multisite summary or community report
 }
 \examples{
-#out <- ejamit(testpoints_10, radius = 3, include_ejindexes = T)
+#out <- ejamit(testpoints_10, radius = 3, include_ejindexes = TRUE)
 out <- testoutput_ejamit_10pts_1miles
 
-ejam2report(out)
 ejam2table_tall(out$results_overall)
 if (interactive()) {
- x <- ejam2report(out, sitenumber = 1, launch_browser = T)
+ ejam2report(out)
+ x <- ejam2report(out, sitenumber = 1, launch_browser = TRUE)
  table_gt_from_ejamit_overall(out$results_overall)
  table_gt_from_ejamit_1site(out$results_bysite[1, ])
 }

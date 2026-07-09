@@ -31,7 +31,8 @@ or one of \code{colnames(map_headernames)} like "rname", "vartype", "decimals", 
 Also, you can use this to extract any info from \code{map_headernames} (which
 here is called mapping_for_names).
 
-NOTE: if you ask to rename your words to a known type like rname or apiname, and
+NOTE: if you ask to rename your words to a known type like rname or
+ejscreen_apinames_old, and
 the namesnow is not found among the oldtype, then it is not renamed, and those are returned as unchanged.
 BUT, if you specify as newtype some column that is not a known type of name, like "varcategory"
 then it will instead return an empty string for those in namesnow that are not found among the oldtype.
@@ -44,9 +45,9 @@ These are some key column names in the \link{map_headernames} table:
 \item "shortname" (aka "short", for plot labels, etc.)
 \item "longname" (aka "long", for full explanatory headers to use on a table)
 \item "rname" (aka "r", the R variable names as used in the EJAM code)
-\item "apiname" (aka "api", as returned by EJSCREEN API)
-\item "csvname" (aka "csv", as found in the CSV files of just the key residential population and environmental indicators, found on the EJSCREEN FTP site)
-\item "acsname" (aka "acs", as found in a ACS data file internally used by EJSCREEN, containing all the extra residential population groups and other indicators not stored in the CSV files on the EJSCREEN FTP site)
+\item "ejscreen_apinames_old" (aka "api", as used by the old EJSCREEN API)
+\item "csvname" (aka "csv", as used in archived EJSCREEN CSV/FTP downloads for key indicators)
+\item "acsname" (aka "acs", as used in ACS-derived fields for additional demographic indicators not included in archived EJSCREEN CSV/FTP downloads)
 \item "DEJ" (whether the indicator is residential population, environmental, etc.)
 \item "varlist" (which group of names is this variable in, such as "names_d", "names_d_subgroups", "names_d_state_pctile", etc.)
 \item "calculation_type" (how it should be aggregated over blockgroups, such as "wtdmean", "sum of counts", etc.)
@@ -64,7 +65,7 @@ These are some key column names in the \link{map_headernames} table:
 
  # see the different names for the same variable,
  # and see it is not in the csv tables on the FTP site
- varinfo("pcthisp", c("csvname", "acsname", "apiname"))
+ varinfo("pcthisp", c("csvname", "acsname", "ejscreen_apinames_old"))
 
  # EJAM:::names_whichlist("RAW_D_INCOME")
  fixcolnames(c("RAW_D_INCOME", "S_D_LIFEEXP"), 'api')

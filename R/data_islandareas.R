@@ -4,18 +4,36 @@
 
 #' @name islandareas
 #' @docType data
-#' @title islandareas (DATA) table, bounds info on lat lon of US Island Areas
+#' @title islandareas (DATA) table, bounding boxes lat lon for US Island Areas
 #' @description data.frame of info on approximate lat lon bounding boxes around
-#'   American Samoa, Guam, the
-#'   Commonwealth of the Northern Mariana Islands (Northern Mariana Islands),
-#'   and the United States Virgin Islands.
 #'
-#'   See also [stateinfo] and [stateinfo2]
+#'   - American Samoa (AS)
+#'   - Guam (GU)
+#'   - the Commonwealth of the Northern Mariana Islands (Northern Mariana Islands) (MP)
+#'   - the United States Virgin Islands (VI)
+#'   - Note the U.S. Minor Outlying Islands (UM) are also Island Areas, but are not included in EJScreen/EJAM. They are widely dispersed, and include Midway Islands, for example.
+#'
+#'   See [stateinfo2] and see info on these areas via `stateinfo2[stateinfo2$is.island.areas, ]`
+#'
+#'   Puerto Rico is included in both Census 2020 and ACS survey data.
+#'
+#'   The 2020 Census (Island Areas Census) did include information on AS,GU,MP,VI, but the ACS does not include Island Areas.
+#'   See https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html
+#'
+#'   For EJAM v3, AS/GU/MP/VI may appear in blockgroup datasets,
+#'   EJSCREEN export files, and map-facing blockgroup data with demographic
+#'   fields kept as `NA` and partial EPA environmental fields where available.
+#'   Island Area blocks are not added to EJAM's block helper datasets, so
+#'   radius/buffer analysis there should return no-data results rather than
+#'   block-weighted estimates.
+#'
+#'   See `vignette("island-areas", package = "EJAM")` for v3 Island Area
+#'   coverage notes and live EJSCREEN layer availability observed in May 2026.
 #'
 #'   See [Census documentation](https://www.census.gov/programs-surveys/geography.html)
 #'
-#'   See source package files datacreate_islandareas.R or EJAM/data-raw/islandareas.xlsx
+#'   See source package files datacreate_islandareas.R or EJAM/data-raw/datafile_islandareas.csv
 #'
-#'   Note the US minor outlying islands are not in that list and are widely dispersed.
-#'   They include Midway Islands, etc.
+#'
+#' @seealso [is.island()]
 'islandareas'

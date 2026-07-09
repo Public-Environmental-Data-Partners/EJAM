@@ -137,7 +137,7 @@ testthat::test_that("latloncsv2nexus ok", {
   latloncsv_example = c("30.01,-90.61", "30.26,-90.95", "30.51,-91.23")
   nexus_example =  "30.01,-90.61;30.26,-90.95;30.51,-91.23"
   testthat::expect_no_error({
-    x <- latloncsv2nexus(latloncsv = latloncsv_example)
+    x <- EJAM:::latloncsv2nexus(latloncsv = latloncsv_example)
   })
   testthat::expect_equal(
   nexus_example, 
@@ -153,7 +153,7 @@ testthat::test_that("latlon2nexus ok", {
   latloncsv_example = c("30.01,-90.61", "30.26,-90.95", "30.51,-91.23")
   nexus_example =  "30.01,-90.61;30.26,-90.95;30.51,-91.23"
   testthat::expect_no_error({
-    x <- latlon2nexus(lat = lat_example, lon = lon_example)
+    x <- EJAM:::latlon2nexus(lat = lat_example, lon = lon_example)
   })
   testthat::expect_equal(
     nexus_example,

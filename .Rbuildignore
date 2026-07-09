@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^.*ALL_THIS_GETS_MOVED_TO_ROOT_FOLDER.*
 ^doc$
+^docs$
 ^Meta$
 ^data-raw$
 ^_pkgdown\.yml$
@@ -22,3 +23,4 @@
 ^README\.html$
 ^logo\.svg$
 ^shiny_bookmarks$
+^planning$

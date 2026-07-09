@@ -40,14 +40,23 @@
 #'
 global_or_param = function(vname) {
 
+  # Back-compat alias map: a param renamed in a later version still resolves under its OLD name when
+  # only the old key is present (e.g. a user's older global_defaults_*.R file). ejamapp() already
+  # normalizes old->new for its own params; this covers the global_defaults files and direct reads.
+  # old_name is NA for any vname that has no alias, so the lookups below are no-ops in that case.
+  old_name <- unname(c(default_site_method = "default_upload_dropdown")[vname])
+
   ################################ #
   ## 1st check if param was defined upon shiny app launch
   ## either via being passed to ejamapp() or  stored as golem global options upon app launch after having been defined by global_default_*.R file
 
-  param_passed_to_run_app_or_global_defaults <- golem::get_golem_options(vname)
+  param_passed_to_ejamapp_or_global_defaults <- golem::get_golem_options(vname)
+  if (is.null(param_passed_to_ejamapp_or_global_defaults) && !is.na(old_name)) {
+    param_passed_to_ejamapp_or_global_defaults <- golem::get_golem_options(old_name)
+  }
 
-  if (!is.null(param_passed_to_run_app_or_global_defaults)) {
-    return(param_passed_to_run_app_or_global_defaults)
+  if (!is.null(param_passed_to_ejamapp_or_global_defaults)) {
+    return(param_passed_to_ejamapp_or_global_defaults)
   } else {
 
     ################################ #
@@ -57,6 +66,9 @@ global_or_param = function(vname) {
     if (exists("global_defaults_package")) {
       if (vname %in% names(global_defaults_package)) {
         return(global_defaults_package[[vname]])
+      }
+      if (!is.na(old_name) && old_name %in% names(global_defaults_package)) {
+        return(global_defaults_package[[old_name]])
       }
     }
     ################################ #

@@ -37,8 +37,8 @@ test_that("matches doaggregate() ratios", {
   #   ----------------- AVERAGES -----------------
 
   avgs <- cbind(
-    calc_avg_columns(varnames = names_these, zones = "USA"),
-    calc_avg_columns(varnames = names_these, zones = testbgs$ST)
+    EJAM:::calc_avg_columns(varnames = names_these, zones = "USA"),
+    EJAM:::calc_avg_columns(varnames = names_these, zones = testbgs$ST)
   )
   data.table::setDT(avgs)
   # t(avgs)
@@ -49,7 +49,7 @@ test_that("matches doaggregate() ratios", {
 
   #   ----------------- RATIOS TO AVERAGES -----------------
 
-  ratios <- calc_ratio_columns(testbgs)  # needs raw and avg cols be in 1 dt
+  ratios <- EJAM:::calc_ratio_columns(testbgs)  # needs raw and avg cols be in 1 dt
   data.table::setDT(ratios)
   # t(ratios)
   expect_true(

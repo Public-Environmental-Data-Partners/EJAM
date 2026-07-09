@@ -36,7 +36,7 @@ frs_make_naics_lookup <- function(x) {
 #  head(x,20)
 #   head(x, 20)
   attr(x, 'released') <- Sys.Date()
-  # print('To use in package,  usethis::use_data(frs_by_naics, overwrite=TRUE)  ')
+  # Obsolete: publish frs_by_naics.arrow; do not save as package .rda data.
 
     invisible(x)
 

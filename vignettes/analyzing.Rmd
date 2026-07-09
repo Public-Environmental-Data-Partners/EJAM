@@ -67,7 +67,10 @@ groups or which facilities have notable findings.
 # Tools for Selecting Locations to Analyze
 
 EJAM offers a variety of ways to specify the places to be analyzed and compared.
-The web app helps you select locations in several ways.
+The web app helps you select locations in several ways, including uploading a
+table of points, selecting facilities by industry category or ID, uploading
+shapefiles or lists of FIPS codes, and clicking on a map to specify one or more
+points.
 
 If you are working in RStudio, and you already have identified the points or
 areas to analyze, the `ejamit()` function will accept 1) point coordinates, 2) a
@@ -121,6 +124,9 @@ You can define locations as all residents within X miles of any one or more of
 the specified points, and you can define those points in a few ways. One way is
 to upload a table of coordinates -- latitude and longitude for each point, one
 row per site, with columns called lat and lon (or some synonyms that work).
+In the web app you can also pick points without a file by choosing
+"Click or draw on map" and clicking the map to add one or more points (click a
+point's marker again to remove it).
 
 There are also [more detailed functions for working with latlon
 coordinates.](../reference/index.html#specify-points-by-lat-lon)
@@ -672,6 +678,25 @@ cbind(overall = as.list( out$results_overall[ , ..names_d_subgroups])); cat("\n"
 cbind(overall = as.list( out$results_overall[ , ..names_e_pctile])); cat("\n")
 cbind(overall = as.list( out$results_overall[ , ..names_d_pctile])); cat("\n")
 # cbind(overall = as.list( out$results_overall[ , ..names_ej_pctile])); cat("\n")
+```
+
+#### See the US or State reference averages and percentiles
+
+These lookup tables hold the benchmark values that site results get compared against (for example in the "Compared to US/State Averages" barplots below).
+
+```{r refstats, eval = TRUE}
+# US mean plus key percentiles, for environmental and demographic indicators
+usastats_query(varnames = names_e)
+
+# US means only, as a tidy 1-column matrix (indicators as rownames)
+usastats_means(names_d)
+
+# the same for one state: mean plus key percentiles
+statestats_query("MD", varnames = names_e)
+
+# state means as a matrix with indicators as rows and one column per state
+# (ST may repeat, e.g. one entry per site)
+statestats_means(ST = c("MD", "VA"), varnames = names_e[1:3])
 ```
 
 # VISUALIZATION OF FINDINGS (PLOTS) {#visualization-of-findings-plots}

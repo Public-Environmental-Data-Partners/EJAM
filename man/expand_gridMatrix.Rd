@@ -21,9 +21,9 @@ It differs from expand.grid in that this returns a matrix not data.frame, only a
 and lacks the other parameters of expand.grid
 }
 \examples{
- expand_gridMatrix(99:103, 1:2) 
+ EJAM:::expand_gridMatrix(99:103, 1:2)
  zz <- 1:10; top <- 1:2
- expand_gridMatrix(zz, top) 
+ EJAM:::expand_gridMatrix(zz, top)
  
 }
 \seealso{

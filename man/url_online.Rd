@@ -4,7 +4,7 @@
 \alias{url_online}
 \title{utility - check if URL available, such as if an API is online or offline}
 \usage{
-url_online(url = "https://ejam.policyinnovation.info")
+url_online(url = "https://ejam.publicenvirodata.org")
 }
 \arguments{
 \item{url}{the URL to check}
@@ -16,7 +16,7 @@ TRUE or FALSE (but NA if no internet connection seems to be available at all)
 utility - check if URL available, such as if an API is online or offline
 }
 \details{
-Also see EJAM:::global_or_param("ejamapi_is_down")
+Also see global_or_param("ejamapi_is_down")
 as set in global_defaults_package.R
 }
 \keyword{internal}

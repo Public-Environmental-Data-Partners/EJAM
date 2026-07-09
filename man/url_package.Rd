@@ -6,22 +6,32 @@
 as specified in the DESCRIPTION file or by redirects from aliases}
 \usage{
 url_package(
-  type = c("code", "data", "docs")[1],
+  type = c("code", "data", "docs", "api")[1],
   get_full_url = FALSE,
   desc_or_alias = c("desc", "alias")[1],
+  docs_version = NULL,
   domain = NULL
 )
 }
 \arguments{
-\item{type}{Which type of URL is needed? Can be "data", "code", or "docs".
+\item{type}{Which type of URL is needed? Can be "data", "code", "docs", or "api".
 \itemize{
 \item "code" is for the github.com repository of R package code
 \item "data" is for the github.com repository of datasets
 \item "docs" is for the documentation website
+\item "api" is for the EJAM REST API base URL (DESCRIPTION field \code{ejam_api_url},
+falling back to the built-in production API base if that field is missing).
+Always a full URL. This is the single source of the API endpoint: all
+functions that call or build EJAM API URLs read it from here, so the
+endpoint can be changed in one place (edit \code{ejam_api_url} in DESCRIPTION).
+A friendlier branded alias, \verb{https://api.ejanalysis.com} (also
+\verb{https://ejamapi.ejanalysis.com}), proxies the same API via Cloudflare and
+may be used as \code{ejam_api_url}. (The \code{ejam_api_repo} field names the API
+source-code repo and is informational only -- it is not the API endpoint.)
 }}
 
 \item{get_full_url}{logical, whether to return full URL or just the owner/reponame info.
-Ignored if type = "docs", where full URL is always returned.}
+Ignored if type = "docs" or "api", where a full URL is always returned.}
 
 \item{desc_or_alias}{must be "desc" or "alias" to use info from DESCRIPTION file
 or the URL based on a redirect from the aliases at
@@ -30,6 +40,14 @@ or the URL based on a redirect from the aliases at
 \item https://ejanalysis.org/data
 \item https://ejanalysis.org/docs
 }}
+
+\item{docs_version}{optional, only used when type = "docs". A docs subpath such as
+"dev", "v3.2024.0", "v3.2023.0", or "v3.2022.0" to append to the canonical root
+docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
+\code{EJAM_DOCS_BASE_URL} is set (as the pkgdown CI workflow does while building a
+given version), that value overrides everything so rendered Rd/Rmd links stay
+within the version being built. \code{desc_or_alias = "alias"} shortcuts always point
+to the root docs site only.}
 
 \item{domain}{obsolete parameter - do not use}
 }
@@ -51,14 +69,20 @@ See https://ejanalysis.com/ejam-code   for a list of URLs
  url_package("docs")
 
  url_package("code")
- url_package("code", get_full_url=T)
+ url_package("code", get_full_url = TRUE)
 
  url_package("data")
- url_package("data", get_full_url=T)
+ url_package("data", get_full_url = TRUE)
+
+ url_package("api")
 
  url_package("docs", desc_or_alias="alias")
  url_package("code", desc_or_alias="alias")
  url_package("data", desc_or_alias="alias")
 
+}
+\seealso{
+\code{\link[=url_ejamapi]{url_ejamapi()}} \code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}} -- the functions that build/call EJAM API
+and app URLs; \code{url_package("api")} is their single source for the API base URL.
 }
 \keyword{internal}

@@ -42,7 +42,7 @@ get assigned which colors from colorpalette}
 or to \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}} which passes it to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}, such as opacity=1}
 }
 \value{
-leaflet html widget (but if static_not_leaflet=T,
+leaflet html widget (but if static_not_leaflet = TRUE,
 returns just shapes_counties_from_countyfips(mydf$ejam_uniq_id))
 }
 \description{
@@ -57,7 +57,7 @@ the average resident in the county is in a blockgroup that is at the 90th
 percentile of blockgroups in the US (or the State, depending on colorvarname).
 }
 \examples{
-\donttest{
+\dontrun{
 myfips = fips_counties_from_state_abbrev(c("AL", "GA", "MS"))
 mydf = ejamit(fips = myfips )$results_bysite
 mapfastej_counties(mydf, colorvarname = "pctile.pctnhba" )

@@ -79,7 +79,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
     shp$ejam_uniq_id <- NULL # since it is 1:NROW there but was the fips value in out$results_bysite
     shpout <- cbind(shp, out$results_bysite) # retains "sf" class only if shp is 1st in cbind()
     names(shpout)[names(shpout) != "geometry"] <- names(out$results_bysite) #  fixes colnames where dot replaced space
-    # headers2fix = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+    # headers2fix = sapply(global_or_param("default_reports"), function(x) x$header)
   } else {
     if (NROW(shp) == 1 && NROW(out$results_bysite) == 1) {
       shpout <- cbind(shp[,"geometry"], out$results_bysite) # retains "sf" class only if shp is 1st in cbind()
@@ -104,27 +104,33 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   }
   shpout <- shpout[shpout$valid, ] # Drop invalid polygons, dont try to map
 
-  # linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
-  pops <- popup_from_ejscreen(
-    shpout %>% sf::st_drop_geometry()
-  )
-  if (is.null(radius_buffer)) {
-    radius_buffer <- out$results_bysite$radius.miles[1]
-  }
-  if (!is.na(radius_buffer) && radius_buffer > 0) {
-    shpout <- sf::st_buffer(shpout, # was "ESRI:102005" but want 4269
-                            dist = units::set_units(radius_buffer, "mi"))
+  if (NROW(shpout) == 0) {
+    mymap <- leaflet::leaflet(width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
+      leaflet::addTiles() %>%
+      leaflet::fitBounds(-115, 37, -65, 48)
   } else {
-    ## why was it doing this ?
-    shpout <- shpout %>%
-      sf::st_zm() %>% sf::as_Spatial()
-  }
+    # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+    pops <- popup_from_ejscreen(
+      shpout %>% sf::st_drop_geometry()
+    )
+    if (is.null(radius_buffer)) {
+      radius_buffer <- out$results_bysite$radius.miles[1]
+    }
+    if (!is.na(radius_buffer) && radius_buffer > 0) {
+      shpout <- sf::st_buffer(shpout, # was "ESRI:102005" but want 4269
+                              dist = units::set_units(radius_buffer, "mi"))
+    } else {
+      ## why was it doing this ?
+      shpout <- shpout %>%
+        sf::st_zm() %>% sf::as_Spatial()
+    }
 
-  mymap <- leaflet::leaflet(shpout, width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
-    leaflet::addTiles()  %>%
-    leaflet::addPolygons(color = circle_color,
-                         popup = pops,
-                         popupOptions = leaflet::popupOptions(maxHeight = 200))
+    mymap <- leaflet::leaflet(shpout, width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
+      leaflet::addTiles()  %>%
+      leaflet::addPolygons(color = circle_color,
+                           popup = pops,
+                           popupOptions = leaflet::popupOptions(maxHeight = 200))
+  }
 
   # see in browser ### #
 
@@ -324,9 +330,9 @@ map_counties_in_state <- function(ST = "DE", colorcolumn = c('pop', "NAME", "POP
 #'   percentile of blockgroups in the US (or the State, depending on colorvarname).
 #'
 #' @seealso [mapfastej()] [map_shapes_leaflet()]
-#' @return leaflet html widget (but if static_not_leaflet=T,
+#' @return leaflet html widget (but if static_not_leaflet = TRUE,
 #'   returns just shapes_counties_from_countyfips(mydf$ejam_uniq_id))
-#' @examples \donttest{
+#' @examples \dontrun{
 #' myfips = fips_counties_from_state_abbrev(c("AL", "GA", "MS"))
 #' mydf = ejamit(fips = myfips )$results_bysite
 #' mapfastej_counties(mydf, colorvarname = "pctile.pctnhba" )
@@ -455,14 +461,11 @@ map_blockgroups_over_blocks <- function(y) {
   if (!exists("bgid2fips_arrow")) {
     dataload_dynamic("bgid2fips", return_data_table = FALSE)
   }
-  bgids_arrow <- arrow::Array$create(bgids)
+  bgid_lookup <- bgid2fips_arrow |>
+    dplyr::select("bgid", "bgfips") |>
+    dplyr::collect()
 
-  bgfips <- bgid2fips_arrow %>%
-    mutate(bgid = cast(.data$bgid, arrow::string())) %>%
-    filter(.data$bgid %in% bgids) %>%
-    select(bgfips) %>%
-    collect() %>%
-    pull(bgfips)
+  bgfips <- bgid_lookup$bgfips[as.character(bgid_lookup$bgid) %in% bgids]
 
   x <- shapes_blockgroups_from_bgfips(bgfips) # but not for 60+ fips!  SLOW
   # add those FIPS shapes to the leaflet htmlwidget map
@@ -504,7 +507,7 @@ map_shapes_plot <- function(shapes, main = "Selected Census Units", ...) {
 #' out = testoutput_ejamit_10pts_1miles
 #' out$results_bysite = out$results_bysite[1:2,]
 #' map_shapes_leaflet(
-#'   ejam2shapefile(out, save=F),
+#'   ejam2shapefile(out, save = FALSE),
 #'   popup = popup_from_ejscreen(out$results_bysite)
 #' )
 #'
@@ -553,7 +556,7 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
   if (is.null(popup)) {
     # if all but 3 colnames are in both, looks like results of ejamit(), so use that type of popup formatting
     if (length(setdiff2(names(shapes), names(testoutput_ejamit_10pts_1miles$results_overall))) < 3) {
-      popup = popup_from_ejscreen(sf::st_drop_geometry(shapes))# linkcolnames = sapply(EJAM:::global_or_param("default_reports"), function(x) x$header)
+      popup = popup_from_ejscreen(sf::st_drop_geometry(shapes))# linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
     } else {
       popup <- popup_from_any(sf::st_drop_geometry(shapes))
     }
@@ -578,6 +581,7 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
 #' @return html widget like from leaflet::leafletProxy()
 #'
 #' @export
+#' @keywords internal
 #'
 map_shapes_leaflet_proxy <- function(mymap, shapes, color = "green", popup = shapes$NAME)  {
   # *** need to confirm this default for popup is right -
@@ -738,7 +742,7 @@ if (FALSE) {
 #'
 #' out = ejamit(testpoints_10[1,], radius = 20)
 #' map_shapes_mapview(
-#'   ejam2shapefile(out, save=F),
+#'   ejam2shapefile(out, save = FALSE),
 #'   popup = popup_from_ejscreen(out$results_bysite)
 #' )
 #'
@@ -775,7 +779,7 @@ map_shapes_mapview <- function(shapes, col.regions = "green", map.types = "OpenS
 #'
 #' @return a ggplot() object
 #'
-#' @examples \donttest{
+#' @examples \dontrun{
 #'   mapfast_gg(testpoints_10)
 #'
 #'   pts <- read.table(textConnection(

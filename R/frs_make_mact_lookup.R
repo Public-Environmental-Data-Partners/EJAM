@@ -218,13 +218,9 @@ frs_make_mact_lookup <- function(frs_by_programid, folder=NULL) {
   mact_table$dropdown_label <- paste0(mact_table$dropdown_label, ' (',prettyNum(mact_table$N, big.mark = ','), ')')
 
 
-  # to save in the package
-  #
-  # usethis::use_data(frs_by_mact, overwrite = TRUE)    # data.table
-  # usethis::use_data(mact_table, overwrite = TRUE)  # data.frame
-  #
-  # save(frs_by_mact, file = "frs_by_mact.rda")
-  # save(mact_table, "mact_table.rda")
+  # Obsolete: frs_by_mact is no longer saved as package .rda data.
+  # Publish frs_by_mact.arrow through the data repository workflow.
+  # mact_table is still a small package data object.
 
   mact_table$title <- gsub(  "^ ", "", mact_table$title)
   mact_table$dropdown_label <- gsub("  ", " ", mact_table$dropdown_label)
@@ -355,4 +351,3 @@ frs_make_mact_lookup <- function(frs_by_programid, folder=NULL) {
 # "ColumnID": "25",
 # "ObjectName": "AIRMacts",
 # "Description": "The Maximum Achievable Control Technology (MACT) Subpart associated with the facility."
-

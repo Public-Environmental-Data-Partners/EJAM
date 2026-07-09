@@ -7,8 +7,11 @@
 #' @title tables_ejscreen_acs dataset
 #' @details See
 #'
+#'  The same ACS tables are used for every vintage; the survey end year `yr`
+#'  depends on the installed EJAM release (see `attributes(blockgroupstats)$acs_version`
+#'  or DESCRIPTION `VersionACS`), e.g. 2022, 2023, or 2024.
 #'  ```
-#'  yr = 2023
+#'  yr = acs_endyear()  # ACS 5-year end year of the installed vintage
 #'  urls = paste0('https://data.census.gov/table/ACSDT5Y', yr, '.', tables_ejscreen_acs)
 #'  sapply(urls, browseURL)
 #'  acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), 'acs5')
@@ -22,16 +25,22 @@
 #'  - B02001  race without hispanic ethnicity
 #'  - B15002  education
 #'  - B23025  unemployed
-#'  - C17002  low income, poor, etc.
+#'  - C17002  low income, poverty ratio population universe, etc.
+#'  - B17017  households below poverty level
 #'  - B19301  per capita income
 #'  - B25032  owned units vs rented units (occupied housing units, same universe as B25003)
-#'  - B28003  no broadband
-#'  - B27010  no health insurance
-#'  - C16002  (language category and) % of households limited English speaking (lingiso) <https://data.census.gov/table/ACSDT5Y2023.C16002>
-#'  - B16004  (language category and) % of residents (not hhlds) speak no English at all <https://data.census.gov/table/ACSDT5Y2023.B16004>
+#'  - B28002  no broadband internet subscription
+#'  - B27010  no health insurance. EJAM calculates `pctnohealthinsurance`
+#'    from the Census-defined B27010 civilian noninstitutionalized population
+#'    universe. Any EJSCREEN-specific compatibility value should be handled in
+#'    the EJSCREEN export stage, not by changing the EJAM ACS indicator.
+#'  - C16002  household language by household limited English speaking status;
+#'    used for `lingiso` and limited-English household language breakdowns
+#'    <https://data.census.gov/table/ACSDT5Y2024.C16002>
+#'  - B16004  (language category and) % of residents (not hhlds) speak no English at all <https://data.census.gov/table/ACSDT5Y2024.B16004>
 #'
 #'  TRACT ONLY, but also used by EJSCREEN:
-#'  - C16001   languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc. <https://data.census.gov/table/ACSDT5Y2023.C16001>
+#'  - C16001   languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.; EJSCREEN repeats these tract-level values on each blockgroup in the tract <https://data.census.gov/table/ACSDT5Y2024.C16001>
 #'  - B18101   disability
 #' @seealso [formulas_ejscreen_acs]
 'tables_ejscreen_acs'

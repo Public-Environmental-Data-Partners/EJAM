@@ -67,6 +67,11 @@
 #'    or NA returned for each item looked up and warning given.
 #'   For example, it could be "NY" for New York State, "USA" for national percentiles.
 #' @param quiet set to FALSE to see details on where certain scores were all NA values like in 1 state
+#' @param signif_digits optional integer. If supplied, round both the raw values
+#'   and the matching lookup-table column to this many significant digits before
+#'   assigning percentiles. This is mainly for reference-replication workflows
+#'   such as the ACS22 `P_DISABILITYPCT` boundary issue, where tiny binary
+#'   floating-point differences otherwise put values just below a lookup cutoff.
 #' @aliases lookup_pctile
 #' @return By default, returns numeric vector length of myvector.
 #' @seealso [calc_pctile_columns()] for handling a table not just a vector
@@ -94,7 +99,12 @@
 #'
 #' @keywords internal
 #'
-pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = usastats, zone = "USA", quiet=TRUE) {
+pctile_from_raw_lookup <- function(myvector,
+                                   varname.in.lookup.table,
+                                   lookup = usastats,
+                                   zone = "USA",
+                                   quiet = TRUE,
+                                   signif_digits = NULL) {
 
   # CHECK FOR FATAL PROBLEMS  ####
 
@@ -142,7 +152,12 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
           FUN = pctile_from_raw_lookup,
           myvector = myvector,
           varname.in.lookup.table = varname.in.lookup.table,
-          MoreArgs = list(lookup = lookup, zone = zone)
+          MoreArgs = list(
+            lookup = lookup,
+            zone = zone,
+            quiet = quiet,
+            signif_digits = signif_digits
+          )
         )
       )
     } else {
@@ -177,9 +192,9 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
       }
     }
   }
-
-  # remove mean - too slow?  this function gets called once for every single indicator that is reported as pctiles, so this is probably slowing it down *** ####
-  lookup <- lookup[lookup$PCTILE != "mean", ]
+  # drop mean & std rows (not used in this func) ####
+  # Remove non-percentile summary rows before using cutoffs.
+  lookup <- lookup[!(lookup$PCTILE %in% c("mean", "std")), ]
 
   # CHECK FOR WARNINGS overall ####
 
@@ -191,6 +206,18 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
   # warn if looks like maybe units mismatch ####
   if (any(!is.na(myvector)) && max(myvector, na.rm = TRUE) > 1 && max(lookup[,varname.in.lookup.table], na.rm = TRUE) <= 1) {
     warning("Raw scores are > 1, but lookup table values are not. Check if percentages should be expressed as fractions (0 to 1.00) instead of as integers 0-100, for ", varname.in.lookup.table)
+  }
+  # signif digits #####
+  if (!is.null(signif_digits)) {
+    if (!is.numeric(signif_digits) || length(signif_digits) != 1L || is.na(signif_digits) || signif_digits <= 0) {
+      stop("signif_digits must be NULL or one positive integer", call. = FALSE)
+    }
+    signif_digits <- as.integer(signif_digits)
+    myvector <- signif(myvector, digits = signif_digits)
+    lookup[, varname.in.lookup.table] <- signif(
+      suppressWarnings(as.numeric(lookup[, varname.in.lookup.table])),
+      digits = signif_digits
+    )
   }
 
   ######################################################################### #
@@ -238,7 +265,7 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
       next  # go to next zone (for this one indicator)
     }
 
-    # findInterval ####
+    # ** findInterval ** ####
 
     # 1.) Uses findInterval to bin each percentile vector value into unique percentile vectors; Results are a list of bin values rather than actual percentiles
     # 2.) Percentile indices are calculated based on the first nonduplicate values (indices are based on 1-100 percentile location)
@@ -266,6 +293,11 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
     # WARN if raw score < PCTILE 0, in lookup ! ####
     # WARN if a raw value < minimum raw value listed in lookup table (which should be percentile zero). Why would that table lack the actual minimum? when created it should have recorded the min of each indic in each zone as the 0 pctile for that indic in that zone.
     # *** COULD IT BE THAT UNITS ARE MISMATCHED?  e.g., QUERY IS FOR RAW VALUE OF 0.35 (FRACTION OF 1) BUT LOOKUP TABLE USES RAW VALUES LIKE 35 (PERCENT. FRACTION OF 100) ?
+    ## This DOES create a 0 PCTILE row:
+    # x = EJAM:::pctiles_lookup_create(blockgroupstats[, ..names_e])
+    ## This also should have a 0 PCTILE row:
+    # head(usastats[c('PCTILE', names_e)])
+
     belowmin <- (myvector_selection < min(myvector_lookup))
     if (any(belowmin, na.rm = TRUE)) {
       whichinterval[zone %in% z][!is.na(belowmin) & belowmin]  <- 1 # which means 0th percentile
@@ -339,8 +371,18 @@ pctile_from_raw_lookup <- function(myvector, varname.in.lookup.table, lookup = u
 #'
 #' @export
 #'
-lookup_pctile <- function(myvector, varname.in.lookup.table, lookup = usastats, zone = "USA") {
+lookup_pctile <- function(myvector,
+                          varname.in.lookup.table,
+                          lookup = usastats,
+                          zone = "USA",
+                          signif_digits = NULL) {
   # this is an exported alias for the internal pctile_from_raw_lookup(), which had a more consistent naming scheme but may be harder to remember.
-  pctile_from_raw_lookup(myvector = myvector, varname.in.lookup.table = varname.in.lookup.table, lookup = lookup, zone = zone)
+  pctile_from_raw_lookup(
+    myvector = myvector,
+    varname.in.lookup.table = varname.in.lookup.table,
+    lookup = lookup,
+    zone = zone,
+    signif_digits = signif_digits
+  )
 } #  function(...) {pctile_from_raw_lookup(...)}
 ######################################################################### #

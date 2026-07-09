@@ -17,6 +17,8 @@ app_ui <- function(request) {
       ## enable JavaScript, CSS   ####
       #   functionality (such as resetting inputs) etc.
       shinyjs::useShinyjs(),
+      # enable shinybusy indicators (spinners) for any long-running processes not already covered by shinycssloaders::withSpinner()
+      shiny::useBusyIndicators(spinners = FALSE, pulse = TRUE, fade = FALSE),
       ## javascript function for jumping to top of screen
       shinyjs::extendShinyjs(text = "shinyjs.toTop = function() {window.scrollTo(0, 0);}", functions = "toTop"),
       # For info on using javascript in shiny apps,
@@ -38,7 +40,7 @@ app_ui <- function(request) {
       ),
 
       ## html header inserted from global_defaults_*.R ####
-      EJAM:::global_or_param("html_header_fmt"),
+      global_or_param("html_header_fmt"),
 
       ## title is now in html in global_defaults_*.R (for app and browser tab) ####
 
@@ -59,7 +61,7 @@ app_ui <- function(request) {
       tabsetPanel( # up to line 1101 or so
         id = 'all_tabs',
 
-        selected = EJAM:::global_or_param("tabshown_default"),
+        selected = global_or_param("tabshown_default"),
 
         # . ## ##
         # ______ "About" tab ______ tabPanel(title = 'About' ####
@@ -71,7 +73,7 @@ app_ui <- function(request) {
                    column(8,
 
                           ## html intro text from global_defaults_*.R
-                          EJAM:::global_or_param("aboutpage_text"),
+                          global_or_param("aboutpage_text"),
                           actionButton(inputId = 'back_to_site_sel2', label = div(icon('play', style = 'transform: rotate(180deg);'), HTML('&nbsp;'), 'Return to Site Selection'), class = 'usa-button'),
                           br(), br(),
                           conditionalPanel(
@@ -84,7 +86,7 @@ app_ui <- function(request) {
                           br(),br()
                    ),
                    column(4,
-                          img(id = "biglogo", src = EJAM:::global_or_param("app_logo_aboutpage"),
+                          img(id = "biglogo", src = global_or_param("app_logo_aboutpage"),
                               alt = "logo", title = "logo", width = "100px", height = "100px")
                    )
                  )
@@ -114,13 +116,18 @@ app_ui <- function(request) {
                   radioButtons(inputId = 'ss_choose_method',
                                label = 'How would you like to identify locations?',
                                choiceNames = c('Select a category of locations',
-                                               'Upload specific locations'),
+                                               'Upload specific locations',
+                                               'Click or draw on map'),
                                choiceValues = c('dropdown',
-                                                'upload'),
-                               selected = EJAM:::global_or_param("default_upload_dropdown")),
-                  # selected = input$default_ss_choose_method), # which has a default of EJAM:::global_or_param("default_upload_dropdown")
-                  # selected = 'upload'),   # if hard-coded default selection.
-                  # uiOutput(outputId = 'ss_choose_method_ui'), # flexible default selection, if handled in server code.
+                                                'upload',
+                                                'mapclick'),
+                               selected = global_or_param("default_site_method")),
+                  # NOTE: the UI is built once at page-load, before any reactive `input` exists, so
+                  # `selected` MUST be a non-reactive value here - global_or_param() reads the ejamapp()
+                  # param / global default (default_site_method = "dropdown" / "upload" / "mapclick").
+                  # Do NOT use `selected = input$default_ss_choose_method` here (that errors at UI build).
+                  # The advanced-tab "Site Selection Method" setting is applied to this radio server-side
+                  # via updateRadioButtons() - see observeEvent(input$default_ss_choose_method) in app_server.R.
 
                   ## > what DROPDOWN CATEGORY TYPE? (NAICS, SIC, MACT, Program, FIPS_PLACE) ####
 
@@ -130,8 +137,8 @@ app_ui <- function(request) {
                                 label = tags$span(
                                   'How would you like to select categories?'
                                 ),
-                                choices = EJAM:::global_or_param("default_choices_for_type_of_site_category"),
-                                selected = EJAM:::global_or_param("default_selected_type_of_site_category")
+                                choices = global_or_param("default_choices_for_type_of_site_category"),
+                                selected = global_or_param("default_selected_type_of_site_category")
                     )
                   ),
 
@@ -142,8 +149,8 @@ app_ui <- function(request) {
                                 label = tags$span(
                                   'What type of data are you uploading?'
                                 ),
-                                choices = EJAM:::global_or_param("default_choices_for_type_of_site_upload"),
-                                selected = EJAM:::global_or_param("default_selected_type_of_site_upload")
+                                choices = global_or_param("default_choices_for_type_of_site_upload"),
+                                selected = global_or_param("default_selected_type_of_site_upload")
                     )
                   )
               ),
@@ -188,12 +195,23 @@ app_ui <- function(request) {
                                 )
                       ),
 
-                      ### include error msg here?? ***
-                      # textOutput("error_message"),
-                      # tags$style(HTML("#error_message { color: red; }")),
+                      textOutput("latlon_upload_error"),
+                      tags$style(HTML("#latlon_upload_error { color: red; font-weight: bold; }")),
                       actionButton(inputId = 'latlon_help', label = 'More Info', class = 'usa-button usa-button--outline'), # HTML(latlon_help_msg)
                       br()
                     ), # end latlong conditionalPanel
+                    ################################################################# #
+
+                    ## _Click or draw on map  (conditional panel)  ------------------------------------- - ####
+                    conditionalPanel(
+                      condition = "input.ss_choose_method == 'mapclick'",
+                      ## input: click on the an_leaf_map (below) to add/remove points; handled by MODULE_SERVER_latlon_from_map_click() in the server
+                      tags$p("Click on the map below to add one or more points to analyze. Click a point's red marker to remove it. Use the radius slider to change the circle drawn around each point.",
+                             tags$br(),
+                             tags$em("(Drawing polygons/areas on the map is planned for a future version.)")),
+                      actionButton(inputId = 'mapclick_clear', label = 'Clear all points', class = 'usa-button usa-button--outline'),
+                      br()
+                    ), # end mapclick conditionalPanel
                     ################################################################# #
 
                     ################################################################# #
@@ -210,7 +228,7 @@ app_ui <- function(request) {
                       fileInput(
                         inputId = 'ss_upload_shp',
                         label = 'Upload a shapefile',
-                        accept = EJAM:::global_or_param("default_shp_oktypes_1"), # c("zip", "gdb", "geojson", "json", "kml", "shp", "shx", "dbf", "prj"), # maybe also sbn, sbx
+                        accept = global_or_param("default_shp_oktypes_1"), # c("zip", "gdb", "geojson", "json", "kml", "shp", "shx", "dbf", "prj"), # maybe also sbn, sbx
                         ## see source code of shapefile_from_any()
                         multiple = TRUE
                       ),
@@ -288,7 +306,7 @@ app_ui <- function(request) {
                                      ## named vector in global_defaults_*.R - values are acronyms,
                                      ## names include # of rows corresponding to that program
                                      choices = epa_programs,
-                                     selected = EJAM:::global_or_param("default_epa_program_selected"),
+                                     selected = global_or_param("default_epa_program_selected"),
                                      ## add X to remove selected options from list
                                      options = list('plugins' = list('remove_button'))),
                       br(),
@@ -313,7 +331,7 @@ app_ui <- function(request) {
                         ## number is NAICS like 31182, names are like "31182 - Cookie, Cracker, and Pasta Manufacturing"
                         # choices = NULL,  # gets updated when buttons used
                         choices = NULL, # will be updated in server to setNames(naics_counts[nchar(naics_counts$NAICS) == 3, ]$NAICS, naics_counts[nchar(naics_counts$NAICS) == 3, ]$label_w_subs), # start with limited options ? ***
-                        selected = NULL, # will be updated in server to input$default_naics  which starts as EJAM:::global_or_param("default_naics"),
+                        selected = NULL, # will be updated in server to input$default_naics  which starts as global_or_param("default_naics"),
                         width = 400,
                         multiple = TRUE,
                         ## add X to remove selected options from list
@@ -331,12 +349,12 @@ app_ui <- function(request) {
                                        inline = TRUE,
                                        choiceNames = c("Basic list", "Detailed list"),
                                        choiceValues = c('basic', 'detailed'),
-                                       selected = EJAM:::global_or_param("default_naics_digits_shown")), # "basic"
+                                       selected = global_or_param("default_naics_digits_shown")), # "basic"
                           radioButtons(inputId = 'add_naics_subcategories', "Add all subcategories of NAICS?",
                                        inline = TRUE,
                                        choiceNames = c("Yes","No"),
                                        choiceValues = c(TRUE,FALSE),
-                                       selected = EJAM:::global_or_param("default_add_naics_subcategories"))
+                                       selected = global_or_param("default_add_naics_subcategories"))
                       ),
 
                       br(),
@@ -452,6 +470,13 @@ app_ui <- function(request) {
                    ############################### #
                    ## MAP of uploaded points ####
 
+                   ## crosshair cursor for the click-to-add ('mapclick') method. The class
+                   ## 'mapclick-cursor-on' is toggled onto #an_leaf_map by the server only while that
+                   ## method is selected, so other methods keep the normal grab/pan cursor.
+                   tags$style(HTML(
+                     "#an_leaf_map.mapclick-cursor-on, #an_leaf_map.mapclick-cursor-on .leaflet-grab { cursor: crosshair !important; }"
+                   )),
+
                    #helpText('Red circles indicate overlapping sites.'),
                    ## output: show leaflet map of uploaded points
                    shinycssloaders::withSpinner(
@@ -553,13 +578,21 @@ app_ui <- function(request) {
                                ###              > DOWNLOAD BUTTON    ####
                                tags$div(
                                  radioButtons(
-                                   inputId = "format_report_multisite",
+                                   inputId = "fileextension", # had been called format_report_multisite, # see format1pager and fileextension
                                    label   = "Download format:",
                                    choices = c("HTML" = "html", "PDF" = "pdf"),
-                                   selected = "html",
+                                   # html format has live interactive maps with popups and links, but pdf has better pagination for printing.
+                                   # normalize (strip leading dot, lowercase) so e.g. ".pdf"/"PDF" still matches "pdf" (mirrors ejam2report())
+                                   selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))), # kept in sync with advanced tab via updateRadioButtons() in server
                                    inline   = TRUE
                                  ),
-                                 downloadButton('download_report_multisite', label = 'Download Multisite Summary Report', class = 'usa-button'), style = 'text-align: center;'
+                                 downloadButton('download_report_multisite',
+                                                label = 'Download Multisite Summary Report',
+                                                class = 'usa-button',
+                                                # start disabled; app_server.R enables it once the report is ready.
+                                                # enabled = FALSE opts out of Shiny 1.14 auto-enable so the manual
+                                                # shinyjs::disable/enable in app_server.R is respected.
+                                                enabled = FALSE), style = 'text-align: center;'
                                )
                              ),  # end report tab
 
@@ -599,7 +632,12 @@ app_ui <- function(request) {
                                                        ),
                                                        column(6,
                                                               ## button to download excel Table of Sites/Results - uses ejam2excel()
-                                                              downloadButton('download_results_spreadsheet', label = 'Download Results Table', class = 'usa-button')
+                                                              downloadButton('download_results_spreadsheet',
+                                                                             label = 'Download Results Table',
+                                                                             class = 'usa-button',
+                                                                             # start disabled; app_server.R enables it after the table renders
+                                                                             # (enabled = FALSE opts out of Shiny 1.14 auto-enable).
+                                                                             enabled = FALSE)
                                                        )
                                                      ),
                                                      br(), ## vertical space
@@ -1040,7 +1078,7 @@ app_ui <- function(request) {
                      ))
                  }),
                  shiny::checkboxInput("bookmarking_allowed_input", "Allow bookmarking?",
-                                      value = EJAM:::global_or_param("bookmarking_allowed") != 'disable'),
+                                      value = isTRUE(global_or_param("bookmarking_allowed") != 'disable')),
                  ######################################################## #
                  ## ------------------------ app title ### #
                  # will not be editable here. defined in global_defaults_package.R
@@ -1054,45 +1092,51 @@ app_ui <- function(request) {
 
                  numericInput(inputId = 'max_pts_upload', label = "Cap on number of points one can UPLOAD, additional ones in uploaded table get dropped entirely",
                               min = 1000,  step = 500,
-                              value = EJAM:::global_or_param("default_max_pts_upload"),
-                              max   = EJAM:::global_or_param("maxmax_pts_upload")),
+                              value = global_or_param("default_max_pts_upload"),
+                              max   = global_or_param("maxmax_pts_upload")),
                  numericInput(inputId = 'max_pts_select', label = "Cap on number of points one can SELECT, additional ones in selected table get dropped entirely",
                               min = 1000,  step = 500,
-                              value = EJAM:::global_or_param("default_max_pts_select"),
-                              max   = EJAM:::global_or_param("maxmax_pts_select")),
+                              value = global_or_param("default_max_pts_select"),
+                              max   = global_or_param("maxmax_pts_select")),
+                 numericInput(inputId = 'max_pts_click', label = "Cap on number of points one can CLICK on the map, additional clicks are ignored",
+                              min = 1,  step = 5,
+                              value = global_or_param("default_max_pts_click"),
+                              max   = global_or_param("maxmax_pts_click")),
                  numericInput(inputId = 'max_pts_map', label = "Cap on number of points one can MAP",
                               min = 500,  step = 100,
-                              value = EJAM:::global_or_param("default_max_pts_map"),
-                              max   = EJAM:::global_or_param("maxmax_pts_map")),
+                              value = global_or_param("default_max_pts_map"),
+                              max   = global_or_param("maxmax_pts_map")),
                  numericInput(inputId = 'max_pts_showtable', label = "Cap on number of points to be rendered for display in DT interactive TABLE (uploads or results)",
                               min = 100, step = 100,
-                              value = EJAM:::global_or_param("default_max_pts_showtable"),
-                              max   = EJAM:::global_or_param("maxmax_pts_showtable")),
+                              value = global_or_param("default_max_pts_showtable"),
+                              max   = global_or_param("maxmax_pts_showtable")),
                  numericInput(inputId = 'max_pts_run', label = "Cap on number of points one can request RESULTS for in one batch",
                               min = 1000,  step = 100,
-                              value = EJAM:::global_or_param("default_max_pts_run"),
-                              max   = EJAM:::global_or_param("maxmax_pts_run")),
+                              value = global_or_param("default_max_pts_run"),
+                              max   = global_or_param("maxmax_pts_run")),
 
                  numericInput(inputId = 'max_shapes_map', label = "Cap on number of shapes (polygons) one can MAP",
                               min = 10,  step = 10,
-                              value = EJAM:::global_or_param("default_max_shapes_map"),
-                              max =        EJAM:::global_or_param("maxmax_shapes_map")),
+                              value = global_or_param("default_max_shapes_map"),
+                              max =        global_or_param("maxmax_shapes_map")),
 
                  numericInput(inputId = 'max_mb_upload', label = 'Cap on size of file(s) one can upload in MB (an issue for shapefiles, mainly)',
-                              min = EJAM:::global_or_param("minmax_mb_upload"),
-                              value = EJAM:::global_or_param("default_max_mb_upload"),
-                              max = EJAM:::global_or_param("maxmax_mb_upload"),
-                              step = EJAM:::global_or_param("minmax_mb_upload")),
+                              min = global_or_param("minmax_mb_upload"),
+                              value = global_or_param("default_max_mb_upload"),
+                              max = global_or_param("maxmax_mb_upload"),
+                              step = global_or_param("minmax_mb_upload")),
                  ######################################################## #
                  ###  Upload file vs Dropdown menu site selection ####
                  h3("Uploaded files and dropdown menu site selection"),
 
                  radioButtons(inputId = "default_ss_choose_method", label = "Site Selection Method",
-                              choices = c(Dropdown = "dropdown", Upload = "upload"),
-                              selected = EJAM:::global_or_param("default_upload_dropdown"),
+                              choices = c(Dropdown = "dropdown", Upload = "upload", `Click on map` = "mapclick"),
+                              selected = global_or_param("default_site_method"),
                               inline = TRUE),
-                 # global_default or ejamapp() parameter: default_upload_dropdown, which is initial selected value of
-                 # input in advanced tab: input$default_ss_choose_method, which is initial selected value of
+                 # global_default or ejamapp() parameter: default_site_method ("dropdown", "upload", or "mapclick"),
+                 # which is the initial selected value of
+                 # input in advanced tab: input$default_ss_choose_method, which (via updateRadioButtons in the server)
+                 # sets the initial/selected value of
                  # input in server:              input$ss_choose_method
                  ######################################################## #
                  ###  Upload files for site selection options ####
@@ -1117,7 +1161,7 @@ app_ui <- function(request) {
                                       mact_table$dropdown_label), # only 136 choices, so can load at start, unlike NAICS and SIC which are much longer lists that slow down loading if loaded at start
                    selected = {
                      # basic validation of MACT specified as param in ejamapp() or as default in global_defaults*.R
-                     x <- EJAM:::global_or_param("default_mact")
+                     x <- global_or_param("default_mact")
                      if (!is.null(x) && all(x %in% mact_table$subpart)) {
                        x
                      } else {
@@ -1136,7 +1180,7 @@ app_ui <- function(request) {
                    inputId = "default_naics",
                    label = h6("NAICS industry code to start with"),
                    choices = NULL, # >2,000 codes. NULL loads faster; will update server side, in app_server  # setNames(naics_counts$NAICS, naics_counts$label_w_subs), # all details not just 3-digit list
-                   selected = NULL, # will be updated in server to EJAM:::global_or_param("default_naics"),
+                   selected = NULL, # will be updated in server to global_or_param("default_naics"),
                    width = 400,
                    multiple = TRUE,
                    ## add X to remove selected options from list
@@ -1148,7 +1192,7 @@ app_ui <- function(request) {
                    inputId = "default_sic",
                    label = h6("SIC industry code to start with"),
                    choices = NULL, # >1,000 codes. NULL loads faster; will update server side, in app_server # SIC
-                   selected = NULL, # will be updated in server to EJAM:::global_or_param("default_sic"),
+                   selected = NULL, # will be updated in server to global_or_param("default_sic"),
                    width = 400,
                    multiple = TRUE,
                    ## add X to remove selected options from list
@@ -1161,18 +1205,18 @@ app_ui <- function(request) {
                  numericInput(inputId = 'radius_default', label = "Default miles radius",  # what is shown at app startup for all but shapefiles
                               ### Also note server code where radius can be modified via updateSliderInput,
                               ### and saved current value stored is specific to each upload type, returns to that when switch type back.
-                              min   = EJAM:::global_or_param("minradius"),  # from global_defaults_*.R
-                              value = EJAM:::global_or_param("radius_default"),
-                              max   = EJAM:::global_or_param("default_max_miles")), # (set via global_defaults_*.R) highest allowed default (i.e. initial) value
+                              min   = global_or_param("minradius"),  # from global_defaults_*.R
+                              value = global_or_param("radius_default"),
+                              max   = global_or_param("default_max_miles")), # (set via global_defaults_*.R) highest allowed default (i.e. initial) value
 
                  numericInput(inputId = 'radius_default_shapefile', label = "Default miles width of buffer around shapefile edges",
-                              min   = EJAM:::global_or_param("minradius_shapefile"), # from global_defaults_*.R
-                              value = EJAM:::global_or_param("radius_default_shapefile"),
-                              max   = EJAM:::global_or_param("max_radius_default")), # (set via global_defaults_*.R) highest allowed default (i.e. initial) value
+                              min   = global_or_param("minradius_shapefile"), # from global_defaults_*.R
+                              value = global_or_param("radius_default_shapefile"),
+                              max   = global_or_param("max_radius_default")), # (set via global_defaults_*.R) highest allowed default (i.e. initial) value
 
                  numericInput(inputId = 'max_miles', label = "Maximum radius in miles",
-                              value = EJAM:::global_or_param("default_max_miles"), # (set via global_defaults_*.R) initial cap that advanced tab lets you increase here
-                              max   = EJAM:::global_or_param("maxmax_miles")), # (set via global_defaults_*.R) i.e., even in the advanced tab one cannot exceed this cap
+                              value = global_or_param("default_max_miles"), # (set via global_defaults_*.R) initial cap that advanced tab lets you increase here
+                              max   = global_or_param("maxmax_miles")), # (set via global_defaults_*.R) i.e., even in the advanced tab one cannot exceed this cap
 
                  ######################################################## ######################################################### #
                  ## CALCULATIONS: Calculating and reporting extra metrics ####
@@ -1197,12 +1241,12 @@ app_ui <- function(request) {
                               label =  "(normally unused) Avoid orphans (by searching for nearest one out to maxradius, instead of reporting NA when no block is within radius)",
                               choices = c(Yes = TRUE, No = FALSE),
                               inline = TRUE,
-                              selected = EJAM:::global_or_param("default_avoidorphans")),
+                              selected = global_or_param("default_avoidorphans")),
 
                  numericInput(inputId = 'maxradius', # THIS IS NOT THE MAX RADIUS USERS CAN PICK - THIS IS THE MAX TO WHICH IT COULD SEARCH IF avoidorphans=T
                               label = '(normally unused) If avoid orphans=T, Max distance in miles to search for closest single block if site has none within normal radius',
-                              value =  EJAM:::global_or_param("default_maxradius"),  # 50000 / meters_per_mile, # 31.06856 miles !!
-                              min = 0, max = EJAM:::global_or_param("default_maxradius"), step = 1),
+                              value =  global_or_param("default_maxradius"),  # 50000 / meters_per_mile, # 31.06856 miles !!
+                              min = 0, max = global_or_param("default_maxradius"), step = 1),
 
                  ######################################################## #
                  ### Which indicators to include in outputs via doaggregate() ####
@@ -1214,22 +1258,22 @@ app_ui <- function(request) {
                                     #    "both" for both versions.
                                     label = "Which definition of Residential Populations subgroups to include?",
                                     choices = list(NonHispanicAlone = 'nh', Alone = 'alone', Both = 'both'),
-                                    selected = EJAM:::global_or_param("default_subgroups_type")),
+                                    selected = global_or_param("default_subgroups_type")),
 
                  shiny::radioButtons(inputId = "need_proximityscore",
                                      label = "Results should include proximity score?",
                                      choices = list(Yes = TRUE, No = FALSE ),
-                                     selected = EJAM:::global_or_param("default_need_proximityscore")),
+                                     selected = global_or_param("default_need_proximityscore")),
 
                  shiny::radioButtons(inputId = "include_ejindexes",
                                      label = "Need EJ Indexes",
                                      choices = list(Yes = TRUE, No = FALSE ),
-                                     selected = EJAM:::global_or_param("default_include_ejindexes")),
+                                     selected = global_or_param("default_include_ejindexes")),
 
                  shiny::radioButtons(inputId = "extra_demog",
                                      label = "Need extra indicators, on language, age groups, sex, percent with disability, poverty, etc.",
                                      choices = list(Yes = TRUE, No = FALSE ),
-                                     selected = EJAM:::global_or_param("default_extra_demog")),
+                                     selected = global_or_param("default_extra_demog")),
 
                  ######################################################## #
                  ### Counting indicators reaching certain thresholds ####
@@ -1238,38 +1282,38 @@ app_ui <- function(request) {
                  ## input: GROUP NAME for 1st set of comparisons - where the table counts which scores are above certain cutoffs?
                  shiny::textInput(inputId = 'an_threshgroup1',
                                   label = 'Name for 1st set of comparisons',
-                                  value = EJAM:::global_or_param("default.an_threshgroup1")
+                                  value = global_or_param("default.an_threshgroup1")
                  ),
                  ## input: variable names for 1st set of comparisons
                  shiny::selectizeInput(inputId = 'an_threshnames1',
                                        multiple = TRUE,
                                        label = 'variable names for 1st set of comparisons',
                                        choices = names_all_r,
-                                       selected = EJAM:::global_or_param("default.an_threshnames1")
+                                       selected = global_or_param("default.an_threshnames1")
                  ),
                  ## input: Threshold VALUE(s) for 1st set of comparisons
                  numericInput(inputId = 'an_thresh_comp1',
                               label = 'Threshold value(s) for 1st set of comparisons (e.g. %ile 1-100):',
-                              value = EJAM:::global_or_param("default.an_thresh_comp1")
+                              value = global_or_param("default.an_thresh_comp1")
                  ),
                  ###### #
 
                  ## input: GROUP NAME for 2d set of comparisons
                  shiny::textInput(inputId = 'an_threshgroup2',
                                   label = 'Name for 2nd set of comparisons',
-                                  value = EJAM:::global_or_param("default.an_threshgroup2")
+                                  value = global_or_param("default.an_threshgroup2")
                  ),
                  ## input: variable names for 2d set of comparisons
                  shiny::selectizeInput(inputId = 'an_threshnames2',
                                        multiple = TRUE,
                                        label = 'variable names for 2d set of comparisons',
                                        choices = names_all_r,
-                                       selected = EJAM:::global_or_param("default.an_threshnames2")
+                                       selected = global_or_param("default.an_threshnames2")
                  ),
                  ## input: Threshold VALUE(s) for 2nd set of comparisons
                  numericInput(inputId = 'an_thresh_comp2',
                               label = 'Threshold value(s) for 2nd set of comparisons (e.g. %ile 1-100):',
-                              value = EJAM:::global_or_param("default.an_thresh_comp2")
+                              value = global_or_param("default.an_thresh_comp2")
                  ),
                  ######################################################## #
                  ### Ratios, Averages, and extra indicators ####
@@ -1277,13 +1321,13 @@ app_ui <- function(request) {
 
                  checkboxInput(inputId = 'calculate_ratios',
                                label = "Results in Excel should include ratios to US and State averages",
-                               value = EJAM:::global_or_param("default_calculate_ratios")),
-                 checkboxInput(inputId = 'include_averages',
-                               label = "Results should include US and State Averages - *** not implemented yet",
-                               value = EJAM:::global_or_param("default_include_averages")),
-                 checkboxInput(inputId = 'include_extraindicators',
-                               label = 'Results should include extra indicators from Community Report - *** not implemented yet',
-                               value = EJAM:::global_or_param("default_include_extraindicators")),
+                               value = global_or_param("default_calculate_ratios")),
+                 # checkboxInput(inputId = 'include_averages',
+                 #               label = "Results should include US and State Averages - *** not implemented yet",
+                 #               value = global_or_param("default_include_averages")),
+                 # checkboxInput(inputId = 'include_extraindicators',
+                 #               label = 'Results should include extra indicators from Community Report - *** not implemented yet',
+                 #               value = global_or_param("default_include_extraindicators")),
 
                  ######################################################## #
                  ## VIEW INTERACTIVE RESULTS ####
@@ -1294,18 +1338,21 @@ app_ui <- function(request) {
 
                  shiny::textInput(inputId = "standard_analysis_title",
                                   label = "Default title to show on each short report",
-                                  value = EJAM:::global_or_param("default_standard_analysis_title")),
+                                  value = global_or_param("default_standard_analysis_title")),
 
                  ## input: Type of plot for 1page report
                  shiny::radioButtons(inputId = "plotkind_1pager",
                                      label = "Type of plot for 1page report",
                                      choices = list(Bar = "bar", Box = "box", Ridgeline = "ridgeline"),
-                                     selected = EJAM:::global_or_param("default_plotkind_1pager")),
+                                     selected = global_or_param("default_plotkind_1pager")),
 
                  ## _radio button on format of short report
-                 #                  was DISABLED while PDF KNITTING DEBUGGED
-                 radioButtons(inputId = "format1pager", "Format",
+                 # sets filename and fileextension parameter in ejam2report()
+                 h3("Short report title and format - html provides live interactive map with popups and links, but pdf has better pagination for printing."),
+                 shiny::radioButtons(inputId = "default_format1pager", "Format",
                               choices = c(html = "html", pdf = "pdf"),
+                              # normalize (strip leading dot, lowercase) so e.g. ".pdf"/"PDF" still matches "pdf" (mirrors ejam2report())
+                              selected = sub("^[.]", "", tolower(as.character(global_or_param("default_format1pager")))),
                               inline = TRUE),
 
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),
@@ -1313,22 +1360,22 @@ app_ui <- function(request) {
                  shiny::radioButtons(inputId = "show_ratios_in_report",
                                      label = "Show ratio to state and ratio to US average in main table of multisite report",
                                      choices = list(Yes = TRUE, No = FALSE ),
-                                     selected = EJAM:::global_or_param("default_show_ratios_in_report")),
+                                     selected = global_or_param("default_show_ratios_in_report")),
 
                  shiny::radioButtons(inputId = "extratable_show_ratios_in_report",
                                      label = "Show ratio to state and ratio to US average in extra indicators (additional information) table of multisite report",
                                      choiceNames = list("Yes","No" ),
                                      choiceValues = list(TRUE, FALSE ),
-                                     selected = EJAM:::global_or_param("default_extratable_show_ratios_in_report")),
+                                     selected = global_or_param("default_extratable_show_ratios_in_report")),
 
                  shiny::textInput(inputId = "extratable_title",
                                   label = "Enter title for subtable of additional indicators",
-                                  value = EJAM:::global_or_param("default_extratable_title")
+                                  value = global_or_param("default_extratable_title")
                                   # value = gsub("[^a-zA-Z0-9 ]", "", "")
                  ),
                  shiny::textInput(inputId = "extratable_title_top_row",
                                   label = "Enter title for upper left cell of subtable of additional indicators",
-                                  value = EJAM:::global_or_param("default_extratable_title_top_row") # in the upper left cell
+                                  value = global_or_param("default_extratable_title_top_row") # in the upper left cell
                                   # value = gsub("[^a-zA-Z0-9 ]", "", "")
                  ),
                  ######################################################## #
@@ -1341,15 +1388,15 @@ app_ui <- function(request) {
                  ## but this can only return a vector not a named list that the parameter to build_community_report() etc. needs
                  shiny::selectizeInput(inputId = "extratable_list_of_sections",
                                        label = "What additional indicators to show in report",
-                                       choices  = EJAM:::global_or_param("default_extratable_list_of_sections"),
+                                       choices  = global_or_param("default_extratable_list_of_sections"),
                                        ### not yet working:
                                        #choices  =  default_extratable_list_of_sections_ui, # see global_defaults_*.R
-                                       selected = as.vector(EJAM:::global_or_param("default_extratable_list_of_sections")),    # see global_defaults_*.R
+                                       selected = as.vector(global_or_param("default_extratable_list_of_sections")),    # see global_defaults_*.R
                                        multiple = TRUE),
                  shiny::selectizeInput(inputId = "extratable_hide_missing_rows_for",
                                        label = "When results are missing for certain indicators, do not show those rows at all in report",
-                                       choices = EJAM:::global_or_param("default_extratable_list_of_sections"),
-                                       selected = EJAM:::global_or_param("default_extratable_hide_missing_rows_for"),
+                                       choices = global_or_param("default_extratable_list_of_sections"),
+                                       selected = global_or_param("default_extratable_hide_missing_rows_for"),
                                        multiple = TRUE),
 
                  ######################################################## #
@@ -1363,11 +1410,11 @@ app_ui <- function(request) {
                  # sitereport_download_buttons_colname = "Download EJAM Report", # input$sitereport_download_buttons_colname
                  shiny::textInput("sitereport_download_buttons_colname",
                                   label = "Name of column of uttons that download 1-site report per row",
-                                  value = EJAM:::global_or_param("sitereport_download_buttons_show")),
+                                  value = global_or_param("sitereport_download_buttons_show")),
 
                  checkboxInput("sitereport_download_buttons_show",
                                label = "Show column of buttons that download 1-site report per row",
-                               value = isTRUE(EJAM:::global_or_param("sitereport_download_buttons_show"))),
+                               value = isTRUE(global_or_param("sitereport_download_buttons_show"))),
 
                  ######################################################## #
                  ### Plots on webpages ####
@@ -1376,11 +1423,11 @@ app_ui <- function(request) {
                  shiny::radioButtons(inputId = "allow_median_in_barplot_indicators",
                                      label = "Allow median not just average as metric for array of barplots",
                                      choices = list(Yes = TRUE, No = FALSE),
-                                     selected = EJAM:::global_or_param("default_allow_median_in_barplot_indicators")),
+                                     selected = global_or_param("default_allow_median_in_barplot_indicators")),
                  ######################################################## #
                  ### Map colors, weights, opacity ####
                  # not used (yet)
-                 # numericInput(inputId = "circleweight_in", label = "weight of circles in maps", value = EJAM:::global_or_param("default_circleweight")),
+                 # numericInput(inputId = "circleweight_in", label = "weight of circles in maps", value = global_or_param("default_circleweight")),
 
                  ######################################################## #
                  ## DOWNLOAD RESULTS ####
@@ -1397,7 +1444,7 @@ app_ui <- function(request) {
 
                  checkboxInput(inputId = "ok2plot",
                                label = "OK to try to plot graphics and include in Excel download",
-                               value = EJAM:::global_or_param("default_ok2plot")),
+                               value = global_or_param("default_ok2plot")),
 
                  # p("May add more options here TBD"),
 
@@ -1426,10 +1473,10 @@ app_ui <- function(request) {
                  h3("Advanced tab"),
                  radioButtons(inputId = "show_advanced_settings", "Start with Advanced tab shown?", choices = c(Yes = TRUE, No = FALSE),
                               inline = TRUE,
-                              selected =  as.logical(EJAM:::global_or_param("default_show_advanced_settings"))), # see global_defaults_shiny_public.R
+                              selected =  as.logical(global_or_param("default_show_advanced_settings"))), # see global_defaults_shiny_public.R
                  radioButtons(inputId = "can_show_advanced_settings", "Provide buttons to let user Show/Hide advanced tab?", choices = c(Yes = TRUE, No = FALSE),
                               inline = TRUE,
-                              selected = as.logical(EJAM:::global_or_param("default_can_show_advanced_settings"))),
+                              selected = as.logical(global_or_param("default_can_show_advanced_settings"))),
 
                  ##################################################### #
                  ### testing modes ####
@@ -1437,11 +1484,11 @@ app_ui <- function(request) {
 
                  radioButtons(inputId = "testing", "testing?", choices = c(Yes = TRUE, No = FALSE),
                               inline = TRUE,
-                              selected = EJAM:::global_or_param("default_testing")),
+                              selected = global_or_param("default_testing")),
 
                  radioButtons(inputId = "shiny.testmode", "shiny.testmode?", choices = c(Yes = TRUE, No = FALSE),
                               inline = TRUE,
-                              selected = EJAM:::global_or_param("default_shiny.testmode")),
+                              selected = global_or_param("default_shiny.testmode")),
                  # If TRUE, then various features for testing Shiny applications are enabled.
                  # shiny.reactlog (defaults to FALSE)
                  #    If TRUE, enable logging of reactive events, which can be viewed later with the reactlogShow() function. This incurs a substantial performance penalty and should not be used in production.
@@ -1465,7 +1512,7 @@ app_ui <- function(request) {
                  # If TRUE, then the R/ of a shiny app will automatically be sourced.
 
                  checkboxInput(inputId = 'print_uploaded_points_to_log', label = "Print each new uploaded lat lon table full contents to server log",
-                               value = EJAM:::global_or_param("default_print_uploaded_points_to_log")),
+                               value = global_or_param("default_print_uploaded_points_to_log")),
 
                  br()
 
@@ -1480,7 +1527,7 @@ app_ui <- function(request) {
         ## . ####
 
       ), # end tabset panel from top of file ^^^^^^^^^  ## ##
-      EJAM:::global_or_param("html_footer_fmt")  ## adds HTML footer - defined in global_defaults_*.R
+      global_or_param("html_footer_fmt")  ## adds HTML footer - defined in global_defaults_*.R
 
     ) ## end fluidPage
   ) # end tag list
@@ -1521,7 +1568,7 @@ golem_add_external_resources <- function() {
     golem::bundle_resources(
       path = app_sys("app/www"),   #  points to  installed/EJAM/app/www which is same as   source/EJAM/inst/app/www
 
-      app_title = EJAM:::global_or_param("app_title")
+      app_title = global_or_param("app_title")
     ),
 
     # favorites icons ####

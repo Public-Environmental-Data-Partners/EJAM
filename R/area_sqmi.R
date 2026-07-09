@@ -116,11 +116,18 @@ area_sqmi_from_fips_made_of_bgs <- function(fips, includewater = FALSE) {
   # This can handle case where each fips is a different type, like mix of state, county, tract, blockgroup fips (unlike other functions here)
 
   myfunction = function(f1) {
-    if (includewater) {
-      sum( blockgroupstats[blockgroupstats$bgfips %in% fips_bgs_in_fips1(f1), arealand + areawater], na.rm = TRUE)
+    if (!("arealand" %in% names(blockgroupstats)) || !("areawater" %in% names(blockgroupstats))) {
+      warning("arealand or areawater column not found in blockgroupstats, so cannot get area by fips without downloading boundaries. Using NA as area.")
+      return(NA)
     } else {
-      sum( blockgroupstats[blockgroupstats$bgfips %in% fips_bgs_in_fips1(f1), arealand            ], na.rm = TRUE)
+
+      if (includewater) {
+        sum( blockgroupstats[blockgroupstats$bgfips %in% fips_bgs_in_fips1(f1), arealand + areawater], na.rm = TRUE)
+      } else {
+        sum( blockgroupstats[blockgroupstats$bgfips %in% fips_bgs_in_fips1(f1), arealand            ], na.rm = TRUE)
+      }
     }
+
   }
   areas_sqmeters <- sapply(fips, FUN = myfunction)
 

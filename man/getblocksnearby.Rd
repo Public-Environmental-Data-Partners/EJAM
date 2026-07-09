@@ -11,9 +11,7 @@ getblocksnearby(
   radius_donut_lower_edge = 0,
   avoidorphans = FALSE,
   quadtree = NULL,
-  quaddatatable = NULL,
   quiet = FALSE,
-  parallel = FALSE,
   use_unadjusted_distance = TRUE,
   ...
 )
@@ -46,12 +44,8 @@ created using indexblocks() which uses the SearchTree package.
 Takes about 2-5 seconds to create this each time it is needed.
 It can be automatically created when the package is attached via the .onAttach() function}
 
-\item{quaddatatable}{Not currently used}
-
 \item{quiet}{Optional. set to TRUE to avoid message about using getblock_diagnostics(),
 which is relevant only if a user saved the output of this function.}
-
-\item{parallel}{Not implemented}
 
 \item{use_unadjusted_distance}{logical, whether to find points within unadjusted distance}
 
@@ -63,7 +57,7 @@ columns named "ejam_uniq_id", "blockid", "distance", etc.
 The ejam_uniq_id represents which of the input sites is being referred to, and the table
 will only have the ids of the sites where blocks were found. If 10 sites were input but only sites 5 and 8
 were valid and had blocks identified, then the data.table here will only include ejam_uniq_id values of 5 and 8.
-This is like the output of  \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}}, or \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} if return_shp=F.
+This is like the output of  \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}}, or \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} if return_shp = FALSE.
 }
 \description{
 Get distance from each site (e.g., facility) to each
@@ -90,7 +84,8 @@ See \code{\link[=ejamit]{ejamit()}} for examples.
 getblocksnearby() is a wrapper redirecting to the right version, like \code{\link[=getblocksnearbyviaQuadTree]{getblocksnearbyviaQuadTree()}}
 Census block "internal points" (defined by Census Bureau) are actually what it looks for,
 and they are like centroids.
-The blocks are pre-indexed for the whole USA, via the data object quadtree aka localtree
+The blocks are pre-indexed for the whole USA via \code{\link[=indexblocks]{indexblocks()}}, which
+stores the quadtree index in the package cache.
 }
 \seealso{
 \code{\link[=ejamit]{ejamit()}} \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}} \code{\link[=get_blockpoints_in_shape]{get_blockpoints_in_shape()}}

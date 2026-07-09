@@ -1,5 +1,14 @@
 ## testing flagged_ functions for aggregating flags as summary stats
 
+flagged_pct_sites <- EJAM:::flagged_pct_sites
+flagged_pct_pop <- EJAM:::flagged_pct_pop
+flagged_pct_pop_us <- EJAM:::flagged_pct_pop_us
+flagged_count_pop_st <- EJAM:::flagged_count_pop_st
+flagged_areas_from_ejam <- EJAM:::flagged_areas_from_ejam
+flagged_areas_ratiosvector_from_flagged_areas <- EJAM:::flagged_areas_ratiosvector_from_flagged_areas
+flagged_areas_ratios_from_ejam <- EJAM:::flagged_areas_ratios_from_ejam
+flagged_areas_shortlabels_from_ejam <- EJAM:::flagged_areas_shortlabels_from_ejam
+
 # count certain areas overlapped & if certain features are here ####
 
 ### Separate note:
@@ -253,9 +262,8 @@ test_that("flagged_areas_shortlabels_from_ejam", {
       c("Schools", "Hospitals", "Worship Places", "Tribes", "Nonattainment Area",
         "Impaired Waters", "CEJST Disadvantaged", "EPA IRA Disadvantaged",
         "Housing Burden Community", "Transportation Disadvantaged", "Food Desert",
-        "% hhlds no Broadband Internet", "% hhlds no Health Insurance")
+        "% hhlds no Broadband Internet", "% no health insurance")
     )
   })
 })
 ################################################################# #
-

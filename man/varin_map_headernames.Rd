@@ -8,9 +8,10 @@ varin_map_headernames(
   query = "lowinc",
   ignore.case = TRUE,
   exact = FALSE,
-  cols_with_names = c("oldname", "apiname", "api_synonym", "acsname", "csvname",
-    "ejscreen_csv", "rname", "topic_root_term", "basevarname", "denominator",
-    "shortlabel", "longname", "api_description", "acs_description", "varlist")
+  cols_with_names = c("oldname", "ejscreen_apinames_old", "api_synonym", "acsname",
+    "csvname", "ejscreen_ftp_names", "ejscreen_indicator", "rname", "topic_root_term",
+    "basevarname", "denominator", "shortlabel", "longname", "api_description",
+    "acs_description", "varlist")
 )
 }
 \arguments{
@@ -34,15 +35,15 @@ utility to check if a variable or term is in map_headernames and where
 EJAM:::varin_map_headernames("spanish")
 EJAM:::varin_map_headernames("lowinc")
 EJAM:::varin_map_headernames("pop")
-EJAM:::varin_map_headernames("POV", ignore.case = T)
-EJAM:::varin_map_headernames("POV", ignore.case = F)
+EJAM:::varin_map_headernames("POV", ignore.case = TRUE)
+EJAM:::varin_map_headernames("POV", ignore.case = FALSE)
 
-EJAM:::varin_map_headernames( "traffic.score", exact = T)
+EJAM:::varin_map_headernames( "traffic.score", exact = TRUE)
 
 EJAM:::varin_map_headernames( "traffic" )
 
 t(EJAM:::varinfo("traffic.score",
-  info = c("oldname","apiname", "acsname" ,"csvname",
+  info = c("oldname", "ejscreen_apinames_old", "acsname" ,"csvname",
   "basevarname", 'shortlabel', 'longname', 'varlist')))
 
 }

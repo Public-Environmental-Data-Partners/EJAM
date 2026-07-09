@@ -13,11 +13,14 @@ datacreate_names_pct_as_fraction <- function(map_headernames)   {
   names_pct_as_fraction_blockgroupstats <- unique(map_headernames$rname[map_headernames$pct_as_fraction_blockgroupstats])
   names_pct_as_fraction_blockgroupstats <- unique(names_pct_as_fraction_blockgroupstats[names_pct_as_fraction_blockgroupstats %in% names(blockgroupstats)])
 
-  names_pct_as_fraction_blockgroupstats <- metadata_add(names_pct_as_fraction_blockgroupstats)
-  names_pct_as_fraction_ejamit          <- metadata_add(names_pct_as_fraction_ejamit)
-
-  usethis::use_data(names_pct_as_fraction_blockgroupstats, overwrite = T)
-  usethis::use_data(names_pct_as_fraction_ejamit,          overwrite = T)
+  # names_pct_as_fraction_blockgroupstats <- metadata_add(names_pct_as_fraction_blockgroupstats)
+  # names_pct_as_fraction_ejamit          <- metadata_add(names_pct_as_fraction_ejamit)
+  #
+  # usethis::use_data(names_pct_as_fraction_blockgroupstats, overwrite = T)
+  # usethis::use_data(names_pct_as_fraction_ejamit,          overwrite = T)
+#
+  EJAM:::metadata_add_and_use_this("names_pct_as_fraction_blockgroupstats")
+  EJAM:::metadata_add_and_use_this("names_pct_as_fraction_ejamit")
 
   ## Documentation ####
 

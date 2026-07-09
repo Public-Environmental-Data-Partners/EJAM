@@ -36,7 +36,7 @@ The Federal ones with at least 100k facilities each are
 RCRAINFO (over 500k sites), NPDES, ICIS, AIR, FIS, EIS, and AIRS/AFS.
 }
 \examples{
-\donttest{
+\dontrun{
  x = latlon_from_program("CAMDBS")
   mapfast(x)
  program <- c("EIS", "UST")

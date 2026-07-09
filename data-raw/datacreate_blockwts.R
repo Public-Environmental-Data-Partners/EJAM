@@ -1,27 +1,69 @@
 
+################################################################################
+# v2.5.0 release note:
+#
+# Do not run this script automatically from run_ejscreen_dataset_pipeline.R.
+# For the ACS 2020-2024 / EJAM v2.5.0 release, keep using the current
+# EPA/EJScreen adjusted 2020-to-2022 block helper Arrow files
+# (blockwts, blockpoints, blockid2fips, bgid2fips, quaddata).
+#
+# This script is retained for a future deliberate block-helper refresh only.
+# Raw Census 2020 regeneration can create block/BG FIPS differences relative
+# to the EPA/EJScreen adjusted helper universe and the ACS 2022+ Connecticut
+# planning-region geography. Before using outputs from this script for a
+# release, validate that every blockgroupstats bgid/bgfips is represented in
+# bgid2fips and blockwts, that blockpoints/blockid2fips/blockwts share the same
+# blockid universe, and that any extra helper BGs are explicitly documented.
+#
+# Island Areas AS/GU/MP/VI are included only at the blockgroup dataset,
+# EJSCREEN export, and map-data visibility level for v2.5.0. Do not add Island
+# Area blocks to these block helper files for this release path; point-buffer,
+# radius, and block-weighted polygon analyses in AS/GU/MP/VI should return
+# no-data results rather than block-weighted estimates.
+################################################################################
+
 # The block data.table tables
 #  'blockpoints', 'blockwts', 'quaddata', 'blockid2fips'
 # need to be updated when FIPS codes or boundaries of blockgroups or blocks change.
 
 # They are created as follows:
 
-# for version 2.32 (in July/August 2024)
-# they can be created from the .gdb.zip file that was obtained from the EJSCREEN team
-message("The 'datacreate_blockwts.R' script does not include Island Areas GU VI MP AS, since they lack almost all indicator data in EJSCREEN v2.32")
-
 # for version 2.2 (through July/August 2024)
 # they were created from Census 2020 data
 # using a non-CRAN package (in github) called census2020download !
 # This script can try to install that and use it.
-#
+
+# for version 2.32 (in July/August 2024)
+# were created from the .gdb.zip file that was obtained from the EJSCREEN team
+message("The 'datacreate_blockwts.R' script intentionally excludes Island Areas AS/GU/MP/VI. EJAM v2.5.0 supports those areas at the blockgroup dataset/export/map-data level, but block/radius analyses there should return no-data results.")
+
+# for version 2.5.0 (in May 2026)
+# created  from Census 2020 data
+# using a non-CRAN package (in github) called census2020download !
+# This script can try to install that and use it.
+# By default that downloads from
+#  "https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/"
+# Note:
+# ***  But reconcile with pipeline handling of odd FIPS discrepancies and
+#   note that downloading block data this way 5/2026 creates
+#   about 2k different block fips than the v2.32 datasets had.
+
+
 #################################################################################### #
 
 # setup ####
 
+### SETTINGS TO USE (parameters)
+
+askquestions = FALSE
+do_download_from_census = TRUE # use ejanalysis\census2020download package for downloads, takes a few minutes
+do_update = TRUE
+do_metadata = TRUE
+do_data_save = FALSE
+tryinstall = FALSE
+
 require(data.table)
 if (!exists("askquestions")) {askquestions <- FALSE}
-
-# do_update = TRUE
 
 if (interactive() && askquestions) {
   do_update <- askYesNo("Update all block tables like blockpoints, blockwts, etc.?
@@ -31,8 +73,6 @@ if (interactive() && askquestions) {
   do_update <- TRUE
 }
 
-# do_metadata = TRUE
-
 if (interactive() && askquestions) {
   do_metadata <- askYesNo("Do metadata_add()  ?")
   if (is.na(do_metadata)) {do_metadata <- FALSE}
@@ -40,22 +80,18 @@ if (interactive() && askquestions) {
   do_metadata <- TRUE
 }
 
-# # do_data_save = FALSE
-#
-# if (interactive() && askquestions) {
-#   do_data_save <- askYesNo("Do use_data() - (PROBABLY NO)?")
-#   if (is.na(do_data_save)) {do_data_save <- FALSE}
-# } else {
-#   do_data_save <- FALSE
-# }
+if (interactive() && askquestions) {
+  do_data_save <- askYesNo("Do use_data() - (PROBABLY NO)?")
+  if (is.na(do_data_save)) {do_data_save <- FALSE}
+} else {
+  do_data_save <- FALSE
+}
 ######################################### #
 
 # A) use downloads from Census Bureau? (install,load census2020download pkg) ####
 
-# tryinstall = FALSE
-
 ################################## #
-warning("Note that the file from EJSCREEN team lacks area info for blocks, while Census Bureau downloads would have that.
+cat("Note that the file from EJSCREEN team lacks area info for blocks, while Census Bureau downloads would have that.
             Relying only on the file from EJSCREEN team, we cannot calculate block_radius_miles
             as would be need to create custom nationwide proximity scores like proxistat() does.
             Also, it seems clear that EJSCREEN does not do small-distance adjustments with that in buffer analysis.")
@@ -83,7 +119,7 @@ in EJAM/data-raw/datacreate_blockwts.R if this is needed.
 ### via the census2020download package, as above.
 
 ### At least for buffer aggregation (as in ejamit() or shiny app) reports,
-### EJSCREEN or EJAM v2.32 will not actually use that in buffer analysis -
+### EJSCREEN or EJAM   will not actually use that in buffer analysis -
 ### CONFIRMED EJSCREEN does NOT do the small distance adjustment for buffer aggregation,
 ### even though it was doing that adjustment in the calculation of blockgroup proximity scores once a year in EJSCREEN.
 ### We can now put in placeholder like NA values for now as long as doaggregate() is prevented
@@ -114,21 +150,21 @@ if (!do_update) {
         tryinstall = askYesNo("Requires the census2020download package, not found installed yet. Try to install now from github?")
         if (is.na(tryinstall)) {tryinstall <- FALSE}
       } else {
-        warning('Cannot update block data -- That requires the census2020download package from\n devtools::install_github("ejanalysis/census2020download") ')
+        warning('Cannot update block data -- That requires the census2020download package from\n pak::pkg_install("ejanalysis/census2020download") ')
         tryinstall <- FALSE
         cando <- FALSE
       }
       if (tryinstall) {
-        devtools::install_github("ejanalysis/census2020download")
+        pak::pkg_install("ejanalysis/census2020download")
         if (!require(census2020download)) {
           cando <- FALSE
-          warning('failed to install necessary package from  devtools::install_github("ejanalysis/census2020download")')
+          warning('failed to install necessary package from  pak::pkg_install("ejanalysis/census2020download")')
         } else {
           cat('installed and attached census2020download package\n')
           cando <- TRUE
         }
       } else {
-        warning('Not updating block data -- that requires the census2020download package from\n devtools::install_github("ejanalysis/census2020download") ')
+        warning('Not updating block data -- that requires the census2020download package from\n pak::pkg_install("ejanalysis/census2020download") ')
         cando <- FALSE
       }
     }
@@ -138,6 +174,8 @@ if (!do_update) {
       ## census2020_get_data() ####
 
       cat('Downloading block data and preparing block tables for EJAM...')
+      # by default downloads data from
+      #  "https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/"
       blocks <- census2020download::census2020_get_data()
       cat("done downloading block tables:\n")
       print(cbind(names(blocks)))
@@ -168,7 +206,9 @@ if (!do_update) {
     # fname = "WeightTables_2020_CT2022_fix.gdb.zip" # had 19 problems
     fname = "WeightTables_2020_CT2022_09032024.gdb.zip" # new, 9/4/24
     fpath = file.path(mydir, fname)
-    fpath = rstudioapi::selectFile(path = fpath, filter = "gdb.zip (*.gdb.zip)")
+    if (interactive() && askquestions && rstudioapi::isAvailable()) {
+      fpath = rstudioapi::selectFile(path = fpath, filter = "gdb.zip (*.gdb.zip)")
+    }
     if (!file.exists(fpath)) {stop("file not found: ", fpath)}
     # library(EJAM)
     library(sf)
@@ -295,6 +335,23 @@ if (!do_update) {
     # want to keep the objects in memory? OK - may use to run EJAM functions like recreating testoutput data
     rm(mylistoftables, blocks)
     gc()
+
+    cat("NOTE: If these block/BG helper Arrow files are intentionally regenerated,
+        publish the updated .arrow files through EJAM:::datasets_arrow_publish()
+        after careful dry-run review. Do not publish automatically from this script.\n")
+    ## also see run_arrow_publish_v2.5.0.R or could be done via pipeline
+    # block_geo_arrow_files <- file.path(
+    #   "PATH_TO_REGENERATED_ARROW_FILES",
+    #   paste0(c("bgid2fips", "blockid2fips", "blockpoints", "blockwts", "quaddata"), ".arrow")
+    # )
+    # EJAM:::datasets_arrow_publish(
+    #   files = block_geo_arrow_files,
+    #   tag = EJAM:::ejamdata_required_tag(),
+    #   release_date = Sys.Date(),
+    #   dry_run = TRUE,
+    #   overwrite = FALSE,
+    #   mark_latest = FALSE
+    # )
   }
 }
 #################################################################################### #
@@ -314,7 +371,7 @@ if (!do_update) {
 # ?blockwts
 # browseURL(paste0("https://ejanalysis", ".github.io/census2020download/reference/index.html"))
 
-# devtools::install_github("ejanalysis/census2020download")
+# pak::pkg_install("ejanalysis/census2020download") #As of devtools 2.5.0 on March 14, 2026, the devtools::install_*() family is deprecated
 # require # (census2020download)
 
 # ?census2020download   # the name of the package

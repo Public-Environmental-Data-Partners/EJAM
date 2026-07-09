@@ -1,6 +1,6 @@
 
 ### Adding these functions would require the tidycensus pkg and scales and stringr
-# ## not already required by EJAM:
+# ##
 # library(tidycensus) # About 2MB (+ other pkgs it uses)
 # library(scales)
 # library(stringr)
@@ -17,33 +17,20 @@
 
 #' download ACS 5year data from Census API, at blockgroup resolution (slowly if for entire US)
 #' @details
+#' See newer ACSdownload::get_acs_new() as used in calc_blockgroupstats_acs() etc.,
+#' which will download ACS nationwide data by table
+#' instead of using acs_bybg(), which queried the API state-by-state.
 #'
-#' Probably requires [getting and specifying an API key for Census Bureau](https://api.census.gov/data/key_signup.html) ! (at least if query is large).
-#'   see [tidycensus package help](https://walker-data.com/tidycensus/)  envt var CENSUS_API_KEY
+#' acs_bybg() requires a [Census Bureau API key](https://api.census.gov/data/key_signup.html):
+#'   tidycensus (>= 1.8) now errors (no longer just warns) without one. Set it once with
+#'   `tidycensus::census_api_key("YOUR KEY", install = TRUE)` (stores envt var CENSUS_API_KEY),
+#'   then restart R. See [tidycensus package help](https://walker-data.com/tidycensus/) and ?tidycensus::census_api_key.
 #'
 #' NOTES ON KEY TABLES IN ACS THAT ARE RELEVANT TO EJSCREEN:
 #' ```
-#' x <- tidycensus::load_variables(2022, "acs5")
-#'
-#' tables = c(
-#'   "B25034", # pre1960, for lead paint indicator (environmental not demographic per se)
-#'   "B01001", # sex and age / basic population counts
-#'   "B03002", # race with hispanic ethnicity
-#'   "B02001", # race without hispanic ethnicity
-#'   "B15002", # education
-#'   "B23025", # unemployed
-#'   "C17002", # low income, poor, etc.
-#'   "B19301", # per capita income
-#'   "B25032", # owned units vs rented units (occupied housing units, same universe as B25003)
-#'   "B28003", # no broadband
-#'   "B27010", # no health insurance
-#'   "C16002", # (language category and) % of households limited English speaking (lingiso) "https://data.census.gov/table/ACSDT5Y2023.C16002"
-#'   "B16004", # (language category and) % of residents (not hhlds) speak no English at all "https://data.census.gov/table/ACSDT5Y2023.B16004"
-#'   ####### TRACT ONLY:
-#'   #   used by EJSCREEN but only available at tract resolution:
-#'   "C16001", # languages detailed list: % of residents (not hhlds) IN TRACT speak Chinese, etc.  "https://data.census.gov/table/ACSDT5Y2023.C16001"
-#'   "B18101" # disability -- at tract resolution only ########### #
-#' )
+#' x <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), "acs5")
+#'   ## tables_ejscreen_acs
+#' tables = tables_ejscreen_acs
 #' acstabs2 <- paste0(tables, "_")
 #' mytables <- data.table::rbindlist(lapply(acstabs2, function(z) {
 #'   x[substr(x$name,1,7) %in% z, ][1, ]
@@ -57,34 +44,34 @@
 #'
 #'  # disability is by tract only:
 #'
-#'  cbind(unique(grep("disab", x$concept, value = T, ignore.case = T) ))
+#'  cbind(unique(grep("disab", x$concept, value = TRUE, ignore.case = TRUE) ))
 #'  # x[substr(x$name,1,6) %in% "B18101" & x$geography %in% "block group", ] |> print(n=50) # none
 #'  x[substr(x$name,1,7) %in% "B18101_"  , ] |> print(n=50)
 #'  ```
-#' @param variables Vector of variables - see get_acs from tidycensus package
-#' @param table  see get_acs from tidycensus package.
+#' @param variables Vector of variables - see [tidycensus::get_acs()]
+#' @param table  see [tidycensus::get_acs()]
 #'
 #'   EJSCREEN-relevant key tables are listed in the details section here.
 #'
 #' @param year optional, e.g., 2024 means ACS5 data covering 2020-2024.
 #'   Tries to use the most recent available if not specified.
 #' @param cache_table  see [tidycensus::get_acs()]
-#' @param output   see get_acs from tidycensus package
+#' @param output   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
 #' @param state Default is 2-character abbreviations, vector of all US States, DC, and PR.
-#' @param county   see get_acs from tidycensus package
-#' @param zcta   see get_acs from tidycensus package
-#' @param geometry   see get_acs from tidycensus package
-#' @param keep_geo_vars   see get_acs from tidycensus package
-#' @param summary_var   see get_acs from tidycensus package
-#' @param key   see get_acs from tidycensus package
-#' @param moe_level   see get_acs from tidycensus package
-#' @param survey   see get_acs from tidycensus package
-#' @param show_call   see get_acs from tidycensus package
+#' @param county   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param zcta   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param geometry   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param keep_geo_vars   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param summary_var   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param key   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param moe_level   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param survey   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
+#' @param show_call   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
 #' @param geography "block group"
 #'   (but it also will recognize you meant "block group" or "tract"
 #'    if you omit the space or capitalize by accident)
 #' @param dropname whether to drop the column called NAME
-#' @param ...   see get_acs from tidycensus package
+#' @param ...   see get_acs() from the [tidycensus package](https://walker-data.com/tidycensus/)
 #'
 #' @examples
 #' \dontrun{
@@ -132,35 +119,19 @@
 #'
 #' ## ACS tables and variables most relevant to EJSCREEN
 #'
-#' acsinfo <- tidycensus::load_variables(2022, "acs5")
-#' ejscreentables <- c("B01001", # sex and age / basic population counts
-#'             "B03002", # race with hispanic ethnicity
-#'             "B02001", # race without hispanic ethnicity
-#'             "B15002", # education
-#'
-#'             "C16002", # language/ lingiso
-#'             "B16004", # language category and English not at all
-#'
-#'             "C17002", # low income, poor, etc.
-#'             "B25034", # pre1960, for lead paint indicator
-#'             "B23025", # unemployed
-#'
-#'             "B25032", # owned units vs rented units # ***
-#'             "B25003", # owned vs rented             # ***
-#'
-#'             "B28003", # no broadband
-#'             "B27010" ,  # no health insurance
-#'
-#'           "B18101" # disability -- at tract resolution only ########### #
-#' )
+#' acsinfo <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), "acs5")
+#' # or x = EJAM:::acs_table_info()
+#' ejscreentables <-  as.vector(tables_ejscreen_acs)
 #'
 #' acstabs2 <- paste0(ejscreentables, "_")
 #' acsinfo$table = gsub("_.*", "", acsinfo$name)
 #' myacsinfo <- acsinfo[acsinfo$table %in% ejscreentables, ]
-#' mytables <- data.table::rbindlist(lapply(ejscreentables, function(z) {acsinfo[acsinfo$table %in% z, ][1,]}))
+#' mytables <- data.table::rbindlist(lapply(ejscreentables, function(z) {
+#'   acsinfo[acsinfo$table %in% z, ][1,]
+#' }))
 #' ejscreen_tables <-  mytables$table # same as ejscreentables
 #'
-#' myvars <- myacsinfo$name # 184 variables among 8 tables
+#' myvars <- myacsinfo$name #
 #'
 #' if ("want to run example that takes >15 minutes" == "yes") {
 #'   # VERY SLOWLY download data for all these tables
@@ -175,7 +146,8 @@
 #'   data.table::setnames(newvars, "GEOID", "bgfips")
 #'   newvars[, ST := fips2stateabbrev(bgfips)]
 #'   names(newvars) <- gsub("E$", "", names(newvars))
-#'   dim(newvars) #  239781 rows (bgs),   370 columns (variable estimates and margin of error values)
+#'   dim(newvars) # 239781 rows, 370 columns
+#'   # columns are variable estimates and margin of error values
 #'   t(head(newvars))
 #'   ejscreen_acs = newvars
 #'   save(ejscreen_acs, file="ejscreen_acs.rda")
@@ -233,7 +205,7 @@ acs_bybg <- function(
   # NEED API KEY POSSIBLY, FOR LARGE QUERIES AT LEAST
 
   if (nchar(Sys.getenv("CENSUS_API_KEY")) == 0) {
-    warning("envt var CENSUS_API_KEY not found - tidycensus::get_acs() may require having set up a census api key - see ?tidycensus::census_api_key  ")
+    warning("envt var CENSUS_API_KEY not found - tidycensus (>= 1.8) now requires a Census API key and tidycensus::get_acs() will error without one. Set it with tidycensus::census_api_key(\"YOUR KEY\", install = TRUE) - see ?tidycensus::census_api_key  ")
   }
 
   # if (!exists("get_acs")) {  # now in Imports of DESCRIPTION file
@@ -243,7 +215,7 @@ acs_bybg <- function(
     warning( "Specify either variables or table parameter; they cannot be combined. Using variables and ignoring table parameter")
     table = NULL
   }
-  # x <- load_variables(year, survey) # slow and requires tidycensus package
+  # x <- tidycensus::load_variables(year, survey) # slow and requires tidycensus package
   # print(x[grepl("b01001_", x$name, ignore.case = T) & grepl("Female", x$label) & grepl("group", x$geography), ], n = 25)
   allstates <- list()
 
@@ -292,7 +264,7 @@ acs_bybg <- function(
 # library(data.table)
 # library(tidycensus) # NEED API KEY, FOR LARGE QUERIES AT LEAST
 #
-# x <- tidycensus::load_variables(2022, "acs5")
+# x <- tidycensus::load_variables(acs_endyear(guess_census_has_published = TRUE), "acs5")
 # # print(x[grepl("b01001_", x$name, ignore.case = T) & grepl("Female", x$label) & grepl("group", x$geography), ], n = 25)
 # allstates <- list()
 #

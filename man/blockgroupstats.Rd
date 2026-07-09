@@ -10,24 +10,70 @@ It is a data.table with one row for every US Census blockgroup.
 }
 \details{
 \itemize{
-\item Environmental indicators were provided by EPA.
-\item Demographics such as percentages are calculated from Census Bureau data from the American Community Survey
-5-year summary file, as documented by EJSCREEN.
-\item The EJ Indexes (Summary Indexes) are stored in a separate table, \link{bgej}
-}
-
-The \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html}{source of data for each indicator was documented by EJSCREEN}
-
-More about blockgroupstats
+\item SOURCES OF DATA:
 \itemize{
-\item During 2025, EJAM used EPA environmental indicators along with population indicators derived
-from 2018-2022 ACS data. Each year this should be re-created as for the latest version.
+\item Environmental indicators were obtained from a variety of sources, and their development in 2026 onward will be documented at https://github.com/Public-Environmental-Data-Partners/EJSCREEN-Data-Processing.
+\item Demographics such as percentages are calculated using EJAM scripts and
+functions, starting with Census Bureau data from the American Community
+Survey 5-year summary file. ACS calculations are based primarily on
+\link{formulas_ejscreen_acs}, \link{formulas_ejscreen_acs_disability}, and
+\link{formulas_ejscreen_demog_index}.
+\item The EJ Indexes (aka Summary Indexes) are calculated by EJAM based on blockgroupstats data, and are stored in a separate table, \link{bgej}
+\item The \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html}{definition of and source of data for every indicator was originally documented by EPA for EJSCREEN}. Originally, the environmental, demographic, and EJ indicators/indexes and extra indicators all were provided by EPA for EJAM versions through v2.32.8 (early 2026).
+\item Metadata on each indicator, such as its glossary definition or long name, are stored in the EJAM package, and can be accessed with the function \code{\link[=varinfo]{varinfo()}} and the dataset \link{map_headernames}.
+\item EJAM versions through v2.32.8.001 converted missing values of the
+drinking-water non-compliance indicator to zero when creating
+\code{blockgroupstats}. Starting with later EJAM releases, environmental
+indicator \code{NA} values should remain \code{NA} unless the source explicitly
+reports a valid zero score. In particular, \code{drinking = NA} means the
+source had no valid drinking-water score for that blockgroup, while
+\code{drinking = 0} means the source reported a valid score of zero.
+}
+\item VINTAGE:
+\itemize{
+\item Each year this should be re-created as for the latest version.
 \item See \code{attributes(blockgroupstats)} to confirm vintage of each dataset
-\item Geographic scope includes States, DC, and Puerto Rico (PR), but not any Island Areas (VI, GU, AS, etc.)
-\item Column names include \code{bgfips}, \code{bgid} (for join to \link{blockwts} by/on \code{bgid}),
-\code{pop}, \code{pctlowinc}, etc.
+\item EJAM v3 (the v3.YYYY.0 annual-vintage line) uses indicators derived
+from the ACS 5-year vintage of each release; see
+\code{attributes(blockgroupstats)$acs_version} (e.g. 2018-2022, 2019-2023, or 2020-2024).
+\item EJAM v2.32.x starting in August 2024 and through 2025 to early 2026, used demographic indicators derived from 2018-2022 ACS data.
+\item Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
+}
+\item GEOGRAPHIC SCOPE:
+\itemize{
+\item Data here includes States, DC, Puerto Rico (PR), and, for EJAM
+v3, the Island Areas AS/GU/MP/VI at the blockgroup dataset,
+EJSCREEN export, and map-data visibility level.
+\item Puerto Rico is included in both Census 2020 and ACS survey data, so it
+has ACS-derived demographics in the \code{blockgroupstats} dataset.
+\item The American Community Survey (ACS) does not include AS/GU/MP/VI. For
+EJAM v3, the default EJSCREEN-compatible pipeline appends AS/GU/MP/VI
+rows with demographic fields, population, and demographic indexes kept as
+\code{NA}, while using the archived EPA EJScreen ACS2022 reference for row
+IDs, area fields, and partial EPA environmental fields where available.
+The annual pipeline can also save 2020 Island Areas Census DHC
+demographics as a separate \code{bg_islandareas_demographics} checkpoint for
+review. Those DHC demographics are not used in the default
+EJSCREEN-compatible \code{blockgroupstats} output unless the maintainer
+explicitly opts into a mixed-source supplemental dataset. See
+https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html
+and also see \code{stateinfo2[stateinfo2$is.island.areas, ]} and
+\link{islandareas}. The Island Areas include American Samoa (AS), U.S. Virgin
+Islands (VI), Guam (GU), and Northern Mariana Islands (MP). The U.S.
+Minor Outlying Islands (UM) are also Island Areas but are not included in
+EJScreen.
+\item Island Areas are not supported by the block helper datasets used for
+point-buffer/radius and block-weighted polygon analysis, such as
+\link{blockwts}, \link{blockpoints}, \link{bgid2fips}, \link{blockid2fips}, \link{quaddata}, and
+\link{bgpts}. Radius/buffer analysis for AS/GU/MP/VI should return no-data
+results rather than block-weighted estimates.
+}
+\item COLUMNS / INDICATORS:
+\itemize{
+\item Column names include \code{bgfips}, \code{bgid} (for join to \link{blockwts} by/on \code{bgid}), \code{pop}, \code{pctlowinc}, etc.
 \item For metadata on each column, see \link{map_headernames} and \code{\link[=varinfo]{varinfo()}}
 \item To see definitions of the columns (indicators) and some basic info on each:
+}
 }
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{x <- data.frame(
@@ -39,19 +85,20 @@ rownames(x) <- NULL
 x[1:20, ]
 }\if{html}{\out{</div>}}
 
-The columns called arealand and areawater are in square meters,
-not square miles - to convert units:
+\if{html}{\out{<div class="sourceCode">}}\preformatted{- The compatibility-only column called `area` is retained from older
+EJScreen/EJAM tables but should not be used for calculations. The columns
+`arealand` and `areawater` are in square meters, not square miles. To
+convert units:
+}\if{html}{\out{</div>}}
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{convert_units(sum( blockgroupstats$arealand) , "sqm", "sqmi")
 }\if{html}{\out{</div>}}
-
-The column called "area" is not used and not documented.
-
-Other key datasets:
+\itemize{
+\item OTHER KEY DATASETS:
 \itemize{
 \item List of key datasets used by EJAM and details about annual updates: \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{technical article on updating datasets}
 \item Datasets stored within the EJAM package (.rda files): \href{https://public-environmental-data-partners.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data}{access to installed data files}
-\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/ejamdata/tree/main/data}{access to downloaded data files}
-\item Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
+\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/ejamdata/releases}{release assets with downloadable data files}
+}
 }
 }

@@ -53,7 +53,9 @@ The original (pre-2025) EJSCREEN API did not handle zip codes. It can show where
 
 ```{r, eval=FALSE, include=TRUE}
 # Just see where the zipcode is, not its boundaries
-browseURL(url_ejscreenmap(wherestr =  '10001'))
+# (use zip= , not wherestr= : a bare 5-digit wherestr is now read as a county FIPS first,
+#  so wherestr = '10001' would open Kent County, DE instead of this Manhattan zip code)
+browseURL(url_ejscreenmap(zip = '10001'))
 ```
 
 **To map and analyze zip codes you can download shapefiles for them and analyze or map them in EJAM as shown below.**
@@ -100,7 +102,35 @@ mapview::mapview(shp1)
 
 ## see EJSCREEN map at a zip code
 
-browseURL(url_ejscreenmap(wherestr =  '20019'))
+The EJScreen map app can be opened at zip code(s) via a deep link, using its `?zip=`
+launch-URL parameter -- the explicit way to pass a zip code. That matters because a bare
+5-digit number is ambiguous: 10001 is both a Manhattan zip code and Kent County, DE's
+county FIPS, and EJScreen deep links read a bare 5-digit `wherestr=` as a county FIPS
+first (EJAM's convention). The `zip` argument of `url_ejscreenmap()` builds the
+unambiguous zip links:
+
+```{r url_ejscreenmap_zip, eval=FALSE, include=TRUE}
+# one zip code: EJScreen opens centered there, with a pin and the site report popup
+browseURL(url_ejscreenmap(zip = "20019"))
+#> opens https://pedp-ejscreen.azurewebsites.net/index.html?zip=20019
+
+# note the zip parameter, unlike wherestr, is never confused with a county FIPS:
+url_ejscreenmap(zip = "10001")  # zip 10001, in Manhattan, NY
+url_ejscreenmap(fips = "10001") # county FIPS 10001 = Kent County, DE (boundary drawn)
+
+# several zips in one link (the map zooms to fit all of them),
+# and radius= prefills the report buffer distance in miles:
+url_ejscreenmap(zip = c("20019", "20020"), combined = TRUE, radius = 1)
+#> "https://pedp-ejscreen.azurewebsites.net/index.html?zip=20019,20020&radius=1"
+
+# a zip passed as a number gets its leading zeroes restored:
+url_ejscreenmap(zip = 1001) # zip 01001, Agawam, MA
+```
+
+These links need the EJScreen release that added deep links (see
+[Public-Environmental-Data-Partners/EJScreen#70](https://github.com/Public-Environmental-Data-Partners/EJScreen/pull/70));
+the map pins the zip's location -- for analyzing the zip code's actual boundaries, use
+the zcta polygons approach above.
 
 ## analyzing zip codes in EJAM
 

@@ -11,7 +11,10 @@ shapefile_from_any(
   layer = NULL,
   inputname = NULL,
   silentinteractive = FALSE,
-  ...
+  ...,
+  shapefile = NULL,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -47,6 +50,12 @@ default is crs = 4269 or Geodetic CRS NAD83}
 \item{silentinteractive}{set to TRUE to NOT prompt for a file/folder when one is not specified}
 
 \item{...}{passed to \code{\link[sf:st_read]{sf::st_read()}}}
+
+\item{shapefile}{alias (synonym) for path (the input shapefile/sf/GeoJSON)}
+
+\item{shape}{alias (synonym) for path}
+
+\item{shp}{alias (synonym) for path}
 }
 \value{
 a simple feature \link[sf:sf]{sf::sf} class spatial data.frame

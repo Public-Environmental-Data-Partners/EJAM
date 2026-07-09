@@ -15,6 +15,7 @@ Table of US cities and other Census Designated Places, Incorporated Places, and 
 }
 \details{
 from \url{https://www2.census.gov/geo/docs/reference/codes/PLACElist.txt}
+As checked in May 2026, this Census PLACElist source did not include AS/GU/MP/VI city, town, or CDP rows. This is a source coverage note only; it does not change how \code{censusplaces$fips} is stored or matched by EJAM helpers.
 Column names: eparegion, ST, stfips, countyname, countyfips, placename, fips
 }
 \keyword{datasets}

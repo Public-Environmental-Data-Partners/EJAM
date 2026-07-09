@@ -4,11 +4,7 @@
 \alias{pkg_dupenames}
 \title{UTILITY - check conflicting getNamespaceExports (names of exported functions or datasets)}
 \usage{
-pkg_dupenames(
-  pkg = EJAM::ejampackages,
-  sortbypkg = FALSE,
-  compare.functions = TRUE
-)
+pkg_dupenames(pkg = "EJAM", sortbypkg = FALSE, compare.functions = TRUE)
 }
 \arguments{
 \item{pkg}{one or more package names as vector of strings.

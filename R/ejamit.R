@@ -1,4 +1,20 @@
 
+#' Message describing why no block centroids were found near a site
+#'
+#' Internal helper used by [ejamit()] to explain empty results by site type.
+#' @param sitetype one of "fips", "shp", or the default point/radius case
+#' @return a character string describing why no block centroids were found
+#' @noRd
+#'
+ejamit_no_block_centroids_message <- function(sitetype) {
+  if (sitetype %in% "fips") {
+    return("no block centroids (fips boundaries not obtained)")
+  }
+  if (sitetype %in% "shp") {
+    return("no block centroids (polygon too small for low pop density)")
+  }
+  "no block centroids (radius too small for low pop density)"
+}
 
 #' Get an EJ analysis (residential population and environmental indicators) in or near a list of locations
 #'
@@ -8,7 +24,10 @@
 #' @details See examples in vignettes/ articles at `r EJAM::url_package(type = "docs", get_full_url = TRUE)`
 #'
 #' @param sitepoints data.table or data.frame with columns lat, lon giving point locations of sites or facilities around which are circular buffers
-#' @param radius in miles, defining circular buffer around a site point (assumes zero in fips or shapefile cases)
+#' @param radius in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
+#'   For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
+#'   before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).
+#' @param buffer Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
 #' @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)
 #' @param avoidorphans logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
@@ -20,9 +39,12 @@
 #' @param fips optional FIPS code vector to provide if using FIPS instead of sitepoints to specify places to analyze,
 #'   such as a list of US Counties or tracts. Passed to [getblocksnearby_from_fips()]
 #' @param shapefile optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
-#'   e.g., `out = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)`
+#' @param shape Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
+#'   e.g., `out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)`
 #'   If in RStudio you want it to interactively prompt you to pick a file,
 #'   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
+#' @param shp alias (synonym) for shapefile
+#' @param lat,lon optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.
 #' @param countcols character vector of names of variables to aggregate within a buffer using a sum of counts,
 #'   like, for example, the number of people for whom a poverty ratio is known,
 #'   the count of which is the exact denominator needed to correctly calculate percent low income.
@@ -66,7 +88,7 @@
 #' @param silentinteractive to prevent long output showing in console in RStudio when in interactive mode,
 #'   passed to [doaggregate()] also. app server sets this to TRUE when calling [doaggregate()] but
 #'   [ejamit()] default is to set this to FALSE when calling [doaggregate()].
-#' @param called_by_ejamit passed to doaggregate(). Set to TRUE by [ejamit()] to suppress some outputs even if ejamit(silentinteractive=F)
+#' @param called_by_ejamit passed to doaggregate(). Set to TRUE by [ejamit()] to suppress some outputs even if ejamit(silentinteractive = FALSE)
 #' @param testing used while testing this function, passed to [doaggregate()]
 #' @param showdrinkingwater T/F whether to include drinking water indicator values or display as NA. Defaults to TRUE.
 #' @param showpctowned T/f whether to include percent owner-occupied units indicator values or display as NA. Defaults to TRUE.
@@ -152,7 +174,7 @@
 #'
 #'   # Shapefile examples
 #'   out2 = ejamit(shapefile = testshapes_2, radius = 0)
-#'   out3 = ejamit(shapefile = testdata("portland.json", quiet = T), radius = 0)
+#'   out3 = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)
 #'
 #'   # FIPS examples
 #'   out4 = ejamit(fips = testinput_fips_cities)
@@ -221,7 +243,7 @@ ejamit <- function(sitepoints = NULL,
                                       c(names_ej_supp_pctile, names_ej_supp_state_pctile)),
                    threshgroups = list("EJ-US-or-ST", "Supp-US-or-ST"),
 
-                   reports = EJAM:::global_or_param("default_reports"),
+                   reports = global_or_param("default_reports"),
 
                    updateProgress = NULL, # may be ignored now
                    updateProgress_getblocks = NULL,
@@ -235,8 +257,23 @@ ejamit <- function(sitepoints = NULL,
                    showpctowned = TRUE,
                    download_city_fips_bounds = TRUE,
                    download_noncity_fips_bounds = FALSE,
-                   ...
+                   ...,
+                   # name-only aliases (after ... so any positional args still flow into ... as before):
+                   buffer = NULL,  # alias (synonym) for radius
+                   shape = NULL,   # alias (synonym) for shapefile
+                   shp = NULL,     # alias (synonym) for shapefile
+                   lat = NULL, lon = NULL  # optional coordinates to build sitepoints (issue #171)
 ) {
+  # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
+  # read more naturally for FIPS or polygon analysis; "radius"/"shapefile" remain
+  # the canonical names. The alias is used only when the canonical name was not
+  # supplied, so an explicit radius/shapefile always wins (consistent with the
+  # other helpers, e.g. url_ejamapp()).
+  if (!is.null(buffer) && (missing(radius) || is.null(radius))) {radius <- buffer}
+  if (!is.null(shape) && (missing(shapefile) || is.null(shapefile))) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp)) {shapefile <- shp}
+  if (is.null(sitepoints) && !is.null(lat) && !is.null(lon)) {sitepoints <- data.frame(lat = lat, lon = lon)}
+
   # note on avoidorphans parameter:
   # What EJSCREEN does in that case is report NA, right?
   # So, does EJAM really need to report stats on residents presumed to be within radius,
@@ -301,6 +338,19 @@ ejamit <- function(sitepoints = NULL,
     #rm(shp)
     ##################################### #
 
+    # Estimate full ejamit runtime for polygon analyses using polygon-specific
+    # timing data when available.
+    ejamit_runtime_estimate <- speed_ejamit_runtime_estimate(
+      rows = nrow(shp_valid),
+      radius = 0,
+      analysis_type = "shapefile",
+      analysis_subtype = "polygon"
+    )
+    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    if (predicted_time > 120) {
+      print(ejamit_runtime_estimate$message)
+    }
+
     # . radius (buffer) for polygons ####
     if (missing(radius)) {
       if (interactive() && !silentinteractive && !in_shiny && rstudioapi::isAvailable()) {
@@ -339,7 +389,7 @@ ejamit <- function(sitepoints = NULL,
       progress_doagg$set(value   = 0,
                          message = 'Initiating aggregation')
       nrows_blocks_value            <- nrow(mysites2blocks)
-      predicted_doaggregate_runtime <- predict_doaggregate_runtime(nrows_blocks_value)
+      predicted_doaggregate_runtime <- speed_predict_doaggregate_runtime(nrows_blocks_value)
       upper_bound_value             <- predicted_doaggregate_runtime[, "fit"]
       updateProgress_doagg <- function(value = NULL,
                                        message_detail = NULL,
@@ -406,14 +456,32 @@ ejamit <- function(sitepoints = NULL,
     data_uploaded$invalid_msg = ifelse(data_uploaded$valid, "",  "invalid FIPS")
     data_uploaded$ejam_uniq_id = as.character(data_uploaded$ejam_uniq_id) # for merge or join below to work, must match class (integer vs character) of output of doaggregate() and before that output of getblocksnearby_from_fips(fips_counties_from_state_abbrev('DE'))  #  1:length(fips))
 
-    # . radius is ignored for fips ####
-    radius <- 999 # use this value when analyzing by fips not by circular buffers, as input to doaggregate(),
-    # then in output of doaggregate()$results_bysite$radius.miles is returned as 0 for every fips, as in _overall.
+    # . radius for fips ####
+    # Save user's specified buffer radius (if radius was not provided, default to no buffer for fips)
+    if (missing(radius)) radius <- 0
+    user_radius <- radius  # preserve actual user radius before overriding with fips-analysis signal
+    fips_has_real_buffer <- !is.null(user_radius) &&
+      length(user_radius) > 0 &&
+      !is.na(user_radius[1]) &&
+      user_radius[1] > 0 &&
+      user_radius[1] != 999
+    fips_buffer_polys <- NULL
+    radius <- 999 # use this value when analyzing by fips not by circular buffers, as input to doaggregate().
+    # doaggregate() detects all(distances == 0) and returns radius.miles = 0 in both results_bysite and results_overall.
+    # Actual buffer (if any) is applied in getblocksnearby_from_fips() via user_radius.
 
-    ## ONCE WE IMPLEMENT BUFFERING radius IN FIPS CASE,   we have to downloaded bounds, we have to add the buffering
-    if (!is.null(radius) && radius > 0 && radius != 999) {
-      warning("adding buffer around fips is not yet implemented")
-      # shp <- shape_buffered_from_shapefile(shp, radius.miles = radius)
+    # Estimate full ejamit runtime for FIPS analyses using FIPS-specific timing
+    # data when available.
+    fips_runtime_subtype <- speed_fips_analysis_subtype(fips[data_uploaded$valid])
+    ejamit_runtime_estimate <- speed_ejamit_runtime_estimate(
+      rows = sum(data_uploaded$valid, na.rm = TRUE),
+      radius = if (isTRUE(fips_has_real_buffer)) user_radius[1] else 0,
+      analysis_type = "fips",
+      analysis_subtype = fips_runtime_subtype
+    )
+    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    if (predicted_time > 120) {
+      print(ejamit_runtime_estimate$message)
     }
 
     # . getblocksnearby_from_fips() ####
@@ -424,8 +492,14 @@ ejamit <- function(sitepoints = NULL,
 
       fips = fips,  # these get retained as a column, but inside getblocksnearby_from_fips(), ejam_uniq_id numbers the sites 1,2,3,etc.
       in_shiny = in_shiny,
-      need_blockwt = need_blockwt
+      need_blockwt = need_blockwt,
+      return_shp = fips_has_real_buffer,
+      radius = user_radius  # pass actual user radius; buffer applied when > 0
     )
+    if (isTRUE(fips_has_real_buffer)) {
+      fips_buffer_polys <- mysites2blocks$polys
+      mysites2blocks <- mysites2blocks$pts
+    }
     if (nrow(mysites2blocks) == 0) {
       return(NULL)
     }
@@ -451,7 +525,7 @@ ejamit <- function(sitepoints = NULL,
       on.exit(progress_doagg$close(), add = TRUE)
       progress_doagg$set(value = 0, message = 'Initiating aggregation')
       nrows_blocks_value            <- nrow(mysites2blocks)
-      predicted_doaggregate_runtime <- predict_doaggregate_runtime(nrows_blocks_value)
+      predicted_doaggregate_runtime <- speed_predict_doaggregate_runtime(nrows_blocks_value)
       upper_bound_value             <- predicted_doaggregate_runtime[, "fit"]
       updateProgress_doagg <- function(value = NULL,
                                        message_detail = NULL,
@@ -503,6 +577,7 @@ ejamit <- function(sitepoints = NULL,
     if (exists("progress_doagg")) {
       progress_doagg$close() # closes the progress bar
     }
+
   } # end fips type
   ######################## #
 
@@ -554,13 +629,18 @@ ejamit <- function(sitepoints = NULL,
     ##################################### #
 
     # Get runtime of ejamit in seconds
-    ejamit_runtime_prediction <- predict_ejamit_runtime(nrow(sitepoints), radius)
-    predicted_time <- ejamit_runtime_prediction[, "upr"]
+    ejamit_runtime_estimate <- speed_ejamit_runtime_estimate(
+      rows = nrow(sitepoints),
+      radius = radius,
+      analysis_type = "points",
+      analysis_subtype = "point_buffer"
+    )
+    predicted_time <- ejamit_runtime_estimate$seconds_upper
 
     ## print runtime if predicted time > 2 minutes / 120 seconds
     ## note: models may over-estimate runtime for small analyses
     if (predicted_time > 120) {
-      print(paste("Ejamit is predicted to take", round(predicted_time, 0), "seconds"))
+      print(ejamit_runtime_estimate$message)
     }
     # . getblocksnearby() ####
 
@@ -596,7 +676,7 @@ ejamit <- function(sitepoints = NULL,
       progress_doagg$set(value   = 0,
                          message = 'Initiating aggregation')
       nrows_blocks_value            <- nrow(mysites2blocks)
-      predicted_doaggregate_runtime <- predict_doaggregate_runtime(nrows_blocks_value)
+      predicted_doaggregate_runtime <- speed_predict_doaggregate_runtime(nrows_blocks_value)
       upper_bound_value             <- predicted_doaggregate_runtime[, "fit"]
       updateProgress_doagg <- function(value = NULL,
                                        message_detail = NULL,
@@ -618,7 +698,7 @@ ejamit <- function(sitepoints = NULL,
     }
 
     if (!silentinteractive) {cat('Aggregating at each site and overall.\n')}
-    doaggregate_runtime_prediction <- predict_doaggregate_runtime(nrow(mysites2blocks))
+    doaggregate_runtime_prediction <- speed_predict_doaggregate_runtime(nrow(mysites2blocks))
     predicted_time <- doaggregate_runtime_prediction[, "fit"]
     if (interactive()) {
       cat(paste("doaggregate is predicted to take", round(predicted_time, 0), "seconds \n"))
@@ -653,6 +733,12 @@ ejamit <- function(sitepoints = NULL,
     #progress_doagg$close()
   } # end latlon type
   ################################################################ #
+  if (is.null(out) || is.null(out$results_bysite)) {
+    message("No block centroids were found for any valid input site; no EJAM report results will be returned.")
+    return(NULL)
+  }
+
+  ################################################################ #
 
   # * AREA CALCULATION ####
 
@@ -661,8 +747,21 @@ ejamit <- function(sitepoints = NULL,
     # done
   } else {
     if (sitetype %in% "fips") {
-      areas <- area_sqmi(fips = out$results_bysite$ejam_uniq_id,
-                         download_city_fips_bounds = download_city_fips_bounds, download_noncity_fips_bounds = download_noncity_fips_bounds)
+      if (exists("fips_buffer_polys", inherits = FALSE) &&
+          !is.null(fips_buffer_polys) &&
+          "FIPS" %in% names(fips_buffer_polys)) {
+        areas_by_site <- data.table(
+          ejam_uniq_id = as.character(fips_buffer_polys$FIPS),
+          area_sqmi = area_sqmi(shp = fips_buffer_polys)
+        )
+        areas <- areas_by_site[
+          match(as.character(out$results_bysite$ejam_uniq_id), ejam_uniq_id),
+          area_sqmi
+        ]
+      } else {
+        areas <- area_sqmi(fips = out$results_bysite$ejam_uniq_id,
+                           download_city_fips_bounds = download_city_fips_bounds, download_noncity_fips_bounds = download_noncity_fips_bounds)
+      }
     }
     if (sitetype %in% "shp") {
       areas_by_site <- data.table(
@@ -721,9 +820,12 @@ ejamit <- function(sitepoints = NULL,
 
   data_uploaded$valid[site_in_results_pop0 | !site_in_results] <- FALSE  # NOTE this also says invalid if zero population
 
-  data_uploaded$invalid_msg[!dropped_before_getblocks & !site_in_blocksfound] <- "no block centroids (area too small for low pop density)"
-  data_uploaded$invalid_msg[site_in_blocksfound & !site_in_results] <- "blocks with residents found but unable to aggregate" # why?
-  data_uploaded$invalid_msg[site_in_results_pop0]   <- "blocks found but zero residents" # msg differs from server version
+  data_uploaded$invalid_msg[!dropped_before_getblocks & !site_in_blocksfound] <-
+    ejamit_no_block_centroids_message(sitetype)
+  data_uploaded$invalid_msg[site_in_blocksfound & !site_in_results] <-
+    "blocks with residents found but unable to aggregate" # why?
+  data_uploaded$invalid_msg[site_in_results_pop0]   <-
+    "blocks found but zero residents" # msg differed from server version?
 
   # Merge invalid and valid sites and msg, so results_bysite has ALL sites originally provided for analysis.
   setDT(data_uploaded)
@@ -751,16 +853,29 @@ ejamit <- function(sitepoints = NULL,
 
   ################################################################ #  ################################################################ #
 
+  ## * radius.miles ####
+
+  if (sitetype == "fips") {
+    # FIPS output should expose a real user-requested buffer radius so
+    # downstream map/report functions can recreate buffered FIPS polygons.
+    radius_for_output <- NA_real_
+    if (isTRUE(fips_has_real_buffer)) {
+      radius_for_output <- user_radius[1]
+    }
+  } else {
+    radius_for_output <- radius
+  }
+
   ## * URLs/HYPERLINKS ####
 
   # now using url_columns_bysite() in server & ejamit - had duplicated ejamit() code in app_server but used reactives there.
 
   if ("REGISTRY_ID" %in% names(out$results_bysite)) {regid <- out$results_bysite$REGISTRY_ID} else {regid <- NULL}
 
-  if (999 %in% radius || is.na(radius)) {
+  if (999 %in% radius_for_output || any(is.na(radius_for_output))) {
     buffer_for_links <- 0
   } else {
-    buffer_for_links <- radius
+    buffer_for_links <- radius_for_output
   }
 
   links <- url_columns_bysite(
@@ -770,7 +885,7 @@ ejamit <- function(sitepoints = NULL,
     radius = buffer_for_links,
     regid = regid,
     sitetype = sitetype,
-    reports = reports, # EJAM:::global_or_param("default_reports")
+    reports = reports, # global_or_param("default_reports")
     as_html = TRUE # TRUE lets them work in a webpage view of table, in ejam2tableviewer(), and in map popups, but then for excel want to delinkify them
   )
   setDT(links$results_bysite)
@@ -793,16 +908,10 @@ ejamit <- function(sitepoints = NULL,
 
   ################################################################ #  ################################################################ #
 
-  ## * radius.miles ####
-
-  if (sitetype == "fips") {
-    # Analyzed by FIPS so reporting a radius does not make sense here.
-    radius <- NA
-  }
   # ( doaggregate already provided this but ok to do again)
-  out$results_bysite[      , radius.miles := radius]
-  out$results_overall[     , radius.miles := radius]
-  out$results_bybg_people[ , radius.miles := radius]
+  out$results_bysite[      , radius.miles := radius_for_output]
+  out$results_overall[     , radius.miles := radius_for_output]
+  out$results_bybg_people[ , radius.miles := radius_for_output]
 
   ## * sort output (results_bysite) like input was sorted ####
 
@@ -856,4 +965,4 @@ ejamit <- function(sitepoints = NULL,
 
   invisible(out)
 }
-
+################################################################ #
