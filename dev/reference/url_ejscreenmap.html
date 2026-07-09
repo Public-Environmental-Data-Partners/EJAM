@@ -184,7 +184,10 @@ zeroes restored.</p></dd>
 <dd><p>optional buffer distance in miles for the EJScreen report around
 each point (or polygon). When provided, point links use the app's
 <code>?lat=&amp;lon=&amp;radius=</code> parameters (instead of <code>?wherestr=lat,lon</code>) so the
-report buffer is prefilled.</p></dd>
+report buffer is prefilled. Must be a single number greater than zero:
+zero (or a negative or non-numeric value) means no buffer is prefilled,
+so it is left out of the URL, which EJScreen treats the same way
+(its deep links only apply a <code>radius=</code> that is greater than zero).</p></dd>
 
 
 <dt id="arg-combined">combined<a class="anchor" aria-label="anchor" href="#arg-combined"></a></dt>
