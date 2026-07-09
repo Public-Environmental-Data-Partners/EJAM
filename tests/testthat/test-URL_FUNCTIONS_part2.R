@@ -241,6 +241,11 @@ test_that("url_ejscreenmap combined=TRUE falls back to one URL per site when too
                  "one URL per site")
   expect_equal(length(p), 150)
   expect_true(all(grepl("radius=1", p, fixed = TRUE)))
+  # same guard for combined zip codes
+  manyzip <- sprintf("%05d", 10001:10400)
+  expect_warning({z <- url_ejscreenmap(zip = manyzip, combined = TRUE)}, "one URL per site")
+  expect_equal(length(z), length(manyzip))
+  expect_true(all(startsWith(z, paste0(base, "?zip="))))
 })
 
 test_that("url_ejscreenmap combined=TRUE for shapefile returns one URL with repeated polygon=", {

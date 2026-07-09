@@ -827,9 +827,12 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
       }
       if (combined) {
         if (any(okzip)) {
-          return(finish_urls(paste0(baseurl, "?zip=", paste(zip[okzip], collapse = ","), radpart)))
+          urlx <- paste0(baseurl, "?zip=", paste(zip[okzip], collapse = ","), radpart)
+          if (nchar(urlx) <= 1900) {return(finish_urls(urlx))} # keep combined URLs a safe length for servers/browsers
+          warning("combined = TRUE but too many zip codes to fit in one URL - returning one URL per site")
+        } else {
+          return(finish_urls(NA_character_))
         }
-        return(finish_urls(NA_character_))
       }
       urlx <- rep(NA_character_, length(zip))
       urlx[okzip] <- paste0(baseurl, "?zip=", zip[okzip], radpart)
