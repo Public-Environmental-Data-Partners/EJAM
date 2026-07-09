@@ -38,12 +38,18 @@ if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if 
 ```
 
 
-# Deep links: launch the app pre-loaded via URL parameters
+# Deep links: launch the EJAM app pre-loaded via URL parameters
 
 Besides the deploy-time settings described below, an already-running EJAM app can be
 **launched pre-loaded with a set of places** by opening it with launch query parameters in
 the URL. This is how the EJScreen Report tool's "Send to EJAM" button opens EJAM ready to
 run, and what `url_ejamapp()` builds as shareable deep links.
+
+Deep linking, in other words, lets you send selected sites from the EJScreen app
+to the EJAM app (multisite tool) via a "handoff"
+that lets you continue in EJAM for further analysis.
+
+EJAM app v3.x handles a few deeplink parameters.
 
 The app reads these at startup (one place-type per launch -- points, else FIPS, else
 polygons):
@@ -55,6 +61,40 @@ polygons):
 - `?handoff=<token>` -- a token minted by the EJAM API `POST /handoff` and fetched back at
   startup, for large polygon sets that exceed URL-length limits
 
+Some examples of URLs:
+
+The URL https://ejam.ejanalysis.com/  is an alias for
+the production server hosting the live EJAM shiny app 
+at https://ejam.publicenvirodata.org,
+and it provides a way to pass through URL-encoded parameters.
+
+The URL http://ejamdev.ejanalysis.com is an alias for
+the development / staging server hosting a live EJAM shiny app 
+at http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com 
+and it also provides a way to pass through URL-encoded parameters.
+
+Deep links based on lat and lon and radius
+for one or more points:
+
+- http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com/?lat=33&lon=-112&radius=2
+- http://ejamdev.ejanalysis.com/?lat=33&lon=-112&radius=2
+- http://ejamdev.ejanalysis.com/?lat=33,33.1&lon=-112,-112.2&radius=2
+
+Deep links based on FIPS code of Census unit like county:
+  
+- http://ejamdev.ejanalysis.com/?fips=24029&buffer=0
+- http://ejamdev.ejanalysis.com/?fips=24029,24031
+
+```{r url_ejamapp, eval=FALSE}
+## EJAM app deep link (default base URL)
+urlx <- url_ejamapp(fips = c(3650617, "0973000"))
+urlx
+# browseURL(urlx)
+
+## For a non-default deployment, override the base URL:
+# browseURL(url_ejamapp(fips = c(3650617, "0973000"), baseurl = "<staging-app-baseurl>"))
+```
+
 Build such a link with `url_ejamapp()`; its query vocabulary matches `url_ejamapi()` (which
 builds *API* request URLs rather than *app* links). The default app base is
 `https://ejamapp.ejanalysis.com/`, a Cloudflare-fronted shortcut on the `ejanalysis.com`
@@ -62,6 +102,20 @@ domain that forwards the query string to the live app (a plain redirect that dro
 query would open the app empty). For the API side -- including the friendlier
 `https://api.ejanalysis.com/` base and parameter details -- see the `dev-api` article, the
 help for `ejamapi()`/`url_ejamapi()`, and the EJAM-API repository's README.
+
+----
+
+**Limited deep link capability for linking into the EJScreen app via URLs:**
+
+  See `url_ejscreenmap()`
+
+Show EJScreen map at given lat,lon point selected
+https://pedp-ejscreen.azurewebsites.net/index.html?wherestr=33,-100
+
+Show EJScreen map at given FIPS code (county), but it is not selected/shown as bounds
+https://pedp-ejscreen.azurewebsites.net/index.html?fips=10001
+
+----
 
 # NOTES ON GLOBAL DEFAULTS, SHINY INPUTS, BOOKMARKS, AND FUNCTION PARAMETERS
 
@@ -138,10 +192,10 @@ Many defaults/ settings used by the web app are defined in the global_defaults_ 
 (global_defaults_package.R, global_defaults_shiny.R, global_defaults_shiny_public.R).
 Some settings are needed even if the shiny app is never launched, so they are stored for the package 
 as soon as the package is attached, in a list object called `global_defaults_package` in the global environment, e.g., `global_defaults_package$report_title`. (When the app is launched, those and many other global_defaults from the files `global_defaults_*.R`, including radius_default, will be stored in the shiny app).
-Note the parameter isPublic is special because it is checked by the global_defaults_shiny_public.R file
-and some settings depend on isPublic being T or F.
+Note the parameter `isPublic` is special because it is checked by the global_defaults_shiny_public.R file
+and some settings depend on `isPublic` being T or F.
 
-### any ejamapp() parameters will override global_defaults_*.R settings
+### any `ejamapp()` parameters will override global_defaults_*.R settings
 
 Just before launching the app, `ejamapp()` calls `get_global_defaults_or_user_options()` which
 gets the global defaults and then overrides/replaces them with
