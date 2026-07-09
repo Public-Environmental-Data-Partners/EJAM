@@ -46,6 +46,15 @@ web app with the sites already loaded and ready to analyze. The supporting piece
   a Cloudflare-fronted shortcut on ejanalysis.com that forwards the query string
   (302 redirect) to the live app so launch parameters arrive intact.
 
+- `url_ejscreenmap()` was rewritten to generate **deep links into EJScreen** that
+  actually draw and select the place(s) on the EJScreen map -- `?fips=` (county,
+  tract, or blockgroup, mixes allowed), `?lat=&lon=` points (with optional
+  `radius=`), or `?polygon=` vertex lists -- matching the new inbound deep-link
+  vocabulary EJScreen itself gained (so links from EJAM reports and tables select
+  the analyzed place for an EJScreen report instead of only dropping a centroid
+  pin). Stored test outputs were deliberately not regenerated for the resulting
+  URL-column changes.
+
 - The EJAM API base URL is now **single-sourced**: functions read it from
   `DESCRIPTION` (`ejam_api_url`) via `url_package("api")`, so the endpoint can be
   changed in one place instead of being hardcoded in several. The default is now

@@ -79,7 +79,8 @@ Some of them can also be adjusted in the web app's Advanced tab, and
 some (the ones that are inputs in the ui / server)
 can be bookmarked (saved in a URL) for later use.
 
-For more details, see the article on "Defaults and Custom Settings for the Web App"
+For more details, see the article on
+\href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html}{Defaults and Custom Settings for the Web App}
 
 \strong{Examples of custom parameters that you could pass to ejamapp() are shown below.}
 
@@ -179,6 +180,9 @@ ejamapp(
 )
 
   ## Specific cities are preselected at launch
+
+  ejamapp(fips=3673000)
+  ejamapp(fips=name2fips(c("akutan,ak", "syracuse city,ny")))
 
   ejamapp(
   default_site_method = "dropdown",
@@ -281,5 +285,8 @@ ejamapp(
   # aka  options=list(test.mode=TRUE)
   default_testing=TRUE
 }
+}
+\seealso{
+\code{\link[=url_ejamapp]{url_ejamapp()}} \code{\link[=url_ejscreenmap]{url_ejscreenmap()}} \code{\link[=url_ejamapi]{url_ejamapi()}} \code{\link[=ejamapi]{ejamapi()}}
 }
 \keyword{internal}
