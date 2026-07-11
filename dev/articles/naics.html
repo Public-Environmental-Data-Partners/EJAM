@@ -173,12 +173,13 @@ these:</p>
 <span></span>
 <span><span class="fu"><a href="../reference/naics_from_any.html">naics_from_any</a></span><span class="op">(</span><span class="st">"cement"</span><span class="op">)</span></span></code></pre></div>
 <p>Compare also these:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">naics_findwebscrape</span>(<span class="st">"refiner"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># reports "324110" (Petroleum Refineries) and other related industries, but not the 5-digit "32411" (also Petroleum</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>Refineries<span class="er">)</span>.</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">naics_from_any</span>(<span class="st">"refiner"</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># reports "324110" and "32411" but not other related industries.</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/naics_findwebscrape.html">naics_findwebscrape</a></span><span class="op">(</span><span class="st">"refiner"</span><span class="op">)</span></span>
+<span><span class="co"># reports "324110" (Petroleum Refineries) and other related industries, but not the 5-digit "32411" (also Petroleum</span></span>
+<span><span class="co"># Refineries).</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/naics_from_any.html">naics_from_any</a></span><span class="op">(</span><span class="st">"refiner"</span><span class="op">)</span></span>
+<span><span class="co"># reports "324110" and "32411" but not other related industries.</span></span></code></pre></div>
 <p>Using <code><a href="../reference/naics_findwebscrape.html">naics_findwebscrape()</a></code> finds only the 6-digit codes
 that match on title or description, so it would find some codes not
 found by <code><a href="../reference/naics_from_any.html">naics_from_any()</a></code> which does not query description,

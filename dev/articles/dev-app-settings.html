@@ -1448,8 +1448,7 @@ characters</p>
 <div class="section level5">
 <h5 id="inputs-tabs-and-nav-and-help-buttons">inputs: tabs and nav and help buttons<a class="anchor" aria-label="anchor" href="#inputs-tabs-and-nav-and-help-buttons"></a>
 </h5>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<pre><code><span></span>
 <span><span class="va">all_tabs</span><span class="op">=</span><span class="st">"See Results"</span>   <span class="co"># or # all_tabs="Advanced Settings"</span></span>
 <span><span class="va">results_tabs</span><span class="op">=</span><span class="st">"Community Report"</span></span>
 <span><span class="va">details_subtabs</span><span class="op">=</span><span class="st">"Site-by-Site Table"</span></span>
@@ -1467,57 +1466,55 @@ characters</p>
 <span><span class="va">shp_help</span><span class="op">=</span><span class="fl">0</span></span>
 <span><span class="va">fips_help</span><span class="op">=</span><span class="fl">0</span></span>
 <span><span class="va">frs_help</span><span class="op">=</span><span class="fl">0</span></span>
-<span><span class="va">epa_program_help</span><span class="op">=</span><span class="fl">0</span></span></code></pre></div>
+<span><span class="va">epa_program_help</span><span class="op">=</span><span class="fl">0</span></span></code></pre>
 </div>
 <div class="section level5">
 <h5 id="inputs-start-analysis-button">inputs: start analysis button<a class="anchor" aria-label="anchor" href="#inputs-start-analysis-button"></a>
 </h5>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bt_get_results</span><span class="op">=</span><span class="fl">0</span></span></code></pre></div>
+<pre><code><span><span class="va">bt_get_results</span><span class="op">=</span><span class="fl">0</span></span></code></pre>
 </div>
 <div class="section level5">
 <h5 id="inputs-site-selection-buttonsdropdowns">inputs: site selection (buttons/dropdowns)<a class="anchor" aria-label="anchor" href="#inputs-site-selection-buttonsdropdowns"></a>
 </h5>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a></span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>default_ss_choose_method<span class="ot">=</span><span class="st">"upload"</span> <span class="co"># or "dropdown" or "mapclick" (click/draw on map)</span></span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>ss_choose_method<span class="ot">=</span><span class="st">"upload"</span>         <span class="co"># or "dropdown" or "mapclick"</span></span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>ss_choose_method_upload<span class="ot">=</span><span class="st">"latlon"</span>   <span class="co"># see global_defaults_*.R for options</span></span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>mapclick_clear<span class="ot">=</span><span class="dv">0</span>                   <span class="co"># "Clear all points" button for the mapclick method</span></span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>ss_choose_method_drop<span class="ot">=</span><span class="st">"FIPS_PLACE"</span> <span class="co"># see global_defaults_*.R for options</span></span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>ss_upload_shp<span class="ot">=</span>null</span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>ss_upload_fips<span class="ot">=</span>null</span>
-<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>ss_upload_frs<span class="ot">=</span>null</span>
-<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>ss_upload_program<span class="ot">=</span>null</span>
-<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>ss_select_program<span class="ot">=</span><span class="st">"CAMDBS"</span></span>
-<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>ss_select_naics<span class="ot">=</span><span class="st">"313"</span>  <span class="co"># see default_naics</span></span>
-<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a>ss_select_sic<span class="ot">=</span><span class="st">"2015"</span>   <span class="co"># see default_sic</span></span>
-<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a>ss_select_mact<span class="ot">=</span><span class="st">"AA"</span> <span class="co"># see default_mact </span></span>
-<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a>naics_digits_shown<span class="ot">=</span><span class="st">"basic"</span></span>
-<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a>add_naics_subcategories<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a></span>
-<span id="cb18-18"><a href="#cb18-18" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_latlon<span class="ot">=</span>{}</span>
-<span id="cb18-19"><a href="#cb18-19" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_shp<span class="ot">=</span>{}</span>
-<span id="cb18-20"><a href="#cb18-20" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_frs<span class="ot">=</span>{}</span>
-<span id="cb18-21"><a href="#cb18-21" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_program<span class="ot">=</span>{}</span>
-<span id="cb18-22"><a href="#cb18-22" tabindex="-1"></a>shinyjs<span class="sc">-</span>resettable<span class="sc">-</span>ss_upload_fips<span class="ot">=</span>{}</span>
-<span id="cb18-23"><a href="#cb18-23" tabindex="-1"></a></span>
-<span id="cb18-24"><a href="#cb18-24" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>fips_type2pick<span class="ot">=</span><span class="st">"Counties"</span></span>
-<span id="cb18-25"><a href="#cb18-25" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>states_picked<span class="ot">=</span>null</span>
-<span id="cb18-26"><a href="#cb18-26" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>counties_picked<span class="ot">=</span>null</span>
-<span id="cb18-27"><a href="#cb18-27" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>cities_picked<span class="ot">=</span>null</span>
-<span id="cb18-28"><a href="#cb18-28" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>regions_picked<span class="ot">=</span>[<span class="st">"1"</span>,<span class="st">"2"</span>,<span class="st">"3"</span>,<span class="st">"4"</span>,<span class="st">"5"</span>,<span class="st">"6"</span>,<span class="st">"7"</span>,<span class="st">"8"</span>,<span class="st">"9"</span>,<span class="st">"10"</span>]</span>
-<span id="cb18-29"><a href="#cb18-29" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_regions_button<span class="ot">=</span>true</span>
-<span id="cb18-30"><a href="#cb18-30" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_states_button<span class="ot">=</span>true</span>
-<span id="cb18-31"><a href="#cb18-31" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_counties_button<span class="ot">=</span>false</span>
-<span id="cb18-32"><a href="#cb18-32" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>all_cities_button<span class="ot">=</span>false</span>
-<span id="cb18-33"><a href="#cb18-33" tabindex="-1"></a>pickermoduleid<span class="sc">-</span>reset_button<span class="ot">=</span><span class="dv">0</span></span>
-<span id="cb18-34"><a href="#cb18-34" tabindex="-1"></a>fipspicker_done_button<span class="ot">=</span><span class="dv">0</span></span></code></pre></div>
+<pre><code>
+default_ss_choose_method="upload" # or "dropdown" or "mapclick" (click/draw on map)
+ss_choose_method="upload"         # or "dropdown" or "mapclick"
+ss_choose_method_upload="latlon"   # see global_defaults_*.R for options
+mapclick_clear=0                   # "Clear all points" button for the mapclick method
+ss_choose_method_drop="FIPS_PLACE" # see global_defaults_*.R for options
+ss_upload_shp=null
+ss_upload_fips=null
+ss_upload_frs=null
+ss_upload_program=null
+ss_select_program="CAMDBS"
+ss_select_naics="313"  # see default_naics
+ss_select_sic="2015"   # see default_sic
+ss_select_mact="AA" # see default_mact 
+naics_digits_shown="basic"
+add_naics_subcategories="TRUE"
+
+shinyjs-resettable-ss_upload_latlon={}
+shinyjs-resettable-ss_upload_shp={}
+shinyjs-resettable-ss_upload_frs={}
+shinyjs-resettable-ss_upload_program={}
+shinyjs-resettable-ss_upload_fips={}
+
+pickermoduleid-fips_type2pick="Counties"
+pickermoduleid-states_picked=null
+pickermoduleid-counties_picked=null
+pickermoduleid-cities_picked=null
+pickermoduleid-regions_picked=["1","2","3","4","5","6","7","8","9","10"]
+pickermoduleid-all_regions_button=true
+pickermoduleid-all_states_button=true
+pickermoduleid-all_counties_button=false
+pickermoduleid-all_cities_button=false
+pickermoduleid-reset_button=0
+fipspicker_done_button=0</code></pre>
 </div>
 <div class="section level5">
 <h5 id="inputs-radius-and-caps">inputs: radius and caps<a class="anchor" aria-label="anchor" href="#inputs-radius-and-caps"></a>
 </h5>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">radius_now</span><span class="op">=</span><span class="fl">3.1</span>  <span class="co"># input from slider but not the way to bookmark /url-encode the radius</span></span>
+<pre><code><span><span class="va">radius_now</span><span class="op">=</span><span class="fl">3.1</span>  <span class="co"># input from slider but not the way to bookmark /url-encode the radius</span></span>
 <span><span class="va">radius_default</span><span class="op">=</span><span class="fl">3.1</span>  <span class="co"># works as parameter to ejamapp() or as bookmarked input$ </span></span>
 <span><span class="va">radius_default_shapefile</span><span class="op">=</span><span class="fl">0</span></span>
 <span><span class="va">max_miles</span><span class="op">=</span><span class="fl">10</span></span>
@@ -1529,80 +1526,79 @@ characters</p>
 <span><span class="va">max_pts_showtable</span><span class="op">=</span><span class="fl">1000</span></span>
 <span><span class="va">max_pts_run</span><span class="op">=</span><span class="fl">10000</span></span>
 <span><span class="va">max_shapes_map</span><span class="op">=</span><span class="fl">159</span></span>
-<span><span class="va">max_mb_upload</span><span class="op">=</span><span class="fl">50</span></span></code></pre></div>
+<span><span class="va">max_mb_upload</span><span class="op">=</span><span class="fl">50</span></span></code></pre>
 </div>
 <div class="section level5">
 <h5 id="inputs-more-ejamit-parameters-summary-report-and-excel-output-settings-etc-">inputs: more ejamit() parameters, summary report and excel output
 settings, etc.<a class="anchor" aria-label="anchor" href="#inputs-more-ejamit-parameters-summary-report-and-excel-output-settings-etc-"></a>
 </h5>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>standard_analysis_title<span class="ot">=</span><span class="st">"CUSTOM Analysis"</span> <span class="co"># shown on webpage of app and on reports</span></span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>analysis_title<span class="ot">=</span><span class="st">"testname"</span></span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>Custom_title_for_bar_plot_of_indicators<span class="ot">=</span><span class="st">""</span></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>include_ejindexes<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>calculate_ratios<span class="ot">=</span>true</span>
-<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>include_averages<span class="ot">=</span>true</span>
-<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>show_ratios_in_report<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>extratable_show_ratios_in_report<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>more3<span class="ot">=</span><span class="st">"a"</span></span>
-<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a>avoidorphans<span class="ot">=</span><span class="st">"FALSE"</span></span>
-<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>need_proximityscore<span class="ot">=</span><span class="st">"FALSE"</span></span>
-<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>plotkind_1pager<span class="ot">=</span><span class="st">"bar"</span></span>
-<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>format1pager<span class="ot">=</span><span class="st">"html"</span></span>
-<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a>ok2plot<span class="ot">=</span>true</span>
-<span id="cb20-15"><a href="#cb20-15" tabindex="-1"></a>allow_median_in_barplot_indicators<span class="ot">=</span><span class="st">"FALSE"</span></span>
-<span id="cb20-16"><a href="#cb20-16" tabindex="-1"></a>summ_hist_distn<span class="ot">=</span><span class="st">"People"</span> <span class="co"># histograms</span></span>
-<span id="cb20-17"><a href="#cb20-17" tabindex="-1"></a>summ_hist_data<span class="ot">=</span><span class="st">"pctile"</span></span>
-<span id="cb20-18"><a href="#cb20-18" tabindex="-1"></a>summ_hist_bins<span class="ot">=</span><span class="dv">10</span></span>
-<span id="cb20-19"><a href="#cb20-19" tabindex="-1"></a></span>
-<span id="cb20-20"><a href="#cb20-20" tabindex="-1"></a>extra_demog<span class="ot">=</span><span class="st">"TRUE"</span></span>
-<span id="cb20-21"><a href="#cb20-21" tabindex="-1"></a>include_extraindicators<span class="ot">=</span>true</span>
-<span id="cb20-22"><a href="#cb20-22" tabindex="-1"></a>extratable_title<span class="ot">=</span><span class="st">""</span></span>
-<span id="cb20-23"><a href="#cb20-23" tabindex="-1"></a>extratable_title_top_row<span class="ot">=</span><span class="st">"ADDITIONAL INFORMATION"</span></span>
-<span id="cb20-24"><a href="#cb20-24" tabindex="-1"></a>extratable_list_of_sections<span class="ot">=</span><span class="st">"pctpoor"</span></span>
-<span id="cb20-25"><a href="#cb20-25" tabindex="-1"></a><span class="co"># extratable_hide_missing_rows_for=["pcthisp","pctnhba","pctnhaa","pctnhaiana","pctnhnhpia","pctnhotheralone","pctnhmulti","pctnhwa","pctlan_ie","pctlan_api","pctlan_other","pctlan_english","pctlan_spanish","pctlan_french",</span></span>
-<span id="cb20-26"><a href="#cb20-26" tabindex="-1"></a><span class="co"># "pctlan_rus_pol_slav","p_chinese","p_korean","pctlan_other_ie","pctlan_vietnamese","pctlan_other_asian","pctlan_arabic","pctlan_nonenglish",</span></span>
-<span id="cb20-27"><a href="#cb20-27" tabindex="-1"></a><span class="co"># "pctspanish_li","pctie_li","pctapi_li","pctother_li","pctmale","pctfemale","pctdisability","lowlifex","rateheartdisease","rateasthma","ratecancer","pctunder5","pctunder18","pctover64","occupiedunits","lifexyears",</span></span>
-<span id="cb20-28"><a href="#cb20-28" tabindex="-1"></a><span class="co"># "percapincome","pctownedunits","pctpoor","sitecount_avg","sitecount_unique","sitecount_max","distance_min_avgperson","distance_min","count.NPL","count.TSDF","num_waterdis","num_airpoll","num_brownfield","num_tri","num_school",</span></span>
-<span id="cb20-29"><a href="#cb20-29" tabindex="-1"></a><span class="co"># "num_hospital","num_church","yesno_tribal","yesno_airnonatt","yesno_impwaters","yesno_cejstdis","yesno_iradis","pctflood","pctfire","pctfire30","pctflood30","yesno_houseburden","yesno_transdis","yesno_fooddesert","pctnobroadband",</span></span>
-<span id="cb20-30"><a href="#cb20-30" tabindex="-1"></a><span class="co"># "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]</span></span>
-<span id="cb20-31"><a href="#cb20-31" tabindex="-1"></a></span>
-<span id="cb20-32"><a href="#cb20-32" tabindex="-1"></a><span class="co"># thresholds - counting how many of a certain indicator type are at/above some threshold</span></span>
-<span id="cb20-33"><a href="#cb20-33" tabindex="-1"></a><span class="co"># see help docs on ejamapp() for examples of using these (but they are named a bit differently as parameters there)</span></span>
-<span id="cb20-34"><a href="#cb20-34" tabindex="-1"></a>an_thresh_comp1<span class="ot">=</span><span class="dv">80</span></span>
-<span id="cb20-35"><a href="#cb20-35" tabindex="-1"></a>an_thresh_comp2<span class="ot">=</span><span class="dv">80</span></span>
-<span id="cb20-36"><a href="#cb20-36" tabindex="-1"></a>an_threshgroup1<span class="ot">=</span><span class="st">"EJ-US-or-ST"</span></span>
-<span id="cb20-37"><a href="#cb20-37" tabindex="-1"></a>an_threshgroup2<span class="ot">=</span><span class="st">"Supp-US-or-ST"</span></span>
-<span id="cb20-38"><a href="#cb20-38" tabindex="-1"></a>an_threshnames1<span class="ot">=</span>[<span class="st">"pctile.EJ.DISPARITY.dpm.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.drinking.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.no2.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.o3.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.pctpre1960.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.pm.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.npdes.eo"</span>,</span>
-<span id="cb20-39"><a href="#cb20-39" tabindex="-1"></a>                 <span class="st">"pctile.EJ.DISPARITY.proximity.npl.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.rmp.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.tsdf.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.rsei.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.traffic.score.eo"</span>,<span class="st">"pctile.EJ.DISPARITY.ust.eo"</span>,</span>
-<span id="cb20-40"><a href="#cb20-40" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.dpm.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.drinking.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.no2.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.o3.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pctpre1960.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pm.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.npdes.eo"</span>,</span>
-<span id="cb20-41"><a href="#cb20-41" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.proximity.npl.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.rmp.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.tsdf.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.rsei.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.traffic.score.eo"</span>,<span class="st">"state.pctile.EJ.DISPARITY.ust.eo"</span>]</span>
-<span id="cb20-42"><a href="#cb20-42" tabindex="-1"></a>an_threshnames2<span class="ot">=</span>[<span class="st">"pctile.EJ.DISPARITY.dpm.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.drinking.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.no2.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.o3.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.pctpre1960.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.pm.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.npdes.supp"</span>,</span>
-<span id="cb20-43"><a href="#cb20-43" tabindex="-1"></a>                 <span class="st">"pctile.EJ.DISPARITY.proximity.npl.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.rmp.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.proximity.tsdf.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.rsei.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.traffic.score.supp"</span>,<span class="st">"pctile.EJ.DISPARITY.ust.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.dpm.supp"</span>,</span>
-<span id="cb20-44"><a href="#cb20-44" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.drinking.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.no2.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.o3.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pctpre1960.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.pm.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.npdes.supp"</span>,</span>
-<span id="cb20-45"><a href="#cb20-45" tabindex="-1"></a>                 <span class="st">"state.pctile.EJ.DISPARITY.proximity.npl.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.rmp.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.proximity.tsdf.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.rsei.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.traffic.score.supp"</span>,<span class="st">"state.pctile.EJ.DISPARITY.ust.supp"</span>]</span></code></pre></div>
+<pre><code>standard_analysis_title="CUSTOM Analysis" # shown on webpage of app and on reports
+analysis_title="testname"
+Custom_title_for_bar_plot_of_indicators=""
+include_ejindexes="TRUE"
+calculate_ratios=true
+include_averages=true
+show_ratios_in_report="TRUE"
+extratable_show_ratios_in_report="TRUE"
+more3="a"
+avoidorphans="FALSE"
+need_proximityscore="FALSE"
+plotkind_1pager="bar"
+format1pager="html"
+ok2plot=true
+allow_median_in_barplot_indicators="FALSE"
+summ_hist_distn="People" # histograms
+summ_hist_data="pctile"
+summ_hist_bins=10
+
+extra_demog="TRUE"
+include_extraindicators=true
+extratable_title=""
+extratable_title_top_row="ADDITIONAL INFORMATION"
+extratable_list_of_sections="pctpoor"
+# extratable_hide_missing_rows_for=["pcthisp","pctnhba","pctnhaa","pctnhaiana","pctnhnhpia","pctnhotheralone","pctnhmulti","pctnhwa","pctlan_ie","pctlan_api","pctlan_other","pctlan_english","pctlan_spanish","pctlan_french",
+# "pctlan_rus_pol_slav","p_chinese","p_korean","pctlan_other_ie","pctlan_vietnamese","pctlan_other_asian","pctlan_arabic","pctlan_nonenglish",
+# "pctspanish_li","pctie_li","pctapi_li","pctother_li","pctmale","pctfemale","pctdisability","lowlifex","rateheartdisease","rateasthma","ratecancer","pctunder5","pctunder18","pctover64","occupiedunits","lifexyears",
+# "percapincome","pctownedunits","pctpoor","sitecount_avg","sitecount_unique","sitecount_max","distance_min_avgperson","distance_min","count.NPL","count.TSDF","num_waterdis","num_airpoll","num_brownfield","num_tri","num_school",
+# "num_hospital","num_church","yesno_tribal","yesno_airnonatt","yesno_impwaters","yesno_cejstdis","yesno_iradis","pctflood","pctfire","pctfire30","pctflood30","yesno_houseburden","yesno_transdis","yesno_fooddesert","pctnobroadband",
+# "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]
+
+# thresholds - counting how many of a certain indicator type are at/above some threshold
+# see help docs on ejamapp() for examples of using these (but they are named a bit differently as parameters there)
+an_thresh_comp1=80
+an_thresh_comp2=80
+an_threshgroup1="EJ-US-or-ST"
+an_threshgroup2="Supp-US-or-ST"
+an_threshnames1=["pctile.EJ.DISPARITY.dpm.eo","pctile.EJ.DISPARITY.drinking.eo","pctile.EJ.DISPARITY.no2.eo","pctile.EJ.DISPARITY.o3.eo","pctile.EJ.DISPARITY.pctpre1960.eo","pctile.EJ.DISPARITY.pm.eo","pctile.EJ.DISPARITY.proximity.npdes.eo",
+                 "pctile.EJ.DISPARITY.proximity.npl.eo","pctile.EJ.DISPARITY.proximity.rmp.eo","pctile.EJ.DISPARITY.proximity.tsdf.eo","pctile.EJ.DISPARITY.rsei.eo","pctile.EJ.DISPARITY.traffic.score.eo","pctile.EJ.DISPARITY.ust.eo",
+                 "state.pctile.EJ.DISPARITY.dpm.eo","state.pctile.EJ.DISPARITY.drinking.eo","state.pctile.EJ.DISPARITY.no2.eo","state.pctile.EJ.DISPARITY.o3.eo","state.pctile.EJ.DISPARITY.pctpre1960.eo","state.pctile.EJ.DISPARITY.pm.eo","state.pctile.EJ.DISPARITY.proximity.npdes.eo",
+                 "state.pctile.EJ.DISPARITY.proximity.npl.eo","state.pctile.EJ.DISPARITY.proximity.rmp.eo","state.pctile.EJ.DISPARITY.proximity.tsdf.eo","state.pctile.EJ.DISPARITY.rsei.eo","state.pctile.EJ.DISPARITY.traffic.score.eo","state.pctile.EJ.DISPARITY.ust.eo"]
+an_threshnames2=["pctile.EJ.DISPARITY.dpm.supp","pctile.EJ.DISPARITY.drinking.supp","pctile.EJ.DISPARITY.no2.supp","pctile.EJ.DISPARITY.o3.supp","pctile.EJ.DISPARITY.pctpre1960.supp","pctile.EJ.DISPARITY.pm.supp","pctile.EJ.DISPARITY.proximity.npdes.supp",
+                 "pctile.EJ.DISPARITY.proximity.npl.supp","pctile.EJ.DISPARITY.proximity.rmp.supp","pctile.EJ.DISPARITY.proximity.tsdf.supp","pctile.EJ.DISPARITY.rsei.supp","pctile.EJ.DISPARITY.traffic.score.supp","pctile.EJ.DISPARITY.ust.supp","state.pctile.EJ.DISPARITY.dpm.supp",
+                 "state.pctile.EJ.DISPARITY.drinking.supp","state.pctile.EJ.DISPARITY.no2.supp","state.pctile.EJ.DISPARITY.o3.supp","state.pctile.EJ.DISPARITY.pctpre1960.supp","state.pctile.EJ.DISPARITY.pm.supp","state.pctile.EJ.DISPARITY.proximity.npdes.supp",
+                 "state.pctile.EJ.DISPARITY.proximity.npl.supp","state.pctile.EJ.DISPARITY.proximity.rmp.supp","state.pctile.EJ.DISPARITY.proximity.tsdf.supp","state.pctile.EJ.DISPARITY.rsei.supp","state.pctile.EJ.DISPARITY.traffic.score.supp","state.pctile.EJ.DISPARITY.ust.supp"]
+</code></pre>
 </div>
 <div class="section level5">
 <h5 id="inputs-maps">inputs: maps<a class="anchor" aria-label="anchor" href="#inputs-maps"></a>
 </h5>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>an_leaf_map_zoom<span class="ot">=</span><span class="dv">5</span></span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>an_leaf_map_bounds<span class="ot">=</span>{<span class="st">"north"</span><span class="sc">:</span><span class="fl">45.61403741135093</span>,<span class="st">"east"</span><span class="sc">:-</span><span class="fl">68.02734375000001</span>,<span class="st">"south"</span><span class="sc">:</span><span class="fl">28.18824364185031</span>,<span class="st">"west"</span><span class="sc">:-</span><span class="fl">123.2666015625</span>}</span>
-<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>an_leaf_map_center<span class="ot">=</span>{<span class="st">"lng"</span><span class="sc">:-</span><span class="fl">95.64786455000001</span>,<span class="st">"lat"</span><span class="sc">:</span><span class="fl">37.40467238129763</span>}</span>
-<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>an_leaf_map_groups<span class="ot">=</span><span class="st">"circles"</span></span>
-<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>circleweight_in<span class="ot">=</span><span class="dv">4</span></span></code></pre></div>
+<pre><code>an_leaf_map_zoom=5
+an_leaf_map_bounds={"north":45.61403741135093,"east":-68.02734375000001,"south":28.18824364185031,"west":-123.2666015625}
+an_leaf_map_center={"lng":-95.64786455000001,"lat":37.40467238129763}
+an_leaf_map_groups="circles"
+circleweight_in=4</code></pre>
 </div>
 <div class="section level5">
 <h5 id="inputs-test-mode">inputs: test mode<a class="anchor" aria-label="anchor" href="#inputs-test-mode"></a>
 </h5>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">testing</span><span class="op">=</span><span class="st">"FALSE"</span></span>
+<pre><code><span><span class="va">testing</span><span class="op">=</span><span class="st">"FALSE"</span></span>
 <span><span class="va">shiny.testmode</span><span class="op">=</span><span class="st">"FALSE"</span></span>
-<span><span class="va">print_uploaded_points_to_log</span><span class="op">=</span><span class="va">true</span></span></code></pre></div>
+<span><span class="va">print_uploaded_points_to_log</span><span class="op">=</span><span class="va">true</span></span></code></pre>
 </div>
 <div class="section level5">
 <h5 id="inputs-draft-reserved-for-a-long-wordpdf-report">inputs: draft / reserved for a long word/pdf report<a class="anchor" aria-label="anchor" href="#inputs-draft-reserved-for-a-long-wordpdf-report"></a>
 </h5>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<pre><code><span></span>
 <span><span class="co"># authors</span></span>
 <span></span>
 <span><span class="va">rg_author_name</span><span class="op">=</span><span class="st">"FirstName LastName"</span></span>
@@ -1641,7 +1637,7 @@ settings, etc.<a class="anchor" aria-label="anchor" href="#inputs-more-ejamit-pa
 <span><span class="va">envt_high_at_what_share_of_sites</span><span class="op">=</span><span class="st">"some of these sites, just as it varies nationwide"</span></span>
 <span><span class="va">conclusion1</span><span class="op">=</span><span class="st">""</span></span>
 <span><span class="va">conclusion2</span><span class="op">=</span><span class="st">""</span></span>
-<span><span class="va">conclusion3</span><span class="op">=</span><span class="st">""</span></span></code></pre></div>
+<span><span class="va">conclusion3</span><span class="op">=</span><span class="st">""</span></span></code></pre>
 </div>
 </div>
 </div>
