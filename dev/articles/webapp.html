@@ -122,6 +122,41 @@ needing even more tools – the full set of complex analytic features –
 can find them in the open source R package described below.</p>
 </div>
 <div class="section level2">
+<h2 id="launching-the-app-pre-loaded-with-places">Launching the app pre-loaded with places<a class="anchor" aria-label="anchor" href="#launching-the-app-pre-loaded-with-places"></a>
+</h2>
+<p>You can open the EJAM web app with a set of places already loaded and
+ready to analyze, by adding launch parameters to the app’s URL. This is
+a <em>deep link</em>.</p>
+<p>The most common way this happens is the <strong>“Send to EJAM” button
+in the EJScreen map tool</strong>: after selecting one or more places in
+EJScreen (clicking points, picking a “Select an Area” FIPS area, or
+drawing a polygon), that button opens EJAM with the same places
+pre-loaded, so you can run a multisite analysis without re-entering
+them.</p>
+<p>You can also build such a deep link yourself. A few examples (the
+query vocabulary is the same for points, FIPS codes, and a radius):</p>
+<ul>
+<li>
+<code>https://ejamapp.ejanalysis.com/?lat=33,34&amp;lon=-112,-114&amp;radius=3</code>
+– two points, each a site, with a 3-mile analysis radius</li>
+<li>
+<code>https://ejamapp.ejanalysis.com/?fips=10001,10003</code> – two
+counties, each a site</li>
+</ul>
+<p>Points and drawn polygons are file-upload inputs that cannot travel
+in a saved Shiny bookmark, so these launch parameters (and, for large
+polygon sets, a token <code>?handoff=</code> minted by the EJAM API) are
+the supported way to arrive pre-loaded.</p>
+<p>From R, <code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code> builds these links, and
+<code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code> builds the reverse links that open a
+place in the EJScreen map. See <code><a href="../reference/url_ejamapp.html">?url_ejamapp</a></code> and, for the
+full launch-URL vocabulary, precedence rules, bookmarking, and the token
+hand-off, the <a href="dev-app-settings.html">Defaults and Custom
+Settings for the Web App</a> article. The hosted <a href="dev-api.html">EJAM REST API</a> (<code><a href="../reference/ejamapi.html">?ejamapi</a></code> /
+<code><a href="../reference/url_ejamapi.html">?url_ejamapi</a></code>) can return the same reports directly, without
+the web app.</p>
+</div>
+<div class="section level2">
 <h2 id="web-app-for-expert-users">Web app for expert users<a class="anchor" aria-label="anchor" href="#web-app-for-expert-users"></a>
 </h2>
 <p>Expert users can launch and use the so-called “internal” version of
