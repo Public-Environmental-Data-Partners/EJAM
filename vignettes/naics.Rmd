@@ -117,7 +117,7 @@ Compare also these:
 ```{r webscrape_vs2, eval=FALSE}
 naics_findwebscrape("refiner")
 # reports "324110" (Petroleum Refineries) and other related industries, but not the 5-digit "32411" (also Petroleum
-Refineries).
+# Refineries).
 
 naics_from_any("refiner")
 # reports "324110" and "32411" but not other related industries.

@@ -820,7 +820,7 @@ Note the URL cuts off  at about 4096 characters
 
 #### inputs: tabs and nav and help buttons
 
-```{r, eval=FALSE}
+```
 
 all_tabs="See Results"   # or # all_tabs="Advanced Settings"
 results_tabs="Community Report"
@@ -844,13 +844,13 @@ epa_program_help=0
 
 #### inputs: start analysis button
 
-```{r, eval=FALSE}
+```
 bt_get_results=0
 ```
 
 #### inputs: site selection (buttons/dropdowns)
 
-```{r, eval=FALSE}
+```
 
 default_ss_choose_method="upload" # or "dropdown" or "mapclick" (click/draw on map)
 ss_choose_method="upload"         # or "dropdown" or "mapclick"
@@ -889,7 +889,7 @@ fipspicker_done_button=0
 
 #### inputs: radius and caps
 
-```{r, eval=FALSE}
+```
 radius_now=3.1  # input from slider but not the way to bookmark /url-encode the radius
 radius_default=3.1  # works as parameter to ejamapp() or as bookmarked input$ 
 radius_default_shapefile=0
@@ -907,7 +907,7 @@ max_mb_upload=50
 
 #### inputs: more ejamit() parameters, summary report and excel output settings, etc.
 
-```{r, eval=FALSE}
+```
 standard_analysis_title="CUSTOM Analysis" # shown on webpage of app and on reports
 analysis_title="testname"
 Custom_title_for_bar_plot_of_indicators=""
@@ -958,7 +958,7 @@ an_threshnames2=["pctile.EJ.DISPARITY.dpm.supp","pctile.EJ.DISPARITY.drinking.su
 
 #### inputs: maps
 
-```{r, eval=FALSE}
+```
 an_leaf_map_zoom=5
 an_leaf_map_bounds={"north":45.61403741135093,"east":-68.02734375000001,"south":28.18824364185031,"west":-123.2666015625}
 an_leaf_map_center={"lng":-95.64786455000001,"lat":37.40467238129763}
@@ -968,7 +968,7 @@ circleweight_in=4
 
 #### inputs: test mode
 
-```{r, eval=FALSE}
+```
 testing="FALSE"
 shiny.testmode="FALSE"
 print_uploaded_points_to_log=true
@@ -976,7 +976,7 @@ print_uploaded_points_to_log=true
 
 #### inputs: draft / reserved for a long word/pdf report
 
-```{r, eval=FALSE}
+```
 
 # authors
 
