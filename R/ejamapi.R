@@ -65,9 +65,9 @@
 #'   that is found within the specified fips. For example, all counties in specified State fips,
 #'   or all blockgroups in specified County fips.
 #'
-#' @param baseurl base API URL without the endpoint path. Defaults to [url_package()] with
-#'   type="api" (from DESCRIPTION file), the single source of the API endpoint; pass a
-#'   different value only to target another API (e.g. a staging server).
+#' @param baseurl base API URL without the endpoint path. Defaults to `url_package("api")`,
+#'   the single source of the API endpoint ([url_package()] reads from the DESCRIPTION file).
+#'   Pass a different value only to target another API (e.g. a staging server).
 #'
 #' @param endpoint "data", "report", or "query".
 #'
