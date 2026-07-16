@@ -84,10 +84,7 @@ ejam2report_site_is_reportable <- function(site_result) {
   } else {
     ""
   }
-  isTRUE(grepl(
-    "^(no block centroids \\(|blocks found but zero residents$|blocks with residents found but unable to aggregate$)",
-    invalid_msg
-  ))
+  isTRUE(invalid_msg %in% unname(ejamit_reportable_invalid_messages()))
 }
 ################################################## #
 

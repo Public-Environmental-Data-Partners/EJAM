@@ -269,18 +269,21 @@ test_that("ejam2report selects the actual valid row when only one site is valid"
 })
 
 test_that("ejam2report only treats known no-results messages as reportable", {
-  no_centroids <- data.frame(
-    valid = FALSE,
-    pop = 0,
-    invalid_msg = "no block centroids (radius too small for low pop density)"
-  )
+  recognized_messages <- unname(EJAM:::ejamit_reportable_invalid_messages())
+  recognized_results <- lapply(recognized_messages, function(message) {
+    data.frame(valid = FALSE, pop = 0, invalid_msg = message)
+  })
   invalid_input <- data.frame(
     valid = FALSE,
     pop = 0,
     invalid_msg = "invalid FIPS"
   )
 
-  expect_true(EJAM:::ejam2report_site_is_reportable(no_centroids))
+  expect_true(all(vapply(
+    recognized_results,
+    EJAM:::ejam2report_site_is_reportable,
+    logical(1)
+  )))
   expect_false(EJAM:::ejam2report_site_is_reportable(invalid_input))
 })
 
