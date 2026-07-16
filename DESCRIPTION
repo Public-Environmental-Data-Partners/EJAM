@@ -18,7 +18,7 @@ License: MIT + file LICENSE
 URL: https://public-environmental-data-partners.github.io/EJAM, https://github.com/Public-Environmental-Data-Partners/EJAM, https://ejanalysis.org
 url_api: https://ejamapi-84652557241.us-central1.run.app
 url_api_alias: https://api.ejanalysis.com
-url_api_dev: https://ejanalysis.org
+url_api_dev: https://ejamapi-84652557241.us-central1.run.app
 url_api_dev_alias: https://apidev.ejanalysis.com
 url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
 url_apirepo_alias: https://ejanalysis.com/apirepo
@@ -33,7 +33,7 @@ url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM/
 url_ejamdocs_alias: https://ejanalysis.com/ejamdocs
 url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
 url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
-url_ejscreenapp_dev: https://NOT-SET-UP-YET-TBD.com
+url_ejscreenapp_dev: https://pedp-ejscreen.azurewebsites.net/index.html
 url_ejscreenapp_dev_alias: https://ejscreendev.ejanalysis.com
 url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
 url_ejscreenrepo_alias: https://ejanalysis.com/ejscreenrepo
