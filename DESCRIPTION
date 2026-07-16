@@ -30,6 +30,7 @@ url_apirepo_alias: https://ejanalysis.com/apirepo
 url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
 url_ejamapp: https://ejam.publicenvirodata.org
 url_ejamapp_alias: https://ejam.ejanalysis.com
+url_ejamapp_redirect: https://ejanalysis.com/ejamapp
 url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
 url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
 url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
@@ -38,6 +39,7 @@ url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM/
 url_ejamdocs_alias: https://ejanalysis.com/ejamdocs
 url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
 url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
+url_ejscreenapp_redirect: https://ejanalysis.com/ejscreenapp
 url_ejscreenapp_dev: https://pedp-ejscreen.azurewebsites.net/index.html
 url_ejscreenapp_dev_alias: https://ejscreendev.ejanalysis.com
 url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
