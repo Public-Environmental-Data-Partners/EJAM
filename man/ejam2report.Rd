@@ -38,6 +38,7 @@ ejam2report(
   filename = NULL,
   return_html = FALSE,
   launch_browser = TRUE,
+  sitenumber_label = NULL,
   shape = NULL,
   shapefile = NULL
 )
@@ -120,6 +121,15 @@ PDF output is required when this option is selected; it is not optional.}
 \item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
 
 \item{launch_browser}{set TRUE to have it launch browser and show report.}
+
+\item{sitenumber_label}{optional, display-only override (a number or short text) of the site
+identifier shown in the 1-site report header, in place of the \code{sitenumber} row index.
+\code{sitenumber} still selects which row of \code{ejamitout$results_bysite} to report on; this
+only changes the label displayed. Useful when one site from a larger analysis has been
+re-analyzed alone -- e.g., the EJAM API per-site report links made by \code{\link[=url_ejamapi]{url_ejamapi()}}
+re-analyze a single site that was row N of the original multisite results, so its row
+index in the regenerated results (1) is not the site number the user expects to see.
+A number N is shown as "Site N"; text is shown as-is. Ignored for a multisite report.}
 
 \item{shape}{alias (synonym) for shp}
 

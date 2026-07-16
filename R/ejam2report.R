@@ -80,6 +80,15 @@ assert_pdf_report_available <- function() {
 #'   But note that it is treated / titled like a 1-site report if only
 #'   one site was analyzed (or only one had valid results).
 #'
+#' @param sitenumber_label optional, display-only override (a number or short text) of the site
+#'   identifier shown in the 1-site report header, in place of the `sitenumber` row index.
+#'   `sitenumber` still selects which row of `ejamitout$results_bysite` to report on; this
+#'   only changes the label displayed. Useful when one site from a larger analysis has been
+#'   re-analyzed alone -- e.g., the EJAM API per-site report links made by [url_ejamapi()]
+#'   re-analyze a single site that was row N of the original multisite results, so its row
+#'   index in the regenerated results (1) is not the site number the user expects to see.
+#'   A number N is shown as "Site N"; text is shown as-is. Ignored for a multisite report.
+#'
 #' @param analysis_title optional title of analysis, default is global_or_param("default_standard_analysis_title")
 #'
 #' @param report_title optional generic name of this type of report, to be shown at top,
@@ -207,6 +216,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         filename = NULL,
                         return_html = FALSE,
                         launch_browser = TRUE,
+                        sitenumber_label = NULL, # (name-only, at end to avoid arg shift)
                         shape = NULL,     # alias (synonym) for shp (name-only, at end to avoid arg shift)
                         shapefile = NULL  # alias (synonym) for shp
 ) {
@@ -374,7 +384,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     residents_within_xyz <- report_residents_within_xyz_from_ejamit(
       ejamitout = ejamitout,
       sitenumber = sitenumber,
-      site_method = site_method
+      site_method = site_method,
+      sitenumber_label = sitenumber_label
     )
     ####################################################### #
 

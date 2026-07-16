@@ -505,3 +505,46 @@ if (FALSE) {
 
 
 }
+############################## #   ############################## #
+# sitenumber_label: display-only override of the site number shown in the header,
+# so a 1-site re-analysis of what was row N of a larger analysis is not
+# mislabeled "Site 1" (Public-Environmental-Data-Partners/EJAM#348)
+
+test_that("sitenumber_label overrides the displayed site number (issue #348)", {
+  out <- testoutput_ejamit_10pts_1miles
+
+  # default behavior unchanged: the row index is shown
+  x1 <- report_residents_within_xyz_from_ejamit(out, sitenumber = 1)
+  expect_true(grepl("Site 1", x1, fixed = TRUE))
+
+  # numeric label: shows the original site number, not this table's row index
+  x5 <- report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = 5)
+  expect_true(grepl("Site 5", x5, fixed = TRUE))
+  expect_false(grepl("Site 1", x5, fixed = TRUE))
+  # the auto row-number ejam_uniq_id is dropped since it would contradict the label
+  expect_false(grepl("ejam_uniq_id", x5, fixed = TRUE))
+
+  # text label is shown as-is
+  xt <- report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = "Jones Mill Site")
+  expect_true(grepl("Jones Mill Site", xt, fixed = TRUE))
+
+  # ignored for a multisite / overall summary report
+  xall <- report_residents_within_xyz_from_ejamit(out, sitenumber = 0, sitenumber_label = 5)
+  expect_false(grepl("Site 5", xall, fixed = TRUE))
+
+  # an explicitly provided ejam_uniq_id is still respected, shown alongside the label
+  xid <- report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = 5,
+                                                 ejam_uniq_id = "Custom ID")
+  expect_true(grepl("Site 5", xid, fixed = TRUE))
+  expect_true(grepl("Custom ID", xid, fixed = TRUE))
+
+  # a FIPS analysis keeps the stable FIPS id next to the label
+  xf <- report_residents_within_xyz_from_ejamit(testoutput_ejamit_fips_cities,
+                                                sitenumber = 2, sitenumber_label = 7)
+  expect_true(grepl("Site 7", xf, fixed = TRUE))
+  expect_true(grepl("FIPS", xf, fixed = TRUE))
+
+  # invalid labels are rejected
+  expect_error(report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = c(1, 2)))
+  expect_error(report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = NA))
+})
