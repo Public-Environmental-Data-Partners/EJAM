@@ -53,6 +53,38 @@ testthat::test_that("acs_endyear ok", {
 })
 ############################################################################################ #
 
+testthat::test_that("acs_check_year_available() gates on Census-published years, not tidycensus default year", {
+
+  # 2020-2024 ACS was released by Census Bureau 1/29/2026, so year 2024 must pass the gate
+  # as of mid-2026, even though tidycensus's own default year still lagged at 2023 then
+  testthat::expect_no_error({
+    y = acs_check_year_available(2024, guess_as_of = "2026-07-01")
+  })
+  testthat::expect_equal(y, 2024)
+
+  # but 2024 had not been published yet as of mid-2025
+  testthat::expect_error(
+    acs_check_year_available(2024, guess_as_of = "2025-07-01"),
+    "published"
+  )
+  testthat::expect_no_error(
+    acs_check_year_available(2023, guess_as_of = "2025-07-01")
+  )
+
+  # a far-future year always errors
+  testthat::expect_error(
+    acs_check_year_available(2099),
+    "published"
+  )
+
+  # year given as text works like numeric
+  testthat::expect_equal(
+    acs_check_year_available("2022", guess_as_of = "2026-07-01"),
+    2022
+  )
+})
+############################################################################################ #
+
 testthat::test_that("acs_clean_date good dates ok", {
 
   testthat::expect_no_error({
