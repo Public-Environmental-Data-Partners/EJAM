@@ -157,6 +157,21 @@ test_that("ejamit no-block-centroid invalid messages distinguish site types", {
 })
 ########################################################## #
 
+test_that("ejamit final output uses zero population for invalid sites", {
+  bysite <- data.table::data.table(
+    valid = c(TRUE, FALSE, FALSE),
+    pop = c(NA_real_, NA_real_, 12),
+    pctlowinc = c(NA_real_, NA_real_, NA_real_)
+  )
+
+  result <- EJAM:::ejamit_invalid_site_pop_zero(bysite)
+
+  expect_equal(result$pop, c(NA_real_, 0, 0))
+  expect_true(all(is.na(result$pctlowinc)))
+  expect_equal(result$valid, c(TRUE, FALSE, FALSE))
+})
+########################################################## #
+
 test_that("ejamit() returns no result rather than crashing when Island Area sites have no block helpers", {
   guam_point <- data.table::data.table(lat = 13.45, lon = 144.75)
   out <- NULL

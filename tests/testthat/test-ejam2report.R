@@ -116,20 +116,27 @@ test_that("ejam2report() returns an absolute path when filename has no directory
   expect_true(startsWith(result_dotslash, "/") || grepl("^[A-Za-z]:", result_dotslash))
 })
 
-fips_report_test_output <- function(radius) {
+fips_report_test_output <- function(radius,
+                                    valid = c(TRUE, TRUE),
+                                    pop = c(10, 20),
+                                    invalid_msg = rep("", length(valid))) {
+  stopifnot(length(valid) == length(pop), length(valid) == length(invalid_msg))
+  fips <- c("10001", "10003")[seq_along(valid)]
   list(
     sitetype = "fips",
     results_bysite = data.table::data.table(
-      ejam_uniq_id = c("10001", "10003"),
-      valid = c(TRUE, TRUE),
-      pop = c(10, 20),
+      ejam_uniq_id = fips,
+      valid = valid,
+      invalid_msg = invalid_msg,
+      pop = pop,
       radius.miles = radius,
-      statename = c("Delaware", "Delaware")
+      statename = rep("Delaware", length(valid))
     ),
     results_overall = data.table::data.table(
       ejam_uniq_id = "overall",
       valid = TRUE,
-      pop = 30,
+      invalid_msg = "",
+      pop = sum(pop[valid %in% TRUE], na.rm = TRUE),
       radius.miles = radius,
       statename = "Delaware"
     )
@@ -139,6 +146,7 @@ fips_report_test_output <- function(radius) {
 local_ejam2report_fips_mocks <- function(buffer_state, .env = parent.frame()) {
   local_mocked_bindings(
     shapes_from_fips = function(fips) {
+      buffer_state$selected_fips <- c(buffer_state$selected_fips, fips)
       data.frame(fips = fips)
     },
     shape_buffered_from_shapefile = function(shapefile, radius.miles, ...) {
@@ -149,7 +157,15 @@ local_ejam2report_fips_mocks <- function(buffer_state, .env = parent.frame()) {
     report_residents_within_xyz_from_ejamit = function(...) "residents",
     report_setup_temp_files = function(...) "template.Rmd",
     create_filename = function(...) "report.html",
-    build_community_report = function(...) "<section>report</section>",
+    build_community_report = function(...) {
+      args <- list(...)
+      buffer_state$reported_fips <- c(
+        buffer_state$reported_fips,
+        as.character(args$output_df$ejam_uniq_id)
+      )
+      buffer_state$reported_pop <- c(buffer_state$reported_pop, args$output_df$pop)
+      "<section>report</section>"
+    },
     plot_barplot_ratios_ez = function(...) ggplot2::ggplot(),
     ejam2map = function(...) "map",
     ensure_pandoc_available_for_ejam = function(...) invisible(TRUE),
@@ -192,6 +208,80 @@ test_that("ejam2report buffers FIPS shapes for positive radius in production pat
     )
   )
   expect_equal(buffer_state$radii, c(1, 1))
+})
+
+test_that("ejam2report creates a report for an analysis-invalid zero-population site", {
+  buffer_state <- new.env(parent = emptyenv())
+  buffer_state$radii <- numeric()
+  buffer_state$selected_fips <- character()
+  buffer_state$reported_fips <- character()
+  buffer_state$reported_pop <- numeric()
+  local_ejam2report_fips_mocks(buffer_state)
+
+  out <- fips_report_test_output(
+    radius = 1,
+    valid = FALSE,
+    pop = 0,
+    invalid_msg = "blocks found but zero residents"
+  )
+
+  expect_no_error(
+    result <- ejam2report(
+      out,
+      sitenumber = 1,
+      report_title = "Report",
+      analysis_title = "Analysis",
+      return_html = TRUE,
+      launch_browser = FALSE
+    )
+  )
+  expect_match(result, "<html>report</html>", fixed = TRUE)
+  expect_equal(buffer_state$reported_pop, 0)
+})
+
+test_that("ejam2report selects the actual valid row when only one site is valid", {
+  buffer_state <- new.env(parent = emptyenv())
+  buffer_state$radii <- numeric()
+  buffer_state$selected_fips <- character()
+  buffer_state$reported_fips <- character()
+  buffer_state$reported_pop <- numeric()
+  local_ejam2report_fips_mocks(buffer_state)
+
+  out <- fips_report_test_output(
+    radius = 1,
+    valid = c(FALSE, TRUE),
+    pop = c(0, 20),
+    invalid_msg = c("blocks with residents found but unable to aggregate", "")
+  )
+
+  expect_no_error(
+    ejam2report(
+      out,
+      report_title = "Report",
+      analysis_title = "Analysis",
+      return_html = TRUE,
+      launch_browser = FALSE
+    )
+  )
+  expect_equal(buffer_state$selected_fips, "10003")
+  expect_equal(buffer_state$reported_fips, "10003")
+  expect_equal(buffer_state$reported_pop, 20)
+})
+
+test_that("ejam2report only treats known no-results messages as reportable", {
+  no_centroids <- data.frame(
+    valid = FALSE,
+    pop = 0,
+    invalid_msg = "no block centroids (radius too small for low pop density)"
+  )
+  invalid_input <- data.frame(
+    valid = FALSE,
+    pop = 0,
+    invalid_msg = "invalid FIPS"
+  )
+
+  expect_true(EJAM:::ejam2report_site_is_reportable(no_centroids))
+  expect_false(EJAM:::ejam2report_site_is_reportable(invalid_input))
 })
 
 test_that("ejam2report does not buffer FIPS shapes for legacy radius 999", {
