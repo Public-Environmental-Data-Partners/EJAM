@@ -239,16 +239,27 @@ acs_endyear <- function(guess_as_of = Sys.Date(), guess_always = FALSE, guess_ce
 
 acs_check_year_available <- function(year, guess_as_of = Sys.Date()) {
 
-  year <- as.numeric(year)
+  year_num <- suppressWarnings(as.numeric(year))
+  if (length(year_num) != 1 || is.na(year_num) || !is.finite(year_num)) {
+    stop("year must be a single numeric ACS 5-year end year (e.g., 2024).")
+  }
+
   latest_published <- suppressMessages({
-    as.numeric(acs_endyear(guess_as_of = guess_as_of, guess_always = TRUE,
-                           guess_census_has_published = TRUE))
+    suppressWarnings(as.numeric(acs_endyear(
+      guess_as_of = guess_as_of,
+      guess_always = TRUE,
+      guess_census_has_published = TRUE
+    )))
   })
-  if (year > latest_published) {
-    stop(paste0("ACS 5-year data ending in ", year, " ", acs_yr_range(year, parens = TRUE),
+  if (length(latest_published) != 1 || is.na(latest_published) || !is.finite(latest_published)) {
+    stop("Cannot determine the latest ACS 5-year end year published by the Census Bureau.")
+  }
+
+  if (year_num > latest_published) {
+    stop(paste0("ACS 5-year data ending in ", year_num, " ", acs_yr_range(year_num, parens = TRUE),
                 " does not seem to have been published yet by the Census Bureau -- the latest available appears to be ",
                 acs_yr_range(latest_published, parens = TRUE),
                 ". Omit the year parameter to use the latest available year."))
   }
-  return(invisible(year))
+  return(invisible(year_num))
 }
