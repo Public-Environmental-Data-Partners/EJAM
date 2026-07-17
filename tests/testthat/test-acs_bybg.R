@@ -41,3 +41,13 @@ test_that("acs_bybg() ok, 1 state", {
     fips_state_from_state_abbrev(TEST_ST)
   )
 })
+
+test_that("acs_bybg() blocks only years Census has not published, before any API call", {
+
+  # the year gate fires before tidycensus::get_acs() is reached,
+  # so this needs no census api key and no network access
+  expect_error(
+    acs_bybg(c(pop = "B01001_001"), state = "DC", year = 2099),
+    "published"
+  )
+})
