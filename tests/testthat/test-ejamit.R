@@ -142,6 +142,16 @@ test_that("local Arrow release marker reader treats blank markers as missing", {
 ########################################################## #
 
 test_that("ejamit no-block-centroid invalid messages distinguish site types", {
+  expect_setequal(
+    unname(EJAM:::ejamit_reportable_invalid_messages()),
+    c(
+      "no block centroids (fips boundaries not obtained)",
+      "no block centroids (polygon too small for low pop density)",
+      "no block centroids (radius too small for low pop density)",
+      "blocks with residents found but unable to aggregate",
+      "blocks found but zero residents"
+    )
+  )
   expect_equal(
     EJAM:::ejamit_no_block_centroids_message("fips"),
     "no block centroids (fips boundaries not obtained)"
@@ -154,6 +164,21 @@ test_that("ejamit no-block-centroid invalid messages distinguish site types", {
     EJAM:::ejamit_no_block_centroids_message("latlon"),
     "no block centroids (radius too small for low pop density)"
   )
+})
+########################################################## #
+
+test_that("ejamit final output uses zero population for invalid sites", {
+  bysite <- data.table::data.table(
+    valid = c(TRUE, FALSE, FALSE),
+    pop = c(NA_real_, NA_real_, 12),
+    pctlowinc = c(NA_real_, NA_real_, NA_real_)
+  )
+
+  result <- EJAM:::ejamit_invalid_site_pop_zero(bysite)
+
+  expect_equal(result$pop, c(NA_real_, 0, 0))
+  expect_true(all(is.na(result$pctlowinc)))
+  expect_equal(result$valid, c(TRUE, FALSE, FALSE))
 })
 ########################################################## #
 
