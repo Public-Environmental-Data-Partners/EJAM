@@ -74,6 +74,17 @@ test_that("map popups honor sitenumber_label for a regenerated 1-site run (issue
   # label is display-only for a single site: ignored for a multisite table
   popmulti <- popup_from_ejscreen(testoutput_ejamit_10pts_1miles$results_bysite, sitenumber_label = 5)
   expect_true(grepl("(Site 2, ejam_uniq_id 2)", popmulti[2], fixed = TRUE))
+
+  # a numeric ejam_uniq_id that is NOT the auto row-number of a regenerated run
+  # (does not equal 1, the row index of a 1-row table) is kept alongside the label
+  out5 <- testoutput_ejamit_10pts_1miles$results_bysite[5, ] # ejam_uniq_id is 5
+  popkeep <- popup_from_ejscreen(out5, sitenumber_label = 7)
+  expect_true(grepl("(Site 7, ejam_uniq_id 5)", popkeep, fixed = TRUE))
+  expect_true(grepl("Site ID (ejam_uniq_id): 5", popkeep, fixed = TRUE))
+
+  # an invalid label (not a number or short text) is ignored, leaving popups unchanged
+  popbad <- popup_from_ejscreen(out1, sitenumber_label = TRUE)
+  expect_true(grepl("(Site 1, ejam_uniq_id 1)", popbad, fixed = TRUE))
 })
 ############################################## #
 

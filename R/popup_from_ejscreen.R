@@ -87,7 +87,8 @@ popup_from_ejscreen <- function(out,
   # Public-Environmental-Data-Partners/EJAM#348) -- ignore it otherwise.
   if (!is.null(sitenumber_label)) {
     if (NROW(out) != 1 ||
-        !(is.atomic(sitenumber_label) && length(sitenumber_label) == 1 && !is.na(sitenumber_label))) {
+        !((is.numeric(sitenumber_label) || is.character(sitenumber_label)) &&
+          length(sitenumber_label) == 1 && !is.na(sitenumber_label))) {
       sitenumber_label <- NULL
     }
   }
@@ -442,9 +443,13 @@ popup_from_ejscreen <- function(out,
   ## > ID/GEO INFO ON EACH SITE  ####
 
   # Does sitenumber_label contradict (and so replace) the auto-assigned row-number id?
+  # Only when ejam_uniq_id equals the row index (1, since the label is only kept for a
+  # 1-row table) is it the auto row-number of a regenerated run; a numeric id with any
+  # other value may be meaningful, so keep it alongside the label.
   # For fips, ejam_uniq_id is the FIPS code (real info), so keep showing it alongside the label.
   label_replaces_id <- !is.null(sitenumber_label) && !(sitetype %in% "fips") &&
-    ('ejam_uniq_id' %in% names(out)) && is.numeric(out$ejam_uniq_id)
+    ('ejam_uniq_id' %in% names(out)) && is.numeric(out$ejam_uniq_id) &&
+    isTRUE(out$ejam_uniq_id[1] == 1)
 
   if ('ejam_uniq_id' %in% names(out)) {
     if (label_replaces_id) {

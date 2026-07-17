@@ -544,7 +544,18 @@ test_that("sitenumber_label overrides the displayed site number (issue #348)", {
   expect_true(grepl("Site 7", xf, fixed = TRUE))
   expect_true(grepl("FIPS", xf, fixed = TRUE))
 
+  # a numeric ejam_uniq_id that is NOT the auto row-number (does not equal the row index)
+  # may be meaningful, so it is kept alongside the label
+  out_ids <- out
+  out_ids$results_bysite <- data.table::copy(out$results_bysite)
+  out_ids$results_bysite$ejam_uniq_id <- 100 + seq_len(NROW(out_ids$results_bysite))
+  xkeep <- report_residents_within_xyz_from_ejamit(out_ids, sitenumber = 1, sitenumber_label = 5)
+  expect_true(grepl("Site 5", xkeep, fixed = TRUE))
+  expect_true(grepl("ejam_uniq_id 101", xkeep, fixed = TRUE))
+
   # invalid labels are rejected
   expect_error(report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = c(1, 2)))
   expect_error(report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = NA))
+  # only a number or short text is a valid label (e.g., logical would show as "Site TRUE")
+  expect_error(report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = TRUE))
 })

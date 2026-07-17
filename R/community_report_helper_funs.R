@@ -1267,7 +1267,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
   if (!is.null(sitenumber) && sitenumber %in% 0) {sitenumber <- NULL} # because ejam2report() allows 0 to mean summary report
   stopifnot(!is.na(sitenumber), (is.null(sitenumber) | is.atomic(sitenumber)), length(sitenumber) < 2)
   stopifnot(is.numeric(sitenumber) | is.null(sitenumber))
-  stopifnot(is.null(sitenumber_label) || (is.atomic(sitenumber_label) && length(sitenumber_label) == 1 && !is.na(sitenumber_label)))
+  stopifnot(is.null(sitenumber_label) || ((is.numeric(sitenumber_label) || is.character(sitenumber_label)) && length(sitenumber_label) == 1 && !is.na(sitenumber_label)))
   if (!is.null(sitenumber)) {
     if (sitenumber < 1 || sitenumber > NROW(out$results_bysite)) {
       message("sitenumber was < 1 or > number of rows in results_bysite, so ignoring sitenumber parameter")
@@ -1393,9 +1393,12 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
   # numeric sitenumber row index; only what is displayed changes here.
   if (!is.null(sitenumber) && !is.null(sitenumber_label)) {
     ejam_uniq_id_explicit <- !is.null(params) && ("ejam_uniq_id" %in% names(params))
-    if (!ejam_uniq_id_explicit && is.numeric(ejam_uniq_id) && !(sitetype %in% "fips")) {
+    if (!ejam_uniq_id_explicit && is.numeric(ejam_uniq_id) && !(sitetype %in% "fips") &&
+        isTRUE(ejam_uniq_id == sitenumber)) {
       # drop the auto-assigned row-number id of this results table -- it is just the row
-      # index of the (possibly regenerated, 1-site) run and would contradict the label
+      # index of the (possibly regenerated, 1-site) run and would contradict the label.
+      # A numeric id that does NOT equal the row index is not the auto row-number,
+      # so it may be meaningful and is kept alongside the label.
       ejam_uniq_id <- NULL
     }
     sitenumber <- sitenumber_label
