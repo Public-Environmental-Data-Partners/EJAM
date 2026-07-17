@@ -548,6 +548,16 @@ app_server <- function(input, output, session) {
         error = function(e) NULL
       )
       if (!is.null(payload) && is.null(payload$error)) {
+        # The API serializes absent payload fields (an R NULL for sites/fips/shape/
+        # radius) as JSON {}, which jsonlite::fromJSON() parses back as a zero-length
+        # list, NOT NULL. Treat any zero-length field as absent so the checks below
+        # see a clean NULL. Without this, a radius-less handoff (every FIPS/polygon
+        # basket, and any point basket with no buffer) returns radius:{} -> an empty
+        # list that reaches as.numeric() in the radius block and evaluates the if()
+        # on a zero-length value, an unhandled error in this init observer that
+        # crashes the whole session. length() of a real sites data.frame is its
+        # column count (>0), so genuine payloads are preserved.
+        payload <- lapply(payload, function(x) if (length(x) == 0) NULL else x)
         if (!is.null(payload$sites) && is.data.frame(payload$sites)) {
           spec$lat <- payload$sites$lat
           spec$lon <- payload$sites$lon
@@ -616,14 +626,15 @@ app_server <- function(input, output, session) {
     ## clobbered when the slider re-renders (e.g. after set_site_method() above changes
     ## the upload method). Reading url_radius() inside the renderUI makes setting it here
     ## re-render the slider with the launch value, which is reliable in both orderings.
-    if (!is.null(spec$radius)) {
-      radval <- suppressWarnings(as.numeric(spec$radius))
-      # 0 is a valid buffer for polygon/FIPS methods (minradius_shapefile is 0,
-      # meaning analyze inside the boundary with no buffer); the slider renderUI
-      # clamps the value into the current method's [min, max], so e.g. 0 becomes
-      # the point-method minimum when points were supplied. Negatives are ignored.
-      if (!is.na(radval) && radval >= 0) url_radius(radval)
-    }
+    # 0 is a valid buffer for polygon/FIPS methods (minradius_shapefile is 0,
+    # meaning analyze inside the boundary with no buffer); the slider renderUI
+    # clamps the value into the current method's [min, max], so e.g. 0 becomes
+    # the point-method minimum when points were supplied. Negatives are ignored.
+    # length(radval) == 1 guard: any absent/empty/multi-value radius (as.numeric()
+    # of NULL or an empty list is numeric(0)) is skipped rather than evaluated by
+    # the if(), which would error on a zero-length condition and crash session init.
+    radval <- suppressWarnings(as.numeric(spec$radius))
+    if (length(radval) == 1 && !is.na(radval) && radval >= 0) url_radius(radval)
   }, priority = 1000)
 
   data_up_shp <- reactive({
