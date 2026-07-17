@@ -363,6 +363,14 @@ test_that("app_server override latch: an advanced-tab Site Selection Method pick
 ##  - httr2::req_perform / resp_body_string  serve the canned handoff JSON for that
 ##    fake base's /handoff/ URL only (anything else passes through to real httr2).
 
+## Bind the unexported app_server from the namespace so the handoff regression tests
+## below run in BOTH contexts: devtools::test()/load_all() (where app_server is already
+## a visible symbol) AND installed-package testing via test_check()/R CMD check (where
+## it is not, and an exists()-based skip would silently drop this regression coverage --
+## flagged by Copilot/Codex review on PR #466). Under load_all(), EJAM:::app_server is
+## the same dev-source object, so binding unconditionally is safe in either context.
+app_server <- EJAM:::app_server
+
 testserver_with_launch_query <- function(query, handoff_json = NULL, expr) {
   orig_global_or_param <- EJAM:::global_or_param
   orig_parseQueryString <- shiny::parseQueryString
@@ -404,7 +412,6 @@ testserver_with_launch_query <- function(query, handoff_json = NULL, expr) {
 ################################################# #
 
 test_that("handoff: FIPS basket (radius {}) loads FIPS and does not crash the session", {
-  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
   ## THE #465 crash case: a County/Tract selection sent via EJScreen "Send to EJAM".
   ## Payload is verbatim what the API returns for a FIPS basket (radius/sites/shape = {}).
   testserver_with_launch_query(
@@ -423,7 +430,6 @@ test_that("handoff: FIPS basket (radius {}) loads FIPS and does not crash the se
 ################################################# #
 
 test_that("handoff: point basket with no buffer (radius {}) loads points and does not crash", {
-  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
   ## Same #465 crash for lat/lon selections made without a buffer: EJScreen's
   ## multisite.js only includes radius when a buffer is set, so the API returns radius:{}.
   testserver_with_launch_query(
@@ -441,7 +447,6 @@ test_that("handoff: point basket with no buffer (radius {}) loads points and doe
 ################################################# #
 
 test_that("handoff: polygon basket (GeoJSON, radius {}) loads the shape and does not crash", {
-  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
   skip_if_not_installed("sf")
   ## Third #465 crash case: a drawn-polygon selection. shape arrives as GeoJSON text
   ## (a JSON string field), radius is absent ({}).
@@ -462,7 +467,6 @@ test_that("handoff: polygon basket (GeoJSON, radius {}) loads the shape and does
 ################################################# #
 
 test_that("handoff: point basket WITH a buffer still applies the radius (working path preserved)", {
-  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
   testserver_with_launch_query(
     query = list(handoff = "TESTTOKEN"),
     handoff_json = '{"method":["latlon"],"sites":[{"lat":38.9072,"lon":-77.0369}],"fips":{},"shape":{},"radius":[3]}',
@@ -476,8 +480,8 @@ test_that("handoff: point basket WITH a buffer still applies the radius (working
 ################################################# #
 
 test_that("handoff: explicit radius 0 is accepted (valid no-buffer value for FIPS/polygon)", {
-  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
-  ## EJScreen#73 / EJAM-API#49 make FIPS/shape handoffs carry an explicit radius 0;
+  ## Public-Environmental-Data-Partners/EJScreen#73 and
+  ## Public-Environmental-Data-Partners/EJAM-API#49 make FIPS/shape handoffs carry an explicit radius 0;
   ## 0 must pass the >= 0 guard (minradius_shapefile is 0 = analyze inside the boundary).
   testserver_with_launch_query(
     query = list(handoff = "TESTTOKEN"),
@@ -492,7 +496,6 @@ test_that("handoff: explicit radius 0 is accepted (valid no-buffer value for FIP
 ################################################# #
 
 test_that("handoff: API error payload loads nothing and does not crash", {
-  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
   testserver_with_launch_query(
     query = list(handoff = "TESTTOKEN"),
     handoff_json = '{"error":["handoff token not found or expired"]}',
@@ -509,7 +512,6 @@ test_that("handoff: API error payload loads nothing and does not crash", {
 ################################################# #
 
 test_that("direct deep-link ?fips=&radius= still loads both (radius-guard refactor unchanged)", {
-  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
   testserver_with_launch_query(
     query = list(fips = "10001,10003", radius = "5"),
     expr = testServer(app = app_server, expr = {
@@ -522,7 +524,6 @@ test_that("direct deep-link ?fips=&radius= still loads both (radius-guard refact
 ################################################# #
 
 test_that("direct deep-link ?fips= with no radius leaves url_radius NULL and does not crash", {
-  skip_if_not(exists("app_server"), message = "unexported function app_server() not found, skipping test")
   ## as.numeric(NULL) is numeric(0); the length()==1 guard must skip it silently.
   testserver_with_launch_query(
     query = list(fips = "10001"),
