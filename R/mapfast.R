@@ -9,7 +9,9 @@
 #' @return like what [mapfast()] returns
 #' @export
 #'
-mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_names, launch_browser = FALSE, color = "#03F") {
+mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_names, launch_browser = FALSE, color = "#03F",
+                      sitenumber_label = NULL # name-only, at end to avoid arg shift
+                      ) {
 
   if (missing(radius)) {if ("radius.miles" %in% names(mydf)) {radius = mydf$radius.miles[1]} else {
     if ("results_bysite" %in% names(mydf) && ("radius.miles" %in% names(mydf$results_bysite))) {
@@ -18,7 +20,8 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
   }
   }
 
-  mapfast(mydf = mydf, radius = radius, column_names = column_names, labels = labels, launch_browser = launch_browser, color = color)
+  mapfast(mydf = mydf, radius = radius, column_names = column_names, labels = labels, launch_browser = launch_browser, color = color,
+          sitenumber_label = sitenumber_label)
 }
 ############################################################################ #
 
@@ -50,6 +53,11 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #'   and print the temp filepath and filename in the console.
 #'   Normally the map would be shown in the default RStudio viewer pane.
 #' @param color color of circles or polygons
+#' @param sitenumber_label optional, display-only override (a number or short text) of the
+#'   site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
+#'   Passed to [popup_from_ejscreen()] (so used only if column_names is "ej"), and only
+#'   relevant when mydf is a single-site (1-row) table -- see [ejam2report()], whose
+#'   sitenumber_label parameter this supports.
 #' @seealso [ejam2map()] [popup_from_any()] [mapfastej()]
 #' @return plots a map via the leaflet package, with popups with all the columns from mydf,
 #'   and returns html widget
@@ -57,7 +65,9 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #'
 #' @export
 #'
-mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names, launch_browser = FALSE, color = "#03F") {
+mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names, launch_browser = FALSE, color = "#03F",
+                    sitenumber_label = NULL # name-only, at end to avoid arg shift
+                    ) {
 
   if (missing(radius)) {if ("radius.miles" %in% names(mydf)) {radius = mydf$radius.miles[1]} else {
     if ("results_bysite" %in% names(mydf) && ("radius.miles" %in% names(mydf$results_bysite))) {
@@ -107,7 +117,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       mydf <- cbind(mydf, ejna)
     }
 
-    mypop <- popup_from_ejscreen(sf::st_drop_geometry(mydf)) # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+    mypop <- popup_from_ejscreen(sf::st_drop_geometry(mydf), sitenumber_label = sitenumber_label) # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
 
   } else if (column_names[1] == 'all') {
     mypop <- popup_from_df(sf::st_drop_geometry(mydf))

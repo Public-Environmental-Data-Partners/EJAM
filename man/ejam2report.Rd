@@ -123,7 +123,8 @@ PDF output is required when this option is selected; it is not optional.}
 \item{launch_browser}{set TRUE to have it launch browser and show report.}
 
 \item{sitenumber_label}{optional, display-only override (a number or short text) of the site
-identifier shown in the 1-site report header, in place of the \code{sitenumber} row index.
+identifier shown in the 1-site report header and in the report map's marker popup,
+in place of the \code{sitenumber} row index.
 \code{sitenumber} still selects which row of \code{ejamitout$results_bysite} to report on; this
 only changes the label displayed. Useful when one site from a larger analysis has been
 re-analyzed alone -- e.g., the EJAM API per-site report links made by \code{\link[=url_ejamapi]{url_ejamapi()}}

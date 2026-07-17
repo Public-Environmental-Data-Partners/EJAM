@@ -38,6 +38,13 @@
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
 #'
+#' @param sitenumber_label optional, display-only override (a number or short text) of the
+#'   site number shown in the popup, in place of the auto-assigned row number/ejam_uniq_id.
+#'   Only used when `out` is a single-site (1-row) table, as when [ejam2report()] re-analyzes
+#'   one site that was row N of a larger analysis (e.g., the EJAM API per-site report links
+#'   made by [url_ejamapi()]) -- the regenerated run's row index (1) is not the site number
+#'   the user expects to see. A number N is shown as "Site N"; text is shown as-is.
+#'
 #' @return HTML ready to be used for map popups
 #'
 #' @keywords internal
@@ -46,7 +53,9 @@
 popup_from_ejscreen <- function(out,
                                 linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header),
                                 verbose = FALSE,
-                                site_method = NULL) {
+                                site_method = NULL,
+                                sitenumber_label = NULL # name-only, at end to avoid arg shift
+                                ) {
   # ornull = function(n) {
   #   x <- try(global_or_param("default_reports")[[n]]$header)
   #   if (inherits(x, "try-error")) {return(NULL)} else {return(x)}
@@ -71,6 +80,16 @@ popup_from_ejscreen <- function(out,
   if (data.table::is.data.table(out)) {out <- data.table::copy(out); data.table::setDF(out)}
   if (NROW(out) == 0) {
     return(character(0))
+  }
+
+  # sitenumber_label: display-only override of the site number shown in popups, only
+  # meaningful for a single-site table (see ejam2report() and
+  # Public-Environmental-Data-Partners/EJAM#348) -- ignore it otherwise.
+  if (!is.null(sitenumber_label)) {
+    if (NROW(out) != 1 ||
+        !(is.atomic(sitenumber_label) && length(sitenumber_label) == 1 && !is.na(sitenumber_label))) {
+      sitenumber_label <- NULL
+    }
   }
 
   ############################################ #
@@ -422,7 +441,20 @@ popup_from_ejscreen <- function(out,
   ############################################################################# #
   ## > ID/GEO INFO ON EACH SITE  ####
 
-  if ('ejam_uniq_id' %in% names(out)) {pops_ejam_uniq_id <- paste0('Site ID (ejam_uniq_id): ', out$ejam_uniq_id, '<br>')} else {pops_ejam_uniq_id <- ''}
+  # Does sitenumber_label contradict (and so replace) the auto-assigned row-number id?
+  # For fips, ejam_uniq_id is the FIPS code (real info), so keep showing it alongside the label.
+  label_replaces_id <- !is.null(sitenumber_label) && !(sitetype %in% "fips") &&
+    ('ejam_uniq_id' %in% names(out)) && is.numeric(out$ejam_uniq_id)
+
+  if ('ejam_uniq_id' %in% names(out)) {
+    if (label_replaces_id) {
+      # display-only override (see sitenumber_label param): the auto row-number id of a
+      # regenerated 1-site run would contradict the label, so show the label instead
+      pops_ejam_uniq_id <- paste0('Site ID: ', sitenumber_label, '<br>')
+    } else {
+      pops_ejam_uniq_id <- paste0('Site ID (ejam_uniq_id): ', out$ejam_uniq_id, '<br>')
+    }
+  } else {pops_ejam_uniq_id <- ''}
   if ('id'           %in% names(out)) {pops_id           <- paste0('id: ',           out$id,           '<br>')} else {pops_id           <- ''}
   if ('regid'        %in% names(out)) {regid             <- paste0('regid: ',        out$regid,        '<br>')} else {regid             <- ''}
   if ('REGISTRY_ID'  %in% names(out)) {REGISTRY_ID       <- paste0('REGISTRY_ID: ',  out$REGISTRY_ID,  '<br>')} else {REGISTRY_ID       <- ''}
@@ -456,8 +488,11 @@ popup_from_ejscreen <- function(out,
         ## unitsingular = 'mile',
         area_in_square_miles = 0, # to suppress it here since added separately below. # out$area_sqmi[n],
         nsites = 1,
-        sitenumber = n,
-        ejam_uniq_id = out$ejam_uniq_id[n],
+        # display-only override (see sitenumber_label param): show the site number the user
+        # expects, and drop the auto row-number id when it would contradict that label,
+        # like report_residents_within_xyz_from_ejamit() does for the report header
+        sitenumber = if (is.null(sitenumber_label)) n else sitenumber_label,
+        ejam_uniq_id = if (label_replaces_id) NULL else out$ejam_uniq_id[n],
         sitetype = sitetype,
         site_method = site_method, # detailed sitetype like MACT/NAICS/etc. if relevant as from server
         census_unit_type = census_unit_type[n], # # ?? detailed sitetype if fips

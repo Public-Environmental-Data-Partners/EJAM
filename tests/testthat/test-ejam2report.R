@@ -251,7 +251,8 @@ test_that("ejam2report passes sitenumber_label through to the report header help
   # (Public-Environmental-Data-Partners/EJAM#348) The API's per-site report links
   # re-analyze one site that was row N of a larger analysis; ejam2report() must hand
   # the display label to report_residents_within_xyz_from_ejamit() so the header
-  # says "Site N" instead of "Site 1".
+  # says "Site N" instead of "Site 1", and to the map builder so the marker popup
+  # says "Site N" too.
   seen <- new.env(parent = emptyenv())
   local_mocked_bindings(
     shapes_from_fips = function(fips) data.frame(fips = fips),
@@ -265,7 +266,10 @@ test_that("ejam2report passes sitenumber_label through to the report header help
     create_filename = function(...) "report.html",
     build_community_report = function(...) "<section>report</section>",
     plot_barplot_ratios_ez = function(...) ggplot2::ggplot(),
-    ejam2map = function(...) "map",
+    ejam2map = function(..., sitenumber_label = NULL) {
+      seen$maplabel <- sitenumber_label
+      "map"
+    },
     ensure_pandoc_available_for_ejam = function(...) invisible(TRUE),
     .package = "EJAM"
   )
@@ -290,4 +294,5 @@ test_that("ejam2report passes sitenumber_label through to the report header help
     )
   )
   expect_equal(seen$label, 7)
+  expect_equal(seen$maplabel, 7)
 })
