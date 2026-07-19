@@ -67,6 +67,27 @@ assert_pdf_report_available <- function() {
 }
 ################################################## #
 
+# helper
+
+ejam2report_site_is_reportable <- function(site_result) {
+  if (!("valid" %in% names(site_result)) || isTRUE(site_result$valid[1])) {
+    return(TRUE)
+  }
+
+  if (!("pop" %in% names(site_result)) ||
+      !isTRUE(!is.na(site_result$pop[1]) && site_result$pop[1] == 0)) {
+    return(FALSE)
+  }
+
+  invalid_msg <- if ("invalid_msg" %in% names(site_result)) {
+    as.character(site_result$invalid_msg[1])
+  } else {
+    ""
+  }
+  isTRUE(invalid_msg %in% unname(ejamit_reportable_invalid_messages()))
+}
+################################################## #
+
 
 #' View HTML Report on EJAM Results (Overall or at 1 Site)
 #'
@@ -282,11 +303,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     sitenumber <- 0  # in case sitenumber was invalid
   }
   # How many sites were actually analyzed, in the (valid) results provided?
-  nsites <- NROW(ejamitout$results_bysite[ejamitout$results_bysite$valid %in% TRUE, ]) # might differ from ejamout1$sitecount_unique
+  valid_site_rows <- which(ejamitout$results_bysite$valid %in% TRUE)
+  nsites <- length(valid_site_rows) # might differ from ejamout1$sitecount_unique
   # Treat it like a 1-site report if only 1 valid site was analyzed.
   #   And then if sitenumber omitted, or sitenumber=1, or sitenumber provided was invalid, just use that 1 site.
   if (sitenumber %in% 0 && nsites == 1) {
-    sitenumber <- 1
+    sitenumber <- valid_site_rows[1]
   }
 
   # Multi-site  (results_overall) ###################################################
@@ -359,7 +381,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   include_ejindexes <- any(names_ej_pctile %in% colnames(ejamout1))
 
   if (!("valid" %in% names(ejamout1))) {ejamout1$valid <- TRUE}
-  if (isTRUE(ejamout1$valid)) {
+  if (ejam2report_site_is_reportable(ejamout1)) {
 
     #############################################################################  #
 

@@ -184,23 +184,10 @@ acs_bybg <- function(
   if (missing(year) || is.null(year)) {
     year <- acs_endyear(guess_as_of = Sys.Date(), guess_always = TRUE, # to get the latest published by census bureau which may be newer than what is in latest release of EJSCREEN/EJAM
                        guess_census_has_published = TRUE)
-    yr_was_inferred = TRUE
-  } else {
-    yr_was_inferred = FALSE
   }
-  year <- as.numeric(year)
-  default_available = formals(tidycensus::get_acs)$year
-  if (year > default_available) {
-    yr_source = ifelse(yr_was_inferred, "assumed/guessed to be available", "requested")
-    msg = paste0("Data for the year ", year, " does not seem to be supported yet by tidycensus package, since the default year in tidycensus::get_acs() is only ", default_available, " which is not as recent as the ", year, " data that was ", yr_source, ".")
-    if (!yr_was_inferred) {
-      stop(msg)
-    } else {
-      warning(msg)
-      message("Using data for the year ", default_available, " instead of the guessed year of ", year, ".")
-      year <- default_available
-    }
-  }
+  # Block only years the Census Bureau has not published yet -- a year newer than
+  # tidycensus's own default year works fine when passed to get_acs() explicitly.
+  year <- acs_check_year_available(year)
 
   # NEED API KEY POSSIBLY, FOR LARGE QUERIES AT LEAST
 

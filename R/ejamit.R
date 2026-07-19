@@ -1,4 +1,27 @@
 
+#' Messages for analysis-invalid sites that can still have reports
+#'
+#' These messages describe usable analysis requests that returned no population
+#' results. Keeping the emitter and reportability check on one canonical list
+#' prevents message wording changes from silently disabling reports.
+#' @return a named character vector of reportable analysis-invalid messages
+#' @noRd
+#'
+ejamit_reportable_invalid_messages <- function() {
+  c(
+    no_block_centroids_fips =
+      "no block centroids (fips boundaries not obtained)",
+    no_block_centroids_shp =
+      "no block centroids (polygon too small for low pop density)",
+    no_block_centroids_latlon =
+      "no block centroids (radius too small for low pop density)",
+    unable_to_aggregate =
+      "blocks with residents found but unable to aggregate",
+    zero_residents =
+      "blocks found but zero residents"
+  )
+}
+
 #' Message describing why no block centroids were found near a site
 #'
 #' Internal helper used by [ejamit()] to explain empty results by site type.
@@ -7,13 +30,38 @@
 #' @noRd
 #'
 ejamit_no_block_centroids_message <- function(sitetype) {
+  messages <- ejamit_reportable_invalid_messages()
   if (sitetype %in% "fips") {
-    return("no block centroids (fips boundaries not obtained)")
+    return(unname(messages[["no_block_centroids_fips"]]))
   }
   if (sitetype %in% "shp") {
-    return("no block centroids (polygon too small for low pop density)")
+    return(unname(messages[["no_block_centroids_shp"]]))
   }
-  "no block centroids (radius too small for low pop density)"
+  unname(messages[["no_block_centroids_latlon"]])
+}
+
+#' Normalize population for invalid sites in final `ejamit()` output
+#'
+#' `doaggregate()` omits sites it cannot aggregate. When [ejamit()] merges those
+#' original input rows back into `results_bysite`, their result columns are
+#' unavailable, but their contribution to analyzed population is zero. Preserve
+#' `NA` for the unavailable indicators while using zero for population.
+#' @param results_bysite final site-level results table from [ejamit()]
+#' @return `results_bysite` with `pop = 0` where `valid = FALSE`
+#' @noRd
+#'
+ejamit_invalid_site_pop_zero <- function(results_bysite) {
+  if (!is.data.frame(results_bysite) ||
+      !all(c("valid", "pop") %in% names(results_bysite))) {
+    return(results_bysite)
+  }
+
+  if (data.table::is.data.table(results_bysite)) {
+    results_bysite[valid %in% FALSE, pop := 0]
+  } else {
+    results_bysite$pop[results_bysite$valid %in% FALSE] <- 0
+  }
+  results_bysite
 }
 
 #' Get an EJ analysis (residential population and environmental indicators) in or near a list of locations
@@ -820,12 +868,13 @@ ejamit <- function(sitepoints = NULL,
 
   data_uploaded$valid[site_in_results_pop0 | !site_in_results] <- FALSE  # NOTE this also says invalid if zero population
 
+  reportable_invalid_messages <- ejamit_reportable_invalid_messages()
   data_uploaded$invalid_msg[!dropped_before_getblocks & !site_in_blocksfound] <-
     ejamit_no_block_centroids_message(sitetype)
   data_uploaded$invalid_msg[site_in_blocksfound & !site_in_results] <-
-    "blocks with residents found but unable to aggregate" # why?
+    unname(reportable_invalid_messages[["unable_to_aggregate"]]) # why?
   data_uploaded$invalid_msg[site_in_results_pop0]   <-
-    "blocks found but zero residents" # msg differed from server version?
+    unname(reportable_invalid_messages[["zero_residents"]]) # msg differed from server version?
 
   # Merge invalid and valid sites and msg, so results_bysite has ALL sites originally provided for analysis.
   setDT(data_uploaded)
@@ -944,6 +993,13 @@ ejamit <- function(sitepoints = NULL,
   ## * table_tall_from_overall() ####
 
   out$formatted <- table_tall_from_overall(out$results_overall, fixcolnames(names(out$results_overall), 'r', 'long')) # out$longnames)
+
+  ## * invalid site population ####
+
+  # Keep the historical batch-summary treatment of unavailable rows above, then
+  # expose their population as zero in final site-level output. `valid` and the
+  # other NA result columns still distinguish sites that were not analyzed.
+  out$results_bysite <- ejamit_invalid_site_pop_zero(out$results_bysite)
 
   ###################################### #
   ## * sitetype ####
