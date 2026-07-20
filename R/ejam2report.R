@@ -101,6 +101,16 @@ ejam2report_site_is_reportable <- function(site_result) {
 #'   But note that it is treated / titled like a 1-site report if only
 #'   one site was analyzed (or only one had valid results).
 #'
+#' @param sitenumber_label optional, display-only override (a number or short text) of the site
+#'   identifier shown in the 1-site report header and in the report map's marker popup,
+#'   in place of the `sitenumber` row index.
+#'   `sitenumber` still selects which row of `ejamitout$results_bysite` to report on; this
+#'   only changes the label displayed. Useful when one site from a larger analysis has been
+#'   re-analyzed alone -- e.g., the EJAM API per-site report links made by [url_ejamapi()]
+#'   re-analyze a single site that was row N of the original multisite results, so its row
+#'   index in the regenerated results (1) is not the site number the user expects to see.
+#'   A number N is shown as "Site N"; text is shown as-is. Ignored for a multisite report.
+#'
 #' @param analysis_title optional title of analysis, default is global_or_param("default_standard_analysis_title")
 #'
 #' @param report_title optional generic name of this type of report, to be shown at top,
@@ -229,7 +239,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         return_html = FALSE,
                         launch_browser = TRUE,
                         shape = NULL,     # alias (synonym) for shp (name-only, at end to avoid arg shift)
-                        shapefile = NULL  # alias (synonym) for shp
+                        shapefile = NULL, # alias (synonym) for shp
+                        sitenumber_label = NULL # display-only (placed after shape/shapefile to avoid positional arg shift)
 ) {
   # Aliases (synonyms) for shp, for naming consistency with ejamit()/ejamapp() etc.
   if (is.null(shp) && !is.null(shape))     {shp <- shape}
@@ -396,7 +407,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     residents_within_xyz <- report_residents_within_xyz_from_ejamit(
       ejamitout = ejamitout,
       sitenumber = sitenumber,
-      site_method = site_method
+      site_method = site_method,
+      sitenumber_label = sitenumber_label
     )
     ####################################################### #
 
@@ -521,11 +533,13 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       }
     } else {
       # just 1 site specified by sitenumber so map should show just that 1 site! shp and ejamout1 both 1 row already in this case
+      # sitenumber_label (display-only) also flows into the map marker popup, so a regenerated
+      # 1-site run's popup says "Site N" like the report header does, not the auto "Site 1"
       if (sitetype %in% c("fips", "shp") && !is.null(shp)) {
         # radius gets found, and used just in popups since shapefile given
-        map <- ejam2map(ejamitout = ejamout1, shp = shp, launch_browser = FALSE)
+        map <- ejam2map(ejamitout = ejamout1, shp = shp, launch_browser = FALSE, sitenumber_label = sitenumber_label)
       } else {
-        map <- mapfastej(ejamout1, radius = rad)
+        map <- mapfastej(ejamout1, radius = rad, sitenumber_label = sitenumber_label)
       }
     }
     ## FOOTER/DATE/VERSION ####

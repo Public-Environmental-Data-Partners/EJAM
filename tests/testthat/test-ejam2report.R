@@ -339,3 +339,53 @@ test_that("ejam2report normalizes default_format1pager fallback without a leadin
   )
   expect_match(basename(result), "\\.pdf$")
 })
+
+test_that("ejam2report passes sitenumber_label through to the report header helper (issue #348)", {
+  # (Public-Environmental-Data-Partners/EJAM#348) The API's per-site report links
+  # re-analyze one site that was row N of a larger analysis; ejam2report() must hand
+  # the display label to report_residents_within_xyz_from_ejamit() so the header
+  # says "Site N" instead of "Site 1", and to the map builder so the marker popup
+  # says "Site N" too.
+  seen <- new.env(parent = emptyenv())
+  local_mocked_bindings(
+    shapes_from_fips = function(fips) data.frame(fips = fips),
+    shape_buffered_from_shapefile = function(shapefile, radius.miles, ...) shapefile,
+    fips2name = function(fips) paste("FIPS", fips),
+    report_residents_within_xyz_from_ejamit = function(..., sitenumber_label = NULL) {
+      seen$label <- sitenumber_label
+      "residents"
+    },
+    report_setup_temp_files = function(...) "template.Rmd",
+    create_filename = function(...) "report.html",
+    build_community_report = function(...) "<section>report</section>",
+    plot_barplot_ratios_ez = function(...) ggplot2::ggplot(),
+    ejam2map = function(..., sitenumber_label = NULL) {
+      seen$maplabel <- sitenumber_label
+      "map"
+    },
+    ensure_pandoc_available_for_ejam = function(...) invisible(TRUE),
+    .package = "EJAM"
+  )
+  local_mocked_bindings(
+    pandoc_available = function(...) TRUE,
+    render = function(input, output_format, output_file, params, envir, quiet, ...) {
+      writeLines("<html>report</html>", output_file)
+      output_file
+    },
+    .package = "rmarkdown"
+  )
+
+  expect_no_error(
+    ejam2report(
+      fips_report_test_output(radius = 1),
+      sitenumber = 1,
+      sitenumber_label = 7,
+      report_title = "Report",
+      analysis_title = "Analysis",
+      return_html = TRUE,
+      launch_browser = FALSE
+    )
+  )
+  expect_equal(seen$label, 7)
+  expect_equal(seen$maplabel, 7)
+})

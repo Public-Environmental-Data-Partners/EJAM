@@ -297,9 +297,15 @@ if (FALSE) {
 #* @param shape A GeoJSON string representing the area of interest
 #* @param fips A FIPS code for a specific US Census geography
 #* @param buffer The buffer radius in miles
+#* @param sitenumber Which site to report on: 0 (or "overall") for an aggregate multisite
+#*   report, or N to report on the Nth submitted site. When only one site is submitted
+#*   (as in the per-site report links that url_ejamapi() builds from multisite results),
+#*   N is used to label the report header "Site N" -- the row that site had in the
+#*   original analysis -- instead of mislabeling every per-site report as Site 1.
+#*   Default (omitted) is a single-site report labeled by row.
 #* @get /report
 #* @serializer html
-function(lat = "", lon = "", shape = "", fips = "", buffer = 3, res) {
+function(lat = "", lon = "", shape = "", fips = "", buffer = 3, sitenumber = "", res) {
   # Determine the input method and prepare the area.
   method <- if (!("" %in% lat) && !("" %in% lon)) "latlon" else if (!("" %in% shape)) "SHP" else if (!("" %in% fips)) "FIPS" else NULL
   area <- if (method == "latlon") data.frame(lat = as.numeric(lat), lon = as.numeric(lon)) else shape %||% fips
@@ -307,6 +313,18 @@ function(lat = "", lon = "", shape = "", fips = "", buffer = 3, res) {
   if (is.null(method) || is.null(area)) {
     res$status <- 400
     return(handle_error("You must provide valid coordinates, a shape, or a FIPS code.", "html"))
+  }
+
+  # Normalize sitenumber: "" (omitted) -> 1; 0 or "overall" -> 0 = aggregate multisite report.
+  sitenumber <- api2rnulltf(sitenumber)
+  if (length(sitenumber) > 1) {sitenumber <- sitenumber[1]} # e.g., a repeated query param
+  if (is.null(sitenumber)) {
+    sitenum <- 1
+  } else if (tolower(as.character(sitenumber)) %in% c("0", "overall")) {
+    sitenum <- 0
+  } else {
+    sitenum <- suppressWarnings(as.numeric(sitenumber))
+    if (length(sitenum) != 1 || is.na(sitenum) || sitenum < 1) {sitenum <- 1}
   }
 
   # Perform the EJAM analysis.
@@ -324,7 +342,16 @@ function(lat = "", lon = "", shape = "", fips = "", buffer = 3, res) {
   }
 
   # Generate and return the HTML report.
-  ejam2report(out, sitenumber = 1, return_html = TRUE, launch_browser = FALSE, site_method = method)
+  # When one site was submitted but it was row N (>1) of a larger original analysis --
+  # as in the per-site report links from url_ejamapi() -- report on that one row but
+  # label the header "Site N" instead of "Site 1"
+  # (Public-Environmental-Data-Partners/EJAM#348).
+  if (sitenum > 1 && NROW(out$results_bysite) == 1) {
+    ejam2report(out, sitenumber = 1, sitenumber_label = sitenum,
+                return_html = TRUE, launch_browser = FALSE, site_method = method)
+  } else {
+    ejam2report(out, sitenumber = sitenum, return_html = TRUE, launch_browser = FALSE, site_method = method)
+  }
 }
 ####################################################### #
 
