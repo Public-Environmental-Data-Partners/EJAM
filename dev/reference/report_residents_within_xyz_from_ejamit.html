@@ -79,7 +79,8 @@
 <span>  <span class="va">ejamitout</span>,</span>
 <span>  sitenumber <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  site_method <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  sitenumber_label <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,6 +106,16 @@ parameters that can be specified – they get passed from here to that function.
 For example, if it is a 1-site report as via sitenumber=2,
 and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
 instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).</p></dd>
+
+
+<dt id="arg-sitenumber-label">sitenumber_label<a class="anchor" aria-label="anchor" href="#arg-sitenumber-label"></a></dt>
+<dd><p>optional, display-only override (a number or short text) of the
+site identifier shown in a 1-site report header, in place of the <code>sitenumber</code> row index.
+Useful when one site from a larger analysis has been re-analyzed alone – e.g., the
+EJAM API per-site report links made by <code><a href="url_ejamapi.html">url_ejamapi()</a></code> re-analyze a single site that
+was row N of the original multisite results, so its row index here (1) is not the
+site number the user expects to see. A number N is shown as "Site N"; text is shown
+as-is. Ignored for a multisite/overall summary report.</p></dd>
 
 </dl></div>
     <div class="section level2">

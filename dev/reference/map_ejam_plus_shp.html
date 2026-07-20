@@ -80,7 +80,8 @@
 <span>  <span class="va">out</span>,</span>
 <span>  radius_buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  circle_color <span class="op">=</span> <span class="st">"#000080"</span>,</span>
-<span>  launch_browser <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  launch_browser <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  sitenumber_label <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -106,6 +107,13 @@
 
 <dt id="arg-launch-browser">launch_browser<a class="anchor" aria-label="anchor" href="#arg-launch-browser"></a></dt>
 <dd><p>set TRUE to have it launch browser to show map.</p></dd>
+
+
+<dt id="arg-sitenumber-label">sitenumber_label<a class="anchor" aria-label="anchor" href="#arg-sitenumber-label"></a></dt>
+<dd><p>optional, display-only override (a number or short text) of the
+site number shown in map popups, passed to <code><a href="popup_from_ejscreen.html">popup_from_ejscreen()</a></code>.
+Only relevant when mapping a single site – see <code><a href="ejam2report.html">ejam2report()</a></code>, whose
+sitenumber_label parameter this supports.</p></dd>
 
 </dl></div>
     <div class="section level2">

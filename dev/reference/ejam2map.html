@@ -87,7 +87,8 @@ create a map of the points.</p>
 <span>  sitenumber <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shape <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shapefile <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  buffer <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sitenumber_label <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -129,6 +130,13 @@ create a map of the points.</p>
 
 <dt id="arg-buffer">buffer<a class="anchor" aria-label="anchor" href="#arg-buffer"></a></dt>
 <dd><p>alias (synonym) for radius</p></dd>
+
+
+<dt id="arg-sitenumber-label">sitenumber_label<a class="anchor" aria-label="anchor" href="#arg-sitenumber-label"></a></dt>
+<dd><p>optional, display-only override (a number or short text) of the
+site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
+Only relevant when mapping a single site – see <code><a href="ejam2report.html">ejam2report()</a></code>, whose
+sitenumber_label parameter this supports.</p></dd>
 
 </dl></div>
     <div class="section level2">

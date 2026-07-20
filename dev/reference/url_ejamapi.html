@@ -153,15 +153,20 @@ followed by "/report?". See <code><a href="ejamapi.html">ejamapi()</a></code> fo
 <dd><p>controls how many URLs are returned and which site(s) each covers:</p><ul><li><p><code>"each"</code> (or <code>-1</code>) – <strong>the default</strong> – returns a vector of URLs, one per site
 (one single-site report per site). Unlike <code><a href="ejam2report.html">ejam2report()</a></code>/<code><a href="ejam2map.html">ejam2map()</a></code>, which never
 return a vector, the <code>url_*</code> helpers can; that vector-per-site output is the main
-reason this parameter exists.</p></li>
+reason this parameter exists. Each URL sends only its own site to the API but also
+carries <code>sitenumber=N</code> (that site's row number in the inputs) so the API labels the
+report header "Site N" instead of calling every per-site report Site 1
+(Public-Environmental-Data-Partners/EJAM#348).</p></li>
 <li><p><code>"overall"</code> (or <code>0</code>, <code>NULL</code>, or <code>""</code>) – returns a single URL requesting one
 aggregate <em>multisite</em> report combining all sites (sent to the API as <code>sitenumber=0</code>;
 assumes &gt;1 site was provided).</p></li>
 <li><p><code>N</code> (a number <code>&gt; 0</code>) – returns a single URL for just the Nth site found in the
-inputs (e.g. the 3rd point, fips, or polygon).</p></li>
+inputs (e.g. the 3rd point, fips, or polygon). The URL carries <code>sitenumber=N</code> when
+<code>N &gt; 1</code> (as for "each" above; omitted when N is 1 since Site 1 is the API's default label).</p></li>
 </ul><p>Single-site auto-override: when the inputs resolve to exactly one site (one row of
 sitepoints, one fips code, or one polygon), sitenumber is coerced to <code>1</code> regardless of what
-was requested, so a lone place yields a single-site report URL.</p></dd>
+was requested, so a lone place yields a single-site report URL (with no <code>sitenumber</code>
+parameter in it).</p></dd>
 
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
@@ -214,7 +219,12 @@ note below on unsupported options).</p></li>
 <code>sitenumber = 1</code> requests a single-site report (the API's per-request default when
 none is supplied), and <code>sitenumber = 0</code> (or "overall") produces an aggregate
 <em>multisite</em> report. (Note <code>url_ejamapi()</code>'s own default is <code>sitenumber = "each"</code> –
-see the parameter docs below.) The API leaves the
+see the parameter docs below.) When a URL sends only ONE site to the API but says
+<code>sitenumber=N</code>, N identifies which row that site was in the original multisite
+analysis, so the API can label the report header "Site N" instead of mislabeling
+every per-site report as Site 1
+(Public-Environmental-Data-Partners/EJAM#348) – the per-site URLs this
+function returns carry that. The API leaves the
 report title to <code><a href="ejam2report.html">ejam2report()</a></code>, which uses "EJSCREEN Community Report" for a
 single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
 polygons can exceed URL length for this GET-based path; the API also provides

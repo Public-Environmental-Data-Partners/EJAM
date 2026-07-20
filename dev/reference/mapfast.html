@@ -81,7 +81,8 @@
 <span>  column_names <span class="op">=</span> <span class="st">"all"</span>,</span>
 <span>  labels <span class="op">=</span> <span class="va">column_names</span>,</span>
 <span>  launch_browser <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  color <span class="op">=</span> <span class="st">"#03F"</span></span>
+<span>  color <span class="op">=</span> <span class="st">"#03F"</span>,</span>
+<span>  sitenumber_label <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -128,6 +129,14 @@ Normally the map would be shown in the default RStudio viewer pane.</p></dd>
 
 <dt id="arg-color">color<a class="anchor" aria-label="anchor" href="#arg-color"></a></dt>
 <dd><p>color of circles or polygons</p></dd>
+
+
+<dt id="arg-sitenumber-label">sitenumber_label<a class="anchor" aria-label="anchor" href="#arg-sitenumber-label"></a></dt>
+<dd><p>optional, display-only override (a number or short text) of the
+site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
+Passed to <code><a href="popup_from_ejscreen.html">popup_from_ejscreen()</a></code> (so used only if column_names is "ej"), and only
+relevant when mydf is a single-site (1-row) table – see <code><a href="ejam2report.html">ejam2report()</a></code>, whose
+sitenumber_label parameter this supports.</p></dd>
 
 </dl></div>
     <div class="section level2">
