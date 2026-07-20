@@ -238,9 +238,9 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         filename = NULL,
                         return_html = FALSE,
                         launch_browser = TRUE,
-                        sitenumber_label = NULL, # (name-only, at end to avoid arg shift)
                         shape = NULL,     # alias (synonym) for shp (name-only, at end to avoid arg shift)
-                        shapefile = NULL  # alias (synonym) for shp
+                        shapefile = NULL, # alias (synonym) for shp
+                        sitenumber_label = NULL # display-only (placed after shape/shapefile to avoid positional arg shift)
 ) {
   # Aliases (synonyms) for shp, for naming consistency with ejamit()/ejamapp() etc.
   if (is.null(shp) && !is.null(shape))     {shp <- shape}
