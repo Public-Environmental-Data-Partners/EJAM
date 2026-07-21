@@ -1,17 +1,18 @@
 Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
 Version: 3.2022.1
-ejamdata_required_tag: v3.2022.0
+ejamdata_required_tag: v3.2022.1
 VersionDate: July 2026
 ReleaseDateEJAM: 2026-07-01
 Description: Actively maintained non-EPA version of EJAM, the web app
-    and set of tools that supported the EJSCREEN multisite capability.
+    and set of tools that supports the EJScreen Community Report 
+    and multisite capability.
     EJAM lets you easily summarize demographic and environmental indicators
     for residents in or near a large number of areas or specific sites.
     Sites can be specified in a variety of ways - lat/lon coordinates, 
-    EPA-regulated facility IDs, type of facility (industry), polygons (shapefile), 
-    or Census units FIPS (eg., cities, counties).  Very fast
-    identification of nearby blocks and distances, aggregation of
+    EPA-regulated facility IDs, type of facility (industry), 
+    polygons (shapefile), or Census units FIPS (eg., cities, counties).
+    Very fast identification of nearby blocks and distances, aggregation of
     indicators by site and overall (all sites as a whole), in maps/plots/reports.
     This version grew from a fork of the last version EPA released before it was archived.
 License: MIT + file LICENSE
