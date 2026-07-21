@@ -107,8 +107,10 @@ assert_pdf_report_available <- function() {
 #' - `options(EJAM.pdf_map_snapshot_delay = 2)` or `EJAM_PDF_MAP_SNAPSHOT_DELAY=2`
 #' - `options(EJAM.pdf_print_wait = 4)` or `EJAM_PDF_PRINT_WAIT=4`
 #'
-#' The option wins over the environment variable. Anything missing, non-numeric,
-#' or negative falls back to the default.
+#' The first usable value wins: option, environment variable, then the named
+#' package default in `global_defaults_package.R`. Missing, non-numeric,
+#' non-finite, vector, and negative values are skipped. If none is usable, the
+#' internal safety default is returned.
 #'
 #' @param setting which pause to look up
 #' @return a single non-negative number of seconds
@@ -125,26 +127,34 @@ pdf_wait_seconds <- function(setting = c("map_snapshot", "print")) {
     # was 4; the map was pixel-identical down to 0.2s, so 1s keeps a wide margin
     # over the measured need while still saving ~3s per PDF
     map_snapshot = list(opt = "EJAM.pdf_map_snapshot_delay",
-                        env = "EJAM_PDF_MAP_SNAPSHOT_DELAY", default = 1),
+                        env = "EJAM_PDF_MAP_SNAPSHOT_DELAY",
+                        global = "pdf_map_snapshot_delay", fallback = 1),
     # was 5; the PDF was identical down to 0s, so this returns to pagedown's own
     # default of 2 rather than to some number we invented, saving ~3s per PDF
     print        = list(opt = "EJAM.pdf_print_wait",
-                        env = "EJAM_PDF_PRINT_WAIT",        default = 2)
+                        env = "EJAM_PDF_PRINT_WAIT",
+                        global = "pdf_print_wait", fallback = 2)
   )
 
-  val <- getOption(spec$opt, default = NULL)
-  if (is.null(val)) {
-    envval <- Sys.getenv(spec$env, unset = "")
-    if (nzchar(envval)) {
-      val <- suppressWarnings(as.numeric(envval))
-    }
+  usable_wait <- function(value) {
+    if (is.null(value) || length(value) != 1) {return(NULL)}
+    value <- suppressWarnings(as.numeric(value))
+    if (is.na(value) || !is.finite(value) || value < 0) {return(NULL)}
+    value
   }
-  # ignore anything unusable (missing, non-numeric, NA, infinite, negative)
-  if (is.null(val) || length(val) != 1) {return(spec$default)}
-  val <- suppressWarnings(as.numeric(val))
-  if (is.na(val) || !is.finite(val) || val < 0) {return(spec$default)}
 
-  val
+  option_wait <- usable_wait(getOption(spec$opt, default = NULL))
+  if (!is.null(option_wait)) {return(option_wait)}
+
+  env_wait <- usable_wait(Sys.getenv(spec$env, unset = ""))
+  if (!is.null(env_wait)) {return(env_wait)}
+
+  package_wait <- usable_wait(
+    tryCatch(global_or_param(spec$global), error = function(e) NULL)
+  )
+  if (!is.null(package_wait)) {return(package_wait)}
+
+  spec$fallback
 }
 ################################################## #
 

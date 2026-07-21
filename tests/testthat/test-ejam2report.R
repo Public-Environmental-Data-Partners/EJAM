@@ -404,6 +404,32 @@ testthat::test_that("pdf_wait_seconds() returns the trimmed defaults", {
   })
 })
 
+testthat::test_that("PDF waits have named package defaults", {
+
+  expect_equal(global_or_param("pdf_map_snapshot_delay"), 1)
+  expect_equal(global_or_param("pdf_print_wait"), 2)
+})
+
+testthat::test_that("pdf_wait_seconds() uses package defaults after option and environment", {
+
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      switch(vname,
+             pdf_map_snapshot_delay = 1.25,
+             pdf_print_wait = 2.25)
+    },
+    .package = "EJAM"
+  )
+  withr::with_options(list(EJAM.pdf_map_snapshot_delay = NULL,
+                           EJAM.pdf_print_wait = NULL), {
+    withr::with_envvar(list(EJAM_PDF_MAP_SNAPSHOT_DELAY = NA,
+                            EJAM_PDF_PRINT_WAIT = NA), {
+      expect_equal(EJAM:::pdf_wait_seconds("map_snapshot"), 1.25)
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 2.25)
+    })
+  })
+})
+
 testthat::test_that("pdf_wait_seconds() can be raised via an R option", {
 
   withr::with_options(list(EJAM.pdf_map_snapshot_delay = 6, EJAM.pdf_print_wait = 7), {
@@ -429,6 +455,28 @@ testthat::test_that("pdf_wait_seconds() option beats environment variable", {
   withr::with_options(list(EJAM.pdf_print_wait = 9), {
     withr::with_envvar(list(EJAM_PDF_PRINT_WAIT = "3"), {
       expect_equal(EJAM:::pdf_wait_seconds("print"), 9)
+    })
+  })
+})
+
+testthat::test_that("pdf_wait_seconds() skips unusable higher-precedence values", {
+
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      switch(vname,
+             pdf_map_snapshot_delay = 1.25,
+             pdf_print_wait = 2.25)
+    },
+    .package = "EJAM"
+  )
+  withr::with_options(list(EJAM.pdf_print_wait = "junk"), {
+    withr::with_envvar(list(EJAM_PDF_PRINT_WAIT = "3.5"), {
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 3.5)
+    })
+  })
+  withr::with_options(list(EJAM.pdf_print_wait = NULL), {
+    withr::with_envvar(list(EJAM_PDF_PRINT_WAIT = "junk"), {
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 2.25)
     })
   })
 })

@@ -51,8 +51,10 @@ environment variable, the latter being what a container can set:
 \item \code{options(EJAM.pdf_print_wait = 4)} or \code{EJAM_PDF_PRINT_WAIT=4}
 }
 
-The option wins over the environment variable. Anything missing, non-numeric,
-or negative falls back to the default.
+The first usable value wins: option, environment variable, then the named
+package default in \code{global_defaults_package.R}. Missing, non-numeric,
+non-finite, vector, and negative values are skipped. If none is usable, the
+internal safety default is returned.
 }
 }
 \seealso{
