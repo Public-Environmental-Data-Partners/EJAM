@@ -38,9 +38,9 @@ ejam2report(
   filename = NULL,
   return_html = FALSE,
   launch_browser = TRUE,
-  sitenumber_label = NULL,
   shape = NULL,
-  shapefile = NULL
+  shapefile = NULL,
+  sitenumber_label = NULL
 )
 }
 \arguments{
@@ -122,6 +122,10 @@ PDF output is required when this option is selected; it is not optional.}
 
 \item{launch_browser}{set TRUE to have it launch browser and show report.}
 
+\item{shape}{alias (synonym) for shp}
+
+\item{shapefile}{alias (synonym) for shp}
+
 \item{sitenumber_label}{optional, display-only override (a number or short text) of the site
 identifier shown in the 1-site report header and in the report map's marker popup,
 in place of the \code{sitenumber} row index.
@@ -131,10 +135,6 @@ re-analyzed alone -- e.g., the EJAM API per-site report links made by \code{\lin
 re-analyze a single site that was row N of the original multisite results, so its row
 index in the regenerated results (1) is not the site number the user expects to see.
 A number N is shown as "Site N"; text is shown as-is. Ignored for a multisite report.}
-
-\item{shape}{alias (synonym) for shp}
-
-\item{shapefile}{alias (synonym) for shp}
 }
 \value{
 URL of temp file or object depending on return_html,
