@@ -474,11 +474,6 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     }
     output_file      <- temp_comm_report
 
-    if (return_html) {
-      temp_comm_report_or_null <- NULL
-    } else {
-      temp_comm_report_or_null <- temp_comm_report
-    }
     ####################################################### #
 
     # ASSEMBLE REPORT  ####
@@ -506,7 +501,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       extratable_hide_missing_rows_for = extratable_hide_missing_rows_for,
 
       in_shiny = FALSE,
-      filename = temp_comm_report_or_null  # passing NULL should make it return the html object
+      filename = NULL  # always return the html object; file writing is done by rmarkdown::render()
     )
 
     ## seems like using cat() was a simpler approach tried initially: ***
