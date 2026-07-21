@@ -86,7 +86,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
   # sitenumber (overall vs 1-site) ####
 
   if (all(is.na(sitenumber)) || is.null(sitenumber) || length(sitenumber) == 0 || length(sitenumber) > 1 ||
-      all(sitenumber %in% "") || all(sitenumber %in% "overall") || all(sitenumber < 0)) {
+      all(sitenumber %in% "") || all(sitenumber %in% "overall") || all(sitenumber <= 0)) {
     sitenumber <- -1
   }
   sitenumber <- as.numeric(sitenumber)
