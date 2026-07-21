@@ -42,7 +42,7 @@ or the URL based on a redirect from the aliases at
 }}
 
 \item{docs_version}{optional, only used when type = "docs". A docs subpath such as
-"dev", "v3.2024.0", "v3.2023.0", or "v3.2022.0" to append to the canonical root
+"dev", "v3.2024.0", or "v3.2022.2" to append to the canonical root
 docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
 \code{EJAM_DOCS_BASE_URL} is set (as the pkgdown CI workflow does while building a
 given version), that value overrides everything so rendered Rd/Rmd links stay

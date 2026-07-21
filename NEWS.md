@@ -1,7 +1,13 @@
+# EJAM 3.2022.2 (August 2026)
+
+Patch release to address some bugs and improve the EJAM API.
+
+
+
 # EJAM 3.2022.1 (July 2026)
 
-Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1,
-v3.2024.1). Functionality is identical across all three ACS vintages
+Patch release for the v3.YYYY.x annual-vintage line (v3.2022.x, v3.2023.x,
+v3.2024.x). Functionality is identical across all three ACS vintages
 (2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between
 branches. This is a code-and-docs patch: it reuses the existing per-vintage
 ejamdata release, with no change to the packaged ACS or environmental data.
