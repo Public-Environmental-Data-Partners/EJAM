@@ -106,7 +106,7 @@ test_that("ejam2map() works fips not given shp", {
 })
 ############################################## #
 
-test_that("ejam2map() works fips sitenumber=2", {
+test_that("ejam2map() works latlon sitenumber=2", {
   expect_no_error({
     suppressWarnings({
       x = ejam2map(testoutput_ejamit_10pts_1miles,
@@ -116,6 +116,25 @@ test_that("ejam2map() works fips sitenumber=2", {
     })
   })
   expect_true("leaflet" %in% class(x))
+
+})
+################################################################################ ############# #
+test_that("ejam2map() works fips given shp, sitenumber=2", {
+  expect_no_error({
+    suppressWarnings({
+      x = ejam2map(testoutput_ejamit_fips_counties,
+                   shp = shapes_from_fips(testinput_fips_counties),
+                   sitenumber = 2,
+                   launch_browser = F
+      )
+    })
+  })
+  expect_true("leaflet" %in% class(x))
+
+  expect_no_error(
+    popups <- map2popups(x)
+  )
+  expect_equal(length(popups), 1)
 
 })
 ################################################################################ ############# #

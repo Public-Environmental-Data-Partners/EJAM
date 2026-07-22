@@ -17,7 +17,13 @@
 #' @param radius optional radius in miles
 #' @param buffer alias (synonym) for radius
 #'
-#' @param sitenumber as used in [ejam2report()]
+#' @param sitenumber Optional integer. If a valid positive integer is provided,
+#'   only that one site (row `sitenumber` of `ejamitout$results_bysite`) is
+#'   mapped. If omitted, NULL, negative, or out of range, all sites are mapped.
+#'   Works for all site types (latlon, fips, shp): when `sitetype` is "fips"
+#'   and `shp` is provided, both the results table and `shp` are subsetted to
+#'   the requested row; when `shp` is not provided, the FIPS polygon is
+#'   downloaded for only that one site.
 #'
 #' @return like what [mapfastej()] returns
 #' @examples
@@ -105,7 +111,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
   } else {
 
     ejamitout$results_bysite <- ejamitout$results_bysite[sitenumber, ]
-    if (sitetype %in% "shp" && !is.null(shp)) {
+    if (sitetype %in% c("shp", "fips") && !is.null(shp)) {
       shp <- shp[sitenumber, ]
     }
   }
