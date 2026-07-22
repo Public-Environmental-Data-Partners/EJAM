@@ -16,15 +16,15 @@ build_barplot_report(
 )
 }
 \arguments{
-\item{analysis_title, }{title to use in header of report}
+\item{analysis_title}{title to use in header of report}
 
-\item{totalpop, }{total population included in location(s) analyzed}
+\item{totalpop}{total population included in location(s) analyzed}
 
-\item{locationstr, }{description of the location(s) analyzed}
+\item{locationstr}{description of the location(s) analyzed}
 
-\item{in_shiny, }{whether the function is being called in or outside of shiny - affects location of header}
+\item{in_shiny}{whether the function is being called in or outside of shiny - affects location of header}
 
-\item{filename, }{optional path to an .html file; if provided, the HTML content
+\item{filename}{optional path to an .html file; if provided, the HTML content
 is also written to that file. The HTML is returned either way.}
 
 \item{report_title}{generic name of this type of report, to be shown at top, like "EJAM Multisite Report"}

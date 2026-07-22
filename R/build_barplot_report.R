@@ -8,12 +8,12 @@
 #' see [ejam2report()] which relies on [build_community_report()]
 #'
 #'
-#' @param analysis_title, title to use in header of report
-#' @param totalpop, total population included in location(s) analyzed
-#' @param locationstr, description of the location(s) analyzed
+#' @param analysis_title title to use in header of report
+#' @param totalpop total population included in location(s) analyzed
+#' @param locationstr description of the location(s) analyzed
 #'
-#' @param in_shiny, whether the function is being called in or outside of shiny - affects location of header
-#' @param filename, optional path to an .html file; if provided, the HTML content
+#' @param in_shiny whether the function is being called in or outside of shiny - affects location of header
+#' @param filename optional path to an .html file; if provided, the HTML content
 #'   is also written to that file. The HTML is returned either way.
 #' @param report_title generic name of this type of report, to be shown at top, like "EJAM Multisite Report"
 #' @param logo_path optional relative path to a logo for the upper right of the overall header.
