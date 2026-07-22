@@ -66,6 +66,97 @@ assert_pdf_report_available <- function() {
   invisible(TRUE)
 }
 ################################################## #
+# helper
+
+#' How long to pause while making a PDF report, in seconds
+#'
+#' @description Returns the pause used while snapshotting the report map
+#'   (`"map_snapshot"`, passed to [webshot2::webshot()] as `delay`) or while
+#'   converting the report to PDF (`"print"`, passed to [pagedown::chrome_print()]
+#'   as `wait`).
+#'
+#' @details
+#' ## Why these pauses exist, and why they are configurable
+#'
+#' Both are *unconditional* pauses, not timeouts -- `pagedown:::print_page()`
+#' literally calls `Sys.sleep(wait)`, and webshot's `delay` is time slept before
+#' the screenshot is taken. So whatever they are set to is paid on **every** PDF,
+#' whether or not it was needed. They used to be 4 and 5 seconds, i.e. ~9 seconds
+#' of guaranteed sleeping per PDF report.
+#'
+#' They are not pointless, though. The tool underneath each one waits for the
+#' page load event, but content that arrives *after* load -- leaflet basemap
+#' tiles fetched over the network, JavaScript-drawn content -- is not covered by
+#' that. If the pause is too short, the failure is silent: webshot still writes a
+#' valid PNG and chrome_print still writes a valid PDF, just with a blank basemap
+#' or missing content, and nothing errors. There is no automated check that would
+#' catch it.
+#'
+#' Measured on a developer laptop, the report map was pixel-identical at every
+#' delay from 0.2 to 4 seconds, and the PDF was identical (same page count, text
+#' and size) at every wait from 0 to 5 seconds -- so on that machine both pauses
+#' were pure overhead. The defaults here are trimmed but deliberately not cut to
+#' the measured minimum, because a laptop with a warm tile cache is not the
+#' Cloud Run container: the container has slower CPU and a colder network, which
+#' is exactly the case where a too-short pause would silently degrade output.
+#'
+#' The values are settable so a too-short default can be raised, or a change
+#' rolled back, **without rebuilding and redeploying** -- via an R option or an
+#' environment variable, the latter being what a container can set:
+#'
+#' - `options(EJAM.pdf_map_snapshot_delay = 2)` or `EJAM_PDF_MAP_SNAPSHOT_DELAY=2`
+#' - `options(EJAM.pdf_print_wait = 4)` or `EJAM_PDF_PRINT_WAIT=4`
+#'
+#' The first usable value wins: option, environment variable, then the named
+#' package default in `global_defaults_package.R`. Missing, non-numeric,
+#' non-finite, vector, and negative values are skipped. If none is usable, the
+#' internal safety default is returned.
+#'
+#' @param setting which pause to look up
+#' @return a single non-negative number of seconds
+#' @seealso [ejam2report()]
+#'
+#' @keywords internal
+#'
+pdf_wait_seconds <- function(setting = c("map_snapshot", "print")) {
+
+  setting <- match.arg(setting)
+
+  spec <- switch(
+    setting,
+    # was 4; the map was pixel-identical down to 0.2s, so 1s keeps a wide margin
+    # over the measured need while still saving ~3s per PDF
+    map_snapshot = list(opt = "EJAM.pdf_map_snapshot_delay",
+                        env = "EJAM_PDF_MAP_SNAPSHOT_DELAY",
+                        global = "pdf_map_snapshot_delay", fallback = 1),
+    # was 5; the PDF was identical down to 0s, so this returns to pagedown's own
+    # default of 2 rather than to some number we invented, saving ~3s per PDF
+    print        = list(opt = "EJAM.pdf_print_wait",
+                        env = "EJAM_PDF_PRINT_WAIT",
+                        global = "pdf_print_wait", fallback = 2)
+  )
+
+  usable_wait <- function(value) {
+    if (is.null(value) || !is.atomic(value) || length(value) != 1) {return(NULL)}
+    value <- suppressWarnings(as.numeric(value))
+    if (is.na(value) || !is.finite(value) || value < 0) {return(NULL)}
+    value
+  }
+
+  option_wait <- usable_wait(getOption(spec$opt, default = NULL))
+  if (!is.null(option_wait)) {return(option_wait)}
+
+  env_wait <- usable_wait(Sys.getenv(spec$env, unset = ""))
+  if (!is.null(env_wait)) {return(env_wait)}
+
+  package_wait <- usable_wait(
+    tryCatch(global_or_param(spec$global), error = function(e) NULL)
+  )
+  if (!is.null(package_wait)) {return(package_wait)}
+
+  spec$fallback
+}
+################################################## #
 
 # helper
 
@@ -717,8 +808,11 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
             map_png          <- tempfile(fileext = ".png")
             htmlwidgets::saveWidget(report_params$map, file = map_widget_html,
                                     selfcontained = TRUE)
+            # delay is an unconditional pause covering content that arrives after
+            # the page load event (mainly leaflet basemap tiles) -- see pdf_wait_seconds()
             webshot2::webshot(map_widget_html, file = map_png,
-                              delay = 4, vwidth = 900, vheight = 500)
+                              delay = pdf_wait_seconds("map_snapshot"),
+                              vwidth = 900, vheight = 500)
             if (file.exists(map_png)) map_png else NULL
           }, error = function(e) {
             message("Could not capture static map snapshot for PDF: ",
@@ -753,7 +847,9 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
             input = rendered_path,
             output = output_file,
             options = list(printBackground = TRUE),
-            wait = 5, timeout = 120, verbose = 0),
+            # wait is an unconditional Sys.sleep() inside pagedown, paid on every
+            # PDF whether needed or not -- see pdf_wait_seconds()
+            wait = pdf_wait_seconds("print"), timeout = 120, verbose = 0),
           error = function(e) {
             stop(paste0("chrome_print failed: ", conditionMessage(e)), call. = FALSE)
           }
