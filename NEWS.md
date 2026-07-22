@@ -1,32 +1,33 @@
 # EJAM 3.2022.2 (August 2026)
 
-Patch release for the v3.YYYY.x annual-vintage line (v3.2022.x, v3.2023.x,
-v3.2024.x): fixes to report generation and the EJScreen/API integration, plus
-faster and more reliable report rendering. This is a code-and-docs patch that
-reuses the `ejamdata` v3.2022.1 release, with no change to the packaged ACS or
-environmental data.
+Faster and more reliable report rendering, and
+fixes to report generation and the EJScreen/API integration.
+This is a patch release for the v3.YYYY.x annual-vintage line 
+(v3.2022.x, v3.2023.x, v3.2024.x). 
+This release just reuses the `ejamdata` v3.2022.1 release datasets, 
+with no change to packaged ACS or environmental data.
 
 ## Bug Fixes
 
-- **App crash on the EJScreen "Send to EJAM" handoff** (#465): every FIPS
+- **App crash on the EJScreen "Send to EJAM" handoff** (#465 fixed by #466): every FIPS
   (County/Tract) and drawn-polygon handoff, and any lat/lon selection made
   without a buffer, killed the Shiny session. The API serializes absent payload
   fields as JSON `{}`, which `jsonlite::fromJSON()` parses as a zero-length list
   rather than `NULL`; those are now normalized to `NULL` and length-checked.
 
-- **Saved reports were empty when `filename` was given** (#471, #475):
+- **Saved reports were empty when `filename` was given** (#385 fixed by #471, #475):
   `build_community_report()` and `build_barplot_report()` had an unfinished
   `filename` branch that wrote no file and returned mangled content. They now
   write the file and return the HTML visibly, and `ejam2report()` accepts a much
   wider range of `filename` / `fileextension` values (bare names, `./` and
   multi-folder paths, uppercase or missing extensions, missing folders).
 
-- **Reports failed or were wrong for zero-population sites** (#467):
+- **Reports failed or were wrong for zero-population sites** (#467 fixed by #468):
   `ejamit()` and `ejam2report()` now handle sites with no residents (open-water
   block groups, industrial parcels) instead of erroring or silently returning
   incorrect summary statistics.
 
-- **API per-site report links were all labeled "Site 1"** (#348):
+- **API per-site report links were all labeled "Site 1"** (#348 fixed by #470):
   `url_ejamapi()` now sends `sitenumber=N` with each per-site link and the
   bundled `GET /report` honors it, so a link for row N produces a report that
   says "Site N". New `ejam2report(sitenumber_label = )` sets that label
@@ -34,21 +35,22 @@ environmental data.
   honors it. `ejam2map()` no longer errors on the aggregate `sitenumber = 0`
   case.
 
-- **`acs_bybg(year = 2024)` wrongly errored** (#391): the year gate used
+- **`acs_bybg(year = 2024)` wrongly errored** (#391 fixed by #392 etc.): the year gate used
   tidycensus's own default year, which can lag more than a year behind what the
   Census Bureau publishes. It now gates on the latest published ACS end year via
   the new internal `acs_check_year_available()`.
 
 ## Improvements
 
-- **PDF reports are about 7 seconds (~46%) faster** (#473): the two
-  unconditional render pauses were trimmed (report-map snapshot 4s -> 1s,
+- **All PDF reports are about 7 seconds (~46%) faster** (#473 helps with #293): 
+  the two unconditional render pauses were trimmed (report-map snapshot 4s -> 1s,
   print-to-PDF 5s -> 2s), and both are now settable without a rebuild -- via the
   `EJAM.pdf_map_snapshot_delay` / `EJAM.pdf_print_wait` options or the matching
   `EJAM_PDF_MAP_SNAPSHOT_DELAY` / `EJAM_PDF_PRINT_WAIT` environment variables --
   as a rollback lever should a too-short pause ever degrade output on a server.
 
-- **County boundaries are now built into the package** (#472, part of #446): the
+- **County reports are faster as boundaries are now built into the package** 
+  (#472, part of #446 and helps with #293): the
   new `counties_shapefile` dataset (Census cartographic boundaries, 1:500k)
   replaces a download at render time, so County maps and reports are faster and
   need no Census API key and no boundary-service network call (Puerto Rico
@@ -64,7 +66,8 @@ environmental data.
 
 ## Internal / Packaging
 
-- The `ejamdata` dependency reference is now v3.2022.1 (was v3.2022.0), and
+- The `ejamdata` dependency reference is now v3.2022.1 (was v3.2022.0,
+  and no v3.2022.2 needed since no change in datasets), and
   several hardcoded version strings were removed from the documentation and
   vignettes.
 
