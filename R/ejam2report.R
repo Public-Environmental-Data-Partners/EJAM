@@ -343,6 +343,18 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 ) {
   fileextensions_implemented <- c(".html", ".pdf")
   if (length(filename) > 1) {warning("ignoring filename parameter since its length > 1; using a default filename in tempdir()")}
+  # Coerce fileextension to a usable length-1 string so NULL/NA/empty/vector/non-character
+  # inputs (e.g. an unset global default passed through) fall back to the html default
+  # instead of erroring in length-sensitive checks further below
+  fileextension_specified <- !missing(fileextension) && is.character(fileextension) &&
+    length(fileextension) >= 1 && !is.na(fileextension[1]) && nzchar(fileextension[1])
+  if (length(fileextension) > 1) {
+    warning("fileextension should be a single value - using the first one")
+    fileextension <- fileextension[1]
+  }
+  if (!fileextension_specified) {
+    fileextension <- "html"
+  }
   # Aliases (synonyms) for shp, for naming consistency with ejamit()/ejamapp() etc.
   if (is.null(shp) && !is.null(shape))     {shp <- shape}
   if (is.null(shp) && !is.null(shapefile)) {shp <- shapefile}
@@ -559,7 +571,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
             tolower(paste0(".", specified_fname_ext)) %in% tolower(fileextensions_implemented)) {
           # a valid extension was provided as part of filename, so use it not the default or specified fileextension param.
           # But could  check if it matches the specified fileextension param, and warn if not.
-          if (!missing(fileextension) &&
+          if (fileextension_specified &&
               tolower(paste0(".", specified_fname_ext)) != paste0(".", gsub("^\\.", "", tolower(fileextension)))) {
             warning("The provided filename has an extension that does not match the specified fileextension parameter. Using the filename extension.")
           }

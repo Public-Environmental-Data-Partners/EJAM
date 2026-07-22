@@ -418,6 +418,29 @@ test_that("ejam2report() writes actual report content when filename is provided"
   expect_match(html, "CONTENT MARKER PR 471", fixed = TRUE)
 })
 
+test_that("ejam2report tolerates NULL, empty, or vector fileextension by falling back to html", {
+  buffer_state <- new.env(parent = emptyenv())
+  buffer_state$radii <- numeric()
+  local_ejam2report_fips_mocks(buffer_state)
+
+  expect_no_error(
+    ejam2report(fips_report_test_output(radius = 1), report_title = "Report",
+                analysis_title = "Analysis", return_html = TRUE, launch_browser = FALSE,
+                fileextension = NULL)
+  )
+  expect_no_error(
+    ejam2report(fips_report_test_output(radius = 1), report_title = "Report",
+                analysis_title = "Analysis", return_html = TRUE, launch_browser = FALSE,
+                fileextension = character(0))
+  )
+  expect_warning(
+    ejam2report(fips_report_test_output(radius = 1), report_title = "Report",
+                analysis_title = "Analysis", return_html = TRUE, launch_browser = FALSE,
+                fileextension = c("html", "pdf")),
+    "single value"
+  )
+})
+
 
 ### more tests/ checks of ejam2report() function, for checking various cases, locally
 ### not as unit tests, since paths are not generic
