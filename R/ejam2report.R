@@ -137,7 +137,7 @@ pdf_wait_seconds <- function(setting = c("map_snapshot", "print")) {
   )
 
   usable_wait <- function(value) {
-    if (is.null(value) || length(value) != 1) {return(NULL)}
+    if (is.null(value) || !is.atomic(value) || length(value) != 1) {return(NULL)}
     value <- suppressWarnings(as.numeric(value))
     if (is.na(value) || !is.finite(value) || value < 0) {return(NULL)}
     value

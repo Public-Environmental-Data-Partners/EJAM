@@ -484,7 +484,7 @@ testthat::test_that("pdf_wait_seconds() skips unusable higher-precedence values"
 testthat::test_that("pdf_wait_seconds() falls back to the default for unusable values", {
 
   # a bad value must not become a 0-second wait (silently degrading output) nor an error
-  for (bad in list("not a number", "", NA, NULL, -1, c(1, 2), Inf)) {
+  for (bad in list("not a number", "", NA, NULL, -1, c(1, 2), Inf, list("junk"))) {
     withr::with_options(list(EJAM.pdf_print_wait = bad), {
       val <- EJAM:::pdf_wait_seconds("print")
       expect_true({is.numeric(val) && length(val) == 1 && is.finite(val) && val >= 0})
