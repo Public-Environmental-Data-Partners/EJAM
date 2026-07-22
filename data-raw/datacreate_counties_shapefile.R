@@ -3,8 +3,7 @@
 
   # help("counties_shapefile")
 
-# stop("must be in local source package EJAM/data-raw folder when running this script")
-# setwd("~/../../R/mysource/EJAM/data-raw")
+# Run from the local source package root (paths below are relative to it).
 
 td = tempdir()
 td = file.path(td, "countyshp")
@@ -13,12 +12,17 @@ if (!dir.exists(td)) {stop('failed to create temp subfolder /countyshp')}
 
 # browseURL("https://www2.census.gov/geo/tiger/Directory_Contents_ReadMe.pdf")
 
-## based on what is probably in the EJScreen package:
-# yr = acs_endyear(guess_always = T); print(yr)
-## or latest published:
-yr = acs_endyear(guess_census_has_published = T); print(yr)
+## The vintage MUST match what the runtime download path requests, which is
+## acs_endyear() -- see shapes_counties_from_countyfips(), where the county
+## branch uses acs_endyear_carto_tiger = acs_endyear(). If this script instead
+## baked in the latest published vintage, use_local = TRUE would serve
+## different geometries than use_local = FALSE downloads, breaking the
+## "changes where the boundaries come from, not which boundaries they are"
+## contract (flagged in review of PR #472). Do NOT use
+## acs_endyear(guess_census_has_published = T) here.
+yr = acs_endyear(); print(yr)
 
-cat("CONFIRM YEAR SHOULD BE ", yr, '\n')
+cat("CONFIRM YEAR SHOULD BE ", yr, " (must equal acs_endyear(), the runtime download vintage)", '\n')
 
 # See notes in datacreate_states_shapefile.R about which vintage of Census
 # geography goes with which ACS release -- the same rule applies here:
@@ -61,7 +65,7 @@ unzip(
   exdir = td
 )
 
-counties_shapefile <- sf::st_read(td)
+counties_shapefile <- sf::st_read(file.path(td, shpname))
 
 ################################################################### #
 ## sanity checks

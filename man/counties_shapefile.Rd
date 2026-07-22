@@ -35,7 +35,7 @@ the island areas.
 It is created by the package via a script at EJAM/data-raw/datacreate_counties_shapefile.R
 which downloads the data from the Census Bureau.
 
-Source: https://www2.census.gov/geo/tiger/GENZ2024/shp/cb_2024_us_county_500k.zip
+Source: https://www2.census.gov/geo/tiger/GENZ2022/shp/cb_2022_us_county_500k.zip
 }
 \seealso{
 seealso \code{\link[=shapes_from_fips]{shapes_from_fips()}} \link{states_shapefile}

@@ -357,6 +357,18 @@ testthat::test_that("built-in county bounds match what downloading returns", {
   # every non-geometry column should be identical no matter where bounds came from
   expect_equal(sf::st_drop_geometry(local_shp), sf::st_drop_geometry(dl_shp),
                ignore_attr = TRUE)
+  # ... and so should the GEOMETRIES: both paths must serve the same cartographic
+  # vintage (acs_endyear()), or use_local changes *which* boundaries are served,
+  # not just where they come from (review finding on PR #472)
+  expect_equal(sf::st_coordinates(local_shp), sf::st_coordinates(dl_shp))
+})
+
+testthat::test_that("built-in county bounds vintage matches the runtime download vintage", {
+  # offline guard for the same contract as above: the dataset must be generated
+  # from the same cartographic vintage the download path requests (acs_endyear());
+  # regenerate via data-raw/datacreate_counties_shapefile.R if this ever fails
+  expect_true(grepl(paste0("GENZ", acs_endyear()),
+                    attr(counties_shapefile, "source_url"), fixed = TRUE))
 })
 
 testthat::test_that("county bounds work with no CENSUS_API_KEY (as on the API server)", {
