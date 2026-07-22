@@ -77,22 +77,25 @@ test_that("local logo_html image sources are embedded for standalone reports", {
   expect_false(grepl(logo_path, normalized_logo, fixed = TRUE))
 })
 
-test_that("ejam2report() returns an absolute path when filename has no directory or uses './'", {
+test_that("ejam2report() routes a bare filename to tempdir() and a './' filename to the working dir", {
   skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
 
-  tmpdir <- tempdir()
-  outfile_bare   <- file.path(tmpdir, "bare_filename_test.html")
-  outfile_dotslash <- file.path(tmpdir, "dotslash_filename_test.html")
+  # work from a SUBFOLDER of tempdir() so the test can tell apart
+  # "saved in tempdir()" (bare name) from "saved in working dir" ("./" name)
+  workdir <- file.path(tempdir(), "wd_for_filename_routing_test")
+  dir.create(workdir, showWarnings = FALSE)
+  outfile_bare     <- file.path(tempdir(), "bare_filename_test.html")
+  outfile_dotslash <- file.path(workdir, "dotslash_filename_test.html")
   on.exit({
     unlink(outfile_bare)
-    unlink(outfile_dotslash)
+    unlink(workdir, recursive = TRUE)
   }, add = TRUE)
 
   oldwd <- getwd()
   on.exit(setwd(oldwd), add = TRUE)
-  setwd(tmpdir)
+  setwd(workdir)
 
-  # filename with no directory component (just a bare name)
+  # filename with no directory component (just a bare name) is saved in tempdir()
   result_bare <- ejam2report(
     ejamitout = testoutput_ejamit_10pts_1miles,
     filename = "bare_filename_test.html",
@@ -103,8 +106,10 @@ test_that("ejam2report() returns an absolute path when filename has no directory
   expect_false(is.na(result_bare))
   # The returned path must be absolute (not relative)
   expect_true(startsWith(result_bare, "/") || grepl("^[A-Za-z]:", result_bare))
+  expect_true(file.exists(outfile_bare))                                       # went to tempdir()
+  expect_false(file.exists(file.path(workdir, "bare_filename_test.html")))     # not to the working dir
 
-  # filename using "./" prefix
+  # filename using "./" prefix is saved in the working dir, with the name unmangled
   result_dotslash <- ejam2report(
     ejamitout = testoutput_ejamit_10pts_1miles,
     filename = "./dotslash_filename_test.html",
@@ -114,6 +119,10 @@ test_that("ejam2report() returns an absolute path when filename has no directory
   expect_true(file.exists(result_dotslash))
   expect_false(is.na(result_dotslash))
   expect_true(startsWith(result_dotslash, "/") || grepl("^[A-Za-z]:", result_dotslash))
+  expect_identical(basename(result_dotslash), "dotslash_filename_test.html")   # no "._" mangling
+  expect_true(file.exists(outfile_dotslash))                                   # went to the working dir
+  expect_false(file.exists(file.path(tempdir(), "dotslash_filename_test.html")))
+  expect_false(file.exists(file.path(tempdir(), "._dotslash_filename_test.html")))
 })
 
 fips_report_test_output <- function(radius,
@@ -389,3 +398,240 @@ test_that("ejam2report passes sitenumber_label through to the report header help
   expect_equal(seen$label, 7)
   expect_equal(seen$maplabel, 7)
 })
+
+
+########################### #
+
+# TESTS OF filename and fileextension handling ####
+
+test_that("ejam2report() writes actual report content when filename is provided", {
+  skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
+  outfile <- file.path(tempdir(), "content_check_471.html")
+  on.exit(unlink(outfile), add = TRUE)
+  result <- ejam2report(
+    ejamitout = testoutput_ejamit_10pts_1miles,
+    analysis_title = "CONTENT MARKER PR 471",
+    filename = outfile, launch_browser = FALSE
+  )
+  expect_true(file.exists(result))
+  html <- paste(readLines(result, warn = FALSE), collapse = "\n")
+  expect_match(html, "CONTENT MARKER PR 471", fixed = TRUE)
+})
+
+test_that("ejam2report tolerates NULL, empty, or vector fileextension by falling back to html", {
+  buffer_state <- new.env(parent = emptyenv())
+  buffer_state$radii <- numeric()
+  local_ejam2report_fips_mocks(buffer_state)
+
+  expect_no_error(
+    ejam2report(fips_report_test_output(radius = 1), report_title = "Report",
+                analysis_title = "Analysis", return_html = TRUE, launch_browser = FALSE,
+                fileextension = NULL)
+  )
+  expect_no_error(
+    ejam2report(fips_report_test_output(radius = 1), report_title = "Report",
+                analysis_title = "Analysis", return_html = TRUE, launch_browser = FALSE,
+                fileextension = character(0))
+  )
+  expect_warning(
+    ejam2report(fips_report_test_output(radius = 1), report_title = "Report",
+                analysis_title = "Analysis", return_html = TRUE, launch_browser = FALSE,
+                fileextension = c("html", "pdf")),
+    "single value"
+  )
+})
+
+
+### more tests/ checks of ejam2report() function, for checking various cases, locally
+### not as unit tests, since paths are not generic
+
+if (FALSE) {
+
+  out = testoutput_ejamit_10pts_1miles
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "defaults")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename.html_only", filename = "test.html")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename.pdf_only", filename = "test.pdf")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename.pdf_but_fileextension=.html", filename = "test.pdf", fileextension = ".html")
+  file.exists(x)
+
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename 1 word only, no path no extension", filename = "testword") # interprets as file name
+  file.exists(x)
+  pause(2)       # without pause, it cannot show up in browser before it is deleted.
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename empty", filename = "")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename . only", filename = ".")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename .. only", filename = "..")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename .. slash blah only", filename = "../blah")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  # handle slash in title which becomes part of filename?
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder ./inst only", filename = "./inst")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder dot slash inst only", filename = "./inst")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder squiggle slash Downloads only", filename = "~/Downloads")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder ~/Downloads/ only", filename = "~/Downloads/")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder ~/Downloads/ only", filename = "~/Downloads/test1")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "full path with filename.html", filename = "~/Downloads/test2.html")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "path ends with badpathword only", filename = "~/Downloads/badpathword") # interprets as file name
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "full path with filename no extension", filename = "~/Downloads/testword") # interprets as file name
+  file.exists(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename is vector", filename = c("a","b"))
+  x
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename is NULL", filename = NULL)
+  x
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+}
+
+################ ################# ################# ################# ################# #
+
+# pdf_wait_seconds() - configurable pauses used while making a PDF report ####
+
+testthat::test_that("pdf_wait_seconds() returns the trimmed defaults", {
+
+  withr::with_options(list(EJAM.pdf_map_snapshot_delay = NULL, EJAM.pdf_print_wait = NULL), {
+    withr::with_envvar(list(EJAM_PDF_MAP_SNAPSHOT_DELAY = NA, EJAM_PDF_PRINT_WAIT = NA), {
+      expect_equal(EJAM:::pdf_wait_seconds("map_snapshot"), 1)
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 2)
+    })
+  })
+})
+
+testthat::test_that("PDF waits have named package defaults", {
+
+  expect_equal(global_or_param("pdf_map_snapshot_delay"), 1)
+  expect_equal(global_or_param("pdf_print_wait"), 2)
+})
+
+testthat::test_that("pdf_wait_seconds() uses package defaults after option and environment", {
+
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      switch(vname,
+             pdf_map_snapshot_delay = 1.25,
+             pdf_print_wait = 2.25)
+    },
+    .package = "EJAM"
+  )
+  withr::with_options(list(EJAM.pdf_map_snapshot_delay = NULL,
+                           EJAM.pdf_print_wait = NULL), {
+    withr::with_envvar(list(EJAM_PDF_MAP_SNAPSHOT_DELAY = NA,
+                            EJAM_PDF_PRINT_WAIT = NA), {
+      expect_equal(EJAM:::pdf_wait_seconds("map_snapshot"), 1.25)
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 2.25)
+    })
+  })
+})
+
+testthat::test_that("pdf_wait_seconds() can be raised via an R option", {
+
+  withr::with_options(list(EJAM.pdf_map_snapshot_delay = 6, EJAM.pdf_print_wait = 7), {
+    expect_equal(EJAM:::pdf_wait_seconds("map_snapshot"), 6)
+    expect_equal(EJAM:::pdf_wait_seconds("print"), 7)
+  })
+})
+
+testthat::test_that("pdf_wait_seconds() can be raised via an environment variable", {
+
+  # this is the one that matters on the API server, where a container can set an
+  # env var but cannot easily be rebuilt just to change a number
+  withr::with_options(list(EJAM.pdf_map_snapshot_delay = NULL, EJAM.pdf_print_wait = NULL), {
+    withr::with_envvar(list(EJAM_PDF_MAP_SNAPSHOT_DELAY = "3.5", EJAM_PDF_PRINT_WAIT = "4"), {
+      expect_equal(EJAM:::pdf_wait_seconds("map_snapshot"), 3.5)
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 4)
+    })
+  })
+})
+
+testthat::test_that("pdf_wait_seconds() option beats environment variable", {
+
+  withr::with_options(list(EJAM.pdf_print_wait = 9), {
+    withr::with_envvar(list(EJAM_PDF_PRINT_WAIT = "3"), {
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 9)
+    })
+  })
+})
+
+testthat::test_that("pdf_wait_seconds() skips unusable higher-precedence values", {
+
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      switch(vname,
+             pdf_map_snapshot_delay = 1.25,
+             pdf_print_wait = 2.25)
+    },
+    .package = "EJAM"
+  )
+  withr::with_options(list(EJAM.pdf_print_wait = "junk"), {
+    withr::with_envvar(list(EJAM_PDF_PRINT_WAIT = "3.5"), {
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 3.5)
+    })
+  })
+  withr::with_options(list(EJAM.pdf_print_wait = NULL), {
+    withr::with_envvar(list(EJAM_PDF_PRINT_WAIT = "junk"), {
+      expect_equal(EJAM:::pdf_wait_seconds("print"), 2.25)
+    })
+  })
+})
+
+testthat::test_that("pdf_wait_seconds() falls back to the default for unusable values", {
+
+  # a bad value must not become a 0-second wait (silently degrading output) nor an error
+  for (bad in list("not a number", "", NA, NULL, -1, c(1, 2), Inf, list("junk"))) {
+    withr::with_options(list(EJAM.pdf_print_wait = bad), {
+      val <- EJAM:::pdf_wait_seconds("print")
+      expect_true({is.numeric(val) && length(val) == 1 && is.finite(val) && val >= 0})
+    })
+  }
+  withr::with_options(list(EJAM.pdf_print_wait = "junk"), {
+    expect_equal(EJAM:::pdf_wait_seconds("print"), 2)
+  })
+  withr::with_options(list(EJAM.pdf_print_wait = -5), {
+    expect_equal(EJAM:::pdf_wait_seconds("print"), 2)
+  })
+})
+
+testthat::test_that("pdf_wait_seconds() rejects an unknown setting name", {
+
+  expect_error({EJAM:::pdf_wait_seconds("something_else")})
+})
+################ ################# ################# ################# ################# #

@@ -75,7 +75,12 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.'}
 
 \item{in_shiny}{whether the function is being called in or outside of shiny - affects location of header}
 
-\item{filename}{path to file to save HTML content to; if null, returns as string (used in Shiny app)}
+\item{filename}{optional path to an .html file; if provided, the assembled HTML
+content is also written to that file. The HTML is returned either way.}
+}
+\value{
+HTML content of the report body (header and tables) as an
+\code{\link[htmltools:HTML]{htmltools::HTML()}} object, whether or not \code{filename} was provided.
 }
 \description{
 Just assembles the report, given the header info, tables, map, and plot
