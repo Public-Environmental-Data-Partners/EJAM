@@ -181,9 +181,10 @@
 #'
 #'    - if fileextension is "pdf", invisibly returns a list of file paths
 #'
-#' @param version optional EJAM version tag (e.g. "3.2024.0") passed to the API as
-#'   version=<ver> via [url_ejamapi()] so it can serve the matching data vintage
-#'   (assuming API implements that).
+#' @param version optional EJAM version tag (e.g. "3.2024.0") sent to the API as
+#'   version=<ver> so the API can be asked to serve the matching data vintage
+#'   (but this is irrelevant until a multivintage option is implemented in the API).
+#'   Default is NULL here, meaning it uses the default found in [url_ejamapi()].
 #'
 #' @export
 #'

@@ -56,9 +56,9 @@ with no change to packaged ACS or environmental data.
   need no Census API key and no boundary-service network call (Puerto Rico
   counties are now mappable), with automatic fallback to downloading.
 
-- Set default `vintage` parameter to NULL in `ejamapi()` or `url_ejamapi()`
-  since API does not support vintage selection yet. 
-  The API uses whatever vintage it has installed.
+- Set default `version` parameter to NULL in `ejamapi()` and `url_ejamapi()`
+  since API does not support vintage selection yet and the API uses 
+  whatever vintage it has installed.
 
 ## Documentation
 

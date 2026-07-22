@@ -121,8 +121,9 @@
 #' }
 #'
 #' @param version optional EJAM version tag (e.g. "3.2024.0") sent to the API as
-#'   version=<ver> so the API can serve the matching data vintage (assuming
-#'   multivintage option is implemented in API. Default is NULL, not sent.
+#'   version=<ver> so the API can be asked to serve the matching data vintage
+#'   (but this is irrelevant until a multivintage option is implemented in the API).
+#'   Default is NULL, meaning no version parameter is included in the URL.
 #'
 #' @param fileextension report format requested from the API, sent as
 #'   fileextension=<ext> on each generated report URL. Default "auto" picks the
