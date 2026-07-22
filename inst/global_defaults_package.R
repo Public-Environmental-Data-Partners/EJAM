@@ -73,6 +73,12 @@ global_defaults_package$report_title           = "EJSCREEN Community Report"
 # html format has live interactive maps with popups and links, but pdf has better pagination for printing.
 global_defaults_package$default_format1pager = "html"
 # see fileextension parameter in ejam2report() and input$default_format1pager etc in server, and see API/ url_ejamapi() etc.
+
+# PDF rendering waits, in seconds. pdf_wait_seconds() checks an R option and
+# environment variable before these package defaults, and retains an internal
+# safety fallback in case the defaults are unavailable or invalid.
+global_defaults_package$pdf_map_snapshot_delay = 1
+global_defaults_package$pdf_print_wait         = 2
 ############################### #
 
 # APP LOGO ####

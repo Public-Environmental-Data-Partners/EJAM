@@ -1,3 +1,13 @@
+# EJAM 3.2022.2 (August 2026)
+
+Patch release to address some bugs and improve the EJAM API.
+
+## Improvements
+
+- PDF report generation is roughly 7 seconds (~46%) faster: the two fixed rendering pauses (report-map snapshot 4s -> 1s, print-to-PDF 5s -> 2s) were trimmed, and both are now adjustable without a rebuild via R option (`EJAM.pdf_map_snapshot_delay`, `EJAM.pdf_print_wait`) or environment variable (`EJAM_PDF_MAP_SNAPSHOT_DELAY`, `EJAM_PDF_PRINT_WAIT`), as a rollback lever in case a too-short pause ever degrades output on the server (#473).
+
+
+
 # EJAM 3.2022.1 (July 2026)
 
 Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1,
