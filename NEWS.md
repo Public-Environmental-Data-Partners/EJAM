@@ -1,3 +1,7 @@
+# EJAM (development version)
+
+- County maps and reports are faster and more reliable: county boundaries are now built into the package (new `counties_shapefile` dataset, cartographic 1:500k) instead of being downloaded at render time, so County reports work with no Census API key and no boundary-service network call (including for Puerto Rico counties, previously unmappable), with automatic fallback to downloading (#472, part of #446).
+
 # EJAM 3.2022.1 (July 2026)
 
 Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1,
