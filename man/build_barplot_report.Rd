@@ -16,15 +16,16 @@ build_barplot_report(
 )
 }
 \arguments{
-\item{analysis_title, }{title to use in header of report}
+\item{analysis_title}{title to use in header of report}
 
-\item{totalpop, }{total population included in location(s) analyzed}
+\item{totalpop}{total population included in location(s) analyzed}
 
-\item{locationstr, }{description of the location(s) analyzed}
+\item{locationstr}{description of the location(s) analyzed}
 
-\item{in_shiny, }{whether the function is being called in or outside of shiny - affects location of header}
+\item{in_shiny}{whether the function is being called in or outside of shiny - affects location of header}
 
-\item{filename, }{path to file to save HTML content to; if null, returns as string (used in Shiny app)}
+\item{filename}{optional path to an .html file; if provided, the HTML content
+is also written to that file. The HTML is returned either way.}
 
 \item{report_title}{generic name of this type of report, to be shown at top, like "EJAM Multisite Report"}
 
@@ -35,7 +36,8 @@ Ignored if logo_html is specified and not NULL, but otherwise uses default or pa
 If specified, it overrides logo_path. If omitted, gets created based on logo_path.}
 }
 \value{
-can return HTML if filename not specified, but otherwise NULL
+HTML content of the report header as an \code{\link[htmltools:HTML]{htmltools::HTML()}} object,
+whether or not \code{filename} was provided.
 }
 \description{
 Creates header and footer of 1 page report to include a barplot on results for one site (to supplement the EJSCREEN Community Report)
