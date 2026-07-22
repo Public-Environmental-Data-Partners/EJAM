@@ -77,22 +77,25 @@ test_that("local logo_html image sources are embedded for standalone reports", {
   expect_false(grepl(logo_path, normalized_logo, fixed = TRUE))
 })
 
-test_that("ejam2report() returns an absolute path when filename has no directory or uses './'", {
+test_that("ejam2report() routes a bare filename to tempdir() and a './' filename to the working dir", {
   skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
 
-  tmpdir <- tempdir()
-  outfile_bare   <- file.path(tmpdir, "bare_filename_test.html")
-  outfile_dotslash <- file.path(tmpdir, "dotslash_filename_test.html")
+  # work from a SUBFOLDER of tempdir() so the test can tell apart
+  # "saved in tempdir()" (bare name) from "saved in working dir" ("./" name)
+  workdir <- file.path(tempdir(), "wd_for_filename_routing_test")
+  dir.create(workdir, showWarnings = FALSE)
+  outfile_bare     <- file.path(tempdir(), "bare_filename_test.html")
+  outfile_dotslash <- file.path(workdir, "dotslash_filename_test.html")
   on.exit({
     unlink(outfile_bare)
-    unlink(outfile_dotslash)
+    unlink(workdir, recursive = TRUE)
   }, add = TRUE)
 
   oldwd <- getwd()
   on.exit(setwd(oldwd), add = TRUE)
-  setwd(tmpdir)
+  setwd(workdir)
 
-  # filename with no directory component (just a bare name)
+  # filename with no directory component (just a bare name) is saved in tempdir()
   result_bare <- ejam2report(
     ejamitout = testoutput_ejamit_10pts_1miles,
     filename = "bare_filename_test.html",
@@ -103,8 +106,10 @@ test_that("ejam2report() returns an absolute path when filename has no directory
   expect_false(is.na(result_bare))
   # The returned path must be absolute (not relative)
   expect_true(startsWith(result_bare, "/") || grepl("^[A-Za-z]:", result_bare))
+  expect_true(file.exists(outfile_bare))                                       # went to tempdir()
+  expect_false(file.exists(file.path(workdir, "bare_filename_test.html")))     # not to the working dir
 
-  # filename using "./" prefix
+  # filename using "./" prefix is saved in the working dir, with the name unmangled
   result_dotslash <- ejam2report(
     ejamitout = testoutput_ejamit_10pts_1miles,
     filename = "./dotslash_filename_test.html",
@@ -114,6 +119,10 @@ test_that("ejam2report() returns an absolute path when filename has no directory
   expect_true(file.exists(result_dotslash))
   expect_false(is.na(result_dotslash))
   expect_true(startsWith(result_dotslash, "/") || grepl("^[A-Za-z]:", result_dotslash))
+  expect_identical(basename(result_dotslash), "dotslash_filename_test.html")   # no "._" mangling
+  expect_true(file.exists(outfile_dotslash))                                   # went to the working dir
+  expect_false(file.exists(file.path(tempdir(), "dotslash_filename_test.html")))
+  expect_false(file.exists(file.path(tempdir(), "._dotslash_filename_test.html")))
 })
 
 fips_report_test_output <- function(radius,

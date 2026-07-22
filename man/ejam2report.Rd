@@ -109,14 +109,22 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.}
 \item{footer_version_number, footer_date, footer_text, footer_html}{to customize the report footer - see \code{\link[=generate_report_footer]{generate_report_footer()}}
 Should provide footer_date to ensure user's timezone is used to determine today's date.}
 
-\item{fileextension}{html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
+\item{fileextension}{html or .html or pdf or .pdf (case-insensitive) - use "pdf" to create a PDF version of the report.
 PDF generation uses \code{\link[pagedown:chrome_print]{pagedown::chrome_print()}} which requires the \code{pagedown} package and a
 Chrome/Chromium browser to be available on the system.
 The PDF preserves the full HTML/CSS styling and supports smart page breaks.
 If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
 PDF output is required when this option is selected; it is not optional.}
 
-\item{filename}{optional path and/or name for report file}
+\item{filename}{optional path and/or name for report file. How it is interpreted:
+a bare name like "myreport.html" is saved in tempdir();
+a "./"-prefixed or multi-folder path like "./myreport.html" or "out/myreport.html"
+is saved relative to the working directory (the folder is created if necessary,
+with a warning and fallback to tempdir() if it cannot be created);
+an existing folder like "~/Desktop" gets an auto-generated report name inside it;
+a missing or invalid extension is fixed based on the fileextension parameter, and
+a valid extension in filename (.html or .pdf) overrides the fileextension parameter
+(with a warning if the two conflict).}
 
 \item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
 
