@@ -1,7 +1,7 @@
 Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
 Version: 3.2022.1
-ejamdata_required_tag: v3.2022.1
+ejamdata_required_tag: v3.2022.0
 VersionDate: July 2026
 ReleaseDateEJAM: 2026-07-01
 Description: Actively maintained non-EPA version of EJAM, the web app

@@ -1,6 +1,9 @@
 # EJAM 3.2022.2 (August 2026)
 
-Patch release to address some bugs and improve the EJAM API.
+Patch release to address some bugs and improve the EJAM API. Like v3.2022.1,
+this is a code-and-docs patch that reuses the already-published `ejamdata`
+data release for this vintage (`v3.2022.0`), with no change to the packaged
+ACS or environmental data.
 
 ## Improvements
 
