@@ -135,7 +135,7 @@ second color is for those >=2d cutpoint but <3d, etc.}
 \item{custom_tab_name}{optional name of optional custom_tab}
 
 \item{flagged_areas_tab}{optional data.frame like ejamit()$results_summarized$flagged_areas
-(see \code{\link[=calc_flagged_areas]{calc_flagged_areas()}}) to put in an extra tab, showing the percent of analyzed
+(see \code{calc_flagged_areas()}) to put in an extra tab, showing the percent of analyzed
 residents with each feature or area type in their blockgroup, vs the US and State
 averages, with the ratio columns color-coded using heatmap2_cuts and heatmap2_colors.
 If the whole ejamit() output is passed as the overall parameter, this is extracted

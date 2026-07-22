@@ -102,7 +102,7 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #'   leave out rows in table where raw value is NA,
 #'   as with many of names_d_language, in extra table of demog. subgroups, etc.'
 #' @param flagged_areas_df optional data.frame like ejamit()$results_summarized$flagged_areas
-#'   (see [calc_flagged_areas()]). If provided, a section of rows is added just below the
+#'   (see \code{calc_flagged_areas()}). If provided, a section of rows is added just below the
 #'   "Features and Location Information" section of the extra table, showing what percent of
 #'   the analyzed residents have each type of feature or area type in (or overlapping) their
 #'   blockgroup, with color-coded ratios to the US and State averages.
@@ -186,8 +186,8 @@ build_community_report <- function(
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded))
 
   # Show the avg resident's counts of features (schools etc.) rounded to 1 decimal place,
-  # not 0 decimal places, since e.g. a count of 0.4 would misleadingly show as 0
-  # even though it means 40% of residents have 1 of that feature in their blockgroup (issue #410)
+  # not 0 decimal places, since e.g. an average count of 0.4 would misleadingly
+  # display as 0 (issue #410)
   countcols <- intersect(c(names_featuresinarea, names_sitesinarea), names(output_df_rounded))
   countcols <- countcols[sapply(as.data.frame(output_df)[, countcols, drop = FALSE], is.numeric)]
   if (length(countcols) > 0) {

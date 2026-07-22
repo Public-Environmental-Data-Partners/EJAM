@@ -34,7 +34,7 @@ and each vector is the vector of colnames of output_df that are indicators to sh
 leave out rows in table where raw value is NA, as with many of names_d_language}
 
 \item{flagged_areas_df}{optional data.frame like ejamit()$results_summarized$flagged_areas
-(see \code{\link[=calc_flagged_areas]{calc_flagged_areas()}}). If provided, a section of rows showing the percent of
+(see \code{calc_flagged_areas()}). If provided, a section of rows showing the percent of
 analyzed residents with each feature or area type in their blockgroup (with ratios
 to the US and State averages) is inserted just after the
 "Features and Location Information" section. NULL (default) omits that section.}

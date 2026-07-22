@@ -75,7 +75,7 @@ leave out rows in table where raw value is NA,
 as with many of names_d_language, in extra table of demog. subgroups, etc.'}
 
 \item{flagged_areas_df}{optional data.frame like ejamit()$results_summarized$flagged_areas
-(see \code{\link[=calc_flagged_areas]{calc_flagged_areas()}}). If provided, a section of rows is added just below the
+(see \code{calc_flagged_areas()}). If provided, a section of rows is added just below the
 "Features and Location Information" section of the extra table, showing what percent of
 the analyzed residents have each type of feature or area type in (or overlapping) their
 blockgroup, with color-coded ratios to the US and State averages.

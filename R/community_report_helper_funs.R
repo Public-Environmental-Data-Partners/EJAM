@@ -437,7 +437,7 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
 #' @param hide_missing_rows_for only for the indicators named in this vector,
 #'   leave out rows in table where raw value is NA, as with many of names_d_language
 #' @param flagged_areas_df optional data.frame like ejamit()$results_summarized$flagged_areas
-#'   (see [calc_flagged_areas()]). If provided, a section of rows showing the percent of
+#'   (see \code{calc_flagged_areas()}). If provided, a section of rows showing the percent of
 #'   analyzed residents with each feature or area type in their blockgroup (with ratios
 #'   to the US and State averages) is inserted just after the
 #'   "Features and Location Information" section. NULL (default) omits that section.
@@ -593,7 +593,7 @@ fill_tbl_full_subgroups <- function(output_df,
 #' Write the flagged-areas rows (% of residents with feature/area type in their blockgroup) for the extra table
 #'
 #' Renders one subheader row plus one row per presence/overlap indicator from
-#' the flagged_areas summary table (see [calc_flagged_areas()]), showing the
+#' the flagged_areas summary table (see \code{calc_flagged_areas()}), showing the
 #' percent of analyzed residents who live in a blockgroup that has the feature
 #' (school, hospital, place of worship) or overlaps the area type, plus
 #' color-coded ratios to the US and State averages (if ratios are shown).
@@ -609,7 +609,7 @@ fill_tbl_full_subgroups <- function(output_df,
 #' @param section_title title text for the section subheader row
 #' @return html text of table rows, or "" if flagged_areas_df is unusable (so the
 #'   section is silently omitted, as for outputs saved by older EJAM versions)
-#' @seealso used by [fill_tbl_full_subgroups()]; see [calc_flagged_areas()]
+#' @seealso used by [fill_tbl_full_subgroups()]; see \code{calc_flagged_areas()}
 #' @keywords internal
 #' @noRd
 fill_tbl_flagged_areas_section <- function(flagged_areas_df,
@@ -693,7 +693,7 @@ generate_report_footnotes <- function(
       "Note: Counts of features (such as Number of Schools) are the average resident's count",
       " of that type of feature located anywhere within their block group",
       " (not a count only within the analyzed area, and not a total count across all these residents).",
-      " Rows showing what % of these residents have a feature or area type in their block group",
+      " If present, rows showing what % of these residents have a feature or area type in their block group",
       " show what percent of the residents analyzed live in a block group that contains at least one",
       " of that type of feature or that overlaps that type of area,",
       " and the ratio columns compare that percent to the equivalent percent of all US residents",

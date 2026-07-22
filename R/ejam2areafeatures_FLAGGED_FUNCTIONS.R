@@ -433,7 +433,7 @@ flagged_pct_pop_st <- function(ST = stateinfo$ST, bybg_st = blockgroupstats, fla
 #' population in each state (sum(pop * bgwt) by ST from results_bybg_people).
 #' This is analogous to how doaggregate() calculates state.avg.cols_overall
 #' (popwtd mean of each site's state average), and is NOT the same as
-#' [flagged_pct_pop_st()], which POOLS the given states into one combined denominator.
+#' \code{flagged_pct_pop_st()}, which POOLS the given states into one combined denominator.
 #' State baselines are computed directly from blockgroupstats (not statestats,
 #' which lacks the yesno_ indicators).
 #' @param bybg_people data.table like ejamit()$results_bybg_people (needs ST, pop, bgwt)
