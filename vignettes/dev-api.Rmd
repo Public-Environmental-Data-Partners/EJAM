@@ -34,11 +34,11 @@ API report matches what `ejamit()` / `ejam2report()` would produce locally.
 
 ## Reaching it from R
 
-```{r api, eval=FALSE}
+```{r api, eval=TRUE}
 ## API example: build a multisite report URL
 urlx = url_ejamapi(fips=c(3650617,'0973000'), sitenumber = 0)
 urlx
-# "https://api.ejanalysis.com/report?fips=3650617,0973000&buffer=0&sitenumber=0&version=3.2022.2&fileextension=html"
+
 # browseURL(urlx)
 ```
 

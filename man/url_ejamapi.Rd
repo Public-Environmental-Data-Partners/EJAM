@@ -77,8 +77,8 @@ was requested, so a lone place yields a single-site report URL (with no \code{si
 parameter in it).}
 
 \item{version}{optional EJAM version tag (e.g. "3.2024.0") sent to the API as
-version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
-resolves to the installed package Version (from DESCRIPTION).}
+version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage (assuming
+multivintage option is implemented in API. Default is NULL, not sent.}
 
 \item{fileextension}{report format requested from the API, sent as
 fileextension=\if{html}{\out{<ext>}} on each generated report URL. Default "auto" picks the

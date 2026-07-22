@@ -121,8 +121,8 @@
 #' }
 #'
 #' @param version optional EJAM version tag (e.g. "3.2024.0") sent to the API as
-#'   version=<ver> so the API can serve the matching data vintage. Default NULL
-#'   resolves to the installed package Version (from DESCRIPTION).
+#'   version=<ver> so the API can serve the matching data vintage (assuming
+#'   multivintage option is implemented in API. Default is NULL, not sent.
 #'
 #' @param fileextension report format requested from the API, sent as
 #'   fileextension=<ext> on each generated report URL. Default "auto" picks the
@@ -251,8 +251,8 @@ url_ejamapi = function(
   #   ... args  ####
   and_other_query_terms = urls_from_keylists(keylist_bysite = ..., baseurl = "")
   if (length(and_other_query_terms) > 0 && !(all(and_other_query_terms %in% ""))) {and_other_query_terms <- paste0("&", and_other_query_terms)}
-  # EJAM version tag, so the API can serve the matching data vintage. Default = package Version.
-  if (is.null(version)) {version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)}
+  ## EJAM version tag, so the API can serve the matching data vintage if multivintage feature enabled. Default = package Version.
+  # if (is.null(version)) {version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)}
   if (!is.null(version) && length(version) == 1 && nzchar(version)) {
     if (length(and_other_query_terms) == 0) {and_other_query_terms <- ""}
     and_other_query_terms <- paste0(and_other_query_terms, "&version=", version)
