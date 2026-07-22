@@ -207,8 +207,9 @@ app_ui <- function(request) {
                       condition = "input.ss_choose_method == 'mapclick'",
                       ## input: click on the an_leaf_map (below) to add/remove points; handled by MODULE_SERVER_latlon_from_map_click() in the server
                       tags$p("Click on the map below to add one or more points to analyze. Click a point's red marker to remove it. Use the radius slider to change the circle drawn around each point.",
-                             tags$br(),
-                             tags$em("(Drawing polygons/areas on the map is planned for a future version.)")),
+                             tags$br() #,
+                             # tags$em("(Drawing polygons/areas on the map is planned for a future version.)") # removed since no firm plan
+                             ),
                       actionButton(inputId = 'mapclick_clear', label = 'Clear all points', class = 'usa-button usa-button--outline'),
                       br()
                     ), # end mapclick conditionalPanel
