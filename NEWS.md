@@ -1,4 +1,4 @@
-# EJAM 3.2022.2 (August 2026)
+# EJAM 3.2022.2 (unreleased)
 
 Faster and more reliable report rendering, and
 fixes to report generation and the EJScreen/API integration.
