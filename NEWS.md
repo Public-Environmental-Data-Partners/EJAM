@@ -35,7 +35,7 @@ with no change to packaged ACS or environmental data.
   honors it. `ejam2map()` no longer errors on the aggregate `sitenumber = 0`
   case.
 
-- **`acs_bybg(year = 2024)` wrongly errored** (#391 fixed by #392 etc.): the year gate used
+- **`acs_bybg(year = 2024)` wrongly errored** (#391 fixed by #469): the year gate used
   tidycensus's own default year, which can lag more than a year behind what the
   Census Bureau publishes. It now gates on the latest published ACS end year via
   the new internal `acs_check_year_available()`.
