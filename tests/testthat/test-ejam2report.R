@@ -389,3 +389,92 @@ test_that("ejam2report passes sitenumber_label through to the report header help
   expect_equal(seen$label, 7)
   expect_equal(seen$maplabel, 7)
 })
+
+
+########################### #
+
+# TESTS OF filename and fileextension handling ####
+
+
+
+
+### more tests/ checks of ejam2report() function, for checking various cases, locally
+### not as unit tests, since paths are not generic
+
+if (FALSE) {
+
+  out = testoutput_ejamit_10pts_1miles
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "defaults")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename.html_only", filename = "test.html")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename.pdf_only", filename = "test.pdf")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename.pdf_but_fileextension=.html", filename = "test.pdf", fileextension = ".html")
+  file.exists(x)
+
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename 1 word only, no path no extension", filename = "testword") # interprets as file name
+  file.exists(x)
+  pause(2)       # without pause, it cannot show up in browser before it is deleted.
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename empty", filename = "")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename . only", filename = ".")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename .. only", filename = "..")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename .. slash blah only", filename = "../blah")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  # handle slash in title which becomes part of filename?
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder ./inst only", filename = "./inst")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder dot slash inst only", filename = "./inst")
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder squiggle slash Downloads only", filename = "~/Downloads")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder ~/Downloads/ only", filename = "~/Downloads/")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "valid folder ~/Downloads/ only", filename = "~/Downloads/test1")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "full path with filename.html", filename = "~/Downloads/test2.html")
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "path ends with badpathword only", filename = "~/Downloads/badpathword") # interprets as file name
+  file.exists(x)
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "full path with filename no extension", filename = "~/Downloads/testword") # interprets as file name
+  file.exists(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename is vector", filename = c("a","b"))
+  x
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+  x = ejam2report(testoutput_ejamit_10pts_1miles, analysis_title = "filename is NULL", filename = NULL)
+  x
+  file.exists(x)
+  pause(2)
+  file.remove(x)
+
+}
+

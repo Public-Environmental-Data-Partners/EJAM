@@ -116,7 +116,7 @@ The PDF preserves the full HTML/CSS styling and supports smart page breaks.
 If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
 PDF output is required when this option is selected; it is not optional.}
 
-\item{filename}{optional path and name for report file, used by web app}
+\item{filename}{optional path and/or name for report file}
 
 \item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
 
