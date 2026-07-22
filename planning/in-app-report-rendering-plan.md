@@ -10,7 +10,7 @@
 
 For users already viewing analysis results in the EJAM Shiny app, generate selected single-site reports locally from the in-memory `ejamit()` result instead of sending the same site back through the EJAM API. Rendering must run outside the Shiny session's main R process so the app remains responsive.
 
-The change targets the largest avoidable delay for uncached single-point reports: an API round trip that repeats analysis the app has already completed. Expected local HTML rendering is approximately 3–6 seconds instead of an approximately 25-second API round trip. PDF rendering also uses the selected local path and benefits from the separate PDF-wait optimization.
+The change targets the largest avoidable delay for uncached single-point reports: an API round trip that repeats analysis the app has already completed. Expected local HTML rendering is approximately 3–6 seconds instead of an API round trip of approximately 25 seconds. PDF rendering also uses the selected local path and benefits from the separate PDF-wait optimization.
 
 ## Exact surface boundary
 
