@@ -237,13 +237,21 @@ ejam2report_site_is_reportable <- function(site_result) {
 #' @param shapefile alias (synonym) for shp
 #' @param launch_browser set TRUE to have it launch browser and show report.
 #' @param return_html set TRUE to have function return HTML object instead of URL of local file
-#' @param fileextension html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
+#' @param fileextension html or .html or pdf or .pdf (case-insensitive) - use "pdf" to create a PDF version of the report.
 #'   PDF generation uses [pagedown::chrome_print()] which requires the `pagedown` package and a
 #'   Chrome/Chromium browser to be available on the system.
 #'   The PDF preserves the full HTML/CSS styling and supports smart page breaks.
 #'   If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
 #'   PDF output is required when this option is selected; it is not optional.
-#' @param filename optional path and name for report file, used by web app
+#' @param filename optional path and/or name for report file. How it is interpreted:
+#'   a bare name like "myreport.html" is saved in tempdir();
+#'   a "./"-prefixed or multi-folder path like "./myreport.html" or "out/myreport.html"
+#'   is saved relative to the working directory (the folder is created if necessary,
+#'   with a warning and fallback to tempdir() if it cannot be created);
+#'   an existing folder like "~/Desktop" gets an auto-generated report name inside it;
+#'   a missing or invalid extension is fixed based on the fileextension parameter, and
+#'   a valid extension in filename (.html or .pdf) overrides the fileextension parameter
+#'   (with a warning if the two conflict).
 #' @param show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in main table of envt/demog. info.
 #' @param extratable_show_ratios_in_report logical, whether to add columns with ratios to US and State overall values, in extra table
 #'
@@ -333,6 +341,20 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                         shapefile = NULL, # alias (synonym) for shp
                         sitenumber_label = NULL # display-only (placed after shape/shapefile to avoid positional arg shift)
 ) {
+  fileextensions_implemented <- c(".html", ".pdf")
+  if (length(filename) > 1) {warning("ignoring filename parameter since its length > 1; using a default filename in tempdir()")}
+  # Coerce fileextension to a usable length-1 string so NULL/NA/empty/vector/non-character
+  # inputs (e.g. an unset global default passed through) fall back to the html default
+  # instead of erroring in length-sensitive checks further below
+  fileextension_specified <- !missing(fileextension) && is.character(fileextension) &&
+    length(fileextension) >= 1 && !is.na(fileextension[1]) && nzchar(fileextension[1])
+  if (length(fileextension) > 1) {
+    warning("fileextension should be a single value - using the first one")
+    fileextension <- fileextension[1]
+  }
+  if (!fileextension_specified) {
+    fileextension <- "html"
+  }
   # Aliases (synonyms) for shp, for naming consistency with ejamit()/ejamapp() etc.
   if (is.null(shp) && !is.null(shape))     {shp <- shape}
   if (is.null(shp) && !is.null(shapefile)) {shp <- shapefile}
@@ -514,12 +536,68 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # # Rmd_name = 'barplot_report_template.Rmd' # for single site barplot report
     # Rmd_folder = 'report/community_report/'
 
-    ## > fileextension ####
-    # adjust this once .pdf option is implemented/working
-    fileextension <- paste0(".", gsub("^\\.", "", fileextension)) # add leading dot if not present
-    fileextensions_implemented <- c(".html", ".pdf")
+    ######################################## #
+    ## > filename and fileextension ####
+
+    ######################################## #
+    # get fileextension from filename if provided.
+    #
+    # check if fname_is_provided and if fname_needs_extension,
+    #  get fileextension from filename if valid extension, remove any bad extension from filename.
+    # if filename (with or without path) is specified, and has a valid extension,
+    # then use the extension of that filename, and ignore the fileextension param (warning if they conflicted)
+
+    # * how to tell diff between these...
+    # filename="myreport" or even filename="./mydir/myreport"  (intended as filename with no extension)
+    # versus
+    # filename="mydir" or even filename="./mydir/myreport"  (intended as folder or folders with no filename)
+    #  -- if (dir.exists(filename)) then treat it as a folder with no file named.
+    fname_is_path_and_file <- FALSE
+    fname_needs_extension <- FALSE
+    if (!missing(filename) && !is.null(filename) && length(filename) == 1 && !is.na(filename) && is.character(filename) && nzchar(filename)) {
+      # a nonempty filename was provided
+      fname_is_provided <- TRUE
+      if (!dir.exists(filename)) {
+        fname_is_folder_only <- FALSE
+
+        # already has a path component so save file there instead of default tempdir()
+        # if filename="x.html" then do not assume they meant to save in working dir, but
+        # if filename="./x.html" then assume they meant to save in working dir
+        # if filename = "." or "./"   then assume they meant to save in working dir
+        fname_is_path_and_file <- grepl("^\\./", filename) || !(dirname(filename) %in% c(".", "./"))
+
+        specified_fname_ext <- (tools::file_ext(basename(filename)))
+        if (!is.null(specified_fname_ext) && nzchar(specified_fname_ext) &&
+            tolower(paste0(".", specified_fname_ext)) %in% tolower(fileextensions_implemented)) {
+          # a valid extension was provided as part of filename, so use it not the default or specified fileextension param.
+          # But could  check if it matches the specified fileextension param, and warn if not.
+          if (fileextension_specified &&
+              tolower(paste0(".", specified_fname_ext)) != paste0(".", gsub("^\\.", "", tolower(fileextension)))) {
+            warning("The provided filename has an extension that does not match the specified fileextension parameter. Using the filename extension.")
+          }
+          fname_needs_extension <- FALSE
+          fileextension <- paste0(".", specified_fname_ext)
+        } else {
+          # filename either lacks extension or the extension is not valid
+          fname_needs_extension <- TRUE
+          if (nchar(specified_fname_ext) > 0) {
+            filename <- sub(paste0("\\.", specified_fname_ext, "$"), "", filename) # remove any existing (invalid) extension, so we can append the correct one below
+          }
+        }
+      } else {
+        # the provided filename is a folder, so treat it as a folder and create a filename within that folder
+        fname_is_folder_only <- TRUE
+      }
+    } else {
+      fname_is_provided <- FALSE
+      fname_needs_extension <- FALSE
+    }
+    ######################################## #
+    # clean/finalize fileextension
+
+    fileextension <- paste0(".", gsub("^\\.", "", tolower(fileextension))) # add leading dot if not present; lowercase so the .pdf branch check matches
     if (!(fileextension %in% fileextensions_implemented)) {
-      warning("fileextension must be one of", fileextensions_implemented)
+      warning("fileextension must be one of ", paste(fileextensions_implemented, collapse = ", "))
       ## Fall back to the global default. global_or_param("default_format1pager") can be NULL
       ## (e.g. when EJAM is used via :: without attaching, so .onAttach() never built the package
       ## defaults), so guard against NULL/empty before normalizing - otherwise gsub()/`%in%` operate
@@ -534,15 +612,51 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         }
       }
     }
+    ######################################## #
+    ## > foldername ####
 
-    ## > filename ####
-    # use create_filename() here like server does:
-    if (!is.null(selected_location_name_react)) {
-      location_suffix <- paste0(" - ", selected_location_name_react) # the statename, if just 1 site not overall results
+    # get or create path
+
+    if (fname_is_provided) {
+      foldername <- tempdir() # default for a bare filename with no path component
+      if (fname_is_folder_only) {
+        foldername <- filename
+        filename <- NULL
+      }
+      if (fname_is_path_and_file) {
+        foldername <- dirname(filename)
+        filename <- basename(filename)
+      }
+      if (!dir.exists(foldername)) {
+        created <- tryCatch(dir.create(foldername, recursive = TRUE),
+                            warning = function(w) FALSE, error = function(e) FALSE)
+        if (!isTRUE(created)) {
+          warning("Could not create folder '", foldername, "' - saving report in tempdir() instead")
+          foldername <- tempdir()
+        }
+      }
     } else {
-      location_suffix <-  ""
+      foldername <- tempdir()
+      filename <- NULL
     }
+    ########### #
+    ## normalize the folder path once - foldername is guaranteed to exist here,
+    ## so this returns an absolute path on all platforms
+    foldername <- normalizePath(foldername, mustWork = FALSE)
+
+    ######################################## #
+    ## > filename ####
+
+    # if (!fname_is_provided || fname_is_folder_only) {
     if (is.null(filename)) {
+
+      # actual valid file name not specified, so use create_filename() here like server does:
+
+      if (!is.null(selected_location_name_react)) {
+        location_suffix <- paste0(" - ", selected_location_name_react) # the statename, if just 1 site not overall results
+      } else {
+        location_suffix <-  ""
+      }
       filename <- create_filename(
         file_desc = paste0('community report', location_suffix),
         title =  analysis_title,
@@ -551,25 +665,32 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         with_datetime = FALSE,
         ext = fileextension
       )
-      temp_comm_report <- file.path(tempdir(), filename)
-    } else {
-      # Make a relative or "./"-prefixed filename absolute (relative to the working
-      # directory) before rendering. normalizePath(mustWork = FALSE) does not
-      # absolutize a path whose file does not exist yet on all platforms, which left
-      # rmarkdown::render() writing to an unexpected location and returning a relative
-      # path (incomplete #370 fix).
-      if (!grepl("^(/|[A-Za-z]:)", filename)) {
-        filename <- file.path(getwd(), filename)
-      }
-      temp_comm_report <- normalizePath(filename, mustWork = FALSE)
+
     }
+
+    # add extension if missing
+    if (fname_needs_extension) {
+      filename <- paste0(filename, fileextension)
+    }
+    # clean slash characters from the filename since not valid in a filename and confuse the code into thinking it is a folder
+    filename <- gsub("\\/", "_", filename)
+
+    ## COMBINE THE CLEAN FOLDER AND CLEAN FILENAME TO GET THE FULL PATH FOR THE REPORT
+
+    temp_comm_report <- file.path(foldername, filename)
+
+    ## normalize the file path (foldername was already absolute, so this mainly
+    ## cleans up separators and resolves symlinks like /var vs /private/var on MacOS)
+    temp_comm_report <- normalizePath(temp_comm_report, mustWork = FALSE)
+
+    ## confirm the directory exists, otherwise stop with error
+    if (!dir.exists(dirname(temp_comm_report))) {
+      # backstop doublecheck
+      stop("The directory for the provided filename does not exist: ", dirname(temp_comm_report))
+    }
+    ####################################################### #
     output_file      <- temp_comm_report
 
-    if (return_html) {
-      temp_comm_report_or_null <- NULL
-    } else {
-      temp_comm_report_or_null <- temp_comm_report
-    }
     ####################################################### #
 
     # ASSEMBLE REPORT  ####
@@ -597,13 +718,13 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       extratable_hide_missing_rows_for = extratable_hide_missing_rows_for,
 
       in_shiny = FALSE,
-      filename = temp_comm_report_or_null  # passing NULL should make it return the html object
+      filename = NULL  # always return the html object; file writing is done by rmarkdown::render()
     )
 
     ## seems like using cat() was a simpler approach tried initially: ***
     ##  that would write just the basics of it to the temp location, not needing render()
     ##  but the render() approach also add the map and plot !!
-    # cat(community_html, file = temp_comm_report)
+    # cat(community_html, file = output_file, sep = "\n")
 
     rmd_template <- system.file("report/community_report/combine_after_build_community_report.Rmd", package = "EJAM")
 
@@ -782,7 +903,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     #   ## pass params to customize .Rmd doc  # ###
 
-    #browseURL(temp_comm_report)
+    #browseURL(output_file)
 
   } else {
     msg <- 'Individual site reports not yet available for this site (valid = FALSE).'
