@@ -73,7 +73,7 @@
     # ignoring sortbysize because simple=TRUE
 
     "NAICS", "SIC", "avg.in.us", "bg_cenpop2020", "bgpts", "blockgroupstats",
-    "censusplaces", "custom", "ejamdata_version", "ejampackages",
+    "censusplaces", "counties_shapefile", "custom", "ejamdata_version", "ejampackages",
     "epa_programs", "epa_programs_defined", "formulas_ejscreen_acs",
     "formulas_ejscreen_acs_disability",
     "formulas_ejscreen_demog_index", "frsprogramcodes", "high_pctiles_tied_with_min",
