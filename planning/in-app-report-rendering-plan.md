@@ -112,7 +112,7 @@ Unit and server tests will establish that:
 - Worker errors are surfaced without ending the Shiny session.
 - Session cleanup removes files, resource mappings, and active processes.
 
-A focused baseline on `origin/development` currently passes 205 tests with two expected interactive/Shiny skips. Browser-level tests will cover both live click locations and both selector values. A manual timing check will compare the existing API link with the local HTML path using the same one-site, 3-mile result.
+At the time of writing (2026-07-22), a focused baseline on `origin/development` passes 205 tests with two expected interactive/Shiny skips. Browser-level tests will cover both live click locations and both selector values. A manual timing check will compare the existing API link with the local HTML path using the same one-site, 3-mile result.
 
 ## Compatibility and non-goals
 
