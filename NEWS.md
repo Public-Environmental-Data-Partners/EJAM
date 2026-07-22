@@ -1,6 +1,14 @@
-# EJAM (development version)
+# EJAM 3.2022.2 (August 2026)
+
+Patch release to address some bugs and improve the EJAM API.
+
+## Improvements
+
+- PDF report generation is roughly 7 seconds (~46%) faster: the two fixed rendering pauses (report-map snapshot 4s -> 1s, print-to-PDF 5s -> 2s) were trimmed, and both are now adjustable without a rebuild via R option (`EJAM.pdf_map_snapshot_delay`, `EJAM.pdf_print_wait`) or environment variable (`EJAM_PDF_MAP_SNAPSHOT_DELAY`, `EJAM_PDF_PRINT_WAIT`), as a rollback lever in case a too-short pause ever degrades output on the server (#473).
 
 - County maps and reports are faster and more reliable: county boundaries are now built into the package (new `counties_shapefile` dataset, cartographic 1:500k) instead of being downloaded at render time, so County reports work with no Census API key and no boundary-service network call (including for Puerto Rico counties, previously unmappable), with automatic fallback to downloading (#472, part of #446).
+
+
 
 # EJAM 3.2022.1 (July 2026)
 

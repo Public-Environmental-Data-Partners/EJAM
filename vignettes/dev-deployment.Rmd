@@ -145,13 +145,14 @@ The workflows can also be run manually from **GitHub → Actions → (deploy wor
 | `EJAMDATA_PAT` | a GitHub PAT, passed to the build as the `GITHUB_PAT` build-arg, used to download the `ejamdata` arrow files from the ejamdata GitHub release |
 
 > **Which EJAM version deploys:** the `Dockerfile` installs EJAM from a **pinned
-> GitHub release tag** via the `EJAM_VERSION` build-arg (default `v3.2022.1`;
+> GitHub release tag** via the `EJAM_VERSION` build-arg (e.g., `v3.2022.1`;
 > override with `--build-arg EJAM_VERSION=vX.Y.Z`), so the deployed version is
 > explicit and reproducible rather than tied to whatever source happens to be
 > checked out on the deploy branch. The `ejamdata` arrow files are fetched
 > separately from the ejamdata GitHub release via the `EJAMDATA_VERSION` build-arg
-> (default `v3.2022.0` — the release that `v3.2022.1` requires, i.e. its
-> `ejamdata_required_tag`); keep the two in sync when bumping to a new release.
+> (e.g., `v3.2022.1` — the release that the given EJAM version requires, 
+> i.e. its `ejamdata_required_tag`); 
+> keep the two in sync when bumping to a new release.
 >
 > *(These pinned build-args are set in the deploy-branch `Dockerfile`. A deploy
 > branch whose `Dockerfile` predates that update instead installs EJAM from the

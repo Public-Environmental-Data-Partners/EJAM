@@ -3113,7 +3113,8 @@ app_server <- function(input, output, session) {
             input = html_path,
             output = file,
             options = list(printBackground = TRUE),
-            wait = 5, timeout = 120, verbose = 0)
+            # keep this in step with the ejam2report() PDF path - see pdf_wait_seconds()
+            wait = pdf_wait_seconds("print"), timeout = 120, verbose = 0)
         }, error = function(e) {
           showModal(modalDialog(
             title = "PDF not available",
