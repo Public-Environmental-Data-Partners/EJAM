@@ -395,7 +395,19 @@ test_that("ejam2report passes sitenumber_label through to the report header help
 
 # TESTS OF filename and fileextension handling ####
 
-
+test_that("ejam2report() writes actual report content when filename is provided", {
+  skip_if_not(rmarkdown::pandoc_available(), "pandoc not available")
+  outfile <- file.path(tempdir(), "content_check_471.html")
+  on.exit(unlink(outfile), add = TRUE)
+  result <- ejam2report(
+    ejamitout = testoutput_ejamit_10pts_1miles,
+    analysis_title = "CONTENT MARKER PR 471",
+    filename = outfile, launch_browser = FALSE
+  )
+  expect_true(file.exists(result))
+  html <- paste(readLines(result, warn = FALSE), collapse = "\n")
+  expect_match(html, "CONTENT MARKER PR 471", fixed = TRUE)
+})
 
 
 ### more tests/ checks of ejam2report() function, for checking various cases, locally
