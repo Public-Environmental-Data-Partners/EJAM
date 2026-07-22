@@ -2,6 +2,63 @@
 
 Patch release to address some bugs and improve the EJAM API.
 
+## Bug Fixes
+
+- **EJAM app crash on EJScreen token handoff (FIPS/polygon/bufferless)** (#465):
+  The launch-URL `?handoff=<token>` observer crashed whenever the payload had
+  no radius -- which is every FIPS (County/Tract) and drawn-polygon handoff
+  from EJScreen's "Send to EJAM", plus any lat/lon selection with no buffer.
+  The EJAM API serializes absent fields as JSON `{}`, which
+  `jsonlite::fromJSON()` parses as a zero-length list instead of `NULL`.
+  Fixed by normalizing `{}` → `NULL` for all payload fields, and adding a
+  length check on the radius value as defense in depth.
+
+- **Reports crash or give wrong results for zero-population sites** (#467):
+  `ejam2report()` and `ejamit()` now handle sites with zero population
+  (e.g. open-water block groups or industrial parcels with no residents)
+  gracefully instead of stopping with an error or silently returning
+  incorrect summary statistics.
+
+- **API per-site report links all labeled "Site 1"** (#348, #470):
+  `url_ejamapi()` now passes `sitenumber=N` (the site's row number in the
+  original inputs) for every per-site link, so each report is correctly
+  identified instead of every link pointing to Site 1. The bundled plumber
+  API's `GET /report` now accepts and honors a `sitenumber` parameter.
+  `ejam2report()` gains a `sitenumber_label` parameter that controls the
+  report-header and map-popup label independently of which results row is
+  used (so a re-run for Site 5 says "Site 5" everywhere, not "Site 1").
+  `popup_from_ejscreen()` honors the same label.
+
+- **`ejam2map()` multi-site call with `sitenumber = 0`**: improved handling
+  of the aggregate-report case to avoid an error when producing the overall
+  map for a multi-site run.
+
+- **`acs_bybg()` year gate** (#391): the function previously gated requested
+  years on `formals(tidycensus::get_acs)$year`, which lagged behind what the
+  Census Bureau actually serves (tidycensus 1.7–1.8 still defaulted to 2023
+  after the 2020-2024 ACS was released on 2026-01-29), so
+  `acs_bybg(year = 2024)` wrongly errored and the inferred-year path silently
+  downgraded 2024 to 2023. A new internal helper `acs_check_year_available()`
+  gates on the latest end year published by the Census Bureau (via
+  `acs_endyear(guess_census_has_published = TRUE)`).
+
+## Documentation
+
+- `vignettes/webapp.Rmd` now covers the v3.2022.1 user-facing features:
+  deep links, the EJScreen "Send to EJAM" button, and launching the app
+  pre-loaded with a set of places, with pointers to `dev-app-settings`,
+  `dev-api`, and `url_ejamapp()`.
+- `vignettes/analyzing.Rmd`: the `url_ejamapi()` / `url_ejscreenmap()`
+  example now cross-references the API article and function help.
+- Fixed broken R chunks in `vignettes/naics.Rmd` and
+  `vignettes/dev-app-settings.Rmd` (a comment in the webscrape chunk
+  wrapped without a leading `#`; non-R config listings changed to plain
+  verbatim fences so they are not mistaken for runnable R).
+
+## Internal / Packaging
+
+- Updated ejamdata dependency reference to v3.2022.1 (from v3.2022.0) and
+  removed several hardcoded version strings in documentation and vignettes.
 
 
 # EJAM 3.2022.1 (July 2026)
