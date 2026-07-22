@@ -103,8 +103,11 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #'   as with many of names_d_language, in extra table of demog. subgroups, etc.'
 #'
 #' @param in_shiny whether the function is being called in or outside of shiny - affects location of header
-#' @param filename path to file to save HTML content to; if null, returns as string (used in Shiny app)
+#' @param filename optional path to an .html file; if provided, the assembled HTML
+#'   content is also written to that file. The HTML is returned either way.
 #'
+#' @return HTML content of the report body (header and tables) as an
+#'   [htmltools::HTML()] object, whether or not `filename` was provided.
 #'
 #' @seealso [ejam2report()]
 #'
@@ -178,10 +181,18 @@ build_community_report <- function(
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded))
 
   if (missing(totalpop) || is.null(totalpop)) {
-    if ("pop" %in% names(output_df_rounded)) {
-      totalpop <- prettyNum(round(output_df_rounded$pop, 0), big.mark = ',')
+    if ("pop" %in% names(output_df)) {
+      # use pop from output_df not output_df_rounded - format_ejamit_columns()
+      # already turned the rounded copy into text like "10,000" so round() would fail on it
+      pop_raw <- as.data.frame(output_df)$pop
+      pop_num <- suppressWarnings(as.numeric(gsub(",", "", pop_raw)))
+      if (!anyNA(pop_num)) {
+        totalpop <- prettyNum(round(pop_num, 0), big.mark = ',')
+      } else {
+        totalpop <- as.character(pop_raw) # was already formatted text, or not numeric
+      }
     } else {
-      warning('totalpop parameter or output_df_rounded$pop is required')
+      warning('totalpop parameter or output_df$pop is required')
       totalpop <- "NA" # text works here rather than NA
     }
   }
@@ -258,13 +269,13 @@ build_community_report <- function(
 #   > map, barplot, footer are elsewhere < ####
 
   ############################################################# #
-  if (is.null(filename)) {
-    return(HTML(full_page))
-  } else {
-    junk <- capture.output({
-      cat(HTML(full_page))
-    })
-    # DO WE NEED TO RENDER  HERE? ***
-    # OR CAN WE WRITE junk TO A .html FILE - WILL THAT WORK?
+  if (!is.null(filename)) {
+    if (!dir.exists(dirname(filename))) {
+      stop("Cannot save the report HTML because the folder does not exist: ", dirname(filename))
+    }
+    writeLines(as.character(full_page), con = filename)
   }
+  # Return visibly in both cases - community_report_template.Rmd relies on this
+  # value auto-printing from its chunk, even when a filename is provided.
+  return(HTML(full_page))
 }
