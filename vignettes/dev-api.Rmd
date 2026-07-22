@@ -36,7 +36,7 @@ API report matches what `ejamit()` / `ejam2report()` would produce locally.
 
 ```{r api, eval=TRUE}
 ## API example: build a multisite report URL
-urlx = url_ejamapi(fips=c(3650617,'0973000'), sitenumber = 0)
+urlx = EJAM::url_ejamapi(fips=c(3650617,'0973000'), sitenumber = 0)
 urlx
 
 # browseURL(urlx)
