@@ -119,7 +119,7 @@ Suggests:
     zip
 Remotes:
     ejanalysis/ACSdownload,
-    mikejohnson51/AOI
+    ericnost/AOI
 VignetteBuilder: 
     knitr,
     rmarkdown
