@@ -26,6 +26,14 @@ packaged ACS or environmental data.
   metadata were also filled in for those and related rows, verified against a
   live `ejamit(testpoints_10, radius = 1)` run.
 
+- **Feature counts in the report no longer round away sub-integer values**
+  (part of #410): the "Features and Location Information" indicators
+  (`count.NPL`, `count.TSDF`, `num_school` and the other counts-in-area, plus
+  the `yesno_*` flag rows) show the average resident's count, so rounding to
+  whole numbers hid values like 1.1 (shown as "1") or 0.4 (shown as "0"). They
+  now keep 2 decimals. The label/footnote clarifications in #410 are still to
+  do.
+
 - **App crash on the EJScreen "Send to EJAM" handoff** (#465 fixed by #466): every FIPS
   (County/Tract) and drawn-polygon handoff, and any lat/lon selection made
   without a buffer, killed the Shiny session. The API serializes absent payload
