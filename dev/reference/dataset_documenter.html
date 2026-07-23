@@ -81,7 +81,8 @@
 <span>  description <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  details <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  seealso <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  saveinpackage <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  saveinpackage <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  scriptname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"datacreate_"</span>, <span class="va">varname</span>, <span class="st">".R"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -112,6 +113,14 @@
 <dt id="arg-saveinpackage">saveinpackage<a class="anchor" aria-label="anchor" href="#arg-saveinpackage"></a></dt>
 <dd><p>if TRUE, puts quoted dataset name at end of file,
 and otherwise puts NULL at end of file</p></dd>
+
+
+<dt id="arg-scriptname">scriptname<a class="anchor" aria-label="anchor" href="#arg-scriptname"></a></dt>
+<dd><p>name of the data-raw script that creates this dataset,
+used in the header comment of the documentation file. Defaults to
+<code>datacreate_&lt;varname&gt;.R</code> (i.e., built from the varname); pass it
+explicitly when one script creates several datasets
+(e.g., datacreate_names_pct_as_fraction.R).</p></dd>
 
 </dl></div>
     <div class="section level2">
