@@ -48,10 +48,10 @@ hyperlinks (via \code{\link[=url_linkify]{url_linkify()}}) suitable for use in a
 
 \item{ifna}{URL shown for missing, NA, NULL, bad input values. Default NULL
 (and an explicitly passed NULL) resolves to the EJAM API base URL from
-DESCRIPTION (\code{ejam_api_url}), via \code{\link[=url_package]{url_package()}} with type="api".}
+the DESCRIPTION file, via \code{\link[=url_package]{url_package()}} with type="api".}
 
 \item{baseurl}{do not change unless endpoint actually changed. Default NULL
-(and an explicitly passed NULL) resolves to the DESCRIPTION \code{ejam_api_url}
+(and an explicitly passed NULL) resolves to url_package("api"), a URL stored in the DESCRIPTION file,
 followed by "/report?". See \code{\link[=ejamapi]{ejamapi()}} for a better way to handle choice of endpoint.}
 
 \item{sitenumber}{controls how many URLs are returned and which site(s) each covers:
@@ -77,8 +77,9 @@ was requested, so a lone place yields a single-site report URL (with no \code{si
 parameter in it).}
 
 \item{version}{optional EJAM version tag (e.g. "3.2024.0") sent to the API as
-version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
-resolves to the installed package Version (from DESCRIPTION).}
+version=\if{html}{\out{<ver>}} so the API can be asked to serve the matching data vintage
+(but this is irrelevant until a multivintage option is implemented in the API).
+Default is NULL, meaning no version parameter is included in the URL.}
 
 \item{fileextension}{report format requested from the API, sent as
 fileextension=\if{html}{\out{<ext>}} on each generated report URL. Default "auto" picks the
@@ -107,8 +108,8 @@ Get URL(s) of HTML summary reports for use with EJAM-API
 \itemize{
 \item Relies on the EJAM REST API, whose source code is at
 https://github.com/Public-Environmental-Data-Partners/EJAM-API
-(the API base URL itself comes from \code{url_package("api")}; see the \code{ejam_api_url}
-field in DESCRIPTION).
+(the API base URL itself comes from \code{url_package("api")}; see the
+DESCRIPTION file).
 \item To construct a "deep link" that launches the live EJAM \emph{app} (not the API)
 pre-loaded with sites, see \code{\link[=url_ejamapp]{url_ejamapp()}}, which uses the same query
 vocabulary (lat, lon, fips, shape, radius, handoff).

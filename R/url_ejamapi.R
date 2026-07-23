@@ -5,8 +5,8 @@
 #' @details
 #' - Relies on the EJAM REST API, whose source code is at
 #'   https://github.com/Public-Environmental-Data-Partners/EJAM-API
-#'   (the API base URL itself comes from `url_package("api")`; see the `ejam_api_url`
-#'   field in DESCRIPTION).
+#'   (the API base URL itself comes from `url_package("api")`; see the
+#'   DESCRIPTION file).
 #'
 #' - To construct a "deep link" that launches the live EJAM *app* (not the API)
 #'   pre-loaded with sites, see [url_ejamapp()], which uses the same query
@@ -52,9 +52,9 @@
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values. Default NULL
 #'   (and an explicitly passed NULL) resolves to the EJAM API base URL from
-#'   DESCRIPTION (`ejam_api_url`), via [url_package()] with type="api".
+#'   the DESCRIPTION file, via [url_package()] with type="api".
 #' @param baseurl do not change unless endpoint actually changed. Default NULL
-#'   (and an explicitly passed NULL) resolves to the DESCRIPTION `ejam_api_url`
+#'   (and an explicitly passed NULL) resolves to url_package("api"), a URL stored in the DESCRIPTION file,
 #'   followed by "/report?". See [ejamapi()] for a better way to handle choice of endpoint.
 #'
 #' @param sitenumber controls how many URLs are returned and which site(s) each covers:
@@ -121,8 +121,9 @@
 #' }
 #'
 #' @param version optional EJAM version tag (e.g. "3.2024.0") sent to the API as
-#'   version=<ver> so the API can serve the matching data vintage. Default NULL
-#'   resolves to the installed package Version (from DESCRIPTION).
+#'   version=<ver> so the API can be asked to serve the matching data vintage
+#'   (but this is irrelevant until a multivintage option is implemented in the API).
+#'   Default is NULL, meaning no version parameter is included in the URL.
 #'
 #' @param fileextension report format requested from the API, sent as
 #'   fileextension=<ext> on each generated report URL. Default "auto" picks the
@@ -203,7 +204,7 @@ url_ejamapi = function(
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
-  # Single source of truth: the EJAM API base URL lives in DESCRIPTION (ejam_api_url),
+  # Single source of truth: the EJAM API base URL lives in DESCRIPTION,
   # read via url_package("api"). Default NULL (and an explicitly passed NULL) resolve here.
   if (is.null(ifna))    {ifna    <- url_package("api")}
   if (is.null(baseurl)) {baseurl <- paste0(url_package("api"), "/report?")}
@@ -251,8 +252,8 @@ url_ejamapi = function(
   #   ... args  ####
   and_other_query_terms = urls_from_keylists(keylist_bysite = ..., baseurl = "")
   if (length(and_other_query_terms) > 0 && !(all(and_other_query_terms %in% ""))) {and_other_query_terms <- paste0("&", and_other_query_terms)}
-  # EJAM version tag, so the API can serve the matching data vintage. Default = package Version.
-  if (is.null(version)) {version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)}
+  ## EJAM version tag, so the API can serve the matching data vintage if/when a multivintage
+  ## feature is enabled. Default is NULL, so no version is sent unless the caller passes one.
   if (!is.null(version) && length(version) == 1 && nzchar(version)) {
     if (length(and_other_query_terms) == 0) {and_other_query_terms <- ""}
     and_other_query_terms <- paste0(and_other_query_terms, "&version=", version)

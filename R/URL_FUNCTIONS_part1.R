@@ -57,7 +57,7 @@ url_acs_table_info <- function(tables = tables_ejscreen_acs, fips = NULL, yr, fi
 #'
 #' @keywords internal
 #'
-url_online <- function(url = "https://ejam.publicenvirodata.org") {
+url_online <- function(url = url_package('ejamapp')) {
 
   if (length(url) > 1) {stop("can only check one URL at a time using url_online()")}
   url <- trimws(unname(as.character(url[1])))
@@ -220,7 +220,7 @@ url_xl_style <- function(urls, urltext = urls) {
 # ## for a more full featured approach, see  ?httr2::url_modify_query()
 ########################################################### #
 
-# url_and_other_query_terms <- function(..., baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?") {
+# url_and_other_query_terms <- function(..., baseurl = paste0(url_package("api"), "/report?")) {
 #
 #   # etc will look something like "&x=1,a=hello,y=3"
 #
@@ -248,7 +248,7 @@ url_xl_style <- function(urls, urltext = urls) {
 # this also drops any keys whose value is NA, NULL, or ""
 
 url_from_keylist <- function(..., keylist = NULL,
-                             baseurl = paste0(url_package("api"), "/report?"),  # canonical API base from DESCRIPTION (ejam_api_url)
+                             baseurl = paste0(url_package("api"), "/report?"),  # canonical API base from DESCRIPTION
                              ifna = url_package("api"),
                              encode = TRUE
 ) {

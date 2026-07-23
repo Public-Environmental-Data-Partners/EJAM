@@ -4,6 +4,7 @@
 \name{EJAM}
 \alias{EJAM}
 \alias{EJAM-package}
+\alias{ejam}
 \title{EJAM - Environmental Justice Analysis Multisite tool}
 \description{
 EJAM provides a way to run hundreds or thousands of location-specific reports all at once, very quickly.

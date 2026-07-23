@@ -2,7 +2,7 @@
 
 #' @title EJAM - `r as.vector(desc::desc_get("Title"))`
 #' @name EJAM
-#' @aliases EJAM-package
+#' @aliases EJAM-package ejam
 #'
 #' @md
 #'
