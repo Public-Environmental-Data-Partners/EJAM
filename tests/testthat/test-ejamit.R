@@ -447,19 +447,23 @@ test_that("ejamit() still returns results_bysite with same EJAM Report column", 
     suppressMessages({
       # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
-      ## Compare column 1, the EJAM Report URLs. Each URL embeds the current package
-      ## version (version=X.Y.Z), which legitimately changes every release, so
-      ## normalize it before comparing -- otherwise this structural check breaks on
-      ## each version bump (the saved reference was built at an earlier version).
-      ## Likewise normalize the API base URL and the fileextension= parameter,
-      ## which legitimately changed (branded api.ejanalysis.com base URL, explicit
-      ## fileextension=pdf) without regenerating the stored reference: this check
-      ## is about the per-site query values (lat/lon/buffer/sitetype), while the
-      ## URL base and format are covered by the URL function tests.
+      ## Compare column 1, the EJAM Report URLs. Strip the parts that legitimately
+      ## vary independently of the per-site query values this test is about
+      ## (lat/lon/buffer/sitetype); the URL base and format are covered by the URL
+      ## function tests. Specifically drop:
+      ##  - the version= parameter: url_ejamapi() now omits it by default (it is only
+      ##    sent when a caller passes version=), while the stored reference was built
+      ##    when a version tag was still emitted, so strip it from either side;
+      ##  - the API base URL (the branded api.ejanalysis.com host replaced the raw
+      ##    Cloud Run host without regenerating the stored reference);
+      ##  - the fileextension= parameter (explicit fileextension=pdf, likewise).
       norm_report_url <- function(x) {
-        x <- gsub("version=[0-9]+\\.[0-9]+\\.[0-9]+", "version=VER", x)
+        x <- gsub("&version=[^&\"]*", "", x)          # version omitted by default now; only sent if a caller passes it
+        x <- gsub("&sitenumber=[0-9]+", "", x)        # per-site "Site N" label added after the stored reference (#470)
         x <- gsub("https://[^/\"]+/report\\?", "https://HOST/report?", x)
         x <- gsub("&fileextension=[[:alnum:]]+", "", x)
+        x <- gsub("=(?:%20)+", "=", x, perl = TRUE)                       # stale reference URL-encoded a leading space in lat/lon
+        x <- gsub("(=-?[0-9.]*[1-9])0+(?=[&\"])", "\\1", x, perl = TRUE)  # drop trailing zeros in lat/lon/buffer
         x
       }
       expect_equal(
