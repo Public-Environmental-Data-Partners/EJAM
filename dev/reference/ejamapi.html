@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -198,9 +198,10 @@ be just a placeholder, for the first site, not an overall summary across all sit
 
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
-<dd><p>optional EJAM version tag (e.g. "3.2024.0") passed to the API as
-version=<ver> via <code><a href="url_ejamapi.html">url_ejamapi()</a></code> so it can serve the matching data vintage.
-Default NULL resolves to the installed package Version (from DESCRIPTION).</ver></p></dd>
+<dd><p>optional EJAM version tag (e.g. "3.2024.0") sent to the API as
+version=<ver> so the API can be asked to serve the matching data vintage
+(but this is irrelevant until a multivintage option is implemented in the API).
+Default is NULL here, meaning it uses the default found in <code><a href="url_ejamapi.html">url_ejamapi()</a></code>.</ver></p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -312,11 +313,11 @@ deep links that launch the live <em>app</em> pre-loaded, and <code><a href="url_
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

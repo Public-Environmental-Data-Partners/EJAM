@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -674,12 +674,13 @@ identifiers match (all <code>v3.YYYY.0</code>):</p>
 <p>git release tag = <code>ejamdata</code> release tag = DESCRIPTION
 <code>ejamdata_required_tag</code> =
 <code>data/ejamdata_version.txt</code>. A code-only
-<strong>patch</strong> release (for example <code>v3.2022.1</code>) is
-the exception: it keeps <code>ejamdata_required_tag</code> and the
+<strong>patch</strong> release (for example <code>v3.2022.1</code> or
+<code>v3.2022.2</code>) keeps <code>ejamdata_required_tag</code> and the
 marker at the existing <code>v3.2022.0</code>, because the data did not
 change and the patch reuses the already-published <code>ejamdata</code>
-release. (There is no <code>v3.2022.1</code> release of
-<code>ejamdata</code>, and none is needed for a code-only patch.)</p>
+release. (There is no <code>v3.2022.1</code> or <code>v3.2022.2</code>
+release of <code>ejamdata</code>, and none is needed for a code-only
+patch.)</p>
 <p>This previously had been handled with a GitHub Actions workflow that
 tried to use Git LFS. That automatic workflow is no longer used and will
 not be restored.</p>
@@ -716,14 +717,14 @@ docs page.</li>
 <code># EJAM 3.YYYY.x (unreleased)</code> heading to the dated release
 heading (for example <code># EJAM 3.2022.1 (July 2026)</code>).</li>
 </ul>
-<p><code>README.md</code> carries no hard-coded version (only a
-lifecycle badge), so it needs no edit. The deployed-API repo (EJAM-API)
-selects which EJAM version to build via the <code>EJAM_VERSION</code>
-build arg in its <code>Dockerfile</code> (with a matching mention in its
-<code>README.md</code>); bump that to the new tag (for example
-<code>v3.2022.1</code>) when redeploying the API. EJScreen has no
-EJAM-version string of its own — it reaches EJAM through the API URL —
-so it needs no version edit for an EJAM release.</p>
+<p><code>README.Rmd</code> or <code>README.md</code> carries no
+hard-coded version (only a lifecycle badge), so it needs no edit. The
+deployed-API repo (EJAM-API) selects which EJAM version to build via the
+<code>EJAM_VERSION</code> build arg in its <code>Dockerfile</code> (with
+a matching mention in its <code>README.md</code>); bump that to the new
+tag when redeploying the API. EJScreen has no EJAM-version string of its
+own — it reaches EJAM through the API URL — so it needs no version edit
+for an EJAM release.</p>
 </div>
 </div>
 <div class="section level2">
@@ -757,11 +758,11 @@ into a data.table/data.frame.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer>

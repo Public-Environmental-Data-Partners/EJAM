@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,17 +69,37 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="3.2022.2" id="ejam-320222-august-2026">EJAM 3.2022.2 (August 2026)<a class="anchor" aria-label="anchor" href="#ejam-320222-august-2026"></a></h2>
-<p>Patch release to address some bugs and improve the EJAM API. Like v3.2022.1, this is a code-and-docs patch that reuses the already-published <code>ejamdata</code> data release for this vintage (<code>v3.2022.0</code>), with no change to the packaged ACS or environmental data.</p>
+<h2 class="pkg-version" data-toc-text="3.2022.2" id="ejam-320222-unreleased">EJAM 3.2022.2 (unreleased)<a class="anchor" aria-label="anchor" href="#ejam-320222-unreleased"></a></h2>
+<p>Faster and more reliable report rendering, and fixes to report generation and the EJScreen/API integration. This is a patch release for the v3.YYYY.x annual-vintage line (v3.2022.x, v3.2023.x, v3.2024.x). Like v3.2022.1, this is a code-and-docs patch that reuses the already-published <code>ejamdata</code> data release for this vintage (<code>v3.2022.0</code>), with no change to the packaged ACS or environmental data.</p>
+<div class="section level3">
+<h3 id="bug-fixes-3-2022-2">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2022-2"></a></h3>
+<ul><li><p><strong>App crash on the EJScreen “Send to EJAM” handoff</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/465" class="external-link">#465</a> fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/466" class="external-link">#466</a>): every FIPS (County/Tract) and drawn-polygon handoff, and any lat/lon selection made without a buffer, killed the Shiny session. The API serializes absent payload fields as JSON <code><a href="https://rdrr.io/r/base/Paren.html" class="external-link">{}</a></code>, which <code><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">jsonlite::fromJSON()</a></code> parses as a zero-length list rather than <code>NULL</code>; those are now normalized to <code>NULL</code> and length-checked.</p></li>
+<li><p><strong>Saved reports were empty when <code>filename</code> was given</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/385" class="external-link">#385</a> fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/471" class="external-link">#471</a>, <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/475" class="external-link">#475</a>): <code><a href="../reference/build_community_report.html">build_community_report()</a></code> and <code><a href="../reference/build_barplot_report.html">build_barplot_report()</a></code> had an unfinished <code>filename</code> branch that wrote no file and returned mangled content. They now write the file and return the HTML visibly, and <code><a href="../reference/ejam2report.html">ejam2report()</a></code> accepts a much wider range of <code>filename</code> / <code>fileextension</code> values (bare names, <code>./</code> and multi-folder paths, uppercase or missing extensions, missing folders).</p></li>
+<li><p><strong>Reports failed or were wrong for zero-population sites</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/467" class="external-link">#467</a> fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/468" class="external-link">#468</a>): <code><a href="../reference/ejamit.html">ejamit()</a></code> and <code><a href="../reference/ejam2report.html">ejam2report()</a></code> now handle sites with no residents (open-water block groups, industrial parcels) instead of erroring or silently returning incorrect summary statistics.</p></li>
+<li><p><strong>API per-site report links were all labeled “Site 1”</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/348" class="external-link">#348</a> fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/470" class="external-link">#470</a>): <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> now sends <code>sitenumber=N</code> with each per-site link and the bundled <code>GET /report</code> honors it, so a link for row N produces a report that says “Site N”. New <code>ejam2report(sitenumber_label = )</code> sets that label independently of which results row is used, and <code><a href="../reference/popup_from_ejscreen.html">popup_from_ejscreen()</a></code> honors it. <code><a href="../reference/ejam2map.html">ejam2map()</a></code> no longer errors on the aggregate <code>sitenumber = 0</code> case, and now applies the site number for FIPS/shapefile sites too (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/479" class="external-link">#479</a>).</p></li>
+<li><p><strong><code>acs_bybg(year = 2024)</code> wrongly errored</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/391" class="external-link">#391</a> fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/469" class="external-link">#469</a>): the year gate used tidycensus’s own default year, which can lag more than a year behind what the Census Bureau publishes. It now gates on the latest published ACS end year via the new internal <code>acs_check_year_available()</code>.</p></li>
+</ul></div>
 <div class="section level3">
 <h3 id="improvements-3-2022-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-3-2022-2"></a></h3>
-<ul><li><p>PDF report generation is roughly 7 seconds (~46%) faster: the two fixed rendering pauses (report-map snapshot 4s -&gt; 1s, print-to-PDF 5s -&gt; 2s) were trimmed, and both are now adjustable without a rebuild via R option (<code>EJAM.pdf_map_snapshot_delay</code>, <code>EJAM.pdf_print_wait</code>) or environment variable (<code>EJAM_PDF_MAP_SNAPSHOT_DELAY</code>, <code>EJAM_PDF_PRINT_WAIT</code>), as a rollback lever in case a too-short pause ever degrades output on the server (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/473" class="external-link">#473</a>).</p></li>
-<li><p>County maps and reports are faster and more reliable: county boundaries are now built into the package (new <code>counties_shapefile</code> dataset, cartographic 1:500k) instead of being downloaded at render time, so County reports work with no Census API key and no boundary-service network call (including for Puerto Rico counties, previously unmappable), with automatic fallback to downloading (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/472" class="external-link">#472</a>, part of <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/446" class="external-link">#446</a>).</p></li>
+<ul><li><p><strong>All PDF reports are about 7 seconds (~46%) faster</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/473" class="external-link">#473</a> helps with <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/293" class="external-link">#293</a>): the two unconditional render pauses were trimmed (report-map snapshot 4s -&gt; 1s, print-to-PDF 5s -&gt; 2s), and both are now settable without a rebuild – via the <code>EJAM.pdf_map_snapshot_delay</code> / <code>EJAM.pdf_print_wait</code> options or the matching <code>EJAM_PDF_MAP_SNAPSHOT_DELAY</code> / <code>EJAM_PDF_PRINT_WAIT</code> environment variables – as a rollback lever should a too-short pause ever degrade output on a server.</p></li>
+<li><p><strong>County reports are faster as boundaries are now built into the package</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/472" class="external-link">#472</a>, part of <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/446" class="external-link">#446</a> and helps with <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/293" class="external-link">#293</a>): the new <code>counties_shapefile</code> dataset (Census cartographic boundaries, 1:500k) replaces a download at render time, so County maps and reports are faster and need no Census API key and no boundary-service network call (Puerto Rico counties are now mappable), with automatic fallback to downloading.</p></li>
+<li><p>Set default <code>version</code> parameter to NULL in <code><a href="../reference/ejamapi.html">ejamapi()</a></code> and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> since API does not support vintage selection yet and the API uses whatever vintage it has installed.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-3-2022-2">Documentation<a class="anchor" aria-label="anchor" href="#documentation-3-2022-2"></a></h3>
+<ul><li>
+<code>vignettes/webapp.Rmd</code> now covers the v3.2022.1 user-facing features: deep links, the EJScreen “Send to EJAM” button, and launching the app pre-loaded with a set of places. <code>vignettes/analyzing.Rmd</code> cross-references the API article, and broken R chunks were fixed in <code>vignettes/naics.Rmd</code> and <code>vignettes/dev-app-settings.Rmd</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="internal--packaging-3-2022-2">Internal / Packaging<a class="anchor" aria-label="anchor" href="#internal--packaging-3-2022-2"></a></h3>
+<ul><li><p>All key project URLs (the EJAM/EJScreen/API apps, their code repositories, and docs sites) are now stored as fields in <code>DESCRIPTION</code> and read through <code><a href="../reference/url_package.html">url_package()</a></code>, so they live in one place instead of being hardcoded across the code (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/485" class="external-link">#485</a>).</p></li>
+<li><p>The <code>AOI</code> geocoding dependency used by <code><a href="../reference/latlon_from_address.html">latlon_from_address()</a></code> now installs from the <code>ericnost/AOI</code> fork (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/478" class="external-link">#478</a>, fixes <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/477" class="external-link">#477</a>).</p></li>
+<li><p>No change to the packaged data: v3.2022.2 continues to require the existing <code>ejamdata</code> v3.2022.0 release (no v3.2022.1/v3.2022.2 <code>ejamdata</code> release is needed for a code-only patch). Several hardcoded version strings were removed from the documentation and vignettes.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2022.1" id="ejam-320221-july-2026">EJAM 3.2022.1 (July 2026)<a class="anchor" aria-label="anchor" href="#ejam-320221-july-2026"></a></h2>
-<p>Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1, v3.2024.1). Functionality is identical across all three ACS vintages (2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between branches. This is a code-and-docs patch: it reuses the existing per-vintage ejamdata release, with no change to the packaged ACS or environmental data.</p>
+<p>Patch release for the v3.YYYY.x annual-vintage line (v3.2022.x, v3.2023.x, v3.2024.x). Functionality is identical across all three ACS vintages (2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between branches. This is a code-and-docs patch: it reuses the existing per-vintage ejamdata release, with no change to the packaged ACS or environmental data.</p>
 <p>Changes since v3.YYYY.0:</p>
 <div class="section level3">
 <h3 id="new-features-3-2022-1">New Features<a class="anchor" aria-label="anchor" href="#new-features-3-2022-1"></a></h3>
@@ -958,11 +978,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

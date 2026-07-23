@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -133,10 +133,11 @@ would produce locally.</p>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## API example: build a multisite report URL</span></span>
-<span><span class="va">urlx</span> <span class="op">=</span> <span class="fu"><a href="../reference/url_ejamapi.html">url_ejamapi</a></span><span class="op">(</span>fips<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3650617</span>,<span class="st">'0973000'</span><span class="op">)</span>, sitenumber <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">urlx</span></span>
-<span><span class="co"># "https://api.ejanalysis.com/report?fips=3650617,0973000&amp;buffer=0&amp;sitenumber=0&amp;version=3.2022.1&amp;fileextension=html"</span></span>
-<span><span class="co"># browseURL(urlx)</span></span></code></pre></div>
+<span><span class="va">urlx</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/url_ejamapi.html">url_ejamapi</a></span><span class="op">(</span>fips<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3650617</span>,<span class="st">'0973000'</span><span class="op">)</span>, sitenumber <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">urlx</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [1] "https://api.ejanalysis.com/report?fips=3650617,0973000&amp;buffer=0&amp;sitenumber=0&amp;fileextension=html"</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># browseURL(urlx)</span></span></code></pre></div>
 <p>Two functions wrap the API:</p>
 <ul>
 <li>
@@ -147,7 +148,7 @@ the API, and returns the report or data.</li>
 URL(s) <em>without</em> calling them (useful for a table of shareable
 links, or to open one in a browser).</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejamapi.html">ejamapi</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">33</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">112</span>, radius <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>              <span class="co"># get a report or data back</span></span>
 <span><span class="fu"><a href="../reference/url_ejamapi.html">url_ejamapi</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">33</span>, <span class="fl">34</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">112</span>, <span class="op">-</span><span class="fl">114</span><span class="op">)</span><span class="op">)</span>      <span class="co"># just build the URL(s)</span></span></code></pre></div>
 <p>The API base URL – and a friendlier branded alias such as
@@ -201,11 +202,11 @@ README</a> is the source of truth, and <code><a href="../reference/ejamapi.html"
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer>

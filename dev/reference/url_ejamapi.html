@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -171,8 +171,9 @@ parameter in it).</p></dd>
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
 <dd><p>optional EJAM version tag (e.g. "3.2024.0") sent to the API as
-version=<ver> so the API can serve the matching data vintage. Default NULL
-resolves to the installed package Version (from DESCRIPTION).</ver></p></dd>
+version=<ver> so the API can be asked to serve the matching data vintage
+(but this is irrelevant until a multivintage option is implemented in the API).
+Default is NULL, meaning no version parameter is included in the URL.</ver></p></dd>
 
 
 <dt id="arg-fileextension">fileextension<a class="anchor" aria-label="anchor" href="#arg-fileextension"></a></dt>
@@ -279,11 +280,11 @@ radius_donut_lower_edge).</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>
