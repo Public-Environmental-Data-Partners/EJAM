@@ -89,7 +89,15 @@ packaged ACS or environmental data.
   template, producing byte-identical output while cutting server-side table
   construction from about 2.1s to 0.6s for 1,000 sites. `table_round()` is also
   used by map popups (`popup_from_ejscreen()`), `ejam2means()`, and
-  `ejam2table_tall()`, which get the same speedup.
+  `ejam2table_tall()`, which get the same speedup. In addition, the table now
+  starts from the default column subset (`default_bysite_webtable_colnames`,
+  ~50 columns) instead of all ~700 columns, and shows 50 rows per page instead
+  of 100 -- together these cut the time until the table appears from ~6.4s to
+  well under 1s for a 1,000-site analysis. Users can add any columns via the
+  advanced tab's column picker (which had never rendered, due to `renderUI()`
+  being used in the UI where `uiOutput()` belongs -- also fixed), can choose
+  100 rows per page from the length menu, and always get every column in the
+  downloaded spreadsheet.
 
 - **All PDF reports are about 7 seconds (~46%) faster** (#473 helps with #293): 
   the two unconditional render pauses were trimmed (report-map snapshot 4s -> 1s,

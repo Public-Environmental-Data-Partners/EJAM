@@ -1404,7 +1404,9 @@ app_ui <- function(request) {
                  ### By-site interactive table of results ####
                  h3("By-site interactive table of results"),
 
-                 shiny::renderUI("bysite_webtable_colnames_ui"),
+                 # uiOutput (not renderUI, which is server-side and rendered nothing here)
+                 # displays the column picker for the site-by-site table (#491)
+                 shiny::uiOutput("bysite_webtable_colnames_ui"),
 
                  # default_reports is not adjustable here-  changing this in advance tab is complicated since it is a list of functions, etc.
 
