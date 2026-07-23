@@ -129,7 +129,7 @@ ejam2barplot_areafeatures <- function(ejamitout,
 #'
 #' - `Indicator` - plain-English name of the indicator
 #' - `Percent_of_these_Sites` - % of the analyzed sites where the indicator is
-#'   present/flagged (or the sum of site percentages, for the two % indicators)
+#'   present/flagged (or the average of the site-level percentages, for the two % indicators)
 #' - `Percent_of_these_People` - % of the analyzed residents living in a
 #'   blockgroup with the feature or overlap
 #' - `Percent_of_all_People_Nationwide` - the same % but among all US residents
@@ -464,18 +464,12 @@ flagged_pct_pop_st_avg <- function(bybg_people = testoutput_ejamit_1000pts_1mile
   }
   stopifnot(all(c("pop", "ST", flagvarnames) %in% colnames(bybg_us)))
 
-  if (!is.data.table(bybg_people)) {
-    wasnt = TRUE
-    setDT(bybg_people)
-  } else {
-    wasnt = FALSE
-  }
+  # use a local data.table (not setDT/setDF, which would modify the caller's object
+  # by reference); if already a data.table it is only queried, never modified
+  bybg_people_dt <- if (is.data.table(bybg_people)) bybg_people else as.data.table(bybg_people)
   # weight for each state = ANALYZED population in that state
   # ("wtd by analyzed people from each state", as done for ratios to State averages overall)
-  wts <- bybg_people[!is.na(ST), .(analyzed_pop = sum(pop * bgwt, na.rm = TRUE)), keyby = ST]
-  if (wasnt) {
-    setDF(bybg_people)
-  }
+  wts <- bybg_people_dt[!is.na(ST), .(analyzed_pop = sum(pop * bgwt, na.rm = TRUE)), keyby = ST]
   wts <- wts[analyzed_pop > 0, ]
   if (NROW(wts) == 0) {
     warning("no analyzed population by state found - returning NA for statewide baselines")

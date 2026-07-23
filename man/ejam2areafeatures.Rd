@@ -35,7 +35,7 @@ The columns of the table are:
 \itemize{
 \item \code{Indicator} - plain-English name of the indicator
 \item \code{Percent_of_these_Sites} - \% of the analyzed sites where the indicator is
-present/flagged (or the sum of site percentages, for the two \% indicators)
+present/flagged (or the average of the site-level percentages, for the two \% indicators)
 \item \code{Percent_of_these_People} - \% of the analyzed residents living in a
 blockgroup with the feature or overlap
 \item \code{Percent_of_all_People_Nationwide} - the same \% but among all US residents
