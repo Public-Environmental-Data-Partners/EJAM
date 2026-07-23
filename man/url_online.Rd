@@ -4,7 +4,7 @@
 \alias{url_online}
 \title{utility - check if URL available, such as if an API is online or offline}
 \usage{
-url_online(url = "https://ejam.publicenvirodata.org")
+url_online(url = url_package("ejamapp"))
 }
 \arguments{
 \item{url}{the URL to check}

@@ -15,7 +15,7 @@ url_ejamapp(
   buffer = NULL,
   handoff = NULL,
   dTolerance = 100,
-  baseurl = "https://ejamapp.ejanalysis.com/",
+  baseurl = url_package("ejamapp"),
   browse = FALSE,
   shp = NULL
 )
