@@ -34,7 +34,7 @@ packaged ACS or environmental data.
   says "Site N". New `ejam2report(sitenumber_label = )` sets that label
   independently of which results row is used, and `popup_from_ejscreen()`
   honors it. `ejam2map()` no longer errors on the aggregate `sitenumber = 0`
-  case.
+  case, and now applies the site number for FIPS/shapefile sites too (#479).
 
 - **`acs_bybg(year = 2024)` wrongly errored** (#391 fixed by #469): the year gate used
   tidycensus's own default year, which can lag more than a year behind what the
@@ -70,6 +70,14 @@ packaged ACS or environmental data.
   `vignettes/dev-app-settings.Rmd`.
 
 ## Internal / Packaging
+
+- All key project URLs (the EJAM/EJScreen/API apps, their code repositories,
+  and docs sites) are now stored as fields in `DESCRIPTION` and read through
+  `url_package()`, so they live in one place instead of being hardcoded across
+  the code (#485).
+
+- The `AOI` geocoding dependency used by `latlon_from_address()` now installs
+  from the `ericnost/AOI` fork (#478, fixes #477).
 
 - No change to the packaged data: v3.2022.2 continues to require the existing
   `ejamdata` v3.2022.0 release (no v3.2022.1/v3.2022.2 `ejamdata` release is

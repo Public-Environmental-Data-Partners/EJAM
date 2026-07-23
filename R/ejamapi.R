@@ -228,10 +228,8 @@ ejamapi <- function(
   scale <- match.arg(scale)
 
   ## EJAM version tag passed to the API as version=<ver> so it can serve the matching
-  ## data vintage, assuming API implements that. Default = NULL, nothing sent.
-  # if (is.null(version)) {
-  #   version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)
-  # }
+  ## data vintage, if/when the API implements multivintage selection.
+  ## Default is NULL, so no version is sent unless the caller passes one explicitly.
 
   dotz = rlang::list2(...)
   if ("no_ejam" %in% names(dotz)) {
