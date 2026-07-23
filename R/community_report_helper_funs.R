@@ -1243,13 +1243,22 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 #'   For example, if it is a 1-site report as via sitenumber=2,
 #'    and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
 #'   instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).
+#' @param sitenumber_label optional, display-only override (a number or short text) of the
+#'   site identifier shown in a 1-site report header, in place of the `sitenumber` row index.
+#'   Useful when one site from a larger analysis has been re-analyzed alone -- e.g., the
+#'   EJAM API per-site report links made by [url_ejamapi()] re-analyze a single site that
+#'   was row N of the original multisite results, so its row index here (1) is not the
+#'   site number the user expects to see. A number N is shown as "Site N"; text is shown
+#'   as-is. Ignored for a multisite/overall summary report.
 #'
 #' @return text string such as "Residents within 1 mile of any of the 99 specified points<br>Area in Square Miles: 311.02"
 #'
 #' @export
 #' @keywords internal
 #'
-report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL, site_method = NULL, ...) {
+report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL, site_method = NULL, ...,
+                                                   sitenumber_label = NULL # name-only (after ... so positional args are unchanged)
+                                                   ) {
 
   out <- ejamitout
   if (!missing(...)) {params = list(...)} else {params = NULL}
@@ -1258,6 +1267,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
   if (!is.null(sitenumber) && sitenumber %in% 0) {sitenumber <- NULL} # because ejam2report() allows 0 to mean summary report
   stopifnot(!is.na(sitenumber), (is.null(sitenumber) | is.atomic(sitenumber)), length(sitenumber) < 2)
   stopifnot(is.numeric(sitenumber) | is.null(sitenumber))
+  stopifnot(is.null(sitenumber_label) || ((is.numeric(sitenumber_label) || is.character(sitenumber_label)) && length(sitenumber_label) == 1 && !is.na(sitenumber_label)))
   if (!is.null(sitenumber)) {
     if (sitenumber < 1 || sitenumber > NROW(out$results_bysite)) {
       message("sitenumber was < 1 or > number of rows in results_bysite, so ignoring sitenumber parameter")
@@ -1373,6 +1383,25 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
     census_unit_type <- ft
   } else {
     census_unit_type <- NULL
+  }
+
+  # sitenumber_label: display-only override of the site number/label shown in the header.
+  # A per-site report regenerated from a larger analysis (e.g., the EJAM API per-site links
+  # from url_ejamapi()) analyzes 1 site whose row index here is 1, but it was row N of the
+  # original analysis, so showing "Site 1" would mislabel it
+  # (Public-Environmental-Data-Partners/EJAM#348). All row lookups above still use the
+  # numeric sitenumber row index; only what is displayed changes here.
+  if (!is.null(sitenumber) && !is.null(sitenumber_label)) {
+    ejam_uniq_id_explicit <- !is.null(params) && ("ejam_uniq_id" %in% names(params))
+    if (!ejam_uniq_id_explicit && is.numeric(ejam_uniq_id) && !(sitetype %in% "fips") &&
+        isTRUE(ejam_uniq_id == sitenumber)) {
+      # drop the auto-assigned row-number id of this results table -- it is just the row
+      # index of the (possibly regenerated, 1-site) run and would contradict the label.
+      # A numeric id that does NOT equal the row index is not the auto row-number,
+      # so it may be meaningful and is kept alongside the label.
+      ejam_uniq_id <- NULL
+    }
+    sitenumber <- sitenumber_label
   }
 
   report_residents_within_xyz(

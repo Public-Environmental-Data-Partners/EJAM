@@ -8,7 +8,8 @@ popup_from_ejscreen(
   out,
   linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header),
   verbose = FALSE,
-  site_method = NULL
+  site_method = NULL,
+  sitenumber_label = NULL
 )
 }
 \arguments{
@@ -35,6 +36,13 @@ beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \co
 
 The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()
 which is much like the one called current_upload_method().}
+
+\item{sitenumber_label}{optional, display-only override (a number or short text) of the
+site number shown in the popup, in place of the auto-assigned row number/ejam_uniq_id.
+Only used when \code{out} is a single-site (1-row) table, as when \code{\link[=ejam2report]{ejam2report()}} re-analyzes
+one site that was row N of a larger analysis (e.g., the EJAM API per-site report links
+made by \code{\link[=url_ejamapi]{url_ejamapi()}}) -- the regenerated run's row index (1) is not the site number
+the user expects to see. A number N is shown as "Site N"; text is shown as-is.}
 }
 \value{
 HTML ready to be used for map popups

@@ -1,3 +1,18 @@
+# EJAM 3.2022.2 (August 2026)
+
+Patch release to address some bugs and improve the EJAM API. Like v3.2022.1,
+this is a code-and-docs patch that reuses the already-published `ejamdata`
+data release for this vintage (`v3.2022.0`), with no change to the packaged
+ACS or environmental data.
+
+## Improvements
+
+- PDF report generation is roughly 7 seconds (~46%) faster: the two fixed rendering pauses (report-map snapshot 4s -> 1s, print-to-PDF 5s -> 2s) were trimmed, and both are now adjustable without a rebuild via R option (`EJAM.pdf_map_snapshot_delay`, `EJAM.pdf_print_wait`) or environment variable (`EJAM_PDF_MAP_SNAPSHOT_DELAY`, `EJAM_PDF_PRINT_WAIT`), as a rollback lever in case a too-short pause ever degrades output on the server (#473).
+
+- County maps and reports are faster and more reliable: county boundaries are now built into the package (new `counties_shapefile` dataset, cartographic 1:500k) instead of being downloaded at render time, so County reports work with no Census API key and no boundary-service network call (including for Puerto Rico counties, previously unmappable), with automatic fallback to downloading (#472, part of #446).
+
+
+
 # EJAM 3.2022.1 (July 2026)
 
 Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1,
@@ -45,6 +60,15 @@ web app with the sites already loaded and ready to analyze. The supporting piece
   `url_ejamapi()`. The default app base is now **`https://ejamapp.ejanalysis.com/`**,
   a Cloudflare-fronted shortcut on ejanalysis.com that forwards the query string
   (302 redirect) to the live app so launch parameters arrive intact.
+
+- `url_ejscreenmap()` was rewritten to generate **deep links into EJScreen** that
+  actually draw and select the place(s) on the EJScreen map -- `?fips=` (county,
+  tract, or blockgroup, mixes allowed), `?lat=&lon=` points (with optional
+  `radius=`), or `?polygon=` vertex lists -- matching the new inbound deep-link
+  vocabulary EJScreen itself gained (so links from EJAM reports and tables select
+  the analyzed place for an EJScreen report instead of only dropping a centroid
+  pin). Stored test outputs were deliberately not regenerated for the resulting
+  URL-column changes.
 
 - The EJAM API base URL is now **single-sourced**: functions read it from
   `DESCRIPTION` via `url_package("api")`, so the endpoint can be
