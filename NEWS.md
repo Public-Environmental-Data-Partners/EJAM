@@ -4,8 +4,9 @@ Faster and more reliable report rendering, and
 fixes to report generation and the EJScreen/API integration.
 This is a patch release for the v3.YYYY.x annual-vintage line 
 (v3.2022.x, v3.2023.x, v3.2024.x). 
-This release just reuses the `ejamdata` v3.2022.1 release datasets, 
-with no change to packaged ACS or environmental data.
+Like v3.2022.1, this is a code-and-docs patch that reuses the already-published
+`ejamdata` data release for this vintage (`v3.2022.0`), with no change to the
+packaged ACS or environmental data.
 
 ## Bug Fixes
 
@@ -70,10 +71,10 @@ with no change to packaged ACS or environmental data.
 
 ## Internal / Packaging
 
-- The `ejamdata` dependency reference is now v3.2022.1 (was v3.2022.0,
-  and no v3.2022.2 needed since no change in datasets), and
-  several hardcoded version strings were removed from the documentation and
-  vignettes.
+- No change to the packaged data: v3.2022.2 continues to require the existing
+  `ejamdata` v3.2022.0 release (no v3.2022.1/v3.2022.2 `ejamdata` release is
+  needed for a code-only patch). Several hardcoded version strings were removed
+  from the documentation and vignettes.
 
 
 # EJAM 3.2022.1 (July 2026)

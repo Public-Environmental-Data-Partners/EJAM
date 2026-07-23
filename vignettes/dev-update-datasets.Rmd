@@ -500,9 +500,10 @@ EJAM:::ejamdata_required_tag()                          # from DESCRIPTION; must
 
 git release tag = `ejamdata` release tag = DESCRIPTION `ejamdata_required_tag` =
 `data/ejamdata_version.txt`. A code-only **patch** release (for example
-`v3.2022.2`) could keep `ejamdata_required_tag` and the marker at
-the existing `v3.2022.1`, if the data did not change and the patch reuses the
-already-published `ejamdata` release.
+`v3.2022.1` and `v3.2022.2`) keeps `ejamdata_required_tag` and the marker at
+the existing `v3.2022.0`, because the data did not change and the patch reuses the
+already-published `ejamdata` release. (There is no `v3.2022.1` or `v3.2022.2`
+release of `ejamdata`, and none is needed for a code-only patch.)
 
 This previously had been handled with a GitHub Actions workflow that tried to
 use Git LFS. That automatic workflow is no longer used and will not be restored.

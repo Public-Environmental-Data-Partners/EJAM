@@ -150,8 +150,9 @@ The workflows can also be run manually from **GitHub → Actions → (deploy wor
 > explicit and reproducible rather than tied to whatever source happens to be
 > checked out on the deploy branch. The `ejamdata` arrow files are fetched
 > separately from the ejamdata GitHub release via the `EJAMDATA_VERSION` build-arg
-> (specifying the release that the given EJAM version requires, 
-> i.e. its `ejamdata_required_tag`); 
+> (e.g., `v3.2022.0` — the release that the given EJAM version requires,
+> i.e. its `ejamdata_required_tag`; note a code-only patch such as `v3.2022.1`
+> or `v3.2022.2` still uses the existing `v3.2022.0` data release);
 > keep the two in sync when bumping to a new release.
 >
 > *(These pinned build-args are set in the deploy-branch `Dockerfile`. A deploy

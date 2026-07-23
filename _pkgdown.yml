@@ -220,6 +220,7 @@ reference:
   - censusplaces
 - subtitle: "Counties"
   contents:
+  - counties_shapefile
   - counties_as_sites
   - fips_counties_from_statefips
   - fips_counties_from_state_abbrev
