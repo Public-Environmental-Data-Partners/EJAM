@@ -9,8 +9,11 @@ datacreate_names_pct_as_fraction <- function(map_headernames)   {
   # map_headernames$pct_as_fraction_blockgroupstats is TRUE when  map_headernames$rname %in% names_pct_as_fraction_blockgroupstats
   # map_headernames$pct_as_fraction_ejamit          is TRUE when  map_headernames$rname %in% names_pct_as_fraction_ejamit
 
-  names_pct_as_fraction_ejamit          <- unique(map_headernames$rname[map_headernames$pct_as_fraction_ejamit])
-  names_pct_as_fraction_blockgroupstats <- unique(map_headernames$rname[map_headernames$pct_as_fraction_blockgroupstats])
+  # Note map_headernames columns are stored as character, so compare to "TRUE" --
+  # subsetting directly by the column as if it were logical silently returns garbage
+  # (that bug once saved names_pct_as_fraction_ejamit as NA and ..._blockgroupstats as empty).
+  names_pct_as_fraction_ejamit          <- unique(map_headernames$rname[map_headernames$pct_as_fraction_ejamit          %in% c(TRUE, "TRUE")])
+  names_pct_as_fraction_blockgroupstats <- unique(map_headernames$rname[map_headernames$pct_as_fraction_blockgroupstats %in% c(TRUE, "TRUE")])
   names_pct_as_fraction_blockgroupstats <- unique(names_pct_as_fraction_blockgroupstats[names_pct_as_fraction_blockgroupstats %in% names(blockgroupstats)])
 
   # names_pct_as_fraction_blockgroupstats <- metadata_add(names_pct_as_fraction_blockgroupstats)
@@ -27,7 +30,7 @@ datacreate_names_pct_as_fraction <- function(map_headernames)   {
   dataset_documenter("names_pct_as_fraction_blockgroupstats",
                      title = "which indicators are percentages stored as 0-1 not 0-100, in blockgroupstats\n#' @keywords internal")
   dataset_documenter("names_pct_as_fraction_ejamit",
-                     title = "which indicators are percentages stored as 0-1 not 0-100, in blockgroupstats\n#' @keywords internal")
+                     title = "which indicators are percentages stored as 0-1 not 0-100, in ejamit() output\n#' @keywords internal")
 
   # return them just in case that is useful, but this is really to save them as datasets and document them
   return(list(

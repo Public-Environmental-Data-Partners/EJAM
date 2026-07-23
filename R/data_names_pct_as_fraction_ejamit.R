@@ -4,6 +4,6 @@
 
 #' @name names_pct_as_fraction_ejamit
 #' @docType data
-#' @title which indicators are percentages stored as 0-1 not 0-100, in blockgroupstats
+#' @title which indicators are percentages stored as 0-1 not 0-100, in ejamit() output
 #' @keywords internal
 'names_pct_as_fraction_ejamit'
