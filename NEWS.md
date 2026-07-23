@@ -95,9 +95,10 @@ packaged ACS or environmental data.
   of 100 -- together these cut the time until the table appears from ~6.4s to
   well under 1s for a 1,000-site analysis. Users can add any columns via the
   advanced tab's column picker (which had never rendered, due to `renderUI()`
-  being used in the UI where `uiOutput()` belongs -- also fixed), can choose
-  100 rows per page from the length menu, and always get every column in the
-  downloaded spreadsheet.
+  being used in the UI where `uiOutput()` belongs -- also fixed, along with
+  the button-column-name field next to it, which displayed "FALSE" because it
+  was bound to the wrong setting), can choose 100 rows per page from the
+  length menu, and always get every column in the downloaded spreadsheet.
 
 - **All PDF reports are about 7 seconds (~46%) faster** (#473 helps with #293): 
   the two unconditional render pauses were trimmed (report-map snapshot 4s -> 1s,

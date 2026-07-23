@@ -1412,8 +1412,10 @@ app_ui <- function(request) {
 
                  # sitereport_download_buttons_colname = "Download EJAM Report", # input$sitereport_download_buttons_colname
                  shiny::textInput("sitereport_download_buttons_colname",
-                                  label = "Name of column of uttons that download 1-site report per row",
-                                  value = global_or_param("sitereport_download_buttons_show")),
+                                  label = "Name of column of buttons that download 1-site report per row",
+                                  # was bound to ..._show (a logical), so the field said "FALSE"
+                                  # and enabling the buttons named the column "FALSE" (#491)
+                                  value = global_or_param("sitereport_download_buttons_colname")),
 
                  checkboxInput("sitereport_download_buttons_show",
                                label = "Show column of buttons that download 1-site report per row",
