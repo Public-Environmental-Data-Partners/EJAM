@@ -21,7 +21,8 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
   analogous to how ratios to State averages are calculated for other indicators.
 - The community report (in the app and via `ejam2report()`) has a new set of rows,
   "% of These Residents Who Have This Feature or Area Type in (or Overlapping)
-  Their Blockgroup," just below the "Poverty" section,
+  Their Blockgroup," just below the "Climate" section (which sits right after
+  "Poverty"),
   with color-coded ratios to the US and State averages (percents shown as whole
   numbers and ratios with 1 decimal place, like the other rows of the table).
   Multisite reports
@@ -38,7 +39,7 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
   hospitals, and area-overlap flags), "Facility Counts" (NPL, TSDF, air, toxic
   release, water discharge, brownfields), and "Analyzed Sites" (distance and
   sites-nearby rows); "Critical Services" is re-sorted (flags first,
-  then percentages); "Climate" moved up to sit right after "Poverty" (following
+  then percentages); "Climate" moved up to sit right after "Poverty" (just before
   the flagged-areas "% of These Residents..." rows); and the "Other" section was
   renamed "Other Totals" (reserving
   "Other" for future user-specified indicators) and moved to the

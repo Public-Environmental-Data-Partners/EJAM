@@ -440,7 +440,8 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
 #'   (see \code{calc_flagged_areas()}). If provided, a section of rows showing the percent of
 #'   analyzed residents with each feature or area type in their blockgroup (with ratios
 #'   to the US and State averages) is inserted just after the
-#'   "Poverty" section. NULL (default) omits that section.
+#'   "Climate" section (or after "Poverty" if there is no Climate section).
+#'   NULL (default) omits that section.
 #' @param flagged_areas_section_title title text for the flagged-areas section subheader row
 #'
 #' @keywords internal
@@ -463,6 +464,14 @@ fill_tbl_full_subgroups <- function(output_df,
 
     full_html <- ''
     flagged_inserted <- !nzchar(flagged_html) # nothing to insert if it is empty
+    # the flagged-areas section goes right below the Climate section (which itself
+    # follows Poverty in the default layout); if the customized list of sections
+    # has no Climate section, it goes right below Poverty instead
+    flagged_anchor <- if (any(grepl("Climate", names(list_of_sections), fixed = TRUE))) {
+      "Climate"
+    } else {
+      "Poverty"
+    }
     for (i in seq_along(list_of_sections)) {
       full_html <- paste0(full_html,
                           table_one_section(section_name = names(list_of_sections)[i],
@@ -471,14 +480,13 @@ fill_tbl_full_subgroups <- function(output_df,
                                             extratable_show_ratios_in_report = extratable_show_ratios_in_report),
                           '\n'
       )
-      # the flagged-areas section goes right below the Poverty section
-      if (!flagged_inserted && grepl("Poverty", names(list_of_sections)[i], fixed = TRUE)) {
+      if (!flagged_inserted && grepl(flagged_anchor, names(list_of_sections)[i], fixed = TRUE)) {
         full_html <- paste0(full_html, flagged_html, '\n')
         flagged_inserted <- TRUE
       }
     }
     if (!flagged_inserted) {
-      # no section named like "Poverty" so just append at the end
+      # no section named like "Climate" or "Poverty" so just append at the end
       full_html <- paste0(full_html, flagged_html, '\n')
     }
 

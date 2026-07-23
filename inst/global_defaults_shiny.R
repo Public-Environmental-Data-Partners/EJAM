@@ -511,7 +511,7 @@ msg <- utils::capture.output({
       "`Age` = c('pctunder5', 'pctunder18', 'pctover64')",
       "`Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))]",
       "`Poverty` = names_d_extra",
-      # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Poverty)
+      # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Climate)
       "`Climate` = names_climate",
       "`Counts of Features and Overlap with Area Types` = c(
     names_featuresinarea ,

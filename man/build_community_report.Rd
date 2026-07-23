@@ -79,7 +79,7 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.'}
 
 \item{flagged_areas_df}{optional data.frame like ejamit()$results_summarized$flagged_areas
 (see \code{calc_flagged_areas()}). If provided, a section of rows is added just below the
-"Poverty" section of the extra table, showing what percent of
+"Climate" section (or "Poverty" if there is no Climate section) of the extra table, showing what percent of
 the analyzed residents have each type of feature or area type in (or overlapping) their
 blockgroup, with color-coded ratios to the US and State averages.
 NULL (the default) omits that section, as for outputs of older EJAM versions.}
