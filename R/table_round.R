@@ -55,7 +55,16 @@ table_round <- function(x, var = names(x), varnametype="rname", ...) {
 
   } else {
     # table, not  a vector
-    if (data.table::is.data.table(x)) {data.table::setDF(x); wasdt <- TRUE} else {wasdt <- FALSE}
+    if (data.table::is.data.table(x)) {
+      # work on a plain data.frame copy, so the caller's data.table is never
+      # converted or altered by reference (setDF() here used to leak: the
+      # caller's object was left as a data.frame, and this function returned
+      # a data.frame instead of a data.table)
+      x <- as.data.frame(x)
+      wasdt <- TRUE
+    } else {
+      wasdt <- FALSE
+    }
 
     # Round each roundable column in place, one at a time.
     # (Assigning via x[ , roundable][ , i] <- ... copied the whole roundable

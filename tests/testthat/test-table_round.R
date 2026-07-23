@@ -28,16 +28,47 @@ test_that("table_round rounds each roundable column of a wide results_bysite tab
   expect_identical(names(result), names(x))
 })
 
-test_that("table_round on a data.table gives the same values as on a data.frame", {
+test_that("table_round on a data.table: same values, returns a data.table, caller untouched", {
   env <- new.env(parent = emptyenv())
   data("testoutput_ejamit_10pts_1miles", package = "EJAM", envir = env)
   out <- get("testoutput_ejamit_10pts_1miles", envir = env, inherits = FALSE)
   df <- as.data.frame(out$results_bysite)
 
   from_df <- EJAM:::table_round(df)
-  from_dt <- EJAM:::table_round(data.table::as.data.table(df))
+  dt_in <- data.table::as.data.table(df)
+  snapshot <- data.table::copy(dt_in)
+  from_dt <- EJAM:::table_round(dt_in)
 
   expect_identical(as.data.frame(from_dt), from_df)
+  # a data.table in gives a data.table back (it used to fall back to data.frame
+  # by accident, via a setDF() side effect inside is.numericish())
+  expect_true(data.table::is.data.table(from_dt))
+  # and the caller's object is not converted or altered by reference
+  expect_true(data.table::is.data.table(dt_in))
+  expect_identical(dt_in, snapshot)
+})
+
+test_that("table_x100, table_signif, and the table_signif_round_x100 chain are also data.table-stable", {
+  # same contract as table_round for the rest of the rounding-helper family:
+  # data.table in -> data.table back, same values as the data.frame path,
+  # and never convert or modify the caller's object by reference
+  env <- new.env(parent = emptyenv())
+  data("testoutput_ejamit_10pts_1miles", package = "EJAM", envir = env)
+  out <- get("testoutput_ejamit_10pts_1miles", envir = env, inherits = FALSE)
+  df <- as.data.frame(out$results_bysite)
+
+  for (fname in c("table_x100", "table_signif", "table_signif_round_x100")) {
+    f <- get(fname, envir = asNamespace("EJAM"))
+    from_df <- f(df)
+    dt_in <- data.table::as.data.table(df)
+    snapshot <- data.table::copy(dt_in)
+    from_dt <- f(dt_in)
+
+    expect_identical(as.data.frame(from_dt), as.data.frame(from_df), label = fname)
+    expect_true(data.table::is.data.table(from_dt), label = paste(fname, "returns data.table"))
+    expect_true(data.table::is.data.table(dt_in), label = paste(fname, "caller class"))
+    expect_identical(dt_in, snapshot, label = paste(fname, "caller values"))
+  }
 })
 
 test_that("table_round works on a vector", {

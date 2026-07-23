@@ -10,6 +10,16 @@ packaged ACS or environmental data.
 
 ## Bug Fixes
 
+- **Rounding helpers no longer mangle data.table inputs** (#491): `table_round()`,
+  `table_signif()`, `table_x100()`, and `is.numericish()` used to convert a
+  data.table argument into a data.frame *in the caller's environment* (a
+  `setDF()` side effect that was never undone because a later copy broke the
+  reference before the restoring `setDT()`), and `table_round()` /
+  `table_signif()` then also returned a plain data.frame. All four now leave
+  the caller's object untouched and return the same class they were given,
+  with identical values (verified cell-for-cell against the old behavior for
+  points, FIPS, and shapefile analysis outputs).
+
 - **Percentages displayed as "0" or "1" (or unrounded) in reports, tables, and
   map popups**: two related metadata problems were fixed. The derived
   `names_pct_as_fraction_ejamit` / `names_pct_as_fraction_blockgroupstats`
