@@ -103,7 +103,7 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #'   as with many of names_d_language, in extra table of demog. subgroups, etc.'
 #' @param flagged_areas_df optional data.frame like ejamit()$results_summarized$flagged_areas
 #'   (see \code{calc_flagged_areas()}). If provided, a section of rows is added just below the
-#'   "Features and Location Information" section of the extra table, showing what percent of
+#'   "Poverty" section of the extra table, showing what percent of
 #'   the analyzed residents have each type of feature or area type in (or overlapping) their
 #'   blockgroup, with color-coded ratios to the US and State averages.
 #'   NULL (the default) omits that section, as for outputs of older EJAM versions.
@@ -144,15 +144,22 @@ build_community_report <- function(
       `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
       `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
       `Poverty` = names_d_extra,
-      `Features and Location Information` = c(
-        names_e_other,
-        names_sitesinarea,
+      # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Poverty)
+      `Counts of Features and Overlap with Area Types` = c(
         names_featuresinarea,
         names_flag
       ),
+      `Critical Services` = c( # names_criticalservice, re-sorted for display: flags first, then percentages
+        'yesno_houseburden', 'yesno_fooddesert', 'yesno_transdis',
+        'pctnobroadband', 'pctnohealthinsurance'
+      ),
       `Climate` = names_climate,
-      `Critical Services` = names_criticalservice,
-      `Other` = names_d_other_count
+      `Other Totals` = names_d_other_count,
+      `Facility Counts` = names_sitesinarea,
+      `Analyzed Sites` = c( # names_e_other, re-sorted for display: distances first, then site counts
+        'distance_min_avgperson', 'distance_min',
+        'sitecount_unique', 'sitecount_avg', 'sitecount_max'
+      )
       # , `Count above threshold` = names_countabove # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
     ),
     ## all the indicators that are in extratable_list_of_sections:
@@ -188,13 +195,16 @@ build_community_report <- function(
   output_df_rounded <-   as.data.frame(output_df)
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded))
 
-  # Show the avg resident's counts of features (schools etc.) rounded to 1 decimal place,
-  # not 0 decimal places, since e.g. an average count of 0.4 would misleadingly
-  # display as 0 (issue #410)
-  countcols <- intersect(c(names_featuresinarea, names_sitesinarea), names(output_df_rounded))
-  countcols <- countcols[sapply(as.data.frame(output_df)[, countcols, drop = FALSE], is.numeric)]
-  if (length(countcols) > 0) {
-    output_df_rounded[, countcols] <- round(as.data.frame(output_df)[, countcols, drop = FALSE], 1)
+  # Feature/facility count rows are estimated totals (see issue #410), so like other
+  # totals they use the 0-decimal rounding from map_headernames via format_ejamit_columns()
+  # above; sitecount_avg is the only average-person count row and its metadata keeps 1 decimal.
+
+  # "Flag for ..." (yesno_*) rows display Yes/No rather than 1/0
+  flagcols <- grep("^yesno_", names(output_df_rounded), value = TRUE)
+  for (fc in flagcols) {
+    rawvals <- suppressWarnings(as.numeric(as.data.frame(output_df)[[fc]]))
+    output_df_rounded[[fc]] <- ifelse(is.na(rawvals), output_df_rounded[[fc]],
+                                      ifelse(rawvals != 0, "Yes", "No"))
   }
 
   if (missing(totalpop) || is.null(totalpop)) {

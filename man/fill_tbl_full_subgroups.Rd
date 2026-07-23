@@ -37,7 +37,7 @@ leave out rows in table where raw value is NA, as with many of names_d_language}
 (see \code{calc_flagged_areas()}). If provided, a section of rows showing the percent of
 analyzed residents with each feature or area type in their blockgroup (with ratios
 to the US and State averages) is inserted just after the
-"Features and Location Information" section. NULL (default) omits that section.}
+"Poverty" section. NULL (default) omits that section.}
 
 \item{flagged_areas_section_title}{title text for the flagged-areas section subheader row}
 }

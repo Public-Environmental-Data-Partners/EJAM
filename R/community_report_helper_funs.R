@@ -440,7 +440,7 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
 #'   (see \code{calc_flagged_areas()}). If provided, a section of rows showing the percent of
 #'   analyzed residents with each feature or area type in their blockgroup (with ratios
 #'   to the US and State averages) is inserted just after the
-#'   "Features and Location Information" section. NULL (default) omits that section.
+#'   "Poverty" section. NULL (default) omits that section.
 #' @param flagged_areas_section_title title text for the flagged-areas section subheader row
 #'
 #' @keywords internal
@@ -471,14 +471,14 @@ fill_tbl_full_subgroups <- function(output_df,
                                             extratable_show_ratios_in_report = extratable_show_ratios_in_report),
                           '\n'
       )
-      # the flagged-areas section goes right below the Features and Location Information section
-      if (!flagged_inserted && grepl("Features and Location", names(list_of_sections)[i], fixed = TRUE)) {
+      # the flagged-areas section goes right below the Poverty section
+      if (!flagged_inserted && grepl("Poverty", names(list_of_sections)[i], fixed = TRUE)) {
         full_html <- paste0(full_html, flagged_html, '\n')
         flagged_inserted <- TRUE
       }
     }
     if (!flagged_inserted) {
-      # no section named like "Features and Location..." so just append at the end
+      # no section named like "Poverty" so just append at the end
       full_html <- paste0(full_html, flagged_html, '\n')
     }
 
@@ -638,15 +638,17 @@ fill_tbl_flagged_areas_section <- function(flagged_areas_df,
     if (cn %in% names(flagged_areas_df)) {flagged_areas_df[[cn]]} else {rep(NA_real_, NROW(flagged_areas_df))}
   }
   vals     <- suppressWarnings(as.numeric(getcol("Percent_of_these_People")))
-  ratio_us <- getcol("ratio")
-  ratio_st <- getcol("ratio_to_state_avg")
+  # ratios display with 1 decimal place, like the other ratio columns in this table
+  ratio_us <- round(suppressWarnings(as.numeric(getcol("ratio"))), 1)
+  ratio_st <- round(suppressWarnings(as.numeric(getcol("ratio_to_state_avg"))), 1)
 
   tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader\">
 <th colspan=\"8\">', section_title, '</th>
 </tr>')
 
   tbl_rows <- sapply(seq_len(NROW(flagged_areas_df)), function(i) {
-    valtxt <- if (is.na(vals[i])) {"N/A"} else {paste0(format(round(vals[i], 1), nsmall = 1, trim = TRUE), "%")}
+    # whole percents with no decimal places, just like the other percentage rows
+    valtxt <- if (is.na(vals[i])) {"N/A"} else {paste0(round(vals[i], 0), "%")}
     cells <- paste0('<td>', valtxt, '</td>')
     if (extratable_show_ratios_in_report) {
       cells <- paste0(cells,
@@ -675,9 +677,10 @@ fill_tbl_flagged_areas_section <- function(flagged_areas_df,
 #' @param diesel_caveat text - see source code for default
 #' @param show_diesel_caveat logical, default FALSE so the diesel particulate-matter
 #'   caveat is suppressed in reports; set TRUE to include it in the footnotes.
-#' @param areafeatures_note text explaining the Features and Location Information rows
-#'   (counts are the average resident's count of the feature anywhere within their
-#'   blockgroup) and the "% of These Residents..." rows and their US/State ratios -
+#' @param areafeatures_note text explaining the feature/facility count rows
+#'   (estimated totals, prorated by the share of each blockgroup's residents
+#'   inside the analyzed area - see issue #410) and the "% of These Residents..."
+#'   rows and their US/State ratios -
 #'   see source code for default. Set to "" to omit.
 #'
 #' @keywords internal
@@ -690,9 +693,12 @@ generate_report_footnotes <- function(
 
   if (is.null(areafeatures_note)) {
     areafeatures_note <- paste0(
-      "Note: Counts of features (such as Number of Schools) are the average resident's count",
-      " of that type of feature located anywhere within their block group",
-      " (not a count only within the analyzed area, and not a total count across all these residents).",
+      # agreed wording from issue #410 (see the #488 review discussion)
+      "Note: Feature counts shown (such as the count of schools) are estimated totals --",
+      " They use the count of features in each blockgroup and adjust that based on",
+      " what share of the blockgroup's residents are inside the analyzed area.",
+      " They estimate the total in the area rather than using exact coordinates",
+      " of each feature to count inside each mapped area.",
       " If present, rows showing what % of these residents have a feature or area type in their block group",
       " show what percent of the residents analyzed live in a block group that contains at least one",
       " of that type of feature or that overlaps that type of area,",

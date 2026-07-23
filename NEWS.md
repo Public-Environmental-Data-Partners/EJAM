@@ -21,8 +21,10 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
   analogous to how ratios to State averages are calculated for other indicators.
 - The community report (in the app and via `ejam2report()`) has a new set of rows,
   "% of These Residents Who Have This Feature or Area Type in (or Overlapping)
-  Their Blockgroup," just below the "Features and Location Information" section,
-  with color-coded ratios to the US and State averages. Multisite reports
+  Their Blockgroup," just below the "Poverty" section,
+  with color-coded ratios to the US and State averages (percents shown as whole
+  numbers and ratios with 1 decimal place, like the other rows of the table).
+  Multisite reports
   summarize all sites; 1-site reports now calculate these stats for that one site.
   (The % without broadband / health insurance indicators remain in the
   "Critical Services" section, where they already had US/State ratios.)
@@ -30,12 +32,28 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
   ratios to State averages instead of US averages.
 - The spreadsheet from `ejam2excel()` gains an "Area Features" tab with this
   summary table, ratio columns color-coded like the other ratio columns.
+- The report's "Additional Information" table was re-organized: the old
+  "Features and Location Information" section is now split into
+  "Counts of Features and Overlap with Area Types" (schools, places of worship,
+  hospitals, and area-overlap flags), "Facility Counts" (NPL, TSDF, air, toxic
+  release, water discharge, brownfields), and "Analyzed Sites" (distance and
+  sites-nearby rows, shown last); "Critical Services" is re-sorted (flags first,
+  then percentages); and the "Other" section was renamed "Other Totals" (reserving
+  "Other" for future user-specified indicators). "Flag for..." rows now display
+  Yes/No instead of 1/0.
 - Also per [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410),
-  the report's Features and Location Information counts (average resident's count
-  of schools etc. within their blockgroup) are now shown with 1 decimal place
-  (0.4 no longer misleadingly displays as 0), and a report footnote now explains
-  what those counts mean and what the State average means for a multisite report
+  the report's feature/facility counts are estimated totals (prorated by the share
+  of each blockgroup's residents inside the analyzed area), so they display with
+  0 decimal places like other totals; "Number of Sites Nearby (avg)" is the only
+  average-person count row and keeps 1 decimal place. A report footnote now
+  explains what those counts mean and what the State average means for a
+  multisite report
   (part of [#403](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/403)).
+  A few indicator names were also cleaned up: "Number of National Priority List
+  Superfund sites" and "Number of Treatment Storage Disposal Facilities (TSDF)"
+  (was "Count of..."), "Count of Households in Internet Subscription Universe"
+  (dropped the "B28002" jargon), and "Count of Residents Who Are Not People of
+  Color" (was "Non-POC resident count").
 
 # EJAM 3.2022.2 (unreleased)
 

@@ -370,9 +370,12 @@ test_that("build_community_report() includes flagged-areas section when df provi
   txt <- as.character(html_with)
   expect_true(grepl(flagged_section_title_text, txt, fixed = TRUE))
   expect_true(grepl("Overlapping with Tribes", txt, fixed = TRUE))
-  # new section sits after the Features and Location Information section subheader
+  # new section sits after the Poverty section subheader and before the
+  # Counts of Features and Overlap with Area Types section
   expect_true(regexpr(flagged_section_title_text, txt, fixed = TRUE) >
-                regexpr("Features and Location Information", txt, fixed = TRUE))
+                regexpr(">Poverty<", txt, fixed = TRUE))
+  expect_true(regexpr(flagged_section_title_text, txt, fixed = TRUE) <
+                regexpr("Counts of Features and Overlap with Area Types", txt, fixed = TRUE))
   # the two percentage indicators are excluded from the new section (they stay under Critical Services):
   # inspect just the new section = from its title to the next section subheader after it
   section_start <- regexpr(flagged_section_title_text, txt, fixed = TRUE)
@@ -427,7 +430,7 @@ test_that("ejam2report() still works when flagged-areas info is unavailable (old
     html_multi <- ejam2report(out, return_html = TRUE, launch_browser = FALSE)
   })
   expect_false(grepl(flagged_section_title_text, html_multi, fixed = TRUE))
-  expect_true(grepl("Features and Location Information", html_multi, fixed = TRUE)) # rest of report still there
+  expect_true(grepl("Counts of Features and Overlap with Area Types", html_multi, fixed = TRUE)) # rest of report still there
 })
 ############################################################################## #
 

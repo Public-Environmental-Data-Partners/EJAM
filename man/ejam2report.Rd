@@ -24,11 +24,14 @@ ejam2report(
     `Breakdown by Sex` = c("pctmale", "pctfemale"), Health = names_health, Age =
     c("pctunder5", "pctunder18", "pctover64"), Community =
     names_community[!(names_community \%in\% c("pctmale", "pctfemale",
-    "pctownedunits_dupe"))], Poverty = names_d_extra, `Features and Location Information`
-    = c(names_e_other, names_sitesinarea, names_featuresinarea, 
-     names_flag),
-    Climate = names_climate, `Critical Services` = names_criticalservice, Other =
-    names_d_other_count),
+    "pctownedunits_dupe"))], Poverty = names_d_extra,
+    `Counts of Features and Overlap with Area Types` = c(names_featuresinarea,
+    names_flag), 
+     `Critical Services` = c("yesno_houseburden", "yesno_fooddesert",
+    "yesno_transdis", "pctnobroadband", "pctnohealthinsurance"), Climate = names_climate,
+    `Other Totals` = names_d_other_count, `Facility Counts` = names_sitesinarea,
+    `Analyzed Sites` = c("distance_min_avgperson", "distance_min", "sitecount_unique",
+    "sitecount_avg", "sitecount_max")),
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
   footer_version_number = NULL,
   footer_date = NULL,

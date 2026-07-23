@@ -16,9 +16,10 @@ generate_report_footnotes(
 \item{show_diesel_caveat}{logical, default FALSE so the diesel particulate-matter
 caveat is suppressed in reports; set TRUE to include it in the footnotes.}
 
-\item{areafeatures_note}{text explaining the Features and Location Information rows
-(counts are the average resident's count of the feature anywhere within their
-blockgroup) and the "\% of These Residents..." rows and their US/State ratios -
+\item{areafeatures_note}{text explaining the feature/facility count rows
+(estimated totals, prorated by the share of each blockgroup's residents
+inside the analyzed area - see issue #410) and the "\% of These Residents..."
+rows and their US/State ratios -
 see source code for default. Set to "" to omit.}
 }
 \description{
