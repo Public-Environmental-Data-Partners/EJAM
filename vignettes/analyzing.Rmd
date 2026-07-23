@@ -386,8 +386,14 @@ industryword <- "chemical manuf"
 # }
 ```
 
+Here `url_ejamapi()` builds links to EJSCREEN-style community reports from the
+hosted EJAM API, and `url_ejscreenmap()` builds deep links that open each place
+on the EJSCREEN map. See the [Using the EJAM API](dev-api.html) article and
+`?url_ejamapi` / `?url_ejscreenmap` for the full options (multisite reports,
+radius, combined links, and the EJSCREEN "Send to EJAM" hand-off).
+
 Map of facilities in an industry, plus popups with links to each facility in
-ECHO and EJSCREEN 
+ECHO and EJSCREEN
 
 ```{r map2, eval = FALSE, fig.height=5, fig.width=5}
 mapfast(mysites)

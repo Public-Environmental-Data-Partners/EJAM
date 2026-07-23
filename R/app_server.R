@@ -492,6 +492,7 @@ app_server <- function(input, output, session) {
   url_sitepoints <- reactiveVal(NULL)
   url_shapefile  <- reactiveVal(NULL)
   url_fips       <- reactiveVal(NULL)
+  url_radius     <- reactiveVal(NULL)  # launch-URL ?radius=/?buffer=; read at radius_now slider render time (below)
 
   # Launch-URL precedence helper (single home for layer-2 precedence). url_param(name) maps a
   # parameter name to its launch-URL reactiveVal -- the only URL-provided params are these three
@@ -547,6 +548,16 @@ app_server <- function(input, output, session) {
         error = function(e) NULL
       )
       if (!is.null(payload) && is.null(payload$error)) {
+        # The API serializes absent payload fields (an R NULL for sites/fips/shape/
+        # radius) as JSON {}, which jsonlite::fromJSON() parses back as a zero-length
+        # list, NOT NULL. Treat any zero-length field as absent so the checks below
+        # see a clean NULL. Without this, a radius-less handoff (every FIPS/polygon
+        # basket, and any point basket with no buffer) returns radius:{} -> an empty
+        # list that reaches as.numeric() in the radius block and evaluates the if()
+        # on a zero-length value, an unhandled error in this init observer that
+        # crashes the whole session. length() of a real sites data.frame is its
+        # column count (>0), so genuine payloads are preserved.
+        payload <- lapply(payload, function(x) if (length(x) == 0) NULL else x)
         if (!is.null(payload$sites) && is.data.frame(payload$sites)) {
           spec$lat <- payload$sites$lat
           spec$lon <- payload$sites$lon
@@ -609,11 +620,21 @@ app_server <- function(input, output, session) {
         loaded <- TRUE
       }
     }
-    ## radius / buffer
-    if (!is.null(spec$radius)) {
-      radval <- suppressWarnings(as.numeric(spec$radius))
-      if (!is.na(radval)) {try(shiny::updateSliderInput(session, inputId = "radius_now", value = radval), silent = TRUE)}
-    }
+    ## radius / buffer -- store in a reactiveVal that the radius_now slider reads at
+    ## render time (see output$radius_slider_ui below). Do NOT updateSliderInput() here:
+    ## radius_now is a renderUI slider, so a post-hoc update races the (re)render and is
+    ## clobbered when the slider re-renders (e.g. after set_site_method() above changes
+    ## the upload method). Reading url_radius() inside the renderUI makes setting it here
+    ## re-render the slider with the launch value, which is reliable in both orderings.
+    # 0 is a valid buffer for polygon/FIPS methods (minradius_shapefile is 0,
+    # meaning analyze inside the boundary with no buffer); the slider renderUI
+    # clamps the value into the current method's [min, max], so e.g. 0 becomes
+    # the point-method minimum when points were supplied. Negatives are ignored.
+    # length(radval) == 1 guard: any absent/empty/multi-value radius (as.numeric()
+    # of NULL or an empty list is numeric(0)) is skipped rather than evaluated by
+    # the if(), which would error on a zero-length condition and crash session init.
+    radval <- suppressWarnings(as.numeric(spec$radius))
+    if (length(radval) == 1 && !is.na(radval) && radval >= 0) url_radius(radval)
   }, priority = 1000)
 
   data_up_shp <- reactive({
@@ -1801,12 +1822,21 @@ app_server <- function(input, output, session) {
     valid_max_miles <- is.numeric(input$max_miles) && input$max_miles > 0
 
     if (valid_radius_default && valid_max_miles) {
+      slider_min <- current_slider_min[[current_upload_method()]]
+      # launch-URL ?radius=/?buffer= wins until the user moves the slider (see the
+      # releasing observer below). The URL value is unvalidated, so clamp it to the
+      # slider's current [min, max] -- a malformed or stale deep link (e.g.
+      # ?radius=999) must not hand sliderInput() an out-of-range value.
+      launch_radius <- url_radius()
+      if (!is.null(launch_radius)) {
+        launch_radius <- min(max(launch_radius, slider_min), input$max_miles)
+      }
       shiny::sliderInput(
         inputId = 'radius_now',
         label = "",
-        min = current_slider_min[[current_upload_method()]],
+        min = slider_min,
         max = input$max_miles,
-        value = input$radius_default,
+        value = launch_radius %||% input$radius_default,
         step = global_or_param("stepradius"),
         post = ' miles'
       )
@@ -1821,6 +1851,33 @@ app_server <- function(input, output, session) {
       tags$p(error_message, style = "color: red; font-weight: bold;")
     }
   })
+
+  ## Release the launch-URL radius once the user moves the slider away from it.
+  ## Without this, url_radius() would pin every later re-render of the slider
+  ## (e.g. after an upload-method change) back to the launch value, overriding
+  ## the user's current selection. While the slider is untouched, the launch
+  ## value deliberately persists across re-renders (the user asked for that
+  ## radius in the URL); after the user moves it, re-renders revert to the
+  ## pre-existing behavior (input$radius_default).
+  observeEvent(input$radius_now, {
+    launch_val <- url_radius()
+    if (!is.null(launch_val) && is.numeric(input$radius_now)) {
+      # Compare against the launch value AS CLAMPED into the slider's current
+      # [min, max] (the renderUI clamps it the same way): for an out-of-range
+      # deep link like ?radius=999 the slider legitimately shows max_miles, and
+      # that programmatic clamp must not be mistaken for a user change (which
+      # would unpin the launch radius on the very first render).
+      slider_min <- current_slider_min[[current_upload_method()]]
+      launch_clamped <- if (is.numeric(input$max_miles) && is.numeric(slider_min)) {
+        min(max(launch_val, slider_min), input$max_miles)
+      } else {
+        launch_val
+      }
+      if (!isTRUE(all.equal(input$radius_now, launch_clamped))) {
+        url_radius(NULL)
+      }
+    }
+  }, ignoreInit = TRUE)
 
   ## disable radius slider when FIPS is selected
   observe({
@@ -1900,9 +1957,16 @@ app_server <- function(input, output, session) {
   }) %>% bindEvent(input$radius_default_shapefile)
 
   ## update/restore previous radius (and reset the min value) when site selection type changes/changes back
+  ## A launch-URL ?radius=/?buffer= (url_radius) wins over the per-method remembered
+  ## value until the user moves the slider: the launch handler itself switches the
+  ## site method, which fires this observer -- without the url_radius() override it
+  ## would immediately overwrite the launch radius with the per-method placeholder,
+  ## and the releasing observer would then mistake that programmatic write for a
+  ## user action and unpin the launch value. (bindEvent limits the trigger to
+  ## current_upload_method(), so reading url_radius() here adds no reactive edge.)
   observe({
     updateSliderInput(session = session, inputId = 'radius_now',
-                      value = current_slider_val[[current_upload_method()]])
+                      value = url_radius() %||% current_slider_val[[current_upload_method()]])
   }) %>% bindEvent(current_upload_method())
 
   ## update stored radius when slider changes
@@ -3050,7 +3114,8 @@ app_server <- function(input, output, session) {
             input = html_path,
             output = file,
             options = list(printBackground = TRUE),
-            wait = 5, timeout = 120, verbose = 0)
+            # keep this in step with the ejam2report() PDF path - see pdf_wait_seconds()
+            wait = pdf_wait_seconds("print"), timeout = 120, verbose = 0)
         }, error = function(e) {
           showModal(modalDialog(
             title = "PDF not available",

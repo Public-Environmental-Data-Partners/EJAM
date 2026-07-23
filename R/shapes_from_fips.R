@@ -16,6 +16,9 @@
 #' @param myservice_county URL of feature service to get shapes from,
 #'   or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
 #'   Note State bounds are built into this package as data so do not need to be downloaded from a service.
+#'   County bounds are too, as of the [counties_shapefile] dataset: the default
+#'   "cartographic" County bounds are served from that built-in dataset rather than
+#'   downloaded, falling back to downloading only for any FIPS not found there.
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
 #' @param year passed to [tigris::places()] for bounds or city/town type of fips
 #' @details
@@ -336,6 +339,61 @@ shapes_state_from_statefips <- function(fips) {
 
 #                                                  counties ####
 
+# utility to turn "Kent County, Delaware" into "Kent County"
+# (used by both the built-in-boundaries path and the download path, so that
+#  the NAME column is identical no matter where the boundaries came from)
+
+drop_comma_statename <- function(countyname_state) {gsub(", .*$", "", countyname_state)}
+
+#' Get County boundaries from the [counties_shapefile] dataset built into this package
+#'
+#' @details Mirrors what [shapes_state_from_statefips()] does for States.
+#'
+#'   [counties_shapefile] holds the Census Bureau cartographic boundary file, which
+#'   is the same source and resolution the `myservice = 'cartographic'` download
+#'   path returns (tidycensus/tigris with `cb = TRUE`), so using it avoids a
+#'   network round-trip without changing which boundaries are used.
+#'
+#'   This returns NULL rather than partial results if any requested FIPS is not
+#'   in the built-in dataset, so that the caller can fall back to downloading
+#'   and no request is ever silently served with some counties missing.
+#'
+#' @param fips vector of County FIPS codes, already zero-padded and validated
+#' @seealso [shapes_from_fips()] [shapes_counties_from_countyfips()] [counties_shapefile]
+#' @return spatial data.frame of boundaries, shaped like the download path's output,
+#'   or NULL if the built-in dataset cannot serve every requested FIPS
+#'
+#' @keywords internal
+#'
+shapes_counties_from_countyfips_local <- function(fips) {
+
+  cshp <- tryCatch(counties_shapefile, error = function(e) NULL)
+  if (is.null(cshp) || !all(c("GEOID", "geometry") %in% names(cshp))) {
+    return(NULL)
+  }
+
+  idx <- match(fips, cshp$GEOID)
+  if (anyNA(idx)) {
+    # at least one requested county is not among the built-in boundaries
+    # (e.g., a newly created or renumbered county fips), so let the caller
+    # download all of them instead of returning a partly-empty answer
+    return(NULL)
+  }
+
+  shp <- cshp[idx, ]
+  shp$FIPS <- fips # keep the original input fips, as the download path does
+  # build NAME exactly as the download path does, so output does not depend on source
+  shp$NAME <- drop_comma_statename(fips2countyname(shp$FIPS))
+  shp <- shp[ , c('NAME', 'FIPS', 'geometry')]
+
+  shp <- shapefile_dropcols(shp)
+  shp <- shapefile_addcols(shp)
+  shp <- shapefile_sortcols(shp)
+  rownames(shp) <- NULL
+  return(shp)
+}
+########################### # ########################### # ########################### # ########################### #
+
 #' Get Counties boundaries via API, to map them
 #'
 #' @details Used [sf::read_sf()], which is an alias for [sf::st_read()]
@@ -352,6 +410,15 @@ shapes_state_from_statefips <- function(fips) {
 #'   just some variables like SQMI, POPULATION_2020, etc., or none
 #' @param myservice URL of feature service to get shapes from
 #'   or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
+#'   Note that "cartographic" (the default) is normally served from the
+#'   [counties_shapefile] dataset built into this package, without downloading - see `use_local`.
+#' @param use_local if TRUE (the default) and `myservice` is "cartographic",
+#'   County boundaries come from the [counties_shapefile] dataset built into this
+#'   package instead of being downloaded, which avoids a network round-trip
+#'   (and avoids needing a CENSUS_API_KEY) for every County map or report.
+#'   Downloading is still used as a fallback for any FIPS not found in that dataset.
+#'   Set FALSE to force downloading. Ignored when `myservice` is "tiger" or a
+#'   feature-service URL, since those request different boundaries.
 #'
 #' @return spatial object via [sf::st_read()]
 #'
@@ -364,7 +431,8 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
                                               paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
                                                      "USA_Counties_and_States_with_PR/FeatureServer/0/query"),
                                               'cartographic', 'tiger'
-                                            )[3]
+                                            )[3],
+                                            use_local = TRUE
 ) {
 
   acs_endyear_carto_tiger = acs_endyear()
@@ -389,6 +457,20 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
   fips = fips_lead_zero(fips)
   fips = fips[fips_valid(fips)]
   if (length(fips) == 0) {stop('no valid fips')}
+
+  ## > built-in boundaries (no download) ####
+  # The default 'cartographic' bounds are built into the package as counties_shapefile,
+  # mirroring how State bounds come from states_shapefile. This is checked before the
+  # CENSUS_API_KEY check below on purpose: serving locally needs no key and no network.
+  # shapes_counties_from_countyfips_local() returns NULL unless it can serve every
+  # requested fips, in which case we fall through to downloading as before.
+  # isTRUE() around the %in% keeps this safe if myservice is NULL or NA
+  if (isTRUE(use_local) && isTRUE(myservice[1] %in% "cartographic")) {
+    shp_local <- shapes_counties_from_countyfips_local(fips)
+    if (!is.null(shp_local)) {
+      return(shp_local)
+    }
+  }
 
   tidycensus_ok <- TRUE
   # >>> check if census api key available *** ####
@@ -449,7 +531,6 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
     # now drop unrequested counties
     shp <- shp[shp$GEOID %in% fips, ] # GEOID is the 5-digit county fips here
     names(shp) <- gsub("GEOID", "FIPS", names(shp))
-    drop_comma_statename <- function(countyname_state) {gsub(", .*$", "", countyname_state)}
     shp$NAME <-  drop_comma_statename(fips2countyname(shp$FIPS)) # also done later by fips2name() but ok to leave it like this
 
     ## STATE_ABBR, STATE_NAME, sqmi, POP_SQMI, pop, etc. all now added by shapefile_addcols()

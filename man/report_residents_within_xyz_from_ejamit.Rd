@@ -8,7 +8,8 @@ report_residents_within_xyz_from_ejamit(
   ejamitout,
   sitenumber = NULL,
   site_method = NULL,
-  ...
+  ...,
+  sitenumber_label = NULL
 )
 }
 \arguments{
@@ -23,6 +24,14 @@ parameters that can be specified -- they get passed from here to that function.
 For example, if it is a 1-site report as via sitenumber=2,
 and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
 instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).}
+
+\item{sitenumber_label}{optional, display-only override (a number or short text) of the
+site identifier shown in a 1-site report header, in place of the \code{sitenumber} row index.
+Useful when one site from a larger analysis has been re-analyzed alone -- e.g., the
+EJAM API per-site report links made by \code{\link[=url_ejamapi]{url_ejamapi()}} re-analyze a single site that
+was row N of the original multisite results, so its row index here (1) is not the
+site number the user expects to see. A number N is shown as "Site N"; text is shown
+as-is. Ignored for a multisite/overall summary report.}
 }
 \value{
 text string such as "Residents within 1 mile of any of the 99 specified points\if{html}{\out{<br>}}Area in Square Miles: 311.02"

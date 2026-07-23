@@ -107,7 +107,7 @@ jobs:
           echo "build_dir=$build_dir" >> "$GITHUB_OUTPUT"
           echo "Building $build_ref as $pkgdown_dev_mode; deploying $build_dir to gh-pages/$target_folder"
 
-      - uses: actions/checkout@v4.3.0
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.deploy.outputs.build_ref }}
 

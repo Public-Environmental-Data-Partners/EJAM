@@ -9,7 +9,8 @@ map_ejam_plus_shp(
   out,
   radius_buffer = NULL,
   circle_color = "#000080",
-  launch_browser = FALSE
+  launch_browser = FALSE,
+  sitenumber_label = NULL
 )
 }
 \arguments{
@@ -22,6 +23,11 @@ map_ejam_plus_shp(
 \item{circle_color}{optional}
 
 \item{launch_browser}{set TRUE to have it launch browser to show map.}
+
+\item{sitenumber_label}{optional, display-only override (a number or short text) of the
+site number shown in map popups, passed to \code{\link[=popup_from_ejscreen]{popup_from_ejscreen()}}.
+Only relevant when mapping a single site -- see \code{\link[=ejam2report]{ejam2report()}}, whose
+sitenumber_label parameter this supports.}
 }
 \value{
 map html widget

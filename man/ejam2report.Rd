@@ -39,7 +39,8 @@ ejam2report(
   return_html = FALSE,
   launch_browser = TRUE,
   shape = NULL,
-  shapefile = NULL
+  shapefile = NULL,
+  sitenumber_label = NULL
 )
 }
 \arguments{
@@ -108,14 +109,22 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.}
 \item{footer_version_number, footer_date, footer_text, footer_html}{to customize the report footer - see \code{\link[=generate_report_footer]{generate_report_footer()}}
 Should provide footer_date to ensure user's timezone is used to determine today's date.}
 
-\item{fileextension}{html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
+\item{fileextension}{html or .html or pdf or .pdf (case-insensitive) - use "pdf" to create a PDF version of the report.
 PDF generation uses \code{\link[pagedown:chrome_print]{pagedown::chrome_print()}} which requires the \code{pagedown} package and a
 Chrome/Chromium browser to be available on the system.
 The PDF preserves the full HTML/CSS styling and supports smart page breaks.
 If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
 PDF output is required when this option is selected; it is not optional.}
 
-\item{filename}{optional path and name for report file, used by web app}
+\item{filename}{optional path and/or name for report file. How it is interpreted:
+a bare name like "myreport.html" is saved in tempdir();
+a "./"-prefixed or multi-folder path like "./myreport.html" or "out/myreport.html"
+is saved relative to the working directory (the folder is created if necessary,
+with a warning and fallback to tempdir() if it cannot be created);
+an existing folder like "~/Desktop" gets an auto-generated report name inside it;
+a missing or invalid extension is fixed based on the fileextension parameter, and
+a valid extension in filename (.html or .pdf) overrides the fileextension parameter
+(with a warning if the two conflict).}
 
 \item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
 
@@ -124,6 +133,16 @@ PDF output is required when this option is selected; it is not optional.}
 \item{shape}{alias (synonym) for shp}
 
 \item{shapefile}{alias (synonym) for shp}
+
+\item{sitenumber_label}{optional, display-only override (a number or short text) of the site
+identifier shown in the 1-site report header and in the report map's marker popup,
+in place of the \code{sitenumber} row index.
+\code{sitenumber} still selects which row of \code{ejamitout$results_bysite} to report on; this
+only changes the label displayed. Useful when one site from a larger analysis has been
+re-analyzed alone -- e.g., the EJAM API per-site report links made by \code{\link[=url_ejamapi]{url_ejamapi()}}
+re-analyze a single site that was row N of the original multisite results, so its row
+index in the regenerated results (1) is not the site number the user expects to see.
+A number N is shown as "Site N"; text is shown as-is. Ignored for a multisite report.}
 }
 \value{
 URL of temp file or object depending on return_html,

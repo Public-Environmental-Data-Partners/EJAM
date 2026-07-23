@@ -18,6 +18,7 @@ url_ejamapi(
   baseurl = NULL,
   sitenumber = "each",
   version = NULL,
+  fileextension = "auto",
   ...,
   shape = NULL,
   shp = NULL
@@ -58,21 +59,38 @@ followed by "/report?". See \code{\link[=ejamapi]{ejamapi()}} for a better way t
 \item \code{"each"} (or \code{-1}) -- \strong{the default} -- returns a vector of URLs, one per site
 (one single-site report per site). Unlike \code{\link[=ejam2report]{ejam2report()}}/\code{\link[=ejam2map]{ejam2map()}}, which never
 return a vector, the \verb{url_*} helpers can; that vector-per-site output is the main
-reason this parameter exists.
+reason this parameter exists. Each URL sends only its own site to the API but also
+carries \code{sitenumber=N} (that site's row number in the inputs) so the API labels the
+report header "Site N" instead of calling every per-site report Site 1
+(Public-Environmental-Data-Partners/EJAM#348).
 \item \code{"overall"} (or \code{0}, \code{NULL}, or \code{""}) -- returns a single URL requesting one
 aggregate \emph{multisite} report combining all sites (sent to the API as \code{sitenumber=0};
 assumes >1 site was provided).
 \item \code{N} (a number \verb{> 0}) -- returns a single URL for just the Nth site found in the
-inputs (e.g. the 3rd point, fips, or polygon).
+inputs (e.g. the 3rd point, fips, or polygon). The URL carries \code{sitenumber=N} when
+\code{N > 1} (as for "each" above; omitted when N is 1 since Site 1 is the API's default label).
 }
 
 Single-site auto-override: when the inputs resolve to exactly one site (one row of
 sitepoints, one fips code, or one polygon), sitenumber is coerced to \code{1} regardless of what
-was requested, so a lone place yields a single-site report URL.}
+was requested, so a lone place yields a single-site report URL (with no \code{sitenumber}
+parameter in it).}
 
 \item{version}{optional EJAM version tag (e.g. "3.2024.0") sent to the API as
 version=\if{html}{\out{<ver>}} so the API can serve the matching data vintage. Default NULL
 resolves to the installed package Version (from DESCRIPTION).}
+
+\item{fileextension}{report format requested from the API, sent as
+fileextension=\if{html}{\out{<ext>}} on each generated report URL. Default "auto" picks the
+format by report type: "html" for an aggregate \emph{multisite} report URL
+(sitenumber 0/"overall" covering more than one site) since HTML renders
+several times faster and displays directly in the browser tab, but "pdf"
+for \emph{single-site} report URLs (the traditional printable community report).
+Use "html" or "pdf" to force one format for all URLs, or NULL/"" to omit
+the parameter and get the API's own default. Case/whitespace are
+normalized; any other value is an error (values are placed in a URL, so
+arbitrary text is rejected rather than encoded). Only applied to actual
+API /report URLs, never to app-fallback or ifna links.}
 
 \item{...}{a named list of other query parameters passed to the API,
 to allow for expansion of allowed parameters}
@@ -101,7 +119,12 @@ note below on unsupported options).
 \code{sitenumber = 1} requests a single-site report (the API's per-request default when
 none is supplied), and \code{sitenumber = 0} (or "overall") produces an aggregate
 \emph{multisite} report. (Note \code{url_ejamapi()}'s own default is \code{sitenumber = "each"} --
-see the parameter docs below.) The API leaves the
+see the parameter docs below.) When a URL sends only ONE site to the API but says
+\code{sitenumber=N}, N identifies which row that site was in the original multisite
+analysis, so the API can label the report header "Site N" instead of mislabeling
+every per-site report as Site 1
+(Public-Environmental-Data-Partners/EJAM#348) -- the per-site URLs this
+function returns carry that. The API leaves the
 report title to \code{\link[=ejam2report]{ejam2report()}}, which uses "EJSCREEN Community Report" for a
 single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
 polygons can exceed URL length for this GET-based path; the API also provides

@@ -20,7 +20,12 @@
 #'   `sitenumber = 1` requests a single-site report (the API's per-request default when
 #'   none is supplied), and `sitenumber = 0` (or "overall") produces an aggregate
 #'   *multisite* report. (Note `url_ejamapi()`'s own default is `sitenumber = "each"` --
-#'   see the parameter docs below.) The API leaves the
+#'   see the parameter docs below.) When a URL sends only ONE site to the API but says
+#'   `sitenumber=N`, N identifies which row that site was in the original multisite
+#'   analysis, so the API can label the report header "Site N" instead of mislabeling
+#'   every per-site report as Site 1
+#'   (Public-Environmental-Data-Partners/EJAM#348) -- the per-site URLs this
+#'   function returns carry that. The API leaves the
 #'   report title to [ejam2report()], which uses "EJSCREEN Community Report" for a
 #'   single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
 #'   polygons can exceed URL length for this GET-based path; the API also provides
@@ -57,18 +62,23 @@
 #'  - `"each"` (or `-1`) -- **the default** -- returns a vector of URLs, one per site
 #'    (one single-site report per site). Unlike [ejam2report()]/[ejam2map()], which never
 #'    return a vector, the `url_*` helpers can; that vector-per-site output is the main
-#'    reason this parameter exists.
+#'    reason this parameter exists. Each URL sends only its own site to the API but also
+#'    carries `sitenumber=N` (that site's row number in the inputs) so the API labels the
+#'    report header "Site N" instead of calling every per-site report Site 1
+#'    (Public-Environmental-Data-Partners/EJAM#348).
 #'
 #'  - `"overall"` (or `0`, `NULL`, or `""`) -- returns a single URL requesting one
 #'    aggregate *multisite* report combining all sites (sent to the API as `sitenumber=0`;
 #'    assumes >1 site was provided).
 #'
 #'  - `N` (a number `> 0`) -- returns a single URL for just the Nth site found in the
-#'    inputs (e.g. the 3rd point, fips, or polygon).
+#'    inputs (e.g. the 3rd point, fips, or polygon). The URL carries `sitenumber=N` when
+#'    `N > 1` (as for "each" above; omitted when N is 1 since Site 1 is the API's default label).
 #'
 #'  Single-site auto-override: when the inputs resolve to exactly one site (one row of
 #'  sitepoints, one fips code, or one polygon), sitenumber is coerced to `1` regardless of what
-#'  was requested, so a lone place yields a single-site report URL.
+#'  was requested, so a lone place yields a single-site report URL (with no `sitenumber`
+#'  parameter in it).
 #'
 #' @param ... a named list of other query parameters passed to the API,
 #'   to allow for expansion of allowed parameters
@@ -113,6 +123,18 @@
 #' @param version optional EJAM version tag (e.g. "3.2024.0") sent to the API as
 #'   version=<ver> so the API can serve the matching data vintage. Default NULL
 #'   resolves to the installed package Version (from DESCRIPTION).
+#'
+#' @param fileextension report format requested from the API, sent as
+#'   fileextension=<ext> on each generated report URL. Default "auto" picks the
+#'   format by report type: "html" for an aggregate *multisite* report URL
+#'   (sitenumber 0/"overall" covering more than one site) since HTML renders
+#'   several times faster and displays directly in the browser tab, but "pdf"
+#'   for *single-site* report URLs (the traditional printable community report).
+#'   Use "html" or "pdf" to force one format for all URLs, or NULL/"" to omit
+#'   the parameter and get the API's own default. Case/whitespace are
+#'   normalized; any other value is an error (values are placed in a URL, so
+#'   arbitrary text is rejected rather than encoded). Only applied to actual
+#'   API /report URLs, never to app-fallback or ifna links.
 #'
 #' @export
 #'
@@ -170,6 +192,8 @@ url_ejamapi = function(
   sitenumber = "each",
 
   version = NULL,
+
+  fileextension = "auto",
 
   ...,
 
@@ -272,9 +296,12 @@ url_ejamapi = function(
 
   # sitenumber (overall vs 1-site) ####
 
-  # N  means Nth site report
-  # -1 means "overall" report
-  # 0  means "each" site report, in a vector of URLs
+  # After normalization here:
+  #  0 means "overall" report (all sites in one URL, sent to the API as sitenumber=0)
+  # -1 means "each" site report, in a vector of URLs (each URL sends 1 site to the API,
+  #      plus sitenumber=N saying which row that site was in the inputs, so the report
+  #      header can be labeled Site N -- Public-Environmental-Data-Partners/EJAM#348)
+  #  N  means Nth site report (1 URL sending just site N, plus sitenumber=N when N > 1)
 
   if (length(sitenumber) > 1) {stop("invalid value for sitenumber")}
   if (is.null(sitenumber) || all(is.na(sitenumber)) || length(sitenumber) == 0 || all(sitenumber %in% "") || sitenumber %in% c(0, "0", "overall")) {
@@ -283,10 +310,8 @@ url_ejamapi = function(
 
   } else {
     if (sitenumber %in% c("each", -1)) {
-      # provide vector of urls, 1 site in each, and do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
       sitenumber <- -1  # each site (vector of URLs)
     } else {
-      # return only 1 URL, 1 of the sites, and do not pass any sitenumber parameter to the API (since we only send site N to the API so it would be confusing to pass site 3 and have to tell the API it is site 1 of what was passed)
       sitenumber <- as.numeric(sitenumber)  # Nth site
     }
   }
@@ -333,10 +358,11 @@ url_ejamapi = function(
         sitenumber <- "" # now omit this from the URL used in API
       }
       if (!is.null(sitenumber) && -1 %in% sitenumber) {
-        # "each" site's URL: provide vector of urls, 1 site in each,
-        # and either do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
-        # or use sitenumber 1:n for a vector of URLs? that would be useful in the table of API links for map popups, if it could tell the API what to say about the site# in the report header without trying to pick that row from a table of results...
-        # e.g., but problematic when API passes it to ejam2report() which tries to use sitenumber to pick 1 site from a table of multisite results
+        # "each" site's URL: these are app-fallback links (not API /report URLs) until
+        # per-polygon API report links are implemented, so no sitenumber is added here.
+        # Once implemented, they should carry sitenumber=1..N like the latlon and fips
+        # branches do, so the API labels each report with the site's original row number
+        # (see Public-Environmental-Data-Partners/EJAM#348).
         url_of_report <- rep(shp_one_site_fallback_url, NROW(shapefile))
         if (any(bad)) {
         url_of_report[bad] <- NA_character_
@@ -367,15 +393,19 @@ url_ejamapi = function(
           fips <- paste0(fips, collapse = ",") ## *** check this is the expected format in the API
         }
         if (sitenumber > 0) {
-          # 1 site's URL:  return only 1 URL, 1 of the sites, and do not pass any sitenumber parameter to the API (since we only send site N to the API so it would be confusing to pass site 3 and have to tell the API it is site 1 of what was passed)
+          # 1 site's URL: return only 1 URL, sending only site N to the API, plus (when N > 1)
+          # sitenumber=N so the API can label the report header "Site N" -- the row this site
+          # had in the original set of inputs -- instead of "Site 1"
+          # (Public-Environmental-Data-Partners/EJAM#348).
           fips <- fips[sitenumber]  # 1-site report
-          sitenumber <- "" # now omit this from the URL used in API
+          if (sitenumber == 1) {sitenumber <- ""} # omit from URL; Site 1 is the API's default label anyway
         }
         if (-1 %in% sitenumber) {
-          # "each" site's URL: provide vector of urls, 1 site in each,
-          # and maybe do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
-          # 1-site reports as a vector
-          sitenumber <- "" # now omit this from the URL used in API
+          # "each" site's URL: provide vector of urls, 1 site in each, each carrying
+          # sitenumber=1..N so the API labels each report with that site's original row
+          # number instead of calling every one "Site 1"
+          # (Public-Environmental-Data-Partners/EJAM#348)
+          sitenumber <- seq_along(fips)
         }
 
         url_of_report <- paste0(
@@ -415,17 +445,22 @@ url_ejamapi = function(
           lon <- paste0(lon, collapse = ",")
         }
         if (sitenumber > 0) {
-          # 1 site's URL:  return only 1 URL, 1 of the sites, and do not pass any sitenumber parameter to the API (since we only send site N to the API so it would be confusing to pass site 3 and have to tell the API it is site 1 of what was passed)
+          # 1 site's URL: return only 1 URL, sending only site N to the API, plus (when N > 1)
+          # sitenumber=N so the API can label the report header "Site N" -- the row this site
+          # had in the original set of inputs -- instead of "Site 1"
+          # (Public-Environmental-Data-Partners/EJAM#348).
           x <- sitepoints[sitenumber, , drop = FALSE]  # 1-site report
-          sitenumber <- "" # now omit this from the URL used in API
+          if (sitenumber == 1) {sitenumber <- ""} # omit from URL; Site 1 is the API's default label anyway
           lat <- x$lat
           lon <- x$lon
         }
-        if (sitenumber == -1) {
-          # "each" site's URL: provide vector of urls, 1 site in each, and do not pass any sitenumber parameter to the API (since saying sitenumber=1 for each would be confusing)
-          # 1-site reports as a vector
+        if (length(sitenumber) == 1 && sitenumber == -1) {
+          # "each" site's URL: provide vector of urls, 1 site in each, each carrying
+          # sitenumber=1..N so the API labels each report with that site's original row
+          # number instead of calling every one "Site 1"
+          # (Public-Environmental-Data-Partners/EJAM#348)
           x <- sitepoints
-          sitenumber <- "" # now omit this from the URL used in API
+          sitenumber <- seq_len(NROW(x))
           lat <- x$lat
           lon <- x$lon
         }
@@ -454,6 +489,31 @@ url_ejamapi = function(
         url_of_report <- NA # later will convert to ifna
       }
     }
+  }
+  ###################### #
+  # fileextension (report format) ####
+  # Appended here, after the branches above, because "auto" depends on the kind
+  # of report each URL requests: at this point sitenumber is 0 only for an
+  # aggregate MULTISITE report over >1 site (single-site links carry N or omit
+  # it, and "each" links carry 1..N), so auto = html for the multisite summary (renders several
+  # times faster; the link opens in a browser tab) and pdf for single-site
+  # reports (the traditional printable community report). Applied only to
+  # actual API /report URLs -- never to the app-fallback links used for
+  # single-polygon sites, nor to NA entries that become ifna below. Validated
+  # strictly rather than URL-encoded: these can be raw URLs (as_html = FALSE),
+  # so unvalidated text could inject extra query parameters or break the URL.
+  if (!is.null(fileextension) && !identical(fileextension, "")) {
+    fileextension <- tolower(trimws(as.character(fileextension)))
+    # Note %in% returns FALSE (not NA) for NA input, so NA already failed this
+    # validation with the intended message; is.na() just makes that explicit.
+    if (length(fileextension) != 1 || is.na(fileextension) || !fileextension %in% c("auto", "html", "pdf")) {
+      stop("fileextension must be 'auto', 'html', or 'pdf' (or NULL or '' to omit it from the URL)")
+    }
+    if (fileextension == "auto") {
+      fileextension <- if (identical(sitenumber, 0)) "html" else "pdf"
+    }
+    is_api_report_url <- !is.na(url_of_report) & startsWith(as.character(url_of_report), baseurl)
+    url_of_report[is_api_report_url] <- paste0(url_of_report[is_api_report_url], "&fileextension=", fileextension)
   }
   ###################### #
 
