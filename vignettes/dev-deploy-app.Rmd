@@ -43,7 +43,7 @@ Update the branch from which the app will be deployed, which could be a differen
 > For the current AWS ECS Fargate hosting architecture and the step-by-step deploy
 > procedure, see [Deploying the Web App to AWS (Infrastructure & Procedure)](dev-deployment.html).
 
-The live EJAM app is hosted via AWS ECS Fargate and Docker, at <https://ejam.publicenvirodata.org>. See also `url_ejampp()`.
+The live EJAM app is hosted via AWS ECS Fargate and Docker, at <https://ejam.publicenvirodata.org>. See also `url_ejamapp()`.
 The build/deploy files (`Dockerfile`, Terraform config, and GitHub Actions workflows) live on the `dev-deploy`/`prod-deploy` branches of the EJAM repository. For the full hosting architecture and the step-by-step deploy procedure, see [Deploying the Web App to AWS (Infrastructure & Procedure)](dev-deployment.html).
 
 The [EJAM-API](https://github.com/Public-Environmental-Data-Partners/EJAM-API) is deployed via Docker as well (on Google Cloud Run); that repository shows how its deployment works. See also the [Using the EJAM API](dev-api.html) article.

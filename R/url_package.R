@@ -54,7 +54,7 @@
 #'
 #'
 #' url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
-#' url_ejamdata_alias:https://ejamdata.ejanalysis.com
+#' url_ejamdata_alias: https://ejamdata.ejanalysis.com
 #' url_ejamdata_redirect: https://ejanalysis.com/ejamdata
 #'
 #' @param type Which type of URL is needed, such as
@@ -102,7 +102,7 @@
 #'   - "datarepo" or "data" (`url_ejamdata` and `ejam_data_repo` field in the DESCRIPTION file) is for the github.com repository of datasets.
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
-#'   Ignored if type = "docs" or "api", where a full URL is always returned.
+#'   Ignored if type is an app, docs, or API URL, where a full URL is always returned.
 #'
 #' @param desc_or_alias must be "desc" or "alias" or "redirect" to use info from DESCRIPTION file
 #'   or the URL based on a cloudflare alias or a simple 301 redirect such as
@@ -222,9 +222,15 @@ url_package <- function(
     get_full_url <- TRUE
   }
 
-  if (type == "docs" && get_full_url == FALSE) {
+  full_url_only_types <- c(
+    "docs", "ejamdocs", "ejscreendocs", "apidocs",
+    "app", "ejam", "ejamapp", "ejamdev", "ejamappdev",
+    "ejscreen", "ejscreenapp"
+  )
+
+  if (type %in% full_url_only_types && get_full_url == FALSE) {
     if (!missing(get_full_url)) {
-      warning("ignoring get_full_url=FALSE since that would not make sense -- we can only return a full URL for the documentation website since it is not a github repository")
+      warning("ignoring get_full_url=FALSE since this type is not a github repository and can only return a full URL")
     }
     get_full_url <- TRUE
   }
@@ -265,15 +271,19 @@ url_package <- function(
 
     if (type %in% c("code", "ejamrepo")) {
       one_url <-  url_desc(paste0("url_ejamrepo", suffix))
+      domain <- "github.com"
     }
     if (type == c("ejscreenrepo")) {
       one_url <- url_desc(paste0("url_ejscreenrepo", suffix))
+      domain <- "github.com"
     }
     if (type == c("apirepo")) {
       one_url <- url_desc(paste0("url_apirepo", suffix))
+      domain <- "github.com"
     }
     if (type %in% c("data", "datarepo")) {
       one_url <-  url_desc(paste0("url_ejamdata", suffix))
+      domain <- "github.com"
     }
     if (type %in% c("docs", "ejamdocs")) {
       one_url <-  url_desc(paste0("url_ejamdocs", suffix))

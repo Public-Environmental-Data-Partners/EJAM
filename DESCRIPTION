@@ -1,7 +1,7 @@
 Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
-Version: 3.2022.2
-VersionEJSCREEN: 3.2022.2
+Version: 3.2022.1
+VersionEJSCREEN: 3.2022.1
 ejamdata_required_tag: v3.2022.0
 VersionACS: 2018-2022
 ReleaseDateACS: 2023-12-07
@@ -54,7 +54,7 @@ url_ejscreendocs_alias: https://ejscreendocs.ejanalysis.com
 url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
 url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
 url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
-url_ejamdata_alias:https://ejamdata.ejanalysis.com
+url_ejamdata_alias: https://ejamdata.ejanalysis.com
 url_ejamdata_redirect: https://ejanalysis.com/ejamdata
 ejam_data_repo: Public-Environmental-Data-Partners/ejamdata
 Authors@R: person("Mark A.", "Corrales", , "ejam@ejanalysis.com", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-1696-5638"))

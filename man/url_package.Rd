@@ -56,7 +56,7 @@ repository on github.com and is informational only -- it is not the API endpoint
 }}
 
 \item{get_full_url}{logical, whether to return full URL or just the owner/reponame info.
-Ignored if type = "docs" or "api", where a full URL is always returned.}
+Ignored if type is an app, docs, or API URL, where a full URL is always returned.}
 
 \item{desc_or_alias}{must be "desc" or "alias" or "redirect" to use info from DESCRIPTION file
 or the URL based on a cloudflare alias or a simple 301 redirect such as
@@ -132,7 +132,7 @@ url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
 url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
 
 url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
-url_ejamdata_alias:https://ejamdata.ejanalysis.com
+url_ejamdata_alias: https://ejamdata.ejanalysis.com
 url_ejamdata_redirect: https://ejanalysis.com/ejamdata
 }
 \examples{
