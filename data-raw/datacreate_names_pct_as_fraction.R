@@ -28,9 +28,11 @@ datacreate_names_pct_as_fraction <- function(map_headernames)   {
   ## Documentation ####
 
   dataset_documenter("names_pct_as_fraction_blockgroupstats",
-                     title = "which indicators are percentages stored as 0-1 not 0-100, in blockgroupstats\n#' @keywords internal")
+                     title = "which indicators are percentages stored as 0-1 not 0-100, in blockgroupstats\n#' @keywords internal",
+                     scriptname = "datacreate_names_pct_as_fraction.R")
   dataset_documenter("names_pct_as_fraction_ejamit",
-                     title = "which indicators are percentages stored as 0-1 not 0-100, in ejamit() output\n#' @keywords internal")
+                     title = "which indicators are percentages stored as 0-1 not 0-100, in ejamit() output\n#' @keywords internal",
+                     scriptname = "datacreate_names_pct_as_fraction.R")
 
   # return them just in case that is useful, but this is really to save them as datasets and document them
   return(list(
