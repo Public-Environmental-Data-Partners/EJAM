@@ -153,23 +153,23 @@ inventory:</p>
 <pre><code><span><span class="co">##  [1] "NAICS"                            "SIC"                             </span></span>
 <span><span class="co">##  [3] "avg.in.us"                        "bg_cenpop2020"                   </span></span>
 <span><span class="co">##  [5] "bgpts"                            "blockgroupstats"                 </span></span>
-<span><span class="co">##  [7] "censusplaces"                     "custom"                          </span></span>
-<span><span class="co">##  [9] "ejamdata_version"                 "ejampackages"                    </span></span>
-<span><span class="co">## [11] "ejscreen_arcgis_service_field"    "ejscreen_schema_extra"           </span></span>
-<span><span class="co">## [13] "epa_programs"                     "epa_programs_defined"            </span></span>
-<span><span class="co">## [15] "formulas_ejscreen_acs"            "formulas_ejscreen_acs_disability"</span></span>
-<span><span class="co">## [17] "formulas_ejscreen_demog_index"    "frsprogramcodes"                 </span></span>
-<span><span class="co">## [19] "high_pctiles_tied_with_min"       "islandareas"                     </span></span>
-<span><span class="co">## [21] "lat_alias"                        "lon_alias"                       </span></span>
-<span><span class="co">## [23] "mact_table"                       "map_headernames"                 </span></span>
-<span><span class="co">## [25] "meters_per_mile"                  "modelDoaggregate"                </span></span>
-<span><span class="co">## [27] "modelEjamit"                      "modelEjamitByAnalysisType"       </span></span>
-<span><span class="co">## [29] "naics_counts"                     "naicstable"                      </span></span>
-<span><span class="co">## [31] "namez"                            "sictable"                        </span></span>
-<span><span class="co">## [33] "stateinfo"                        "stateinfo2"                      </span></span>
-<span><span class="co">## [35] "states_shapefile"                 "statestats"                      </span></span>
-<span><span class="co">## [37] "tables_ejscreen_acs"              "usastats"                        </span></span>
-<span><span class="co">## [39] "x_anyother"</span></span></code></pre>
+<span><span class="co">##  [7] "censusplaces"                     "counties_shapefile"              </span></span>
+<span><span class="co">##  [9] "custom"                           "ejamdata_version"                </span></span>
+<span><span class="co">## [11] "ejampackages"                     "ejscreen_arcgis_service_field"   </span></span>
+<span><span class="co">## [13] "ejscreen_schema_extra"            "epa_programs"                    </span></span>
+<span><span class="co">## [15] "epa_programs_defined"             "formulas_ejscreen_acs"           </span></span>
+<span><span class="co">## [17] "formulas_ejscreen_acs_disability" "formulas_ejscreen_demog_index"   </span></span>
+<span><span class="co">## [19] "frsprogramcodes"                  "high_pctiles_tied_with_min"      </span></span>
+<span><span class="co">## [21] "islandareas"                      "lat_alias"                       </span></span>
+<span><span class="co">## [23] "lon_alias"                        "mact_table"                      </span></span>
+<span><span class="co">## [25] "map_headernames"                  "meters_per_mile"                 </span></span>
+<span><span class="co">## [27] "modelDoaggregate"                 "modelEjamit"                     </span></span>
+<span><span class="co">## [29] "modelEjamitByAnalysisType"        "naics_counts"                    </span></span>
+<span><span class="co">## [31] "naicstable"                       "namez"                           </span></span>
+<span><span class="co">## [33] "sictable"                         "stateinfo"                       </span></span>
+<span><span class="co">## [35] "stateinfo2"                       "states_shapefile"                </span></span>
+<span><span class="co">## [37] "statestats"                       "tables_ejscreen_acs"             </span></span>
+<span><span class="co">## [39] "usastats"                         "x_anyother"</span></span></code></pre>
 <div class="section level3">
 <h3 id="where-the-datasets-are-stored">Where the datasets are stored<a class="anchor" aria-label="anchor" href="#where-the-datasets-are-stored"></a>
 </h3>
@@ -678,10 +678,11 @@ identifiers match (all <code>v3.YYYY.0</code>):</p>
 the exception: it keeps <code>ejamdata_required_tag</code> and the
 marker at the existing <code>v3.2022.0</code>, because the data did not
 change and the patch reuses the already-published <code>ejamdata</code>
-release.</p>
+release. (There is no <code>v3.2022.1</code> release of
+<code>ejamdata</code>, and none is needed for a code-only patch.)</p>
 <p>This previously had been handled with a GitHub Actions workflow that
-tried to use Git LFS. That automatic workflow is no longer used and
-should not be restored.</p>
+tried to use Git LFS. That automatic workflow is no longer used and will
+not be restored.</p>
 </div>
 <div class="section level3">
 <h3 id="bump-the-package-version-number">Bump the package version number<a class="anchor" aria-label="anchor" href="#bump-the-package-version-number"></a>

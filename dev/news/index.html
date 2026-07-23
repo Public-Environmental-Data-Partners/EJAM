@@ -69,6 +69,15 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.2022.2" id="ejam-320222-august-2026">EJAM 3.2022.2 (August 2026)<a class="anchor" aria-label="anchor" href="#ejam-320222-august-2026"></a></h2>
+<p>Patch release to address some bugs and improve the EJAM API. Like v3.2022.1, this is a code-and-docs patch that reuses the already-published <code>ejamdata</code> data release for this vintage (<code>v3.2022.0</code>), with no change to the packaged ACS or environmental data.</p>
+<div class="section level3">
+<h3 id="improvements-3-2022-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-3-2022-2"></a></h3>
+<ul><li><p>PDF report generation is roughly 7 seconds (~46%) faster: the two fixed rendering pauses (report-map snapshot 4s -&gt; 1s, print-to-PDF 5s -&gt; 2s) were trimmed, and both are now adjustable without a rebuild via R option (<code>EJAM.pdf_map_snapshot_delay</code>, <code>EJAM.pdf_print_wait</code>) or environment variable (<code>EJAM_PDF_MAP_SNAPSHOT_DELAY</code>, <code>EJAM_PDF_PRINT_WAIT</code>), as a rollback lever in case a too-short pause ever degrades output on the server (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/473" class="external-link">#473</a>).</p></li>
+<li><p>County maps and reports are faster and more reliable: county boundaries are now built into the package (new <code>counties_shapefile</code> dataset, cartographic 1:500k) instead of being downloaded at render time, so County reports work with no Census API key and no boundary-service network call (including for Puerto Rico counties, previously unmappable), with automatic fallback to downloading (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/472" class="external-link">#472</a>, part of <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/446" class="external-link">#446</a>).</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2022.1" id="ejam-320221-july-2026">EJAM 3.2022.1 (July 2026)<a class="anchor" aria-label="anchor" href="#ejam-320221-july-2026"></a></h2>
 <p>Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1, v3.2024.1). Functionality is identical across all three ACS vintages (2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between branches. This is a code-and-docs patch: it reuses the existing per-vintage ejamdata release, with no change to the packaged ACS or environmental data.</p>
 <p>Changes since v3.YYYY.0:</p>

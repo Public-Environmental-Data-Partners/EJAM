@@ -113,7 +113,10 @@ or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycens
 <dt id="arg-myservice-county">myservice_county<a class="anchor" aria-label="anchor" href="#arg-myservice-county"></a></dt>
 <dd><p>URL of feature service to get shapes from,
 or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
-Note State bounds are built into this package as data so do not need to be downloaded from a service.</p></dd>
+Note State bounds are built into this package as data so do not need to be downloaded from a service.
+County bounds are too, as of the <a href="counties_shapefile.html">counties_shapefile</a> dataset: the default
+"cartographic" County bounds are served from that built-in dataset rather than
+downloaded, falling back to downloading only for any FIPS not found there.</p></dd>
 
 
 <dt id="arg-allow-multiple-fips-types">allow_multiple_fips_types<a class="anchor" aria-label="anchor" href="#arg-allow-multiple-fips-types"></a></dt>

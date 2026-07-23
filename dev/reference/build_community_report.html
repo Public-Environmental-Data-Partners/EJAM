@@ -181,9 +181,15 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.'</p><
 
 
 <dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
-<dd><p>path to file to save HTML content to; if null, returns as string (used in Shiny app)</p></dd>
+<dd><p>optional path to an .html file; if provided, the assembled HTML
+content is also written to that file. The HTML is returned either way.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>HTML content of the report body (header and tables) as an
+<code><a href="https://rstudio.github.io/htmltools/reference/HTML.html" class="external-link">htmltools::HTML()</a></code> object, whether or not <code>filename</code> was provided.</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This is used by the shiny app server. For use in RStudio,

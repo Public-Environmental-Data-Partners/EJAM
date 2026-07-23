@@ -110,6 +110,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/convert_units.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/count_sites_with_n_high_scores.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/counties_as_sites.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/counties_shapefile.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/countpoints_after_getpoints.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/countpoints_nearby.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/create_filename.html</loc></url>
@@ -473,6 +474,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pctile_from_raw_lookup.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pctile_x_is_hit_by_score.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pctiles_lookup_create.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pdf_wait_seconds.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pkg_data.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pkg_dependencies.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pkg_dupeRfiles.html</loc></url>
@@ -550,6 +552,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/shapefix.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/shapes_blockgroups_from_bgfips.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/shapes_counties_from_countyfips.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/shapes_counties_from_countyfips_local.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/shapes_from_fips.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/shapes_places_from_placefips.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/shapes_state_from_statefips.html</loc></url>

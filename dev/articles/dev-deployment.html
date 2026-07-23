@@ -398,16 +398,17 @@ the ejamdata GitHub release</td>
 <blockquote>
 <p><strong>Which EJAM version deploys:</strong> the
 <code>Dockerfile</code> installs EJAM from a <strong>pinned GitHub
-release tag</strong> via the <code>EJAM_VERSION</code> build-arg
-(default <code>v3.2022.1</code>; override with
+release tag</strong> via the <code>EJAM_VERSION</code> build-arg (e.g.,
+<code>v3.2022.1</code>; override with
 <code>--build-arg EJAM_VERSION=vX.Y.Z</code>), so the deployed version
 is explicit and reproducible rather than tied to whatever source happens
 to be checked out on the deploy branch. The <code>ejamdata</code> arrow
 files are fetched separately from the ejamdata GitHub release via the
-<code>EJAMDATA_VERSION</code> build-arg (default <code>v3.2022.0</code>
-— the release that <code>v3.2022.1</code> requires, i.e. its
-<code>ejamdata_required_tag</code>); keep the two in sync when bumping
-to a new release.</p>
+<code>EJAMDATA_VERSION</code> build-arg (e.g., <code>v3.2022.0</code> —
+the release that the given EJAM version requires, i.e. its
+<code>ejamdata_required_tag</code>; note a code-only patch such as
+<code>v3.2022.1</code> still uses the existing <code>v3.2022.0</code>
+data release); keep the two in sync when bumping to a new release.</p>
 <p><em>(These pinned build-args are set in the deploy-branch
 <code>Dockerfile</code>. A deploy branch whose <code>Dockerfile</code>
 predates that update instead installs EJAM from the build context via

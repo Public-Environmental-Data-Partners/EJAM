@@ -91,24 +91,25 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-analysis-title-">analysis_title, <a class="anchor" aria-label="anchor" href="#arg-analysis-title-"></a></dt>
+<dl><dt id="arg-analysis-title">analysis_title<a class="anchor" aria-label="anchor" href="#arg-analysis-title"></a></dt>
 <dd><p>title to use in header of report</p></dd>
 
 
-<dt id="arg-totalpop-">totalpop, <a class="anchor" aria-label="anchor" href="#arg-totalpop-"></a></dt>
+<dt id="arg-totalpop">totalpop<a class="anchor" aria-label="anchor" href="#arg-totalpop"></a></dt>
 <dd><p>total population included in location(s) analyzed</p></dd>
 
 
-<dt id="arg-locationstr-">locationstr, <a class="anchor" aria-label="anchor" href="#arg-locationstr-"></a></dt>
+<dt id="arg-locationstr">locationstr<a class="anchor" aria-label="anchor" href="#arg-locationstr"></a></dt>
 <dd><p>description of the location(s) analyzed</p></dd>
 
 
-<dt id="arg-in-shiny-">in_shiny, <a class="anchor" aria-label="anchor" href="#arg-in-shiny-"></a></dt>
+<dt id="arg-in-shiny">in_shiny<a class="anchor" aria-label="anchor" href="#arg-in-shiny"></a></dt>
 <dd><p>whether the function is being called in or outside of shiny - affects location of header</p></dd>
 
 
-<dt id="arg-filename-">filename, <a class="anchor" aria-label="anchor" href="#arg-filename-"></a></dt>
-<dd><p>path to file to save HTML content to; if null, returns as string (used in Shiny app)</p></dd>
+<dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
+<dd><p>optional path to an .html file; if provided, the HTML content
+is also written to that file. The HTML is returned either way.</p></dd>
 
 
 <dt id="arg-report-title">report_title<a class="anchor" aria-label="anchor" href="#arg-report-title"></a></dt>
@@ -127,7 +128,8 @@ If specified, it overrides logo_path. If omitted, gets created based on logo_pat
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>can return HTML if filename not specified, but otherwise NULL</p>
+    <p>HTML content of the report header as an <code><a href="https://rstudio.github.io/htmltools/reference/HTML.html" class="external-link">htmltools::HTML()</a></code> object,
+whether or not <code>filename</code> was provided.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

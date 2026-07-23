@@ -109,9 +109,9 @@
 <span>  filename <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return_html <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  launch_browser <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  sitenumber_label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shape <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  shapefile <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  shapefile <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sitenumber_label <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -211,7 +211,7 @@ Should provide footer_date to ensure user's timezone is used to determine today'
 
 
 <dt id="arg-fileextension">fileextension<a class="anchor" aria-label="anchor" href="#arg-fileextension"></a></dt>
-<dd><p>html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
+<dd><p>html or .html or pdf or .pdf (case-insensitive) - use "pdf" to create a PDF version of the report.
 PDF generation uses <code><a href="https://rdrr.io/pkg/pagedown/man/chrome_print.html" class="external-link">pagedown::chrome_print()</a></code> which requires the <code>pagedown</code> package and a
 Chrome/Chromium browser to be available on the system.
 The PDF preserves the full HTML/CSS styling and supports smart page breaks.
@@ -220,7 +220,15 @@ PDF output is required when this option is selected; it is not optional.</p></dd
 
 
 <dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
-<dd><p>optional path and name for report file, used by web app</p></dd>
+<dd><p>optional path and/or name for report file. How it is interpreted:
+a bare name like "myreport.html" is saved in tempdir();
+a "./"-prefixed or multi-folder path like "./myreport.html" or "out/myreport.html"
+is saved relative to the working directory (the folder is created if necessary,
+with a warning and fallback to tempdir() if it cannot be created);
+an existing folder like "~/Desktop" gets an auto-generated report name inside it;
+a missing or invalid extension is fixed based on the fileextension parameter, and
+a valid extension in filename (.html or .pdf) overrides the fileextension parameter
+(with a warning if the two conflict).</p></dd>
 
 
 <dt id="arg-return-html">return_html<a class="anchor" aria-label="anchor" href="#arg-return-html"></a></dt>
@@ -229,6 +237,14 @@ PDF output is required when this option is selected; it is not optional.</p></dd
 
 <dt id="arg-launch-browser">launch_browser<a class="anchor" aria-label="anchor" href="#arg-launch-browser"></a></dt>
 <dd><p>set TRUE to have it launch browser and show report.</p></dd>
+
+
+<dt id="arg-shape">shape<a class="anchor" aria-label="anchor" href="#arg-shape"></a></dt>
+<dd><p>alias (synonym) for shp</p></dd>
+
+
+<dt id="arg-shapefile">shapefile<a class="anchor" aria-label="anchor" href="#arg-shapefile"></a></dt>
+<dd><p>alias (synonym) for shp</p></dd>
 
 
 <dt id="arg-sitenumber-label">sitenumber_label<a class="anchor" aria-label="anchor" href="#arg-sitenumber-label"></a></dt>
@@ -241,14 +257,6 @@ re-analyzed alone – e.g., the EJAM API per-site report links made by <code><a 
 re-analyze a single site that was row N of the original multisite results, so its row
 index in the regenerated results (1) is not the site number the user expects to see.
 A number N is shown as "Site N"; text is shown as-is. Ignored for a multisite report.</p></dd>
-
-
-<dt id="arg-shape">shape<a class="anchor" aria-label="anchor" href="#arg-shape"></a></dt>
-<dd><p>alias (synonym) for shp</p></dd>
-
-
-<dt id="arg-shapefile">shapefile<a class="anchor" aria-label="anchor" href="#arg-shapefile"></a></dt>
-<dd><p>alias (synonym) for shp</p></dd>
 
 </dl></div>
     <div class="section level2">
