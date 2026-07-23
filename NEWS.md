@@ -10,6 +10,22 @@ packaged ACS or environmental data.
 
 ## Bug Fixes
 
+- **Percentages displayed as "0" or "1" (or unrounded) in reports, tables, and
+  map popups**: two related metadata problems were fixed. The derived
+  `names_pct_as_fraction_ejamit` / `names_pct_as_fraction_blockgroupstats`
+  datasets had been silently saved as `NA` / empty (a script subset a character
+  column as if it were logical), which disabled the fraction-to-percent (x100)
+  conversion in `ejam2table_tall()`, `ejam2tableviewer()`, `ejam2means()`,
+  `popup_from_ejscreen()`, and `plot_boxplot_vs_ref()`. Separately,
+  `map_headernames` was missing `pct_as_fraction_ejamit` flags for 76
+  fraction-stored indicators (language spoken at home, low-income language,
+  poverty, housing tenure, broadband, health insurance, age, sex, pre-1960
+  housing, 30-year fire/flood risk, and their US/State average rows), so the
+  community report showed values like `avg.pctlan_english = 0.7867` as "1"
+  instead of "79%". Rounding (`decimals`) and Excel `%`-styling (`percentage`)
+  metadata were also filled in for those and related rows, verified against a
+  live `ejamit(testpoints_10, radius = 1)` run.
+
 - **App crash on the EJScreen "Send to EJAM" handoff** (#465 fixed by #466): every FIPS
   (County/Tract) and drawn-polygon handoff, and any lat/lon selection made
   without a buffer, killed the Shiny session. The API serializes absent payload
