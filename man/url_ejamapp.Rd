@@ -15,7 +15,7 @@ url_ejamapp(
   buffer = NULL,
   handoff = NULL,
   dTolerance = 100,
-  baseurl = "https://ejamapp.ejanalysis.com/",
+  baseurl = url_package("ejamapp", desc_or_alias = "alias"),
   browse = FALSE,
   shp = NULL
 )
@@ -43,7 +43,9 @@ many/large polygons).}
 \item{dTolerance}{meters tolerance for \code{\link[sf:st_simplify]{sf::st_simplify()}} so a polygon fits in a URL}
 
 \item{baseurl}{base URL of the live EJAM app. Defaults to
-\verb{https://ejamapp.ejanalysis.com/}, a Cloudflare-fronted shortcut on
+\code{url_package("ejamapp", desc_or_alias = "alias")} (the DESCRIPTION field
+\code{url_ejamapp_alias}, currently \verb{https://ejam.ejanalysis.com} — equivalently
+\verb{https://ejamapp.ejanalysis.com}), a Cloudflare-fronted shortcut on
 ejanalysis.com that forwards the query string (302 redirect) to the app, so
 the launch parameters arrive intact. Any base works as long as it preserves
 the \code{?...} query; a plain 301 that drops it would open the app empty (which
