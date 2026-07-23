@@ -3,14 +3,14 @@
 \docType{data}
 \name{names_pct_as_fraction_ejamit}
 \alias{names_pct_as_fraction_ejamit}
-\title{which indicators are percentages stored as 0-1 not 0-100, in blockgroupstats}
+\title{which indicators are percentages stored as 0-1 not 0-100, in ejamit() output}
 \format{
-An object of class \code{character} of length 1.
+An object of class \code{character} of length 158.
 }
 \usage{
 names_pct_as_fraction_ejamit
 }
 \description{
-which indicators are percentages stored as 0-1 not 0-100, in blockgroupstats
+which indicators are percentages stored as 0-1 not 0-100, in ejamit() output
 }
 \keyword{internal}
