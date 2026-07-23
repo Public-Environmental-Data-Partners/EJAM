@@ -98,10 +98,10 @@ be just a placeholder, for the first site, not an overall summary across all sit
 
 \item{dry_run}{set to TRUE to see preview info about what the API call would look like.}
 
-\item{version}{NOT YET IMPLEMENTED.
-optional EJAM version tag (e.g. "3.2024.0") passed to the API as
-version=\if{html}{\out{<ver>}} via \code{\link[=url_ejamapi]{url_ejamapi()}} so it can serve the matching data vintage.
-Default NULL resolves to the installed package Version (from DESCRIPTION).}
+\item{version}{NOT YET IMPLEMENTED. Optional EJAM version tag (e.g. "3.2024.0")
+sent to the API as version=\if{html}{\out{<ver>}} so the API can be asked to serve the matching
+data vintage (irrelevant until a multivintage option is implemented in the API).
+Default is NULL here, meaning it uses the default found in \code{\link[=url_ejamapi]{url_ejamapi()}}.}
 
 \item{...}{other parameters, passed to \code{\link[httr2:req_body_json]{httr2::req_body_json()}} in the "data" case,
 passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case, and used for the
