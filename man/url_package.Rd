@@ -10,7 +10,7 @@ url_package(
     "ejamdocs", "ejscreendocs", "apidocs", "app", "ejam", "ejamapp", "ejamdev",
     "ejamappdev", "ejscreen", "ejscreenapp", "api")[1],
   get_full_url = FALSE,
-  desc_or_alias = c("desc", "alias")[1],
+  desc_or_alias = c("desc", "alias", "redirect")[1],
   docs_version = NULL,
   domain = NULL
 )
@@ -42,8 +42,9 @@ APP OR API SERVERS:
 \item "api" (\code{url_api} field in the DESCRIPTION file) is for the EJAM REST API base URL.
 Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
 endpoint can be changed in one place (by editing \code{url_api} in DESCRIPTION).
-A friendlier branded alias (in \code{url_api_alias}) proxies the same API via Cloudflare and
-may be used as a substitute.
+It is the branded Cloudflare edge proxy \verb{https://api.ejanalysis.com}
+(equivalently \verb{https://ejamapi.ejanalysis.com}, stored in \code{url_api_alias}),
+which fronts the direct Cloud Run origin recorded informationally in \code{url_api_direct}.
 }
 
 CODE OR DATA REPOSITORIES:
@@ -56,17 +57,22 @@ repository on github.com and is informational only -- it is not the API endpoint
 }}
 
 \item{get_full_url}{logical, whether to return full URL or just the owner/reponame info.
-Ignored if type is an app, docs, or API URL, where a full URL is always returned.}
+Only meaningful for the github repository types ("code", "ejamrepo", "ejscreenrepo",
+"apirepo", "data", "datarepo"); for all other types (and whenever
+desc_or_alias is "alias" or "redirect") a full URL is always returned.}
 
 \item{desc_or_alias}{must be "desc" or "alias" or "redirect" to use info from DESCRIPTION file
 or the URL based on a cloudflare alias or a simple 301 redirect such as
 \itemize{
-\item https://ejamapi-84652557241.us-central1.run.app # if "desc", use the basic URL
-\item https://api.ejanalysis.com # if "alias" use the cloudflare alias that can handle subpaths and query strings passed through to the final URL
-\item https://ejanalysis.com/api # if "redirect" use the simple 301 redirect that cannot handle subpaths or query strings
-}}
+\item https://api.ejanalysis.com (if "desc", use the basic URL from the "url_xyz" field)
+\item https://ejamapi.ejanalysis.com (if "alias", use the cloudflare alias from the "url_xyz_alias" field, which can handle subpaths and query strings passed through to the final URL)
+\item https://ejanalysis.com/api (if "redirect", use the simple 301 redirect from the "url_xyz_redirect" field, which cannot handle subpaths or query strings)
+}
 
-\item{docs_version}{optional, only used when type = "docs". A docs subpath such as
+If the "_alias" or "_redirect" field is missing from DESCRIPTION, the basic
+"url_xyz" field is used as a fallback.}
+
+\item{docs_version}{optional, only used when type = "docs" or "ejamdocs". A docs subpath such as
 "dev" or "v3.2022.1" to append to the canonical root
 docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
 \code{EJAM_DOCS_BASE_URL} is set (as the pkgdown CI workflow does while building a
@@ -85,19 +91,20 @@ as specified in the DESCRIPTION file or by redirects or aliases
 }
 \details{
 This function reads from the DESCRIPTION file, but below is a
-snapshot of URLs that were in DESCRIPTION file at the time of writing (7/2026):
+snapshot of URLs that were in the DESCRIPTION file at the time of writing (7/2026):
 
-url_api: https://ejamapi-84652557241.us-central1.run.app
-url_api_alias: https://api.ejanalysis.com
+\if{html}{\out{<div class="sourceCode">}}\preformatted{url_api: https://api.ejanalysis.com
+url_api_alias: https://ejamapi.ejanalysis.com
 url_api_redirect: https://ejanalysis.com/api
+url_api_direct: https://ejamapi-84652557241.us-central1.run.app
 
 url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
 url_apirepo_alias: https://apirepo.ejanalysis.com
 url_apirepo_redirect: https://ejanalysis.com/apirepo
 
 url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
-url_apidocs_alias: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html # not https://apidocs.ejanalysis.com  ???
-url_apidocs_redirect: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html # not https://ejanalysis.com/apidocs  ???
+url_apidocs_alias: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
+url_apidocs_redirect: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
 
 url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
 
@@ -134,6 +141,10 @@ url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJSc
 url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
 url_ejamdata_alias: https://ejamdata.ejanalysis.com
 url_ejamdata_redirect: https://ejanalysis.com/ejamdata
+}\if{html}{\out{</div>}}
+
+(\code{url_api_direct}, \code{url_apidocker}, and \code{url_ejscreendocs_old} are informational
+only -- they are stored in DESCRIPTION but are not \code{type} values this function accepts.)
 }
 \examples{
  owner_repo <- url_package()
@@ -149,6 +160,10 @@ url_ejamdata_redirect: https://ejanalysis.com/ejamdata
  url_package("data", get_full_url = TRUE)
 
  url_package("api")
+
+ url_package("ejamapp")
+ url_package("ejamapp", desc_or_alias = "alias")
+ url_package("ejscreenapp")
 
  url_package("docs", desc_or_alias="alias")
  url_package("docs", desc_or_alias="redirect")

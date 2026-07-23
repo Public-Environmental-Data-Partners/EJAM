@@ -21,9 +21,10 @@ Description: Actively maintained non-EPA version of EJAM, the web app
     This version grew from a fork of the last version EPA released before it was archived.
 License: MIT + file LICENSE
 URL: https://public-environmental-data-partners.github.io/EJAM, https://github.com/Public-Environmental-Data-Partners/EJAM, https://ejanalysis.org
-url_api: https://ejamapi-84652557241.us-central1.run.app
-url_api_alias: https://api.ejanalysis.com
+url_api: https://api.ejanalysis.com
+url_api_alias: https://ejamapi.ejanalysis.com
 url_api_redirect: https://ejanalysis.com/api
+url_api_direct: https://ejamapi-84652557241.us-central1.run.app
 url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
 url_apirepo_alias: https://apirepo.ejanalysis.com
 url_apirepo_redirect: https://ejanalysis.com/apirepo

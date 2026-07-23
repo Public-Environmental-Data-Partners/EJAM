@@ -91,3 +91,55 @@ testthat::test_that("url_package app and docs types always return full URLs", {
     "^https?://"
   )
 })
+
+# --- expanded types added by the urls-in-DESCRIPTION work (PR #485) ---
+
+testthat::test_that("url_package api returns the branded full URL with no trailing slash", {
+  x <- url_package("api")
+  expect_match(x, "^https://")
+  expect_false(grepl("/$", x))
+  expect_identical(x, "https://api.ejanalysis.com")
+})
+
+testthat::test_that("url_package app/api/docs types return full URLs even with default get_full_url", {
+  for (ty in c("ejamapp", "app", "ejam", "ejamdev", "ejamappdev",
+               "ejscreen", "ejscreenapp", "docs", "ejamdocs",
+               "ejscreendocs", "apidocs", "api")) {
+    expect_match(url_package(ty), "^https?://", info = ty)
+  }
+})
+
+testthat::test_that("url_package type synonyms agree", {
+  expect_identical(url_package("code"), url_package("ejamrepo"))
+  expect_identical(url_package("data"), url_package("datarepo"))
+  expect_identical(url_package("docs"), url_package("ejamdocs"))
+  expect_identical(url_package("app"), url_package("ejamapp"))
+  expect_identical(url_package("ejam"), url_package("ejamapp"))
+  expect_identical(url_package("ejamdev"), url_package("ejamappdev"))
+  expect_identical(url_package("ejscreen"), url_package("ejscreenapp"))
+})
+
+testthat::test_that("url_package repo types give owner/repo shorthand by default", {
+  for (ty in c("code", "ejamrepo", "ejscreenrepo", "apirepo", "data", "datarepo")) {
+    expect_match(url_package(ty), "^[^/]+/[^/]+$", info = ty)
+  }
+  expect_identical(url_package("data"), "Public-Environmental-Data-Partners/ejamdata")
+})
+
+testthat::test_that("url_package alias and redirect variants return full URLs", {
+  for (ty in c("code", "data", "docs", "ejamapp", "ejscreenapp", "api")) {
+    expect_match(url_package(ty, desc_or_alias = "alias"), "^https://", info = ty)
+    expect_match(url_package(ty, desc_or_alias = "redirect"), "^https://", info = ty)
+  }
+  expect_identical(url_package("api", desc_or_alias = "redirect"), "https://ejanalysis.com/api")
+})
+
+testthat::test_that("url_package rejects unknown types", {
+  expect_error(url_package("nonsense"))
+  expect_error(url_package("apidocker")) # informational field, not an accepted type
+})
+
+testthat::test_that("url_package docs_version appends subpath for docs types", {
+  expect_match(url_package("docs", docs_version = "dev"), "/dev$")
+  expect_match(url_package("ejamdocs", docs_version = "v3.2022.1"), "/v3\\.2022\\.1$")
+})
