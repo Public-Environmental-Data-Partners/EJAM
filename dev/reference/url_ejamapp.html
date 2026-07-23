@@ -104,7 +104,7 @@ of <code><a href="ejamapp.html">ejamapp()</a></code>.</p>
 <span>  buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  handoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dTolerance <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  baseurl <span class="op">=</span> <span class="st">"https://ejamapp.ejanalysis.com/"</span>,</span>
+<span>  baseurl <span class="op">=</span> <span class="fu"><a href="url_package.html">url_package</a></span><span class="op">(</span><span class="st">"ejamapp"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span>,</span>
 <span>  browse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  shp <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -155,7 +155,9 @@ many/large polygons).</p></dd>
 
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
 <dd><p>base URL of the live EJAM app. Defaults to
-<code>https://ejamapp.ejanalysis.com/</code>, a Cloudflare-fronted shortcut on
+<code>url_package("ejamapp", desc_or_alias = "alias")</code> (the DESCRIPTION field
+<code>url_ejamapp_alias</code>, currently <code>https://ejam.ejanalysis.com</code> — equivalently
+<code>https://ejamapp.ejanalysis.com</code>), a Cloudflare-fronted shortcut on
 ejanalysis.com that forwards the query string (302 redirect) to the app, so
 the launch parameters arrive intact. Any base works as long as it preserves
 the <code><a href="https://rdrr.io/r/base/dots.html" class="external-link">?...</a></code> query; a plain 301 that drops it would open the app empty (which

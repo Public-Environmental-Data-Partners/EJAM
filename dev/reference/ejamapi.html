@@ -154,9 +154,9 @@ or all blockgroups in specified County fips.</p></dd>
 
 
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
-<dd><p>base API URL without the endpoint path. Defaults to <code><a href="url_package.html">url_package()</a></code> with
-type="api" (the DESCRIPTION <code>ejam_api_url</code>), the single source of the API endpoint; pass a
-different value only to target another API (e.g. a staging server).</p></dd>
+<dd><p>base API URL without the endpoint path. Defaults to <code>url_package("api")</code>,
+the single source of the API endpoint (<code><a href="url_package.html">url_package()</a></code> reads from the DESCRIPTION file).
+Pass a different value only to target another API (e.g. a staging server).</p></dd>
 
 
 <dt id="arg-endpoint">endpoint<a class="anchor" aria-label="anchor" href="#arg-endpoint"></a></dt>
@@ -198,9 +198,9 @@ be just a placeholder, for the first site, not an overall summary across all sit
 
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
-<dd><p>optional EJAM version tag (e.g. "3.2024.0") sent to the API as
-version=<ver> so the API can be asked to serve the matching data vintage
-(but this is irrelevant until a multivintage option is implemented in the API).
+<dd><p>NOT YET IMPLEMENTED. Optional EJAM version tag (e.g. "3.2024.0")
+sent to the API as version=<ver> so the API can be asked to serve the matching
+data vintage (irrelevant until a multivintage option is implemented in the API).
 Default is NULL here, meaning it uses the default found in <code><a href="url_ejamapi.html">url_ejamapi()</a></code>.</ver></p></dd>
 
 
@@ -253,6 +253,7 @@ deep links that launch the live <em>app</em> pre-loaded, and <code><a href="url_
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># also see ?EJAM::url_ejamapi()</span></span>
+<span><span class="fu"><a href="url_ejamapi.html">url_ejamapi</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">eg</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
 <span></span>
 <span><span class="co"># one blockgroup</span></span>

@@ -140,12 +140,12 @@ hyperlinks (via <code><a href="url_linkify.html">url_linkify()</a></code>) suita
 <dt id="arg-ifna">ifna<a class="anchor" aria-label="anchor" href="#arg-ifna"></a></dt>
 <dd><p>URL shown for missing, NA, NULL, bad input values. Default NULL
 (and an explicitly passed NULL) resolves to the EJAM API base URL from
-DESCRIPTION (<code>ejam_api_url</code>), via <code><a href="url_package.html">url_package()</a></code> with type="api".</p></dd>
+the DESCRIPTION file, via <code><a href="url_package.html">url_package()</a></code> with type="api".</p></dd>
 
 
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
 <dd><p>do not change unless endpoint actually changed. Default NULL
-(and an explicitly passed NULL) resolves to the DESCRIPTION <code>ejam_api_url</code>
+(and an explicitly passed NULL) resolves to url_package("api"), a URL stored in the DESCRIPTION file,
 followed by "/report?". See <code><a href="ejamapi.html">ejamapi()</a></code> for a better way to handle choice of endpoint.</p></dd>
 
 
@@ -208,8 +208,8 @@ to allow for expansion of allowed parameters</p></dd>
 
 <ul><li><p>Relies on the EJAM REST API, whose source code is at
 https://github.com/Public-Environmental-Data-Partners/EJAM-API
-(the API base URL itself comes from <code>url_package("api")</code>; see the <code>ejam_api_url</code>
-field in DESCRIPTION).</p></li>
+(the API base URL itself comes from <code>url_package("api")</code>; see the
+DESCRIPTION file).</p></li>
 <li><p>To construct a "deep link" that launches the live EJAM <em>app</em> (not the API)
 pre-loaded with sites, see <code><a href="url_ejamapp.html">url_ejamapp()</a></code>, which uses the same query
 vocabulary (lat, lon, fips, shape, radius, handoff).</p></li>
