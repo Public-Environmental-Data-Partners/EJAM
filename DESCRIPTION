@@ -29,8 +29,8 @@ url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
 url_apirepo_alias: https://apirepo.ejanalysis.com
 url_apirepo_redirect: https://ejanalysis.com/apirepo
 url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
-url_apidocs_alias: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
-url_apidocs_redirect: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
+url_apidocs_alias: https://apidocs.ejanalysis.com
+url_apidocs_redirect: https://ejanalysis.com/apidocs
 url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
 url_ejamapp: https://ejam.publicenvirodata.org
 url_ejamapp_alias: https://ejam.ejanalysis.com

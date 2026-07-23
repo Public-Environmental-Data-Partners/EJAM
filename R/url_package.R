@@ -17,8 +17,8 @@
 #' url_apirepo_redirect: https://ejanalysis.com/apirepo
 #'
 #' url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
-#' url_apidocs_alias: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
-#' url_apidocs_redirect: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
+#' url_apidocs_alias: https://apidocs.ejanalysis.com
+#' url_apidocs_redirect: https://ejanalysis.com/apidocs
 #'
 #' url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
 #'
