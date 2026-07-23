@@ -145,6 +145,7 @@ build_community_report <- function(
       `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
       `Poverty` = names_d_extra,
       # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Poverty)
+      `Climate` = names_climate,
       `Counts of Features and Overlap with Area Types` = c(
         names_featuresinarea,
         names_flag
@@ -158,7 +159,6 @@ build_community_report <- function(
         'distance_min_avgperson', 'distance_min',
         'sitecount_unique', 'sitecount_avg', 'sitecount_max'
       ),
-      `Climate` = names_climate,
       `Other Totals` = names_d_other_count
       # , `Count above threshold` = names_countabove # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
     ),

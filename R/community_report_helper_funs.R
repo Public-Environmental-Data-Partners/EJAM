@@ -733,7 +733,7 @@ generate_report_footnotes <- function(
   if (isTRUE(show_diesel_caveat)) {
     dieselnote = paste0("
   <span style= 'font-size: 9pt'>
-  <p tabindex=\'13\' style='font-size: 9pt'><small>", diesel_caveat, "</small></p>
+  <p tabindex=\'13\' style='font-size: 9pt; line-height: 1.25; margin: 2px 0;'><small>", diesel_caveat, "</small></p>
   </span>"
     )
   } else {
@@ -748,9 +748,10 @@ generate_report_footnotes <- function(
   # )
 
   if (nzchar(areafeatures_note)) {
+    # compact spacing: tighter line-height and small margins so the long note reads as one tight block
     areafeaturesnote = paste0("
   <span style= 'font-size: 9pt'>
-  <p tabindex=\'15\' style='font-size: 9pt'><small>", areafeatures_note, "</small></p>
+  <p tabindex=\'15\' style='font-size: 9pt; line-height: 1.25; margin: 2px 0;'><small>", areafeatures_note, "</small></p>
   </span>"
     )
   } else {

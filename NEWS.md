@@ -38,15 +38,27 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
   hospitals, and area-overlap flags), "Facility Counts" (NPL, TSDF, air, toxic
   release, water discharge, brownfields), and "Analyzed Sites" (distance and
   sites-nearby rows); "Critical Services" is re-sorted (flags first,
-  then percentages); and the "Other" section was renamed "Other Totals" (reserving
-  "Other" for future user-specified indicators) and moved with "Climate" to the
+  then percentages); "Climate" moved up to sit right after "Poverty" (following
+  the flagged-areas "% of These Residents..." rows); and the "Other" section was
+  renamed "Other Totals" (reserving
+  "Other" for future user-specified indicators) and moved to the
   end of the table, after "Analyzed Sites". "Flag for..." rows now display
   Yes/No instead of 1/0.
+- The three CDC PLACES health indicators ("% with Heart Diseases", "% of Adults
+  with Asthma", "% of Adults with Cancer (excluding skin cancer)") now display
+  in the report as whole percentages with a % sign ("10%" instead of "9.90"),
+  like the other health rows. They are stored as 0-100 percentage points (unlike
+  the fraction-stored percent columns), so a new `pct_as_points_ejamit` column in
+  `map_headernames` marks them for %-sign display without the x100 rescaling -
+  in the report via `format_ejamit_columns()` and in the `ejam2excel()`
+  spreadsheet, whose percent styling would otherwise multiply by 100 (e.g. the
+  heart disease column would have displayed 387%).
 - Also per [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410),
   the report's feature/facility counts are estimated totals (prorated by the share
   of each blockgroup's residents inside the analyzed area), so they display with
   0 decimal places like other totals; "Number of Sites Nearby (avg)" is the only
-  average-person count row and keeps 1 decimal place. A report footnote now
+  average-person count row and keeps 1 decimal place. A report footnote (shown
+  with compact line spacing) now
   explains what those counts mean and what the State average means for a
   multisite report
   (part of [#403](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/403)).

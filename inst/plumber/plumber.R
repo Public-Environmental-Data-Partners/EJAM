@@ -713,6 +713,7 @@ function(ejamitout = testoutput_ejamit_10pts_1miles, ..., attachment = "true", r
   #   `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
   #   `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
   #   `Poverty` = names_d_extra,
+  #   `Climate` = names_climate,
   #   `Counts of Features and Overlap with Area Types` = c(
   #     names_featuresinarea,
   #     names_flag
@@ -722,7 +723,6 @@ function(ejamitout = testoutput_ejamit_10pts_1miles, ..., attachment = "true", r
   #   `Facility Counts` = names_sitesinarea,
   #   `Analyzed Sites` = c('distance_min_avgperson', 'distance_min',
   #                        'sitecount_unique', 'sitecount_avg', 'sitecount_max'),
-  #   `Climate` = names_climate,
   #   `Other Totals` = names_d_other_count
   #   # , `Count above threshold` = names_countabove  # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
   # ),

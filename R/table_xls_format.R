@@ -739,6 +739,17 @@ table_xls_format <- function(overall,
   is.percentage_eachsite  <- 1 == fixcolnames(headers_eachsite, oldtype = "r", newtype = "percentage")
   percentage_colnums_eachsite <- which(is.percentage_eachsite)
 
+  # columns stored as percentage points (0-100), e.g. rateasthma = 9.88 meaning 9.88%:
+  # display with a literal % suffix, NOT the "0%" percent style (which multiplies by 100)
+  is.pctpoints_overall <- as.logical(fixcolnames(headers_overall, oldtype = "r", newtype = "pct_as_points_ejamit"))
+  is.pctpoints_overall[is.na(is.pctpoints_overall)] <- FALSE
+  pctpoints_colnums_overall <- which(is.pctpoints_overall)
+  is.pctpoints_eachsite <- as.logical(fixcolnames(headers_eachsite, oldtype = "r", newtype = "pct_as_points_ejamit"))
+  is.pctpoints_eachsite[is.na(is.pctpoints_eachsite)] <- FALSE
+  pctpoints_colnums_eachsite <- which(is.pctpoints_eachsite)
+  percentage_colnums_overall  <- setdiff(percentage_colnums_overall,  pctpoints_colnums_overall)
+  percentage_colnums_eachsite <- setdiff(percentage_colnums_eachsite, pctpoints_colnums_eachsite)
+
   is.dollar_overall <- 1 == fixcolnames(headers_overall, oldtype = "r", newtype = "dollar")
   dollar_colnums_overall <- which(is.dollar_overall)
   is.dollar_eachsite  <- 1 == fixcolnames(headers_eachsite, oldtype = "r", newtype = "dollar")
@@ -908,7 +919,8 @@ table_xls_format <- function(overall,
   ## only loop over unique values
   for (i in unique(decimals_tosee)) {
     perc_cols <- decimals_colnum[which(decimals_tosee == i & decimals_colnum %in%  percentage_colnums_eachsite)]
-    non_perc_cols <- decimals_colnum[which(decimals_tosee == i & !(decimals_colnum %in%  percentage_colnums_eachsite))]
+    points_cols <- decimals_colnum[which(decimals_tosee == i & decimals_colnum %in% pctpoints_colnums_eachsite)]
+    non_perc_cols <- decimals_colnum[which(decimals_tosee == i & !(decimals_colnum %in% c(percentage_colnums_eachsite, pctpoints_colnums_eachsite)))]
     if (testing) {
       print(i); print(paste0(dec2format(i),"%"))
       print("percentages:"); print(names(eachsite)[perc_cols])
@@ -917,9 +929,13 @@ table_xls_format <- function(overall,
     }
     style_cur <- openxlsx::createStyle(numFmt = dec2format(i))
     style_perc <- openxlsx::createStyle(numFmt = paste0(dec2format(i),"%"))
+    style_points <- openxlsx::createStyle(numFmt = paste0(dec2format(i), "\"%\"")) # literal % suffix, value already 0-100
 
     openxlsx::addStyle(wb, 'Overall',   cols = perc_cols, rows = 2                    ,  style = style_perc, stack = TRUE)
     openxlsx::addStyle(wb, 'Each Site', cols = perc_cols, rows = 2:(1 + NROW(eachsite)), style = style_perc, stack = TRUE, gridExpand = TRUE)
+
+    openxlsx::addStyle(wb, 'Overall',   cols = points_cols, rows = 2                    ,  style = style_points, stack = TRUE)
+    openxlsx::addStyle(wb, 'Each Site', cols = points_cols, rows = 2:(1 + NROW(eachsite)), style = style_points, stack = TRUE, gridExpand = TRUE)
 
     openxlsx::addStyle(wb, 'Overall',   cols = non_perc_cols, rows = 2                    ,  style = style_cur, stack = TRUE)
     openxlsx::addStyle(wb, 'Each Site', cols = non_perc_cols, rows = 2:(1 + NROW(eachsite)), style = style_cur, stack = TRUE, gridExpand = TRUE)
@@ -975,6 +991,11 @@ table_xls_format <- function(overall,
   percentage_style <- openxlsx::createStyle(numFmt = "0%")   # specify 0 decimal places plus percentage style
   openxlsx::addStyle(wb, sheet = 'Overall',   rows = 2,                      cols = percentage_colnums_overall, style = percentage_style, stack = TRUE)
   openxlsx::addStyle(wb, sheet = 'Each Site', rows = 2:(1 + NROW(eachsite)), cols = percentage_colnums_eachsite, style = percentage_style, stack = TRUE, gridExpand = TRUE)
+
+  # percentage-points columns (already 0-100): literal % suffix, no x100 rescaling
+  pctpoints_style <- openxlsx::createStyle(numFmt = '0"%"')
+  openxlsx::addStyle(wb, sheet = 'Overall',   rows = 2,                      cols = pctpoints_colnums_overall,  style = pctpoints_style, stack = TRUE)
+  openxlsx::addStyle(wb, sheet = 'Each Site', rows = 2:(1 + NROW(eachsite)), cols = pctpoints_colnums_eachsite, style = pctpoints_style, stack = TRUE, gridExpand = TRUE)
 
   ### Number format total count columns  ####
 
