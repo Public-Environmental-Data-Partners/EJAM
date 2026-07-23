@@ -117,7 +117,13 @@ create a map of the points.</p>
 
 
 <dt id="arg-sitenumber">sitenumber<a class="anchor" aria-label="anchor" href="#arg-sitenumber"></a></dt>
-<dd><p>as used in <code><a href="ejam2report.html">ejam2report()</a></code></p></dd>
+<dd><p>Optional integer. If a valid positive integer is provided,
+only that one site (row <code>sitenumber</code> of <code>ejamitout$results_bysite</code>) is
+mapped. If omitted, NULL, zero, negative, or out of range, all sites are mapped.
+Works for all site types (latlon, fips, shp): when <code>sitetype</code> is "fips"
+and <code>shp</code> is provided, both the results table and <code>shp</code> are subsetted to
+the requested row; when <code>shp</code> is not provided, the FIPS polygon is
+downloaded for only that one site.</p></dd>
 
 
 <dt id="arg-shape">shape<a class="anchor" aria-label="anchor" href="#arg-shape"></a></dt>
