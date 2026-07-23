@@ -28,7 +28,13 @@ ejam2map(
 
 \item{radius}{optional radius in miles}
 
-\item{sitenumber}{as used in \code{\link[=ejam2report]{ejam2report()}}}
+\item{sitenumber}{Optional integer. If a valid positive integer is provided,
+only that one site (row \code{sitenumber} of \code{ejamitout$results_bysite}) is
+mapped. If omitted, NULL, zero, negative, or out of range, all sites are mapped.
+Works for all site types (latlon, fips, shp): when \code{sitetype} is "fips"
+and \code{shp} is provided, both the results table and \code{shp} are subsetted to
+the requested row; when \code{shp} is not provided, the FIPS polygon is
+downloaded for only that one site.}
 
 \item{shape}{alias (synonym) for shp}
 
