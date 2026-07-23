@@ -920,7 +920,8 @@ table_xls_format <- function(overall,
   ## only loop over unique values
   for (i in unique(decimals_tosee)) {
     perc_cols <- decimals_colnum[which(decimals_tosee == i & decimals_colnum %in%  percentage_colnums_eachsite)]
-    points_cols <- decimals_colnum[which(decimals_tosee == i & decimals_colnum %in% pctpoints_colnums_eachsite)]
+    # pct_as_points columns are skipped here entirely: their number format is applied
+    # in ONE place only, the pctpoints_style block further below
     non_perc_cols <- decimals_colnum[which(decimals_tosee == i & !(decimals_colnum %in% c(percentage_colnums_eachsite, pctpoints_colnums_eachsite)))]
     if (testing) {
       print(i); print(paste0(dec2format(i),"%"))
@@ -930,13 +931,9 @@ table_xls_format <- function(overall,
     }
     style_cur <- openxlsx::createStyle(numFmt = dec2format(i))
     style_perc <- openxlsx::createStyle(numFmt = paste0(dec2format(i),"%"))
-    style_points <- openxlsx::createStyle(numFmt = paste0(dec2format(i), "\"%\"")) # literal % suffix, value already 0-100
 
     openxlsx::addStyle(wb, 'Overall',   cols = perc_cols, rows = 2                    ,  style = style_perc, stack = TRUE)
     openxlsx::addStyle(wb, 'Each Site', cols = perc_cols, rows = 2:(1 + NROW(eachsite)), style = style_perc, stack = TRUE, gridExpand = TRUE)
-
-    openxlsx::addStyle(wb, 'Overall',   cols = points_cols, rows = 2                    ,  style = style_points, stack = TRUE)
-    openxlsx::addStyle(wb, 'Each Site', cols = points_cols, rows = 2:(1 + NROW(eachsite)), style = style_points, stack = TRUE, gridExpand = TRUE)
 
     openxlsx::addStyle(wb, 'Overall',   cols = non_perc_cols, rows = 2                    ,  style = style_cur, stack = TRUE)
     openxlsx::addStyle(wb, 'Each Site', cols = non_perc_cols, rows = 2:(1 + NROW(eachsite)), style = style_cur, stack = TRUE, gridExpand = TRUE)
