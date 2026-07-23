@@ -5,6 +5,14 @@ this is a code-and-docs patch that reuses the already-published `ejamdata`
 data release for this vintage (`v3.2022.0`), with no change to the packaged
 ACS or environmental data.
 
+## New Features
+
+- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
+  to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
+  any other shapefile, and `ejam2report()` describes the places as zip codes and
+  maps their boundaries without needing the `shp` parameter. This automates the
+  workflow that the Zipcodes article documented as manual steps (#482).
+
 ## Improvements
 
 - PDF report generation is roughly 7 seconds (~46%) faster: the two fixed rendering pauses (report-map snapshot 4s -> 1s, print-to-PDF 5s -> 2s) were trimmed, and both are now adjustable without a rebuild via R option (`EJAM.pdf_map_snapshot_delay`, `EJAM.pdf_print_wait`) or environment variable (`EJAM_PDF_MAP_SNAPSHOT_DELAY`, `EJAM_PDF_PRINT_WAIT`), as a rollback lever in case a too-short pause ever degrades output on the server (#473).

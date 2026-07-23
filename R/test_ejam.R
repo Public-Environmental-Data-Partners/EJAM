@@ -294,6 +294,7 @@ instead of tests/testthat/_logs
         "test-shapefix.R",
         "test-shapefile_xyz.R",
         "test-shapes_from_fips.R",
+        "test-shapes_from_zip.R",
         "test-ejam2shapefile.R",
         "test-shape2zip.R",
         "test-shape2geojson.R"
@@ -604,7 +605,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-test2.R", "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R",
               "test-ejamapi.R", "test-url_columns_bysite.R", "test-url_ejamapi.R",
               "test-url_package.R", "test-ejam2boxplot_ratios.R", "test-shiny-1-14-compat.R",
-              "test-build_community_report.R"),
+              "test-build_community_report.R", "test-shapes_from_zip.R"),
           seconds_byfile =
             c(0, 0, 0, 0, 0, 0, 0,
               0, 0, 2, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 6, 0, 0, 0,
@@ -612,9 +613,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               39, 0, 11, 11, 0, 5, 32, 5, 0, 5, 0, 2, 0, 140, 2, 8, 0, 3, 2,
               23, 0, 7, 0, 12, 0, 4, 5, 1, 0, 3, 0, 3, 0, 0, 0, 0, 1, 0, 4,
               2, 0, 0, 0, 0, 1, 0, 0, 16, 8, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-              0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 12, 0, 4, 0, 0, 0, 0, 1)),
+              0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 12, 0, 4, 0, 0, 0, 0, 1,
+              0)),
           row.names = c(NA,
-                        -127L), class = "data.frame")
+                        -128L), class = "data.frame")
       )
 
 

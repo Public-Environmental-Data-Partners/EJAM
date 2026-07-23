@@ -967,7 +967,7 @@ generate_extra_header <- function(title = 'Additional Information') {
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -1012,7 +1012,7 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
 }
 ##################################################################################### #
 
-# eg = c("latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
+# eg = c("latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
 # cbind(eg, site_method2text(eg))
 
 # used by buffer_desc_from_sitetype()
@@ -1041,6 +1041,9 @@ site_method2text =  function(site_method) {
     }
     if (site_method %in% tolower("FIPS_PLACE")) {
       return("names of places")
+    }
+    if (site_method %in% tolower(c("ZIP", "ZCTA"))) {
+      return("zip codes (ZCTA boundaries)")
     }
     if (site_method %in% tolower("NAICS")) {
       return("EPA-regulated facilities by NAICS code (industry type)")
@@ -1084,7 +1087,7 @@ site_method2text =  function(site_method) {
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -1139,7 +1142,10 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   # uploaded each site (detailed site_method) ---------------------------------- -
   # # These detailed designations will override simple ones above, if available (as in server/shiny app)
 
-  if (site_method %in% 'frs') {
+  if (site_method %in% c('zip', 'zcta')) {
+    location_type <- paste0("specified ",            pluralize_maybe("zip code", nsites)) # zips analyzed as ZCTA polygons, so sitetype is shp
+
+  } else if (site_method %in% 'frs') {
     location_type <- paste0("FRS ID-specified ",     pluralize_maybe("site",     nsites)) # "FRS ID-specified site"
 
   } else if (site_method %in% 'epa_program_up') {

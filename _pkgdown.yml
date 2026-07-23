@@ -192,6 +192,7 @@ reference:
   - shape_buffered_from_shapefile
   - shape_buffered_from_shapefile_points
   - shapes_from_fips
+  - shapes_from_zip
   - shapes_counties_from_countyfips
   - shapes_blockgroups_from_bgfips
   - shape2zip

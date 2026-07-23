@@ -226,7 +226,7 @@ ejam2report_site_is_reportable <- function(site_result) {
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -388,7 +388,10 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   # and as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
   # which is useful for providing report header info
   if (missing(site_method) || is.null(site_method) || site_method %in% "") {
-    if (sitetype %in% 'shp') {
+    if (!is.null(ejamitout$site_method)) {
+      # e.g., "ZIP" if ejamit(zipcode = ...) was used (which analyzes via the shp path)
+      site_method <- ejamitout$site_method
+    } else if (sitetype %in% 'shp') {
       site_method <- 'SHP'
     } else {
       if (sitetype %in% 'fips') {
@@ -452,6 +455,14 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
       }
     }
+    ## > zipcode (ZCTA) polygons ####
+    if (site_method %in% "ZIP" && is.null(shp) && !is.null(ejamitout$zipcode)) {
+      shp <- tryCatch(shapes_from_zip(ejamitout$zipcode), error = function(e) {
+        warning("Could not get zip code (ZCTA) boundaries to map: ", conditionMessage(e)); NULL})
+      if (!is.null(shp) && !is.na(rad) && rad > 0 && rad != 999) {
+        shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
+      }
+    }
   } else {
 
     # Single-site  (results_bysite, or _overall but just 1 site) ###################################################
@@ -477,6 +488,15 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > filename will include name of location ####
     selected_location_name_react <- ejamout1$statename
 
+    ## > zipcode (ZCTA) polygons ####
+    if (site_method %in% "ZIP" && is.null(shp) && !is.null(ejamitout$zipcode)) {
+      # rebuild all zip polygons here (cached download); subsetted to sitenumber just below
+      shp <- tryCatch(shapes_from_zip(ejamitout$zipcode), error = function(e) {
+        warning("Could not get zip code (ZCTA) boundaries to map: ", conditionMessage(e)); NULL})
+      if (!is.null(shp) && !is.na(rad) && rad > 0 && rad != 999) {
+        shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
+      }
+    }
     ## > fips polygons ####
     if (site_method %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])

@@ -92,6 +92,11 @@ ejamit_invalid_site_pop_zero <- function(results_bysite) {
 #'   If in RStudio you want it to interactively prompt you to pick a file,
 #'   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
 #' @param shp alias (synonym) for shapefile
+#' @param zipcode optional vector of one or more 5-digit zip codes to analyze
+#'   (instead of sitepoints, fips, or shapefile). Zip codes are converted to
+#'   ZCTA polygons via [shapes_from_zip()] and then analyzed exactly like a
+#'   shapefile (so `ejamit()$sitetype` is "shp"), with no buffer unless
+#'   radius is specified. See the Zipcodes article/vignette.
 #' @param lat,lon optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.
 #' @param countcols character vector of names of variables to aggregate within a buffer using a sum of counts,
 #'   like, for example, the number of people for whom a poverty ratio is known,
@@ -183,6 +188,9 @@ ejamit_invalid_site_pop_zero <- function(results_bysite) {
 #'
 #'   * **sitetype** indicates if analysis used latlon, fips, or shp
 #'
+#'   * **site_method** and **zipcode** are also included if places were specified
+#'     via the `zipcode` parameter (in which case sitetype is "shp")
+#'
 #'   * **formatted** another tall format showing averages for all indicators
 #'
 #'   * **sitetype** the type of analysis done: "latlon", "shp", "fips", etc.
@@ -227,6 +235,9 @@ ejamit_invalid_site_pop_zero <- function(results_bysite) {
 #'   # FIPS examples
 #'   out4 = ejamit(fips = testinput_fips_cities)
 #'   out5 = ejamit(fips = fips_counties_from_state_abbrev("DE"), radius = 0)
+#'
+#'   # Zip code example (analyzed as ZCTA polygons - see the Zipcodes article)
+#'   out6 = ejamit(zipcode = c("10012", "10506"))
 #'
 #'   # View results overall
 #'   round(t(out$results_overall), 3.1)
@@ -310,6 +321,7 @@ ejamit <- function(sitepoints = NULL,
                    buffer = NULL,  # alias (synonym) for radius
                    shape = NULL,   # alias (synonym) for shapefile
                    shp = NULL,     # alias (synonym) for shapefile
+                   zipcode = NULL, # zip code(s) to convert to ZCTA polygons analyzed like a shapefile
                    lat = NULL, lon = NULL  # optional coordinates to build sitepoints (issue #171)
 ) {
   # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
@@ -321,6 +333,15 @@ ejamit <- function(sitepoints = NULL,
   if (!is.null(shape) && (missing(shapefile) || is.null(shapefile))) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp)) {shapefile <- shp}
   if (is.null(sitepoints) && !is.null(lat) && !is.null(lon)) {sitepoints <- data.frame(lat = lat, lon = lon)}
+
+  # zipcode gets converted to ZCTA polygons here, then analyzed exactly like any shapefile
+  if (!is.null(zipcode)) {
+    if (!is.null(shapefile) || !is.null(fips) || !is.null(sitepoints)) {
+      stop("zipcode cannot be combined with sitepoints, fips, or shapefile - specify places to analyze in only 1 way")
+    }
+    shapefile <- shapes_from_zip(zipcode)
+    zipcode <- shapefile$zip # normalized, and only the zips actually found, in row order
+  }
 
   # note on avoidorphans parameter:
   # What EJSCREEN does in that case is report NA, right?
@@ -1005,6 +1026,12 @@ ejamit <- function(sitepoints = NULL,
   ## * sitetype ####
 
   out$sitetype <- sitetype
+  if (!is.null(zipcode)) {
+    # zipcode analysis ran via the shp path, so sitetype is "shp", but these let
+    # ejam2report() etc. describe the places as zip codes and rebuild their polygons
+    out$site_method <- "ZIP"
+    out$zipcode <- zipcode
+  }
 
   ###################################### #
   if (interactive() && !silentinteractive && !in_shiny) {
