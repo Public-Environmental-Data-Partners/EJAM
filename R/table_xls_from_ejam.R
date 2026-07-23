@@ -63,8 +63,9 @@ table_xls_from_ejam <- function(ejamitout,
                                 notes = NULL,
                                 custom_tab = NULL,         # but default in ejam2excel is  ejamitout$results_summarized$cols
                                 custom_tab_name = "other", # but default in ejam2excel is  "thresholds"
-                                flagged_areas_add = TRUE,
                                 ejscreen_ejam_caveat = NULL,
+                                # (new args go after all pre-existing ones so positional callers are unaffected)
+                                flagged_areas_add = TRUE,
                                 ...
 ) {
   # npts ####

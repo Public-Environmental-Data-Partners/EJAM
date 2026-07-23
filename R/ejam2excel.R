@@ -152,8 +152,9 @@ ejam2excel <- function(ejamitout,
                        notes = NULL,
                        custom_tab = ejamitout$results_summarized$cols,
                        custom_tab_name = "thresholds",
-                       flagged_areas_add = TRUE,
                        ejscreen_ejam_caveat = NULL,
+                       # (new args go after all pre-existing ones so positional callers are unaffected)
+                       flagged_areas_add = TRUE,
                        ...
 ) {
 

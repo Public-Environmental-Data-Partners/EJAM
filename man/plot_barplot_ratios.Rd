@@ -11,7 +11,8 @@ plot_barplot_ratios(
   main = "Residential Populations at the Analyzed Locations Compared to US Overall",
   ylab = "Ratio vs. Average",
   caption =
-    "NH = \\"Non-Hispanic\\"\\nNHA = \\"Non-Hispanic Alone\\" (alone = single race)"
+    "NH = \\"Non-Hispanic\\"\\nNHA = \\"Non-Hispanic Alone\\" (alone = single race)",
+  vs = NULL
 )
 }
 \arguments{
@@ -28,6 +29,10 @@ or if using state ratios, include the word "State" to have it try to infer what 
 \item{ylab}{optional, label for y axis}
 
 \item{caption}{text for a key defining some terms that are abbreviations}
+
+\item{vs}{optional, "us" or "state" - what the ratios are compared against, which
+controls the legend text. NULL (the default) infers it from whether the word
+"State" appears in main, the back-compatible behavior.}
 }
 \value{
 ggplot should be returned

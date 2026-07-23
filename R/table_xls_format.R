@@ -132,9 +132,10 @@ table_xls_format <- function(overall,
                              notes = NULL,
                              custom_tab = NULL,         # but default in ejam2excel is  ejamitout$results_summarized$cols
                              custom_tab_name = "other", # but default in ejam2excel is  "thresholds"
+                             ejscreen_ejam_caveat = NULL,
+                             # (new args go after all pre-existing ones so positional callers are unaffected)
                              flagged_areas_tab = NULL,  # like ejamitout$results_summarized$flagged_areas
                              flagged_areas_tab_name = "Area Features",
-                             ejscreen_ejam_caveat = NULL,
                              ...) {
 
   if (is.null(ejscreen_ejam_caveat)) {

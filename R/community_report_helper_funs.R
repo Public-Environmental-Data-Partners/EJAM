@@ -335,6 +335,11 @@ ratio_td_html <- function(val) {
   # so any change to the ratio color cutoffs (see issue #288) can be made in one place.
 
   val <- suppressWarnings(as.numeric(val))
+  # show missing/non-numeric ratios as "N/A", matching how format_ejamit_columns()
+  # displays missing values elsewhere in the table (not the literal string "NA")
+  if (length(val) != 1 || !is.finite(val)) {
+    return('<td>N/A</td>')
+  }
 
   bg_color <- if (is.numeric(val) && !is.na(val)) {
     if (val > 2.9) {

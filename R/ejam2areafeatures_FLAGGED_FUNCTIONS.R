@@ -80,7 +80,6 @@ ejam2barplot_areafeatures <- function(ejamitout,
            "re-run ejamit() with a current version of EJAM to get the ratio_to_state_avg column, or use vs = 'us'")
     }
     ratiocolname <- "ratio_to_state_avg"
-    # note plot_barplot_ratios() keys its legend text off the word "State" appearing in main
     if (is.null(main)) {main <- paste0(
       "% of analyzed population",
       " that lives in blockgroups with given features",
@@ -96,9 +95,11 @@ ejam2barplot_areafeatures <- function(ejamitout,
   }
 
   ratios <- flagged_areas_ratios_from_ejam(ejamitout, ratiocolname = ratiocolname)
+  # pass vs explicitly so the legend basis does not depend on the wording of a custom main title
   plot_barplot_ratios(ratios, main = main, ylab = ylab,
                       shortlabels = shortlabels,
-                      caption = "")
+                      caption = "",
+                      vs = vs)
 }
 ######################################################### # ######################################################### #
 ######################################################### # ######################################################### #
@@ -532,11 +533,14 @@ calc_flagged_areas <- function(sitestats, popstats,
   rownames(fa) <- NULL
   fa$ratio <- round(fa$Percent_of_these_People / fa$Percent_of_all_People_Nationwide, 2)
   # statewide baseline, wtd by analyzed people from each state (as done to get overall ratios to State averages)
-  fa$Percent_of_all_People_Statewide <- as.vector(t(
-    flagged_pct_pop_st_avg(bybg_people = popstats, flagvarnames = flagvarnames)
+  # the ratio must use the UNROUNDED baseline: rounding first would collapse tiny nonzero
+  # baselines (e.g. yesno_tribal is 0.017% in VA) to 0 and turn a real ratio into NA
+  st_baseline <- as.vector(t(
+    flagged_pct_pop_st_avg(bybg_people = popstats, flagvarnames = flagvarnames, digits = 7)
   ))
-  fa$ratio_to_state_avg <- round(fa$Percent_of_these_People / fa$Percent_of_all_People_Statewide, 2)
-  # a state baseline of 0% is plausible (e.g., yesno_tribal in some states), so avoid Inf here
+  fa$Percent_of_all_People_Statewide <- round(st_baseline, 1)
+  fa$ratio_to_state_avg <- round(fa$Percent_of_these_People / st_baseline, 2)
+  # a state baseline of exactly 0% is still plausible (no such areas in the state), so avoid Inf here
   fa$ratio_to_state_avg[!is.finite(fa$ratio_to_state_avg)] <- NA_real_
   fa$rname = myrnames
   return(fa)

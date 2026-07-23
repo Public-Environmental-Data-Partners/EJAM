@@ -349,11 +349,17 @@ test_that("calc_flagged_areas: structure and consistency with batch.summarize ou
   # same as what batch.summarize() put into results_summarized (tout was just computed by ejamit)
   expect_equal(fa, tout$results_summarized$flagged_areas)
   # internal consistency of the state ratio
-  ok <- is.finite(fa$ratio_to_state_avg)
+  # ratio_to_state_avg is computed from the UNROUNDED statewide baseline (so tiny
+  # baselines like VA yesno_tribal 0.017% do not collapse to 0 and NA out the ratio),
+  # while Percent_of_all_People_Statewide is displayed rounded to 1 decimal place -
+  # so recomputing from the displayed columns only matches approximately, and only
+  # where the displayed baseline is not too close to 0
+  ok <- is.finite(fa$ratio_to_state_avg) & fa$Percent_of_all_People_Statewide >= 0.5
   expect_true(any(ok))
   expect_equal(
     fa$ratio_to_state_avg[ok],
-    round(fa$Percent_of_these_People[ok] / fa$Percent_of_all_People_Statewide[ok], 2)
+    fa$Percent_of_these_People[ok] / fa$Percent_of_all_People_Statewide[ok],
+    tolerance = 0.05
   )
 })
 ################################################################# #
