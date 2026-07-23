@@ -37,9 +37,10 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
   "Counts of Features and Overlap with Area Types" (schools, places of worship,
   hospitals, and area-overlap flags), "Facility Counts" (NPL, TSDF, air, toxic
   release, water discharge, brownfields), and "Analyzed Sites" (distance and
-  sites-nearby rows, shown last); "Critical Services" is re-sorted (flags first,
+  sites-nearby rows); "Critical Services" is re-sorted (flags first,
   then percentages); and the "Other" section was renamed "Other Totals" (reserving
-  "Other" for future user-specified indicators). "Flag for..." rows now display
+  "Other" for future user-specified indicators) and moved with "Climate" to the
+  end of the table, after "Analyzed Sites". "Flag for..." rows now display
   Yes/No instead of 1/0.
 - Also per [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410),
   the report's feature/facility counts are estimated totals (prorated by the share

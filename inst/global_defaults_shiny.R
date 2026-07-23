@@ -517,14 +517,14 @@ msg <- utils::capture.output({
     names_flag
   )",
       "`Critical Services` = c('yesno_houseburden', 'yesno_fooddesert', 'yesno_transdis',
-    'pctnobroadband', 'pctnohealthinsurance')", # names_criticalservice, re-sorted for display: flags first, then percentages
-      "`Climate` = names_climate"
+    'pctnobroadband', 'pctnohealthinsurance')" # names_criticalservice, re-sorted for display: flags first, then percentages
     ),
     `Other` = list(  # just a heading for UI
-      "`Other Totals` = names_d_other_count",
       "`Facility Counts` = names_sitesinarea",
       "`Analyzed Sites` = c('distance_min_avgperson', 'distance_min',
-    'sitecount_unique', 'sitecount_avg', 'sitecount_max')" # names_e_other, re-sorted for display: distances first, then site counts
+    'sitecount_unique', 'sitecount_avg', 'sitecount_max')", # names_e_other, re-sorted for display: distances first, then site counts
+      "`Climate` = names_climate",
+      "`Other Totals` = names_d_other_count"
       # , "`Count above threshold` = names_countabove"  # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
     )
   )

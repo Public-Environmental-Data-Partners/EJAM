@@ -153,13 +153,13 @@ build_community_report <- function(
         'yesno_houseburden', 'yesno_fooddesert', 'yesno_transdis',
         'pctnobroadband', 'pctnohealthinsurance'
       ),
-      `Climate` = names_climate,
-      `Other Totals` = names_d_other_count,
       `Facility Counts` = names_sitesinarea,
       `Analyzed Sites` = c( # names_e_other, re-sorted for display: distances first, then site counts
         'distance_min_avgperson', 'distance_min',
         'sitecount_unique', 'sitecount_avg', 'sitecount_max'
-      )
+      ),
+      `Climate` = names_climate,
+      `Other Totals` = names_d_other_count
       # , `Count above threshold` = names_countabove # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
     ),
     ## all the indicators that are in extratable_list_of_sections:
