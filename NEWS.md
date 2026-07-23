@@ -69,7 +69,7 @@ packaged ACS or environmental data.
 ## Improvements
 
 - **The web app's Site-by-Site Table (Details tab) is built about 4x faster**
-  (#127): profiling showed the lag after clicking the tab was not the
+  (#491 fixes #127): profiling showed the lag after clicking the tab was not the
   URL-generating functions (links are created earlier, during the analysis) but
   two steps in building the table view. `table_round()` copied the entire wide
   table once per column, costing over half a second even for a small analysis,
