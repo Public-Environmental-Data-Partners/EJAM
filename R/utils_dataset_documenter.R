@@ -10,8 +10,9 @@
 #'  and otherwise puts NULL at end of file
 #' @param scriptname name of the data-raw script that creates this dataset,
 #'  used in the header comment of the documentation file. Defaults to
-#'  datacreate_(varname).R; pass it explicitly when one script creates
-#'  several datasets (e.g., datacreate_names_pct_as_fraction.R).
+#'  `datacreate_<varname>.R` (i.e., built from the varname); pass it
+#'  explicitly when one script creates several datasets
+#'  (e.g., datacreate_names_pct_as_fraction.R).
 #' @details
 #' see [article on updating datasets](`r paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html")`)
 #'
