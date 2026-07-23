@@ -57,8 +57,19 @@ table_round <- function(x, var = names(x), varnametype="rname", ...) {
     # table, not  a vector
     if (data.table::is.data.table(x)) {data.table::setDF(x); wasdt <- TRUE} else {wasdt <- FALSE}
 
-    for (i in 1:sum(roundable)) {
-      x[ , roundable][ , i] <- round(x[ , roundable][ , i], dig[roundable][i])
+    # Round each roundable column in place, one at a time.
+    # (Assigning via x[ , roundable][ , i] <- ... copied the whole roundable
+    # subset of the table on every iteration, which took over half a second
+    # for a wide table like ejamit()$results_bysite regardless of row count.)
+    if (is.data.frame(x)) {
+      for (i in which(roundable)) {
+        x[[i]] <- round(x[[i]], dig[i])
+      }
+    } else {
+      # e.g., a matrix
+      for (i in which(roundable)) {
+        x[ , i] <- round(x[ , i], dig[i])
+      }
     }
     if (wasdt) {data.table::setDT(x)}
     return(x)

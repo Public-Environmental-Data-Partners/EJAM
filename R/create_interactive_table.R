@@ -64,22 +64,22 @@ create_interactive_table <- function(out,
   ## BUTTONS for 1-site reports ####
 
   if (sitereport_download_buttons_show) {
-  # function to create shiny UI buttons, one per row (site), to download 1-site report for given site
-  shinyInputmaker <- function(FUN, len, id, ...) {
-    inputs <- character(len)
-    for (i in seq_len(len)) {
-      inputs[i] <- as.character(FUN(id[i], ...))
-    }
-    inputs
-  }
-  index <- 1:NROW(x)
-  buttoncolumn <- shinyInputmaker(
-    FUN = shiny::actionButton,
-    len = length(index),
-    id = paste0('button_', index),
+  # One shiny UI button per row (site), to download the 1-site report for that site.
+  # Rendering a shiny::actionButton() tag per row was a big part of why this table
+  # was slow to appear for analyses with many sites (issue #127), so render the tag
+  # only once, with placeholder tokens, and fill in each row's id and onclick via
+  # string substitution, which produces exactly the same HTML.
+  index <- seq_len(NROW(x))
+  button_template <- as.character(shiny::actionButton(
+    "EJAMROWIDTOKEN",
     label = "Download",
-    onclick = paste0('Shiny.onInputChange(\"single_site_report_button', index,'\", this.id)' )
-  )
+    onclick = 'Shiny.onInputChange(\"single_site_report_buttonEJAMROWNUMTOKEN\", this.id)'
+  ))
+  buttoncolumn <- vapply(index, function(i) {
+    gsub("EJAMROWNUMTOKEN", i,
+         gsub("EJAMROWIDTOKEN", paste0("button_", i), button_template, fixed = TRUE),
+         fixed = TRUE)
+  }, character(1))
   x$buttoncolumn <- buttoncolumn
   x <- dplyr::relocate(x, buttoncolumn)  # will be second column
   names(x) <- gsub("buttoncolumn", sitereport_download_buttons_colname, names(x))

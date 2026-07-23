@@ -68,6 +68,19 @@ packaged ACS or environmental data.
 
 ## Improvements
 
+- **The web app's Site-by-Site Table (Details tab) is built about 4x faster**
+  (#127): profiling showed the lag after clicking the tab was not the
+  URL-generating functions (links are created earlier, during the analysis) but
+  two steps in building the table view. `table_round()` copied the entire wide
+  table once per column, costing over half a second even for a small analysis,
+  and a `shiny::actionButton()` tag was rendered separately for every site
+  (about 1 second per 1,000 sites). Rounding now updates each column in place
+  and the per-site download buttons are filled in from a single rendered
+  template, producing byte-identical output while cutting server-side table
+  construction from about 2.1s to 0.6s for 1,000 sites. `table_round()` is also
+  used by map popups (`popup_from_ejscreen()`), `ejam2means()`, and
+  `ejam2table_tall()`, which get the same speedup.
+
 - **All PDF reports are about 7 seconds (~46%) faster** (#473 helps with #293): 
   the two unconditional render pauses were trimmed (report-map snapshot 4s -> 1s,
   print-to-PDF 5s -> 2s), and both are now settable without a rebuild -- via the
