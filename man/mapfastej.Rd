@@ -10,7 +10,8 @@ mapfastej(
   column_names = "ej",
   labels = column_names,
   launch_browser = FALSE,
-  color = "#03F"
+  color = "#03F",
+  sitenumber_label = NULL
 )
 }
 \arguments{
@@ -44,6 +45,12 @@ and print the temp filepath and filename in the console.
 Normally the map would be shown in the default RStudio viewer pane.}
 
 \item{color}{color of circles or polygons}
+
+\item{sitenumber_label}{optional, display-only override (a number or short text) of the
+site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
+Passed to \code{\link[=popup_from_ejscreen]{popup_from_ejscreen()}} (so used only if column_names is "ej"), and only
+relevant when mydf is a single-site (1-row) table -- see \code{\link[=ejam2report]{ejam2report()}}, whose
+sitenumber_label parameter this supports.}
 }
 \value{
 like what \code{\link[=mapfast]{mapfast()}} returns

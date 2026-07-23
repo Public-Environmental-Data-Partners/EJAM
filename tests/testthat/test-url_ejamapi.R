@@ -267,11 +267,52 @@ test_that("url_ejamapi fileextension: auto = pdf for single-site, html for multi
   )
 })
 
+# per-site links carry the original site number ####
+# (Public-Environmental-Data-Partners/EJAM#348: per-site report links used to omit
+# sitenumber, so the API's regenerated one-site analysis labeled every report "Site 1")
+
+test_that("per-site 'each' links carry each site's original sitenumber (latlon) - issue #348", {
+  x <- url_ejamapi(sitepoints = testpoints_10[1:3, ], radius = 1)  # default sitenumber = "each"
+  expect_equal(length(x), 3)
+  expect_true(grepl("[&?]sitenumber=1(&|$)", x[1]))
+  expect_true(grepl("[&?]sitenumber=2(&|$)", x[2]))
+  expect_true(grepl("[&?]sitenumber=3(&|$)", x[3]))
+})
+
+test_that("per-site 'each' links carry each site's original sitenumber (fips) - issue #348", {
+  fips2 <- testinput_fips_counties[1:2]
+  x <- url_ejamapi(fips = fips2)
+  expect_equal(length(x), 2)
+  expect_true(grepl("[&?]sitenumber=1(&|$)", x[1]))
+  expect_true(grepl("[&?]sitenumber=2(&|$)", x[2]))
+  # and each link still sends only its own site to the API
+  expect_true(grepl(paste0("fips=", fips2[1]), x[1], fixed = TRUE))
+  expect_true(grepl(paste0("fips=", fips2[2]), x[2], fixed = TRUE))
+  expect_false(grepl(fips2[1], x[2], fixed = TRUE))
+})
+
+test_that("a single-site link for site N carries sitenumber=N; site-1/lone-site links omit it - issue #348", {
+  x5 <- url_ejamapi(sitepoints = testpoints_10, radius = 1, sitenumber = 5)
+  expect_equal(length(x5), 1)
+  expect_true(grepl("[&?]sitenumber=5(&|$)", x5))
+
+  # site 1 or a lone site: Site 1 is the API's default label, so the param is omitted
+  # (these URLs are unchanged from before the issue #348 fix)
+  x1 <- url_ejamapi(sitepoints = testpoints_10, radius = 1, sitenumber = 1)
+  expect_false(grepl("sitenumber", x1, fixed = TRUE))
+  xlone <- url_ejamapi(sitepoints = testpoints_10[1, ], radius = 1)
+  expect_false(grepl("sitenumber", xlone, fixed = TRUE))
+
+  # the aggregate multisite link still passes sitenumber=0
+  x0 <- url_ejamapi(sitepoints = testpoints_10, radius = 1, sitenumber = 0)
+  expect_true(grepl("[&?]sitenumber=0(&|$)", x0))
+})
+
 # sitenumber (overall vs 1-site) ####
 
 # N  means Nth site report
-# -1 means "overall" report
-# 0  means "each" site report, in a vector of URLs
+# 0 (or "overall") means "overall" report
+# -1 (or "each") means "each" site report, in a vector of URLs
 
 
 if (FALSE) {

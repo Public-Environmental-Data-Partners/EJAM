@@ -254,7 +254,7 @@ latlon_from_address <- function(address, xy=FALSE, pt = FALSE, aoimap=FALSE, bat
   ))
   if (!aoi_available) {
     warning('AOI package not available. To install, run:
-            pak::pkg_install("mikejohnson51/AOI")')
+            pak::pkg_install("ericnost/AOI")')
     x <- NULL
     return(x)
     ############################################## #
