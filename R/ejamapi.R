@@ -181,9 +181,10 @@
 #'
 #'    - if fileextension is "pdf", invisibly returns a list of file paths
 #'
-#' @param version optional EJAM version tag (e.g. "3.2024.0") passed to the API as
-#'   version=<ver> via [url_ejamapi()] so it can serve the matching data vintage.
-#'   Default NULL resolves to the installed package Version (from DESCRIPTION).
+#' @param version optional EJAM version tag (e.g. "3.2024.0") sent to the API as
+#'   version=<ver> so the API can be asked to serve the matching data vintage
+#'   (but this is irrelevant until a multivintage option is implemented in the API).
+#'   Default is NULL here, meaning it uses the default found in [url_ejamapi()].
 #'
 #' @export
 #'
@@ -226,11 +227,9 @@ ejamapi <- function(
   }
   scale <- match.arg(scale)
 
-  # EJAM version tag passed to the API as version=<ver> so it can serve the matching
-  # data vintage. Default = the package Version from DESCRIPTION (NULL/omitted standalone).
-  if (is.null(version)) {
-    version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)
-  }
+  ## EJAM version tag passed to the API as version=<ver> so it can serve the matching
+  ## data vintage, if/when the API implements multivintage selection.
+  ## Default is NULL, so no version is sent unless the caller passes one explicitly.
 
   dotz = rlang::list2(...)
   if ("no_ejam" %in% names(dotz)) {
