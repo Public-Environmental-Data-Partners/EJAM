@@ -302,7 +302,7 @@ Precedence is: `options(ejam.api.baseurl=...)` first, then the environment varia
 apiproc <- EJAM:::ejamapi_local()               # local API at http://127.0.0.1:3035
 Sys.setenv(EJAM_API_BASEURL = "http://127.0.0.1:3035")
 # or, equivalently: options(ejam.api.baseurl = "http://127.0.0.1:3035")
-run_app()                                        # report links in tables/popups now
+EJAM::ejamapp()                                  # report links in tables/popups now
                                                  # hit the local API, end to end
 # when done:
 Sys.unsetenv("EJAM_API_BASEURL")

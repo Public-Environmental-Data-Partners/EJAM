@@ -34,19 +34,6 @@ This article highlights some key features or areas ripe for future enhancements.
 
 Although EPA stopped actively developing EJAM in 2025, it had already identified various options for future enhancements, including some of the ideas listed below. Subsequent non-EPA work on newer versions of EJAM has started to address some of these and is likely to continue to do so, in tandem with work on EJSCREEN itself. The open source EJAM R package is designed to be extensible, so that updated data, new kinds of indicators, new types of analyses, and new types of reports can be added over time by a community of contributors.
 
-### API
-
-In 2025, when the original EJSCREEN API was taken offline by EPA, a non-EPA effort replaced it with a new API ("EJAM API") that provides many of the original features. The new API became the tool through which EJSCREEN is able to provide a Community Report on a single location. It also allows the "EJSCREEN multisite tool" (aka EJAM's web app) to show links within tables of results and map popups, to link to a report on each site, for example. Some parallel work on an API was also drafted in the plumber folder of the EJAM source package. A future, expanded API is likely to provide the following: 
-- reports in pdf format (not just html), for better pagination when printing
-- better handling of polygons (ability to request a report on a large/complex polygon)
-- ability to obtain a multisite summary report (not just a 1-site report) (via the sitenumber parameter)
-- allowing the API to use most or all of the same parameters as the functions `ejamit()` and `ejam2report()`, providing more features and flexibility in customizing reports.
-- data (an easy way to obtain subsets of data at the block or blockgroup level, for example, via an assets)
-- enhancements and/or fixes as noted in [github issues for the EJAM-API repository](https://github.com/edgi-govdata-archiving/EJAM-API/issues)
-- access to services such as fast identification of nearby blocks or other points (via `getblocksnearby()` `getblocksnearby_from_fips()` or `get_blockpoints_in_shape()`)
-- summarization (aggregation over blocks or blockgroups), maybe for user-provided indicators
-
-
 ### User-specified Indicators
 
 EJAM in the future will also be able to analyze, aggregate, and report on other residential population indicators (e.g., other Census ACS variables), to include user-selected EPA-hosted layers, or even user-provided data. In other words, an analysis would be able to include other layers on risks or concentrations (at blockgroup resolution), or user-provided scores for each blockgroup. This would first be available for use in R as one or more functions and would subsequently be made available as a set of features through the web app interface. That could separately include the ability to upload a user-provided blockgroup indicator for analysis in existing or distinct reports, and/or the ability to specify ACS variables and formulas to obtain and calculate new indicators on the fly. This could first be a set of functions available for use in R and could subsequently be made available for use through the web app interface. See preliminary work such as the following: [ACSdownload::get_acs_new()](https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html) as a way to obtain Census ACS demographics, `acs_bybg()` examples of another way to obtain data and then using ACS raw data to calculate indicators, `calctype()` for metadata on how a given indicator should get aggregated over blocks or blockgroups, `doaggregate()` parameters like wtdmeancols, and exploratory early drafts of possible approaches to creating new indicators or aggregating them for a report, in`calc_ejam()`, `custom_doaggregate()`, `doaggregate_newscores()`, etc.
