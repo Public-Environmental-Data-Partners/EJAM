@@ -3,110 +3,118 @@
 #' as specified in the DESCRIPTION file or by redirects or aliases
 #'
 #' @details
-#' This function reads from the DESCRIPTION file, but below is a
-#' snapshot of URLs that were in the DESCRIPTION file at the time of writing (7/2026):
+#' This function reads `Config/EJAM/url_*` fields from the DESCRIPTION file.
+#' Below is a snapshot of those fields at the time of writing (7/2026):
 #'
 #' ```
-#' url_api: https://api.ejanalysis.com
-#' url_api_alias: https://ejamapi.ejanalysis.com
-#' url_api_redirect: https://ejanalysis.com/api
-#' url_api_direct: https://ejamapi-84652557241.us-central1.run.app
+#' Config/EJAM/url_api: https://api.ejanalysis.com
+#' Config/EJAM/url_api_alias: https://ejamapi.ejanalysis.com
+#' Config/EJAM/url_api_redirect: https://ejanalysis.com/api
+#' Config/EJAM/url_api_direct: https://ejamapi-84652557241.us-central1.run.app
 #'
-#' url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
-#' url_apirepo_alias: https://apirepo.ejanalysis.com
-#' url_apirepo_redirect: https://ejanalysis.com/apirepo
+#' Config/EJAM/url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
+#' Config/EJAM/url_apirepo_alias: https://apirepo.ejanalysis.com
+#' Config/EJAM/url_apirepo_redirect: https://ejanalysis.com/apirepo
 #'
-#' url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
-#' url_apidocs_alias: https://apidocs.ejanalysis.com
-#' url_apidocs_redirect: https://ejanalysis.com/apidocs
+#' Config/EJAM/url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
+#' Config/EJAM/url_apidocs_alias: https://apidocs.ejanalysis.com
+#' Config/EJAM/url_apidocs_redirect: https://ejanalysis.com/apidocs
 #'
-#' url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
+#' Config/EJAM/url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
 #'
-#' url_ejamapp: https://ejam.publicenvirodata.org
-#' url_ejamapp_alias: https://ejam.ejanalysis.com
-#' url_ejamapp_redirect: https://ejanalysis.com/ejamapp
+#' Config/EJAM/url_ejamapp: https://ejam.publicenvirodata.org
+#' Config/EJAM/url_ejamapp_alias: https://ejam.ejanalysis.com
+#' Config/EJAM/url_ejamapp_redirect: https://ejanalysis.com/ejamapp
 #'
-#' url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
-#' url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
-#' url_ejamapp_dev_redirect: https://ejanalysis.com/ejamdev
+#' Config/EJAM/url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
+#' Config/EJAM/url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
+#' Config/EJAM/url_ejamapp_dev_redirect: https://ejanalysis.com/ejamdev
 #'
-#' url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
-#' url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
-#' url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
+#' Config/EJAM/url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
+#' Config/EJAM/url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
+#' Config/EJAM/url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
 #'
-#' url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
-#' url_ejamdocs_alias: https://docs.ejanalysis.com
-#' url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
+#' Config/EJAM/url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
+#' Config/EJAM/url_ejamdocs_alias: https://docs.ejanalysis.com
+#' Config/EJAM/url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
 #'
-#' url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
-#' url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
-#' url_ejscreenapp_redirect: https://ejanalysis.com/ejscreenapp
+#' Config/EJAM/url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
+#' Config/EJAM/url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
+#' Config/EJAM/url_ejscreenapp_redirect: https://ejanalysis.com/ejscreenapp
 #'
-#' url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
-#' url_ejscreenrepo_alias: https://ejscreenrepo.ejanalysis.com
-#' url_ejscreenrepo_redirect: https://ejanalysis.com/ejscreenrepo
+#' Config/EJAM/url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
+#' Config/EJAM/url_ejscreenrepo_alias: https://ejscreenrepo.ejanalysis.com
+#' Config/EJAM/url_ejscreenrepo_redirect: https://ejanalysis.com/ejscreenrepo
 #'
-#' url_ejscreendocs: https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html
-#' url_ejscreendocs_alias: https://ejscreendocs.ejanalysis.com
-#' url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
+#' Config/EJAM/url_ejscreendocs: https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html
+#' Config/EJAM/url_ejscreendocs_alias: https://ejscreendocs.ejanalysis.com
+#' Config/EJAM/url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
 #'
-#' url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
+#' Config/EJAM/url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
 #'
-#' url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
-#' url_ejamdata_alias: https://ejamdata.ejanalysis.com
-#' url_ejamdata_redirect: https://ejanalysis.com/ejamdata
+#' Config/EJAM/url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
+#' Config/EJAM/url_ejamdata_alias: https://ejamdata.ejanalysis.com
+#' Config/EJAM/url_ejamdata_redirect: https://ejanalysis.com/ejamdata
 #' ```
 #'
-#' (`url_api_direct`, `url_apidocker`, and `url_ejscreendocs_old` are informational
-#' only -- they are stored in DESCRIPTION but are not `type` values this function accepts.)
+#' (`Config/EJAM/url_api_direct`, `Config/EJAM/url_apidocker`, and
+#' `Config/EJAM/url_ejscreendocs_old` are informational only -- they are stored
+#' in DESCRIPTION but are not `type` values this function accepts.)
 #'
 #' @param type Which type of URL is needed, such as
 #'   "docs", "app", "api", "code", or "data",
 #'   but more specifically, "ejamapp", "ejscreenapp", "ejamrepo", etc.
 #'
-#'   The basic type "xyz" is stored in the DESCRIPTION file field "url_xyz",
-#'   as listed below, but a URL also can be an alias or simple 301 redirect,
-#'   stored in the DESCRIPTION file field that has
+#'   The basic type "xyz" is stored in the DESCRIPTION field
+#'   `Config/EJAM/url_xyz`, as listed below, but a URL also can be an alias or
+#'   simple 301 redirect, stored in a field that has
 #'   "_alias" or "_redirect" as a suffix,
-#'   such as the "url_ejamdocs_alias" field in DESCRIPTION providing the URL for
-#'   type = "ejamdocs" and desc_or_alias = "alias".
+#'   such as `Config/EJAM/url_ejamdocs_alias` providing the URL for
+#'   `type = "ejamdocs"` and `desc_or_alias = "alias"`.
 #'   The "_alias" suffix is part of the DESCRIPTION field name, not a `type`
 #'   value: use `url_package("apidocs", desc_or_alias = "alias")`, not
 #'   `url_package("apidocs_alias")`.
 #'
 #' DOCUMENTATION SITES:
 #'
-#'   - "ejamdocs" or "docs" (`url_ejamdocs` field in the DESCRIPTION file contains this, and `URL` field has it in part) is for the EJAM (and EJScreen to some extent) documentation website.
+#'   - "ejamdocs" or "docs" (`Config/EJAM/url_ejamdocs`, also recorded in part
+#'     in the standard `URL` field) is for the EJAM (and EJScreen to some extent)
+#'     documentation website.
 #'
-#'   - "ejscreendocs" (`url_ejscreendocs` field in the DESCRIPTION file) is for the EJScreen documentation website.
+#'   - "ejscreendocs" (`Config/EJAM/url_ejscreendocs`) is for the EJScreen
+#'     documentation website.
 #'
-#'   - "apidocs" (`url_apidocs` field in the DESCRIPTION file) is for the EJAM API documentation website.
+#'   - "apidocs" (`Config/EJAM/url_apidocs`) is for the EJAM API documentation website.
 #'
 #' APP OR API SERVERS:
 #'
-#'   - "ejam" or "ejamapp" or "app" (`url_ejamapp` field in the DESCRIPTION file) is for the EJAM Shiny app.
+#'   - "ejam" or "ejamapp" or "app" (`Config/EJAM/url_ejamapp`) is for the EJAM Shiny app.
 #'
-#'   - "ejamdev" or "ejamappdev" (`url_ejamapp_dev` field in the DESCRIPTION file) is for the EJAM Shiny app development server.
+#'   - "ejamdev" or "ejamappdev" (`Config/EJAM/url_ejamapp_dev`) is for the EJAM Shiny app development server.
 #'
-#'   - "ejscreen" or "ejscreenapp" (`url_ejscreenapp` field in the DESCRIPTION file) is for the live EJScreen app.
+#'   - "ejscreen" or "ejscreenapp" (`Config/EJAM/url_ejscreenapp`) is for the live EJScreen app.
 #'
-#'   - "api" (`url_api` field in the DESCRIPTION file) is for the EJAM REST API base URL.
+#'   - "api" (`Config/EJAM/url_api`) is for the EJAM REST API base URL.
 #'     Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
-#'     endpoint can be changed in one place (by editing `url_api` in DESCRIPTION).
+#'     endpoint can be changed in one place (by editing `Config/EJAM/url_api`).
 #'     It is the branded Cloudflare edge proxy `https://api.ejanalysis.com`
-#'     (equivalently `https://ejamapi.ejanalysis.com`, stored in `url_api_alias`),
-#'     which fronts the direct Cloud Run origin recorded informationally in `url_api_direct`.
+#'     (equivalently `https://ejamapi.ejanalysis.com`, stored in
+#'     `Config/EJAM/url_api_alias`), which fronts the direct Cloud Run origin
+#'     recorded informationally in `Config/EJAM/url_api_direct`.
 #'
 #' CODE OR DATA REPOSITORIES:
 #'
-#'   - "ejamrepo" or "code" (`url_ejamrepo` field in the DESCRIPTION file contains this, and `URL` field has it in part) is for the github.com repository of EJAM R package code.
+#'   - "ejamrepo" or "code" (`Config/EJAM/url_ejamrepo`, also recorded in part
+#'     in the standard `URL` field) is for the github.com repository of EJAM R package code.
 #'
-#'   - "ejscreenrepo" (`url_ejscreenrepo` field in the DESCRIPTION file) is for the EJScreen code repository.
+#'   - "ejscreenrepo" (`Config/EJAM/url_ejscreenrepo`) is for the EJScreen code repository.
 #'
-#'   - "apirepo" (`url_apirepo` field in the DESCRIPTION file) is for the API source-code
+#'   - "apirepo" (`Config/EJAM/url_apirepo`) is for the API source-code
 #'     repository on github.com and is informational only -- it is not the API endpoint.
 #'
-#'   - "datarepo" or "data" (`url_ejamdata` and `ejam_data_repo` field in the DESCRIPTION file) is for the github.com repository of datasets.
+#'   - "datarepo" or "data" (`Config/EJAM/url_ejamdata`, with owner/repository
+#'     shorthand also stored in `ejam_data_repo`) is for the github.com
+#'     repository of datasets.
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
 #'   Only meaningful for the github repository types ("code", "ejamrepo", "ejscreenrepo",
@@ -208,7 +216,9 @@ url_package <- function(
     }
   }
 
-  # map each accepted type (and its synonyms) to the DESCRIPTION field that stores its URL
+  # Map each accepted type (and its synonyms) to its key within the
+  # Config/EJAM/ namespace in DESCRIPTION.
+  url_config_prefix <- "Config/EJAM/"
   field_by_type <- c(
     code = "url_ejamrepo", ejamrepo = "url_ejamrepo",
     ejscreenrepo = "url_ejscreenrepo",
@@ -260,7 +270,10 @@ url_package <- function(
   }
 
   url_desc <- function(field) {
-    as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get(field))
+    config_field <- paste0(url_config_prefix, field)
+    as.vector(
+      desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get(config_field)
+    )
   }
   is_missing_value <- function(x) {
     length(x) == 0 || is.na(x[1]) || !nzchar(trimws(x[1]))
@@ -269,15 +282,17 @@ url_package <- function(
   suffix <- switch(desc_or_alias, desc = "", alias = "_alias", redirect = "_redirect")
   one_url <- url_desc(paste0(field_by_type[[type]], suffix))
   if (is_missing_value(one_url)) {
-    # fall back to the basic "url_xyz" field if the "_alias"/"_redirect" field is missing,
-    # and for the API fall back further to the built-in production API base
+    # Fall back to the basic Config/EJAM/url_xyz field if its "_alias" or
+    # "_redirect" field is missing, and for the API fall back further to the
+    # built-in production API base.
     one_url <- url_desc(field_by_type[[type]])
     if (is_missing_value(one_url)) {
       if (type == "api") {
         one_url <- "https://api.ejanalysis.com"
       } else {
         stop("DESCRIPTION file of the EJAM package is missing the field '",
-             field_by_type[[type]], "' needed for url_package(type='", type, "')")
+             url_config_prefix, field_by_type[[type]],
+             "' needed for url_package(type='", type, "')")
       }
     }
   }

@@ -46,12 +46,15 @@ If the package is renamed or relocated, several files need to be updated for
 the package, documentation, tests, and data-download helpers to work correctly.
 
 - The full URL of the repository where the R package is stored must be
-recorded in the `URL` field of the `DESCRIPTION` file in the source package
-root.
+  recorded in the standard `URL` field of the `DESCRIPTION` file in the source
+  package root. The canonical URL used by `url_package()` must also be stored
+  in `Config/EJAM/url_ejamrepo`; its stable alias and simple redirect belong in
+  `Config/EJAM/url_ejamrepo_alias` and
+  `Config/EJAM/url_ejamrepo_redirect`.
 
-- The full URL is currently `r code_reponame_url` as found in the
-`DESCRIPTION` file. It can also be checked via
-`url_package(type = "code", get_full_url = TRUE)`.
+- The full URL is currently `r code_reponame_url` as found in
+  `Config/EJAM/url_ejamrepo`. It can be checked via
+  `url_package(type = "code", get_full_url = TRUE)`.
 
 - The `_pkgdown.yml` file in the root folder should also be updated with the
 new URL.
@@ -111,8 +114,10 @@ names are identical.
 ## DATASETS REPOSITORY: If relevant, carefully change the owner or name of the GitHub repository storing large datasets
 
 - The owner/name of the repository where external large datasets are stored
-must be recorded as the `ejam_data_repo` parameter in the `DESCRIPTION` file in
-the source package root. It can be checked via `url_package(type = "data")`.
+  must be recorded as the `ejam_data_repo` parameter in the `DESCRIPTION` file
+  in the source package root. The full canonical URL used by `url_package()`
+  must be stored in `Config/EJAM/url_ejamdata`, with alias and redirect values
+  in the corresponding `_alias` and `_redirect` fields.
 
 - The full URL is currently `r data_reponame_url`. It can be checked via
 `url_package(type = "data", get_full_url = TRUE)`.
@@ -137,9 +142,12 @@ located. There may still be documentation or comments where the term
 ## DOCUMENTATION URL: If relevant, carefully change where the R package documentation is published
 
 - The URL where package documentation is published must be recorded in the
-`URL` field of the `DESCRIPTION` file in the source package root. The website
-providing documentation for the R package is created via `pkgdown_update()`, as
-explained in [updating documentation](dev-update-documentation.html).
+  standard `URL` field of the `DESCRIPTION` file in the source package root.
+  The canonical URL used by `url_package()` must also be stored in
+  `Config/EJAM/url_ejamdocs`, with its alias and redirect in the corresponding
+  `_alias` and `_redirect` fields. The website providing documentation for the
+  R package is created via `pkgdown_update()`, as explained in
+  [updating documentation](dev-update-documentation.html).
 
 - This URL at least through mid-2026 was associated with the same owner name as
 the R code repository, but the documentation can be published elsewhere and
@@ -147,7 +155,8 @@ does not have to use the same owner as the code repository. If the
 documentation is published on GitHub Pages, the URL will look like
 `https://OWNER.github.io/REPONAME`; `OWNER` and `REPONAME` need to be updated if
 the documentation is moved. If the documentation is published on a different
-domain, update that URL in `DESCRIPTION`.
+domain, update both the standard `URL` field and
+`Config/EJAM/url_ejamdocs` in `DESCRIPTION`.
 
 - This URL can be checked via `url_package(type = "docs")`, which should
 return the full URL where documentation is published (currently

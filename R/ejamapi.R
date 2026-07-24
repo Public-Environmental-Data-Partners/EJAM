@@ -66,7 +66,8 @@
 #'   or all blockgroups in specified County fips.
 #'
 #' @param baseurl base API URL without the endpoint path. Defaults to `url_package("api")`,
-#'   the single source of the API endpoint ([url_package()] reads from the DESCRIPTION file).
+#'   the single source of the API endpoint ([url_package()] reads the
+#'   `Config/EJAM/url_api` field from DESCRIPTION).
 #'   Pass a different value only to target another API (e.g. a staging server).
 #'
 #' @param endpoint "data", "report", or "query".
@@ -197,7 +198,7 @@ ejamapi <- function(
     buffer = NULL, radius = NULL,
     geometries = FALSE,
     scale = c("blockgroup", "county"),
-    baseurl = paste0(url_package("api"), "/"),   # canonical API base from DESCRIPTION
+    baseurl = paste0(url_package("api"), "/"),   # canonical API base from DESCRIPTION Config/EJAM/url_api
     endpoint = c("data", "report", "query"),
     browse = TRUE,
     save_and_return_html = TRUE,
