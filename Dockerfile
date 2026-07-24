@@ -44,7 +44,7 @@ ARG GITHUB_PAT
 # EJAM-API image's EJAM_VERSION build-arg so both deploys pin EJAM the same way,
 # and makes the deployed version EXPLICIT (rather than implicitly tied to whatever
 # source happens to be checked out on this deploy branch).
-ARG EJAM_VERSION=v3.2022.1
+ARG EJAM_VERSION=v3.2022.2
 ENV EJAM_VERSION=${EJAM_VERSION}
 
 WORKDIR /root
@@ -139,7 +139,7 @@ RUN install2.r --error \
     && rm -rf /tmp/downloaded_packages /tmp/*.rds
 
 # GitHub packages
-RUN R -e "remotes::install_github('mikejohnson51/AOI')" && \
+RUN R -e "remotes::install_github('ericnost/AOI')" && \
     R -e "remotes::install_github('hrbrmstr/hrbrthemes')" && \
     rm -rf /tmp/downloaded_packages /tmp/*.rds
 
@@ -155,7 +155,7 @@ RUN R -e "remotes::install_github(paste0('Public-Environmental-Data-Partners/EJA
 # Download ejamdata arrow files from GitHub release
 # Must run AFTER the EJAM package install so the data/ folder is not overwritten by the installer
 # EJAMDATA_VERSION: pinned by default to v3.2022.0 -- the ejamdata release that
-#   EJAM v3.2022.1 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
+#   EJAM v3.2022.2 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
 #   sync with EJAM_VERSION when bumping releases; override with
 #   --build-arg EJAMDATA_VERSION=vX.Y.Z. (An explicit empty string falls back to the
 #   latest ejamdata release via the GitHub API below.)
