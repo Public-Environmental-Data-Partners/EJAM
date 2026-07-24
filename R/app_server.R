@@ -3291,10 +3291,12 @@ app_server <- function(input, output, session) {
                                  sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
 
                                  ## show the default column subset until the user picks
-                                 ## columns in the advanced tab (the input is NULL until
-                                 ## that picker has been rendered) - showing all ~700
-                                 ## columns made this table several times slower to appear (#127)
-                                 columns_used = if (is.null(input$bysite_webtable_colnames)) {
+                                 ## columns in the advanced tab - showing all ~700
+                                 ## columns made this table several times slower to appear (#127).
+                                 ## length()==0 covers both NULL (picker never rendered)
+                                 ## and character(0) (user cleared every selection), since
+                                 ## an empty columns_used would mean "all columns"
+                                 columns_used = if (length(input$bysite_webtable_colnames) == 0) {
                                    global_or_param("default_bysite_webtable_colnames")
                                  } else {
                                    input$bysite_webtable_colnames

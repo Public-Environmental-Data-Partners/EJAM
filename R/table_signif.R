@@ -37,7 +37,8 @@ table_signif <- function(dat, digits = NULL) {
   signifarray.api <- function(dat, digits = NULL) {
     # work on a plain data.frame (a copy, so a data.table input is never
     # altered by reference) since the subset-assignment below relies on
-    # data.frame semantics, then return the same class that came in
+    # data.frame semantics; a data.table in gets a data.table back, while
+    # any other input (matrix, etc.) is returned as a data.frame, as before
     wasdt <- data.table::is.data.table(dat)
     if (wasdt || !is.data.frame(dat)) {dat <- as.data.frame(dat)}
     if (length(digits) != NCOL(dat)) {
