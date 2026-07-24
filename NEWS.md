@@ -10,6 +10,16 @@ packaged ACS or environmental data.
 
 ## Bug Fixes
 
+- **Rounding helpers no longer mangle data.table inputs** (#491): `table_round()`,
+  `table_signif()`, `table_x100()`, and `is.numericish()` used to convert a
+  data.table argument into a data.frame *in the caller's environment* (a
+  `setDF()` side effect that was never undone because a later copy broke the
+  reference before the restoring `setDT()`), and `table_round()` /
+  `table_signif()` then also returned a plain data.frame. All four now leave
+  the caller's object untouched and return the same class they were given,
+  with identical values (verified cell-for-cell against the old behavior for
+  points, FIPS, and shapefile analysis outputs).
+
 - **Percentages displayed as "0" or "1" (or unrounded) in reports, tables, and
   map popups**: two related metadata problems were fixed. The derived
   `names_pct_as_fraction_ejamit` / `names_pct_as_fraction_blockgroupstats`
@@ -67,6 +77,28 @@ packaged ACS or environmental data.
   the new internal `acs_check_year_available()`.
 
 ## Improvements
+
+- **The web app's Site-by-Site Table (Details tab) is built about 4x faster**
+  (#491 fixes #127): profiling showed the lag after clicking the tab was not the
+  URL-generating functions (links are created earlier, during the analysis) but
+  two steps in building the table view. `table_round()` copied the entire wide
+  table once per column, costing over half a second even for a small analysis,
+  and a `shiny::actionButton()` tag was rendered separately for every site
+  (about 1 second per 1,000 sites). Rounding now updates each column in place
+  and the per-site download buttons are filled in from a single rendered
+  template, producing byte-identical output while cutting server-side table
+  construction from about 2.1s to 0.6s for 1,000 sites. `table_round()` is also
+  used by map popups (`popup_from_ejscreen()`), `ejam2means()`, and
+  `ejam2table_tall()`, which get the same speedup. In addition, the table now
+  starts from the default column subset (`default_bysite_webtable_colnames`,
+  ~50 columns) instead of all ~700 columns, and shows 50 rows per page instead
+  of 100 -- together these cut the time until the table appears from ~6.4s to
+  well under 1s for a 1,000-site analysis. Users can add any columns via the
+  advanced tab's column picker (which had never rendered, due to `renderUI()`
+  being used in the UI where `uiOutput()` belongs -- also fixed, along with
+  the button-column-name field next to it, which displayed "FALSE" because it
+  was bound to the wrong setting), can choose 100 rows per page from the
+  length menu, and always get every column in the downloaded spreadsheet.
 
 - **All PDF reports are about 7 seconds (~46%) faster** (#473 helps with #293): 
   the two unconditional render pauses were trimmed (report-map snapshot 4s -> 1s,

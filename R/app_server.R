@@ -3290,8 +3290,17 @@ app_server <- function(input, output, session) {
                                  sitereport_download_buttons_show = isTRUE(as.logical(input$sitereport_download_buttons_show)),
                                  sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
 
-                                 columns_used = input$bysite_webtable_colnames
-                                 ## if NULL, uses all available from data_processed()
+                                 ## show the default column subset until the user picks
+                                 ## columns in the advanced tab - showing all ~700
+                                 ## columns made this table several times slower to appear (#127).
+                                 ## length()==0 covers both NULL (picker never rendered)
+                                 ## and character(0) (user cleared every selection), since
+                                 ## an empty columns_used would mean "all columns"
+                                 columns_used = if (length(input$bysite_webtable_colnames) == 0) {
+                                   global_or_param("default_bysite_webtable_colnames")
+                                 } else {
+                                   input$bysite_webtable_colnames
+                                 }
     )
     # enable download button only after DT::renderDT
     download_button_enable_js(id = 'download_results_spreadsheet')
@@ -3302,17 +3311,20 @@ app_server <- function(input, output, session) {
   # but note this is not the same as controlling the url report columns defined by default_reports
   output$bysite_webtable_colnames_ui <- renderUI({
 
-    choicelist =  list(names(testoutput_ejamit_10pts_1miles$results_overall))
-    names(choicelist)  <- fixcolnames(rnames, 'r', 'short')
+    # offer every column the site-by-site table can show, labeled with short names
+    # (this had referenced an undefined object and results_overall, but was never
+    # reached because the ui used renderUI() instead of uiOutput() - fixed in #491)
+    choicevec <- names(testoutput_ejamit_10pts_1miles$results_bysite)
+    choicelabels <- fixcolnames(choicevec, 'r', 'short')
+    choicelabels[is.na(choicelabels)] <- choicevec[is.na(choicelabels)]
 
     shiny::selectInput("bysite_webtable_colnames",
                        label = "Columns to show in interactive table",
                        multiple = TRUE,
-                       ### shows ALL available if this input is  NULL
-                       # choices = names(testoutput_ejamit_10pts_1miles$results_overall), # simpler
-                       choices = choicelist
-                       # comment out selected to start with none picked.
-                       , selected <- global_or_param("default_bysite_webtable_colnames")
+                       choices = stats::setNames(choicevec, choicelabels),
+                       # starts as the default subset; if emptied, the server falls
+                       # back to that same default subset
+                       selected = global_or_param("default_bysite_webtable_colnames")
     )
   })
 

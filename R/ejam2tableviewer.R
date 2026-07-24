@@ -78,7 +78,9 @@ ejam2tableviewer = function(out, filename = 'automatic', maxrows = 1000, launch_
 
                            ## freeze header row when scrolling down
                            fixedHeader = TRUE,
-                           pageLength = 100,
+                           # 50 rows/page renders about 2x faster than 100 for wide
+                           # tables (#127 / #491); users can pick 100 from the length menu
+                           pageLength = 50,
                            ## set scroll height up and down
                            scrollY = '500px',
 
