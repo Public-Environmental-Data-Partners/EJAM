@@ -44,14 +44,19 @@ function(pr) {
   if (!exists("blockwts", envir = globalenv())) EJAM::dataload_dynamic("blockwts")
   if (!EJAM:::localtree_exists()) EJAM::indexblocks()
 
-  # Serve from the mirror's OWN directory: rest_controller.r source()s
-  # query_pagination.R at plumb time AND serves ./assets resolved at request
-  # time, both relative to its folder (the Docker WORKDIR in production) --
-  # see ejam-api/SYNC.md. This changes the working directory for the life of
-  # the serving process; prefer EJAM:::ejamapi_local(), which runs the server
-  # in its own background process, to keep your session's directory pristine.
-  setwd(dirname(api_file))
-  api <- plumber::plumb(basename(api_file))
+  # Plumb the mirror from its OWN directory (rest_controller.r source()s
+  # query_pagination.R with a path relative to its folder, the Docker WORKDIR
+  # in production -- see ejam-api/SYNC.md), restoring the caller's working
+  # directory afterwards so running this in your main R session (e.g. RStudio
+  # "Run API") does not leave you in a different directory.
+  owd <- setwd(dirname(api_file))
+  api <- tryCatch(plumber::plumb(basename(api_file)), finally = setwd(owd))
+
+  # The mirror's `@assets ./assets` static route resolves at REQUEST time
+  # against the process working directory, so remount it here by absolute
+  # path (composition-layer fix; the mirrored file itself stays verbatim).
+  api$mount("/assets", plumber::PlumberStatic$new(file.path(dirname(api_file), "assets")))
+
   draft <- plumber::plumb(draft_file)
   api$mount("/draft", draft)
   pr$mount("/", api)
