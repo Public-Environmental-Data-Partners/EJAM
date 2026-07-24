@@ -517,6 +517,24 @@ app_server <- function(input, output, session) {
     if (is.null(search) || !nzchar(search)) {return(NULL)}
     q <- shiny::parseQueryString(search)
 
+    ## Advanced Settings tab via launch URL, e.g. ?advanced=TRUE (?advanced=1/yes also work;
+    ## show_advanced_settings is accepted as a synonym). This is a clean, per-visitor query
+    ## param -- unlike ejamapp(default_show_advanced_settings=) which is fixed per deploy, and
+    ## unlike Shiny's bookmark URLs which encode the whole input state. Updating the radio flows
+    ## through the priority=10 observer above that shows/hides the tab; can_show_advanced_settings
+    ## is also enabled so the tab can appear even on a public deploy (where it defaults off), and
+    ## showTab() is called directly so it appears immediately without waiting for the input
+    ## round-trip. An explicit false (?advanced=FALSE/0/no) hides it.
+    adv <- q$advanced %||% q$show_advanced_settings
+    if (!is.null(adv) && nzchar(trimws(adv))) {
+      showadv <- tolower(trimws(adv)) %in% c("1", "true", "t", "yes", "y")
+      updateRadioButtons(session, inputId = "show_advanced_settings", selected = as.character(showadv))
+      if (showadv) {
+        updateRadioButtons(session, inputId = "can_show_advanced_settings", selected = "TRUE")
+        showTab(inputId = "all_tabs", target = "Advanced Settings")
+      }
+    }
+
     # base URL of the EJAM API that mints/resolves handoff tokens. Single source of
     # truth is in the DESCRIPTION file; read it via url_package("api"),
     # and if that is unavailable derive it from url_ejamapi()'s resolved base (its
