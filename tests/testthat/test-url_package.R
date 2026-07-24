@@ -134,9 +134,29 @@ testthat::test_that("url_package alias and redirect variants return full URLs", 
   expect_identical(url_package("api", desc_or_alias = "redirect"), "https://ejanalysis.com/api")
 })
 
-testthat::test_that("url_package rejects unknown types", {
-  expect_error(url_package("nonsense"))
+testthat::test_that("url_package gives useful errors for invalid types", {
+  type_error <- tryCatch(
+    url_package("nonsense"),
+    error = function(error) conditionMessage(error)
+  )
+  expect_match(
+    type_error,
+    'Invalid `type` value: "nonsense".',
+    fixed = TRUE
+  )
+  expect_match(
+    type_error,
+    '`type` must be one of: "code", "ejamrepo"',
+    fixed = TRUE
+  )
+  expect_match(type_error, '"api". See ?url_package.', fixed = TRUE)
+
   expect_error(url_package("apidocker")) # informational field, not an accepted type
+  expect_error(
+    url_package(c("docs", "api")),
+    "`type` must be one of:",
+    fixed = TRUE
+  )
 })
 
 testthat::test_that("url_package docs_version appends subpath for docs types", {

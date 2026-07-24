@@ -213,7 +213,21 @@ url_package <- function(
   # (get_full_url = FALSE) makes sense
   repo_types <- c("code", "ejamrepo", "ejscreenrepo", "apirepo", "data", "datarepo")
 
-  stopifnot(length(type) == 1, type %in% names(field_by_type))
+  valid_types <- names(field_by_type)
+  if (length(type) != 1 || is.na(type) || !(type %in% valid_types)) {
+    supplied_type <- if (length(type) == 0) {
+      "<empty>"
+    } else {
+      paste(encodeString(as.character(type), quote = "\""), collapse = ", ")
+    }
+    stop(
+      "Invalid `type` value: ", supplied_type, ". ",
+      "`type` must be one of: ",
+      paste(encodeString(valid_types, quote = "\""), collapse = ", "),
+      ". See ?url_package.",
+      call. = FALSE
+    )
+  }
   stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias", "redirect"))
 
   if (desc_or_alias %in% c("alias", "redirect") && get_full_url == FALSE) {
