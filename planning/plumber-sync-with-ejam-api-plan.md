@@ -289,7 +289,11 @@ Plus `R CMD check` / the plumber test group in `test_ejam()`.
   issue; nice-to-have later — the drift-check test in `test-plumber-api.R` covers this
   manually for now).
 - Upstream EJAM-API hardening for the "no census blocks in buffer" 500 (see §0a findings).
-- §7 below: configuring the EJAM Shiny app to use a local/draft API (adjunct planning).
+- §7 below: configuring the EJAM Shiny app to use a local/draft API — steps 1–2 (the
+  `EJAM_API_BASEURL` / `options(ejam.api.baseurl)` override + docs) implemented 2026-07-24;
+  the dev-server variant (step 3) still pending, gated on a reachable draft API deployment.
+- §8 below: exposing more `ejamit()`/`ejam2report()` parameters through the endpoints
+  (draft-first, then upstream) — TODO incl. filing a dedicated tracking issue.
 
 ## 7. Adjunct (planning only, per Mark 2026-07-24): test the EJAM app against a draft API
 
@@ -306,21 +310,62 @@ results tables and map popups (via `url_ejamapi()`), and anything else routed th
 (EJAM#485 single-sourcing). The EJScreen→EJAM token handoff calls `GET /handoff/<token>` on
 the API from the app at launch.
 
-**Proposed mechanism (to design/confirm before implementing):**
-1. Add one override point honored by `url_package("api")` (and hence everything downstream):
-   e.g. `option(ejam.api.baseurl)` falling back to env var `EJAM_API_BASEURL`, falling back
-   to DESCRIPTION as today. One code path, testable, no scattering.
-2. **Local app + local API** (the easy, high-value case): run `ejamapi_local()` (port 3035),
-   then launch the app with `EJAM_API_BASEURL=http://127.0.0.1:3035`. Report links in the
-   local app then exercise the draft API code end to end.
-3. **Dev-server app + draft API** (harder): the AWS-hosted dev app cannot reach a laptop's
-   localhost. Options to evaluate later: (a) point dev app's `EJAM_API_BASEURL` env (ECS task
-   definition) at any reachable draft API deployment; (b) expose a local API temporarily via
-   a Cloudflare tunnel (`cloudflared`) hostname like api-draft.ejanalysis.com; (c) run the
-   plumber API as a sidecar/second process inside the dev app task. (a)+(b) need no new
-   infra beyond a tunnel; (c) is heavier.
+**Mechanism (steps 1–2 IMPLEMENTED 2026-07-24, same branch/PR):**
+1. ✅ **DONE** — `url_package("api")` now honors `options(ejam.api.baseurl)` (highest
+   precedence), then env var `EJAM_API_BASEURL`, then DESCRIPTION as before. Applies only
+   to the canonical `desc` lookup (alias/redirect lookups unaffected); trailing slash
+   stripped like the DESCRIPTION path. Tests added in `test-url_package.R` (env override +
+   only-api scoping, option-beats-env precedence, and flow-through to `url_ejamapi()`
+   report links). Documented in the roxygen for `url_package()`, a new
+   **"Testing against a local or draft API"** section of `vignettes/dev-deployment.Rmd`
+   (the hosting/deploy article), and a pointer in `vignettes/dev-api.Rmd`.
+2. ✅ **DONE (documented)** — local app + local API: `ejamapi_local()` +
+   `EJAM_API_BASEURL=http://127.0.0.1:3035` + `run_app()`; report links in tables/popups
+   then exercise the draft API end to end. (Verified at the URL-construction layer by the
+   new tests; a full manual app-click-through is listed in §4-style verification for the
+   PR review.)
+3. **Dev-server app + draft API (still pending):** the AWS-hosted dev app cannot reach a
+   laptop's localhost. Options: (a) point dev app's `EJAM_API_BASEURL` env (ECS task
+   definition) at any reachable draft API deployment — note
+   Public-Environmental-Data-Partners/EJAM-API#47 tracks standing up a real
+   apidev.ejanalysis.com staging service, the natural target; (b) expose a local API
+   temporarily via a Cloudflare tunnel (`cloudflared`); (c) plumber sidecar in the dev app
+   task (heavier). The override honors whatever URL is used, so only the hosting question
+   remains.
 4. Using the `/draft` endpoints from the app would additionally need the app to build
    `/draft/...` paths — only relevant once a draft endpoint has an app use case; defer.
 
-**Not implemented in this PR** — recorded here so the next session can pick it up; step 1 is
-tiny and could ride along with any future PR touching `url_package()`.
+## 8. Adjunct plan (Mark 2026-07-24): expose more function parameters through the API endpoints
+
+**Goal:** each key endpoint should accept most or all of the *appropriate* parameters of
+the function it wraps — e.g. pass any relevant `ejamit()` parameter to the ejamit-style
+endpoints, and `ejam2report()` display parameters to the report endpoints — so API users
+get (nearly) the flexibility R users have.
+
+**Where this idea is already recorded:** no dedicated GitHub issue found (searched both
+repos 2026-07-24); the canonical statement is in `vignettes/dev-future-plans.Rmd` ("A
+future, expanded API is likely to provide … allowing the API to use most or all of the
+same parameters as the functions `ejamit()` and `ejam2report()`"). Related:
+Public-Environmental-Data-Partners/EJAM-API#4 (create different endpoints) and
+Public-Environmental-Data-Partners/EJAM-API#12 (GET /report accepting a zipped-shapefile
+URL — one specific new parameter). **TODO: file a dedicated issue** (probably in EJAM-API,
+cross-referencing dev-future-plans and this plan) so the idea is trackable.
+
+**Approach (draft-first, then upstream):**
+1. Inventory `formals(ejamit)` and `formals(ejam2report)` and classify each parameter:
+   HTTP-safe scalars/vectors (radius/donut, subgroups_type, include_ejindexes,
+   calculate_ratios, extra_demog, thresholds, show* toggles, analysis_title, …) vs
+   NOT-exposable (functions/callbacks like updateProgress, shiny-session things,
+   in_shiny, quadtree objects, connections). The whitelist becomes the endpoint contract.
+2. Prototype on the `/draft` router first (that is what it is for): `/draft/report2`
+   already exposes ~15 `ejamit()` params and is the working prototype; extend it and
+   `/draft/ejamit` to the full whitelist, converting inputs with the `api2rnulltf()` /
+   `api_true()` helper family, and document each param in the plumber annotations so the
+   Swagger page at /__docs__/ shows them.
+3. Tests: parameterized tests that each whitelisted param round-trips (at least: accepted
+   without error, and a spot-check that a few visibly change output, e.g.
+   `include_ejindexes`, `subgroups_type`, thresholds).
+4. Once proven at `/draft`, propose the same expansion upstream for the production
+   `GET/POST /report` and `POST /data` endpoints via the mirror-edit → EJAM-API PR
+   workflow (§2 sync contract). Keep GET URLs within length limits (complex params may be
+   POST-body only).
