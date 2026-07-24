@@ -53,7 +53,12 @@ jobs:
         id: build
         env:
           REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: dev-${{ github.sha }}
+          # Include the run id: ECR tags are IMMUTABLE, and github.sha is the
+          # DEPLOY-BRANCH commit, which does not change between manual dispatches.
+          # Two "Run workflow" dispatches (e.g. deploying EJAM@development twice, or
+          # a different ejam_version) would otherwise build the same tag and the push
+          # would fail with "tag invalid: ... already exists ... cannot be overwritten".
+          IMAGE_TAG: dev-${{ github.sha }}-${{ github.run_id }}
           # Empty on a push (deploy the Dockerfile's pinned default); set only when a
           # manual "Run workflow" dispatch supplies a ref to override the pin with.
           # Passed via env (not inlined into the shell) to avoid command injection.
