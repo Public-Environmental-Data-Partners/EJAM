@@ -1265,8 +1265,9 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
 
       ################################################ #
       shinytestLogMessage("CLICK URL LINK IN INTERACTIVE TABLE")
-      # Build the link from the configured API base (DESCRIPTION url_api via
-      # url_package("api")) so this fixture tracks the single-sourced host.
+      # Build the link from the configured API base (DESCRIPTION
+      # Config/EJAM/url_api via url_package("api")) so this fixture tracks the
+      # single-sourced host.
       app$set_inputs(interactive_table_cell_clicked = c("1", "1", paste0("<a href=\"", url_package("api"), "/report?fips=3684000&buffer=0&sitetype=fips&validate_regids=FALSE\" target=\"_blank\">EJAM Site Report</a>")),
                      allow_no_input_binding_ = TRUE, priority_ = "event")
 

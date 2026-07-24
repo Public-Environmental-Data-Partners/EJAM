@@ -205,9 +205,9 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
 ## Internal / Packaging
 
 - All key project URLs (the EJAM/EJScreen/API apps, their code repositories,
-  and docs sites) are now stored as fields in `DESCRIPTION` and read through
-  `url_package()`, so they live in one place instead of being hardcoded across
-  the code (#485).
+  and docs sites) are stored as `Config/EJAM/url_*` fields in `DESCRIPTION` and
+  read through `url_package()`, so they live in one conventional configuration
+  namespace instead of being hardcoded across the code (#485).
 
 - The `AOI` geocoding dependency used by `latlon_from_address()` now installs
   from the `ericnost/AOI` fork (#478, fixes #477).
