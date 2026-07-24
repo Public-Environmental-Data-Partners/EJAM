@@ -428,6 +428,16 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
 
 ################################################################################## #
 
+# Names of Additional Information sections whose subheader row gets the
+# "report-section-page-break" class, which communityreport.css turns into a page
+# break before that section when the report is printed to PDF. The row order
+# changed in #444, so these are the points where the table now needs to break.
+# Matching ignores case and surrounding whitespace. PDF pagination only - the
+# HTML report is unchanged.
+report_sections_page_break_before <- c(
+  "Language in Limited English Speaking Households",
+  "Facility Counts"
+)
 
 #' Create full demog subgroup/ language/ health/ community/ etc. HTML table of indicator rows
 #' @seealso used by [build_community_report()]
@@ -501,7 +511,13 @@ fill_tbl_full_subgroups <- function(output_df,
 
   table_one_section <- function(section_name, varnames, df, extratable_show_ratios_in_report) {
 
-    tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader\">
+    # some sections start a new page in the PDF - see report_sections_page_break_before
+    brk <- if (tolower(trimws(section_name)) %in% tolower(report_sections_page_break_before)) {
+      " report-section-page-break"
+    } else {
+      ""
+    }
+    tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader', brk, '\">
 <th colspan=\"8\">', section_name, '</th>
 </tr>')
 
@@ -655,10 +671,10 @@ fill_tbl_flagged_areas_section <- function(flagged_areas_df,
   ratio_us <- round(suppressWarnings(as.numeric(getcol("ratio"))), 1)
   ratio_st <- round(suppressWarnings(as.numeric(getcol("ratio_to_state_avg"))), 1)
 
-  # report-flagged-areas-subheader starts this section on a fresh page in the PDF
+  # report-section-page-break starts this section on a fresh page in the PDF
   # (the row order changed in #444, so the old breaks fell mid-section) - see
-  # communityreport.css
-  tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader report-flagged-areas-subheader\">
+  # communityreport.css and report_sections_page_break_before
+  tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader report-section-page-break\">
 <th colspan=\"8\">', section_title, '</th>
 </tr>')
 
