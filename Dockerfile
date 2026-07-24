@@ -28,8 +28,16 @@ RUN curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_a
 RUN printf '#!/bin/bash\nexec /usr/bin/google-chrome-stable --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage "$@"\n' \
     > /usr/local/bin/chrome-wrapper && chmod +x /usr/local/bin/chrome-wrapper
 
-# Point chromote/pagedown/webshot2 at the wrapper
+# Point chromote/webshot2 (report map snapshot) AND pagedown (chrome_print, the
+# PDF conversion) at the wrapper. Both env vars are needed and are read by
+# different tools: chromote uses CHROMOTE_CHROME, pagedown uses PAGEDOWN_CHROME.
+# Without PAGEDOWN_CHROME, pagedown::chrome_print() finds the raw
+# /usr/bin/google-chrome-stable via its own find_chrome() and launches it WITHOUT
+# --no-sandbox, so Chrome (running as root in the container) refuses to start and
+# the PDF fails with "Cannot find headless Chrome after 20 attempts". The wrapper
+# adds --no-sandbox / --disable-dev-shm-usage so Chrome starts.
 ENV CHROMOTE_CHROME=/usr/local/bin/chrome-wrapper
+ENV PAGEDOWN_CHROME=/usr/local/bin/chrome-wrapper
 
 # Install AWS CLI v2
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
