@@ -153,6 +153,28 @@ domain, update that URL in `DESCRIPTION`.
 return the full URL where documentation is published (currently
 `r EJAM::url_package("docs")`).
 
+- Before a release, compare the published development documentation at
+  [https://docs.ejanalysis.com/dev](https://docs.ejanalysis.com/dev) with the
+  root documentation at
+  [https://docs.ejanalysis.com](https://docs.ejanalysis.com). For example,
+  compare `/dev/reference/ejamapp.html` with `/reference/ejamapp.html`, and
+  `/dev/articles/whatis.html` with `/articles/whatis.html`. The development
+  site is the documentation built from `development`; the root site is built
+  from `main`.
+
+- `EJAM::url_package("docs", docs_version = "dev")` returns the canonical
+  development-site URL.
+  `EJAM::url_package("docs", desc_or_alias = "alias")` returns the stable
+  root alias, and appending `"/dev"` selects its development build. The API
+  documentation can be found with `EJAM::url_package("apidocs")` or its stable
+  alias, <https://apidocs.ejanalysis.com>. Use
+  `EJAM::url_package("apidocs", desc_or_alias = "alias")` to request that
+  alias; `EJAM::url_package("apidocs_alias")` is not valid.
+
+- See [Updating Documentation](dev-update-documentation.html) for a table of
+  root and development URLs for the reference index, individual help pages,
+  article index, and individual articles.
+
 
 ## APP TITLE: If relevant, carefully change the title of the web app
 
