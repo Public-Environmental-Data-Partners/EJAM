@@ -71,7 +71,12 @@ table_x100 <- function(df, cnames = names_pct_as_fraction_ejamit
     #
     # df[ , (tofix) := lapply(.SD, function(z) z * 100), .SDcols = tofix]
 
-    setDF(df)
+    # work on a plain data.frame copy: setDF(df) here used to convert the
+    # CALLER's data.table to a data.frame by reference and never restore it
+    # (e.g., rendering map popups silently changed the class of the app's
+    # results_bysite), because the subset-assignment below broke the
+    # reference before the restoring setDT() ran
+    df <- as.data.frame(df)
     df[ , tofix] <- df[ , tofix] * 100
     setDT(df)
     return(df)

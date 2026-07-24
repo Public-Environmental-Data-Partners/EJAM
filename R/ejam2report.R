@@ -184,6 +184,15 @@ ejam2report_site_is_reportable <- function(site_result) {
 #'
 #' @description Get the html text or the path to the html file with a multisite summary or community report
 #'
+#' @details The report also includes rows showing what percent of the analyzed residents
+#'   have each type of feature (school, hospital, place of worship) or area type
+#'   (Tribal, nonattainment, impaired waters, CEJST/IRA disadvantaged, etc.)
+#'   in (or overlapping) their blockgroup, with ratios to the US and State averages
+#'   (see [ejam2areafeatures()]). For a multisite report those come from
+#'   `ejamitout$results_summarized$flagged_areas`; for a 1-site report they are
+#'   calculated for just that site. The rows are omitted if that information
+#'   is unavailable (e.g., for outputs saved by older EJAM versions).
+#'
 #' @param ejamitout output as from [ejamit()], list with a table in [data.table](https://r-datatable.com) format called `results_bysite`
 #'   if sitenumber parameter is used, or a table in [data.table](https://r-datatable.com) format called `results_overall` otherwise
 #' @param sitenumber If a valid number is provided, the report is a "1-site" report, about
@@ -314,15 +323,22 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
                           `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
                           `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
                           `Poverty` = names_d_extra,
-                          `Features and Location Information` = c(
-                            names_e_other,
-                            names_sitesinarea,
+                          # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Climate)
+                          `Climate` = names_climate,
+                          `Counts of Features and Overlap with Area Types` = c(
                             names_featuresinarea,
                             names_flag
                           ),
-                          `Climate` = names_climate,
-                          `Critical Services` = names_criticalservice,
-                          `Other` = names_d_other_count
+                          `Critical Services` = c( # names_criticalservice, re-sorted for display: flags first, then percentages
+                            'yesno_houseburden', 'yesno_fooddesert', 'yesno_transdis',
+                            'pctnobroadband', 'pctnohealthinsurance'
+                          ),
+                          `Facility Counts` = names_sitesinarea,
+                          `Analyzed Sites` = c( # names_e_other, re-sorted for display: distances first, then site counts
+                            'distance_min_avgperson', 'distance_min',
+                            'sitecount_unique', 'sitecount_avg', 'sitecount_max'
+                          ),
+                          `Other Totals` = names_d_other_count
                           # , `Count above threshold` = names_countabove  # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
                         ),
                         ## all the indicators that are in extratable_list_of_sections:
@@ -442,6 +458,20 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     # but shp is all rows, remember, and popup can still be like for site by site
     rad <- ejamout1$radius.miles
 
+    ## > flagged areas summary (for new rows in report - see calc_flagged_areas()) ####
+    # normally already in results_summarized via batch.summarize(); recalculate as fallback if missing;
+    # NULL (as for outputs saved by very old EJAM versions) means the report just omits that section
+    junk <- capture.output({
+      flagged_areas_df <- tryCatch({
+        fa <- ejamitout$results_summarized$flagged_areas
+        if (is.null(fa) && !is.null(ejamitout$results_bysite) && !is.null(ejamitout$results_bybg_people)) {
+          fa <- calc_flagged_areas(sitestats = ejamitout$results_bysite,
+                                   popstats  = ejamitout$results_bybg_people)
+        }
+        fa
+      }, error = function(e) NULL)
+    })
+
     ## > filename needs no location name ####
     selected_location_name_react <- NULL
 
@@ -470,6 +500,19 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     }
     ejamout1 <- ejamitout$results_bysite[sitenumber, ]
     rad <- ejamout1$radius.miles
+
+    ## > flagged areas summary for this ONE site (for new rows in report - see calc_flagged_areas()) ####
+    # calculated here for just this site, using the blockgroups at this site only;
+    # NULL (e.g., if results_bybg_people is unavailable) means the report just omits that section
+    junk <- capture.output({
+      flagged_areas_df <- tryCatch({
+        id1 <- ejamitout$results_bysite$ejam_uniq_id[sitenumber]
+        calc_flagged_areas(
+          sitestats = ejamitout$results_bysite[sitenumber, ],
+          popstats  = ejamitout$results_bybg_people[ejamitout$results_bybg_people$ejam_uniq_id %in% id1, ]
+        )
+      }, error = function(e) NULL)
+    })
 
     ## > nsites
     nsites <- 1
@@ -716,6 +759,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       extratable_list_of_sections      = extratable_list_of_sections,
       extratable_show_ratios_in_report = extratable_show_ratios_in_report,
       extratable_hide_missing_rows_for = extratable_hide_missing_rows_for,
+
+      flagged_areas_df = flagged_areas_df, # for the multisite report this summarizes all the sites; for a 1-site report it is for that one site
 
       in_shiny = FALSE,
       filename = NULL  # always return the html object; file writing is done by rmarkdown::render()

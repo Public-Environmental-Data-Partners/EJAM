@@ -18,6 +18,7 @@ params:
   extratable_title_top_row: NA
   extratable_list_of_sections: NA
   extratable_hide_missing_rows_for: NA
+  flagged_areas_df: NULL
   in_shiny: FALSE
   filename: NULL
   map: NULL
@@ -61,6 +62,8 @@ build_community_report(
   extratable_title_top_row         = params$extratable_title_top_row,
   extratable_list_of_sections      = params$extratable_list_of_sections, # just use default
   extratable_hide_missing_rows_for = params$extratable_hide_missing_rows_for, # just use default
+  
+  flagged_areas_df = params$flagged_areas_df,
   
   in_shiny     = params$in_shiny,
   filename     = params$filename

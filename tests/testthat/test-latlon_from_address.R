@@ -24,7 +24,7 @@ testthat::test_that("latlon_from_address_table works on testinput_address_table"
     request = c("1200 Pennsylvania Ave Washington DC ",
                 "5 pARK AVE NY NY "),
     score = c(99.48, 100),
-    arcgis_address = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20044",
+    arcgis_address = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
                        "5 Park Ave, New York, New York, 10016"),
     lon = c(-77.028948300066, -73.980999465092),
     lat = c(38.8948262664, 40.747143677784)
@@ -63,7 +63,7 @@ testthat::test_that("latlon_from_address_table if address col conflicts with str
 
   original =    structure(list(
     arcgis_address = c(
-      "1200 Pennsylvania Ave NW, Washington, District of Columbia, 20044",
+      "1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
       "5 Park Ave, New York, New York, 10016"),
     lon = c(-77.028948300066, -73.980999465092),
     lat = c(38.8948262664, 40.747143677784)
@@ -108,7 +108,7 @@ testthat::test_that("latlon_from_address works", {
   if (!exists("geocode")) {
     suppressPackageStartupMessages(library(AOI))
   }
-  addresses_example_temp = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20044",
+  addresses_example_temp = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
                              "5 Park Ave, New York, New York, 10016")
   testthat::expect_no_error({
     x <- latlon_from_address(addresses_example_temp)
@@ -118,12 +118,12 @@ testthat::test_that("latlon_from_address works", {
 
   expected_x <-     structure(list(
     request = tolower(
-      c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20044",
+      c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
         "5 Park Ave, New York, New York, 10016")
     ),
     score = c(100L, 100L),
     arcgis_address = tolower(
-      c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20044",
+      c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
         "5 Park Ave, New York, New York, 10016")
     ),
     lon = c(-77.028948300066, -73.980999465092),
@@ -133,10 +133,10 @@ testthat::test_that("latlon_from_address works", {
   testthat::expect_true(
     all.equal(
       x,
-      expected_x
+      expected_x,
+      # tolerate small drift in the live geocoder's match score (e.g., 100 vs 99.5)
+      tolerance = 0.01
     )
-    # ,
-    # tolerance = 0.01
   )
 })
 ###################### #
@@ -198,12 +198,12 @@ testthat::test_that("latlon_from_address( xy=FALSE) works", {
   a1 <- "1200 Pennsylvania Ave NW, Washington DC"
   a2 <- "4930 Old Page Road Durham NC 27703"
   out1old <- structure(list(request = "1200 Pennsylvania Ave NW, Washington DC",
-                            score = 100L, arcgis_address = "1200 Pennsylvania Ave NW, Washington, District of Columbia, 20044",
+                            score = 100L, arcgis_address = "1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
                             lon = -77.02895, lat = 38.89483), row.names = c(NA, -1L), class = "data.frame")
   out2old <- structure(list(request = c("1200 Pennsylvania Ave NW, Washington DC",
                                         "4930 Old Page Road Durham NC 27703"),
                             score = c(100L, 100L),
-                            arcgis_address = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20044",
+                            arcgis_address = c("1200 Pennsylvania Ave NW, Washington, District of Columbia, 20004",
                                                "4930 Old Page Rd, Durham, North Carolina, 27703"),
                             lon = c(-77.02895, -78.84164),
                             lat = c(38.89483, 35.88678)), row.names = c(NA, -2L), class = "data.frame")

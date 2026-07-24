@@ -39,9 +39,16 @@
 #'
 #'
 #' @param ejamitout output from ejamit()
-#' @param main optional title for plot
-#' @param ylab optional y axis label
+#' @param main optional title for plot. If NULL (default), a title is chosen
+#'   based on the `vs` parameter.
+#' @param ylab optional y axis label. If NULL (default), a label is chosen
+#'   based on the `vs` parameter.
 #' @param shortlabels optional alternative labels for the bars
+#' @param vs "us" (default) to plot ratios to the US average,
+#'   or "state" to plot ratios to the average in the State(s) analyzed
+#'   (population-weighted across the states of the residents analyzed).
+#'   "state" requires ejamitout to have the ratio_to_state_avg column
+#'   in results_summarized$flagged_areas (from a current version of ejamit()).
 #' @seealso [ejam2areafeatures()] [batch.summarize()]
 #' @examples
 #' out <- testoutput_ejamit_1000pts_1miles
@@ -50,22 +57,49 @@
 #' shortlabels = EJAM:::flagged_areas_shortlabels_from_ejam(out)
 #' ejam2barplot_areafeatures(out, shortlabels = shortlabels)
 #'
+#' # ratios to State averages instead of US averages:
+#' if ("ratio_to_state_avg" %in% names(ejam2areafeatures(out))) {
+#'   ejam2barplot_areafeatures(out, vs = "state")
+#' }
+#'
 #' @return ggplot2 plot
 #'
 #' @export
 #'
 ejam2barplot_areafeatures <- function(ejamitout,
-                                      main = paste0(
-                                        "% of analyzed population",
-                                        " that lives in blockgroups with given features",
-                                        " or that overlap given area type"),
-                                      ylab = "Ratio of Indicator in Analyzed Locations / in US Overall",
-                                      shortlabels = NULL) {
+                                      main = NULL,
+                                      ylab = NULL,
+                                      shortlabels = NULL,
+                                      vs = c("us", "state")) {
 
-  ratios <- flagged_areas_ratios_from_ejam(ejamitout)
+  vs <- match.arg(tolower(vs[1]), c("us", "state"))
+  if (vs == "state") {
+    fa <- ejamitout$results_summarized$flagged_areas
+    if (is.null(fa) || !("ratio_to_state_avg" %in% names(fa)) || all(is.na(fa$ratio_to_state_avg))) {
+      stop("No ratios to State averages found in ejamitout$results_summarized$flagged_areas - ",
+           "re-run ejamit() with a current version of EJAM to get the ratio_to_state_avg column, or use vs = 'us'")
+    }
+    ratiocolname <- "ratio_to_state_avg"
+    if (is.null(main)) {main <- paste0(
+      "% of analyzed population",
+      " that lives in blockgroups with given features",
+      " or that overlap given area type, vs State averages")}
+    if (is.null(ylab)) {ylab <- "Ratio of Indicator in Analyzed Locations / in State(s) Analyzed"}
+  } else {
+    ratiocolname <- "ratio"
+    if (is.null(main)) {main <- paste0(
+      "% of analyzed population",
+      " that lives in blockgroups with given features",
+      " or that overlap given area type")}
+    if (is.null(ylab)) {ylab <- "Ratio of Indicator in Analyzed Locations / in US Overall"}
+  }
+
+  ratios <- flagged_areas_ratios_from_ejam(ejamitout, ratiocolname = ratiocolname)
+  # pass vs explicitly so the legend basis does not depend on the wording of a custom main title
   plot_barplot_ratios(ratios, main = main, ylab = ylab,
                       shortlabels = shortlabels,
-                      caption = "")
+                      caption = "",
+                      vs = vs)
 }
 ######################################################### # ######################################################### #
 ######################################################### # ######################################################### #
@@ -91,6 +125,24 @@ ejam2barplot_areafeatures <- function(ejamitout,
 #'
 #' - The "pctno" or % indicators are summarized as what % of the
 #'   residents analyzed lack the critical service.
+#'
+#' The columns of the table are:
+#'
+#' - `Indicator` - plain-English name of the indicator
+#' - `Percent_of_these_Sites` - % of the analyzed sites where the indicator is
+#'   present/flagged (or the average of the site-level percentages, for the two % indicators)
+#' - `Percent_of_these_People` - % of the analyzed residents living in a
+#'   blockgroup with the feature or overlap
+#' - `Percent_of_all_People_Nationwide` - the same % but among all US residents
+#' - `ratio` - Percent_of_these_People / Percent_of_all_People_Nationwide
+#' - `Percent_of_all_People_Statewide` - the same % but among all residents of the
+#'   state(s) analyzed. Where sites span multiple states, this is the average of
+#'   the state-level percentages weighted by the analyzed population in each state
+#'   (i.e., the average among all the residents at these sites, using the statewide
+#'   value in each resident's state), analogous to how ratios to State averages
+#'   are calculated for other indicators in `results_overall`.
+#' - `ratio_to_state_avg` - Percent_of_these_People / Percent_of_all_People_Statewide
+#' - `rname` - the variable name of the indicator, like "num_school" or "yesno_tribal"
 #'
 #' @return a data frame with the summary of flagged areas
 #' @seealso [ejam2barplot_areafeatures()] [batch.summarize()]
@@ -372,6 +424,127 @@ flagged_pct_pop_st <- function(ST = stateinfo$ST, bybg_st = blockgroupstats, fla
   # results_overall$pop  is a bit different as denominator than  sum(bybg_st$pop, na.rm = TRUE)
   return(x)
 }
+######################################################### #
+
+#' analyzed-population-weighted average of state-level percent flagged, per indicator
+#'
+#' For each indicator, computes each relevant state's percent of residents living in
+#' blockgroups with the feature or overlap (or the popwtd mean, for the two percentage
+#' indicators), then averages those state-level baselines weighted by the ANALYZED
+#' population in each state (sum(pop * bgwt) by ST from results_bybg_people).
+#' This is analogous to how doaggregate() calculates state.avg.cols_overall
+#' (popwtd mean of each site's state average), and is NOT the same as
+#' \code{flagged_pct_pop_st()}, which POOLS the given states into one combined denominator.
+#' State baselines are computed directly from blockgroupstats (not statestats,
+#' which lacks the yesno_ indicators).
+#' @param bybg_people data.table like ejamit()$results_bybg_people (needs ST, pop, bgwt)
+#' @param bybg_us data.table of all US blockgroups, like blockgroupstats (needs ST, pop, and the indicators)
+#' @param flagvarnames names of indicator columns to summarize
+#' @param digits rounding digits (rounded once, at the end)
+#' @return 1-row data.table of percentages (0-100), one column per flagvarname;
+#'   all NA (with a warning) if bybg_people lacks usable ST/pop/bgwt info
+#' @keywords internal
+#' @noRd
+flagged_pct_pop_st_avg <- function(bybg_people = testoutput_ejamit_1000pts_1miles$results_bybg_people,
+                                   bybg_us = blockgroupstats,
+                                   flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice),
+                                   digits = 1) {
+
+  na_row <- function() {
+    x <- data.table::as.data.table(as.list(rep(NA_real_, length(flagvarnames))))
+    data.table::setnames(x, flagvarnames)
+    x
+  }
+  if (!is.data.frame(bybg_people) || !all(c("pop", "bgwt") %in% colnames(bybg_people))) {
+    warning("bybg_people must have pop and bgwt columns - returning NA for statewide baselines")
+    return(na_row())
+  }
+  if (!("ST" %in% colnames(bybg_people)) || all(is.na(bybg_people$ST))) {
+    warning("bybg_people lacks a usable ST column - returning NA for statewide baselines")
+    return(na_row())
+  }
+  stopifnot(all(c("pop", "ST", flagvarnames) %in% colnames(bybg_us)))
+
+  # use a local data.table (not setDT/setDF, which would modify the caller's object
+  # by reference); if already a data.table it is only queried, never modified
+  bybg_people_dt <- if (is.data.table(bybg_people)) bybg_people else as.data.table(bybg_people)
+  # weight for each state = ANALYZED population in that state
+  # ("wtd by analyzed people from each state", as done for ratios to State averages overall)
+  wts <- bybg_people_dt[!is.na(ST), .(analyzed_pop = sum(pop * bgwt, na.rm = TRUE)), keyby = ST]
+  wts <- wts[analyzed_pop > 0, ]
+  if (NROW(wts) == 0) {
+    warning("no analyzed population by state found - returning NA for statewide baselines")
+    return(na_row())
+  }
+
+  # state-level baseline percent for each relevant state, over ALL blockgroups in that state,
+  # using the same logic as flagged_pct_pop_us():
+  # percent of pop living in blockgroups with indicator > 0,
+  # EXCEPT popwtd mean for the two percentage indicators (z * pop, not (z > 0) * pop)
+  sts <- wts$ST
+  perst <- bybg_us[ST %in% sts,
+                   lapply(.SD, function(z) {100 * sum((z > 0) * pop, na.rm = TRUE) / sum(pop, na.rm = TRUE)}),
+                   keyby = ST, .SDcols = flagvarnames]
+  pctvars = intersect(c('pctnobroadband', 'pctnohealthinsurance'), flagvarnames)
+  if (length(pctvars) > 0) {
+    perst[, (pctvars)] <- bybg_us[ST %in% sts,
+                                  lapply(.SD, function(z) {100 * sum(z * pop, na.rm = TRUE) / sum(pop, na.rm = TRUE)}),
+                                  keyby = ST, .SDcols = pctvars][, ..pctvars]
+  }
+
+  m <- merge(wts, perst, by = "ST") # inner join: a state with analyzed people but absent from bybg_us drops out
+  x <- m[, lapply(.SD, function(z) {round(collapse::fmean(z, w = analyzed_pop), digits = digits)}),
+         .SDcols = flagvarnames]
+  return(x)
+}
+######################################################### #
+
+#' calculate the flagged areas summary table (as in ejamit()$results_summarized$flagged_areas)
+#'
+#' Extracted from batch.summarize() so it can also be used for a single site
+#' (pass a 1-row sitestats and the popstats rows for just that site's ejam_uniq_id),
+#' as in the community report via ejam2report().
+#' @param sitestats data.table like ejamit()$results_bysite (or 1 row of it)
+#' @param popstats data.table like ejamit()$results_bybg_people (or the rows for one site)
+#' @param flagvarnames names of indicator columns to summarize
+#' @return data.frame with columns Indicator, Percent_of_these_Sites, Percent_of_these_People,
+#'   Percent_of_all_People_Nationwide, ratio (to US), Percent_of_all_People_Statewide,
+#'   ratio_to_state_avg, rname
+#' @seealso [ejam2areafeatures()] [batch.summarize()]
+#' @keywords internal
+#' @noRd
+calc_flagged_areas <- function(sitestats, popstats,
+                               flagvarnames = c(names_featuresinarea, names_flag, names_criticalservice)) {
+
+  zsites = flagged_pct_sites(sitestats, flagvarnames = flagvarnames)
+  myrnames = names(zsites)
+  names(zsites) <- gsub("num_school", "Any schools", names(zsites))
+  names(zsites) <- gsub("num_hospital", "Any hospitals", names(zsites))
+  names(zsites) <- gsub("num_church", "Any places of worship", names(zsites))
+  longernames = fixcolnames(names(zsites), 'r', 'long')
+  longernames = gsub("Flag for ", "", longernames)
+  fa <- data.frame(
+
+    data.frame(Indicator = longernames),
+    data.frame(`Percent_of_these_Sites`  = t(zsites)),
+    data.frame(`Percent_of_these_People` = t(flagged_pct_pop(popstats, flagvarnames = flagvarnames))),
+    data.frame("Percent_of_all_People_Nationwide" = t(flagged_pct_pop_us(flagvarnames = flagvarnames)))
+  )
+  rownames(fa) <- NULL
+  fa$ratio <- round(fa$Percent_of_these_People / fa$Percent_of_all_People_Nationwide, 2)
+  # statewide baseline, wtd by analyzed people from each state (as done to get overall ratios to State averages)
+  # the ratio must use the UNROUNDED baseline: rounding first would collapse tiny nonzero
+  # baselines (e.g. yesno_tribal is 0.017% in VA) to 0 and turn a real ratio into NA
+  st_baseline <- as.vector(t(
+    flagged_pct_pop_st_avg(bybg_people = popstats, flagvarnames = flagvarnames, digits = 7)
+  ))
+  fa$Percent_of_all_People_Statewide <- round(st_baseline, 1)
+  fa$ratio_to_state_avg <- round(fa$Percent_of_these_People / st_baseline, 2)
+  # a state baseline of exactly 0% is still plausible (no such areas in the state), so avoid Inf here
+  fa$ratio_to_state_avg[!is.finite(fa$ratio_to_state_avg)] <- NA_real_
+  fa$rname = myrnames
+  return(fa)
+}
 ######################################################### # ######################################################### #
 ######################################################### # ######################################################### #
 
@@ -379,16 +552,19 @@ flagged_pct_pop_st <- function(ST = stateinfo$ST, bybg_st = blockgroupstats, fla
 
 #' reshape flagged areas table into a named vector of ratios
 #' @param flagged_areas data.frame like ejamit()$results_summarized$flagged_areas
+#' @param ratiocolname which ratio column to use, "ratio" (vs US, the default)
+#'   or "ratio_to_state_avg" (vs States analyzed)
 #' @return named vector of ratios, ready for plot_barplot_ratios()
 #' @keywords internal
 #' @noRd
-flagged_areas_ratiosvector_from_flagged_areas <- function(flagged_areas) {
+flagged_areas_ratiosvector_from_flagged_areas <- function(flagged_areas, ratiocolname = "ratio") {
   # reformat the table  ejamit()$results_summarized$flagged_areas
+  stopifnot(length(ratiocolname) == 1, ratiocolname %in% names(flagged_areas))
   unlist(as.vector(
     tidyr::pivot_wider(
-      data = flagged_areas[, c('Indicator', 'ratio')],
+      data = flagged_areas[, c('Indicator', ratiocolname)],
       names_from = "Indicator",
-      values_from = "ratio"
+      values_from = tidyr::all_of(ratiocolname)
     )
   ))
 }
@@ -398,16 +574,19 @@ flagged_areas_ratiosvector_from_flagged_areas <- function(flagged_areas) {
 
 #' get named vector of flagged areas ratios from ejamit() output
 #' @param ejamitout output from ejamit()
+#' @param ratiocolname which ratio column to use, "ratio" (vs US, the default)
+#'   or "ratio_to_state_avg" (vs States analyzed)
 #' @return named vector of ratios, ready for plot_barplot_ratios()
 #' @keywords internal
 #' @noRd
-flagged_areas_ratios_from_ejam <- function(ejamitout) {
+flagged_areas_ratios_from_ejam <- function(ejamitout, ratiocolname = "ratio") {
   # after ejamitout <- ejamit()
   # reformat the table   ejamitout$results_summarized$flagged_areas
   # into a named vector of ratios
   # ready for plot_barplot_ratios(), etc.
   flagged_areas_ratiosvector_from_flagged_areas(
-    flagged_areas_from_ejam(ejamitout)
+    flagged_areas_from_ejam(ejamitout),
+    ratiocolname = ratiocolname
   )
 }
 ################## #

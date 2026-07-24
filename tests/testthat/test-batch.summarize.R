@@ -107,7 +107,54 @@ test_that("batch.summarize rows Average Person ok", {
 
 ######################################## #
 
-# needs more tests here... tests for $flagged_areas_pop, $flagged_areas_sites 
+# $flagged_areas ####
+
+test_that("batch.summarize()$flagged_areas has 13 rows and expected columns incl. state versions", {
+
+  junk <- capture.output({
+    suppressWarnings({
+      x <- batch.summarize(
+        sitestats = data.table::copy(testoutput_ejamit_10pts_1miles$results_bysite),
+        popstats  = data.table::copy(testoutput_ejamit_10pts_1miles$results_bybg_people),
+        overall   = data.table::copy(testoutput_ejamit_10pts_1miles$results_overall),
+        quiet = TRUE
+      )
+    })
+  })
+  fa <- x$flagged_areas
+  expect_true(is.data.frame(fa))
+  expect_equal(NROW(fa), 13)
+  expect_equal(
+    names(fa),
+    c("Indicator", "Percent_of_these_Sites", "Percent_of_these_People",
+      "Percent_of_all_People_Nationwide", "ratio",
+      "Percent_of_all_People_Statewide", "ratio_to_state_avg", "rname")
+  )
+  # percentages are in 0-100, and the ratios are consistent with their components
+  pctcols <- c("Percent_of_these_Sites", "Percent_of_these_People",
+               "Percent_of_all_People_Nationwide", "Percent_of_all_People_Statewide")
+  for (pc in pctcols) {
+    expect_true(all(fa[[pc]] >= 0 & fa[[pc]] <= 100, na.rm = TRUE), info = pc)
+  }
+  # ratio_to_state_avg is computed from the UNROUNDED statewide baseline (so tiny
+  # baselines like VA yesno_tribal 0.017% do not collapse to 0 and NA out the ratio),
+  # while Percent_of_all_People_Statewide is displayed rounded to 1 decimal place -
+  # so recomputing from the displayed columns only matches approximately, and only
+  # where the displayed baseline is not too close to 0
+  ok <- is.finite(fa$ratio_to_state_avg) & fa$Percent_of_all_People_Statewide >= 0.5
+  expect_true(any(ok))
+  expect_equal(
+    fa$ratio_to_state_avg[ok],
+    fa$Percent_of_these_People[ok] / fa$Percent_of_all_People_Statewide[ok],
+    tolerance = 0.05
+  )
+  okus <- is.finite(fa$ratio)
+  expect_equal(
+    fa$ratio[okus],
+    round(fa$Percent_of_these_People[okus] / fa$Percent_of_all_People_Nationwide[okus], 2)
+  )
+})
+######################################## #
 
 
 

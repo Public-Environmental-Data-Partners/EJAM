@@ -1,14 +1,95 @@
-# EJAM 3.2022.2 (unreleased)
+# EJAM 3.2022.2 (August 2026)
 
-Faster and more reliable report rendering, and
-fixes to report generation and the EJScreen/API integration.
-This is a patch release for the v3.YYYY.x annual-vintage line 
-(v3.2022.x, v3.2023.x, v3.2024.x). 
+State versions of the flagged-areas stats (now shown in the community report),
+a much faster Site-by-Site table in the web app, faster and more reliable
+report rendering, and fixes to report generation and the EJScreen/API
+integration.
+This is a patch release for the v3.YYYY.x annual-vintage line
+(v3.2022.x, v3.2023.x, v3.2024.x).
 Like v3.2022.1, this is a code-and-docs patch that reuses the already-published
 `ejamdata` data release for this vintage (`v3.2022.0`), with no change to the
 packaged ACS or environmental data.
 
+## New Features
+
+### State versions of the flagged-areas stats, shown in the community report
+
+The "flagged areas" summary stats (% of analyzed residents who have a school,
+hospital, or place of worship in their blockgroup, or whose blockgroup overlaps
+a Tribal area, nonattainment area, impaired waters, CEJST or IRA disadvantaged
+community, housing burden community, food desert, or transportation
+disadvantaged community) now also have **State** versions, not just US ones,
+and are now shown in the community report
+(closes [#242](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/242);
+addresses [#156](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/156)
+and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410)):
+
+- `ejamit()$results_summarized$flagged_areas` (see `ejam2areafeatures()`) gains
+  `Percent_of_all_People_Statewide` and `ratio_to_state_avg` columns. Where an
+  analysis spans multiple states, the statewide baseline is the average of the
+  state-level percentages weighted by the analyzed population in each state,
+  analogous to how ratios to State averages are calculated for other indicators.
+- The community report (in the app and via `ejam2report()`) has a new set of rows,
+  "% of These Residents Who Have This Feature or Area Type in (or Overlapping)
+  Their Blockgroup," just below the "Climate" section (which sits right after
+  "Poverty"),
+  with color-coded ratios to the US and State averages (percents shown as whole
+  numbers and ratios with 1 decimal place, like the other rows of the table).
+  Multisite reports
+  summarize all sites; 1-site reports now calculate these stats for that one site.
+  (The % without broadband / health insurance indicators remain in the
+  "Critical Services" section, where they already had US/State ratios.)
+- `ejam2barplot_areafeatures()` gains a `vs` parameter: `vs = "state"` plots the
+  ratios to State averages instead of US averages.
+- The spreadsheet from `ejam2excel()` gains an "Area Features" tab with this
+  summary table, ratio columns color-coded like the other ratio columns.
+- The report's "Additional Information" table was re-organized: the old
+  "Features and Location Information" section is now split into
+  "Counts of Features and Overlap with Area Types" (schools, places of worship,
+  hospitals, and area-overlap flags), "Facility Counts" (NPL, TSDF, air, toxic
+  release, water discharge, brownfields), and "Analyzed Sites" (distance and
+  sites-nearby rows); "Critical Services" is re-sorted (flags first,
+  then percentages); "Climate" moved up to sit right after "Poverty" (just before
+  the flagged-areas "% of These Residents..." rows); and the "Other" section was
+  renamed "Other Totals" (reserving
+  "Other" for future user-specified indicators) and moved to the
+  end of the table, after "Analyzed Sites". "Flag for..." rows now display
+  Yes/No instead of 1/0.
+- The three CDC PLACES health indicators ("% with Heart Diseases", "% of Adults
+  with Asthma", "% of Adults with Cancer (excluding skin cancer)") now display
+  in the report as whole percentages with a % sign ("10%" instead of "9.90"),
+  like the other health rows. They are stored as 0-100 percentage points (unlike
+  the fraction-stored percent columns), so a new `pct_as_points_ejamit` column in
+  `map_headernames` marks them for %-sign display without the x100 rescaling -
+  in the report via `format_ejamit_columns()` and in the `ejam2excel()`
+  spreadsheet, whose percent styling would otherwise multiply by 100 (e.g. the
+  heart disease column would have displayed 387%).
+- Also per [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410),
+  the report's feature/facility counts are estimated totals (prorated by the share
+  of each blockgroup's residents inside the analyzed area), so they display with
+  0 decimal places like other totals; "Number of Sites Nearby (avg)" is the only
+  average-person count row and keeps 1 decimal place. A report footnote (shown
+  with compact line spacing) now
+  explains what those counts mean and what the State average means for a
+  multisite report
+  (part of [#403](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/403)).
+  A few indicator names were also cleaned up: "Number of National Priority List
+  Superfund sites" and "Number of Treatment Storage Disposal Facilities (TSDF)"
+  (was "Count of..."), "Count of Households in Internet Subscription Universe"
+  (dropped the "B28002" jargon), and "Count of Residents Who Are Not People of
+  Color" (was "Non-POC resident count").
+
 ## Bug Fixes
+
+- **Rounding helpers no longer mangle data.table inputs** (#491): `table_round()`,
+  `table_signif()`, `table_x100()`, and `is.numericish()` used to convert a
+  data.table argument into a data.frame *in the caller's environment* (a
+  `setDF()` side effect that was never undone because a later copy broke the
+  reference before the restoring `setDT()`), and `table_round()` /
+  `table_signif()` then also returned a plain data.frame. All four now leave
+  the caller's object untouched and return the same class they were given,
+  with identical values (verified cell-for-cell against the old behavior for
+  points, FIPS, and shapefile analysis outputs).
 
 - **Percentages displayed as "0" or "1" (or unrounded) in reports, tables, and
   map popups**: two related metadata problems were fixed. The derived
@@ -68,6 +149,33 @@ packaged ACS or environmental data.
 
 ## Improvements
 
+- **Community report now shows the "Ratio to US average" and "Ratio to State
+  average" columns (with their color coding) by default**, in both the public
+  and the private/full versions of the app. Previously these columns were shown
+  only in the private app. The report options still let a user turn them off.
+
+- **The web app's Site-by-Site Table (Details tab) is built about 4x faster**
+  (#491 fixes #127): profiling showed the lag after clicking the tab was not the
+  URL-generating functions (links are created earlier, during the analysis) but
+  two steps in building the table view. `table_round()` copied the entire wide
+  table once per column, costing over half a second even for a small analysis,
+  and a `shiny::actionButton()` tag was rendered separately for every site
+  (about 1 second per 1,000 sites). Rounding now updates each column in place
+  and the per-site download buttons are filled in from a single rendered
+  template, producing byte-identical output while cutting server-side table
+  construction from about 2.1s to 0.6s for 1,000 sites. `table_round()` is also
+  used by map popups (`popup_from_ejscreen()`), `ejam2means()`, and
+  `ejam2table_tall()`, which get the same speedup. In addition, the table now
+  starts from the default column subset (`default_bysite_webtable_colnames`,
+  ~50 columns) instead of all ~700 columns, and shows 50 rows per page instead
+  of 100 -- together these cut the time until the table appears from ~6.4s to
+  well under 1s for a 1,000-site analysis. Users can add any columns via the
+  advanced tab's column picker (which had never rendered, due to `renderUI()`
+  being used in the UI where `uiOutput()` belongs -- also fixed, along with
+  the button-column-name field next to it, which displayed "FALSE" because it
+  was bound to the wrong setting), can choose 100 rows per page from the
+  length menu, and always get every column in the downloaded spreadsheet.
+
 - **All PDF reports are about 7 seconds (~46%) faster** (#473 helps with #293): 
   the two unconditional render pauses were trimmed (report-map snapshot 4s -> 1s,
   print-to-PDF 5s -> 2s), and both are now settable without a rebuild -- via the
@@ -108,7 +216,6 @@ packaged ACS or environmental data.
   `ejamdata` v3.2022.0 release (no v3.2022.1/v3.2022.2 `ejamdata` release is
   needed for a code-only patch). Several hardcoded version strings were removed
   from the documentation and vignettes.
-
 
 # EJAM 3.2022.1 (July 2026)
 

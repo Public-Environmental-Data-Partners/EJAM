@@ -1404,14 +1404,18 @@ app_ui <- function(request) {
                  ### By-site interactive table of results ####
                  h3("By-site interactive table of results"),
 
-                 shiny::renderUI("bysite_webtable_colnames_ui"),
+                 # uiOutput (not renderUI, which is server-side and rendered nothing here)
+                 # displays the column picker for the site-by-site table (#491)
+                 shiny::uiOutput("bysite_webtable_colnames_ui"),
 
                  # default_reports is not adjustable here-  changing this in advance tab is complicated since it is a list of functions, etc.
 
                  # sitereport_download_buttons_colname = "Download EJAM Report", # input$sitereport_download_buttons_colname
                  shiny::textInput("sitereport_download_buttons_colname",
-                                  label = "Name of column of uttons that download 1-site report per row",
-                                  value = global_or_param("sitereport_download_buttons_show")),
+                                  label = "Name of column of buttons that download 1-site report per row",
+                                  # was bound to ..._show (a logical), so the field said "FALSE"
+                                  # and enabling the buttons named the column "FALSE" (#491)
+                                  value = global_or_param("sitereport_download_buttons_colname")),
 
                  checkboxInput("sitereport_download_buttons_show",
                                label = "Show column of buttons that download 1-site report per row",
