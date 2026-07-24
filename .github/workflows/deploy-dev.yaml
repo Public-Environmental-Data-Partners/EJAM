@@ -8,11 +8,11 @@ on:
       ejam_version:
         description: >-
           EJAM git ref to install & deploy to the DEV server: a branch
-          (e.g. development, main), tag (e.g. v3.2022.2), or commit SHA.
-          Lets you test an unreleased branch on dev without cutting a tag.
-          Leave blank to use the version pinned in the Dockerfile.
+          (e.g. enter "development" to test the release candidate), a tag
+          (e.g. v3.2022.2), or a commit SHA. Lets you test an unreleased
+          branch on dev without cutting a tag. Leave blank (the default) to
+          deploy the version pinned in the Dockerfile, same as a push does.
         required: false
-        default: development
         type: string
 
 permissions:
@@ -36,10 +36,10 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -62,13 +62,20 @@ jobs:
           FULL_IMAGE=$REGISTRY/$ECR_REPOSITORY
 
           # Override EJAM_VERSION only for a manual dispatch that named a ref; a plain
-          # push leaves it unset so the Dockerfile's pinned default stays the single
-          # source of truth (no fallback duplicated here). install_github accepts any
-          # ref — branch, tag, or SHA — so this can deploy an unreleased branch to dev.
-          EXTRA_BUILD_ARGS=""
+          # push (or a blank input) leaves it unset so the Dockerfile's pinned default
+          # stays the single source of truth (no fallback duplicated here).
+          # install_github accepts any ref — branch, tag, or SHA — so this can deploy
+          # an unreleased branch to dev. The value is validated against git-ref
+          # characters and passed as a single quoted array element, so it cannot be
+          # word-split into extra docker flags (option injection).
+          EXTRA_BUILD_ARGS=()
           if [ -n "$EJAM_VERSION_INPUT" ]; then
+            if ! printf '%s' "$EJAM_VERSION_INPUT" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9._/-]*$'; then
+              echo "::error::ejam_version '$EJAM_VERSION_INPUT' is not a valid git ref (must start with a letter or digit; allowed characters: letters, digits, . _ / -)"
+              exit 1
+            fi
             echo "▶ Overriding EJAM_VERSION with dispatched ref: $EJAM_VERSION_INPUT"
-            EXTRA_BUILD_ARGS="--build-arg EJAM_VERSION=$EJAM_VERSION_INPUT"
+            EXTRA_BUILD_ARGS=(--build-arg "EJAM_VERSION=$EJAM_VERSION_INPUT")
           else
             echo "▶ No ejam_version input; using the Dockerfile's pinned EJAM_VERSION default"
           fi
@@ -80,7 +87,7 @@ jobs:
           # which can expire and cause HTTP 401 "Bad credentials" during the build.
           docker build \
             --build-arg GITHUB_PAT=${{ github.token }} \
-            $EXTRA_BUILD_ARGS \
+            "${EXTRA_BUILD_ARGS[@]}" \
             -t $FULL_IMAGE:$IMAGE_TAG .
 
           docker push $FULL_IMAGE:$IMAGE_TAG
