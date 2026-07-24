@@ -1,3 +1,16 @@
+# EJAM v4 (unreleased)
+
+Features held for the v4 milestone, not part of the v3.2022.x patch line.
+
+## New Features
+
+- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
+  to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
+  any other shapefile, and `ejam2report()` describes the places as zip codes and
+  maps their boundaries without needing the `shp` parameter. This automates the
+  workflow that the Zipcodes article documented as manual steps (#482).
+
+
 # EJAM 3.2022.2 (unreleased)
 
 Faster and more reliable report rendering, and
@@ -65,14 +78,6 @@ packaged ACS or environmental data.
   tidycensus's own default year, which can lag more than a year behind what the
   Census Bureau publishes. It now gates on the latest published ACS end year via
   the new internal `acs_check_year_available()`.
-
-## New Features
-
-- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
-  to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
-  any other shapefile, and `ejam2report()` describes the places as zip codes and
-  maps their boundaries without needing the `shp` parameter. This automates the
-  workflow that the Zipcodes article documented as manual steps (#482).
 
 ## Improvements
 
