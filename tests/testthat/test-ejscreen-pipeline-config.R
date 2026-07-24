@@ -2947,6 +2947,10 @@ test_that("recipe runner scripts exist and point to expected config recipes", {
   if (!file.exists(file.path(repo_root, "DESCRIPTION"))) {
     repo_root <- getwd()
   }
+  # data-raw/ is .Rbuildignore'd, so it exists only in the source tree; under
+  # R CMD check (installed package) this source-tree inspection must skip.
+  testthat::skip_if_not(dir.exists(file.path(repo_root, "data-raw")),
+    "data-raw/ not available (installed-package check); runner-script test runs only from the source tree")
   script_rel <- c(
     annual = "data-raw/run_ejscreen_pipeline_annual.R",
     release = "data-raw/run_ejscreen_pipeline_release.R",
