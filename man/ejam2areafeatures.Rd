@@ -30,6 +30,25 @@ the blockgroup they live in.
 \item The "pctno" or \% indicators are summarized as what \% of the
 residents analyzed lack the critical service.
 }
+
+The columns of the table are:
+\itemize{
+\item \code{Indicator} - plain-English name of the indicator
+\item \code{Percent_of_these_Sites} - \% of the analyzed sites where the indicator is
+present/flagged (or the average of the site-level percentages, for the two \% indicators)
+\item \code{Percent_of_these_People} - \% of the analyzed residents living in a
+blockgroup with the feature or overlap
+\item \code{Percent_of_all_People_Nationwide} - the same \% but among all US residents
+\item \code{ratio} - Percent_of_these_People / Percent_of_all_People_Nationwide
+\item \code{Percent_of_all_People_Statewide} - the same \% but among all residents of the
+state(s) analyzed. Where sites span multiple states, this is the average of
+the state-level percentages weighted by the analyzed population in each state
+(i.e., the average among all the residents at these sites, using the statewide
+value in each resident's state), analogous to how ratios to State averages
+are calculated for other indicators in \code{results_overall}.
+\item \code{ratio_to_state_avg} - Percent_of_these_People / Percent_of_all_People_Statewide
+\item \code{rname} - the variable name of the indicator, like "num_school" or "yesno_tribal"
+}
 }
 \seealso{
 \code{\link[=ejam2barplot_areafeatures]{ejam2barplot_areafeatures()}} \code{\link[=batch.summarize]{batch.summarize()}}

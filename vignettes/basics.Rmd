@@ -244,6 +244,33 @@ ejam2barplot(testoutput_ejamit_100pts_1miles,
 
 To see the underlying US or State average values these barplots compare against, use `usastats_means()` / `statestats_means()` (or `usastats_query()` / `statestats_query()` for percentiles too) -- see the "Using EJAM for Analysis in R" article.
 
+## Special Areas and Features (`ejam2areafeatures()`)
+
+EJAM also summarizes what percent of the residents analyzed have certain features
+in their blockgroup (a school, hospital, or place of worship) or live in a
+blockgroup that overlaps certain special types of areas (Tribal areas,
+nonattainment areas, impaired waters, CEJST or IRA disadvantaged communities,
+housing burden communities, food deserts, transportation disadvantaged
+communities), compared to the share of all US residents -- and the share of all
+residents of the state(s) analyzed -- who have those features or overlaps.
+This info also appears in the community report, and in the "Area Features" tab
+of the spreadsheet from `ejam2excel()`.
+
+```{r ejam2areafeatures, eval=FALSE, echo=TRUE}
+out <- testoutput_ejamit_100pts_1miles
+
+# table of the stats, incl. ratios to the US and State percentages
+ejam2areafeatures(out)
+
+# barplot of ratios to the US percentages
+ejam2barplot_areafeatures(out)
+
+# barplot of ratios to the State percentages
+# (for multistate analyses, the baseline is the average among all the residents
+#  at these sites, using the statewide percentage in each resident's state)
+ejam2barplot_areafeatures(out, vs = "state")
+```
+
 ## View Results Spreadsheet via `ejam2excel()` (to Launch Excel)
 
 ```{r table_xls_from_ejam-launchexcel, eval=FALSE}
