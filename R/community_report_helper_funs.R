@@ -655,7 +655,10 @@ fill_tbl_flagged_areas_section <- function(flagged_areas_df,
   ratio_us <- round(suppressWarnings(as.numeric(getcol("ratio"))), 1)
   ratio_st <- round(suppressWarnings(as.numeric(getcol("ratio_to_state_avg"))), 1)
 
-  tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader\">
+  # report-flagged-areas-subheader starts this section on a fresh page in the PDF
+  # (the row order changed in #444, so the old breaks fell mid-section) - see
+  # communityreport.css
+  tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader report-flagged-areas-subheader\">
 <th colspan=\"8\">', section_title, '</th>
 </tr>')
 
