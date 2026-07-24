@@ -139,7 +139,7 @@ RUN install2.r --error \
     && rm -rf /tmp/downloaded_packages /tmp/*.rds
 
 # GitHub packages
-RUN R -e "remotes::install_github('mikejohnson51/AOI')" && \
+RUN R -e "remotes::install_github('ericnost/AOI')" && \
     R -e "remotes::install_github('hrbrmstr/hrbrthemes')" && \
     rm -rf /tmp/downloaded_packages /tmp/*.rds
 
