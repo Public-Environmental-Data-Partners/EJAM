@@ -73,19 +73,23 @@ test_that("mirror of the EJAM-API code has not drifted from the EJAM-API repo's 
       "https://raw.githubusercontent.com/Public-Environmental-Data-Partners/EJAM-API/main/",
       relpath
     )
-    upstream <- tryCatch(
-      readLines(upstream_url, warn = FALSE),
-      error = function(e) NULL, warning = function(w) NULL
-    )
-    testthat::skip_if(is.null(upstream), paste("could not fetch upstream", relpath))
+    # Compare RAW BYTES, not readLines(): readLines() normalizes line endings and
+    # trailing newlines, so it cannot verify the byte-for-byte mirror contract
+    # described in inst/plumber/ejam-api/SYNC.md (per Copilot review).
+    upstream_file <- tempfile()
+    on.exit(unlink(upstream_file), add = TRUE)
+    fetched <- tryCatch({
+      utils::download.file(upstream_url, upstream_file, quiet = TRUE, mode = "wb")
+      TRUE
+    }, error = function(e) FALSE, warning = function(w) FALSE)
+    testthat::skip_if(!fetched, paste("could not fetch upstream", relpath))
 
-    local_copy <- readLines(
-      system.file(paste0("plumber/ejam-api/", relpath), package = "EJAM"),
-      warn = FALSE
-    )
+    local_path <- system.file(paste0("plumber/ejam-api/", relpath), package = "EJAM")
+    local_bytes    <- readBin(local_path,    what = "raw", n = file.size(local_path))
+    upstream_bytes <- readBin(upstream_file, what = "raw", n = file.size(upstream_file))
     expect_identical(
-      local_copy, upstream,
-      label = paste0("inst/plumber/ejam-api/", relpath),
+      local_bytes, upstream_bytes,
+      label = paste0("inst/plumber/ejam-api/", relpath, " (raw bytes)"),
       expected.label = paste0("EJAM-API main ", relpath,
                               " (re-sync the mirror; see inst/plumber/ejam-api/SYNC.md)")
     )
