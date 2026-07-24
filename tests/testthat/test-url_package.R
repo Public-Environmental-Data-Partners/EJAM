@@ -157,6 +157,11 @@ testthat::test_that("url_package gives useful errors for invalid types", {
     "`type` must be one of:",
     fixed = TRUE
   )
+  expect_error(
+    url_package(character()),
+    "Invalid `type` value: <empty>",
+    fixed = TRUE
+  )
 })
 
 testthat::test_that("url_package docs_version appends subpath for docs types", {

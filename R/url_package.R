@@ -182,7 +182,10 @@ url_package <- function(
     domain = NULL
 ) {
 
-  if (all(type %in% c("github.com", "github.io"))) {
+  # length guard: all(character(0) %in% ...) is vacuously TRUE, so without it an
+  # empty `type` slipped into this legacy block and errored on `type[1]` (NA)
+  # instead of reaching the invalid-`type` validation below
+  if (length(type) == 1L && all(type %in% c("github.com", "github.io"))) {
     # warning("this function no longer uses the 'domain' parameter. Use 'type' instead.")
     domain <- type[1]
   }
