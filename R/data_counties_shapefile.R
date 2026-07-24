@@ -28,5 +28,5 @@
 #'   which downloads the data from the Census Bureau.
 #'
 #'   Source: https://www2.census.gov/geo/tiger/GENZ2022/shp/cb_2022_us_county_500k.zip
-#' @seealso seealso [shapes_from_fips()] [states_shapefile]
+#' @seealso [shapes_from_fips()] [states_shapefile]
 'counties_shapefile'
