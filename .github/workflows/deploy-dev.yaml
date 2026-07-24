@@ -61,6 +61,12 @@ jobs:
         run: |
           FULL_IMAGE=$REGISTRY/$ECR_REPOSITORY
 
+          # Reminder: this DEV image runs the FULL (private) app, ejamapp(isPublic = FALSE),
+          # so RC testing exercises every feature (ratio columns, etc.). PRODUCTION runs
+          # isPublic = TRUE (the streamlined public app). If you want dev to mirror what
+          # end users see, change isPublic in the Dockerfile CMD before deploying.
+          echo "▶ App mode for this deploy: ejamapp(isPublic = FALSE)  [DEV = full/private app; prod = public]"
+
           # Override EJAM_VERSION only for a manual dispatch that named a ref; a plain
           # push (or a blank input) leaves it unset so the Dockerfile's pinned default
           # stays the single source of truth (no fallback duplicated here).

@@ -28,8 +28,16 @@ RUN curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_a
 RUN printf '#!/bin/bash\nexec /usr/bin/google-chrome-stable --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage "$@"\n' \
     > /usr/local/bin/chrome-wrapper && chmod +x /usr/local/bin/chrome-wrapper
 
-# Point chromote/pagedown/webshot2 at the wrapper
+# Point chromote/webshot2 (report map snapshot) AND pagedown (chrome_print, the
+# PDF conversion) at the wrapper. Both env vars are needed and are read by
+# different tools: chromote uses CHROMOTE_CHROME, pagedown uses PAGEDOWN_CHROME.
+# Without PAGEDOWN_CHROME, pagedown::chrome_print() finds the raw
+# /usr/bin/google-chrome-stable via its own find_chrome() and launches it WITHOUT
+# --no-sandbox, so Chrome (running as root in the container) refuses to start and
+# the PDF fails with "Cannot find headless Chrome after 20 attempts". The wrapper
+# adds --no-sandbox / --disable-dev-shm-usage so Chrome starts.
 ENV CHROMOTE_CHROME=/usr/local/bin/chrome-wrapper
+ENV PAGEDOWN_CHROME=/usr/local/bin/chrome-wrapper
 
 # Install AWS CLI v2
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
@@ -182,4 +190,10 @@ WORKDIR /root
 # (calling it here made every ECS task exit 1 with "'run_app' is not an exported
 # object from 'namespace:EJAM'"). ejamapp(isPublic=...) is supported and its
 # options= list is passed to shinyApp() for host/port.
-CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
+CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = FALSE, options = list(host = '0.0.0.0', port = 2000))"]
+
+# NOTE on isPublic: the DEV/staging server runs the FULL (private) app
+# (isPublic = FALSE) so RC testing exercises all features. PRODUCTION
+# (prod-deploy) runs isPublic = TRUE (the streamlined public app most users
+# see). Confirm which mode you want each time you deploy here -- see the
+# reminder in .github/workflows/deploy-dev.yaml.
