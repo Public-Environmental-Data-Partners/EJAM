@@ -102,11 +102,11 @@
 
 
 <dl><dt id="arg-variables">variables<a class="anchor" aria-label="anchor" href="#arg-variables"></a></dt>
-<dd><p>Vector of variables - see <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html" class="external-link">tidycensus::get_acs()</a></code></p></dd>
+<dd><p>Vector of variables - see <code><a href="https://rdrr.io/pkg/tidycensus/man/get_acs.html" class="external-link">tidycensus::get_acs()</a></code></p></dd>
 
 
 <dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
-<dd><p>see <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html" class="external-link">tidycensus::get_acs()</a></code></p>
+<dd><p>see <code><a href="https://rdrr.io/pkg/tidycensus/man/get_acs.html" class="external-link">tidycensus::get_acs()</a></code></p>
 <p>EJSCREEN-relevant key tables are listed in the details section here.</p></dd>
 
 
@@ -116,7 +116,7 @@ Tries to use the most recent available if not specified.</p></dd>
 
 
 <dt id="arg-cache-table">cache_table<a class="anchor" aria-label="anchor" href="#arg-cache-table"></a></dt>
-<dd><p>see <code><a href="https://walker-data.com/tidycensus/reference/get_acs.html" class="external-link">tidycensus::get_acs()</a></code></p></dd>
+<dd><p>see <code><a href="https://rdrr.io/pkg/tidycensus/man/get_acs.html" class="external-link">tidycensus::get_acs()</a></code></p></dd>
 
 
 <dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
@@ -259,7 +259,7 @@ then restart R. See <a href="https://walker-data.com/tidycensus/" class="externa
 <span></span>
 <span><span class="co">## ACS tables and variables most relevant to EJSCREEN</span></span>
 <span></span>
-<span><span class="va">acsinfo</span> <span class="op">&lt;-</span> <span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://walker-data.com/tidycensus/reference/load_variables.html" class="external-link">load_variables</a></span><span class="op">(</span><span class="fu"><a href="acs_endyear.html">acs_endyear</a></span><span class="op">(</span>guess_census_has_published <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="st">"acs5"</span><span class="op">)</span></span>
+<span><span class="va">acsinfo</span> <span class="op">&lt;-</span> <span class="fu">tidycensus</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tidycensus/man/load_variables.html" class="external-link">load_variables</a></span><span class="op">(</span><span class="fu"><a href="acs_endyear.html">acs_endyear</a></span><span class="op">(</span>guess_census_has_published <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="st">"acs5"</span><span class="op">)</span></span>
 <span><span class="co"># or x = EJAM:::acs_table_info()</span></span>
 <span><span class="va">ejscreentables</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">tables_ejscreen_acs</span><span class="op">)</span></span>
 <span></span>

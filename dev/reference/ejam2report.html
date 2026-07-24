@@ -95,10 +95,13 @@
 <span>    `Breakdown by Sex` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pctmale"</span>, <span class="st">"pctfemale"</span><span class="op">)</span>, Health <span class="op">=</span> <span class="va">names_health</span>, Age <span class="op">=</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pctunder5"</span>, <span class="st">"pctunder18"</span>, <span class="st">"pctover64"</span><span class="op">)</span>, Community <span class="op">=</span></span>
 <span>    <span class="va">names_community</span><span class="op">[</span><span class="op">!</span><span class="op">(</span><span class="va">names_community</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pctmale"</span>, <span class="st">"pctfemale"</span>,</span>
-<span>    <span class="st">"pctownedunits_dupe"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, Poverty <span class="op">=</span> <span class="va">names_d_extra</span>, `Features and Location Information`</span>
-<span>    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_e_other</span>, <span class="va">names_sitesinarea</span>, <span class="va">names_featuresinarea</span>, </span>
-<span>     <span class="va">names_flag</span><span class="op">)</span>,</span>
-<span>    Climate <span class="op">=</span> <span class="va">names_climate</span>, `Critical Services` <span class="op">=</span> <span class="va">names_criticalservice</span>, Other <span class="op">=</span></span>
+<span>    <span class="st">"pctownedunits_dupe"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, Poverty <span class="op">=</span> <span class="va">names_d_extra</span>, Climate <span class="op">=</span> <span class="va">names_climate</span>,</span>
+<span>    `Counts of Features and Overlap with Area Types` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">names_featuresinarea</span>, </span>
+<span>    </span>
+<span>    <span class="va">names_flag</span><span class="op">)</span>, `Critical Services` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"yesno_houseburden"</span>, <span class="st">"yesno_fooddesert"</span>,</span>
+<span>    <span class="st">"yesno_transdis"</span>, <span class="st">"pctnobroadband"</span>, <span class="st">"pctnohealthinsurance"</span><span class="op">)</span>, `Facility Counts` <span class="op">=</span></span>
+<span>    <span class="va">names_sitesinarea</span>, `Analyzed Sites` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"distance_min_avgperson"</span>, <span class="st">"distance_min"</span>,</span>
+<span>    <span class="st">"sitecount_unique"</span>, <span class="st">"sitecount_avg"</span>, <span class="st">"sitecount_max"</span><span class="op">)</span>, `Other Totals` <span class="op">=</span></span>
 <span>    <span class="va">names_d_other_count</span><span class="op">)</span>,</span>
 <span>  extratable_hide_missing_rows_for <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">extratable_list_of_sections</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  footer_version_number <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -263,6 +266,17 @@ A number N is shown as "Site N"; text is shown as-is. Ignored for a multisite re
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>URL of temp file or object depending on return_html,
 and has side effect of launching browser to view it depending on return_html</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The report also includes rows showing what percent of the analyzed residents
+have each type of feature (school, hospital, place of worship) or area type
+(Tribal, nonattainment, impaired waters, CEJST/IRA disadvantaged, etc.)
+in (or overlapping) their blockgroup, with ratios to the US and State averages
+(see <code><a href="ejam2areafeatures.html">ejam2areafeatures()</a></code>). For a multisite report those come from
+<code>ejamitout$results_summarized$flagged_areas</code>; for a 1-site report they are
+calculated for just that site. The rows are omitted if that information
+is unavailable (e.g., for outputs saved by older EJAM versions).</p>
     </div>
 
     <div class="section level2">

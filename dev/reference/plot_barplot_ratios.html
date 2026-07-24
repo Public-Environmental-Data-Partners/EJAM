@@ -82,7 +82,8 @@
 <span>  main <span class="op">=</span> <span class="st">"Residential Populations at the Analyzed Locations Compared to US Overall"</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="st">"Ratio vs. Average"</span>,</span>
 <span>  caption <span class="op">=</span></span>
-<span>    <span class="st">"NH = \"Non-Hispanic\"\nNHA = \"Non-Hispanic Alone\" (alone = single race)"</span></span>
+<span>    <span class="st">"NH = \"Non-Hispanic\"\nNHA = \"Non-Hispanic Alone\" (alone = single race)"</span>,</span>
+<span>  vs <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -114,6 +115,12 @@ or if using state ratios, include the word "State" to have it try to infer what 
 
 <dt id="arg-caption">caption<a class="anchor" aria-label="anchor" href="#arg-caption"></a></dt>
 <dd><p>text for a key defining some terms that are abbreviations</p></dd>
+
+
+<dt id="arg-vs">vs<a class="anchor" aria-label="anchor" href="#arg-vs"></a></dt>
+<dd><p>optional, "us" or "state" - what the ratios are compared against, which
+controls the legend text. NULL (the default) infers it from whether the word
+"State" appears in main, the back-compatible behavior.</p></dd>
 
 </dl></div>
     <div class="section level2">

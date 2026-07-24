@@ -81,7 +81,10 @@
 <span>  extratable_title_top_row <span class="op">=</span> <span class="st">"ADDITIONAL INFORMATION"</span>,</span>
 <span>  list_of_sections <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  extratable_show_ratios_in_report <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  hide_missing_rows_for <span class="op">=</span> <span class="va">names_d_language</span></span>
+<span>  hide_missing_rows_for <span class="op">=</span> <span class="va">names_d_language</span>,</span>
+<span>  flagged_areas_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  flagged_areas_section_title <span class="op">=</span></span>
+<span>    <span class="st">"% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -115,6 +118,19 @@ and each vector is the vector of colnames of output_df that are indicators to sh
 <dt id="arg-hide-missing-rows-for">hide_missing_rows_for<a class="anchor" aria-label="anchor" href="#arg-hide-missing-rows-for"></a></dt>
 <dd><p>only for the indicators named in this vector,
 leave out rows in table where raw value is NA, as with many of names_d_language</p></dd>
+
+
+<dt id="arg-flagged-areas-df">flagged_areas_df<a class="anchor" aria-label="anchor" href="#arg-flagged-areas-df"></a></dt>
+<dd><p>optional data.frame like ejamit()$results_summarized$flagged_areas
+(see <code>calc_flagged_areas()</code>). If provided, a section of rows showing the percent of
+analyzed residents with each feature or area type in their blockgroup (with ratios
+to the US and State averages) is inserted just after the
+"Climate" section (or after "Poverty" if there is no Climate section).
+NULL (default) omits that section.</p></dd>
+
+
+<dt id="arg-flagged-areas-section-title">flagged_areas_section_title<a class="anchor" aria-label="anchor" href="#arg-flagged-areas-section-title"></a></dt>
+<dd><p>title text for the flagged-areas section subheader row</p></dd>
 
 </dl></div>
     <div class="section level2">

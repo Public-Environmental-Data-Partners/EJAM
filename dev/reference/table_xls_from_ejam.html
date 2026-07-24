@@ -114,6 +114,7 @@
 <span>  custom_tab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  custom_tab_name <span class="op">=</span> <span class="st">"other"</span>,</span>
 <span>  ejscreen_ejam_caveat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  flagged_areas_add <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -289,6 +290,12 @@ second color is for those &gt;=2d cutpoint but &lt;3d, etc.</p></dd>
 
 <dt id="arg-ejscreen-ejam-caveat">ejscreen_ejam_caveat<a class="anchor" aria-label="anchor" href="#arg-ejscreen-ejam-caveat"></a></dt>
 <dd><p>optional text if you want to change this in the notes tab</p></dd>
+
+
+<dt id="arg-flagged-areas-add">flagged_areas_add<a class="anchor" aria-label="anchor" href="#arg-flagged-areas-add"></a></dt>
+<dd><p>logical, whether to include an "Area Features" tab with the
+ejamitout$results_summarized$flagged_areas table (percent of analyzed residents with
+each feature or area type in their blockgroup, vs the US and State averages)</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

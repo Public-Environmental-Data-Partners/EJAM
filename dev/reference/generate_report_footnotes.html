@@ -75,7 +75,11 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_report_footnotes</span><span class="op">(</span>diesel_caveat <span class="op">=</span> <span class="cn">NULL</span>, show_diesel_caveat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_report_footnotes</span><span class="op">(</span></span>
+<span>  diesel_caveat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_diesel_caveat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  areafeatures_note <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -89,6 +93,14 @@
 <dt id="arg-show-diesel-caveat">show_diesel_caveat<a class="anchor" aria-label="anchor" href="#arg-show-diesel-caveat"></a></dt>
 <dd><p>logical, default FALSE so the diesel particulate-matter
 caveat is suppressed in reports; set TRUE to include it in the footnotes.</p></dd>
+
+
+<dt id="arg-areafeatures-note">areafeatures_note<a class="anchor" aria-label="anchor" href="#arg-areafeatures-note"></a></dt>
+<dd><p>text explaining the feature/facility count rows
+(estimated totals, prorated by the share of each blockgroup's residents
+inside the analyzed area - see issue #410) and the "% of These Residents..."
+rows and their US/State ratios -
+see source code for default. Set to "" to omit.</p></dd>
 
 </dl></div>
     <div class="section level2">

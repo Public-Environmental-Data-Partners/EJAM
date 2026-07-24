@@ -103,6 +103,21 @@ AT LEAST ONE OR MORE of that type of site in
 the blockgroup they live in.</p></li>
 <li><p>The "pctno" or % indicators are summarized as what % of the
 residents analyzed lack the critical service.</p></li>
+</ul><p>The columns of the table are:</p><ul><li><p><code>Indicator</code> - plain-English name of the indicator</p></li>
+<li><p><code>Percent_of_these_Sites</code> - % of the analyzed sites where the indicator is
+present/flagged (or the average of the site-level percentages, for the two % indicators)</p></li>
+<li><p><code>Percent_of_these_People</code> - % of the analyzed residents living in a
+blockgroup with the feature or overlap</p></li>
+<li><p><code>Percent_of_all_People_Nationwide</code> - the same % but among all US residents</p></li>
+<li><p><code>ratio</code> - Percent_of_these_People / Percent_of_all_People_Nationwide</p></li>
+<li><p><code>Percent_of_all_People_Statewide</code> - the same % but among all residents of the
+state(s) analyzed. Where sites span multiple states, this is the average of
+the state-level percentages weighted by the analyzed population in each state
+(i.e., the average among all the residents at these sites, using the statewide
+value in each resident's state), analogous to how ratios to State averages
+are calculated for other indicators in <code>results_overall</code>.</p></li>
+<li><p><code>ratio_to_state_avg</code> - Percent_of_these_People / Percent_of_all_People_Statewide</p></li>
+<li><p><code>rname</code> - the variable name of the indicator, like "num_school" or "yesno_tribal"</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
