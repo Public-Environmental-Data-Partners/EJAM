@@ -1,4 +1,14 @@
-# EJAM (development version)
+# EJAM 3.2022.2 (August 2026)
+
+State versions of the flagged-areas stats (now shown in the community report),
+a much faster Site-by-Site table in the web app, faster and more reliable
+report rendering, and fixes to report generation and the EJScreen/API
+integration.
+This is a patch release for the v3.YYYY.x annual-vintage line
+(v3.2022.x, v3.2023.x, v3.2024.x).
+Like v3.2022.1, this is a code-and-docs patch that reuses the already-published
+`ejamdata` data release for this vintage (`v3.2022.0`), with no change to the
+packaged ACS or environmental data.
 
 ## New Features
 
@@ -68,16 +78,6 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
   (was "Count of..."), "Count of Households in Internet Subscription Universe"
   (dropped the "B28002" jargon), and "Count of Residents Who Are Not People of
   Color" (was "Non-POC resident count").
-
-# EJAM 3.2022.2 (unreleased)
-
-Faster and more reliable report rendering, and
-fixes to report generation and the EJScreen/API integration.
-This is a patch release for the v3.YYYY.x annual-vintage line 
-(v3.2022.x, v3.2023.x, v3.2024.x). 
-Like v3.2022.1, this is a code-and-docs patch that reuses the already-published
-`ejamdata` data release for this vintage (`v3.2022.0`), with no change to the
-packaged ACS or environmental data.
 
 ## Bug Fixes
 
