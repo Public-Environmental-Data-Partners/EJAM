@@ -1,35 +1,127 @@
 
-
 #' Get URL, or just owner/reponame, for the package code, datasets, or documentation website
-#' as specified in the DESCRIPTION file or by redirects from aliases
+#' as specified in the DESCRIPTION file or by redirects or aliases
 #'
-#' @param type Which type of URL is needed? Can be "data", "code", "docs", or "api".
+#' @details
+#' This function reads from the DESCRIPTION file, but below is a
+#' snapshot of URLs that were in the DESCRIPTION file at the time of writing (7/2026):
 #'
-#'   - "code" is for the github.com repository of R package code
-#'   - "data" is for the github.com repository of datasets
-#'   - "docs" is for the documentation website
-#'   - "api" is for the EJAM REST API base URL (DESCRIPTION field `ejam_api_url`,
-#'     falling back to the built-in production API base if that field is missing).
-#'     Always a full URL. This is the single source of the API endpoint: all
-#'     functions that call or build EJAM API URLs read it from here, so the
-#'     endpoint can be changed in one place (edit `ejam_api_url` in DESCRIPTION).
-#'     A friendlier branded alias, `https://api.ejanalysis.com` (also
-#'     `https://ejamapi.ejanalysis.com`), proxies the same API via Cloudflare and
-#'     may be used as `ejam_api_url`. (The `ejam_api_repo` field names the API
-#'     source-code repo and is informational only -- it is not the API endpoint.)
+#' ```
+#' url_api: https://api.ejanalysis.com
+#' url_api_alias: https://ejamapi.ejanalysis.com
+#' url_api_redirect: https://ejanalysis.com/api
+#' url_api_direct: https://ejamapi-84652557241.us-central1.run.app
+#'
+#' url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
+#' url_apirepo_alias: https://apirepo.ejanalysis.com
+#' url_apirepo_redirect: https://ejanalysis.com/apirepo
+#'
+#' url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
+#' url_apidocs_alias: https://apidocs.ejanalysis.com
+#' url_apidocs_redirect: https://ejanalysis.com/apidocs
+#'
+#' url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
+#'
+#' url_ejamapp: https://ejam.publicenvirodata.org
+#' url_ejamapp_alias: https://ejam.ejanalysis.com
+#' url_ejamapp_redirect: https://ejanalysis.com/ejamapp
+#'
+#' url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
+#' url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
+#' url_ejamapp_dev_redirect: https://ejanalysis.com/ejamdev
+#'
+#' url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
+#' url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
+#' url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
+#'
+#' url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
+#' url_ejamdocs_alias: https://ejamdocs.ejanalysis.com
+#' url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
+#'
+#' url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
+#' url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
+#' url_ejscreenapp_redirect: https://ejanalysis.com/ejscreenapp
+#'
+#' url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
+#' url_ejscreenrepo_alias: https://ejscreenrepo.ejanalysis.com
+#' url_ejscreenrepo_redirect: https://ejanalysis.com/ejscreenrepo
+#'
+#' url_ejscreendocs: https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html
+#' url_ejscreendocs_alias: https://ejscreendocs.ejanalysis.com
+#' url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
+#'
+#' url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
+#'
+#' url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
+#' url_ejamdata_alias: https://ejamdata.ejanalysis.com
+#' url_ejamdata_redirect: https://ejanalysis.com/ejamdata
+#' ```
+#'
+#' (`url_api_direct`, `url_apidocker`, and `url_ejscreendocs_old` are informational
+#' only -- they are stored in DESCRIPTION but are not `type` values this function accepts.)
+#'
+#' @param type Which type of URL is needed, such as
+#'   "docs", "app", "api", "code", or "data",
+#'   but more specifically, "ejamapp", "ejscreenapp", "ejamrepo", etc.
+#'
+#'   The basic type "xyz" is stored in the DESCRIPTION file field "url_xyz",
+#'   as listed below, but a URL also can be an alias or simple 301 redirect,
+#'   stored in the DESCRIPTION file field that has
+#'   "_alias" or "_redirect" as a suffix,
+#'   such as the "url_ejamdocs_alias" field in DESCRIPTION providing the URL for
+#'   type = "ejamdocs" and desc_or_alias = "alias".
+#'
+#' DOCUMENTATION SITES:
+#'
+#'   - "ejamdocs" or "docs" (`url_ejamdocs` field in the DESCRIPTION file contains this, and `URL` field has it in part) is for the EJAM (and EJScreen to some extent) documentation website.
+#'
+#'   - "ejscreendocs" (`url_ejscreendocs` field in the DESCRIPTION file) is for the EJScreen documentation website.
+#'
+#'   - "apidocs" (`url_apidocs` field in the DESCRIPTION file) is for the EJAM API documentation website.
+#'
+#' APP OR API SERVERS:
+#'
+#'   - "ejam" or "ejamapp" or "app" (`url_ejamapp` field in the DESCRIPTION file) is for the EJAM Shiny app.
+#'
+#'   - "ejamdev" or "ejamappdev" (`url_ejamapp_dev` field in the DESCRIPTION file) is for the EJAM Shiny app development server.
+#'
+#'   - "ejscreen" or "ejscreenapp" (`url_ejscreenapp` field in the DESCRIPTION file) is for the live EJScreen app.
+#'
+#'   - "api" (`url_api` field in the DESCRIPTION file) is for the EJAM REST API base URL.
+#'     Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
+#'     endpoint can be changed in one place (by editing `url_api` in DESCRIPTION).
+#'     It is the branded Cloudflare edge proxy `https://api.ejanalysis.com`
+#'     (equivalently `https://ejamapi.ejanalysis.com`, stored in `url_api_alias`),
+#'     which fronts the direct Cloud Run origin recorded informationally in `url_api_direct`.
+#'
+#' CODE OR DATA REPOSITORIES:
+#'
+#'   - "ejamrepo" or "code" (`url_ejamrepo` field in the DESCRIPTION file contains this, and `URL` field has it in part) is for the github.com repository of EJAM R package code.
+#'
+#'   - "ejscreenrepo" (`url_ejscreenrepo` field in the DESCRIPTION file) is for the EJScreen code repository.
+#'
+#'   - "apirepo" (`url_apirepo` field in the DESCRIPTION file) is for the API source-code
+#'     repository on github.com and is informational only -- it is not the API endpoint.
+#'
+#'   - "datarepo" or "data" (`url_ejamdata` and `ejam_data_repo` field in the DESCRIPTION file) is for the github.com repository of datasets.
 #'
 #' @param get_full_url logical, whether to return full URL or just the owner/reponame info.
-#'   Ignored if type = "docs" or "api", where a full URL is always returned.
+#'   Only meaningful for the github repository types ("code", "ejamrepo", "ejscreenrepo",
+#'   "apirepo", "data", "datarepo"); for all other types (and whenever
+#'   desc_or_alias is "alias" or "redirect") a full URL is always returned.
 #'
-#' @param desc_or_alias must be "desc" or "alias" to use info from DESCRIPTION file
-#'   or the URL based on a redirect from the aliases at
+#' @param desc_or_alias must be "desc" or "alias" or "redirect" to use info from DESCRIPTION file
+#'   or the URL based on a cloudflare alias or a simple 301 redirect such as
 #'
-#'   - https://ejanalysis.org/code
-#'   - https://ejanalysis.org/data
-#'   - https://ejanalysis.org/docs
+#'   - https://api.ejanalysis.com (if "desc", use the basic URL from the "url_xyz" field)
+#'   - https://ejamapi.ejanalysis.com (if "alias", use the cloudflare alias from the "url_xyz_alias" field, which can handle subpaths and query strings passed through to the final URL)
+#'   - https://ejanalysis.com/api (if "redirect", use the simple 301 redirect from the "url_xyz_redirect" field, which cannot handle subpaths or query strings)
 #'
-#' @param docs_version optional, only used when type = "docs". A docs subpath such as
-#'   "dev", "v3.2024.0", "v3.2023.0", or "v3.2022.0" to append to the canonical root
+#'   If the "_alias" or "_redirect" field is missing from DESCRIPTION, the basic
+#'   "url_xyz" field is used as a fallback.
+#'
+#' @param docs_version optional, only used when type = "docs" or "ejamdocs". A docs subpath such as
+#'   "dev", "v3.2024.0", or "v3.2022.2" to append to the canonical root
 #'   docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
 #'   `EJAM_DOCS_BASE_URL` is set (as the pkgdown CI workflow does while building a
 #'   given version), that value overrides everything so rendered Rd/Rmd links stay
@@ -38,8 +130,6 @@
 #' @param domain obsolete parameter - do not use
 #' @seealso [url_ejamapi()] [ejamapi()] [url_ejamapp()] -- the functions that build/call EJAM API
 #'   and app URLs; `url_package("api")` is their single source for the API base URL.
-#' @details
-#' See https://ejanalysis.com/ejam-code   for a list of URLs
 #'
 #' @examples
 #'  owner_repo <- url_package()
@@ -56,7 +146,12 @@
 #'
 #'  url_package("api")
 #'
+#'  url_package("ejamapp")
+#'  url_package("ejamapp", desc_or_alias = "alias")
+#'  url_package("ejscreenapp")
+#'
 #'  url_package("docs", desc_or_alias="alias")
+#'  url_package("docs", desc_or_alias="redirect")
 #'  url_package("code", desc_or_alias="alias")
 #'  url_package("data", desc_or_alias="alias")
 #'
@@ -66,9 +161,23 @@
 #' @keywords internal
 #'
 url_package <- function(
-    type = c('code', 'data', 'docs', 'api')[1],
+    type = c(
+
+      'code', 'ejamrepo', 'ejscreenrepo', 'apirepo',
+      'data', 'datarepo',
+
+      'docs', 'ejamdocs', 'ejscreendocs', 'apidocs',
+
+      'app',
+      'ejam',    'ejamapp',
+      'ejamdev', 'ejamappdev',
+      'ejscreen', 'ejscreenapp',
+
+      'api' # , 'apidocker'
+    )[1],
+
     get_full_url = FALSE,
-    desc_or_alias = c("desc", "alias")[1],
+    desc_or_alias = c("desc", "alias", "redirect")[1],
     docs_version = NULL,
     domain = NULL
 ) {
@@ -85,94 +194,89 @@ url_package <- function(
       }
     }
   }
-  stopifnot(length(type) == 1, type %in% c('code', 'data', 'docs', 'api'))
-  stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias"))
 
-  # "api": full EJAM REST API base URL from DESCRIPTION (ejam_api_url). Returned
-  # as-is (a full URL, like "docs"), so it bypasses the github owner/repo handling
-  # below. If the field is somehow missing, fall back to the built-in production API
-  # base -- NOT ejam_api_repo, which names the API source-code repo (a github URL),
-  # not an API endpoint.
-  if (type == "api") {
-    one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_api_url"))
-    if (length(one_url) == 0 || is.na(one_url) || !nzchar(one_url)) {
-      one_url <- "https://api.ejanalysis.com"
-    }
-    return(sub("/+$", "", one_url[1]))
-  }
-  if (desc_or_alias == "alias" && get_full_url == FALSE) {
+  # map each accepted type (and its synonyms) to the DESCRIPTION field that stores its URL
+  field_by_type <- c(
+    code = "url_ejamrepo", ejamrepo = "url_ejamrepo",
+    ejscreenrepo = "url_ejscreenrepo",
+    apirepo = "url_apirepo",
+    data = "url_ejamdata", datarepo = "url_ejamdata",
+    docs = "url_ejamdocs", ejamdocs = "url_ejamdocs",
+    ejscreendocs = "url_ejscreendocs",
+    apidocs = "url_apidocs",
+    app = "url_ejamapp", ejam = "url_ejamapp", ejamapp = "url_ejamapp",
+    ejamdev = "url_ejamapp_dev", ejamappdev = "url_ejamapp_dev",
+    ejscreen = "url_ejscreenapp", ejscreenapp = "url_ejscreenapp",
+    api = "url_api"
+  )
+  # github repositories are the only types where the owner/repo shorthand
+  # (get_full_url = FALSE) makes sense
+  repo_types <- c("code", "ejamrepo", "ejscreenrepo", "apirepo", "data", "datarepo")
+
+  stopifnot(length(type) == 1, type %in% names(field_by_type))
+  stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias", "redirect"))
+
+  if (desc_or_alias %in% c("alias", "redirect") && get_full_url == FALSE) {
     if (!missing(get_full_url)) {
-      warning("cannot use desc_or_alias='alias' if get_full_url=FALSE, so just using get_full_url=TRUE ")
+      warning("cannot use desc_or_alias='", desc_or_alias,
+              "' if get_full_url=FALSE, so just using get_full_url=TRUE ")
     }
     get_full_url <- TRUE
   }
-  if (type == "docs" && get_full_url == FALSE) {
+  if (!(type %in% repo_types) && get_full_url == FALSE) {
     if (!missing(get_full_url)) {
-      warning("ignoring get_full_url=FALSE since that would not make sense -- we can only return a full URL for the documentation website since it is not a github repository")
+      warning("ignoring get_full_url=FALSE since that would not make sense -- ",
+              "the owner/repo shorthand only applies to github repositories, ",
+              "so returning a full URL for type = '", type, "'")
     }
     get_full_url <- TRUE
   }
 
-  if (desc_or_alias == "alias") {
-
-    # use redirects
-
-    get_full_url <- TRUE # already handled but just in case
-    if (type == "data") {
-      one_url <- "https://ejanalysis.org/data"
-    }
-    if (type == "code") {
-      one_url <- "https://ejanalysis.org/code"
-    }
-    if (type == "docs") {
-      one_url <- "https://ejanalysis.org/docs"
-    }
-
-  } else {
-
-    # look at DESCRIPTION file
-
-    if (type == "data") {
-      one_url <- as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("ejam_data_repo"))
-      one_url <- paste0("https://github.com/", one_url)
-      domain <- "github.com"
-    }
-    if (type == "code") {
-      domain <- "github.com"
-    }
-    if (type == "docs") {
-      domain <- "github.io"
-    }
-    if (type %in% c("code", "docs")) {
-      # split out each URL from that data field that stored more than one URL
-      both_urls <- desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("URL")
-      both_urls <- as.vector(unlist(strsplit(gsub(" |\n", "", both_urls), ",")))
-      one_url <- grep(domain, both_urls, value = T)
-    }
+  url_desc <- function(field) {
+    as.vector(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get(field))
+  }
+  is_missing_value <- function(x) {
+    length(x) == 0 || is.na(x[1]) || !nzchar(trimws(x[1]))
   }
 
-  # Versioned docs support (type = "docs", desc path only). Within a pkgdown CI build,
+  suffix <- switch(desc_or_alias, desc = "", alias = "_alias", redirect = "_redirect")
+  one_url <- url_desc(paste0(field_by_type[[type]], suffix))
+  if (is_missing_value(one_url)) {
+    # fall back to the basic "url_xyz" field if the "_alias"/"_redirect" field is missing,
+    # and for the API fall back further to the built-in production API base
+    one_url <- url_desc(field_by_type[[type]])
+    if (is_missing_value(one_url)) {
+      if (type == "api") {
+        one_url <- "https://api.ejanalysis.com"
+      } else {
+        stop("DESCRIPTION file of the EJAM package is missing the field '",
+             field_by_type[[type]], "' needed for url_package(type='", type, "')")
+      }
+    }
+  }
+  one_url <- sub("/+$", "", trimws(one_url[1]))
+
+  # Versioned docs support (EJAM docs types, desc path only). Within a pkgdown CI build,
   # EJAM_DOCS_BASE_URL overrides the docs base so rendered Rd/Rmd links stay inside the
   # version being built. Otherwise docs_version (e.g. "dev", "v3.2024.0") appends a
   # subpath to the canonical root docs URL. Alias shortcuts always point to root only.
-  if (type == "docs" && desc_or_alias == "desc") {
+  if (type %in% c("docs", "ejamdocs") && desc_or_alias == "desc") {
     env_base <- Sys.getenv("EJAM_DOCS_BASE_URL")
     if (nzchar(env_base)) {
       return(sub("/+$", "", env_base))
     }
-    base <- sub("/+$", "", one_url[1])
     if (!is.null(docs_version) && nzchar(docs_version)) {
-      base <- paste0(base, "/", sub("^/+|/+$", "", docs_version))
+      one_url <- paste0(one_url, "/", sub("^/+|/+$", "", docs_version))
     }
-    return(base)
+    return(one_url)
   }
 
   if (get_full_url) {
     return(one_url)
   } else {
-    owner_slash_repo_or_just_docs_repo <- gsub(
-      paste0("(.*", domain, "/)(.*)"), "\\2", one_url)
-    return(owner_slash_repo_or_just_docs_repo)
+    # owner/repo shorthand for github repositories,
+    # e.g. "Public-Environmental-Data-Partners/EJAM"
+    return(sub("^https?://github\\.com/", "", one_url))
   }
 }
 ############################################################################# #

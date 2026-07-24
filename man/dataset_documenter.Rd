@@ -10,7 +10,8 @@ dataset_documenter(
   description = "",
   details = "",
   seealso = "",
-  saveinpackage = TRUE
+  saveinpackage = TRUE,
+  scriptname = paste0("datacreate_", varname, ".R")
 )
 }
 \arguments{
@@ -26,6 +27,12 @@ dataset_documenter(
 
 \item{saveinpackage}{if TRUE, puts quoted dataset name at end of file,
 and otherwise puts NULL at end of file}
+
+\item{scriptname}{name of the data-raw script that creates this dataset,
+used in the header comment of the documentation file. Defaults to
+\verb{datacreate_<varname>.R} (i.e., built from the varname); pass it
+explicitly when one script creates several datasets
+(e.g., datacreate_names_pct_as_fraction.R).}
 }
 \value{
 name of .R file where documentation was written

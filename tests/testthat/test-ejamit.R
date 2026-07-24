@@ -447,20 +447,17 @@ test_that("ejamit() still returns results_bysite with same EJAM Report column", 
     suppressMessages({
       # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
-      ## Compare column 1, the EJAM Report URLs. Each URL embeds the current package
-      ## version (version=X.Y.Z), which legitimately changes every release, so
-      ## normalize it before comparing -- otherwise this structural check breaks on
-      ## each version bump (the saved reference was built at an earlier version).
-      ## Likewise normalize the API base URL and the fileextension= parameter,
-      ## which legitimately changed (branded api.ejanalysis.com base URL, explicit
-      ## fileextension=pdf) without regenerating the stored reference: this check
-      ## is about the per-site query values (lat/lon/buffer/sitetype), while the
-      ## URL base and format are covered by the URL function tests.
+      ## Compare column 1, the EJAM Report URLs. The stored reference was regenerated
+      ## in #488, so it now matches current url_ejamapi() output exactly (branded
+      ## api.ejanalysis.com host, no version= tag, per-site sitenumber=, current
+      ## lat/lon formatting). The workarounds that were needed while the reference was
+      ## stale are therefore gone, and this is now a strict comparison -- which also
+      ## means it again covers sitenumber=, the host, and fileextension=.
+      ## The one thing still normalized is version=: url_ejamapi() omits it by default,
+      ## but if it is ever re-enabled it embeds the package version, which changes on
+      ## every release and would otherwise break this check at each version bump.
       norm_report_url <- function(x) {
-        x <- gsub("version=[0-9]+\\.[0-9]+\\.[0-9]+", "version=VER", x)
-        x <- gsub("https://[^/\"]+/report\\?", "https://HOST/report?", x)
-        x <- gsub("&fileextension=[[:alnum:]]+", "", x)
-        x
+        gsub("&version=[^&\"]*", "", x)
       }
       expect_equal(
         norm_report_url(as.vector(unlist(ejamitoutnow$results_bysite[,1]))),
