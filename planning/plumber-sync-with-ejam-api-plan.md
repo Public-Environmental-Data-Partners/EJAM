@@ -12,19 +12,50 @@ proposed code edit, *before* anyone deploys it.
 
 ---
 
+## 0. Status snapshot (updated 2026-07-24 — see also `planning/api-in-ejam-handoff-2026-07-24.md`)
+
+- **The mirror target is a moving file.** When this plan was drafted (2026-07-23) EJAM-API
+  `origin/main` was `8ca7869`; as of 2026-07-24 it is **`08dc3a7`**, which additionally merges
+  PR Public-Environmental-Data-Partners/EJAM-API#32: **`POST /query` pagination** —
+  `page`/`limit` params (max 500/page), a `{results, pagination}` envelope instead of a bare
+  list, and 400 on bad input (closes EJAM-API#37). Recent history of main:
+  `08dc3a7` (#32 query pagination) → `8ca7869` (#49 buffer defaults 0 for fips/shape) →
+  `0518bc9` (#51 Site-N label + normalize_sitenumber) → `6659786` (#48 zero-pop fail-safe).
+  **Re-export from `origin/main` at implementation time; never trust a stale local checkout.**
+- **Live API lags main.** A 2026-07-24 verification session found `api.ejanalysis.com`
+  byte-identical to main *as of `0518bc9`*; #49 and #32 merged after that and #48 was verified
+  NOT yet deployed. So the local mirror will be **ahead of prod and equal to main** — that is
+  the intent (mirror tracks the repo, not the deployment).
+- **Deployed EJAM pin is `EJAM_VERSION=v3.2022.1`**, so the merged `sitenumber_label` code in
+  rest_controller.r is formals-guarded and **dormant in prod** until the pin advances to a
+  release containing EJAM#470. Locally, running the mirror against the current EJAM
+  `development` (which has #470 merged) exercises the "Site N" path *today* — a concrete
+  benefit of this plan's local preview.
+- The map-popup residual flagged in earlier notes ("header says Site 5 but popup says Site 1")
+  is **verified resolved on `development`**: `sitenumber_label` threads through
+  `ejam2report()` → `ejam2map()`/`mapfastej()` → `popup_from_ejscreen()`.
+- **No worktrees** (standing preference): all work happens on branch `API-in-EJAM` in the main
+  checkout. Branch exists on origin.
+- Known draft-endpoint defects to address (or drop) when splitting out `draft/plumber.R`:
+  `/ejam2report` has a `future({})` bug (`out` assigned inside the future, never returned);
+  `/ejamit` shapefile path "not working yet"; `/get_blockpoints_in_shape` broken;
+  `/getblocksnearby` works for 1 point only. Which drafts ship at `/draft` vs get dropped is a
+  decision for Mark before implementation (§3 item 2).
+
 ## 1. What exists today (inventory)
 
-### EJAM-API repo (`../EJAM-API`, sync from **origin/main**, currently commit `8ca7869`)
+### EJAM-API repo (`../EJAM-API`, sync from **origin/main** — `08dc3a7` as of 2026-07-24)
 
-> Note: the local clone's `main` is 1 commit behind origin (missing `8ca7869`, PR
-> Public-Environmental-Data-Partners/EJAM-API#49, radius-0 defaults for FIPS/shape). Sync must
-> copy from `origin/main`, not the local checkout.
+> Note: sync must copy from `origin/main` after a fresh `git fetch`, never from the local
+> checkout, which has repeatedly been found stale. The endpoint description below reflects
+> `8ca7869`; `08dc3a7` additionally changes `POST /query` as described in §0.
 
 - `rest_controller.r` (597 lines) — the production API. Endpoints & features:
   - `cors` filter (CORS + OPTIONS preflight)
   - `GET /` → 302 redirect to `/__docs__/` (Swagger UI)
   - `POST /data` — analysis data as JSON (sites/shape/fips, geometries, scale, radius alias)
-  - `POST /query` — blockgroups filtered by attribute percentile cutoff
+  - `POST /query` — blockgroups filtered by attribute percentile cutoff (as of `08dc3a7`:
+    paginated — `page`/`limit` ≤ 500, `{results, pagination}` envelope, 400 on bad input)
   - `GET /report` — multisite-capable (comma-separated lat/lon/fips), pdf **and** html,
     per-method buffer defaults (3 for points, 0 for fips/shape), `radius` alias,
     `normalize_sitenumber()` (0/"overall"/N with strict 400 on junk), `sitenumber_label`
@@ -127,7 +158,8 @@ deploy. Because the file is byte-identical, `diff` between the two repos is alwa
 ## 3. Concrete changes in the EJAM PR
 
 1. **Add** `inst/plumber/ejam-api/rest_controller.r` + `assets/` copied from EJAM-API
-   `origin/main` (`8ca7869`), plus `SYNC.md` recording that SHA.
+   `origin/main` **at whatever SHA it is when implementation starts** (`08dc3a7` as of
+   2026-07-24 — re-fetch first), plus `SYNC.md` recording that SHA.
 2. **Create** `inst/plumber/draft/plumber.R` containing only the draft-only endpoints, the
    `api2rnulltf()` helper family, and the logger filter. Delete from it the now-redundant
    stale copies: old `GET /report`, disabled `/data` + `/assets` blocks, `handle_error()`,
@@ -193,7 +225,7 @@ request against the live API (`https://api.ejanalysis.com/...`):
 | FIPS radius-0 default (EJAM-API#49) | `GET /report?fips=10001` |
 | POST /report | JSON body with polygons |
 | Data endpoint | `POST /data` sites + geometries |
-| Query endpoint | `POST /query?attribute=pctlowinc&value=0.9` |
+| Query endpoint | `POST /query?attribute=pctlowinc&value=0.9` — expect `{results, pagination}` envelope; also try `page=2&limit=100` and a bad `value` (expect 400) |
 | Handoff round trip | `POST /handoff` → token → `GET /handoff/<token>` |
 | CORS preflight | `OPTIONS /handoff` returns the CORS headers |
 | Drafts intact | `GET /draft/echo?msg=hi`, `GET /draft/getblocksnearby?...`, `GET /draft/dataset` |
@@ -202,8 +234,8 @@ Plus `R CMD check` / the plumber test group in `test_ejam()`.
 
 ## 5. PR mechanics
 
-- Branch off `development` (suggest `plumber-sync-ejam-api`, worktree `../EJAM-plumber-sync`
-  optional), **draft** PR into `development`.
+- Branch: **`API-in-EJAM`** (already created off `development`, in the main checkout — no
+  worktrees). **Draft** PR into `development`.
 - Cross-repo refs written as `Public-Environmental-Data-Partners/EJAM-API#NN`.
 - Milestone: ask Mark (v3.2022.2 vs v4) — this is dev-tooling + inst/ files only, no exported
   behavior change to the package's R functions except `ejamapi_local()` internals.
