@@ -557,10 +557,55 @@ present</td>
 </table>
 </div>
 <div class="section level2">
+<h2 id="testing-against-a-local-or-draft-api">Testing against a local or draft API<a class="anchor" aria-label="anchor" href="#testing-against-a-local-or-draft-api"></a>
+</h2>
+<p>The app computes analysis results in-process via
+<code><a href="../reference/ejamit.html">ejamit()</a></code> – it does not call the EJAM REST API for analysis.
+Where the API base URL matters is everywhere the app or package
+<strong>builds URLs that point at the API</strong>: the per-site report
+links in results tables and map popups (built by
+<code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>), <code><a href="../reference/ejamapi.html">ejamapi()</a></code> calls, and the
+EJScreen-to-EJAM token handoff. All of those read the base URL from one
+place, <code>url_package("api")</code>, which normally comes from the
+<code>url_api</code> field of <code>DESCRIPTION</code> (the production
+API, <a href="https://api.ejanalysis.com" class="external-link uri">https://api.ejanalysis.com</a>).</p>
+<p>To test an app release candidate against a <strong>different
+API</strong> – most usefully the local API served by
+<code>EJAM:::ejamapi_local()</code>, which mirrors the latest EJAM-API
+code before it is deployed anywhere (see the <a href="dev-api.html">API
+article</a>) – override that one lookup. Precedence is:
+<code>options(ejam.api.baseurl=...)</code> first, then the environment
+variable <code>EJAM_API_BASEURL</code>, then
+<code>DESCRIPTION</code>.</p>
+<p><strong>Local app + local API</strong> (no infrastructure
+needed):</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">apiproc</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/ejamapi_local.html">ejamapi_local</a></span><span class="op">(</span><span class="op">)</span>               <span class="co"># local API at http://127.0.0.1:3035</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_API_BASEURL <span class="op">=</span> <span class="st">"http://127.0.0.1:3035"</span><span class="op">)</span></span>
+<span><span class="co"># or, equivalently: options(ejam.api.baseurl = "http://127.0.0.1:3035")</span></span>
+<span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/ejamapp.html">ejamapp</a></span><span class="op">(</span><span class="op">)</span>                                  <span class="co"># report links in tables/popups now</span></span>
+<span>                                                 <span class="co"># hit the local API, end to end</span></span>
+<span><span class="co"># when done:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.unsetenv</a></span><span class="op">(</span><span class="st">"EJAM_API_BASEURL"</span><span class="op">)</span></span>
+<span><span class="va">apiproc</span><span class="op">$</span><span class="fu">kill</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The same override works for one-off calls without the app, e.g.
+<code>ejamapi(fips = "10001", endpoint = "data")</code> or
+<code>url_ejamapi(lat = 34, lon = -118)</code> will target whatever base
+is set.</p>
+<p><strong>Deployed app (dev server) + draft API:</strong> the
+AWS-hosted dev app cannot reach a laptop’s localhost, so point its
+<code>EJAM_API_BASEURL</code> (an environment variable in the ECS task
+definition) at any reachable draft API deployment – e.g. a future
+apidev.ejanalysis.com staging service (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API/issues/47" class="external-link">EJAM-API#47</a>
+tracks setting one up), or a temporary Cloudflare tunnel exposing a
+locally-run API. Unsetting the variable (or omitting it) restores the
+production API from <code>DESCRIPTION</code>.</p>
+</div>
+<div class="section level2">
 <h2 id="teardown">Teardown<a class="anchor" aria-label="anchor" href="#teardown"></a>
 </h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="bu">cd</span> ejam-infra</span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="ex">terraform</span> destroy <span class="at">-var-file</span><span class="op">=</span>prod.tfvars <span class="at">-var</span><span class="op">=</span><span class="st">"aws_account_id=&lt;ACCOUNT_ID&gt;"</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="bu">cd</span> ejam-infra</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="ex">terraform</span> destroy <span class="at">-var-file</span><span class="op">=</span>prod.tfvars <span class="at">-var</span><span class="op">=</span><span class="st">"aws_account_id=&lt;ACCOUNT_ID&gt;"</span></span></code></pre></div>
 <p>The prod ALB has <strong>deletion protection</strong> enabled;
 disable it in the AWS Console first (EC2 → Load Balancers →
 <code>ejam-prod-alb</code> → Edit attributes → Deletion protection: off)

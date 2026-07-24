@@ -123,11 +123,14 @@ updated for the package, documentation, tests, and data-download helpers
 to work correctly.</p>
 <ul>
 <li><p>The full URL of the repository where the R package is stored must
-be recorded in the <code>URL</code> field of the
-<code>DESCRIPTION</code> file in the source package root.</p></li>
+be recorded in the standard <code>URL</code> field of the
+<code>DESCRIPTION</code> file in the source package root. The canonical
+URL used by <code><a href="../reference/url_package.html">url_package()</a></code> must also be stored in
+<code>Config/EJAM/url_ejamrepo</code>; its stable alias and simple
+redirect belong in <code>Config/EJAM/url_ejamrepo_alias</code> and
+<code>Config/EJAM/url_ejamrepo_redirect</code>.</p></li>
 <li><p>The full URL is currently <a href="https://github.com/Public-Environmental-Data-Partners/EJAM" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/EJAM</a>
-as found in the <code>DESCRIPTION</code> file. It can also be checked
-via
+as found in <code>Config/EJAM/url_ejamrepo</code>. It can be checked via
 <code>url_package(type = "code", get_full_url = TRUE)</code>.</p></li>
 <li><p>The <code>_pkgdown.yml</code> file in the root folder should also
 be updated with the new URL.</p></li>
@@ -192,8 +195,11 @@ of the GitHub repository storing large datasets<a class="anchor" aria-label="anc
 <ul>
 <li><p>The owner/name of the repository where external large datasets
 are stored must be recorded as the <code>ejam_data_repo</code> parameter
-in the <code>DESCRIPTION</code> file in the source package root. It can
-be checked via <code>url_package(type = "data")</code>.</p></li>
+in the <code>DESCRIPTION</code> file in the source package root. The
+full canonical URL used by <code><a href="../reference/url_package.html">url_package()</a></code> must be stored in
+<code>Config/EJAM/url_ejamdata</code>, with alias and redirect values in
+the corresponding <code>_alias</code> and <code>_redirect</code>
+fields.</p></li>
 <li><p>The full URL is currently <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>.
 It can be checked via
 <code>url_package(type = "data", get_full_url = TRUE)</code>.</p></li>
@@ -220,9 +226,13 @@ documentation is published<a class="anchor" aria-label="anchor" href="#documenta
 </h2>
 <ul>
 <li><p>The URL where package documentation is published must be recorded
-in the <code>URL</code> field of the <code>DESCRIPTION</code> file in
-the source package root. The website providing documentation for the R
-package is created via <code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code>, as explained in <a href="dev-update-documentation.html">updating
+in the standard <code>URL</code> field of the <code>DESCRIPTION</code>
+file in the source package root. The canonical URL used by
+<code><a href="../reference/url_package.html">url_package()</a></code> must also be stored in
+<code>Config/EJAM/url_ejamdocs</code>, with its alias and redirect in
+the corresponding <code>_alias</code> and <code>_redirect</code> fields.
+The website providing documentation for the R package is created via
+<code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code>, as explained in <a href="dev-update-documentation.html">updating
 documentation</a>.</p></li>
 <li><p>This URL at least through mid-2026 was associated with the same
 owner name as the R code repository, but the documentation can be
@@ -231,7 +241,9 @@ repository. If the documentation is published on GitHub Pages, the URL
 will look like <code>https://OWNER.github.io/REPONAME</code>;
 <code>OWNER</code> and <code>REPONAME</code> need to be updated if the
 documentation is moved. If the documentation is published on a different
-domain, update that URL in <code>DESCRIPTION</code>.</p></li>
+domain, update both the standard <code>URL</code> field and
+<code>Config/EJAM/url_ejamdocs</code> in
+<code>DESCRIPTION</code>.</p></li>
 <li><p>This URL can be checked via
 <code>url_package(type = "docs")</code>, which should return the full
 URL where documentation is published (currently <a href="https://public-environmental-data-partners.github.io/EJAM/dev" class="uri">https://public-environmental-data-partners.github.io/EJAM/dev</a>).</p></li>

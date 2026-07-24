@@ -126,33 +126,6 @@ package is designed to be extensible, so that updated data, new kinds of
 indicators, new types of analyses, and new types of reports can be added
 over time by a community of contributors.</p>
 <div class="section level4">
-<h4 id="api">API<a class="anchor" aria-label="anchor" href="#api"></a>
-</h4>
-<p>In 2025, when the original EJSCREEN API was taken offline by EPA, a
-non-EPA effort replaced it with a new API (“EJAM API”) that provides
-many of the original features. The new API became the tool through which
-EJSCREEN is able to provide a Community Report on a single location. It
-also allows the “EJSCREEN multisite tool” (aka EJAM’s web app) to show
-links within tables of results and map popups, to link to a report on
-each site, for example. Some parallel work on an API was also drafted in
-the plumber folder of the EJAM source package. A future, expanded API is
-likely to provide the following: - reports in pdf format (not just
-html), for better pagination when printing - better handling of polygons
-(ability to request a report on a large/complex polygon) - ability to
-obtain a multisite summary report (not just a 1-site report) (via the
-sitenumber parameter) - allowing the API to use most or all of the same
-parameters as the functions <code><a href="../reference/ejamit.html">ejamit()</a></code> and
-<code><a href="../reference/ejam2report.html">ejam2report()</a></code>, providing more features and flexibility in
-customizing reports. - data (an easy way to obtain subsets of data at
-the block or blockgroup level, for example, via an assets) -
-enhancements and/or fixes as noted in <a href="https://github.com/edgi-govdata-archiving/EJAM-API/issues" class="external-link">github
-issues for the EJAM-API repository</a> - access to services such as fast
-identification of nearby blocks or other points (via
-<code><a href="../reference/getblocksnearby.html">getblocksnearby()</a></code> <code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code>
-or <code><a href="../reference/get_blockpoints_in_shape.html">get_blockpoints_in_shape()</a></code>) - summarization (aggregation
-over blocks or blockgroups), maybe for user-provided indicators</p>
-</div>
-<div class="section level4">
 <h4 id="user-specified-indicators">User-specified Indicators<a class="anchor" aria-label="anchor" href="#user-specified-indicators"></a>
 </h4>
 <p>EJAM in the future will also be able to analyze, aggregate, and

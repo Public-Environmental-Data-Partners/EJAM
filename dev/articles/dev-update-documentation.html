@@ -441,14 +441,17 @@ read information from the <code>.R</code> files in the R folder, from
 <code>man/</code>; <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> creates HTML files for GitHub
 Pages.</p></li>
 <li><p>The URL where documentation is published at any given time should
-be recorded in the <code>URL</code> field of the
-<code>DESCRIPTION</code> file in the source package root. That URL can
-be read with <code>EJAM::url_package("docs")</code>, which currently
-returns <a href="https://public-environmental-data-partners.github.io/EJAM/dev" class="uri">https://public-environmental-data-partners.github.io/EJAM/dev</a>.
-Prior to mid-2025, documentation web pages had been on GitHub Pages at
-URLs related to the <code>USEPA/EJAM</code> and
-<code>USEPA/EJAM-open</code> repositories, but those pages may now be
-archived, unpublished, or otherwise obsolete.</p></li>
+be recorded in the standard <code>URL</code> field of the
+<code>DESCRIPTION</code> file in the source package root and in
+<code>Config/EJAM/url_ejamdocs</code>, which is the field read by
+<code>EJAM::url_package("docs")</code>. The helper currently returns <a href="https://public-environmental-data-partners.github.io/EJAM/dev" class="uri">https://public-environmental-data-partners.github.io/EJAM/dev</a>.
+Store stable alias and redirect URLs in
+<code>Config/EJAM/url_ejamdocs_alias</code> and
+<code>Config/EJAM/url_ejamdocs_redirect</code>. Prior to mid-2025,
+documentation web pages had been on GitHub Pages at URLs related to the
+<code>USEPA/EJAM</code> and <code>USEPA/EJAM-open</code> repositories,
+but those pages may now be archived, unpublished, or otherwise
+obsolete.</p></li>
 </ul>
 </div>
 </div>

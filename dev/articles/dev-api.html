@@ -191,6 +191,35 @@ length can be sent via a <code>POST /report</code> request. See the
 parameter notes in the <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link">EJAM-API
 README</a>.</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="running-the-api-locally">Running the API locally<a class="anchor" aria-label="anchor" href="#running-the-api-locally"></a>
+</h2>
+<p>The EJAM package ships a <strong>verbatim mirror</strong> of the
+deployed API’s code (<code>inst/plumber/ejam-api/</code>, kept in sync
+with the EJAM-API repo – see the <code>SYNC.md</code> there), plus
+draft/experimental endpoints that exist only in this package
+(<code>inst/plumber/draft/</code>). Since the EJAM-API has no staging
+server, this is the way to preview how the API will behave – including
+after a proposed EJAM-API code change, before anyone deploys it:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">apiproc</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/ejamapi_local.html">ejamapi_local</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># background server; browse http://127.0.0.1:3035/__docs__/</span></span>
+<span><span class="co"># production paths served locally: /report, /data, /query, /handoff, /assets</span></span>
+<span><span class="co"># draft-only endpoints mounted at:  /draft/echo, /draft/ejamit, /draft/report2, ...</span></span>
+<span><span class="va">apiproc</span><span class="op">$</span><span class="fu">kill</span><span class="op">(</span><span class="op">)</span>                     <span class="co"># stop it when done</span></span></code></pre></div>
+<p>To propose an EJAM-API change: edit the mirror copy, test it via
+<code><a href="../reference/ejamapi_local.html">ejamapi_local()</a></code>, then submit the identical diff as a PR to
+the EJAM-API repo and re-sync the mirror after it merges. See
+<code>inst/plumber/try_the_api.R</code> for worked examples.</p>
+<p>To point the <strong>package and web app at that local API</strong>
+(so report links in the app’s tables and map popups,
+<code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>, and <code><a href="../reference/ejamapi.html">ejamapi()</a></code> all use it
+instead of the production API), set
+<code>EJAM_API_BASEURL=http://127.0.0.1:3035</code> (or
+<code>options(ejam.api.baseurl=...)</code>) – one override honored by
+<code>url_package("api")</code>, the single source of the API base URL.
+Details and the deployed-app variant are in the <a href="dev-deployment.html">deployment article</a> under “Testing against
+a local or draft API”.</p>
 <p>For anything not covered here, the <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link">EJAM-API
 README</a> is the source of truth, and <code><a href="../reference/ejamapi.html">?ejamapi</a></code> /
 <code><a href="../reference/url_ejamapi.html">?url_ejamapi</a></code> document the R interface.</p>

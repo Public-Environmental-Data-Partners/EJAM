@@ -155,7 +155,8 @@ or all blockgroups in specified County fips.</p></dd>
 
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
 <dd><p>base API URL without the endpoint path. Defaults to <code>url_package("api")</code>,
-the single source of the API endpoint (<code><a href="url_package.html">url_package()</a></code> reads from the DESCRIPTION file).
+the single source of the API endpoint (<code><a href="url_package.html">url_package()</a></code> reads the
+<code>Config/EJAM/url_api</code> field from DESCRIPTION).
 Pass a different value only to target another API (e.g. a staging server).</p></dd>
 
 
