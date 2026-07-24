@@ -43,7 +43,7 @@ url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
 url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
 url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
 url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
-url_ejamdocs_alias: https://ejamdocs.ejanalysis.com
+url_ejamdocs_alias: https://docs.ejanalysis.com
 url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
 url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
 url_ejscreenapp_alias: https://ejscreen.ejanalysis.com

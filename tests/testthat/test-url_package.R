@@ -27,9 +27,9 @@ testthat::test_that("url_package docs gives full URL", {
 
 
 testthat::test_that("url_package docs alias gives full URL", {
-  expect_match(
+  expect_identical(
     url_package("docs", get_full_url = TRUE, desc_or_alias = "alias"),
-    "^https://"
+    "https://docs.ejanalysis.com"
   )
 })
 testthat::test_that("url_package code alias gives full URL", {
@@ -127,10 +127,14 @@ testthat::test_that("url_package repo types give owner/repo shorthand by default
 })
 
 testthat::test_that("url_package alias and redirect variants return full URLs", {
-  for (ty in c("code", "data", "docs", "ejamapp", "ejscreenapp", "api")) {
+  for (ty in c("code", "data", "docs", "apidocs", "ejamapp", "ejscreenapp", "api")) {
     expect_match(url_package(ty, desc_or_alias = "alias"), "^https://", info = ty)
     expect_match(url_package(ty, desc_or_alias = "redirect"), "^https://", info = ty)
   }
+  expect_identical(
+    url_package("apidocs", desc_or_alias = "alias"),
+    "https://apidocs.ejanalysis.com"
+  )
   expect_identical(url_package("api", desc_or_alias = "redirect"), "https://ejanalysis.com/api")
 })
 
@@ -152,6 +156,7 @@ testthat::test_that("url_package gives useful errors for invalid types", {
   expect_match(type_error, '"api". See ?url_package.', fixed = TRUE)
 
   expect_error(url_package("apidocker")) # informational field, not an accepted type
+  expect_error(url_package("apidocs_alias")) # select with desc_or_alias = "alias"
   expect_error(
     url_package(c("docs", "api")),
     "`type` must be one of:",
