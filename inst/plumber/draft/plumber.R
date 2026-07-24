@@ -116,8 +116,13 @@ function(fname = "blockgroupstats", attachment = "false", res) {
     data(list = itemname, package = "EJAM", envir = env)
     out <- get(itemname, envir = env)
   } else {
-    # .arrow datasets (downloaded on demand); dataload_dynamic() loads into globalenv
-    dataload_dynamic(itemname, silent = TRUE)
+    # .arrow datasets (downloaded on demand); dataload_dynamic() loads into globalenv.
+    # It can throw on an unknown name or a failed download -- treat that as
+    # not-found rather than letting the endpoint 500.
+    tryCatch(
+      dataload_dynamic(itemname, silent = TRUE),
+      error = function(e) NULL, warning = function(w) NULL
+    )
     if (exists(itemname, envir = globalenv())) {
       out <- get(itemname, envir = globalenv())
     }

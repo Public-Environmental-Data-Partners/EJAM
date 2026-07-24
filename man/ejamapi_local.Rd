@@ -31,7 +31,7 @@ mounting the /draft endpoints (a pure preview of the deployed API).}
 
 \item{quiet}{optional, set to TRUE to reduce info printed to console}
 
-\item{launch_browser}{optional, set FALSE to not open /\strong{docs}/ in a browser}
+\item{launch_browser}{optional, set FALSE to not open \verb{/__docs__/} in a browser}
 }
 \value{
 Invisibly, the \code{\link[callr:r_bg]{callr::r_bg()}} process handle for the background

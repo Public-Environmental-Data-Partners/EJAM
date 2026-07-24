@@ -36,7 +36,7 @@
 #' @param host optional, localhost IP
 #' @param port optional, a port number
 #' @param quiet optional, set to TRUE to reduce info printed to console
-#' @param launch_browser optional, set FALSE to not open /__docs__/ in a browser
+#' @param launch_browser optional, set FALSE to not open `/__docs__/` in a browser
 #'
 #' @examples
 #' \dontrun{

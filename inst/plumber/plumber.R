@@ -26,7 +26,7 @@ function(pr) {
   find_plumber_file <- function(relpath) {
     candidates <- c(
       file.path("inst", "plumber", relpath),        # running from EJAM source pkg root
-      file.path("..", relpath),                     # cwd is inst/plumber itself
+      relpath,                                      # cwd is inst/plumber itself
       system.file(file.path("plumber", relpath), package = "EJAM") # installed (or load_all)
     )
     for (f in candidates) {

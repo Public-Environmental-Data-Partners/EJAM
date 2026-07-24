@@ -293,7 +293,7 @@ Plus `R CMD check` / the plumber test group in `test_ejam()`.
   `EJAM_API_BASEURL` / `options(ejam.api.baseurl)` override + docs) implemented 2026-07-24;
   the dev-server variant (step 3) still pending, gated on a reachable draft API deployment.
 - §8 below: exposing more `ejamit()`/`ejam2report()` parameters through the endpoints
-  (draft-first, then upstream) — TODO incl. filing a dedicated tracking issue.
+  (draft-first, then upstream) — tracked as Public-Environmental-Data-Partners/EJAM-API#52.
 
 ## 7. Adjunct (planning only, per Mark 2026-07-24): test the EJAM app against a draft API
 
@@ -348,8 +348,8 @@ future, expanded API is likely to provide … allowing the API to use most or al
 same parameters as the functions `ejamit()` and `ejam2report()`"). Related:
 Public-Environmental-Data-Partners/EJAM-API#4 (create different endpoints) and
 Public-Environmental-Data-Partners/EJAM-API#12 (GET /report accepting a zipped-shapefile
-URL — one specific new parameter). **TODO: file a dedicated issue** (probably in EJAM-API,
-cross-referencing dev-future-plans and this plan) so the idea is trackable.
+URL — one specific new parameter). **Tracking issue FILED 2026-07-24 (with Mark's OK):
+Public-Environmental-Data-Partners/EJAM-API#52.**
 
 **Approach (draft-first, then upstream):**
 1. Inventory `formals(ejamit)` and `formals(ejam2report)` and classify each parameter:
