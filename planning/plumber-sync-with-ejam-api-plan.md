@@ -12,7 +12,46 @@ proposed code edit, *before* anyone deploys it.
 
 ---
 
-## 0. Status snapshot (updated 2026-07-24 — see also `planning/api-in-ejam-handoff-2026-07-24.md`)
+## 0a. Decisions & implementation status (2026-07-24)
+
+**Mark's decisions:** milestone **v4**; **keep ALL draft endpoints and repair them in this PR**
+(none dropped); no worktrees; out-of-scope items in §6 stay deferred but tracked.
+
+**IMPLEMENTED on branch `API-in-EJAM`** (all items in §3, plus repairs to every draft
+endpoint). Verified locally end-to-end: parse/route-inventory/drift tests
+(`test-plumber-api.R`, 12 passing), gated server smoke tests (`test-ejamapi_local.R`,
+18 passing, `EJAM_TEST_LOCAL_API=true`), and a manual smoke of the heavy endpoints —
+single-site html report (~4s), **"Site 3" header label live locally** (EJAM#470 ×
+EJAM-API#51 working together pre-deploy, as §0 predicted), multisite report, `/query`
+pagination envelope + 400 on bad input, `/data` (with `scale`), `/handoff` round trip
+(returns explicit `radius=0` per EJAM-API#49), CORS preflight, `/assets` files, all
+`/draft/...` endpoints incl. a 1.4MB working xlsx from `/draft/ejam2excel`, and the
+**zero-population report case renders a real report locally** (EJAM#468 + EJAM-API#48
+verified end-to-end before any deploy).
+
+Implementation findings (things learned that the plan didn't know):
+- EJAM-API#32 split helpers into a **new upstream file `query_pagination.R`**, `source()`d by
+  rest_controller.r with a cwd-relative path — the mirror now includes it, and SYNC.md's
+  re-sync recipe copies it and warns to check for new upstream files.
+- plumber's `@assets ./assets` resolves **at request time against the process cwd** (not the
+  plumber file's folder), so the serving process must run with cwd = the mirror folder —
+  `ejamapi_local()` runs the server in a dedicated background process with its cwd set there
+  for its lifetime (the exact analog of the Docker WORKDIR in production).
+- A `#* @plumber` hook must return the SAME router it was passed; composition therefore
+  nests the draft mount inside the mirror router, then mounts that at `/` (verified: mounted
+  routes appear in the Swagger docs).
+- The old draft file's `attachment == "true"` checks were silently always-FALSE after
+  `api2rnulltf()` converted values to logical (R: `TRUE == "true"` is FALSE) — fixed with an
+  `api_true()` helper; `@serializer excel` was not a real plumber serializer (the old
+  combined file could not even plumb) — `/draft/ejam2excel` now streams a real xlsx via
+  `@serializer contentType`.
+- **Upstream hardening candidate (out of scope here, mirror stays verbatim):** a location
+  where NO census blocks fall inside the buffer (e.g. `lat=33.9&lon=-112.35&buffer=1`)
+  makes `ejamit()` (dev EJAM) return empty → `ejam2report()` errors uncaught → plumber's
+  generic JSON 500 instead of EJAM-API#48's friendly HTML fail-safe. Distinct from the
+  zero-population-with-blocks case, which works. Worth proposing upstream later.
+
+## 0b. Status snapshot (updated 2026-07-24 — see also `planning/api-in-ejam-handoff-2026-07-24.md`)
 
 - **The mirror target is a moving file.** When this plan was drafted (2026-07-23) EJAM-API
   `origin/main` was `8ca7869`; as of 2026-07-24 it is **`08dc3a7`**, which additionally merges
@@ -237,14 +276,51 @@ Plus `R CMD check` / the plumber test group in `test_ejam()`.
 - Branch: **`API-in-EJAM`** (already created off `development`, in the main checkout — no
   worktrees). **Draft** PR into `development`.
 - Cross-repo refs written as `Public-Environmental-Data-Partners/EJAM-API#NN`.
-- Milestone: ask Mark (v3.2022.2 vs v4) — this is dev-tooling + inst/ files only, no exported
+- Milestone: **v4** (Mark, 2026-07-24) — this is dev-tooling + inst/ files only, no exported
   behavior change to the package's R functions except `ejamapi_local()` internals.
 - EJAM-API repo: **zero changes** in this effort (read-only source of truth).
 
-## 6. Out of scope (explicitly deferred)
+## 6. Out of scope (explicitly deferred — tracked, per Mark, so they are not forgotten)
 
 - Promoting any draft endpoint into the real EJAM-API.
 - The multi-version `?version=` API plan, R2 write-back caching (#446), and in-app rendering
   (#476) — unrelated tracks.
 - Automating the sync (a GH Action could diff the mirror against EJAM-API main and open an
-  issue; nice-to-have later).
+  issue; nice-to-have later — the drift-check test in `test-plumber-api.R` covers this
+  manually for now).
+- Upstream EJAM-API hardening for the "no census blocks in buffer" 500 (see §0a findings).
+- §7 below: configuring the EJAM Shiny app to use a local/draft API (adjunct planning).
+
+## 7. Adjunct (planning only, per Mark 2026-07-24): test the EJAM app against a draft API
+
+**Goal:** be able to test EJAM Shiny-app release candidates — run locally and/or on the app
+dev server (<https://ejamdev.ejanalysis.com>) — configured to use (a) the locally hosted
+latest draft of the main API endpoints, and/or (b) the `/draft` endpoints, instead of the
+production API at api.ejanalysis.com.
+
+**Where the app touches the API today (small surface, good news):** the app itself computes
+results in-process via `ejamit()` — it does NOT call the API for analysis. The API base URL
+matters only where the app *builds URLs pointing at the API*: per-site report links in
+results tables and map popups (via `url_ejamapi()`), and anything else routed through
+`url_package("api")`, which reads the canonical URL from the `DESCRIPTION` `Config/` URLs
+(EJAM#485 single-sourcing). The EJScreen→EJAM token handoff calls `GET /handoff/<token>` on
+the API from the app at launch.
+
+**Proposed mechanism (to design/confirm before implementing):**
+1. Add one override point honored by `url_package("api")` (and hence everything downstream):
+   e.g. `option(ejam.api.baseurl)` falling back to env var `EJAM_API_BASEURL`, falling back
+   to DESCRIPTION as today. One code path, testable, no scattering.
+2. **Local app + local API** (the easy, high-value case): run `ejamapi_local()` (port 3035),
+   then launch the app with `EJAM_API_BASEURL=http://127.0.0.1:3035`. Report links in the
+   local app then exercise the draft API code end to end.
+3. **Dev-server app + draft API** (harder): the AWS-hosted dev app cannot reach a laptop's
+   localhost. Options to evaluate later: (a) point dev app's `EJAM_API_BASEURL` env (ECS task
+   definition) at any reachable draft API deployment; (b) expose a local API temporarily via
+   a Cloudflare tunnel (`cloudflared`) hostname like api-draft.ejanalysis.com; (c) run the
+   plumber API as a sidecar/second process inside the dev app task. (a)+(b) need no new
+   infra beyond a tunnel; (c) is heavier.
+4. Using the `/draft` endpoints from the app would additionally need the app to build
+   `/draft/...` paths — only relevant once a draft endpoint has an app use case; defer.
+
+**Not implemented in this PR** — recorded here so the next session can pick it up; step 1 is
+tiny and could ride along with any future PR touching `url_package()`.

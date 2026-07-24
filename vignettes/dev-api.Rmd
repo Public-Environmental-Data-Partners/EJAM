@@ -82,6 +82,25 @@ For the launch-URL vocabulary and the handoff endpoints, see the
   `POST /report` request. See the parameter notes in the
   [EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
 
+## Running the API locally
+
+The EJAM package ships a **verbatim mirror** of the deployed API's code
+(`inst/plumber/ejam-api/`, kept in sync with the EJAM-API repo -- see the `SYNC.md` there),
+plus draft/experimental endpoints that exist only in this package (`inst/plumber/draft/`).
+Since the EJAM-API has no staging server, this is the way to preview how the API will
+behave -- including after a proposed EJAM-API code change, before anyone deploys it:
+
+```{r apilocal, eval=FALSE}
+apiproc <- EJAM:::ejamapi_local()  # background server; browse http://127.0.0.1:3035/__docs__/
+# production paths served locally: /report, /data, /query, /handoff, /assets
+# draft-only endpoints mounted at:  /draft/echo, /draft/ejamit, /draft/report2, ...
+apiproc$kill()                     # stop it when done
+```
+
+To propose an EJAM-API change: edit the mirror copy, test it via `ejamapi_local()`, then
+submit the identical diff as a PR to the EJAM-API repo and re-sync the mirror after it
+merges. See `inst/plumber/try_the_api.R` for worked examples.
+
 For anything not covered here, the
 [EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API) is the
 source of truth, and `?ejamapi` / `?url_ejamapi` document the R interface.

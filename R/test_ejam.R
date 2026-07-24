@@ -396,12 +396,18 @@ instead of tests/testthat/_logs
         "test-ejscreen-facilities-live.R"
       ),
       test_local_api = c(
-        # Draft local Plumber API tests. Skipped by default via skip_these and
-        # separately gated by EJAM_TEST_LOCAL_API=true in the test file.
+        # Local Plumber API server smoke tests (starts a server on port 3035).
+        # Skipped by default via skip_these and separately gated by
+        # EJAM_TEST_LOCAL_API=true in the test file.
         "test-ejamapi_local.R"
       ),
 
       test_misc = c(
+        # Parse/inventory checks of the plumber API files in inst/plumber/
+        # (no server started), incl. the drift check comparing the verbatim
+        # mirror in inst/plumber/ejam-api/ against the EJAM-API repo's main.
+        "test-plumber-api.R",
+
         "test-sites_from_input.R",
         "test-is.numericish.R",
         "test-create_filename.R",

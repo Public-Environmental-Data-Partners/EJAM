@@ -2,52 +2,78 @@
 % Please edit documentation in R/ejamapi_local.R
 \name{ejamapi_local}
 \alias{ejamapi_local}
-\title{Run API in background to test/develop it}
+\title{Run the EJAM API locally, in the background, to test/develop it}
 \usage{
 ejamapi_local(
-  fname = system.file("plumber/plumber.R", package = "EJAM"),
+  fname = system.file("plumber/ejam-api/rest_controller.r", package = "EJAM"),
+  draftfile = system.file("plumber/draft/plumber.R", package = "EJAM"),
+  drafts = TRUE,
   host = "127.0.0.1",
   port = 3035,
-  quiet = FALSE
+  quiet = FALSE,
+  launch_browser = interactive()
 )
 }
 \arguments{
-\item{fname}{file with API definition using plumber package}
+\item{fname}{plumber file served at the root. Default is the mirror of the
+deployed EJAM-API. (Passing the older combined file, or any other plumber
+file, still works.)}
+
+\item{draftfile}{plumber file mounted at /draft. Default is the package's
+draft endpoints file.}
+
+\item{drafts}{set FALSE to serve only the EJAM-API mirror, without
+mounting the /draft endpoints (a pure preview of the deployed API).}
 
 \item{host}{optional, localhost IP}
 
 \item{port}{optional, a port number}
 
-\item{quiet}{optional, set to TRUE To reduce info printed to console}
+\item{quiet}{optional, set to TRUE to reduce info printed to console}
+
+\item{launch_browser}{optional, set FALSE to not open /\strong{docs}/ in a browser}
 }
 \value{
-NA
+Invisibly, the \code{\link[callr:r_bg]{callr::r_bg()}} process handle for the background
+server; use \code{x$kill()} to stop it, \code{x$is_alive()} to check on it, and
+\code{x$read_error()} to see startup errors if the server did not come up.
 }
 \description{
-Run API in background to test/develop it
+Serves, on localhost, a composite of two plumber routers:
+\enumerate{
+\item At the root, a verbatim mirror of the deployed EJAM-API
+(\code{inst/plumber/ejam-api/rest_controller.r} -- see the SYNC.md there),
+so local paths like \verb{/report}, \verb{/data}, \verb{/query}, \verb{/handoff}, and the
+Swagger docs at \verb{/__docs__/} behave like \url{https://api.ejanalysis.com}.
+Since the EJAM-API has no staging server, this is the way to preview
+how it will behave -- including how it will behave after a proposed
+EJAM-API code edit (edit the mirror copy, rerun this, test, then
+submit the identical diff to the EJAM-API repo).
+\item Mounted at \verb{/draft}, the draft/experimental endpoints that exist only
+in this package (\code{inst/plumber/draft/plumber.R}), e.g. \verb{/draft/echo},
+\verb{/draft/ejamit}, \verb{/draft/report2}, \verb{/draft/getblocksnearby}.
+}
+
+Note local PDF report rendering requires pandoc (e.g., the RSTUDIO_PANDOC
+environment variable set when running outside RStudio).
 }
 \examples{
 \dontrun{
- # launch and try it in R console
- ejamapi_local()
+ # launch (in a background R process) and try it from this R console
+ apiproc <- EJAM:::ejamapi_local()
 
- urlx <- "http://127.0.0.1:3035/getblocksnearby?lat=33&lon=-99&radius=2"
- reqx <- httr2::request(urlx)
- httr2::req_dry_run(reqx)
- outx <- httr2::req_perform(reqx)
+ # the deployed-API endpoints, served locally:
+ browseURL("http://127.0.0.1:3035/report?lat=34.05&lon=-118.24&radius=3")
+ df <- ejamapi(fips = "10001", endpoint = "data",
+   baseurl = "http://127.0.0.1:3035/")
 
+ # the draft-only endpoints, at /draft:
+ urlx <- "http://127.0.0.1:3035/draft/getblocksnearby?lat=33&lon=-99&radius=2"
+ outx <- httr2::req_perform(httr2::request(urlx))
  s2b <- data.table::rbindlist(httr2::resp_body_json(outx))
- s2b
 
- urlx <- "http://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-99&radius=2"
- reqx <- httr2::request(urlx)
- httr2::req_dry_run(reqx)
- outx <- httr2::req_perform(reqx)
-
- x <- httr2::resp_body_html(outx)
- fname <- tempfile("report", fileext = ".html")
- xml2::write_html(x, file = fname)
- browseURL(fname)
+ # stop the background API process when done:
+ apiproc$kill()
 }
 }
 \seealso{
