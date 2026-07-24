@@ -4,6 +4,16 @@ on:
   push:
     branches: [dev-deploy]
   workflow_dispatch:
+    inputs:
+      ejam_version:
+        description: >-
+          EJAM git ref to install & deploy to the DEV server: a branch
+          (e.g. development, main), tag (e.g. v3.2022.2), or commit SHA.
+          Lets you test an unreleased branch on dev without cutting a tag.
+          Leave blank to use the version pinned in the Dockerfile.
+        required: false
+        default: development
+        type: string
 
 permissions:
   contents: read
@@ -44,8 +54,24 @@ jobs:
         env:
           REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           IMAGE_TAG: dev-${{ github.sha }}
+          # Empty on a push (deploy the Dockerfile's pinned default); set only when a
+          # manual "Run workflow" dispatch supplies a ref to override the pin with.
+          # Passed via env (not inlined into the shell) to avoid command injection.
+          EJAM_VERSION_INPUT: ${{ github.event.inputs.ejam_version }}
         run: |
           FULL_IMAGE=$REGISTRY/$ECR_REPOSITORY
+
+          # Override EJAM_VERSION only for a manual dispatch that named a ref; a plain
+          # push leaves it unset so the Dockerfile's pinned default stays the single
+          # source of truth (no fallback duplicated here). install_github accepts any
+          # ref — branch, tag, or SHA — so this can deploy an unreleased branch to dev.
+          EXTRA_BUILD_ARGS=""
+          if [ -n "$EJAM_VERSION_INPUT" ]; then
+            echo "▶ Overriding EJAM_VERSION with dispatched ref: $EJAM_VERSION_INPUT"
+            EXTRA_BUILD_ARGS="--build-arg EJAM_VERSION=$EJAM_VERSION_INPUT"
+          else
+            echo "▶ No ejam_version input; using the Dockerfile's pinned EJAM_VERSION default"
+          fi
 
           # Use the auto-generated GITHUB_TOKEN for this workflow run (mirrors the R CI
           # workflows, e.g. check-standard.yaml `GITHUB_PAT: ${{ github.token }}`).
@@ -54,6 +80,7 @@ jobs:
           # which can expire and cause HTTP 401 "Bad credentials" during the build.
           docker build \
             --build-arg GITHUB_PAT=${{ github.token }} \
+            $EXTRA_BUILD_ARGS \
             -t $FULL_IMAGE:$IMAGE_TAG .
 
           docker push $FULL_IMAGE:$IMAGE_TAG
