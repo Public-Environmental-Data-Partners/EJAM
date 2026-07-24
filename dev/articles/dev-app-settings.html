@@ -107,6 +107,30 @@
     
     
 <div class="section level2">
+<h2 id="stable-documentation-links-while-testing-settings">Stable documentation links while testing settings<a class="anchor" aria-label="anchor" href="#stable-documentation-links-while-testing-settings"></a>
+</h2>
+<p>When testing app settings against the <code>development</code>
+branch, use <a href="https://docs.ejanalysis.com/dev" class="external-link">https://docs.ejanalysis.com/dev</a>
+to see the package documentation built from that branch. In
+particular:</p>
+<ul>
+<li><a href="https://docs.ejanalysis.com/dev/articles/dev-app-settings.html" class="external-link">the
+development version of this settings article</a></li>
+<li><a href="https://docs.ejanalysis.com/dev/reference/ejamapp.html" class="external-link">the
+development <code>ejamapp()</code> reference page</a></li>
+<li><a href="https://docs.ejanalysis.com/dev/articles" class="external-link">the development
+article index</a></li>
+</ul>
+<p>Without <code>/dev</code>, the same paths select the root
+documentation built from <code>main</code>; for example, <a href="https://docs.ejanalysis.com/reference/ejamapp.html" class="external-link uri">https://docs.ejanalysis.com/reference/ejamapp.html</a> and
+<a href="https://docs.ejanalysis.com/articles" class="external-link uri">https://docs.ejanalysis.com/articles</a>. The stable root
+alias is returned by
+<code>EJAM::url_package("docs", desc_or_alias = "alias")</code>; append
+<code>"/dev"</code> to that value for the development build. See <a href="dev-update-documentation.html#published-release-and-development-documentation-urls">Updating
+Documentation</a> for a fuller list and the API-documentation
+shortcuts.</p>
+</div>
+<div class="section level2">
 <h2 id="deep-links-launch-the-ejam-app-pre-loaded-via-url-parameters">Deep links: launch the EJAM app pre-loaded via URL parameters<a class="anchor" aria-label="anchor" href="#deep-links-launch-the-ejam-app-pre-loaded-via-url-parameters"></a>
 </h2>
 <p>Besides the deploy-time settings described below, an already-running

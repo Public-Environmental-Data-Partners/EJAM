@@ -102,7 +102,10 @@ as listed below, but a URL also can be an alias or simple 301 redirect,
 stored in the DESCRIPTION file field that has
 "_alias" or "_redirect" as a suffix,
 such as the "url_ejamdocs_alias" field in DESCRIPTION providing the URL for
-type = "ejamdocs" and desc_or_alias = "alias".</p>
+type = "ejamdocs" and desc_or_alias = "alias".
+The "_alias" suffix is part of the DESCRIPTION field name, not a <code>type</code>
+value: use <code>url_package("apidocs", desc_or_alias = "alias")</code>, not
+<code>url_package("apidocs_alias")</code>.</p>
 <p>DOCUMENTATION SITES:</p><ul><li><p>"ejamdocs" or "docs" (<code>url_ejamdocs</code> field in the DESCRIPTION file contains this, and <code>URL</code> field has it in part) is for the EJAM (and EJScreen to some extent) documentation website.</p></li>
 <li><p>"ejscreendocs" (<code>url_ejscreendocs</code> field in the DESCRIPTION file) is for the EJScreen documentation website.</p></li>
 <li><p>"apidocs" (<code>url_apidocs</code> field in the DESCRIPTION file) is for the EJAM API documentation website.</p></li>
@@ -189,7 +192,7 @@ snapshot of URLs that were in the DESCRIPTION file at the time of writing (7/202
 <span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>url_ejamrepo_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejamrepo</span>
 <span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a></span>
 <span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>url_ejamdocs<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM</span>
-<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>url_ejamdocs_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejamdocs.ejanalysis.com</span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>url_ejamdocs_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>docs.ejanalysis.com</span>
 <span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>url_ejamdocs_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejamdocs</span>
 <span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a></span>
 <span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>url_ejscreenapp<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>pedp<span class="sc">-</span>ejscreen.azurewebsites.net<span class="sc">/</span>index.html</span>
@@ -225,6 +228,7 @@ and app URLs; <code>url_package("api")</code> is their single source for the API
 <span> <span class="va">reponame</span></span>
 <span></span>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"docs"</span><span class="op">)</span></span>
+<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"docs"</span>, docs_version <span class="op">=</span> <span class="st">"dev"</span><span class="op">)</span></span>
 <span></span>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"code"</span><span class="op">)</span></span>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"code"</span>, get_full_url <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -238,10 +242,16 @@ and app URLs; <code>url_package("api")</code> is their single source for the API
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"ejamapp"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span></span>
 <span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"ejscreenapp"</span><span class="op">)</span></span>
 <span></span>
-<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"docs"</span>, desc_or_alias<span class="op">=</span><span class="st">"alias"</span><span class="op">)</span></span>
-<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"docs"</span>, desc_or_alias<span class="op">=</span><span class="st">"redirect"</span><span class="op">)</span></span>
-<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"code"</span>, desc_or_alias<span class="op">=</span><span class="st">"alias"</span><span class="op">)</span></span>
-<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"data"</span>, desc_or_alias<span class="op">=</span><span class="st">"alias"</span><span class="op">)</span></span>
+<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"docs"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu">url_package</span><span class="op">(</span><span class="st">"docs"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span>, <span class="st">"/dev"</span><span class="op">)</span></span>
+<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"docs"</span>, desc_or_alias <span class="op">=</span> <span class="st">"redirect"</span><span class="op">)</span></span>
+<span></span>
+<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"apidocs"</span><span class="op">)</span></span>
+<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"apidocs"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span></span>
+<span> <span class="co"># Not url_package("apidocs_alias"): select the alias separately as above.</span></span>
+<span></span>
+<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"code"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span></span>
+<span> <span class="fu">url_package</span><span class="op">(</span><span class="st">"data"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

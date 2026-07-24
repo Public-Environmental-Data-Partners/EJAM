@@ -235,6 +235,28 @@ domain, update that URL in <code>DESCRIPTION</code>.</p></li>
 <li><p>This URL can be checked via
 <code>url_package(type = "docs")</code>, which should return the full
 URL where documentation is published (currently <a href="https://public-environmental-data-partners.github.io/EJAM/dev" class="uri">https://public-environmental-data-partners.github.io/EJAM/dev</a>).</p></li>
+<li><p>Before a release, compare the published development documentation
+at <a href="https://docs.ejanalysis.com/dev" class="external-link">https://docs.ejanalysis.com/dev</a>
+with the root documentation at <a href="https://docs.ejanalysis.com" class="external-link">https://docs.ejanalysis.com</a>. For
+example, compare <code>/dev/reference/ejamapp.html</code> with
+<code>/reference/ejamapp.html</code>, and
+<code>/dev/articles/whatis.html</code> with
+<code>/articles/whatis.html</code>. The development site is the
+documentation built from <code>development</code>; the root site is
+built from <code>main</code>.</p></li>
+<li><p><code>EJAM::url_package("docs", docs_version = "dev")</code>
+returns the canonical development-site URL.
+<code>EJAM::url_package("docs", desc_or_alias = "alias")</code> returns
+the stable root alias, and appending <code>"/dev"</code> selects its
+development build. The API documentation can be found with
+<code>EJAM::url_package("apidocs")</code> or its stable alias, <a href="https://apidocs.ejanalysis.com" class="external-link uri">https://apidocs.ejanalysis.com</a>. Use
+<code>EJAM::url_package("apidocs", desc_or_alias = "alias")</code> to
+request that alias; <code>EJAM::url_package("apidocs_alias")</code> is
+not valid.</p></li>
+<li><p>See <a href="dev-update-documentation.html">Updating
+Documentation</a> for a table of root and development URLs for the
+reference index, individual help pages, article index, and individual
+articles.</p></li>
 </ul>
 </div>
 <div class="section level2">
