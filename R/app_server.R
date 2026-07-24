@@ -526,12 +526,20 @@ app_server <- function(input, output, session) {
     ## showTab() is called directly so it appears immediately without waiting for the input
     ## round-trip. An explicit false (?advanced=FALSE/0/no) hides it.
     adv <- q$advanced %||% q$show_advanced_settings
-    if (!is.null(adv) && nzchar(trimws(adv))) {
-      showadv <- tolower(trimws(adv)) %in% c("1", "true", "t", "yes", "y")
-      updateRadioButtons(session, inputId = "show_advanced_settings", selected = as.character(showadv))
-      if (showadv) {
+    if (!is.null(adv)) {
+      # normalize to ONE lowercase value (repeated ?advanced= params can arrive as a
+      # vector, which would make updateRadioButtons() error), then act ONLY on known
+      # truthy/falsy spellings -- an unrecognized value (e.g. ?advanced=maybe) is
+      # ignored and leaves the deploy defaults untouched, instead of being treated
+      # as false. Explicit false also hideTab()s so hiding is immediate.
+      adv <- tolower(trimws(as.character(adv)[[1]]))
+      if (adv %in% c("1", "true", "t", "yes", "y")) {
+        updateRadioButtons(session, inputId = "show_advanced_settings", selected = "TRUE")
         updateRadioButtons(session, inputId = "can_show_advanced_settings", selected = "TRUE")
         showTab(inputId = "all_tabs", target = "Advanced Settings")
+      } else if (adv %in% c("0", "false", "f", "no", "n")) {
+        updateRadioButtons(session, inputId = "show_advanced_settings", selected = "FALSE")
+        hideTab(inputId = "all_tabs", target = "Advanced Settings")
       }
     }
 

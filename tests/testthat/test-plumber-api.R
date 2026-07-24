@@ -79,8 +79,12 @@ test_that("mirror of the EJAM-API code has not drifted from the EJAM-API repo's 
     upstream_file <- tempfile()
     on.exit(unlink(upstream_file), add = TRUE)
     fetched <- tryCatch({
-      utils::download.file(upstream_url, upstream_file, quiet = TRUE, mode = "wb")
-      TRUE
+      # download.file() can return a NON-ZERO status without throwing, which would
+      # leave an empty/partial file and a confusing readBin() failure later --
+      # validate the status AND that a non-empty file landed (per Copilot review),
+      # so fetch problems route through the skip_if() below instead.
+      status <- utils::download.file(upstream_url, upstream_file, quiet = TRUE, mode = "wb")
+      identical(status, 0L) && file.exists(upstream_file) && file.size(upstream_file) > 0
     }, error = function(e) FALSE, warning = function(w) FALSE)
     testthat::skip_if(!fetched, paste("could not fetch upstream", relpath))
 

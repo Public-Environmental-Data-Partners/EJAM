@@ -37,8 +37,12 @@ test_that("/handoff round trip works locally (mirror of deployed endpoint)", {
                      body = list(fips = list("10001")), encode = "json")
   expect_equal(httr::status_code(resp), 200)
   tok <- httr::content(resp)
-  expect_true(is.character(tok$token) || is.character(tok$token[[1]]))
-  resp2 <- httr::GET(paste0(baseurl, "/handoff/", tok$token[[1]]))
+  # extract + normalize first: if the response ever lacks `token`, indexing
+  # NULL[[1]] would ERROR the test rather than fail the expectation cleanly
+  token <- tok$token
+  if (is.list(token)) token <- unlist(token, use.names = FALSE)
+  expect_true(is.character(token) && length(token) >= 1 && nzchar(token[[1]]))
+  resp2 <- httr::GET(paste0(baseurl, "/handoff/", token[[1]]))
   expect_equal(httr::status_code(resp2), 200)
   payload <- httr::content(resp2)
   expect_equal(payload$fips[[1]], "10001")
