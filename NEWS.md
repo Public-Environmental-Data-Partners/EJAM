@@ -12,6 +12,10 @@ packaged ACS or environmental data.
 
 ## New Features
 
+- The web app accepts an `?advanced=TRUE` launch-URL parameter (synonyms
+  `?show_advanced_settings=`, values like 1/yes; explicit FALSE/0/no hides) to
+  open with the Advanced Settings tab shown, even on a public deploy (#505).
+
 ### State versions of the flagged-areas stats, shown in the community report
 
 The "flagged areas" summary stats (% of analyzed residents who have a school,
@@ -207,7 +211,17 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
 - All key project URLs (the EJAM/EJScreen/API apps, their code repositories,
   and docs sites) are stored as `Config/EJAM/url_*` fields in `DESCRIPTION` and
   read through `url_package()`, so they live in one conventional configuration
-  namespace instead of being hardcoded across the code (#485).
+  namespace instead of being hardcoded across the code (#485, #503). Invalid
+  `url_package()` types now get a clear error listing the accepted values
+  (#502), and the docs-site alias is `https://docs.ejanalysis.com` (#501).
+
+- For developers: `EJAM:::ejamapi_local()` now serves a **local stand-in for
+  the deployed EJAM API** -- `inst/plumber/ejam-api/` is a byte-for-byte mirror
+  of the EJAM-API repo (drift-checked by a test; see its `SYNC.md`) served at
+  the production paths, with draft-only endpoints under `/draft/...`; and
+  `url_package("api")` honors an override (`options(ejam.api.baseurl=)` or env
+  var `EJAM_API_BASEURL`) so the package and app can be pointed at a local or
+  draft API for testing (#499).
 
 - The `AOI` geocoding dependency used by `latlon_from_address()` now installs
   from the `ericnost/AOI` fork (#478, fixes #477).
