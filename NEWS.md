@@ -149,6 +149,11 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
 
 ## Improvements
 
+- **Community report now shows the "Ratio to US average" and "Ratio to State
+  average" columns (with their color coding) by default**, in both the public
+  and the private/full versions of the app. Previously these columns were shown
+  only in the private app. The report options still let a user turn them off.
+
 - **The web app's Site-by-Site Table (Details tab) is built about 4x faster**
   (#491 fixes #127): profiling showed the lag after clicking the tab was not the
   URL-generating functions (links are created earlier, during the analysis) but

@@ -147,9 +147,9 @@ global_defaults_shiny_public <- list(
 
   ## ------------------------ Short report options ####
 
-  default_show_ratios_in_report = !isTRUE(isPublic), # used by app_ui to affect input$show_ratios_in_report which server uses in ejam2report(), etc.
+  default_show_ratios_in_report = TRUE, # show ratio-to-US-avg and ratio-to-State-avg columns (with their color coding) by DEFAULT in BOTH public and private apps; user can still toggle off in report options. Used by app_ui to set input$show_ratios_in_report, which the server passes to build_community_report()/ejam2report(). (was !isTRUE(isPublic))
 
-  default_extratable_show_ratios_in_report = !isTRUE(isPublic), # same
+  default_extratable_show_ratios_in_report = TRUE, # same, for the Additional Information (extra) table. (was !isTRUE(isPublic))
 
   ## normally would be the same as the defaults in ejam2report() or defaults in build_community_report()
 
