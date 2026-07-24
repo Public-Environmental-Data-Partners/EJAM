@@ -102,6 +102,17 @@
 #'     `Config/EJAM/url_api_alias`), which fronts the direct Cloud Run origin
 #'     recorded informationally in `Config/EJAM/url_api_direct`.
 #'
+#'     For development/testing, the API base can be overridden without editing
+#'     DESCRIPTION: `options(ejam.api.baseurl = ...)` takes highest precedence,
+#'     then the environment variable `EJAM_API_BASEURL`, then DESCRIPTION as usual.
+#'     Setting either (e.g. to `http://127.0.0.1:3035`, where `EJAM:::ejamapi_local()`
+#'     serves the API locally) makes every API URL the package builds -- report links
+#'     in the app's tables and map popups, [url_ejamapi()], [ejamapi()] -- point at
+#'     that base instead of the production API. The override applies only to the
+#'     canonical lookup (`desc_or_alias = "desc"`); explicit "alias"/"redirect"
+#'     lookups are unaffected. See the "Testing against a local or draft API"
+#'     section of the deployment article (`vignette("dev-deployment")`).
+#'
 #' CODE OR DATA REPOSITORIES:
 #'
 #'   - "ejamrepo" or "code" (`Config/EJAM/url_ejamrepo`, also recorded in part
@@ -267,6 +278,21 @@ url_package <- function(
               "so returning a full URL for type = '", type, "'")
     }
     get_full_url <- TRUE
+  }
+
+  # Developer/test override of the API base URL: lets a locally-run API
+  # (EJAM:::ejamapi_local(), e.g. http://127.0.0.1:3035) or a staging URL stand
+  # in for the production API everywhere the package builds API URLs -- report
+  # links in app tables and map popups, url_ejamapi(), ejamapi(), etc.
+  # Precedence: option(ejam.api.baseurl) > env var EJAM_API_BASEURL >
+  # DESCRIPTION as usual. Applies only to the canonical lookup (desc_or_alias =
+  # "desc"); explicit alias/redirect lookups are left alone. See the
+  # "Testing against a local or draft API" section of vignette("dev-deployment").
+  if (type == "api" && desc_or_alias == "desc") {
+    override <- getOption("ejam.api.baseurl", default = Sys.getenv("EJAM_API_BASEURL"))
+    if (length(override) == 1 && !is.na(override) && nzchar(trimws(override))) {
+      return(sub("/+$", "", trimws(override)))
+    }
   }
 
   url_desc <- function(field) {

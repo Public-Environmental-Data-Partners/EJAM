@@ -204,3 +204,38 @@ testthat::test_that("url_package docs_version appends subpath for docs types", {
   expect_match(url_package("docs", docs_version = "dev"), "/dev$")
   expect_match(url_package("ejamdocs", docs_version = "v3.2022.1"), "/v3\\.2022\\.1$")
 })
+
+testthat::test_that("EJAM_API_BASEURL env var overrides the api base URL (and only api)", {
+  withr::with_envvar(c(EJAM_API_BASEURL = "http://127.0.0.1:3035"), {
+    expect_identical(url_package("api"), "http://127.0.0.1:3035")
+    # trailing slash is stripped, like the DESCRIPTION path
+    withr::with_envvar(c(EJAM_API_BASEURL = "http://127.0.0.1:3035/"), {
+      expect_identical(url_package("api"), "http://127.0.0.1:3035")
+    })
+    # other types are unaffected
+    expect_match(url_package("docs"), "^https://")
+    expect_false(identical(url_package("ejamapp"), "http://127.0.0.1:3035"))
+    # explicit alias/redirect lookups are unaffected by the override
+    expect_match(url_package("api", desc_or_alias = "alias"), "^https://")
+    expect_identical(url_package("api", desc_or_alias = "redirect"), "https://ejanalysis.com/api")
+  })
+})
+
+testthat::test_that("option(ejam.api.baseurl) overrides the api base URL, beating the env var", {
+  withr::with_envvar(c(EJAM_API_BASEURL = "http://127.0.0.1:9999"), {
+    withr::with_options(list(ejam.api.baseurl = "http://127.0.0.1:3035"), {
+      expect_identical(url_package("api"), "http://127.0.0.1:3035")
+    })
+    # option unset again: env var applies
+    expect_identical(url_package("api"), "http://127.0.0.1:9999")
+  })
+  # neither set: DESCRIPTION value as usual
+  expect_match(url_package("api"), "^https://")
+})
+
+testthat::test_that("EJAM_API_BASEURL override flows through url_ejamapi() report links", {
+  withr::with_envvar(c(EJAM_API_BASEURL = "http://127.0.0.1:3035"), {
+    urlx <- url_ejamapi(lat = 34.05, lon = -118.24, radius = 3)
+    expect_match(urlx, "^http://127\\.0\\.0\\.1:3035/report\\?")
+  })
+})

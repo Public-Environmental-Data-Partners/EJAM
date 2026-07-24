@@ -52,6 +52,17 @@ It is the branded Cloudflare edge proxy \verb{https://api.ejanalysis.com}
 (equivalently \verb{https://ejamapi.ejanalysis.com}, stored in
 \code{Config/EJAM/url_api_alias}), which fronts the direct Cloud Run origin
 recorded informationally in \code{Config/EJAM/url_api_direct}.
+
+For development/testing, the API base can be overridden without editing
+DESCRIPTION: \code{options(ejam.api.baseurl = ...)} takes highest precedence,
+then the environment variable \code{EJAM_API_BASEURL}, then DESCRIPTION as usual.
+Setting either (e.g. to \verb{http://127.0.0.1:3035}, where \code{EJAM:::ejamapi_local()}
+serves the API locally) makes every API URL the package builds -- report links
+in the app's tables and map popups, \code{\link[=url_ejamapi]{url_ejamapi()}}, \code{\link[=ejamapi]{ejamapi()}} -- point at
+that base instead of the production API. The override applies only to the
+canonical lookup (\code{desc_or_alias = "desc"}); explicit "alias"/"redirect"
+lookups are unaffected. See the "Testing against a local or draft API"
+section of the deployment article (\code{vignette("dev-deployment")}).
 }
 
 CODE OR DATA REPOSITORIES:

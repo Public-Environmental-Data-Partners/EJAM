@@ -132,6 +132,7 @@ Suggests:
     ggridges (>= 0.5.7),
     mapview,
     miniUI,
+    openssl,
     pak,
     pkgdown (>= 2.1.2),
     plumber,

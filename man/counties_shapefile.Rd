@@ -38,6 +38,6 @@ which downloads the data from the Census Bureau.
 Source: https://www2.census.gov/geo/tiger/GENZ2022/shp/cb_2022_us_county_500k.zip
 }
 \seealso{
-seealso \code{\link[=shapes_from_fips]{shapes_from_fips()}} \link{states_shapefile}
+\code{\link[=shapes_from_fips]{shapes_from_fips()}} \link{states_shapefile}
 }
 \keyword{datasets}
