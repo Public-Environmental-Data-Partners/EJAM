@@ -171,7 +171,7 @@ ejamapp(isPublic=TRUE)
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
 
 **API: Live hosted EJAM REST API (separate from, and not the same as, the draft/inactive API code sitting in this package's `inst/plumber/` folder)**
-- Don't hardcode a URL for this either. Use `EJAM::url_package("api", get_full_url = TRUE)` or `url_ejamapi()`, which read the `ejam_api_url` field in `DESCRIPTION`.
+- Don't hardcode a URL for this either. Use `EJAM::url_package("api", get_full_url = TRUE)` or `url_ejamapi()`, which read the `Config/EJAM/url_api` field in `DESCRIPTION`.
 - The API is a separate service hosted on **Google Cloud Run**, deployed from its own repo: https://github.com/Public-Environmental-Data-Partners/EJAM-API (that repo's README documents every endpoint/parameter and is the authoritative reference -- see also `vignettes/dev-api.Rmd` here for a short overview from the EJAM-package side).
 - Note the version of the EJAM package used there may differ from the latest release sometimes, for some time after the release.
 
@@ -256,7 +256,7 @@ These conventions are used consistently across the maintainer's AI tooling (Clau
 - **Cross-repo issue/PR references:** In commit messages, PR descriptions, comments, and docs, write cross-repo issue/PR references as `owner/repo#NN` (e.g. `Public-Environmental-Data-Partners/EJAM-API#43`), not bare `#NN`. A bare `#NN` auto-links to whichever repo the text lives in, which is wrong when referring to one of the sibling repos.
 - **No local machine paths in commits:** Never commit code, comments, or docs containing a local-machine path (e.g. a personal home-directory path, a personal folder name). Check staged content before committing; this repo has at least one pre-existing offender (a hardcoded local path in a `data-raw/` script) that should eventually be cleaned up.
 - **Resolve addressed PR review threads:** When a PR review comment/thread has been fully addressed (fixed or confirmed obsolete), resolve the conversation rather than leaving it open.
-- **Don't hardcode live-service URLs in docs or code:** The Shiny app URL, the API base URL, and related repo URLs can change (proxies, domain moves, etc.). Prefer reading them from `DESCRIPTION` via `url_package()`/`url_ejamapp()`/`url_ejamapi()` rather than hardcoding a URL string, per the "Live EJAM web app" / "API" sections above (which also have the current, verified specifics on AWS ECS Fargate vs. Cloud Run hosting).
+- **Don't hardcode live-service URLs in docs or code:** The Shiny app URL, the API base URL, and related repo URLs can change (proxies, domain moves, etc.). They are stored in the `Config/EJAM/url_*` namespace in `DESCRIPTION`; prefer reading them via `url_package()`/`url_ejamapp()`/`url_ejamapi()` rather than hardcoding a URL string, per the "Live EJAM web app" / "API" sections above (which also have the current, verified specifics on AWS ECS Fargate vs. Cloud Run hosting).
 - **Obsolete worktree or branch cleanup:** If it is clear that a worktree or local or remote branch is obsolete since it has already been used for a PR that is merged or issue that it closed, then it should be deleted, but if it is somewhat unclear or not easy to confirm then make a note of it asking for confirmation before deleting it.
 
 ## Package Version Management
@@ -276,13 +276,13 @@ Version of package and versions of critical data sources like ACS are tracked in
 - See https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html for an article providing an overview of what the EJAM package and EJAM web app are.
 - See https://ejanalysis.com/ejam-code for key URLs for relevant repositories and documentation.
 
-**Documentation:** See the DESCRIPTION file URL field for the github.io documentation URL. That URL also can be obtained via EJAM::url_package("docs", get_full_url = T) - 
+**Documentation:** See the DESCRIPTION fields `URL` and `Config/EJAM/url_ejamdocs` for the github.io documentation URL. `EJAM::url_package("docs", get_full_url = T)` reads the latter.
 Also, https://ejanalysis.com/docs redirects to the package documentation site. However that URL is for a set of pages that document the main branch or latest release, and does not necessarily document the most recent source version or any other branch such as the development branch.
   However, it is important to note that the most recent documentation for a given branch is in roxygen2 tags within the .R files in the given branch. Periodically those are converted to .Rd files in the man folder (via document()), and eventually may be converted to .html files in the docs folder via pkgdown_update()
 
-**Code Repository:** See the DESCRIPTION file URL field for the github.com R package code URL. That URL also can be obtained via EJAM::url_package("code", get_full_url = T)
+**Code Repository:** See the DESCRIPTION fields `URL` and `Config/EJAM/url_ejamrepo` for the github.com R package code URL. `EJAM::url_package("code", get_full_url = T)` reads the latter.
 
-**Data Repository:** See the DESCRIPTION file ejam_data_repo field for the github.com datasets URL. That URL also can be obtained via EJAM::url_package("data", get_full_url = T)
+**Data Repository:** See the DESCRIPTION fields `ejam_data_repo` and `Config/EJAM/url_ejamdata` for the github.com datasets repository. `EJAM::url_package("data", get_full_url = T)` reads the full URL from the latter.
 And note it might be useful to look at the live web app and/or the hosted API, both of which are mentioned above.
 
 ## Trust These Instructions

@@ -94,6 +94,37 @@ testthat::test_that("url_package app and docs types always return full URLs", {
 
 # --- expanded types added by the urls-in-DESCRIPTION work (PR #485) ---
 
+testthat::test_that("DESCRIPTION URL settings use the Config/EJAM namespace", {
+  description_path <- testthat::test_path("../../DESCRIPTION")
+  testthat::skip_if_not(file.exists(description_path))
+
+  expected_fields <- paste0(
+    "Config/EJAM/",
+    c(
+      "url_api", "url_api_alias", "url_api_redirect", "url_api_direct",
+      "url_apirepo", "url_apirepo_alias", "url_apirepo_redirect",
+      "url_apidocs", "url_apidocs_alias", "url_apidocs_redirect",
+      "url_apidocker",
+      "url_ejamapp", "url_ejamapp_alias", "url_ejamapp_redirect",
+      "url_ejamapp_dev", "url_ejamapp_dev_alias", "url_ejamapp_dev_redirect",
+      "url_ejamrepo", "url_ejamrepo_alias", "url_ejamrepo_redirect",
+      "url_ejamdocs", "url_ejamdocs_alias", "url_ejamdocs_redirect",
+      "url_ejscreenapp", "url_ejscreenapp_alias", "url_ejscreenapp_redirect",
+      "url_ejscreenrepo", "url_ejscreenrepo_alias", "url_ejscreenrepo_redirect",
+      "url_ejscreendocs", "url_ejscreendocs_alias",
+      "url_ejscreendocs_redirect", "url_ejscreendocs_old",
+      "url_ejamdata", "url_ejamdata_alias", "url_ejamdata_redirect"
+    )
+  )
+  description_fields <- colnames(read.dcf(description_path, all = TRUE))
+
+  expect_setequal(
+    grep("^Config/EJAM/url_", description_fields, value = TRUE),
+    expected_fields
+  )
+  expect_length(grep("^url_", description_fields, value = TRUE), 0)
+})
+
 testthat::test_that("url_package api returns the branded full URL with no trailing slash", {
   x <- url_package("api")
   expect_match(x, "^https://")

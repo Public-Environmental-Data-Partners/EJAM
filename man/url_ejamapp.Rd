@@ -44,7 +44,7 @@ many/large polygons).}
 
 \item{baseurl}{base URL of the live EJAM app. Defaults to
 \code{url_package("ejamapp", desc_or_alias = "alias")} (the DESCRIPTION field
-\code{url_ejamapp_alias}, currently \verb{https://ejam.ejanalysis.com} — equivalently
+\code{Config/EJAM/url_ejamapp_alias}, currently \verb{https://ejam.ejanalysis.com} — equivalently
 \verb{https://ejamapp.ejanalysis.com}), a Cloudflare-fronted shortcut on
 ejanalysis.com that forwards the query string (302 redirect) to the app, so
 the launch parameters arrive intact. Any base works as long as it preserves

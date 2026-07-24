@@ -258,9 +258,12 @@ https://public-environmental-data-partners.github.io/EJAM/v3/
     `{pkgdown}` creates HTML files for GitHub Pages.
 
 -   The URL where documentation is published at any given time should be
-    recorded in the `URL` field of the `DESCRIPTION` file in the source package
-    root. That URL can be read with `EJAM::url_package("docs")`, which
-    currently returns `r docs_reponame_url`. Prior to mid-2025, documentation
-    web pages had been on GitHub Pages at URLs related to the `USEPA/EJAM` and
+    recorded in the standard `URL` field of the `DESCRIPTION` file in the
+    source package root and in `Config/EJAM/url_ejamdocs`, which is the field
+    read by `EJAM::url_package("docs")`. The helper currently returns
+    `r docs_reponame_url`. Store stable alias and redirect URLs in
+    `Config/EJAM/url_ejamdocs_alias` and
+    `Config/EJAM/url_ejamdocs_redirect`. Prior to mid-2025, documentation web
+    pages had been on GitHub Pages at URLs related to the `USEPA/EJAM` and
     `USEPA/EJAM-open` repositories, but those pages may now be archived,
     unpublished, or otherwise obsolete.
