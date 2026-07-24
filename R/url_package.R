@@ -35,7 +35,7 @@
 #' Config/EJAM/url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
 #'
 #' Config/EJAM/url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
-#' Config/EJAM/url_ejamdocs_alias: https://ejamdocs.ejanalysis.com
+#' Config/EJAM/url_ejamdocs_alias: https://docs.ejanalysis.com
 #' Config/EJAM/url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
 #'
 #' Config/EJAM/url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
@@ -71,6 +71,9 @@
 #'   "_alias" or "_redirect" as a suffix,
 #'   such as `Config/EJAM/url_ejamdocs_alias` providing the URL for
 #'   `type = "ejamdocs"` and `desc_or_alias = "alias"`.
+#'   The "_alias" suffix is part of the DESCRIPTION field name, not a `type`
+#'   value: use `url_package("apidocs", desc_or_alias = "alias")`, not
+#'   `url_package("apidocs_alias")`.
 #'
 #' DOCUMENTATION SITES:
 #'
@@ -145,6 +148,7 @@
 #'  reponame
 #'
 #'  url_package("docs")
+#'  url_package("docs", docs_version = "dev")
 #'
 #'  url_package("code")
 #'  url_package("code", get_full_url = TRUE)
@@ -158,10 +162,16 @@
 #'  url_package("ejamapp", desc_or_alias = "alias")
 #'  url_package("ejscreenapp")
 #'
-#'  url_package("docs", desc_or_alias="alias")
-#'  url_package("docs", desc_or_alias="redirect")
-#'  url_package("code", desc_or_alias="alias")
-#'  url_package("data", desc_or_alias="alias")
+#'  url_package("docs", desc_or_alias = "alias")
+#'  paste0(url_package("docs", desc_or_alias = "alias"), "/dev")
+#'  url_package("docs", desc_or_alias = "redirect")
+#'
+#'  url_package("apidocs")
+#'  url_package("apidocs", desc_or_alias = "alias")
+#'  # Not url_package("apidocs_alias"): select the alias separately as above.
+#'
+#'  url_package("code", desc_or_alias = "alias")
+#'  url_package("data", desc_or_alias = "alias")
 #'
 #' @return a single URL or owner/repo as a character string
 #'
@@ -190,7 +200,10 @@ url_package <- function(
     domain = NULL
 ) {
 
-  if (all(type %in% c("github.com", "github.io"))) {
+  # length guard: all(character(0) %in% ...) is vacuously TRUE, so without it an
+  # empty `type` slipped into this legacy block and errored on `type[1]` (NA)
+  # instead of reaching the invalid-`type` validation below
+  if (length(type) == 1L && all(type %in% c("github.com", "github.io"))) {
     # warning("this function no longer uses the 'domain' parameter. Use 'type' instead.")
     domain <- type[1]
   }
@@ -223,7 +236,21 @@ url_package <- function(
   # (get_full_url = FALSE) makes sense
   repo_types <- c("code", "ejamrepo", "ejscreenrepo", "apirepo", "data", "datarepo")
 
-  stopifnot(length(type) == 1, type %in% names(field_by_type))
+  valid_types <- names(field_by_type)
+  if (length(type) != 1 || is.na(type) || !(type %in% valid_types)) {
+    supplied_type <- if (length(type) == 0) {
+      "<empty>"
+    } else {
+      paste(encodeString(as.character(type), quote = "\""), collapse = ", ")
+    }
+    stop(
+      "Invalid `type` value: ", supplied_type, ". ",
+      "`type` must be one of: ",
+      paste(encodeString(valid_types, quote = "\""), collapse = ", "),
+      ". See ?url_package.",
+      call. = FALSE
+    )
+  }
   stopifnot(length(desc_or_alias) == 1, desc_or_alias %in% c("desc", "alias", "redirect"))
 
   if (desc_or_alias %in% c("alias", "redirect") && get_full_url == FALSE) {

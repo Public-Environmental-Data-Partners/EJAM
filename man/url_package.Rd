@@ -26,6 +26,9 @@ simple 301 redirect, stored in a field that has
 "_alias" or "_redirect" as a suffix,
 such as \code{Config/EJAM/url_ejamdocs_alias} providing the URL for
 \code{type = "ejamdocs"} and \code{desc_or_alias = "alias"}.
+The "_alias" suffix is part of the DESCRIPTION field name, not a \code{type}
+value: use \code{url_package("apidocs", desc_or_alias = "alias")}, not
+\code{url_package("apidocs_alias")}.
 
 DOCUMENTATION SITES:
 \itemize{
@@ -128,7 +131,7 @@ Config/EJAM/url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
 Config/EJAM/url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
 
 Config/EJAM/url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
-Config/EJAM/url_ejamdocs_alias: https://ejamdocs.ejanalysis.com
+Config/EJAM/url_ejamdocs_alias: https://docs.ejanalysis.com
 Config/EJAM/url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
 
 Config/EJAM/url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
@@ -160,6 +163,7 @@ in DESCRIPTION but are not \code{type} values this function accepts.)
  reponame
 
  url_package("docs")
+ url_package("docs", docs_version = "dev")
 
  url_package("code")
  url_package("code", get_full_url = TRUE)
@@ -173,10 +177,16 @@ in DESCRIPTION but are not \code{type} values this function accepts.)
  url_package("ejamapp", desc_or_alias = "alias")
  url_package("ejscreenapp")
 
- url_package("docs", desc_or_alias="alias")
- url_package("docs", desc_or_alias="redirect")
- url_package("code", desc_or_alias="alias")
- url_package("data", desc_or_alias="alias")
+ url_package("docs", desc_or_alias = "alias")
+ paste0(url_package("docs", desc_or_alias = "alias"), "/dev")
+ url_package("docs", desc_or_alias = "redirect")
+
+ url_package("apidocs")
+ url_package("apidocs", desc_or_alias = "alias")
+ # Not url_package("apidocs_alias"): select the alias separately as above.
+
+ url_package("code", desc_or_alias = "alias")
+ url_package("data", desc_or_alias = "alias")
 
 }
 \seealso{

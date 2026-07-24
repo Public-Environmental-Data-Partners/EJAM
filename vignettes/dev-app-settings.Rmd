@@ -37,6 +37,23 @@ if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if 
 # indexblocks()
 ```
 
+# Stable documentation links while testing settings
+
+When testing app settings against the `development` branch, use
+[https://docs.ejanalysis.com/dev](https://docs.ejanalysis.com/dev) to see the
+package documentation built from that branch. In particular:
+
+- [the development version of this settings article](https://docs.ejanalysis.com/dev/articles/dev-app-settings.html)
+- [the development `ejamapp()` reference page](https://docs.ejanalysis.com/dev/reference/ejamapp.html)
+- [the development article index](https://docs.ejanalysis.com/dev/articles)
+
+Without `/dev`, the same paths select the root documentation built from `main`;
+for example, <https://docs.ejanalysis.com/reference/ejamapp.html> and
+<https://docs.ejanalysis.com/articles>. The stable root alias is returned by
+`EJAM::url_package("docs", desc_or_alias = "alias")`; append `"/dev"` to that
+value for the development build. See
+[Updating Documentation](dev-update-documentation.html#published-release-and-development-documentation-urls)
+for a fuller list and the API-documentation shortcuts.
 
 # Deep links: launch the EJAM app pre-loaded via URL parameters
 
