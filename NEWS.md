@@ -226,6 +226,26 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
 - The `AOI` geocoding dependency used by `latlon_from_address()` now installs
   from the `ericnost/AOI` fork (#478, fixes #477).
 
+- In the bundled local API's Swagger page, the `/draft/...` endpoints are now
+  grouped under a **"Draft API Endpoints"** heading instead of the bare
+  "default" heading Swagger falls back to when an endpoint has no tag
+  (#509, follow-up to #499).
+
+- The example datasets shipped with the package (`testoutput_ejamit_*`,
+  `testoutput_doaggregate_*`, `testoutput_getblocksnearby_*`) were regenerated
+  so their `flagged_areas` tables include the new
+  `Percent_of_all_People_Statewide` and `ratio_to_state_avg` columns described
+  above. Without this, every example, vignette, and stored example report
+  showed N/A for the new State flagged-areas stats. The stored `.xlsx`, `.html`,
+  and `.pdf` example outputs were regenerated to match (#512).
+
+- New `.github/workflows/release.yaml` tags a release from the `Version` in
+  `DESCRIPTION` and publishes a GitHub Release whose notes are the matching
+  `NEWS.md` section. It runs on demand (defaulting to a dry run that only
+  previews the tag and notes) or on a schedule, refuses to act if the version
+  is not the one it was set up to ship, and skips if a tag or release for that
+  version already exists (#512).
+
 - No change to the packaged data: v3.2022.2 continues to require the existing
   `ejamdata` v3.2022.0 release (no v3.2022.1/v3.2022.2 `ejamdata` release is
   needed for a code-only patch). Several hardcoded version strings were removed
