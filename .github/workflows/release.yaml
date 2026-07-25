@@ -66,9 +66,14 @@ jobs:
             echo "::error::Could not read a Version field from DESCRIPTION."
             exit 1
           fi
+          # Pin the exact commit we checked out. github.sha is NOT reliable here:
+          # on a workflow_dispatch from another ref it points at that ref, not at
+          # the head of main that we actually tag.
+          SHA="$(git rev-parse HEAD)"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION"    >> "$GITHUB_OUTPUT"
-          echo "DESCRIPTION on main is version $VERSION (tag would be v$VERSION)."
+          echo "sha=$SHA"         >> "$GITHUB_OUTPUT"
+          echo "DESCRIPTION on main is version $VERSION (tag would be v$VERSION) at commit $SHA."
 
       - name: Confirm the version is the one we meant to release
         id: guard
@@ -104,12 +109,18 @@ jobs:
           set -euo pipefail
           VERSION='${{ steps.ver.outputs.version }}'
 
-          # Pull the block from "# EJAM <version>" up to (not including) the next
-          # top-level "# EJAM " heading.
+          # Take the body that FOLLOWS the "# EJAM <version>" heading, up to (not
+          # including) the next top-level "# EJAM " heading. The heading itself is
+          # deliberately left out: it would just repeat the release title. Leading
+          # blank lines are stripped so the notes don't open with whitespace.
+          #
+          # The version is escaped before being used as a regex, since an unescaped
+          # "." would match any character and could latch onto the wrong heading.
           awk -v v="$VERSION" '
-            $0 ~ "^# EJAM " v "([^0-9.]|$)" { inside = 1; next }
+            BEGIN { esc = v; gsub(/\./, "\\.", esc) }
+            !inside && $0 ~ "^# EJAM " esc "([^0-9.]|$)" { inside = 1; next }
             inside && /^# EJAM / { exit }
-            inside { print }
+            inside { if (started || NF) { started = 1; print } }
           ' NEWS.md > release-notes.md
 
           if [ ! -s release-notes.md ]; then
@@ -145,7 +156,7 @@ jobs:
             echo ""
             echo "- Tag that *would* be created: \`${{ steps.ver.outputs.tag }}\`"
             echo "- Release title: ${{ steps.notes.outputs.title }}"
-            echo "- Target commit: \`${{ github.sha }}\` on \`main\`"
+            echo "- Target commit: \`${{ steps.ver.outputs.sha }}\` (head of \`main\`)"
             echo ""
             echo "<details><summary>Release notes that would be published</summary>"
             echo ""
@@ -172,8 +183,10 @@ jobs:
             LATEST_FLAG='--latest'
           fi
 
+          # Pin the release to the exact commit we tagged, not to the branch name -
+          # main could advance between the tag push and the release creation.
           gh release create "$TAG" \
-            --target main \
+            --target '${{ steps.ver.outputs.sha }}' \
             --title "${{ steps.notes.outputs.title }}" \
             --notes-file release-notes.md \
             $LATEST_FLAG
