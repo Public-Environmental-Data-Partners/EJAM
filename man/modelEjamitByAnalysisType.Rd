@@ -16,6 +16,6 @@ Weighted runtime models for point-buffer, FIPS, and shapefile ejamit analyses, f
 \details{
 Regression models to predict runtime for ejamit by input type
 
-This list stores separate models for points, FIPS, shapefile, and available FIPS subtypes such as fips_city and fips_county. The points model uses input_number and radius when enough rows are available. FIPS and shapefile models use input_number because there is no point-buffer radius in those workflows. Missing scenario models are stored as NULL until timing rows for that scenario have been collected.
+This list stores legacy fallback models for points, FIPS, shapefile, and available FIPS subtypes such as fips_city and fips_county. Current live web estimates use measured profiles in utils_speedtest.R instead. The fallback FIPS and shapefile models use input_number only and do not model an optional buffer radius.
 }
 \keyword{datasets}

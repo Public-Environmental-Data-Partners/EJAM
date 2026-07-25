@@ -85,6 +85,18 @@ and [#410](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410
 
 ## Bug Fixes
 
+- **Web-app completion estimates now reflect current live performance** (#513):
+  the app uses a v3.2022.2 click-to-report calibration instead of presenting
+  the local `ejamit()` regression's much wider 95% upper prediction limit as
+  an ETA. The point curve now includes measured 1-, 10-, 100-, and 1,000-site
+  anchors and stays monotone across site counts. Unbuffered FIPS and shapefile
+  estimates use separate versioned web curves, while local R calls retain a
+  separate current `ejamit()` profile. Multi-state live estimates are labeled
+  as provisional lower bounds after repeated service failures, and buffered
+  FIPS runs omit a numeric web ETA until controlled radius-matched benchmarks
+  exist. The scenario benchmark helper now actually times full point analyses
+  by default (`test_ejamit = TRUE`).
+
 - **Rounding helpers no longer mangle data.table inputs** (#491): `table_round()`,
   `table_signif()`, `table_x100()`, and `is.numericish()` used to convert a
   data.table argument into a data.frame *in the caller's environment* (a

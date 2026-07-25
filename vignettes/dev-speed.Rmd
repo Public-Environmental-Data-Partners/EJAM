@@ -140,6 +140,10 @@ scenario_speeds <- EJAM:::speedtest_runtime_scenarios() # uses defaults
 scenario_rows <- attr(scenario_speeds, "detailed_results")
 ```
 
+Point scenarios time the full `ejamit()` call by default. Set
+`test_ejamit = FALSE` only when collecting component timings rather than
+training the total-runtime estimate.
+
 The combined detailed table includes `analysis_type` and `analysis_subtype`.
 For FIPS runs, the subtype is based on `fipstype(fips)`, so city/place FIPS and
 county FIPS can be modeled separately. The default county scenario uses up to
@@ -148,6 +152,55 @@ county FIPS can be modeled separately. The default county scenario uses up to
 example shapefile in `inst/testdata/shapes/portland_folder_shp/`. You can
 provide different FIPS vectors or a different shapefile if you want the timing
 data to reflect another expected workload.
+
+### Local runtime versus web-app completion time
+
+The runtime displayed by the web app is a different target from the runtime of
+an `ejamit()` call in a local R session. The web target includes normal
+deployment overhead and the time to summarize and render the multisite report.
+Transient service contention and upstream failures must be recorded
+separately because they cannot be predicted from the input count alone. Use:
+
+```{r runtime-targets, eval = FALSE}
+EJAM:::speed_ejamit_runtime_estimate(
+  rows = 100,
+  radius = 3.1,
+  analysis_type = "points",
+  target = "ejamit"
+)
+
+EJAM:::speed_ejamit_runtime_estimate(
+  rows = 100,
+  radius = 3.1,
+  analysis_type = "points",
+  target = "webapp_report",
+  profile = "live_v3.2022.2"
+)
+```
+
+Browser benchmarks for the web profile start when **Start Analysis** is clicked
+and stop when `#comm_report_html` contains the multisite report. Benchmark
+local, live development, and live production separately and record the exact
+app version. Do not train the active web profile from another deployment
+version. Record cold and warm/cache runs separately, because FIPS boundary
+downloads and server contention can produce large differences or timeouts.
+For FIPS benchmarks, verify the observed radius as well as the requested
+radius: a nonzero FIPS radius is a real buffered workload and must not be used
+to calibrate an unbuffered run.
+
+The current live profile is calibrated only for unbuffered FIPS runs. It
+deliberately omits a numeric web ETA for a nonzero FIPS radius until controlled
+matched repeats exist. Two-state and all-state live development runs also
+failed after the click rather than producing completed timings, so estimates
+for two or more states are labeled as lower bounds rather than expected
+completion times.
+
+The canonical point matrix includes 1 and 10 points at a 1-mile radius, 10
+points at 5 miles, and 100 and 1,000 points at 3.1 miles. The broader scenario
+matrix also includes county, state, tract, blockgroup, city, and mixed FIPS
+files plus uploaded polygon examples. See
+`data-raw/README-runtime-benchmarks.md` for the current benchmark results,
+exclusions, and calibration accuracy.
 
 For small numbers of points, the radius and number of points do not have a large impact on total time, 
 but for larger radius values the number of points matters more. Likewise, for larger numbers of points,
