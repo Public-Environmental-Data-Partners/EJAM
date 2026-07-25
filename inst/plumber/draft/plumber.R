@@ -101,6 +101,7 @@ function(req, res) {
 #* Return a dataset from the EJAM package (lazy-loaded .rda or downloaded .arrow), as JSON
 #* @param fname name of the dataset, like "blockgroupstats" (a trailing .rda or .arrow is ignored)
 #* @param attachment "true" to return as a download attachment
+#* @tag "Draft API Endpoints"
 #* @get /dataset
 #*
 function(fname = "blockgroupstats", attachment = "false", res) {
@@ -172,6 +173,7 @@ function(fname = "blockgroupstats", attachment = "false", res) {
 #* @param showpctowned whether to include percent owner-occupied units indicator values or display as NA
 #* @param attachment "true" means return html file as attachment
 #*
+#* @tag "Draft API Endpoints"
 #* @post /report2
 #* @serializer html
 function(
@@ -270,6 +272,7 @@ function(
 #* @param attachment optional, "true" for download of attachment
 #*
 #* @serializer html
+#* @tag "Draft API Endpoints"
 #* @post /reportpost
 #*
 function(lat = "", lon = "", radius = "", shapefile = "", fips = "",
@@ -335,6 +338,7 @@ function(lat = "", lon = "", radius = "", shapefile = "", fips = "",
 #* Like `EJAM::ejam2report()`
 #*
 #* @serializer html
+#* @tag "Draft API Endpoints"
 #* @post /ejam2report
 #*
 function(ejamitout = NULL, sitenumber = "", attachment = "true", res) {
@@ -391,6 +395,7 @@ function(ejamitout = NULL, sitenumber = "", attachment = "true", res) {
 #* See `?EJAM::ejam2excel()`
 #*
 #* @serializer contentType list(type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+#* @tag "Draft API Endpoints"
 #* @post /ejam2excel
 #*
 function(lat = "", lon = "", radius = 3, fips = "", shapefile = "", test = "false", res) {
@@ -445,6 +450,7 @@ function(lat = "", lon = "", radius = 3, fips = "", shapefile = "", test = "fals
 #* @param test "true" or "false" If true, returns a pre-calculated result (ignoring lat, lon, radius)
 #*
 #* @serializer csv
+#* @tag "Draft API Endpoints"
 #* @get /ejamit_csv
 #*
 function(lat = 40.81417, lon = -96.69963, radius = 1, shapefile = "", fips = "",
@@ -499,6 +505,7 @@ function(lat = 40.81417, lon = -96.69963, radius = 1, shapefile = "", fips = "",
 #* results_overall <- httr2::request(url2) |> httr2::req_perform() |>
 #* httr2::resp_body_json() |> jsonlite::toJSON() |> jsonlite::fromJSON()
 #*
+#* @tag "Draft API Endpoints"
 #* @get /ejamit
 #*
 function(lat = 40.81417, lon = -96.69963, radius = 1, shapefile = "", fips = "", names = "long", test = "false", res) {
@@ -556,6 +563,7 @@ function(lat = 40.81417, lon = -96.69963, radius = 1, shapefile = "", fips = "",
 #*
 #* Finds all Census blocks whose internal point is within radius of each site point.
 #*
+#* @tag "Draft API Endpoints"
 #* @get /getblocksnearby
 #*
 function(lat, lon, radius, attachment = "false", res) {
@@ -601,6 +609,7 @@ function(lat, lon, radius, attachment = "false", res) {
 #* @param attachment optional, set "true" for download of attachment,
 #*   "false" to get json results back
 #*
+#* @tag "Draft API Endpoints"
 #* @post /get_blockpoints_in_shape
 #*
 function(polys,
@@ -652,6 +661,7 @@ function(polys,
 #*   with columns ejam_uniq_id, blockid, distance (posted as JSON). see [doaggregate()]
 #* @param sites2states_or_latlon see [doaggregate()]
 #*
+#* @tag "Draft API Endpoints"
 #* @post /doaggregate
 #*
 function(sites2blocks, sites2states_or_latlon = "latlon", res) {
@@ -680,6 +690,7 @@ function(sites2blocks, sites2states_or_latlon = "latlon", res) {
 #
 #* Echo the parameter that was sent in
 #* @param msg The message to echo back.
+#* @tag "Draft API Endpoints"
 #* @get /echo
 #*
 function(msg = "") {
