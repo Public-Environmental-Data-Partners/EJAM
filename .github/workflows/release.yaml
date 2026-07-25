@@ -1,0 +1,186 @@
+name: 'Release: tag and publish'
+
+# Tags the version currently in DESCRIPTION on `main` and publishes a GitHub
+# Release whose notes are the matching section of NEWS.md.
+#
+# Two ways to run it:
+#
+#   1. Manually (workflow_dispatch) - the normal path. Use dry_run first to see
+#      exactly what would be tagged and what the notes would say.
+#   2. On a schedule - 13:00 UTC on August 1, to ship v3.2022.2 without anyone
+#      having to be at a keyboard.
+#
+# The scheduled path is deliberately one-shot: it refuses to do anything unless
+# DESCRIPTION on `main` still reads exactly SCHEDULED_EXPECTED_VERSION. So when
+# this cron fires again in later years it will find a different version and exit
+# quietly instead of releasing something nobody asked for. Re-running it is
+# always safe: if the tag already exists, the job skips.
+#
+# NOTE: scheduled workflows only fire from the default branch (`main`), so this
+# file has to be merged to `main` before the August 1 run can happen.
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_version:
+        description: 'Version you expect to release, e.g. 3.2022.2. Must match DESCRIPTION or the run fails.'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Print what would happen; create no tag and no release.'
+        required: true
+        type: boolean
+        default: true
+      mark_latest:
+        description: 'Mark this release as "Latest" on the releases page.'
+        required: true
+        type: boolean
+        default: true
+  schedule:
+    # 13:00 UTC = 09:00 EDT on August 1.
+    - cron: '0 13 1 8 *'
+
+permissions:
+  contents: write
+
+env:
+  # Guard for the scheduled run only - see the header comment.
+  SCHEDULED_EXPECTED_VERSION: '3.2022.2'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Read version from DESCRIPTION
+        id: ver
+        run: |
+          set -euo pipefail
+          VERSION="$(grep -E '^Version:' DESCRIPTION | head -1 | sed -E 's/^Version:[[:space:]]*//' | tr -d '[:space:]')"
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not read a Version field from DESCRIPTION."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION"    >> "$GITHUB_OUTPUT"
+          echo "DESCRIPTION on main is version $VERSION (tag would be v$VERSION)."
+
+      - name: Confirm the version is the one we meant to release
+        id: guard
+        run: |
+          set -euo pipefail
+          VERSION='${{ steps.ver.outputs.version }}'
+          SKIP=false
+
+          if [ '${{ github.event_name }}' = 'schedule' ]; then
+            if [ "$VERSION" != "$SCHEDULED_EXPECTED_VERSION" ]; then
+              echo "::notice::Scheduled run is a no-op. DESCRIPTION on main is $VERSION but this schedule only ships $SCHEDULED_EXPECTED_VERSION."
+              SKIP=true
+            fi
+          else
+            EXPECTED='${{ inputs.expected_version }}'
+            if [ -n "$EXPECTED" ] && [ "$EXPECTED" != "$VERSION" ]; then
+              echo "::error::You asked to release $EXPECTED but DESCRIPTION on main says $VERSION. Nothing was tagged."
+              exit 1
+            fi
+          fi
+
+          if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
+            echo "::notice::Tag v$VERSION already exists. Skipping - this workflow never moves an existing tag."
+            SKIP=true
+          fi
+
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+
+      - name: Extract the NEWS.md section for this version
+        if: steps.guard.outputs.skip == 'false'
+        id: notes
+        run: |
+          set -euo pipefail
+          VERSION='${{ steps.ver.outputs.version }}'
+
+          # Pull the block from "# EJAM <version>" up to (not including) the next
+          # top-level "# EJAM " heading.
+          awk -v v="$VERSION" '
+            $0 ~ "^# EJAM " v "([^0-9.]|$)" { inside = 1; next }
+            inside && /^# EJAM / { exit }
+            inside { print }
+          ' NEWS.md > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::error::Found no '# EJAM $VERSION' section in NEWS.md, so there are no release notes to publish."
+            exit 1
+          fi
+
+          # Derive the ACS vintage from a 3.YYYY.x version, to match the naming
+          # used by the existing releases (e.g. "EJAM v3.2022.2 (ACS 2018-2022)").
+          TITLE="EJAM v$VERSION"
+          if printf '%s' "$VERSION" | grep -qE '^3\.[0-9]{4}\.'; then
+            END_YEAR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+            TITLE="EJAM v$VERSION (ACS $((END_YEAR - 4))-$END_YEAR)"
+          fi
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+
+          {
+            echo ""
+            echo "---"
+            echo ""
+            echo "Full changelog: [NEWS.md](https://github.com/${{ github.repository }}/blob/main/NEWS.md)"
+          } >> release-notes.md
+
+          echo "Release title: $TITLE"
+          echo "--- notes preview (first 40 lines) ---"
+          head -40 release-notes.md
+
+      - name: Dry run summary
+        if: steps.guard.outputs.skip == 'false' && github.event_name == 'workflow_dispatch' && inputs.dry_run
+        run: |
+          {
+            echo "### Dry run - nothing was tagged or published"
+            echo ""
+            echo "- Tag that *would* be created: \`${{ steps.ver.outputs.tag }}\`"
+            echo "- Release title: ${{ steps.notes.outputs.title }}"
+            echo "- Target commit: \`${{ github.sha }}\` on \`main\`"
+            echo ""
+            echo "<details><summary>Release notes that would be published</summary>"
+            echo ""
+            cat release-notes.md
+            echo ""
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create the tag and publish the release
+        if: steps.guard.outputs.skip == 'false' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG='${{ steps.ver.outputs.tag }}'
+
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git tag -a "$TAG" -m "${{ steps.notes.outputs.title }}"
+          git push origin "$TAG"
+
+          LATEST_FLAG='--latest=false'
+          if [ '${{ github.event_name }}' = 'schedule' ] || [ '${{ inputs.mark_latest }}' = 'true' ]; then
+            LATEST_FLAG='--latest'
+          fi
+
+          gh release create "$TAG" \
+            --target main \
+            --title "${{ steps.notes.outputs.title }}" \
+            --notes-file release-notes.md \
+            $LATEST_FLAG
+
+          {
+            echo "### Released ${{ steps.notes.outputs.title }}"
+            echo ""
+            echo "- Tag: \`$TAG\`"
+            echo "- https://github.com/${{ github.repository }}/releases/tag/$TAG"
+          } >> "$GITHUB_STEP_SUMMARY"
