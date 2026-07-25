@@ -621,6 +621,42 @@ same time.</p>
 <h2 id="what-can-you-do-with-ejam">What Can You Do with EJAM?</h2>
 <p><a href="https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html">What
 is EJAM?</a></p>
+<p>EJAM lets you specify the places to analyze in several ways –
+uploading a table of point locations (latitude/longitude), picking
+facilities by industry category or ID, uploading shapefiles or lists of
+Census FIPS codes, or clicking on a map to specify one or more points –
+and it returns a summary report comparing residents and environmental
+conditions at those places to the rest of the country.</p>
+<h2 id="whats-new-in-v320222-august-2026">What’s New in v3.2022.2
+(August 2026)</h2>
+<p>The web app is noticeably quicker. The Site-by-Site table on the
+Details tab now appears in well under a second for a 1,000-site analysis
+instead of roughly six, PDF reports finish about seven seconds sooner,
+and County reports no longer stop to download boundaries – those are
+built into the package now, so Puerto Rico counties map correctly and no
+Census API key is needed.</p>
+<p>The community report gained a set of rows showing what share of the
+analyzed residents live in a block group that contains a school,
+hospital, or place of worship, or that overlaps a Tribal area,
+nonattainment area, impaired waters, or a disadvantaged-community
+designation – each compared against both the US and the relevant State
+average. Those ratio-to-US and ratio-to-State columns are now shown by
+default in the public app, not only the private one, and
+<code>ejam2excel()</code> writes a matching “Area Features” tab.</p>
+<p>Launching the app with <code>?advanced=TRUE</code> opens it with the
+Advanced Settings tab visible, even on a public deployment.</p>
+<p>Several long-standing bugs are fixed. The EJScreen “Send to EJAM”
+handoff no longer crashes the session. Saved reports are no longer empty
+when you pass a <code>filename</code>. Sites with no residents no longer
+break report generation. Per-site report links from the API are labeled
+with the correct site number instead of all reading “Site 1”.
+Percentages that used to display as “0”, “1”, or “55.30%” now read as
+whole percents. Internally, every key project URL moved into
+<code>DESCRIPTION</code> and is read through
+<code>url_package()</code>.</p>
+<p>This is a code-and-docs patch: it reuses the published
+<code>ejamdata</code> v3.2022.0 release, with no change to the packaged
+ACS or environmental data. Full details are in <a href="NEWS.md">NEWS.md</a>.</p>
 <h2 id="status-of-ejam-package-in-2026">Status of EJAM package in
 2026</h2>
 <p>See <a href="https://ejanalysis.org/status">ejanalysis.org/status</a>
