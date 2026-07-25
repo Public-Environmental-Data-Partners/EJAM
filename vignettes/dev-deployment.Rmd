@@ -145,13 +145,15 @@ The workflows can also be run manually from **GitHub → Actions → (deploy wor
 | `EJAMDATA_PAT` | a GitHub PAT, passed to the build as the `GITHUB_PAT` build-arg, used to download the `ejamdata` arrow files from the ejamdata GitHub release |
 
 > **Which EJAM version deploys:** the `Dockerfile` installs EJAM from a **pinned
-> GitHub release tag** via the `EJAM_VERSION` build-arg (default `v3.2022.1`;
+> GitHub release tag** via the `EJAM_VERSION` build-arg (e.g., `v3.2022.2`;
 > override with `--build-arg EJAM_VERSION=vX.Y.Z`), so the deployed version is
 > explicit and reproducible rather than tied to whatever source happens to be
 > checked out on the deploy branch. The `ejamdata` arrow files are fetched
 > separately from the ejamdata GitHub release via the `EJAMDATA_VERSION` build-arg
-> (default `v3.2022.0` — the release that `v3.2022.1` requires, i.e. its
-> `ejamdata_required_tag`); keep the two in sync when bumping to a new release.
+> (e.g., `v3.2022.0` — the release that the given EJAM version requires,
+> i.e. its `ejamdata_required_tag`; note a code-only patch such as `v3.2022.1`
+> or `v3.2022.2` still uses the existing `v3.2022.0` data release);
+> keep the two in sync when bumping to a new release.
 >
 > *(These pinned build-args are set in the deploy-branch `Dockerfile`. A deploy
 > branch whose `Dockerfile` predates that update instead installs EJAM from the
@@ -277,6 +279,47 @@ aws logs filter-log-events --log-group-name /ecs/ejam-prod \
 | Docker build fails | confirm Docker Desktop is running and `.dockerignore` is present |
 | ECS tasks failing health checks | confirm the container serves HTTP 200 on the health-check port (2001) and the app port (2000) matches the task definition |
 | Slow local Docker push | use GitHub Actions instead |
+
+## Testing against a local or draft API
+
+The app computes analysis results in-process via `ejamit()` -- it does not call the
+EJAM REST API for analysis. Where the API base URL matters is everywhere the app or
+package **builds URLs that point at the API**: the per-site report links in results
+tables and map popups (built by `url_ejamapi()`), `ejamapi()` calls, and the
+EJScreen-to-EJAM token handoff. All of those read the base URL from one place,
+`url_package("api")`, which normally comes from the `url_api` field of `DESCRIPTION`
+(the production API, https://api.ejanalysis.com).
+
+To test an app release candidate against a **different API** -- most usefully the local
+API served by `EJAM:::ejamapi_local()`, which mirrors the latest EJAM-API code before it
+is deployed anywhere (see the [API article](dev-api.html)) -- override that one lookup.
+Precedence is: `options(ejam.api.baseurl=...)` first, then the environment variable
+`EJAM_API_BASEURL`, then `DESCRIPTION`.
+
+**Local app + local API** (no infrastructure needed):
+
+```{r localapi, eval=FALSE}
+apiproc <- EJAM:::ejamapi_local()               # local API at http://127.0.0.1:3035
+Sys.setenv(EJAM_API_BASEURL = "http://127.0.0.1:3035")
+# or, equivalently: options(ejam.api.baseurl = "http://127.0.0.1:3035")
+EJAM::ejamapp()                                  # report links in tables/popups now
+                                                 # hit the local API, end to end
+# when done:
+Sys.unsetenv("EJAM_API_BASEURL")
+apiproc$kill()
+```
+
+The same override works for one-off calls without the app, e.g.
+`ejamapi(fips = "10001", endpoint = "data")` or `url_ejamapi(lat = 34, lon = -118)`
+will target whatever base is set.
+
+**Deployed app (dev server) + draft API:** the AWS-hosted dev app cannot reach a
+laptop's localhost, so point its `EJAM_API_BASEURL` (an environment variable in the
+ECS task definition) at any reachable draft API deployment -- e.g. a future
+apidev.ejanalysis.com staging service
+([EJAM-API#47](https://github.com/Public-Environmental-Data-Partners/EJAM-API/issues/47)
+tracks setting one up), or a temporary Cloudflare tunnel exposing a locally-run API.
+Unsetting the variable (or omitting it) restores the production API from `DESCRIPTION`.
 
 ## Teardown
 

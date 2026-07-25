@@ -517,8 +517,34 @@ app_server <- function(input, output, session) {
     if (is.null(search) || !nzchar(search)) {return(NULL)}
     q <- shiny::parseQueryString(search)
 
+    ## Advanced Settings tab via launch URL, e.g. ?advanced=TRUE (?advanced=1/yes also work;
+    ## show_advanced_settings is accepted as a synonym). This is a clean, per-visitor query
+    ## param -- unlike ejamapp(default_show_advanced_settings=) which is fixed per deploy, and
+    ## unlike Shiny's bookmark URLs which encode the whole input state. Updating the radio flows
+    ## through the priority=10 observer above that shows/hides the tab; can_show_advanced_settings
+    ## is also enabled so the tab can appear even on a public deploy (where it defaults off), and
+    ## showTab() is called directly so it appears immediately without waiting for the input
+    ## round-trip. An explicit false (?advanced=FALSE/0/no) hides it.
+    adv <- q$advanced %||% q$show_advanced_settings
+    if (!is.null(adv)) {
+      # normalize to ONE lowercase value (repeated ?advanced= params can arrive as a
+      # vector, which would make updateRadioButtons() error), then act ONLY on known
+      # truthy/falsy spellings -- an unrecognized value (e.g. ?advanced=maybe) is
+      # ignored and leaves the deploy defaults untouched, instead of being treated
+      # as false. Explicit false also hideTab()s so hiding is immediate.
+      adv <- tolower(trimws(as.character(adv)[[1]]))
+      if (adv %in% c("1", "true", "t", "yes", "y")) {
+        updateRadioButtons(session, inputId = "show_advanced_settings", selected = "TRUE")
+        updateRadioButtons(session, inputId = "can_show_advanced_settings", selected = "TRUE")
+        showTab(inputId = "all_tabs", target = "Advanced Settings")
+      } else if (adv %in% c("0", "false", "f", "no", "n")) {
+        updateRadioButtons(session, inputId = "show_advanced_settings", selected = "FALSE")
+        hideTab(inputId = "all_tabs", target = "Advanced Settings")
+      }
+    }
+
     # base URL of the EJAM API that mints/resolves handoff tokens. Single source of
-    # truth is the DESCRIPTION field ejam_api_url; read it via url_package("api"),
+    # truth is in the DESCRIPTION file; read it via url_package("api"),
     # and if that is unavailable derive it from url_ejamapi()'s resolved base (its
     # /report? endpoint minus the path). Override via global_or_param("ejamapi_baseurl").
     # A usable base is a single non-NA, non-empty string; each fallback is tried only
@@ -548,6 +574,16 @@ app_server <- function(input, output, session) {
         error = function(e) NULL
       )
       if (!is.null(payload) && is.null(payload$error)) {
+        # The API serializes absent payload fields (an R NULL for sites/fips/shape/
+        # radius) as JSON {}, which jsonlite::fromJSON() parses back as a zero-length
+        # list, NOT NULL. Treat any zero-length field as absent so the checks below
+        # see a clean NULL. Without this, a radius-less handoff (every FIPS/polygon
+        # basket, and any point basket with no buffer) returns radius:{} -> an empty
+        # list that reaches as.numeric() in the radius block and evaluates the if()
+        # on a zero-length value, an unhandled error in this init observer that
+        # crashes the whole session. length() of a real sites data.frame is its
+        # column count (>0), so genuine payloads are preserved.
+        payload <- lapply(payload, function(x) if (length(x) == 0) NULL else x)
         if (!is.null(payload$sites) && is.data.frame(payload$sites)) {
           spec$lat <- payload$sites$lat
           spec$lon <- payload$sites$lon
@@ -616,14 +652,15 @@ app_server <- function(input, output, session) {
     ## clobbered when the slider re-renders (e.g. after set_site_method() above changes
     ## the upload method). Reading url_radius() inside the renderUI makes setting it here
     ## re-render the slider with the launch value, which is reliable in both orderings.
-    if (!is.null(spec$radius)) {
-      radval <- suppressWarnings(as.numeric(spec$radius))
-      # 0 is a valid buffer for polygon/FIPS methods (minradius_shapefile is 0,
-      # meaning analyze inside the boundary with no buffer); the slider renderUI
-      # clamps the value into the current method's [min, max], so e.g. 0 becomes
-      # the point-method minimum when points were supplied. Negatives are ignored.
-      if (!is.na(radval) && radval >= 0) url_radius(radval)
-    }
+    # 0 is a valid buffer for polygon/FIPS methods (minradius_shapefile is 0,
+    # meaning analyze inside the boundary with no buffer); the slider renderUI
+    # clamps the value into the current method's [min, max], so e.g. 0 becomes
+    # the point-method minimum when points were supplied. Negatives are ignored.
+    # length(radval) == 1 guard: any absent/empty/multi-value radius (as.numeric()
+    # of NULL or an empty list is numeric(0)) is skipped rather than evaluated by
+    # the if(), which would error on a zero-length condition and crash session init.
+    radval <- suppressWarnings(as.numeric(spec$radius))
+    if (length(radval) == 1 && !is.na(radval) && radval >= 0) url_radius(radval)
   }, priority = 1000)
 
   data_up_shp <- reactive({
@@ -2616,6 +2653,7 @@ app_server <- function(input, output, session) {
       extratable_title_top_row         = input$extratable_title_top_row,
       extratable_list_of_sections      = global_or_param("default_extratable_list_of_sections"),
       extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
+      flagged_areas_df = data_processed()$results_summarized$flagged_areas, # % of residents with each feature/area type in their blockgroup, vs US and State
       in_shiny = TRUE,
       filename = NULL
     )
@@ -3102,7 +3140,8 @@ app_server <- function(input, output, session) {
             input = html_path,
             output = file,
             options = list(printBackground = TRUE),
-            wait = 5, timeout = 120, verbose = 0)
+            # keep this in step with the ejam2report() PDF path - see pdf_wait_seconds()
+            wait = pdf_wait_seconds("print"), timeout = 120, verbose = 0)
         }, error = function(e) {
           showModal(modalDialog(
             title = "PDF not available",
@@ -3278,8 +3317,17 @@ app_server <- function(input, output, session) {
                                  sitereport_download_buttons_show = isTRUE(as.logical(input$sitereport_download_buttons_show)),
                                  sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
 
-                                 columns_used = input$bysite_webtable_colnames
-                                 ## if NULL, uses all available from data_processed()
+                                 ## show the default column subset until the user picks
+                                 ## columns in the advanced tab - showing all ~700
+                                 ## columns made this table several times slower to appear (#127).
+                                 ## length()==0 covers both NULL (picker never rendered)
+                                 ## and character(0) (user cleared every selection), since
+                                 ## an empty columns_used would mean "all columns"
+                                 columns_used = if (length(input$bysite_webtable_colnames) == 0) {
+                                   global_or_param("default_bysite_webtable_colnames")
+                                 } else {
+                                   input$bysite_webtable_colnames
+                                 }
     )
     # enable download button only after DT::renderDT
     download_button_enable_js(id = 'download_results_spreadsheet')
@@ -3290,17 +3338,20 @@ app_server <- function(input, output, session) {
   # but note this is not the same as controlling the url report columns defined by default_reports
   output$bysite_webtable_colnames_ui <- renderUI({
 
-    choicelist =  list(names(testoutput_ejamit_10pts_1miles$results_overall))
-    names(choicelist)  <- fixcolnames(rnames, 'r', 'short')
+    # offer every column the site-by-site table can show, labeled with short names
+    # (this had referenced an undefined object and results_overall, but was never
+    # reached because the ui used renderUI() instead of uiOutput() - fixed in #491)
+    choicevec <- names(testoutput_ejamit_10pts_1miles$results_bysite)
+    choicelabels <- fixcolnames(choicevec, 'r', 'short')
+    choicelabels[is.na(choicelabels)] <- choicevec[is.na(choicelabels)]
 
     shiny::selectInput("bysite_webtable_colnames",
                        label = "Columns to show in interactive table",
                        multiple = TRUE,
-                       ### shows ALL available if this input is  NULL
-                       # choices = names(testoutput_ejamit_10pts_1miles$results_overall), # simpler
-                       choices = choicelist
-                       # comment out selected to start with none picked.
-                       , selected <- global_or_param("default_bysite_webtable_colnames")
+                       choices = stats::setNames(choicevec, choicelabels),
+                       # starts as the default subset; if emptied, the server falls
+                       # back to that same default subset
+                       selected = global_or_param("default_bysite_webtable_colnames")
     )
   })
 

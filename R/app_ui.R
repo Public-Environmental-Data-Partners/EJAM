@@ -207,8 +207,9 @@ app_ui <- function(request) {
                       condition = "input.ss_choose_method == 'mapclick'",
                       ## input: click on the an_leaf_map (below) to add/remove points; handled by MODULE_SERVER_latlon_from_map_click() in the server
                       tags$p("Click on the map below to add one or more points to analyze. Click a point's red marker to remove it. Use the radius slider to change the circle drawn around each point.",
-                             tags$br(),
-                             tags$em("(Drawing polygons/areas on the map is planned for a future version.)")),
+                             tags$br() #,
+                             # tags$em("(Drawing polygons/areas on the map is planned for a future version.)") # removed since no firm plan
+                             ),
                       actionButton(inputId = 'mapclick_clear', label = 'Clear all points', class = 'usa-button usa-button--outline'),
                       br()
                     ), # end mapclick conditionalPanel
@@ -1403,14 +1404,18 @@ app_ui <- function(request) {
                  ### By-site interactive table of results ####
                  h3("By-site interactive table of results"),
 
-                 shiny::renderUI("bysite_webtable_colnames_ui"),
+                 # uiOutput (not renderUI, which is server-side and rendered nothing here)
+                 # displays the column picker for the site-by-site table (#491)
+                 shiny::uiOutput("bysite_webtable_colnames_ui"),
 
                  # default_reports is not adjustable here-  changing this in advance tab is complicated since it is a list of functions, etc.
 
                  # sitereport_download_buttons_colname = "Download EJAM Report", # input$sitereport_download_buttons_colname
                  shiny::textInput("sitereport_download_buttons_colname",
-                                  label = "Name of column of uttons that download 1-site report per row",
-                                  value = global_or_param("sitereport_download_buttons_show")),
+                                  label = "Name of column of buttons that download 1-site report per row",
+                                  # was bound to ..._show (a logical), so the field said "FALSE"
+                                  # and enabling the buttons named the column "FALSE" (#491)
+                                  value = global_or_param("sitereport_download_buttons_colname")),
 
                  checkboxInput("sitereport_download_buttons_show",
                                label = "Show column of buttons that download 1-site report per row",

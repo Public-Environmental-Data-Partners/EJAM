@@ -6,20 +6,28 @@
 \usage{
 ejam2barplot_areafeatures(
   ejamitout,
-  main = paste0("\% of analyzed population",
-    " that lives in blockgroups with given features", " or that overlap given area type"),
-  ylab = "Ratio of Indicator in Analyzed Locations / in US Overall",
-  shortlabels = NULL
+  main = NULL,
+  ylab = NULL,
+  shortlabels = NULL,
+  vs = c("us", "state")
 )
 }
 \arguments{
 \item{ejamitout}{output from ejamit()}
 
-\item{main}{optional title for plot}
+\item{main}{optional title for plot. If NULL (default), a title is chosen
+based on the \code{vs} parameter.}
 
-\item{ylab}{optional y axis label}
+\item{ylab}{optional y axis label. If NULL (default), a label is chosen
+based on the \code{vs} parameter.}
 
 \item{shortlabels}{optional alternative labels for the bars}
+
+\item{vs}{"us" (default) to plot ratios to the US average,
+or "state" to plot ratios to the average in the State(s) analyzed
+(population-weighted across the states of the residents analyzed).
+"state" requires ejamitout to have the ratio_to_state_avg column
+in results_summarized$flagged_areas (from a current version of ejamit()).}
 }
 \value{
 ggplot2 plot
@@ -55,6 +63,11 @@ ejam2barplot_areafeatures(out)
 
 shortlabels = EJAM:::flagged_areas_shortlabels_from_ejam(out)
 ejam2barplot_areafeatures(out, shortlabels = shortlabels)
+
+# ratios to State averages instead of US averages:
+if ("ratio_to_state_avg" \%in\% names(ejam2areafeatures(out))) {
+  ejam2barplot_areafeatures(out, vs = "state")
+}
 
 }
 \seealso{

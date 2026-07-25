@@ -34,11 +34,11 @@ API report matches what `ejamit()` / `ejam2report()` would produce locally.
 
 ## Reaching it from R
 
-```{r api, eval=FALSE}
+```{r api, eval=TRUE}
 ## API example: build a multisite report URL
-urlx = url_ejamapi(fips=c(3650617,'0973000'), sitenumber = 0)
+urlx = EJAM::url_ejamapi(fips=c(3650617,'0973000'), sitenumber = 0)
 urlx
-# "https://api.ejanalysis.com/report?fips=3650617,0973000&buffer=0&sitenumber=0&version=3.2022.1&fileextension=html"
+
 # browseURL(urlx)
 ```
 
@@ -81,6 +81,32 @@ For the launch-URL vocabulary and the handoff endpoints, see the
   site). Many or large polygons that would exceed a GET URL's length can be sent via a
   `POST /report` request. See the parameter notes in the
   [EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
+
+## Running the API locally
+
+The EJAM package ships a **verbatim mirror** of the deployed API's code
+(`inst/plumber/ejam-api/`, kept in sync with the EJAM-API repo -- see the `SYNC.md` there),
+plus draft/experimental endpoints that exist only in this package (`inst/plumber/draft/`).
+Since the EJAM-API has no staging server, this is the way to preview how the API will
+behave -- including after a proposed EJAM-API code change, before anyone deploys it:
+
+```{r apilocal, eval=FALSE}
+apiproc <- EJAM:::ejamapi_local()  # background server; browse http://127.0.0.1:3035/__docs__/
+# production paths served locally: /report, /data, /query, /handoff, /assets
+# draft-only endpoints mounted at:  /draft/echo, /draft/ejamit, /draft/report2, ...
+apiproc$kill()                     # stop it when done
+```
+
+To propose an EJAM-API change: edit the mirror copy, test it via `ejamapi_local()`, then
+submit the identical diff as a PR to the EJAM-API repo and re-sync the mirror after it
+merges. See `inst/plumber/try_the_api.R` for worked examples.
+
+To point the **package and web app at that local API** (so report links in the app's
+tables and map popups, `url_ejamapi()`, and `ejamapi()` all use it instead of the
+production API), set `EJAM_API_BASEURL=http://127.0.0.1:3035` (or
+`options(ejam.api.baseurl=...)`) -- one override honored by `url_package("api")`, the
+single source of the API base URL. Details and the deployed-app variant are in the
+[deployment article](dev-deployment.html) under "Testing against a local or draft API".
 
 For anything not covered here, the
 [EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API) is the

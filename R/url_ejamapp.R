@@ -35,7 +35,9 @@
 #'   many/large polygons).
 #' @param dTolerance meters tolerance for [sf::st_simplify()] so a polygon fits in a URL
 #' @param baseurl base URL of the live EJAM app. Defaults to
-#'   `https://ejamapp.ejanalysis.com/`, a Cloudflare-fronted shortcut on
+#'   `url_package("ejamapp", desc_or_alias = "alias")` (the DESCRIPTION field
+#'   `Config/EJAM/url_ejamapp_alias`, currently `https://ejam.ejanalysis.com` — equivalently
+#'   `https://ejamapp.ejanalysis.com`), a Cloudflare-fronted shortcut on
 #'   ejanalysis.com that forwards the query string (302 redirect) to the app, so
 #'   the launch parameters arrive intact. Any base works as long as it preserves
 #'   the `?...` query; a plain 301 that drops it would open the app empty (which
@@ -59,7 +61,7 @@ url_ejamapp <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                         fips = NULL, shapefile = NULL, shape = NULL,
                         radius = NULL, buffer = NULL,
                         handoff = NULL, dTolerance = 100,
-                        baseurl = "https://ejamapp.ejanalysis.com/",
+                        baseurl = url_package("ejamapp", desc_or_alias = "alias"), # the branded, query-preserving alias (see DESCRIPTION Config/EJAM/url_ejamapp_alias)
                         browse = FALSE, shp = NULL) {
 
   # Back-compat: url_ejamapp() historically took `browse` as its first/only argument,

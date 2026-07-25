@@ -25,8 +25,8 @@ footer:
     left: [datefooter]
     right: [package, versionmsg]
   components:
-    datefooter: July 2026
-    versionmsg: Version 3.2022.1
+    datefooter: August 2026
+    versionmsg: Version 3.2022.2
 development:
   mode: release
   destination: dev
@@ -220,6 +220,7 @@ reference:
   - censusplaces
 - subtitle: "Counties"
   contents:
+  - counties_shapefile
   - counties_as_sites
   - fips_counties_from_statefips
   - fips_counties_from_state_abbrev

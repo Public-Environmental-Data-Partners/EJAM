@@ -599,6 +599,19 @@ h2, h3, h4 {
   page-break-after: always;
 }
 
+/* Start certain Additional Information sections on a fresh page in the PDF:
+   the flagged-areas section ("% OF THESE RESIDENTS WHO HAVE THIS FEATURE OR
+   AREA TYPE IN (OR OVERLAPPING) THEIR BLOCKGROUP"), plus the sections named in
+   report_sections_page_break_before (LANGUAGE IN LIMITED ENGLISH SPEAKING
+   HOUSEHOLDS, FACILITY COUNTS). The row order changed in #444, so the previous
+   breaks landed mid-section. Keep the subheader with the rows that follow it. */
+tr.report-section-page-break {
+  break-before: page;
+  page-break-before: always;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
 .report-map-section {
   break-before: page;
   break-inside: avoid-page;

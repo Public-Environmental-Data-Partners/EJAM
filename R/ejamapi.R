@@ -65,9 +65,10 @@
 #'   that is found within the specified fips. For example, all counties in specified State fips,
 #'   or all blockgroups in specified County fips.
 #'
-#' @param baseurl base API URL without the endpoint path. Defaults to [url_package()] with
-#'   type="api" (the DESCRIPTION `ejam_api_url`), the single source of the API endpoint; pass a
-#'   different value only to target another API (e.g. a staging server).
+#' @param baseurl base API URL without the endpoint path. Defaults to `url_package("api")`,
+#'   the single source of the API endpoint ([url_package()] reads the
+#'   `Config/EJAM/url_api` field from DESCRIPTION).
+#'   Pass a different value only to target another API (e.g. a staging server).
 #'
 #' @param endpoint "data", "report", or "query".
 #'
@@ -102,6 +103,7 @@
 #'
 #' @examples
 #' # also see ?EJAM::url_ejamapi()
+#' url_ejamapi()
 #' eg <- TRUE
 #'
 #' # one blockgroup
@@ -181,9 +183,10 @@
 #'
 #'    - if fileextension is "pdf", invisibly returns a list of file paths
 #'
-#' @param version optional EJAM version tag (e.g. "3.2024.0") passed to the API as
-#'   version=<ver> via [url_ejamapi()] so it can serve the matching data vintage.
-#'   Default NULL resolves to the installed package Version (from DESCRIPTION).
+#' @param version NOT YET IMPLEMENTED. Optional EJAM version tag (e.g. "3.2024.0")
+#'   sent to the API as version=<ver> so the API can be asked to serve the matching
+#'   data vintage (irrelevant until a multivintage option is implemented in the API).
+#'   Default is NULL here, meaning it uses the default found in [url_ejamapi()].
 #'
 #' @export
 #'
@@ -195,7 +198,7 @@ ejamapi <- function(
     buffer = NULL, radius = NULL,
     geometries = FALSE,
     scale = c("blockgroup", "county"),
-    baseurl = paste0(url_package("api"), "/"),   # canonical API base from DESCRIPTION (ejam_api_url)
+    baseurl = paste0(url_package("api"), "/"),   # canonical API base from DESCRIPTION Config/EJAM/url_api
     endpoint = c("data", "report", "query"),
     browse = TRUE,
     save_and_return_html = TRUE,
@@ -226,11 +229,9 @@ ejamapi <- function(
   }
   scale <- match.arg(scale)
 
-  # EJAM version tag passed to the API as version=<ver> so it can serve the matching
-  # data vintage. Default = the package Version from DESCRIPTION (NULL/omitted standalone).
-  if (is.null(version)) {
-    version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)
-  }
+  ## EJAM version tag passed to the API as version=<ver> so it can serve the matching
+  ## data vintage, if/when the API implements multivintage selection.
+  ## Default is NULL, so no version is sent unless the caller passes one explicitly.
 
   dotz = rlang::list2(...)
   if ("no_ejam" %in% names(dotz)) {

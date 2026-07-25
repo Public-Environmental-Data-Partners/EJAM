@@ -500,13 +500,13 @@ EJAM:::ejamdata_required_tag()                          # from DESCRIPTION; must
 
 git release tag = `ejamdata` release tag = DESCRIPTION `ejamdata_required_tag` =
 `data/ejamdata_version.txt`. A code-only **patch** release (for example
-`v3.2022.1`) is the exception: it keeps `ejamdata_required_tag` and the marker at
+`v3.2022.1` or `v3.2022.2`) keeps `ejamdata_required_tag` and the marker at
 the existing `v3.2022.0`, because the data did not change and the patch reuses the
-already-published `ejamdata` release.
+already-published `ejamdata` release. (There is no `v3.2022.1` or `v3.2022.2`
+release of `ejamdata`, and none is needed for a code-only patch.)
 
 This previously had been handled with a GitHub Actions workflow that tried to
-use Git LFS. That automatic workflow is no longer used and should not be
-restored.
+use Git LFS. That automatic workflow is no longer used and will not be restored.
 
 ### Bump the package version number
 
@@ -526,11 +526,11 @@ version shown in the app, the docs site, and the citation agree:
 - `NEWS.md` — when publishing, retitle the top `# EJAM 3.YYYY.x (unreleased)`
   heading to the dated release heading (for example `# EJAM 3.2022.1 (July 2026)`).
 
-`README.md` carries no hard-coded version (only a lifecycle badge), so it needs
+`README.Rmd` or `README.md` carries no hard-coded version (only a lifecycle badge), so it needs
 no edit. The deployed-API repo (EJAM-API) selects which EJAM version to build via
 the `EJAM_VERSION` build arg in its `Dockerfile` (with a matching mention in its
-`README.md`); bump that to the new tag (for example `v3.2022.1`) when redeploying
-the API. EJScreen has no EJAM-version string of its own — it reaches EJAM through
+`README.md`); bump that to the new tag when redeploying the API.
+EJScreen has no EJAM-version string of its own — it reaches EJAM through
 the API URL — so it needs no version edit for an EJAM release.
 
 

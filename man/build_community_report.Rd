@@ -23,12 +23,16 @@ build_community_report(
     `Breakdown by Sex` = c("pctmale", "pctfemale"), Health = names_health, Age =
     c("pctunder5", "pctunder18", "pctover64"), Community =
     names_community[!(names_community \%in\% c("pctmale", "pctfemale",
-    "pctownedunits_dupe"))], Poverty = names_d_extra, `Features and Location Information`
-    = c(names_e_other, names_sitesinarea, names_featuresinarea, 
-     names_flag),
-    Climate = names_climate, `Critical Services` = names_criticalservice, Other =
+    "pctownedunits_dupe"))], Poverty = names_d_extra, Climate = names_climate,
+    `Counts of Features and Overlap with Area Types` = c(names_featuresinarea, 
+    
+    names_flag), `Critical Services` = c("yesno_houseburden", "yesno_fooddesert",
+    "yesno_transdis", "pctnobroadband", "pctnohealthinsurance"), `Facility Counts` =
+    names_sitesinarea, `Analyzed Sites` = c("distance_min_avgperson", "distance_min",
+    "sitecount_unique", "sitecount_avg", "sitecount_max"), `Other Totals` =
     names_d_other_count),
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
+  flagged_areas_df = NULL,
   in_shiny = FALSE,
   filename = NULL
 )
@@ -73,9 +77,21 @@ to show in that section, in extra table of demog. subgroups, etc.}
 leave out rows in table where raw value is NA,
 as with many of names_d_language, in extra table of demog. subgroups, etc.'}
 
+\item{flagged_areas_df}{optional data.frame like ejamit()$results_summarized$flagged_areas
+(see \code{calc_flagged_areas()}). If provided, a section of rows is added just below the
+"Climate" section (or "Poverty" if there is no Climate section) of the extra table, showing what percent of
+the analyzed residents have each type of feature or area type in (or overlapping) their
+blockgroup, with color-coded ratios to the US and State averages.
+NULL (the default) omits that section, as for outputs of older EJAM versions.}
+
 \item{in_shiny}{whether the function is being called in or outside of shiny - affects location of header}
 
-\item{filename}{path to file to save HTML content to; if null, returns as string (used in Shiny app)}
+\item{filename}{optional path to an .html file; if provided, the assembled HTML
+content is also written to that file. The HTML is returned either way.}
+}
+\value{
+HTML content of the report body (header and tables) as an
+\code{\link[htmltools:HTML]{htmltools::HTML()}} object, whether or not \code{filename} was provided.
 }
 \description{
 Just assembles the report, given the header info, tables, map, and plot

@@ -73,7 +73,7 @@
     # ignoring sortbysize because simple=TRUE
 
     "NAICS", "SIC", "avg.in.us", "bg_cenpop2020", "bgpts", "blockgroupstats",
-    "censusplaces", "custom", "ejamdata_version", "ejampackages",
+    "censusplaces", "counties_shapefile", "custom", "ejamdata_version", "ejampackages",
     "epa_programs", "epa_programs_defined", "formulas_ejscreen_acs",
     "formulas_ejscreen_acs_disability",
     "formulas_ejscreen_demog_index", "frsprogramcodes", "high_pctiles_tied_with_min",
@@ -171,7 +171,7 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
     "..names_these_avg", "..names_these_ratio_to_avg",
     "..names_these_ratio_to_state_avg", "..names_these_state_avg",
     "..neededvars", "..otheravailable", "..output_vars",
-    "..popmeancols_inbgstats", "..rationames", "..score_colname",
+    "..pctvars", "..popmeancols_inbgstats", "..rationames", "..score_colname",
     "..scorewts_colname", "..sharednames", "..topoints_id_colname",
     "..usefulcolumns", "..v", "..varname", "..vars", "..vnames_ST",
     "..vnames_e", "AIR_PROGRAM_CODE_SUBPARTS", "BLOCK_X", "BLOCK_Y",
@@ -180,7 +180,7 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
     "Locations", "N", "NAME", "OBJECTID", "PGM_SYS_ACRNMS",
     "PRIMARY_NAME", "Package", "Priority", "REGISTRY_ID", "Ratio",
     "V1", "aboutpage_texts", "acs_bgfips", "acs_tractfips",
-    "acs_version_global", "arcgis_address", "area", "area_fallback",
+    "acs_version_global", "analyzed_pop", "arcgis_address", "area", "area_fallback",
     "arealand", "areawater", "avg.pctdisability", "avg.pctlingiso",
     "avg.pctlowinc", "avg.pctlowlifex", "avg.pctlths", "avg.pctmin",
     "bg_suffix", "bgej", "bgid2fips", "bgid2fips_arrow", "bgpop",

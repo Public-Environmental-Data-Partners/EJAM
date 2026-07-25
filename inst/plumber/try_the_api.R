@@ -1,205 +1,116 @@
 ####################################################### #
-# TO TRY plumber API ON LOCAL SERVER ####
+# TO TRY THE EJAM plumber API ON A LOCAL SERVER ####
 ####################################################### #
-####################################################### #
-# you could START UP THE API this way below,
-# or simply open the plumber.R file in RStudio and click "Run API" button.
+#
+# The local API is a composite of two routers (see plumber.R in this folder):
+#
+#  ROOT   = verbatim mirror of the deployed EJAM-API (ejam-api/rest_controller.r;
+#           see ejam-api/SYNC.md), so /report, /data, /query, /handoff and the
+#           Swagger docs at /__docs__/ behave like https://api.ejanalysis.com
+#  /draft = draft endpoints that exist only in this package (draft/plumber.R):
+#           /draft/echo, /draft/ejamit, /draft/ejamit_csv, /draft/report2,
+#           /draft/reportpost, /draft/ejam2report, /draft/ejam2excel,
+#           /draft/getblocksnearby, /draft/get_blockpoints_in_shape,
+#           /draft/doaggregate, /draft/dataset
+#
+# START IT (in a background R process; returns a handle you can $kill()):
 
-# use the pr() function to translate this R file into a Plumber API
-# The pr object encapsulates all the logic represented in your plumber.R file.
-# To bring the API to life use the pr_run() method.
-# You should see a message about your API running on your computer on port 8000.
-# The API will continue running in your R session until you press the Esc key.
-####################################################### #
-## to use the INSTALLED version:
-##
-## If in a package, plumber.R MUST BE PUT IN /inst/plumber/  of SOURCE package,
-## since installing deletes folders like EJAM/plumber/
-##  and moves all in /inst/   to the root of installed version!
-## But while testing it is confusing since the location of the
-## plumber.R file differs from where it will be in the installed package.
-## This would refer to where it will be once installed:
-## what was in inst folder of source pkg, installed version puts in root folder
-# rstudioapi::restartSession(clean = TRUE)
-# fname_installed <- system.file("plumber/plumber.R", package = "EJAM")
-## or
-# rstudioapi::restartSession(clean = TRUE)
-# library(EJAM)
-# fname_installed <- system.file("plumber/plumber.R", package = "EJAM")
-####################################################### #
-## to use the CURRENT CHECKED-OUT LOCAL SOURCE version:
-##
-## This would refer to where it is during testing:
-# rstudioapi::restartSession(clean = TRUE)
-# library(EJAM) # must do this before load_all() for it to correctly create  cbind(global_defaults_package), e.g., global_defaults_package$report_logo
-# devtools::load_all(".")
-# fname_source <- system.file("plumber/plumber.R", package = "EJAM")
-## or
-# fname_source <- "./inst/plumber/plumber.R"
-###################################################### #
-# fname_source <- "./inst/plumber/rest_controller_ejam-api.R"
-# source("~/R PACKAGES/EJAM/inst/plumber/rest_controller_ejam-api.R")
-### source version
-# fname_source <- normalizePath("./inst/plumber/plumber.R")
-### installed version unless used load_all() after library()
-# fname_source <- system.file("plumber/plumber.R", package = "EJAM")
-# test_host <- "127.0.0.1"
-# test_port <- 3035
-# test_url <- paste0("http://", test_host, ":", test_port)
+apiproc <- EJAM:::ejamapi_local()
+# or serve only the deployed-API mirror, without drafts:
+# apiproc <- EJAM:::ejamapi_local(drafts = FALSE)
 
-
-ejamapi_local()
-
+## to use the CURRENT CHECKED-OUT LOCAL SOURCE version of EJAM & these files:
+# library(EJAM); devtools::load_all(".")   # then ejamapi_local() as above
+## NOTE: rendering PDF reports locally requires pandoc
+##  (e.g., Sys.setenv(RSTUDIO_PANDOC = ...) if running outside RStudio).
 
 ####################################################### #
-## another idea:
-# library(job)
-# empty({
-#   library(plumber)
-#   pr_run(pr(file =
-#               system.file("plumber/plumber.R", package = "EJAM")
-#   ))
-# })
+# TRY IT ####
 
-
-####################################################### #
-# If you’re running this code locally on your personal machine,
-# you can do what is below in a separate R session than the one running the API:
-
-# BUT YOU HAVE TO USE THE RIGHT FULL IP:PORT WHICH CHANGES EACH TIME unless you specify it
-
-# PORT = 3073
-PORT <- test_port # or whatever
-##############  #
-# try echo
-
-#  https://127.0.0.1:7705/echo?msg=asdf
-# browseURL(paste0("https://localhost:", PORT, "/echo"))
+test_host <- "127.0.0.1"
+test_port <- 3035
+test_url <- paste0("http://", test_host, ":", test_port)
 
 if (FALSE) {
-  ##############  #
-  # try ejamit
 
-  url2 <- "http://127.0.0.1:3035/getblocksnearby?lat=33&lon=-99&radius=2"
-  req2 <- httr2::request(url2)
-  httr2::req_dry_run(req2)
-  out2 <- httr2::req_perform(req2)
-  s2b <- data.table::rbindlist(httr2::resp_body_json(out2))   ####  *********
-  ##############  #
-  url2 <- paste0("http://127.0.0.1:", PORT, "/report?lon=-101&lat=36&radius=1")
+  ############## #
+  # interactive docs (Swagger UI); the root path redirects here too
+  browseURL(paste0(test_url, "/__docs__/"))
 
-  # url2 = paste0("https://127.0.0.1:", PORT, "/ejamit?lon=-101&lat=36&radius=1")
-  req2 <- httr2::request(url2)
-  httr2::req_dry_run(req2)
-  out2 <- httr2::req_perform(req2)
-  class(out2)
-  str(out2)
-  print(out2)
-  ##############  #
+  ############## #
+  # deployed-API endpoints, served locally at the same paths as production
 
-  urlx <- (url_ejamapi(sitepoints = testpoints_10[1, ], radius = 3.14, baseurl = "http://127.0.0.1:3035/report?")) # buffer vs radius as param in url?
-  print(urlx)
+  # single-site report (defaults to pdf, like production)
+  browseURL(paste0(test_url, "/report?lat=34.05&lon=-118.24&radius=3"))
+  # ... as html
+  browseURL(paste0(test_url, "/report?lat=34.05&lon=-118.24&radius=3&fileextension=html"))
+  # multisite (comma-separated), aggregate report
+  browseURL(paste0(test_url, "/report?lat=34,35&lon=-118,-117&sitenumber=0"))
+  # per-site report labeled "Site 3" (EJAM#470 / EJAM-API#51)
+  browseURL(paste0(test_url, "/report?lat=34.05&lon=-118.24&sitenumber=3"))
+  # FIPS report; buffer defaults to 0 for fips/shape (EJAM-API#49)
+  browseURL(paste0(test_url, "/report?fips=10001"))
 
-  out2 <- httr2::req_perform(httr2::request(urlx))
+  # data endpoint (POST)
+  df <- EJAM::ejamapi(fips = "10001", scale = "blockgroup", endpoint = "data",
+                      baseurl = paste0(test_url, "/"))
 
+  # query endpoint (POST; paginated as of EJAM-API#32)
+  req <- httr2::request(paste0(test_url, "/query")) |>
+    httr2::req_method("POST") |>
+    httr2::req_url_query(attribute = "pctlowinc", value = 0.9, page = 1, limit = 100)
+  out <- httr2::resp_body_json(httr2::req_perform(req))
+  str(out$pagination)
 
-  browseURL(url2)
-  #  paste0("https://127.0.0.1:", PORT, "/ejamit?lat=31.34653&lon=-92.40151&radius=1.2&attachment=false&test=false")
+  # handoff round trip (POST a payload, get a token, GET it back)
+  tok <- httr2::request(paste0(test_url, "/handoff")) |>
+    httr2::req_body_json(list(fips = list("10001"))) |>
+    httr2::req_perform() |> httr2::resp_body_json()
+  httr2::request(paste0(test_url, "/handoff/", tok$token)) |>
+    httr2::req_perform() |> httr2::resp_body_json()
 
-  ##############  #
+  ############## #
+  # draft-only endpoints, at /draft
 
-  #  31.34653 -92.40151
-  browseURL(paste0("https://localhost:", PORT, "/ejamit"))
+  browseURL(paste0(test_url, "/draft/echo?msg=asdf"))
 
+  urlx <- paste0(test_url, "/draft/getblocksnearby?lat=33&lon=-99&radius=2")
+  outx <- httr2::req_perform(httr2::request(urlx))
+  s2b <- data.table::rbindlist(httr2::resp_body_json(outx))
 
-  url2 <- paste0("https://127.0.0.1:", PORT, "/ejamit?lon=-101&lat=36&radius=1")
-  browseURL(url2)
+  # precalculated sample result, as json or csv
+  browseURL(paste0(test_url, "/draft/ejamit?test=true"))
+  browseURL(paste0(test_url, "/draft/ejamit_csv?lon=-101&lat=36&radius=1"))
 
+  # a package dataset
+  # browseURL(paste0(test_url, "/draft/dataset?fname=testpoints_10"))
 
-  url2csv <- paste0("https://127.0.0.1:", PORT, "/ejamit_csv?lon=-101&lat=36&radius=1")
-  browseURL(url2csv)
-
-
-  rm(url2, req2, out2)
-
-  ##############  #
-  # try getblocksnearby
-  #
-  # browseURL(paste0("https://localhost:", PORT, "/getblocksnearby"))
-
-  url3 <- paste0("https://127.0.0.1:", PORT, "/getblocksnearby?lon=-101&lat=39&radius=1")
-
-  req3 <- httr2::request(url3)
-  out3 <- httr2::req_perform(req3)
-  class(out3)
-  str(out3)
-  print(out3)
-
-  browseURL(url3)
-
-
-  ##############  #
-  # try doaggregate
-  #
-  # browseURL(paste0("http://localhost:", PORT, "/doaggregate"))
+  ############## #
+  # stop the background server when done
+  apiproc$kill()
 }
 
-# ####################################################### # # ####################################################### #
-# ####################################################### # # ####################################################### #
-# Help/notes on setting up API:
+####################################################### #
+# PREVIEWING A PROPOSED EJAM-API CHANGE ####
+#
+# 1. Edit inst/plumber/ejam-api/rest_controller.r locally (normally verbatim --
+#    edits are ONLY for previewing a change you intend to propose upstream).
+# 2. ejamapi_local() (after devtools::load_all() or reinstall) and test it here.
+# 3. Submit the identical diff as a PR to
+#    https://github.com/Public-Environmental-Data-Partners/EJAM-API
+#    then re-sync the mirror after it merges (see ejam-api/SYNC.md).
+#
+####################################################### #
+# Help/notes on plumber APIs:
 #
 # browseURL("https://www.rplumber.io/articles/quickstart.html")
 # browseURL("https://www.rplumber.io/articles/routing-and-input.html")
-# browseURL("https://httr.r-lib.org/articles/api-packages.html")
-# ####################################################### #
-#  input formats
-# parser_csv(): CSV parser. See readr::read_csv() for more details.
-# parser_read_file(): Helper parser that writes the binary body to a file and reads it back again using read_fn. This parser should be used when reading from a file is required.
-# parser_feather(...) See arrow::read_feather() for more details.
-# parser_json(...) See jsonlite::parse_json() for more details. (Defaults to using simplifyVectors = TRUE)
-# parser_read_file(read_fn = readLines)
-# parser_multi(): Multi part parser. This parser will then parse each individual body with its respective parser. When this parser is used, req$body will contain the updated output from webutils::parse_multipart() by adding the parsed output to each part. Each part may contain detailed information, such as name (required), content_type, content_disposition, filename, (raw, original) value, and parsed (parsed value). When performing Plumber route argument matching, each multipart part will match its name to the parsed content.
+#
+# input parsers: parser_csv(), parser_json(), parser_multi(), parser_read_file(), ...
+# output serializers: serializer_json(), serializer_csv(), serializer_html(),
+#   as_attachment(), and @serializer contentType for full control of the response
+#   (used by the /report endpoints and /draft/ejam2excel).
+# static files: @assets (the mirror serves ./assets at /assets; mounting static
+#   files at root "/" would shadow the /__docs__/ Swagger UI).
+# plumber.maxRequestSize option limits request body size (default unlimited).
 ####################################################### #
-#  output formats
-# # as_attachment()  and  serializer_headers()
-####################################################### #
-# you can leverage the @serializer contentType annotation
-# which does no serialization of the response but specifies the contentType header.
-# You can use this annotation when you want more control over the response that you send.
-#
-# #* @serializer contentType list(type="application/pdf")
-# #* @get /pdf
-# function(){
-#   tmp <- tempfile()
-#   pdf(tmp)
-#   plot(1:10, type="b")
-#   text(4, 8, "PDF from plumber!")
-#   text(6, 2, paste("The time is", Sys.time()))
-#   dev.off()
-#
-#   readBin(tmp, "raw", n=file.info(tmp)$size)
-# }
-#
-# Running this API and visiting http://localhost:8000/pdf
-# will download the PDF generated from R
-# (or display the PDF natively, if your client supports it).
-
-####################################################### #
-# defining routers that serve a directory of static files:
-# Static file routers are just a special case of Plumber routers created using pr_static().
-# For example
-#
-# pr() %>%
-#   pr_static("/assets", "./myfiles") %>%
-#   pr_run()
-# This will make the files and directories stored in the ./myfiles directory
-# available on your API under the /assets/ path.
-
-####################################################### #
-# plumber.maxRequestSize
-# Maximum length in bytes of request body. Body larger than maximum are rejected with http error 413. 0 means unlimited size. Defaults to 0.
-# PlumberEndpoint$new()  creates a new endpoint from code
-#
-# pr_set_serializer() - Sets the default serializer of the router.
-# pr_set_error() - Sets the error handler which gets invoked if any filter or endpoint generates an error.
-# pr_set_404() - Sets the handler that gets called if an incoming request can’t be served by any filter, endpoint, or sub-router.

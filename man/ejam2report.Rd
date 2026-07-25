@@ -24,10 +24,13 @@ ejam2report(
     `Breakdown by Sex` = c("pctmale", "pctfemale"), Health = names_health, Age =
     c("pctunder5", "pctunder18", "pctover64"), Community =
     names_community[!(names_community \%in\% c("pctmale", "pctfemale",
-    "pctownedunits_dupe"))], Poverty = names_d_extra, `Features and Location Information`
-    = c(names_e_other, names_sitesinarea, names_featuresinarea, 
-     names_flag),
-    Climate = names_climate, `Critical Services` = names_criticalservice, Other =
+    "pctownedunits_dupe"))], Poverty = names_d_extra, Climate = names_climate,
+    `Counts of Features and Overlap with Area Types` = c(names_featuresinarea, 
+    
+    names_flag), `Critical Services` = c("yesno_houseburden", "yesno_fooddesert",
+    "yesno_transdis", "pctnobroadband", "pctnohealthinsurance"), `Facility Counts` =
+    names_sitesinarea, `Analyzed Sites` = c("distance_min_avgperson", "distance_min",
+    "sitecount_unique", "sitecount_avg", "sitecount_max"), `Other Totals` =
     names_d_other_count),
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
   footer_version_number = NULL,
@@ -39,7 +42,8 @@ ejam2report(
   return_html = FALSE,
   launch_browser = TRUE,
   shape = NULL,
-  shapefile = NULL
+  shapefile = NULL,
+  sitenumber_label = NULL
 )
 }
 \arguments{
@@ -108,14 +112,22 @@ as with many of names_d_language, in extra table of demog. subgroups, etc.}
 \item{footer_version_number, footer_date, footer_text, footer_html}{to customize the report footer - see \code{\link[=generate_report_footer]{generate_report_footer()}}
 Should provide footer_date to ensure user's timezone is used to determine today's date.}
 
-\item{fileextension}{html or .html or pdf or .pdf - use "pdf" to create a PDF version of the report.
+\item{fileextension}{html or .html or pdf or .pdf (case-insensitive) - use "pdf" to create a PDF version of the report.
 PDF generation uses \code{\link[pagedown:chrome_print]{pagedown::chrome_print()}} which requires the \code{pagedown} package and a
 Chrome/Chromium browser to be available on the system.
 The PDF preserves the full HTML/CSS styling and supports smart page breaks.
 If PDF-related dependencies are unavailable, PDF generation stops with a clear error.
 PDF output is required when this option is selected; it is not optional.}
 
-\item{filename}{optional path and name for report file, used by web app}
+\item{filename}{optional path and/or name for report file. How it is interpreted:
+a bare name like "myreport.html" is saved in tempdir();
+a "./"-prefixed or multi-folder path like "./myreport.html" or "out/myreport.html"
+is saved relative to the working directory (the folder is created if necessary,
+with a warning and fallback to tempdir() if it cannot be created);
+an existing folder like "~/Desktop" gets an auto-generated report name inside it;
+a missing or invalid extension is fixed based on the fileextension parameter, and
+a valid extension in filename (.html or .pdf) overrides the fileextension parameter
+(with a warning if the two conflict).}
 
 \item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
 
@@ -124,6 +136,16 @@ PDF output is required when this option is selected; it is not optional.}
 \item{shape}{alias (synonym) for shp}
 
 \item{shapefile}{alias (synonym) for shp}
+
+\item{sitenumber_label}{optional, display-only override (a number or short text) of the site
+identifier shown in the 1-site report header and in the report map's marker popup,
+in place of the \code{sitenumber} row index.
+\code{sitenumber} still selects which row of \code{ejamitout$results_bysite} to report on; this
+only changes the label displayed. Useful when one site from a larger analysis has been
+re-analyzed alone -- e.g., the EJAM API per-site report links made by \code{\link[=url_ejamapi]{url_ejamapi()}}
+re-analyze a single site that was row N of the original multisite results, so its row
+index in the regenerated results (1) is not the site number the user expects to see.
+A number N is shown as "Site N"; text is shown as-is. Ignored for a multisite report.}
 }
 \value{
 URL of temp file or object depending on return_html,
@@ -131,6 +153,16 @@ and has side effect of launching browser to view it depending on return_html
 }
 \description{
 Get the html text or the path to the html file with a multisite summary or community report
+}
+\details{
+The report also includes rows showing what percent of the analyzed residents
+have each type of feature (school, hospital, place of worship) or area type
+(Tribal, nonattainment, impaired waters, CEJST/IRA disadvantaged, etc.)
+in (or overlapping) their blockgroup, with ratios to the US and State averages
+(see \code{\link[=ejam2areafeatures]{ejam2areafeatures()}}). For a multisite report those come from
+\code{ejamitout$results_summarized$flagged_areas}; for a 1-site report they are
+calculated for just that site. The rows are omitted if that information
+is unavailable (e.g., for outputs saved by older EJAM versions).
 }
 \examples{
 #out <- ejamit(testpoints_10, radius = 3, include_ejindexes = TRUE)

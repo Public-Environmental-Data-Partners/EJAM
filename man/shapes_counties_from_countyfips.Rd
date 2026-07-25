@@ -11,7 +11,8 @@ shapes_counties_from_countyfips(
     c(paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
     "USA_Boundaries_2022/FeatureServer/2/query"),
     paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
-    "USA_Counties_and_States_with_PR/FeatureServer/0/query"), "cartographic", "tiger")[3]
+    "USA_Counties_and_States_with_PR/FeatureServer/0/query"), "cartographic", "tiger")[3],
+  use_local = TRUE
 )
 }
 \arguments{
@@ -22,7 +23,17 @@ as from fips_counties_from_state_abbrev("DE")}
 just some variables like SQMI, POPULATION_2020, etc., or none}
 
 \item{myservice}{URL of feature service to get shapes from
-or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.}
+or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
+Note that "cartographic" (the default) is normally served from the
+\link{counties_shapefile} dataset built into this package, without downloading - see \code{use_local}.}
+
+\item{use_local}{if TRUE (the default) and \code{myservice} is "cartographic",
+County boundaries come from the \link{counties_shapefile} dataset built into this
+package instead of being downloaded, which avoids a network round-trip
+(and avoids needing a CENSUS_API_KEY) for every County map or report.
+Downloading is still used as a fallback for any FIPS not found in that dataset.
+Set FALSE to force downloading. Ignored when \code{myservice} is "tiger" or a
+feature-service URL, since those request different boundaries.}
 }
 \value{
 spatial object via \code{\link[sf:st_read]{sf::st_read()}}

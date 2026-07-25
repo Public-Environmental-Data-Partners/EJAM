@@ -305,3 +305,107 @@ testthat::test_that("shapes_from_fips misc cases", {
 ################ ################# ################# ################# ################# #
 
 
+
+################ ################# ################# ################# ################# #
+
+# counties_shapefile built into the package, used instead of downloading ####
+
+testthat::test_that("counties_shapefile dataset looks right", {
+
+  expect_true({"sf" %in% class(counties_shapefile)})
+  expect_true({all(c("GEOID", "geometry") %in% names(counties_shapefile))})
+  # counties and county equivalents in the 50 states, DC, PR, and island areas
+  expect_true({NROW(counties_shapefile) > 3000})
+  expect_false({any(duplicated(counties_shapefile$GEOID))})
+  expect_true({all(nchar(counties_shapefile$GEOID) == 5)})
+})
+
+testthat::test_that("shapes_counties_from_countyfips_local() serves known county fips", {
+
+  myfips <- c("10001", "10003", "10005")
+  shp <- EJAM:::shapes_counties_from_countyfips_local(myfips)
+
+  expect_true({"sf" %in% class(shp)})
+  expect_identical(myfips, shp$FIPS)          # same order as input
+  expect_equal(NROW(shp), length(myfips))     # one row per input fips
+  expect_false({any(sf::st_is_empty(shp))})   # real boundaries, not empty polygons
+})
+
+testthat::test_that("shapes_counties_from_countyfips_local() returns NULL rather than partial results", {
+
+  # if any requested fips is not in the built-in dataset, the caller must be able
+  # to fall back to downloading, instead of getting an answer missing some counties
+  expect_null({EJAM:::shapes_counties_from_countyfips_local(c("10001", "99999"))})
+  expect_null({EJAM:::shapes_counties_from_countyfips_local("99999")})
+})
+
+testthat::test_that("built-in county bounds match what downloading returns", {
+
+  testthat::skip_if_offline()
+  testthat::skip_if(nchar(Sys.getenv("CENSUS_API_KEY")) == 0,
+                    "no CENSUS_API_KEY, so cannot compare against the download path")
+
+  myfips <- c("10001", "10003", "10005")
+  junk <- capture.output({
+    suppressWarnings({
+      local_shp <- EJAM:::shapes_counties_from_countyfips(myfips, use_local = TRUE)
+      dl_shp    <- EJAM:::shapes_counties_from_countyfips(myfips, use_local = FALSE)
+    })
+  })
+
+  expect_identical(names(local_shp), names(dl_shp))
+  # every non-geometry column should be identical no matter where bounds came from
+  expect_equal(sf::st_drop_geometry(local_shp), sf::st_drop_geometry(dl_shp),
+               ignore_attr = TRUE)
+  # ... and so should the GEOMETRIES: both paths must serve the same cartographic
+  # vintage (acs_endyear()), or use_local changes *which* boundaries are served,
+  # not just where they come from (review finding on PR #472)
+  expect_equal(sf::st_coordinates(local_shp), sf::st_coordinates(dl_shp))
+})
+
+testthat::test_that("built-in county bounds vintage matches the runtime download vintage", {
+  # offline guard for the same contract as above: the dataset must be generated
+  # from the same cartographic vintage the download path requests (acs_endyear());
+  # regenerate via data-raw/datacreate_counties_shapefile.R if this ever fails
+  expect_true(grepl(paste0("GENZ", acs_endyear()),
+                    attr(counties_shapefile, "source_url"), fixed = TRUE))
+})
+
+testthat::test_that("county bounds work with no CENSUS_API_KEY (as on the API server)", {
+
+  # the whole point of building the bounds into the package: a container with no
+  # Census API key and no network can still map a County
+  oldkey <- Sys.getenv("CENSUS_API_KEY")
+  on.exit(Sys.setenv(CENSUS_API_KEY = oldkey), add = TRUE)
+  Sys.setenv(CENSUS_API_KEY = "")
+
+  myfips <- c("10001", "10003", "10005")
+  expect_no_warning({
+    shp <- EJAM:::shapes_counties_from_countyfips(myfips)
+  })
+  expect_identical(myfips, shp$FIPS)
+})
+
+testthat::test_that("use_local=FALSE still uses the download path", {
+
+  # Proof that the built-in bounds are really bypassed: with no CENSUS_API_KEY,
+  # the download path warns about the missing key before it tries the network.
+  # If use_local=FALSE were silently served locally, no such warning would occur.
+  # try() swallows whatever the ensuing network attempt does, which is not the point here.
+  oldkey <- Sys.getenv("CENSUS_API_KEY")
+  on.exit(Sys.setenv(CENSUS_API_KEY = oldkey), add = TRUE)
+  Sys.setenv(CENSUS_API_KEY = "")
+
+  warns <- character(0)
+  junk <- capture.output({
+    withCallingHandlers(
+      try(EJAM:::shapes_counties_from_countyfips("10001", use_local = FALSE), silent = TRUE),
+      warning = function(w) {
+        warns <<- c(warns, conditionMessage(w))
+        invokeRestart("muffleWarning")
+      }
+    )
+  })
+  expect_true({any(grepl("CENSUS_API_KEY", warns))})
+})
+################ ################# ################# ################# ################# #

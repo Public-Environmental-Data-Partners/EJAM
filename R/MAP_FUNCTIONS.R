@@ -17,12 +17,18 @@
 #' @param radius_buffer optional but can be obtained from out
 #' @param circle_color optional
 #' @param launch_browser set TRUE to have it launch browser to show map.
+#' @param sitenumber_label optional, display-only override (a number or short text) of the
+#'   site number shown in map popups, passed to [popup_from_ejscreen()].
+#'   Only relevant when mapping a single site -- see [ejam2report()], whose
+#'   sitenumber_label parameter this supports.
 #'
 #' @return map html widget
 #'
 #' @keywords internal
 #'
-map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#000080', launch_browser = FALSE) {
+map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#000080', launch_browser = FALSE,
+                              sitenumber_label = NULL # name-only, at end to avoid arg shift
+                              ) {
 
   ## to use it in shiny app:
   # shp <- data_uploaded()  # reactive in shiny app already has ejam_uniq_id but outside shiny shp might lack that
@@ -111,7 +117,8 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
   } else {
     # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
     pops <- popup_from_ejscreen(
-      shpout %>% sf::st_drop_geometry()
+      shpout %>% sf::st_drop_geometry(),
+      sitenumber_label = sitenumber_label
     )
     if (is.null(radius_buffer)) {
       radius_buffer <- out$results_bysite$radius.miles[1]
@@ -558,7 +565,21 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
     if (length(setdiff2(names(shapes), names(testoutput_ejamit_10pts_1miles$results_overall))) < 3) {
       popup = popup_from_ejscreen(sf::st_drop_geometry(shapes))# linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
     } else {
-      popup <- popup_from_any(sf::st_drop_geometry(shapes))
+      # Some columns (e.g. "EJAM Report", "EJSCREEN Map") hold EJAM-generated <a href>
+      # links, so escaping them would show raw markup like "&lt;a href=..." in the
+      # popup. popup_from_df_with_urls() skips escaping for ONLY those named columns
+      # and still escapes everything else, so arbitrary/user-supplied columns stay
+      # protected (the XSS fix in e28936dd).
+      popdf <- sf::st_drop_geometry(shapes)
+      linkcols <- intersect(
+        names(popdf),
+        as.character(sapply(global_or_param("default_reports"), function(z) z$header))
+      )
+      if (length(linkcols) > 0) {
+        popup <- popup_from_df_with_urls(popdf, column_names_urls = linkcols)
+      } else {
+        popup <- popup_from_any(popdf)
+      }
     }
   }
 

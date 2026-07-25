@@ -54,7 +54,7 @@ test_that("bgej is classified as EJSCREEN annual update data", {
 
 test_that("Arrow datasets use the DESCRIPTION-required ejamdata tag by default", {
   # Derive from DESCRIPTION rather than hardcoding, so this stays correct across
-  # the annual-vintage release branches (v3.2024.0 / v3.2023.0 / v3.2022.0).
+  # annual-vintage release branches (e.g., v3.2024.x / v3.2023.x / v3.2022.x).
   expected_tag <- EJAM:::ejamdata_required_tag()
   expect_match(expected_tag, "^v[0-9]")
 
@@ -142,6 +142,16 @@ test_that("local Arrow release marker reader treats blank markers as missing", {
 ########################################################## #
 
 test_that("ejamit no-block-centroid invalid messages distinguish site types", {
+  expect_setequal(
+    unname(EJAM:::ejamit_reportable_invalid_messages()),
+    c(
+      "no block centroids (fips boundaries not obtained)",
+      "no block centroids (polygon too small for low pop density)",
+      "no block centroids (radius too small for low pop density)",
+      "blocks with residents found but unable to aggregate",
+      "blocks found but zero residents"
+    )
+  )
   expect_equal(
     EJAM:::ejamit_no_block_centroids_message("fips"),
     "no block centroids (fips boundaries not obtained)"
@@ -154,6 +164,21 @@ test_that("ejamit no-block-centroid invalid messages distinguish site types", {
     EJAM:::ejamit_no_block_centroids_message("latlon"),
     "no block centroids (radius too small for low pop density)"
   )
+})
+########################################################## #
+
+test_that("ejamit final output uses zero population for invalid sites", {
+  bysite <- data.table::data.table(
+    valid = c(TRUE, FALSE, FALSE),
+    pop = c(NA_real_, NA_real_, 12),
+    pctlowinc = c(NA_real_, NA_real_, NA_real_)
+  )
+
+  result <- EJAM:::ejamit_invalid_site_pop_zero(bysite)
+
+  expect_equal(result$pop, c(NA_real_, 0, 0))
+  expect_true(all(is.na(result$pctlowinc)))
+  expect_equal(result$valid, c(TRUE, FALSE, FALSE))
 })
 ########################################################## #
 
@@ -422,20 +447,17 @@ test_that("ejamit() still returns results_bysite with same EJAM Report column", 
     suppressMessages({
       # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
-      ## Compare column 1, the EJAM Report URLs. Each URL embeds the current package
-      ## version (version=X.Y.Z), which legitimately changes every release, so
-      ## normalize it before comparing -- otherwise this structural check breaks on
-      ## each version bump (the saved reference was built at an earlier version).
-      ## Likewise normalize the API base URL and the fileextension= parameter,
-      ## which legitimately changed (branded api.ejanalysis.com base URL, explicit
-      ## fileextension=pdf) without regenerating the stored reference: this check
-      ## is about the per-site query values (lat/lon/buffer/sitetype), while the
-      ## URL base and format are covered by the URL function tests.
+      ## Compare column 1, the EJAM Report URLs. The stored reference was regenerated
+      ## in #488, so it now matches current url_ejamapi() output exactly (branded
+      ## api.ejanalysis.com host, no version= tag, per-site sitenumber=, current
+      ## lat/lon formatting). The workarounds that were needed while the reference was
+      ## stale are therefore gone, and this is now a strict comparison -- which also
+      ## means it again covers sitenumber=, the host, and fileextension=.
+      ## The one thing still normalized is version=: url_ejamapi() omits it by default,
+      ## but if it is ever re-enabled it embeds the package version, which changes on
+      ## every release and would otherwise break this check at each version bump.
       norm_report_url <- function(x) {
-        x <- gsub("version=[0-9]+\\.[0-9]+\\.[0-9]+", "version=VER", x)
-        x <- gsub("https://[^/\"]+/report\\?", "https://HOST/report?", x)
-        x <- gsub("&fileextension=[[:alnum:]]+", "", x)
-        x
+        gsub("&version=[^&\"]*", "", x)
       }
       expect_equal(
         norm_report_url(as.vector(unlist(ejamitoutnow$results_bysite[,1]))),
