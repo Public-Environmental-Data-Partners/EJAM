@@ -33,8 +33,17 @@ new information in the community report about where people live.
     - docs: [apidocs.ejanalysis.com](https://apidocs.ejanalysis.com)
   
 - **Bugs fixed**, including a crash when arriving from EJScreen's "Send to EJAM"
-  button, intermittent problems uploading files, and 
-  downloaded reports that came out empty (details below).
+  button and downloaded reports that came out empty (details below).
+
+- **Intermittent upload failures on the hosted app are being fixed alongside
+  this release** (#268), but by a change to the hosting setup rather than by
+  anything in this package. The production app runs on two servers, and an
+  upload could be sent to the one that was not holding your session, which
+  answered "Not Found" -- roughly half the time. The load balancer is being set
+  to keep each session on a single server, the same fix applied in early 2026
+  that was later lost when the servers were rebuilt from their configuration
+  files. Because it is a hosting change, installing v3.2022.2 does not by itself
+  resolve it; the two are simply being done at the same time.
 
 ## Improvements
 
