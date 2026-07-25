@@ -421,6 +421,28 @@ test_that("map_shapes_leaflet_proxy() keeps popup alignment after dropping empty
   expect_equal(map2popups_polygon(x3), c("already filtered first", "already filtered third"))
 })
 ############################################## #
+
+test_that("shapefile upload map path keeps uploaded shapes as sf", {
+  # Regression test for issue #136:
+  # the app's SHP upload branch used to coerce uploaded polygons to sp, then call
+  # sf::st_drop_geometry() on that object, which logged a UseMethod('st_geometry')
+  # error even though the map still rendered.
+  d_uploads <- testinput_shapes_2 %>%
+    dplyr::select(-any_of(c("valid", "invalid_msg"))) %>%
+    sf::st_zm()
+
+  expect_s3_class(d_uploads, "sf")
+  expect_no_error({
+    x <- map_shapes_leaflet_proxy(
+      leaflet::leaflet(),
+      shapes = d_uploads,
+      popup = popup_from_df(d_uploads %>% sf::st_drop_geometry())
+    )
+  })
+  expect_true(inherits(x, "leaflet"))
+})
+############################################## #
+
 test_that("map_shapes_mapview() if mapview pkg available works", {
   junk = capture_output({
     suppressWarnings({

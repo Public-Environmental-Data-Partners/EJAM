@@ -2812,9 +2812,8 @@ app_server <- function(input, output, session) {
       }
       d_uploads <- data_uploaded() %>%
         dplyr::select(-any_of(c('valid', 'invalid_msg'))) %>%
-        sf::st_zm() %>% sf::as_Spatial() # st_zm() was already done? ***
+        sf::st_zm() # st_zm() was already done? ***
 
-      # d_uploads is an object of class "SpatialPolygonsDataFrame" not "sf" and "data.frame" like data_uploaded() here is
       leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
         map_shapes_leaflet_proxy(shapes = d_uploads, popup = popup_from_df(d_uploads %>% sf::st_drop_geometry()))
 
