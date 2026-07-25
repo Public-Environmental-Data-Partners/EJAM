@@ -32,37 +32,23 @@ conditions at those places to the rest of the country.
 
 ## What’s New in v3.2022.2 (August 2026)
 
-The web app is noticeably quicker. The Site-by-Site table on the Details
-tab now appears in well under a second for a 1,000-site analysis instead
-of roughly six, PDF reports finish about seven seconds sooner, and
-County reports no longer stop to download boundaries – those are built
-into the package now, so Puerto Rico counties map correctly and no
-Census API key is needed.
+The web app is quicker: the Details tab’s Site-by-Site table appears in
+under a second for a 1,000-site analysis instead of six, PDF reports
+finish seven seconds sooner, and County reports no longer pause to
+download boundaries.
 
-The community report gained a set of rows showing what share of the
-analyzed residents live in a block group that contains a school,
-hospital, or place of worship, or that overlaps a Tribal area,
-nonattainment area, impaired waters, or a disadvantaged-community
-designation – each compared against both the US and the relevant State
-average. Those ratio-to-US and ratio-to-State columns are now shown by
-default in the public app, not only the private one, and `ejam2excel()`
-writes a matching “Area Features” tab.
+The community report gained rows showing the share of residents whose
+block group holds a school, hospital, or place of worship, or overlaps a
+Tribal area, impaired waters, or a disadvantaged community, each
+compared to the US and State average. Those ratio columns now show by
+default in the public app, and `?advanced=TRUE` opens the Advanced
+Settings tab.
 
-Launching the app with `?advanced=TRUE` opens it with the Advanced
-Settings tab visible, even on a public deployment.
+Fixes: the EJScreen “Send to EJAM” handoff no longer crashes, saved
+reports are no longer empty when given a `filename`, zero-population
+sites work, per-site API links carry the right site number.
 
-Several long-standing bugs are fixed. The EJScreen “Send to EJAM”
-handoff no longer crashes the session. Saved reports are no longer empty
-when you pass a `filename`. Sites with no residents no longer break
-report generation. Per-site report links from the API are labeled with
-the correct site number instead of all reading “Site 1”. Percentages
-that used to display as “0”, “1”, or “55.30%” now read as whole
-percents. Internally, every key project URL moved into `DESCRIPTION` and
-is read through `url_package()`.
-
-This is a code-and-docs patch: it reuses the published `ejamdata`
-v3.2022.0 release, with no change to the packaged ACS or environmental
-data. Full details are in [NEWS.md](NEWS.md).
+A code-and-docs patch; packaged data unchanged. See [NEWS.md](NEWS.md).
 
 ## Status of EJAM package in 2026
 

@@ -77,6 +77,8 @@ jobs:
 
       - name: Confirm the version is the one we meant to release
         id: guard
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           VERSION='${{ steps.ver.outputs.version }}'
@@ -97,6 +99,15 @@ jobs:
 
           if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
             echo "::notice::Tag v$VERSION already exists. Skipping - this workflow never moves an existing tag."
+            SKIP=true
+          fi
+
+          # A DRAFT release does not create a tag ref, so the check above cannot
+          # see one. Without this, a draft prepared by hand would be duplicated
+          # (or collide) the next time this workflow ran. Publish the draft
+          # yourself, or delete it first if you want the workflow to do it.
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo "::notice::A release already exists for v$VERSION (it may be an unpublished draft). Skipping so this workflow does not duplicate or clobber it."
             SKIP=true
           fi
 
