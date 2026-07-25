@@ -68,7 +68,7 @@ and generate inst/issues/ejam_issues_scored_by_risk_and_value.MD.
 #       scored, cost_med, benefit_med = score_issues(issues)
 #
 #       # scored is a list of dicts:
-#       #   { num, title, labels, cost, benefit, quad }
+#       #   { num, title, labels, milestone, cost, benefit, quad }
 #       # cost_med / benefit_med are the median thresholds used to split quadrants
 #
 #       md_text = generate_markdown(scored, cost_med, benefit_med,
@@ -153,6 +153,16 @@ def get_labels(issue: dict) -> list[str]:
         lbl if isinstance(lbl, str) else lbl["name"]
         for lbl in issue.get("labels", [])
     ]
+
+
+def get_milestone(issue: dict) -> str:
+    """Return the issue's milestone title, or ``NA`` when none is assigned."""
+    milestone = issue.get("milestone")
+    if not milestone:
+        return "NA"
+    if isinstance(milestone, str):
+        return milestone
+    return milestone.get("title") or "NA"
 
 
 # ── COST SCORE ────────────────────────────────────────────────────────────────
@@ -447,6 +457,7 @@ def build_score_payload(scored_issues: list[dict],
             "title": r["title"],
             "url": f"{URL_BASE}{r['num']}",
             "existing_labels": r["labels"],
+            "milestone": r["milestone"],
             "cost": r["cost"],
             "benefit": r["benefit"],
             "quadrant": r["quad"],
@@ -490,6 +501,10 @@ def benefit_tier(b: int) -> str:
     return "🟩🟩 Very High"
 
 
+def issue_count_text(count: int) -> str:
+    return f"{count} issue" if count == 1 else f"{count} issues"
+
+
 def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
                 issues: list[dict]) -> None:
     lines.append(f"## Quadrant {letter} — {heading}")
@@ -498,16 +513,16 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
     lines.append(f"**{len(issues)} issues**")
     lines.append("")
     for r in issues:
-        plbl    = get_priority_label(r["labels"])
-        bug_tag = " 🐛" if any("bug" in l.lower() for l in r["labels"]) else ""
         lines.append(
-            f"- [#{r['num']}]({URL_BASE}{r['num']}) | "
-            f"Cost {r['cost']} / Benefit {r['benefit']} | "
-            f"{plbl}{bug_tag} — {r['title']}"
+            f"- [#{r['num']}]({URL_BASE}{r['num']}) — {r['title']}"
         )
     lines.append("")
-    lines.append("| # | Issue | Cost | Benefit | Priority | Labels (key) |")
-    lines.append("|---|-------|------|---------|----------|--------------|")
+    lines.append(
+        "| # | Issue | Cost | Benefit | Milestone | Priority | Labels (key) |"
+    )
+    lines.append(
+        "|---|-------|------|---------|-----------|----------|--------------|"
+    )
     for r in issues:
         plbl     = get_priority_label(r["labels"])
         key_labs = [
@@ -521,7 +536,7 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
             f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
             f"{r['cost']} ({cost_tier(r['cost'])}) | "
             f"{r['benefit']} ({benefit_tier(r['benefit'])}) | "
-            f"{plbl} | {lab_str} |"
+            f"{r['milestone']} | {plbl} | {lab_str} |"
         )
     lines.append("")
     lines.append("---")
@@ -572,23 +587,8 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
     lines.append("## Overview")
     lines.append("")
-    lines.append("Each issue is scored independently on two dimensions:")
-    lines.append("")
-    lines.append("| Dimension | What it measures | Key inputs |")
-    lines.append("|-----------|-----------------|------------|")
-    lines.append(
-        "| **Cost** (complexity / risk / effort) | How hard is it to fix safely? | "
-        "WIP/unclear state, data pipeline, spatial methods, refactor scope, body length, "
-        "architecture labels |"
-    )
-    lines.append(
-        "| **Benefit** (value / urgency / importance) | How much does fixing it matter? | "
-        "PRIORITY label, BUG label, web app vs R-only impact, crash/wrong-calculation "
-        "signals, CRAN visibility |"
-    )
     costs    = sorted(r["cost"]    for r in scored_issues)
     benefits = sorted(r["benefit"] for r in scored_issues)
-    lines.append("")
     lines.append("### Previous-run comparison")
     lines.append("")
     lines.append("| Metric | Value |")
@@ -612,29 +612,25 @@ def generate_markdown(scored_issues: list[dict],
     lines.append(f"| Issues closed since previous run | {closed} |")
     lines.append(f"| Issues whose quadrant changed | {changed} |")
     lines.append("")
-    lines.append("### GitHub rank labels for a later update task")
-    lines.append("")
-    lines.append("This scoring script writes the labels below into the JSON payload, but it does not apply them to GitHub.")
-    lines.append("")
-    lines.append("| Quadrant | Label |")
-    lines.append("|----------|-------|")
-    for quad in ("A", "B", "C", "D"):
-        lines.append(f"| {quad} | `{RANK_LABELS[quad]}` |")
-    lines.append("")
     lines.append("---")
     lines.append("")
     lines.append("## 2×2 Priority Matrix")
     lines.append("")
-    lines.append("```")
-    lines.append("                │  LOW Benefit          │  HIGH Benefit")
-    lines.append("                │  (value < median)     │  (value ≥ median)")
-    lines.append("────────────────┼───────────────────────┼───────────────────────")
-    lines.append(f" LOW Cost       │  C — Might As Well    │  A — BEST CANDIDATES")
-    lines.append(f" (cost < med.)  │  {len(quads['C'])} issues                │  {len(quads['A'])} issues")
-    lines.append("────────────────┼───────────────────────┼───────────────────────")
-    lines.append(f" HIGH Cost      │  D — WORST CANDIDATES │  B — OK Candidates")
-    lines.append(f" (cost ≥ med.)  │  {len(quads['D'])} issues                │  {len(quads['B'])} issues")
-    lines.append("```")
+    lines.append(
+        "| Cost / Benefit | **LOW Benefit**<br>value < median | "
+        "**HIGH Benefit**<br>value ≥ median |"
+    )
+    lines.append("|---|---|---|")
+    lines.append(
+        "| **LOW Cost**<br>cost < median | "
+        f"**C — Might As Well**<br>{issue_count_text(len(quads['C']))} | "
+        f"**A — BEST CANDIDATES**<br>{issue_count_text(len(quads['A']))} |"
+    )
+    lines.append(
+        "| **HIGH Cost**<br>cost ≥ median | "
+        f"**D — WORST CANDIDATES**<br>{issue_count_text(len(quads['D']))} | "
+        f"**B — OK Candidates**<br>{issue_count_text(len(quads['B']))} |"
+    )
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -660,19 +656,50 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
     lines.append("Sorted: A first (best), then B, C, D; within each group by benefit DESC.")
     lines.append("")
-    lines.append("| Quad | Issue # | Cost | Benefit | Priority | Title |")
-    lines.append("|------|---------|------|---------|----------|-------|")
+    lines.append("| Quad | Issue # | Cost | Benefit | Milestone | Priority | Title |")
+    lines.append("|------|---------|------|---------|-----------|----------|-------|")
     for letter in ("A", "B", "C", "D"):
         for r in quads[letter]:
             plbl  = get_priority_label(r["labels"])
             short = r["title"][:72] + ("…" if len(r["title"]) > 72 else "")
             lines.append(
                 f"| {letter} | [{r['num']}]({URL_BASE}{r['num']}) | "
-                f"{r['cost']} | {r['benefit']} | {plbl} | {short} |"
+                f"{r['cost']} | {r['benefit']} | {r['milestone']} | "
+                f"{plbl} | {short} |"
             )
 
     lines.append("")
     lines.append("---")
+    lines.append("")
+    lines.append("## Issues by Milestone")
+    lines.append("")
+    lines.append("| Milestone | Issue count |")
+    lines.append("|-----------|------------:|")
+    milestone_counts = Counter(r["milestone"] for r in scored_issues)
+    for milestone in sorted(
+        milestone_counts,
+        key=lambda value: (value == "NA", value.casefold()),
+    ):
+        lines.append(f"| {milestone} | {milestone_counts[milestone]} |")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append("## How Ranking was Done")
+    lines.append("")
+    lines.append("Each issue is scored independently on two dimensions:")
+    lines.append("")
+    lines.append("| Dimension | What it measures | Key inputs |")
+    lines.append("|-----------|-----------------|------------|")
+    lines.append(
+        "| **Cost** (complexity / risk / effort) | How hard is it to fix safely? | "
+        "WIP/unclear state, data pipeline, spatial methods, refactor scope, body length, "
+        "architecture labels |"
+    )
+    lines.append(
+        "| **Benefit** (value / urgency / importance) | How much does fixing it matter? | "
+        "PRIORITY label, BUG label, web app vs R-only impact, crash/wrong-calculation "
+        "signals, CRAN visibility |"
+    )
     lines.append("")
     lines.append("### Score ranges")
     lines.append("")
@@ -686,9 +713,21 @@ def generate_markdown(scored_issues: list[dict],
         "for that dimension."
     )
     lines.append("")
-    lines.append("## Scoring Factors")
+    lines.append("### GitHub rank labels for a later update task")
     lines.append("")
-    lines.append("### Cost factors (higher = harder/riskier)")
+    lines.append(
+        "This scoring script writes the labels below into the JSON payload, "
+        "but it does not apply them to GitHub."
+    )
+    lines.append("")
+    lines.append("| Quadrant | Label |")
+    lines.append("|----------|-------|")
+    for quad in ("A", "B", "C", "D"):
+        lines.append(f"| {quad} | `{RANK_LABELS[quad]}` |")
+    lines.append("")
+    lines.append("### Scoring Factors")
+    lines.append("")
+    lines.append("#### Cost factors (higher = harder/riskier)")
     lines.append("")
     lines.append("| Factor | Points |")
     lines.append("|--------|--------|")
@@ -711,7 +750,7 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("| Title: README / suppress / remove unused / rename param / round / changelog / fix link | −2 to −4 |")
     lines.append("| documentation label (no calculate/datasets) | −1 |")
     lines.append("")
-    lines.append("### Benefit factors (higher = more valuable/urgent)")
+    lines.append("#### Benefit factors (higher = more valuable/urgent)")
     lines.append("")
     lines.append("| Factor | Points |")
     lines.append("|--------|--------|")
@@ -744,19 +783,20 @@ def score_issues(issues: list[dict]) -> tuple[list[dict], int, int]:
     Score a list of GitHub issue dicts and return (scored_list, cost_med, benefit_med).
 
     Each element of scored_list is a dict with keys:
-        num, title, labels, cost, benefit, quad
+        num, title, labels, milestone, cost, benefit, quad
     """
     scored = []
     for issue in issues:
         labels = get_labels(issue)
         body   = issue.get("body") or ""
-        title  = issue.get("title", "")
+        title  = issue.get("title", "").strip()
         c = cost_score(title, labels, body)
         b = benefit_score(title, labels, body)
         scored.append({
             "num":     issue["number"],
             "title":   title,
             "labels":  labels,
+            "milestone": get_milestone(issue),
             "cost":    c,
             "benefit": b,
         })
