@@ -92,7 +92,8 @@
 </li>
 </ul></li>
 </ul></li>
-<li><p><strong>Bugs fixed</strong>, including a crash when arriving from EJScreen’s “Send to EJAM” button, intermittent problems uploading files, and downloaded reports that came out empty (details below).</p></li>
+<li><p><strong>Bugs fixed</strong>, including a crash when arriving from EJScreen’s “Send to EJAM” button and downloaded reports that came out empty (details below).</p></li>
+<li><p><strong>Intermittent upload failures on the hosted app are being fixed alongside this release</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/268" class="external-link">#268</a>), but by a change to the hosting setup rather than by anything in this package. The production app runs on two servers, and an upload could be sent to the one that was not holding your session, which answered “Not Found” – roughly half the time. The load balancer is being set to keep each session on a single server, the same fix applied in early 2026 that was later lost when the servers were rebuilt from their configuration files. Because it is a hosting change, installing v3.2022.2 does not by itself resolve it; the two are simply being done at the same time.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-3-2022-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-3-2022-2"></a></h3>
