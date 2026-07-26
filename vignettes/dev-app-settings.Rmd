@@ -1,7 +1,7 @@
 ---
 title: "Defaults and Custom Settings for the Web App"
-description: "Defaults and Custom Settings for the Web App"
-output: 
+description: "How EJAM app defaults, launch parameters, bookmarks, and Advanced Settings differ"
+output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
@@ -13,1029 +13,264 @@ editor_options:
     wrap: 100
 ---
 
-```{r developernote, eval=FALSE, echo= FALSE, include = FALSE}
-#  *>>>>>>>>>> Developer note: vignettes need to be tested/edited/rebuilt regularly <<<<<<<<<<<*
-#    - **See ?pkgdown::build_site** and script in EJAM/data-raw/- EJAM uses the pkgdown R package to build help and articles/ vignettes as web pages
-```
-
-```{r SETUP_default_eval_or_not, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
-)
-knitr::opts_chunk$set(eval = FALSE)
-# https://r-pkgs.org/vignettes.html
-```
-
-```{r libraryEJAM, eval = TRUE, echo= FALSE, include= FALSE}
-# rm(list = ls()); golem::detach_all_attached(); devtools::load_all()
-
-if (!exists("blockgroupstats")) {library(EJAM)} # use installed version only if pkg not yet attached
-
-# dataload_dynamic('all') # varnames = all  currently means all defined by .arrow_ds_names
-# 
-# indexblocks()
-```
-
-# Stable documentation links while testing settings
-
-When testing app settings against the `development` branch, use
-[https://docs.ejanalysis.com/dev](https://docs.ejanalysis.com/dev) to see the
-package documentation built from that branch. In particular:
-
-- [the development version of this settings article](https://docs.ejanalysis.com/dev/articles/dev-app-settings.html)
-- [the development `ejamapp()` reference page](https://docs.ejanalysis.com/dev/reference/ejamapp.html)
-- [the development article index](https://docs.ejanalysis.com/dev/articles)
-
-Without `/dev`, the same paths select the root documentation built from `main`;
-for example, <https://docs.ejanalysis.com/reference/ejamapp.html> and
-<https://docs.ejanalysis.com/articles>. The stable root alias is returned by
-`EJAM::url_package("docs", desc_or_alias = "alias")`; append `"/dev"` to that
-value for the development build. See
-[Updating Documentation](dev-update-documentation.html#published-release-and-development-documentation-urls)
-for a fuller list and the API-documentation shortcuts.
-
-# Deep links: launch the EJAM app pre-loaded via URL parameters
-
-Besides the deploy-time settings described below, an already-running EJAM app can be
-**launched pre-loaded with a set of places** by opening it with launch query parameters in
-the URL. This is how the EJScreen Report tool's "Send to EJAM" button opens EJAM ready to
-run, and what `url_ejamapp()` builds as shareable deep links.
-
-Deep linking, in other words, lets you send selected sites from the EJScreen app
-to the EJAM app (multisite tool) via a "handoff"
-that lets you continue in EJAM for further analysis.
-
-EJAM app v3.x handles a few deeplink parameters.
-
-The app reads these at startup (one place-type per launch -- points, else FIPS, else
-polygons):
-
-- `?lat=33,34&lon=-112,-114` -- one or more points, each treated as a site
-- `?fips=10001,10003` -- one or more FIPS codes, each a separate site
-- `?shape=<url-encoded GeoJSON>` -- a polygon or FeatureCollection
-- `?radius=` (or `?buffer=`) -- analysis radius in miles
-- `?handoff=<token>` -- a token minted by the EJAM API `POST /handoff` and fetched back at
-  startup, for large polygon sets that exceed URL-length limits
-
-Some examples of URLs:
-
-The URL https://ejam.ejanalysis.com/  is an alias for
-the production server hosting the live EJAM shiny app 
-at https://ejam.publicenvirodata.org,
-and it provides a way to pass through URL-encoded parameters.
-
-The URL https://ejamdev.ejanalysis.com is an alias for
-the development / staging server hosting a live EJAM shiny app.
-(It redirects to an AWS load balancer whose literal hostname can change when the
-infrastructure is rebuilt -- one reason the stable alias is the address to share --
-and it also provides a way to pass through URL-encoded parameters.)
-
-Deep links based on lat and lon and radius
-for one or more points (staging examples; links for the production app are the
-same but with the production base, which is `url_ejamapp()`'s default):
-
-- https://ejamdev.ejanalysis.com/?lat=33&lon=-112&radius=2
-- https://ejamdev.ejanalysis.com/?lat=33,33.1&lon=-112,-112.2&radius=2
-
-Deep links based on FIPS code of Census unit like county:
-
-- https://ejamdev.ejanalysis.com/?fips=24029&buffer=0
-- https://ejamdev.ejanalysis.com/?fips=24029,24031
-
-```{r url_ejamapp, eval=FALSE}
-## EJAM app deep link (default base URL)
-urlx <- url_ejamapp(fips = c(3650617, "0973000"))
-urlx
-# browseURL(urlx)
-
-## For a non-default deployment, override the base URL:
-# browseURL(url_ejamapp(fips = c(3650617, "0973000"), baseurl = "<staging-app-baseurl>"))
-```
-
-Build such a link with `url_ejamapp()`; its query vocabulary matches `url_ejamapi()` (which
-builds *API* request URLs rather than *app* links). The default app base is
-`https://ejamapp.ejanalysis.com/`, a Cloudflare-fronted shortcut on the `ejanalysis.com`
-domain that forwards the query string to the live app (a plain redirect that dropped the
-query would open the app empty). For the API side -- including the friendlier
-`https://api.ejanalysis.com/` base and parameter details -- see the `dev-api` article, the
-help for `ejamapi()`/`url_ejamapi()`, and the EJAM-API repository's README.
-
-## Deep links into EJScreen (the mapping tool)
-
-The PEDP EJScreen map app accepts a symmetric set of launch-URL parameters, so a link can
-open EJScreen with place(s) already drawn and **selected for analysis** -- the reverse
-direction of the "Send to EJAM" handoff described above. Build these links with
-`url_ejscreenmap()`, whose default `baseurl=` points at the current live EJScreen
-deployment (override `baseurl=` for a different one); they are plain URLs anyone can
-construct:
-
-- `?fips=10001` or `?fips=10001,10003,10001040100` -- one or more FIPS codes,
-  comma-separated: 5-digit county, 11-digit tract, or 12-digit block group (mixes allowed).
-  EJScreen queries its boundary services, draws each area, and selects it. State (2-digit)
-  and city/CDP (7-digit) codes have no boundary service in the app, so use `wherestr=` with
-  a place name for those -- `url_ejscreenmap()` does that fallback automatically via
-  `fips2name()`.
-- `?lat=39,39.7&lon=-75.5,-75.6&radius=3` -- one or more points (comma-separated, equal
-  lengths); the optional `radius=` (miles) prefills the site report's buffer distance.
-- `?polygon=39.1,-75.5;39.2,-75.4;39.0,-75.3` -- a polygon as semicolon-separated `lat,lon`
-  vertices (at least 3); repeat the parameter for more than one polygon. `shape=`, `shp=`,
-  and `shapefile=` are aliases (synonyms) for `polygon=`, matching the parameter aliases
-  EJAM functions like `ejamit()` accept.
-- `?zip=10001` or `?zip=10001,99501` -- the explicit way to pass zip code(s),
-  comma-separated: each is geocoded as a zip (never read as a county FIPS) and pinned
-  with the report popup; one zip centers the map, several fit the view to all of them.
-- `?wherestr=Dover%2C%20DE` or `?wherestr=39.157,-75.52` -- the original EJScreen
-  parameter: geocodes a place name / address / zipcode (or centers on a `lat,lon`) and
-  drops a pin, without selecting a boundary -- except a bare 5-digit value, see below.
-
-One kind of place is used per link: the EJScreen app reads these URL parameters in the
-order above, so a link's `fips=` beats its `lat=`/`lon=`, which beat polygons, which
-beat `zip=`, which beats `wherestr=`. (That describes how the app reads a URL -- the
-`url_ejscreenmap()` R helper arbitrates its *arguments* in its own order when several
-are passed, so give it only one input type per call.) A single place opens the site
-report popup on it; several places are all drawn and (other than zips) added to
-EJScreen's Multisite list, ready for a Multisite Report or the "Send to EJAM" handoff
-back into EJAM.
-
-**ZIP code vs county FIPS:** a bare 5-digit number is ambiguous -- 10001 is both a
-Manhattan zip code and Kent County, DE's county FIPS. The deep links resolve it
-explicitly: `fips=` is always county/tract/blockgroup FIPS, and `zip=` is always a zip
-code. A bare 5-digit `wherestr=` follows EJAM's convention: it is tried as a county FIPS
-first (drawing and selecting that county), and only geocoded as a zip code if no county
-has that code. So prefer `fips=` and `zip=` -- the `fips` and `zip` arguments of
-`url_ejscreenmap()` -- while adding context like `?wherestr=10001,NY` also still forces
-the zip reading. The interactive search box inside the EJScreen app is unchanged:
-typing a bare 5-digit number there still searches it as a zip code.
-
-URL-encoding: percent-encode free-text values (a space becomes `%20`, a comma can be
-`%2C`); the digits, commas, and semicolons in the numeric parameters can be left as is.
-EJScreen decodes the values on arrival. `url_ejscreenmap()` takes care of the encoding,
-and for polygons it also simplifies each outline enough to fit URL length limits (falling
-back to a centroid `wherestr=` link if an outline cannot fit):
-
-```{r url_ejscreenmap_examples}
-# One county: boundary drawn & selected, site report popup open
-# (10001 as a FIPS is Kent County, DE; as a zip code it is in Manhattan, NY)
-url_ejscreenmap(fips = "10001")
-#> "https://pedp-ejscreen.azurewebsites.net/index.html?fips=10001"
-
-# The same 5 digits as a zip code: pinned in Manhattan, never read as a FIPS
-url_ejscreenmap(zip = "10001")
-#> "https://pedp-ejscreen.azurewebsites.net/index.html?zip=10001"
-
-# One URL per site (the default; used for per-site link columns in EJAM result tables)
-url_ejscreenmap(fips = c("10001", "10003"))
-
-# ONE link that loads ALL the sites into EJScreen's Multisite list
-url_ejscreenmap(fips = c("10001", "10003"), combined = TRUE)
-#> "https://pedp-ejscreen.azurewebsites.net/index.html?fips=10001,10003"
-
-# Points, with the site report buffer prefilled to 3 miles
-url_ejscreenmap(lat = c(39, 39.7), lon = c(-75.5, -75.6), radius = 3, combined = TRUE)
-#> "https://pedp-ejscreen.azurewebsites.net/index.html?lat=39,39.7&lon=-75.5,-75.6&radius=3"
-
-# A polygon (outline simplified as needed to fit in a URL)
-url_ejscreenmap(shapefile = testinput_shapes_2[1, ])
-#> "https://pedp-ejscreen.azurewebsites.net/index.html?polygon=39.0375,-75.5519;39.0392,..."
-
-# A place name via the legacy parameter (free text gets percent-encoded)
-url_ejscreenmap(wherestr = "Dover, DE")
-#> "https://pedp-ejscreen.azurewebsites.net/index.html?wherestr=Dover%2C%20DE"
-
-# browseURL(url_ejscreenmap(fips = "10001"))  # open one in the browser
-```
-
-The selection-drawing parameters need the EJScreen release that added deep links (see
-[Public-Environmental-Data-Partners/EJScreen#70](https://github.com/Public-Environmental-Data-Partners/EJScreen/pull/70));
-older EJScreen deployments ignore them and just open the map, while the `wherestr=` links
-work on all versions. The same parameter vocabulary is documented in the EJScreen
-repository's README.
-
-# NOTES ON GLOBAL DEFAULTS, SHINY INPUTS, BOOKMARKS, AND FUNCTION PARAMETERS
-
-This document provides technical notes on how defaults and custom settings are defined for the EJAM web app.
-
-Most of what you might want to do is shown in documentation showing examples of using the `ejamapp()` function. This article is only needed if you want even more detail. First reading the `ejamapp()` reference info is recommended before reading any of the details below.
-
-
-## HOW SETTINGS GET PASSED TO THE WEB APP
-
-Many defaults are defined in files like `global_defaults_*.R`. They can be changed there, but also can be passed to `ejamapp()` as parameters, to override those global default settings for the duration of the app. Using `ejamapp()` parameters allows experienced analysts to customize how the web app works without having to edit any files. It can be used on a laptop, for example interactively with custom settings. For example, one can change the radius, the type of sites to analyze, default name of the analysis, report title/logo, etc., or to override caps such as limits on file upload size or number of points:
-
-```{r run-app1, eval=FALSE}
-ejamapp(
-  radius=3.14,
-  default_max_miles=31,
-  default_max_mb_upload=100
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
-These custom parameters are "advanced" features for knowledgeable users, and not all the possible changes to these have been tested,
-so anyone using them should be careful to understand the details of how this work and confirm it is doing what is expected. 
+# What this article covers
 
-*For example, the radius is defined like this:* 
+EJAM has several ways to customize the Shiny app. They act at different times and are not
+interchangeable:
 
-1. if a user in RStudio launches the app with something like `ejamapp(radius_default=3.1)`, the setting `radius_default` is defined, and will override what it says in `global_defaults_shiny.R`
-
-2. the files `global_defaults_*.R` are where the settings like `radius_default` are defined and stored as appOptions.
-
-3. that option/setting is checked in the advanced tab UI, to provide the initially selected value of `input$radius_default` in a bookmarkable input control found in the advanced tab. In this case the option and input used the same exact name, "radius_default" but that is not always the case for other settings.
-
-4. in the advanced tab, `input$radius_default` can then be adjusted by a user or just left alone. It provides the initially selected value of `input$radius_now` (which is for the slider UI, but happens to be defined in the server not ui in this case).
-
-5. the radius slider bar will change the value of `input$radius_now` when a user moves the radius slider bar in the UI.
-
-6. the value of `input$radius_now` is what the app uses in calculations when the start analysis button is clicked.
-
-*A setting can be named differently in three places:*
-
-Sometimes there are two or three separate names that affect the same
-setting. You only need to know about the first one unless
-you are editing URL-encoded bookmarks or editing source code!
-
-1) The global default constant that is the initial value of x,
-and is normally defined in a `global_defaults_*.R` file installed with the EJAM package, but
-also can be provided as a parameter to `ejamapp()`.
-
-2) for the subset of settings that can be adjusted in the Advanced tab (not all can),
-there is a second variable: the input$ one can adjust in that tab.
-
-3) the name of the input$ finally used in the main part of the web app.
-
-The first of these three cannot be saved as a bookmark, but the second or third
-can be bookmarked since it is a shiny app input$ variable.
-
-*Steps in EJAM shiny app launch, and the use of params/ defaults/ advanced tab/ bookmarked inputs/etc.:*
-
-### app.R and isPublic=T
-
-If the app is on a server or one uses the RStudio button "Run", app.R is used.
-app.R is normally how the app is launched if it is a hosted shiny app on a server.
-app.R mostly just does library(EJAM) and ejamapp(isPublic = TRUE).
-isPublic is special because it is checked by the global_defaults_shiny_public.R file
-and some settings depend on isPublic being T or F.
-
-### ejamapp() parameters
-
-If the app is launched directly via `ejamapp()` by a user in RStudio console, it skips app.R
-and a user can provide arguments as parameters in ejamapp(...). See `?ejamapp`
-
-### global_defaults_*.R files
-
-Many defaults/ settings used by the web app are defined in the global_defaults_ files
-(global_defaults_package.R, global_defaults_shiny.R, global_defaults_shiny_public.R).
-Some settings are needed even if the shiny app is never launched, so they are stored for the package 
-as soon as the package is attached, in a list object called `global_defaults_package` in the global environment, e.g., `global_defaults_package$report_title`. (When the app is launched, those and many other global_defaults from the files `global_defaults_*.R`, including radius_default, will be stored in the shiny app).
-Note the parameter `isPublic` is special because it is checked by the global_defaults_shiny_public.R file
-and some settings depend on `isPublic` being T or F.
-
-### any `ejamapp()` parameters will override global_defaults_*.R settings
-
-Just before launching the app, `ejamapp()` calls `get_global_defaults_or_user_options()` which
-gets the global defaults and then overrides/replaces them with
-any user-specified versions of those options given as arguments in `ejamapp()`.
-
-### ejamapp() convenience aliases
-
-`ejamapp()` also accepts a number of short **aliases** for parameters and, for site selection,
-infers related defaults. For example `pts` (or `lat`+`lon`) is an alias for `sitepoints`, `shp` is
-an alias for `shapefile`, and `naics`/`sic`/`mact` are aliases for `default_naics`/etc. Some of these
-also set the method automatically -- e.g. passing `fips`, `shapefile`, or `sitepoints` sets
-`default_site_method = "upload"` (and the upload sub-type), while `default_naics` sets
-`default_site_method = "dropdown"`. See `?ejamapp` and the alias-handling block near the top of
-`R/ejamapp.R`.
-
-The aliases and the defaults they cross-set (kept in sync with the alias block near the top of `R/ejamapp.R`):
-
-| You pass to `ejamapp()` | Canonical param | Also cross-sets |
+| Mechanism | Best for | Scope |
 |---|---|---|
-| `pts`, or `lat`+`lon` | `sitepoints` | `default_site_method="upload"`, `default_selected_type_of_site_upload="latlon"` |
-| `shp` or `shape` | `shapefile` | `default_site_method="upload"`, `default_selected_type_of_site_upload="SHP"` |
-| `shapefile` | `shapefile` | `default_site_method="upload"`, `default_selected_type_of_site_upload="SHP"` |
-| `fips` | `fips` | `default_site_method="upload"`, `default_selected_type_of_site_upload="FIPS"` |
-| `naics` | `default_naics` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="NAICS"`, `default_naics_digits_shown="detailed"` |
-| `sic` | `default_sic` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="SIC"` |
-| `mact` | `default_mact` | `default_site_method="dropdown"`, `default_selected_type_of_site_category="MACT"` |
+| Arguments to `ejamapp()` | Configuring a local app or a deployment | Fixed for that app process |
+| App launch parameters such as `?fips=` | Opening an already-running app with sites or a radius | One visitor's session |
+| A Shiny bookmark | Restoring Shiny input controls | One saved session state |
+| The Advanced Settings tab | Changing the controls exposed there | Current session, after launch |
+| EJAM API request parameters | Requesting a report or data without the Shiny app | One API request |
 
-The site-selection method param `default_site_method` was formerly named `default_upload_dropdown`;
-the old name still works as a back-compat alias (normalized to the new name inside `ejamapp()`).
+This distinction is important. For example, adding an arbitrary `?name=value` to the app URL does
+not turn it into an `ejamapp(name = value)` argument. The app recognizes only the launch parameters
+listed below. Likewise, an `ejamapp()` argument is not bookmarkable unless it becomes a Shiny
+`input$` control.
 
-### app launch
+For development-branch documentation, use:
 
-`ejamapp()` launches the app -- it uses a function called `golem::with_golem_options()`, 
-which defines the `app` object using `shiny::shinyApp()`, but then
-stores all the global defaults and any user-provided parameters as `app$appOptions$golem_options`, 
-just before launching the app. Those options can be retrieved in app or server later, 
-via `EJAM:::global_or_param()` which relies on `golem::get_golem_options()`.
+- [this article on the development site](https://docs.ejanalysis.com/dev/articles/dev-app-settings.html);
+- [the development `ejamapp()` reference](https://docs.ejanalysis.com/dev/reference/ejamapp.html);
+- [Accessing the Web App](webapp.html) for the user-facing overview; and
+- [Using the EJAM API](dev-api.html) for API endpoints and parameters.
 
-### global env?
+# Configure an app with `ejamapp()`
 
-Then app_ui() and app_server() can check for defaults/params using `EJAM:::global_or_param("radius_default")` 
-which uses `golem::get_golem_options()` to check for a named option stored in `app$appOptions$golem_options`.
-Usually these are used as initial/default values for input$ variables in the app.
-However, note if an expected setting is not found (ie not set by user in ejamapp() and not set in any global_defaults_ file)
-`global_or_param()` also looks in global env, as a last resort!! That might be a problem if ui or server looks for a
-setting that we failed to provide in global_defaults files and that variable name happens to be in the global env !
+Run `ejamapp()` from R to launch a local app. The root `app.R` used for the hosted public app calls
+`ejamapp(isPublic = TRUE)`. A plain local `ejamapp()` call defaults to the fuller analyst
+configuration because `isPublic` is not set to `TRUE`.
 
-### Advanced Tab
+The authoritative parameter examples are in `?ejamapp`. Keep calls small and use the documented
+convenience names:
 
-SOME BUT NOT ALL global_defaults_ settings are in the Advanced Tab (in app_ui)
-where they typically provide the default for an input$ but that default can be overridden
-there by someone using the app's Advanced Tab,
-so what ui or server ends up using could be an input$ that is adjustable in the Advanced Tab
-and therefore can be bookmarked (since inputs can be bookmarked unless specifically excluded from that).
+```{r ejamapp-examples}
+## A local app preloaded with two counties and a 3-mile radius
+EJAM::ejamapp(
+  fips = c("10001", "10003"),
+  radius = 3,
+  default_show_advanced_settings = TRUE
+)
 
-An Advanced-Tab setting that should change a *main* control (e.g. the "Site Selection Method"
-radio `default_ss_choose_method` setting the main `ss_choose_method` radio) is applied from the
-**server** via `updateRadioButtons()` -- you cannot reference `input$...` from `app_ui()`.
-
-### Launch-URL parameters (in addition to the above)
-
-Beyond `ejamapp()` params and the global_defaults_ files, the app can also read settings from the
-**launch URL**, via two distinct mechanisms:
-
-- Shiny's native **bookmarking** restores any `input$` value from a `?_inputs_&id=value...` URL
-  (see the bookmarking notes above).
-- The EJScreen / multisite handoff work adds **custom launch-URL parameters** (e.g. `?lat=&lon=`,
-  `?fips=`, `?shape=`, `?handoff=`) that take precedence over the matching `ejamapp()`/global default
-  via `url_x() %||% global_or_param("x")`. (See PR #413 on the `ejscreen-multisite-selection` branch.)
-
-### how an input control actually gets its default
-
-Two orthogonal things determine an input control: **(Axis 1) how the widget is built**, and
-**(Axis 2) where its value comes from**.
-
-**Axis 1 -- how the widget is built** (a UI-mechanics choice, almost always forced by the widget, not stylistic):
-
-| Pattern | Use when | Example |
-|---|---|---|
-| **A. static UI default** -- `selected=`/`value=` set in `app_ui.R` to `global_or_param("...")` | the default is a plain value known at page-load, with a fixed choice set | most controls |
-| **B. server `renderUI`** (`uiOutput()` in UI + `output$x <- renderUI({...})`) | the widget's *structure* (which choices exist, min/max, conditional sub-controls) depends on reactive state | radius slider (`radius_now`) |
-| **C. static-empty UI + server `update*Input()`** | choices load server-side (large selectize lists) OR the value must change on a later event | NAICS/SIC/MACT selectize; advanced-tab -> main-control sync |
-
-Because the UI is built once before any reactive `input$` exists, an Axis-1-A control's `selected=`/`value=`
-must be a **non-reactive** value -- `global_or_param("...")` -- never `input$...` (that errors at UI build).
-To make an advanced-tab setting change a main control, sync it server-side via `update*Input()` (Axis-1-C).
-
-**Axis 2 -- where the value comes from** (the precedence stack, highest wins):
-
-1. **Shiny bookmark** `?_inputs_&...` -- restores saved `input$` values on load (framework-level; orthogonal to the rest).
-2. **Launch-URL custom params** `?lat=&lon=`, `?fips=`, `?shape=`, `?handoff=`, `?radius=` -- read via the `url_*`
-   reactives and resolved by `global_or_shinyparam_or_urlparam(name)`, so a launch-URL value wins over the default.
-3. **`ejamapp()` params** (after alias normalization) -- override the global-default files.
-4. **`global_defaults_*.R`** files (package < shiny < shiny_public).
-
-The advanced-tab -> main-control sync sits *alongside* this stack: it applies a user's runtime change after load
-(e.g. the "Site Selection Method" radio updates `ss_choose_method` via `update*Input()`).
-
-To view the Advanced tab in the web app, click the About tab and then the Show advanced button on that page. If that button is not visible, use ejamapp(default_can_show_advanced_settings=TRUE). To show the advanced tab at launch, use ejamapp(default_show_advanced_settings=TRUE).
-
-### web app reactives and interactive inputs
-
-The shiny app uses some settings as initial values for
-parameters that can get changed by the user via sliders, radio buttons, text boxes, dropdowns, etc.
-and some selections/inputs can get changed by reactive observers, etc.
-
-### Bookmarks (URL or server-based) for saved input$ state
-
-If the app is launched by a bookmark (e.g.URL-encoded bookmark),
-any inputs encoded in the URL will override the above and the app will change to
-a state where the inputs are as specified by the bookmark.
-
-Bookmarks have limitations though: 
-Notably, uploaded files can only be bookmarked
-if enableBookmarking="server" not enableBookmarking="url".
-Also, bookmarks normally just save the state
-of UI inputs, not other reactive values (unless the server code specifies otherwise by 
-using the `shiny::onBookmark()` and `shiny::onRestore()` functions to make 
-bookmarks store other information, beyond just inputs).
-Some important global defaults affect the app but not by providing
-initial values for inputs in the shiny app, so some useful information
-including some that is controlled by global defaults or user parameters in ejamapp()
-cannot be bookmarked because it is stored in reactives
-but not as shiny app inputs.
-To pass a set of *sites* (points, FIPS codes, or polygons) into an already-deployed
-app through a URL — which the file-upload inputs cannot do through a url-bookmark —
-use the custom launch query parameters described next.
-
-### Launch URL with pre-selected sites (handoff from an external app)
-
-Separately from Shiny's `?_inputs_&...` bookmark mechanism, the app server reads a
-small set of **custom launch query parameters** so an external app (e.g. EJScreen)
-can open EJAM already pre-loaded with a set of places. This is the way to pass in
-**points or polygons**, which are file uploads and therefore cannot travel in a
-url-encoded bookmark. The vocabulary matches `url_ejamapi()`:
-
-- `?lat=33,34&lon=-112,-114` — one or more points (comma-separated), each a site
-- `?fips=10001,10003` — one or more FIPS codes, **each a separate site**
-- `?shape=<url-encoded GeoJSON>` — a polygon / FeatureCollection (read by `shapefile_from_any()`)
-- `?radius=3` (or `?buffer=3`) — analysis radius in miles
-- `?handoff=<token>` — a token previously minted by the EJAM API `POST /handoff`;
-  the app fetches `GET /handoff/<token>` and pre-loads whatever places it holds.
-  Use this for large polygon sets that would not fit in a URL.
-
-Only one place-type is loaded per launch (points, then FIPS, then polygons),
-matching the one-method-per-analysis model. Internally the launch handler stores
-the parsed places in three per-session reactives — `url_sitepoints`, `url_fips`,
-and `url_shapefile` — which `data_up_tablepassed_latlon()`/`data_up_latlon()`,
-`data_up_fips()`, and `data_up_shp()` prefer over the `ejamapp()`/global defaults.
-It also updates `ss_choose_method` and `ss_choose_method_upload` so the matching
-upload tab is shown, so the app opens with those sites selected and ready to run.
-The handler is the `observe()` near the top of the SELECT SITES section in
-`R/app_server.R`.
-
-For example, this opens the hosted app pre-loaded with two counties (two sites):
-
-    https://ejamapp.ejanalysis.com/?fips=10001,10003
-
-and this pre-loads two points with a 3-mile radius:
-
-    https://ejamapp.ejanalysis.com/?lat=33,34&lon=-112,-114&radius=3
-
-Because the query vocabulary matches `url_ejamapi()` (which builds EJAM API report
-URLs), the helper `url_ejamapp()` builds these app-launch URLs with the same
-vocabulary -- for example `url_ejamapp(fips = c("10001","10003"))` or
-`url_ejamapp(handoff = "<token>")`. The `?handoff=<token>` form is how EJScreen's
-"Send to EJAM" button passes a large set of drawn polygons without hitting
-URL-length limits:
-EJScreen `POST`s the GeoJSON to the EJAM API `/handoff`, gets a token, and opens
-the EJAM app at `?handoff=<token>` (e.g. `https://ejamapp.ejanalysis.com/?handoff=<token>`);
-the app then fetches those places back from the API's `GET /handoff/<token>` at startup.
-
---------------
---------------
-
-## EXAMPLES OF USING CUSTOM SETTINGS 
-
-
-### Launch local app (the R user's computer) with custom settings
-
-See the examples in the documentation of the function `ejamapp()`  
-
-One such example:
-```{r run-app, eval=FALSE}
-ejamapp(
-  default_standard_analysis_title="Custom NAICS Analysis",
-  default_site_method="dropdown",
-  default_selected_type_of_site_category="NAICS",
-  default_naics_digits_shown="detailed",
-  default_naics="562211",
-  radius_default=3.1,
-  default_show_advanced_settings=FALSE
+## Start with a detailed NAICS selection
+EJAM::ejamapp(
+  analysis_title = "Custom NAICS analysis",
+  naics = "562211"
 )
 ```
 
-<!--   not finished   - hidden from article until ready...
+Use `radius`, not the internal setting name `radius_default`, in new `ejamapp()` calls.
+`ejamapp()` normalizes `radius` (and its synonym `buffer`) to that internal setting.
 
+## Supported convenience arguments
 
-Functions to help launch with custom parameters
+`ejamapp()` accepts `...`, then normalizes these documented aliases before collecting the app
+defaults:
 
-```{r run-app-with-params, eval=FALSE, }
+| Argument supplied | Internal setting or data |
+|---|---|
+| `radius` or `buffer` | `radius_default` |
+| `pts`, or `lat` plus `lon` | `sitepoints` |
+| `shp` or `shape` | `shapefile` |
+| `fips` | FIPS upload data |
+| `naics`, `sic`, or `mact` | The corresponding `default_*` selection |
+| `analysis_title` | `default_standard_analysis_title` |
+| `report_title` | `report_title_multisite` |
+| `default_upload_dropdown` | Backward-compatible alias for `default_site_method` |
 
-# Define helper functions -   *************** UNFINISHED DRAFT  -   *************** 
+Supplying sites also selects the matching site-selection method. For example, `fips=` selects the
+FIPS upload path, `shapefile=` selects the polygon upload path, and `naics=` selects the dropdown
+NAICS path.
 
-# draft function generator that gives you a custom version of ejamapp()
-make_run_custom = function(params = NULL) {
-  if (is.list(params)) {params <- unlist(params)}
-  txt <- paste0(
-    "ejamapp(", paste0(paste0(names(params), " = '", params, "'"), collapse=", "), ")"
-  )
-  myapp = function() {
-    EJAM:::source_this_codetext(txt)  ### ***(((((((((((((( ACTUALLY THIS HAS TO BE EVALUATED BEFOREHAND - FIX THIS  ))))))))))))))
-  }
-  return(myapp)
-}
+Because `...` can accept any name, a misspelled or unused name is not guaranteed to produce an
+error. Use names documented by `?ejamapp`, or an exact setting name that the UI or server reads
+through `global_or_param()`.
 
-# function to launch ejamapp() with parameters saved as vector or list
-run_with_paramlist = function(params = NULL) {
-  fn = make_run_custom(params)
-  fn()
-}
-```
+## How deploy-time defaults are collected
 
-Launch using parameters that are saved in a named vector or list
+At launch, `ejamapp()`:
 
-```{r run-with-paramlist, eval=FALSE}
-myparams <- c(
-  default_standard_analysis_title="Custom NAICS Analysis",
-  default_site_method="dropdown",
-  default_selected_type_of_site_category="NAICS",
-  default_naics_digits_shown="detailed",
-  default_naics="562211",
-  radius_default=3.1,
-  default_show_advanced_settings=TRUE
+1. normalizes its convenience arguments;
+2. calls `get_global_defaults_or_user_options()`;
+3. keeps user-supplied values ahead of same-named defaults from
+   `global_defaults_package.R`, `global_defaults_shiny.R`, and
+   `global_defaults_shiny_public.R`;
+4. stores the resulting list as golem options; and
+5. creates the app with `app_ui`, `app_server`, and the requested bookmarking mode.
+
+`global_defaults_shiny_public.R` uses `isPublic` to choose the simpler public configuration. Most
+code reads the collected value with `global_or_param("setting_name")`.
+
+Package maintainers may change a default in the appropriate `inst/global_defaults_*.R` source file.
+For a particular local run or deployment, prefer an `ejamapp()` argument instead of editing an
+installed package file.
+
+# Launch an already-running EJAM app
+
+An app launch URL can preload sites for one visitor without changing the deployed app's defaults.
+Use `url_ejamapp()` to build these links. It uses the query-preserving app alias recorded in
+`DESCRIPTION`, rather than hardcoding a deployment hostname.
+
+```{r app-launch-links, eval = TRUE}
+EJAM::url_ejamapp(
+  lat = c(33, 34),
+  lon = c(-112, -114),
+  radius = 3
 )
 
-run_with_paramlist(myparams)
+EJAM::url_ejamapp(fips = c("10001", "10003"), buffer = 0)
 ```
 
-Save a custom reusable function you can use to launch with preset parameters
+The app recognizes:
 
-```{r custom-app, eval=FALSE}
+- `?lat=33,34&lon=-112,-114` for points;
+- `?fips=10001,10003` for FIPS codes;
+- `?shape=<URL-encoded inline GeoJSON>` for a polygon or FeatureCollection;
+- `?radius=3` or `?buffer=3` for the analysis radius in miles;
+- `?handoff=<token>` for a site collection stored temporarily by the EJAM API; and
+- `?advanced=TRUE` (or `?show_advanced_settings=TRUE`) to show the Advanced Settings tab.
 
-myparams <- c(
-  default_standard_analysis_title="Custom NAICS Analysis",
-  default_site_method="dropdown",
-  default_selected_type_of_site_category="NAICS",
-  default_naics_digits_shown="detailed",
-  default_naics="562211",
-  radius_default=3.1,
-  default_show_advanced_settings=TRUE
-)
+`advanced` accepts `1`, `true`, `t`, `yes`, or `y`; the corresponding false values hide the tab.
+An unrecognized value is ignored. `url_ejamapp()` builds the site, radius, and handoff parameters.
+Append the Advanced Settings parameter when needed:
 
-# create your reusable customized app launcher
-myapp = make_run_custom(myparams)
-# save(myapp, file = "myapp.rda")
+```{r advanced-launch-link, eval = TRUE}
+paste0(EJAM::url_ejamapp(), "?advanced=TRUE")
 
-# use that later to launch app
-# load("myapp.rda")
-myapp()
-```
-
--->
-
-
-
-
-### Launch hosted app (online, URL) with custom settings
-
-If the web app is running locally or hosted on a server,
-launching it via URL-encoded bookmark can provide it any of the input$ variables as a starting state.
-
-This approach cannot provide settings that are not input$ reactives, like some
-of the defaults in global_defaults_ that are not turned into inputs in the app,
-such as "app_logo_aboutpage" set in global_defaults_package.R and used in app_ui.R
-as the src parameter for img().
-
-Also note that url-encoded bookmarked inputs can launch the app
-and pass various input$ settings to the app, which would override
-the default values of those input$ settings provided by the global_defaults_*.R
-and/or `ejamapp()` parameters handled by the utility function
-get_global_defaults_or_user_options().
-
-**Example that will launch app with a custom title and radius**
-
-Note this tries to specify the NAICS method, but at least initially the draft code handling this could not specify the NAICS code itself or start analysis via URL bookmark:
-
-Here is an example using the URL of one copy of the hosted app:
-
-Locally hosted app example
-
-```{r, eval=FALSE}
-# In 1 R session, launch locally with advanced tab disabled
-myport <- 5432
-ejamapp(isPublic=TRUE, options = list(port=myport))
-
-# Then you can open a second R session and in that new R session
-# paste/use the code below to relaunch the app
-# with a parameter that enables the advanced tab:
-
-params <- c('ui_show_advanced_settings=1')
-urlbase <- paste0("http://127.0.0.1:", myport, "/?_inputs_&")
-urlx <- URLencode(paste0(urlbase, paste0(params, collapse = "&")))
-browseURL(urlx)
-```
-
-
-Using a custom URL to go to a web app with custom settings
-
-```{r browseURL, eval=FALSE}
-urlbase <- "https://ejam.publicenvirodata.org/?_inputs_&"
-
-myparams <- c(
-  standard_analysis_title="Custom NAICS Analysis",
-  default_ss_choose_method="dropdown", 
-  ss_choose_method_drop="NAICS", 
-  naics_digits_shown="detailed", 
-  # ss_select_naics=313,  
-  radius_default=3.1,
-  ui_show_advanced_settings=1
-)
-
-params <- c('standard_analysis_title="Custom NAICS Analysis"',
-            'ss_choose_method="dropdown"',   # like ejamapp( default_site_method="dropdown" )
-            'ss_choose_method_drop="NAICS"', # see ?ejamapp()
-            'naics_digits_shown="detailed"', # like ejamapp( default_naics_digits_shown = "detailed")
-            # 'ss_select_naics=313',           # like ejamapp(default_naics=313)
-            'radius_default=3.1',             # like ejamapp(radius_default = 3.1)
-            'ui_show_advanced_settings=1')
-
-urlx <- URLencode(paste0(urlbase, paste0(params, collapse = "&")))
-browseURL(urlx)
-
-# URL tried, with fips picked
-# http://127.0.0.1:4200/?_inputs_&standard_analysis_title=%22Custom%20COUNTIES%20Analysis%22&pickermoduleid-all_regions_button=%22TRUE%22&pickermoduleid-all_states_button=%22TRUE%22&ui_show_advanced_settings=1&ss_choose_method=%22dropdown%22&fipspicker_done_button=2&ss_choose_method_drop=%22FIPS_PLACE%22&pickermoduleid-fips_type2pick=%22Counties%22&pickermoduleid-counties_picked=%2202110%22
-```
-
---------------
---------------
-
-## COMPILED LISTS OF ALL SETTINGS (FUNCTION PARAMETERS, GLOBAL_DEFAULTS_, AND SHINY INPUT$ VARS)
-
-### > global_defaults_xyz - compiled full list
-
-```{r global-d, eval=TRUE}
-gdefs = EJAM:::get_global_defaults_or_user_options()
-gdefnames = sort(unique(names(gdefs)))
-cbind(global_defaults = gdefnames)
-```
-
-### > function params - compiled full list
-```{r, eval=TRUE}
-params = formals(ejamit) 
-# params = c(formals(getblocksnearby), formals(getblocksnearbyviaQuadTree), formals(get_blockpoints_in_shape), formals(getblocksnearby_from_fips), formals(ejamit), formals(doaggregate))
-paramnames = sort(unique(names(params)))
-cbind(params = paramnames)
-```
-
-### > shiny inputs - compiled full list
-
-Compilation of input$  variables used in the shiny app
-
-
-<!--   needs updating   and  compare to  EJAM:::input_names_listing()    -->
-
-
-```{r inputs, eval=FALSE}
-# getwd() must be the source pkg root folder
-getwd()
-lines_with_inputnames = trimws(grep("input\\$", gsub("^(.*)(input\\$.*\\))(.*)", "\\2", readLines("./R/app_server.R") ), value=T))
-x = gsub("^(.*)(input\\$.*)", "\\2", lines_with_inputnames)
-x = gsub("]|)|,|}", " ", x)
-x = gsub("(input\\$)([^ ]*)(.*)", "\\1\\2", x)
-# cbind(x, lines_with_inputnames)
-inputnames = sort(unique(x)); rm(x,lines_with_inputnames)
-inputnames = grep("\\.$|\\$$", inputnames, value = TRUE, invert = TRUE)
-# cbind(inputnames)
-# cbind(part_of_a_named_list = inputnames[grepl("\\$.*\\$", inputnames)])
-inputnames =  inputnames[!grepl("\\$.*\\$", inputnames)] # they all also showed up without the extra $xyz part
-
-# What names are used in the shiny app input$ reactives?
-
-cbind(shiny_inputs = inputnames)
-inputnames = gsub("^input\\$", "", inputnames)
-dput(inputnames)
-```
-
-```{r inputnames, eval=TRUE}
-
-inputnames = c("add_naics_subcategories", "all_tabs", "allow_median_in_barplot_indicators", 
-"an_map_clusters", "an_thresh_comp2", "an_threshgroup1", "an_threshgroup2", 
-"an_threshnames2", "analysis_title", "avoidorphans", "back_to_site_sel", 
-"back_to_site_sel2", "bt_get_results", "bysite_webtable_colnames", 
-"calculate_ratios", "can_show_advanced_settings", "checkbox1", 
-"coauthor_emails", "coauthor_names", "conclusion1", "conclusion2", 
-"conclusion3", "Custom_title_for_bar_plot_of_indicators", "default_ss_choose_method", 
-"demog_high_at_what_share_of_sites", "demog_how_elevated", "envt_high_at_what_share_of_sites", 
-"envt_how_elevated", "epa_program_help", "extra_demog", "extratable_hide_missing_rows_for", 
-"extratable_show_ratios_in_report", "extratable_title", "extratable_title_top_row", 
-"facilities_studied", "facilities_studied_enter", "fips_help", 
-"fipspicker_done_button", "format1pager", "frs_help", "fundingsource", 
-"go", "in_areas_where_enter", "in_the_x_zone", "in_the_x_zone_enter", 
-"include_ejindexes", "latlon_help", "latlontypedin_submit_button", 
-"max_mb_upload", "max_miles", "max_pts_click", "max_pts_map", "max_pts_run", "max_pts_select",
-"max_pts_upload", "max_shapes_map", "maxradius", "naics_digits_shown",
-"need_proximityscore", "ok2plot", "plotkind_1pager", "radius_default", 
-"radius_default_shapefile", "radius_now", "radius_units", "results_tabs", 
-"return_to_results", "rg_author_email", "rg_author_name", "rg_enter_miles", 
-"rg_enter_sites", "rg_zonetype", "risks_are_x", "shiny.testmode", 
-"show_advanced_settings", "show_data_preview", "show_ratios_in_report", 
-"shp_help", "sitereport_download_buttons_show", "source_of_latlons", 
-"ss_choose_method", "ss_choose_method_drop", "ss_choose_method_upload", 
-"ss_select_mact", "ss_select_naics", "ss_select_program", "ss_select_sic", 
-"ss_upload_fips", "ss_upload_frs", "ss_upload_latlon", "ss_upload_program", 
-"ss_upload_shp", "standard_analysis_title", "subgroups_type", 
-"summ_bar_data", "summ_bar_ind", "summ_bar_stat", "summ_hist_bins", 
-"summ_hist_data", "summ_hist_distn", "summ_hist_ind", "testing", 
-"ui_hide_advanced_settings", "ui_show_advanced_settings", "y"
+paste0(
+  EJAM::url_ejamapp(fips = c("10001", "10003")),
+  "&advanced=TRUE"
 )
 ```
 
-### > ALL OVERLAPS/ DIFFS (compiled func params, global defaults, shiny inputs)
+## Launch-parameter rules and limits
 
-```{r overlaps, echo=TRUE}
+- A handoff token is handled instead of direct site parameters.
+- Otherwise the app loads one place type, in this order: valid `lat`/`lon` points, then FIPS,
+  then an inline GeoJSON shape.
+- Point latitude and longitude vectors must have equal lengths and contain no missing values.
+- `shape=` must contain inline GeoJSON. A URL or local file path is deliberately rejected.
+- A single radius applies to all supplied sites. Radius zero is valid for FIPS and polygon
+  analyses; a point radius is clamped to the point slider's allowed range.
+- Launch-provided sites and radius take precedence over corresponding `ejamapp()`/deployment
+  defaults at startup. The user can still change controls afterward.
 
-gdefnames_noprefix = gsub("default_", "", gdefnames)
+Large polygon collections can exceed normal URL limits. EJScreen's "Send to EJAM" workflow sends
+those places to the EJAM API `POST /handoff` endpoint, receives a short-lived token, and opens the
+app with `?handoff=<token>`. The app retrieves the collection from `GET /handoff/<token>`.
+See [Using the EJAM API](dev-api.html) and the
+[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API#readme).
 
-cat("How many are named the same way in shiny inputs, global_defaults_, and function parameters?\n\n")
+# Shiny bookmarks
 
-length(
-  intersect(inputnames, gdefnames_noprefix) # about 28
-  )
-length(
-  intersect(paramnames, gdefnames_noprefix)
-  )
-length(
-  intersect(paramnames, inputnames)
-  )
-# in all 3 lists
-print(
-  intersect(paramnames, intersect(inputnames, gdefnames_noprefix))
+Bookmarks restore Shiny `input$` values. They are separate from the compact launch parameters
+above.
+
+`ejamapp(enableBookmarking = "url")` is the default. When bookmarking is enabled, use the app's
+**Bookmark** button to generate the URL; do not construct `?_inputs_&...` URLs by hand. Input IDs
+and encoded formats can change.
+
+- URL bookmarking stores input values in the URL but cannot carry uploaded files.
+- Server bookmarking stores state on the server and can preserve uploads, subject to the Shiny
+  server's configuration and retention.
+- `enableBookmarking = "disable"` disables the feature.
+
+A bookmark captures inputs, not every app option. Values such as a deployment logo or an option
+that never becomes an input are not restored by a bookmark. Use the compact launch parameters for
+points, FIPS, polygons, handoff tokens, and radius rather than trying to encode uploaded site data
+as bookmark inputs.
+
+# Advanced Settings
+
+The Advanced Settings tab exposes a subset of app settings as Shiny inputs. It does not expose
+every `global_defaults_*` value or every `ejamapp()` argument.
+
+- For a local or purpose-built deployment, use
+  `ejamapp(default_show_advanced_settings = TRUE)`.
+- To let users reveal or hide it from the About tab, use
+  `ejamapp(default_can_show_advanced_settings = TRUE)`.
+- For one visitor to a running app, use `?advanced=TRUE`. This also enables the tab in a public
+  deployment where it is normally unavailable.
+
+The UI is built before reactive `input$` values exist. A normal static control therefore gets its
+initial `selected=` or `value=` from `global_or_param()`, never from `input$...`. When an Advanced
+Settings control changes a main control later, `app_server.R` applies it with an
+`update*Input()` function. Use `renderUI()` only when the widget's structure itself depends on
+reactive state.
+
+Advanced Settings includes experimental and specialist controls. Changing a cap in the tab cannot
+exceed an absolute `maxmax_*` limit set by the deployment.
+
+# Links from EJAM to EJScreen
+
+`url_ejscreenmap()` builds the reverse kind of deep link: it opens the EJScreen map with a place
+drawn or selected. This is not an EJAM app-default mechanism, so its full parameter vocabulary is
+maintained in `?url_ejscreenmap` and the EJScreen repository rather than duplicated here.
+
+```{r ejscreen-links, eval = TRUE}
+## One EJScreen URL containing both points
+EJAM::url_ejscreenmap(
+  lat = c(39, 39.7),
+  lon = c(-75.5, -75.6),
+  radius = 3,
+  combined = TRUE
 )
-
-cat("Unique names in shiny inputs, as named \n")
-length(
-  setdiff(inputnames, c(paramnames, gdefnames_noprefix))
-)
-
-cat("Unique names in global_defaults_ (not function parameters or inputs, as named) \n")
-length(
-  setdiff(gdefnames_noprefix, c(paramnames, inputnames))
-)
-
-cat("Unique names in function parameters \n")
-length(
-  setdiff(paramnames, c(gdefnames_noprefix, inputnames))
-)
-
 ```
 
---------------
---------------
+The helper supports points, supported Census FIPS types, small polygon outlines, explicit ZIP
+codes, and `wherestr` place searches. The destination EJScreen deployment must include the deep-link
+support added in
+[Public-Environmental-Data-Partners/EJScreen#70](https://github.com/Public-Environmental-Data-Partners/EJScreen/pull/70);
+older deployments ignore the newer selection parameters.
 
-## ANNOTATED LISTS OF SOME SETTINGS
+# API parameters are a separate interface
 
+`ejamapi()` and `url_ejamapi()` request reports or data from the REST API. They are not alternate
+ways to set arbitrary Shiny app controls. The API and app deep links share core site names such as
+`lat`, `lon`, `fips`, `shape`, `radius`, and `buffer`, but each interface has additional parameters
+and different return behavior.
 
-### > function params - grouped by function ####
+See [Using the EJAM API](dev-api.html), `?ejamapi`, `?url_ejamapi`, and the
+[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API#readme) for the
+current endpoint-specific contract.
 
-Function parameters whose defaults are or could be included in advanced tab, and allowed by `ejamapp()`.
+# Developer maintenance checks
 
-```{r func-params-by-func, eval=TRUE}
+Do not paste a snapshot of every global default or `input$` name into this article. Those lists
+become obsolete whenever the app changes. Inspect the source of truth instead:
 
-EJAM:::args2(getblocksnearby)
+```{r inspect-settings}
+## Consolidated defaults from the installed package
+defaults <- EJAM:::get_global_defaults_or_user_options()
+sort(names(defaults))
 
-EJAM:::args2(getblocksnearbyviaQuadTree)
-
-EJAM:::args2(get_blockpoints_in_shape)
-
-EJAM:::args2(getblocksnearby_from_fips)
-
-# sitepoints can be a param in ejamapp()
-# shapefile  can be a param in ejamapp()
-# fips
-
-# radius_donut_lower_edge
-# quiet = FALSE
-
+## Approximate input$ references in the current server source
+EJAM:::input_names_listing("R/app_server.R")
 ```
 
-### > function params - annotated list of most
+When changing this system, check these files together:
 
-```{r funcparams-annotated, eval=TRUE}
-# > cbind(formals(ejamit))
-EJAM:::args2(ejamit)
+- `R/ejamapp.R` for convenience arguments and launch-time normalization;
+- `R/utils_get_global_defaults_or_user_options.R` and `R/utils_global_or_param.R`;
+- `inst/global_defaults_package.R`, `inst/global_defaults_shiny.R`, and
+  `inst/global_defaults_shiny_public.R`;
+- `R/app_ui.R` for static controls and the Advanced Settings tab;
+- `R/app_server.R` for launch-URL parsing, reactive controls, and `update*Input()` synchronization;
+- `R/url_ejamapp.R` for app-link generation; and
+- `tests/testthat/test-webapp-ui_and_server.R` and
+  `tests/testthat/test-URL_FUNCTIONS_part1.R` for the corresponding contracts.
 
-# sitepoints               NULL            -- Now can be passed to ejamapp()
-# shapefile                NULL           ----   shapefile now can be  passed to ejamapp()
-# fips                     NULL            ----   fips  will be enabled as param
-
-# radius                   3   for getblocksnearby(), shiny radius_default is in global_defaults_
-# radius_donut_lower_edge  0         na
-# maxradius                31.07     for getblocksnearby(), shiny default is set in global
-# avoidorphans             FALSE     for getblocksnearby(), shiny default is set in global
-# quadtree                 NULL      na
-
-# countcols                NULL      for doaggregate() ** shiny default NOT specified here
-# popmeancols              NULL      for doaggregate() ** shiny default NOT specified here
-# calculatedcols           NULL      for doaggregate() ** shiny default NOT specified here
-# calctype_maxbg           NULL      for doaggregate() ** shiny default NOT specified here
-# calctype_minbg           NULL      for doaggregate() ** shiny default NOT specified here
-
-# subgroups_type           "nh"      for doaggregate(), shiny default is set in global
-# include_ejindexes        TRUE      for doaggregate(), shiny default is set in global
-# calculate_ratios         TRUE      for doaggregate(), shiny default is set in global
-# extra_demog              TRUE      for doaggregate(), shiny default is set in global
-# need_proximityscore      FALSE     for doaggregate(), shiny default is set in global
-# infer_sitepoints         FALSE     for doaggregate() ** shiny default NOT specified here
-# need_blockwt             TRUE      for getblocksnearby_from_fips(), shiny default not specified here, but by function defaults
-
-# thresholds          expression  for batch.summarize() - set in global_ but named differently
-# threshnames         expression  for batch.summarize() - set in global_ but named differently
-# threshgroups        expression  for batch.summarize() - set in global_ but named differently
-
-# updateProgress           NULL      ** shiny default NOT specified here
-# updateProgress_getblocks NULL      ** shiny default NOT specified here
-# in_shiny                 FALSE     for ejamit(), internal report builders, and related functions
-# quiet                    TRUE      for getblocksnearby() and batch.summarize(), na
-
-# testing                  FALSE    for doaggregate(), shiny default is set in global
-# silentinteractive        FALSE    for doaggregate() etc. na
-# called_by_ejamit         TRUE     for doaggregate(), na
-# showdrinkingwater        TRUE     for doaggregate(), na
-# showpctowned             TRUE     for doaggregate(), na
-# download_city_fips_bounds = TRUE,
-# download_noncity_fips_bounds = FALSE,
-# ...                      ?   for getblocksnearby(), like use_unadjusted_distance ** shiny default NOT specified here
-```
-
-
-### > shiny inputs - categorized (partial) ####
-
-EJAM shiny app inputs that can be URL-encoded in a bookmark to reopen the app with those settings
-Note the URL cuts off  at about 4096 characters
-
-#### inputs: tabs and nav and help buttons
-
-```
-
-all_tabs="See Results"   # or # all_tabs="Advanced Settings"
-results_tabs="Community Report"
-details_subtabs="Site-by-Site Table"
-
-show_advanced_settings="TRUE" 
-can_show_advanced_settings="TRUE"
-
-# buttons:
-ui_show_advanced_settings=1 #button
-ui_hide_advanced_settings=0 #button
-show_data_preview=0
-back_to_site_sel2=0
-return_to_results=0
-latlon_help=0
-shp_help=0
-fips_help=0
-frs_help=0
-epa_program_help=0
-```
-
-#### inputs: start analysis button
-
-```
-bt_get_results=0
-```
-
-#### inputs: site selection (buttons/dropdowns)
-
-```
-
-default_ss_choose_method="upload" # or "dropdown" or "mapclick" (click/draw on map)
-ss_choose_method="upload"         # or "dropdown" or "mapclick"
-ss_choose_method_upload="latlon"   # see global_defaults_*.R for options
-mapclick_clear=0                   # "Clear all points" button for the mapclick method
-ss_choose_method_drop="FIPS_PLACE" # see global_defaults_*.R for options
-ss_upload_shp=null
-ss_upload_fips=null
-ss_upload_frs=null
-ss_upload_program=null
-ss_select_program="CAMDBS"
-ss_select_naics="313"  # see default_naics
-ss_select_sic="2015"   # see default_sic
-ss_select_mact="AA" # see default_mact 
-naics_digits_shown="basic"
-add_naics_subcategories="TRUE"
-
-shinyjs-resettable-ss_upload_latlon={}
-shinyjs-resettable-ss_upload_shp={}
-shinyjs-resettable-ss_upload_frs={}
-shinyjs-resettable-ss_upload_program={}
-shinyjs-resettable-ss_upload_fips={}
-
-pickermoduleid-fips_type2pick="Counties"
-pickermoduleid-states_picked=null
-pickermoduleid-counties_picked=null
-pickermoduleid-cities_picked=null
-pickermoduleid-regions_picked=["1","2","3","4","5","6","7","8","9","10"]
-pickermoduleid-all_regions_button=true
-pickermoduleid-all_states_button=true
-pickermoduleid-all_counties_button=false
-pickermoduleid-all_cities_button=false
-pickermoduleid-reset_button=0
-fipspicker_done_button=0
-```
-
-#### inputs: radius and caps
-
-```
-radius_now=3.1  # input from slider but not the way to bookmark /url-encode the radius
-radius_default=3.1  # works as parameter to ejamapp() or as bookmarked input$ 
-radius_default_shapefile=0
-max_miles=10
-maxradius=31.06856
-max_pts_upload=5000
-max_pts_select=5000
-max_pts_click=30
-max_pts_map=5000
-max_pts_showtable=1000
-max_pts_run=10000
-max_shapes_map=159
-max_mb_upload=50
-```
-
-#### inputs: more ejamit() parameters, summary report and excel output settings, etc.
-
-```
-standard_analysis_title="CUSTOM Analysis" # shown on webpage of app and on reports
-analysis_title="testname"
-Custom_title_for_bar_plot_of_indicators=""
-include_ejindexes="TRUE"
-calculate_ratios=true
-include_averages=true
-show_ratios_in_report="TRUE"
-extratable_show_ratios_in_report="TRUE"
-more3="a"
-avoidorphans="FALSE"
-need_proximityscore="FALSE"
-plotkind_1pager="bar"
-format1pager="html"
-ok2plot=true
-allow_median_in_barplot_indicators="FALSE"
-summ_hist_distn="People" # histograms
-summ_hist_data="pctile"
-summ_hist_bins=10
-
-extra_demog="TRUE"
-include_extraindicators=true
-extratable_title=""
-extratable_title_top_row="ADDITIONAL INFORMATION"
-extratable_list_of_sections="pctpoor"
-# extratable_hide_missing_rows_for=["pcthisp","pctnhba","pctnhaa","pctnhaiana","pctnhnhpia","pctnhotheralone","pctnhmulti","pctnhwa","pctlan_ie","pctlan_api","pctlan_other","pctlan_english","pctlan_spanish","pctlan_french",
-# "pctlan_rus_pol_slav","p_chinese","p_korean","pctlan_other_ie","pctlan_vietnamese","pctlan_other_asian","pctlan_arabic","pctlan_nonenglish",
-# "pctspanish_li","pctie_li","pctapi_li","pctother_li","pctmale","pctfemale","pctdisability","lowlifex","rateheartdisease","rateasthma","ratecancer","pctunder5","pctunder18","pctover64","occupiedunits","lifexyears",
-# "percapincome","pctownedunits","pctpoor","sitecount_avg","sitecount_unique","sitecount_max","distance_min_avgperson","distance_min","count.NPL","count.TSDF","num_waterdis","num_airpoll","num_brownfield","num_tri","num_school",
-# "num_hospital","num_church","yesno_tribal","yesno_airnonatt","yesno_impwaters","yesno_cejstdis","yesno_iradis","pctflood","pctfire","pctfire30","pctflood30","yesno_houseburden","yesno_transdis","yesno_fooddesert","pctnobroadband",
-# "pctnohealthinsurance","pop","nonmins","age25up","hhlds","unemployedbase","pre1960","builtunits","povknownratio"]
-
-# thresholds - counting how many of a certain indicator type are at/above some threshold
-# see help docs on ejamapp() for examples of using these (but they are named a bit differently as parameters there)
-an_thresh_comp1=80
-an_thresh_comp2=80
-an_threshgroup1="EJ-US-or-ST"
-an_threshgroup2="Supp-US-or-ST"
-an_threshnames1=["pctile.EJ.DISPARITY.dpm.eo","pctile.EJ.DISPARITY.drinking.eo","pctile.EJ.DISPARITY.no2.eo","pctile.EJ.DISPARITY.o3.eo","pctile.EJ.DISPARITY.pctpre1960.eo","pctile.EJ.DISPARITY.pm.eo","pctile.EJ.DISPARITY.proximity.npdes.eo",
-                 "pctile.EJ.DISPARITY.proximity.npl.eo","pctile.EJ.DISPARITY.proximity.rmp.eo","pctile.EJ.DISPARITY.proximity.tsdf.eo","pctile.EJ.DISPARITY.rsei.eo","pctile.EJ.DISPARITY.traffic.score.eo","pctile.EJ.DISPARITY.ust.eo",
-                 "state.pctile.EJ.DISPARITY.dpm.eo","state.pctile.EJ.DISPARITY.drinking.eo","state.pctile.EJ.DISPARITY.no2.eo","state.pctile.EJ.DISPARITY.o3.eo","state.pctile.EJ.DISPARITY.pctpre1960.eo","state.pctile.EJ.DISPARITY.pm.eo","state.pctile.EJ.DISPARITY.proximity.npdes.eo",
-                 "state.pctile.EJ.DISPARITY.proximity.npl.eo","state.pctile.EJ.DISPARITY.proximity.rmp.eo","state.pctile.EJ.DISPARITY.proximity.tsdf.eo","state.pctile.EJ.DISPARITY.rsei.eo","state.pctile.EJ.DISPARITY.traffic.score.eo","state.pctile.EJ.DISPARITY.ust.eo"]
-an_threshnames2=["pctile.EJ.DISPARITY.dpm.supp","pctile.EJ.DISPARITY.drinking.supp","pctile.EJ.DISPARITY.no2.supp","pctile.EJ.DISPARITY.o3.supp","pctile.EJ.DISPARITY.pctpre1960.supp","pctile.EJ.DISPARITY.pm.supp","pctile.EJ.DISPARITY.proximity.npdes.supp",
-                 "pctile.EJ.DISPARITY.proximity.npl.supp","pctile.EJ.DISPARITY.proximity.rmp.supp","pctile.EJ.DISPARITY.proximity.tsdf.supp","pctile.EJ.DISPARITY.rsei.supp","pctile.EJ.DISPARITY.traffic.score.supp","pctile.EJ.DISPARITY.ust.supp","state.pctile.EJ.DISPARITY.dpm.supp",
-                 "state.pctile.EJ.DISPARITY.drinking.supp","state.pctile.EJ.DISPARITY.no2.supp","state.pctile.EJ.DISPARITY.o3.supp","state.pctile.EJ.DISPARITY.pctpre1960.supp","state.pctile.EJ.DISPARITY.pm.supp","state.pctile.EJ.DISPARITY.proximity.npdes.supp",
-                 "state.pctile.EJ.DISPARITY.proximity.npl.supp","state.pctile.EJ.DISPARITY.proximity.rmp.supp","state.pctile.EJ.DISPARITY.proximity.tsdf.supp","state.pctile.EJ.DISPARITY.rsei.supp","state.pctile.EJ.DISPARITY.traffic.score.supp","state.pctile.EJ.DISPARITY.ust.supp"]
-
-```
-
-#### inputs: maps
-
-```
-an_leaf_map_zoom=5
-an_leaf_map_bounds={"north":45.61403741135093,"east":-68.02734375000001,"south":28.18824364185031,"west":-123.2666015625}
-an_leaf_map_center={"lng":-95.64786455000001,"lat":37.40467238129763}
-an_leaf_map_groups="circles"
-circleweight_in=4
-```
-
-#### inputs: test mode
-
-```
-testing="FALSE"
-shiny.testmode="FALSE"
-print_uploaded_points_to_log=true
-```
-
-#### inputs: draft / reserved for a long word/pdf report
-
-```
-
-# authors
-
-rg_author_name="FirstName LastName"
-rg_author_email="author@email.org"
-rg_add_coauthors=false
-coauthor_names=""
-coauthor_emails=""
-fundingsource=""
-
-# methods & data
-
-acs_version=""
-ejscreen_version=""
-subgroups_type="nh"
-
-## sites selected for analysis
-
-prefix_filenames=""
-in_the_x_zone="area"
-facilities_studied="rule"
-facilities_studied_enter=""
-rg_enter_sites="facilities in the _____ source category"
-source_of_latlons=""
-in_areas_where_enter=""
-in_the_x_zone_enter="in "
-rg_zonetype="zone_is_named_x"
-within_x_miles_of="near the"
-in_areas_where="in areas with"
-risks_are_x="risk is at or above 1 per million (lifetime individual cancer risk due to inhalation of air toxics from this source category)"
-
-# results
-
-demog_how_elevated=""
-envt_how_elevated=""
-demog_high_at_what_share_of_sites="some of these sites, just as it varies nationwide"
-envt_high_at_what_share_of_sites="some of these sites, just as it varies nationwide"
-conclusion1=""
-conclusion2=""
-conclusion3=""
-
-```
-
---------------
---------------
+If a new launch parameter is added, update the parser, URL builder where applicable, tests,
+`?ejamapp`/`?url_ejamapp`, this article, and the shorter cross-references in
+[Accessing the Web App](webapp.html) and [Using the EJAM API](dev-api.html).
