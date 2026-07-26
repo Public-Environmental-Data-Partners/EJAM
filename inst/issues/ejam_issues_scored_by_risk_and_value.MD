@@ -1,6 +1,6 @@
 # EJAM Open Issues — Scored by Cost & Benefit
 
-**Total open issues:** 130  |  **Generated:** 2026-07-25  |  **Source:** Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)
+**Total open issues:** 131  |  **Generated:** 2026-07-26  |  **Source:** Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)
 
 **Score payload:** `inst/issues/ejam_issues_scored_by_risk_and_value.json`
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Previous run | 2026-07-24 |
-| Issues opened since previous run | 4 |
-| Issues closed since previous run | 11 |
-| Issues whose quadrant changed | 17 |
+| Previous run | 2026-07-25 |
+| Issues opened since previous run | 2 |
+| Issues closed since previous run | 1 |
+| Issues whose quadrant changed | 0 |
 
 ---
 
@@ -23,28 +23,27 @@
 
 | Cost / Benefit | **LOW Benefit**<br>value < median | **HIGH Benefit**<br>value ≥ median |
 |---|---|---|
-| **LOW Cost**<br>cost < median | **C — Might As Well**<br>21 issues | **A — BEST CANDIDATES**<br>40 issues |
-| **HIGH Cost**<br>cost ≥ median | **D — WORST CANDIDATES**<br>23 issues | **B — OK Candidates**<br>46 issues |
+| **LOW Cost**<br>cost < median | **C — Might As Well**<br>22 issues | **A — BEST CANDIDATES**<br>39 issues |
+| **HIGH Cost**<br>cost ≥ median | **D — WORST CANDIDATES**<br>23 issues | **B — OK Candidates**<br>47 issues |
 
 ---
 
 ## Quadrant A — BEST CANDIDATES — Low Cost, High Benefit
 *Easy fixes with clear high value. Prioritize these above all others.*
 
-**40 issues**
+**39 issues**
 
+- [#16](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16) — need new/updated "User Guide" ("Help" in header at right) since UI has changed a lot, etc.
 - [#504](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504) — Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate task during blockgroup join
 - [#152](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/152) — build_community_report() needs unit tests, table_signif_round_x100() or table_round() too
 - [#274](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/274) — Add the features not yet restored from the pre-2025 EPA version of the Community Report
 - [#342](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/342) — use renv package to create lock state for what versions of what packages are used
 - [#341](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/341) — Align map_headernames and/or generated avg/pctile/ratio metadata with columns doaggregate() can produce for the report
-- [#16](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16) — need new/updated "User Guide" ("Help" in header at right) since UI has changed a lot, etc.
 - [#400](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/400) — improve how webapp users can find info on data vintage (in EJAM web app UI, from community report, and from EJScreen UI)
 - [#344](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/344) — Show an example of a community report - e.g., in or linked from "basics" vignette
 - [#249](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/249) — ejam2report() fails if filename is specified without path, or with "./xyz.html"
 - [#137](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/137) — fix bug in popshare_at_top_x_pct() - results sometimes not quite right. seems to interpolate badly.
 - [#268](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/268) — Uploading a file was failing intermittently when live app hosted using AWS with load balancing
-- [#109](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/109) — Update & correct the article "Defaults and Custom Settings for the Web App"
 - [#73](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73) — in web app, add ways to analyze multiple radii at once or even continuous radius
 - [#354](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/354) — consider if downloaded report map and/or excel can use polygons in map to do POST API request for 1-site report
 - [#166](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/166) — could simplify polygons before mapping, saving - check if useful and then implement
@@ -76,18 +75,17 @@
 
 | # | Issue | Cost | Benefit | Milestone | Priority | Labels (key) |
 |---|-------|------|---------|-----------|----------|--------------|
+| [16](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16) | need new/updated "User Guide" ("Help" in header at right) since UI has… | 2 (🔵 Low) | 17 (🟩🟩 Very High) | v4 | PRIORITY HIGH | BUG, documentation, help wanted, good first issue |
 | [504](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504) | Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate tas… | 3 (🔵 Low) | 17 (🟩🟩 Very High) | v4 | PRIORITY MEDIUM | BUG, Affects Web App |
 | [152](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/152) | build_community_report() needs unit tests, table_signif_round_x100() o… | 0 (🟢 Very Low) | 15 (🟩🟩 Very High) | NA | PRIORITY HIGH-ish but not a bug | test, Affects Web App, Community Report, rank:A-high-value-low-cost |
 | [274](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/274) | Add the features not yet restored from the pre-2025 EPA version of the… | 2 (🔵 Low) | 15 (🟩🟩 Very High) | NA | PRIORITY HIGH-ish but not a bug | Affects Web App, Community Report, rank:A-high-value-low-cost |
 | [342](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/342) | use renv package to create lock state for what versions of what packag… | 3 (🔵 Low) | 15 (🟩🟩 Very High) | NA | PRIORITY HIGH-ish but not a bug | help wanted, Affects Web App, rank:A-high-value-low-cost |
 | [341](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/341) | Align map_headernames and/or generated avg/pctile/ratio metadata with … | 3 (🔵 Low) | 15 (🟩🟩 Very High) | NA | PRIORITY HIGH-ish but not a bug | Affects Web App, Community Report, rank:A-high-value-low-cost |
-| [16](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16) | need new/updated "User Guide" ("Help" in header at right) since UI has… | 2 (🔵 Low) | 14 (🟩🟩 Very High) | v4 | PRIORITY HIGH | BUG, documentation, help wanted, good first issue |
 | [400](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/400) | improve how webapp users can find info on data vintage (in EJAM web ap… | 3 (🔵 Low) | 13 (🟩🟩 Very High) | NA | PRIORITY HIGH | Affects Web App, rank:A-high-value-low-cost |
 | [344](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/344) | Show an example of a community report - e.g., in or linked from "basic… | 2 (🔵 Low) | 12 (🟩🟦 High) | v4 | PRIORITY HIGH-ish but not a bug | documentation, help wanted, good first issue, rank:A-high-value-low-cost |
 | [249](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/249) | ejam2report() fails if filename is specified without path, or with "./… | 2 (🔵 Low) | 12 (🟩🟦 High) | v3.2022.2 | PRIORITY LOW | BUG, Affects R users only - NOT web app users, rank:A-high-value-low-cost |
 | [137](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/137) | fix bug in popshare_at_top_x_pct() - results sometimes not quite right… | 1 (🟢 Very Low) | 11 (🟩🟦 High) | v4 | PRIORITY MEDIUM | BUG, Affects Web App, rank:A-high-value-low-cost |
 | [268](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/268) | Uploading a file was failing intermittently when live app hosted using… | 2 (🔵 Low) | 11 (🟩🟦 High) | NA | — | BUG, Affects Web App |
-| [109](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/109) | Update & correct the article "Defaults and Custom Settings for the Web… | 1 (🟢 Very Low) | 10 (🟩🟦 High) | v4 | PRIORITY LOW | BUG, documentation, Affects R users only - NOT web app users, rank:A-high-value-low-cost |
 | [73](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73) | in web app, add ways to analyze multiple radii at once or even continu… | 3 (🔵 Low) | 10 (🟩🟦 High) | NA | PRIORITY MEDIUM | Affects Web App, rank:A-high-value-low-cost |
 | [354](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/354) | consider if downloaded report map and/or excel can use polygons in map… | 2 (🔵 Low) | 9 (🟩🟦 High) | NA | PRIORITY MEDIUM | Affects Web App, Community Report, rank:A-high-value-low-cost |
 | [166](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/166) | could simplify polygons before mapping, saving - check if useful and t… | 2 (🔵 Low) | 9 (🟩🟦 High) | NA | PRIORITY MEDIUM | Affects Web App, API, rank:A-high-value-low-cost |
@@ -122,7 +120,7 @@
 ## Quadrant B — OK Candidates — High Cost, High Benefit
 *Worth doing but require more effort or expertise. Plan carefully before starting.*
 
-**46 issues**
+**47 issues**
 
 - [#293](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/293) — API takes too long to create a community report from when user clicks
 - [#513](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/513) — need better ETA estimates (predicted seconds to completion are too high)
@@ -134,6 +132,7 @@
 - [#193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) — Create Executive Summary helper functions - summarizer / Methods for Identifying and Focusing on Key Findings
 - [#68](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68) — allow user to type in radius not only use slider
 - [#46](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46) — Long Report text needed
+- [#527](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/527) — shapes_from_fips() errors offline even when the county boundary is built into the package
 - [#126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) — enable 1-site report on Polygons / Shapefile, via links/buttons in shiny map popups and table of sites (but NOT outside shiny like in URL-based/link in Excel table)
 - [#279](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/279) — Prepare the package to submit to CRAN (and get it accepted for hosting on CRAN)
 - [#87](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/87) — Enable shiny.telemetry log file that is not just a text file on server
@@ -183,6 +182,7 @@
 | [193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) | Create Executive Summary helper functions - summarizer / Methods for I… | 5 (🟡 Medium) | 15 (🟩🟩 Very High) | NA | PRIORITY HIGH-ish but not a bug | LongReport_output, Affects Web App, future plan list, rank:B-high-value-high-cost |
 | [68](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68) | allow user to type in radius not only use slider | 4 (🟡 Medium) | 13 (🟩🟩 Very High) | NA | PRIORITY HIGH-ish but not a bug | rank:B-high-value-high-cost |
 | [46](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46) | Long Report text needed | 8 (🟠 High) | 13 (🟩🟩 Very High) | NA | PRIORITY HIGH-ish but not a bug | LongReport_output, future plan list, rank:B-high-value-high-cost |
+| [527](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/527) | shapes_from_fips() errors offline even when the county boundary is bui… | 4 (🟡 Medium) | 11 (🟩🟦 High) | v4 | PRIORITY MEDIUM | BUG, test, Affects R users only - NOT web app users |
 | [126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) | enable 1-site report on Polygons / Shapefile, via links/buttons in shi… | 4 (🟡 Medium) | 11 (🟩🟦 High) | NA | PRIORITY MEDIUM | Affects Web App, API, rank:B-high-value-high-cost |
 | [279](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/279) | Prepare the package to submit to CRAN (and get it accepted for hosting… | 5 (🟡 Medium) | 10 (🟩🟦 High) | NA | PRIORITY MEDIUM | help wanted, Affects R users only - NOT web app users, rank:B-high-value-high-cost |
 | [87](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/87) | Enable shiny.telemetry log file that is not just a text file on server | 6 (🟡 Medium) | 10 (🟩🟦 High) | NA | PRIORITY MEDIUM | datasets-related, Affects Web App, rank:B-high-value-high-cost |
@@ -225,7 +225,7 @@
 ## Quadrant C — Might As Well — Low Cost, Low Benefit
 *Cheap to do; low urgency. Pick these up when bandwidth allows or combine with nearby work.*
 
-**21 issues**
+**22 issues**
 
 - [#177](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/177) — pick which approach is faster among functions like sf_nearest_points() and related
 - [#176](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/176) — popups reports in county case are not normal/ignore reports settings?
@@ -236,6 +236,7 @@
 - [#179](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/179) — in ejam2excel() rename parameter fname to filename for consistency w other functions
 - [#174](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/174) — round to only 1 digit the area in square miles in header of summary report
 - [#464](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464) — Investigate and solve high cost on AWS Fargate
+- [#535](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/535) — Consolidate app-settings vignette: EJScreen deep links + cross-vignette overlap
 - [#181](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/181) — add other ejam2xyz functions to basics.Rmd as examples
 - [#93](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/93) — make Demog. section of summary report table more visually prominent
 - [#59](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/59) — Improve MACT-related  lat lon data
@@ -260,6 +261,7 @@
 | [179](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/179) | in ejam2excel() rename parameter fname to filename for consistency w o… | 0 (🟢 Very Low) | 3 (⬜ Low) | NA | PRIORITY LOW | refactor, Affects R users only - NOT web app users, rank:C-low-value-low-cost |
 | [174](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/174) | round to only 1 digit the area in square miles in header of summary re… | 0 (🟢 Very Low) | 3 (⬜ Low) | NA | PRIORITY LOW | Affects Web App, Community Report, rank:C-low-value-low-cost |
 | [464](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464) | Investigate and solve high cost on AWS Fargate | 2 (🔵 Low) | 3 (⬜ Low) | NA | — | Affects Web App |
+| [535](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/535) | Consolidate app-settings vignette: EJScreen deep links + cross-vignett… | 1 (🟢 Very Low) | 2 (⬜ Low) | v4 | PRIORITY LOW | documentation, Affects R users only - NOT web app users |
 | [181](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/181) | add other ejam2xyz functions to basics.Rmd as examples | 1 (🟢 Very Low) | 2 (⬜ Low) | NA | PRIORITY LOW | documentation, refactor, Affects R users only - NOT web app users, rank:C-low-value-low-cost |
 | [93](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/93) | make Demog. section of summary report table more visually prominent | 2 (🔵 Low) | 2 (⬜ Low) | NA | PRIORITY LOW | Community Report, rank:C-low-value-low-cost |
 | [59](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/59) | Improve MACT-related  lat lon data | 2 (🔵 Low) | 2 (⬜ Low) | NA | PRIORITY LOW | rank:C-low-value-low-cost |
@@ -332,24 +334,23 @@
 
 ---
 
-## Full Table — All 130 Issues
+## Full Table — All 131 Issues
 
 Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 
 | Quad | Issue # | Cost | Benefit | Milestone | Priority | Title |
 |------|---------|------|---------|-----------|----------|-------|
+| A | [16](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16) | 2 | 17 | v4 | PRIORITY HIGH | need new/updated "User Guide" ("Help" in header at right) since UI has c… |
 | A | [504](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504) | 3 | 17 | v4 | PRIORITY MEDIUM | Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate task … |
 | A | [152](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/152) | 0 | 15 | NA | PRIORITY HIGH-ish but not a bug | build_community_report() needs unit tests, table_signif_round_x100() or … |
 | A | [274](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/274) | 2 | 15 | NA | PRIORITY HIGH-ish but not a bug | Add the features not yet restored from the pre-2025 EPA version of the C… |
 | A | [342](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/342) | 3 | 15 | NA | PRIORITY HIGH-ish but not a bug | use renv package to create lock state for what versions of what packages… |
 | A | [341](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/341) | 3 | 15 | NA | PRIORITY HIGH-ish but not a bug | Align map_headernames and/or generated avg/pctile/ratio metadata with co… |
-| A | [16](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16) | 2 | 14 | v4 | PRIORITY HIGH | need new/updated "User Guide" ("Help" in header at right) since UI has c… |
 | A | [400](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/400) | 3 | 13 | NA | PRIORITY HIGH | improve how webapp users can find info on data vintage (in EJAM web app … |
 | A | [344](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/344) | 2 | 12 | v4 | PRIORITY HIGH-ish but not a bug | Show an example of a community report - e.g., in or linked from "basics"… |
 | A | [249](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/249) | 2 | 12 | v3.2022.2 | PRIORITY LOW | ejam2report() fails if filename is specified without path, or with "./xy… |
 | A | [137](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/137) | 1 | 11 | v4 | PRIORITY MEDIUM | fix bug in popshare_at_top_x_pct() - results sometimes not quite right. … |
 | A | [268](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/268) | 2 | 11 | NA | — | Uploading a file was failing intermittently when live app hosted using A… |
-| A | [109](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/109) | 1 | 10 | v4 | PRIORITY LOW | Update & correct the article "Defaults and Custom Settings for the Web A… |
 | A | [73](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73) | 3 | 10 | NA | PRIORITY MEDIUM | in web app, add ways to analyze multiple radii at once or even continuou… |
 | A | [354](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/354) | 2 | 9 | NA | PRIORITY MEDIUM | consider if downloaded report map and/or excel can use polygons in map t… |
 | A | [166](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/166) | 2 | 9 | NA | PRIORITY MEDIUM | could simplify polygons before mapping, saving - check if useful and the… |
@@ -388,6 +389,7 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 | B | [193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) | 5 | 15 | NA | PRIORITY HIGH-ish but not a bug | Create Executive Summary helper functions - summarizer / Methods for Ide… |
 | B | [68](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68) | 4 | 13 | NA | PRIORITY HIGH-ish but not a bug | allow user to type in radius not only use slider |
 | B | [46](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46) | 8 | 13 | NA | PRIORITY HIGH-ish but not a bug | Long Report text needed |
+| B | [527](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/527) | 4 | 11 | v4 | PRIORITY MEDIUM | shapes_from_fips() errors offline even when the county boundary is built… |
 | B | [126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) | 4 | 11 | NA | PRIORITY MEDIUM | enable 1-site report on Polygons / Shapefile, via links/buttons in shiny… |
 | B | [279](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/279) | 5 | 10 | NA | PRIORITY MEDIUM | Prepare the package to submit to CRAN (and get it accepted for hosting o… |
 | B | [87](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/87) | 6 | 10 | NA | PRIORITY MEDIUM | Enable shiny.telemetry log file that is not just a text file on server |
@@ -433,6 +435,7 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 | C | [179](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/179) | 0 | 3 | NA | PRIORITY LOW | in ejam2excel() rename parameter fname to filename for consistency w oth… |
 | C | [174](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/174) | 0 | 3 | NA | PRIORITY LOW | round to only 1 digit the area in square miles in header of summary repo… |
 | C | [464](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464) | 2 | 3 | NA | — | Investigate and solve high cost on AWS Fargate |
+| C | [535](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/535) | 1 | 2 | v4 | PRIORITY LOW | Consolidate app-settings vignette: EJScreen deep links + cross-vignette … |
 | C | [181](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/181) | 1 | 2 | NA | PRIORITY LOW | add other ejam2xyz functions to basics.Rmd as examples |
 | C | [93](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/93) | 2 | 2 | NA | PRIORITY LOW | make Demog. section of summary report table more visually prominent |
 | C | [59](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/59) | 2 | 2 | NA | PRIORITY LOW | Improve MACT-related  lat lon data |
@@ -477,7 +480,7 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 |-----------|------------:|
 | Data Updates | 1 |
 | v3.2022.2 | 2 |
-| v4 | 18 |
+| v4 | 19 |
 | NA | 109 |
 
 ---
