@@ -141,7 +141,10 @@ out <- testoutput_ejamit_100pts_1miles
 ejam2map(out, launch_browser = FALSE) 
 ```
 
-## Report via `ejam2report()` (interactive html file)
+## Community report via `ejam2report()`
+
+`ejam2report()` turns the analysis results into a community report that can be
+viewed in a browser or saved as a PDF.
 
 ```{r ejam2report1_show_commands, eval=FALSE, echo = TRUE}
 
@@ -149,49 +152,22 @@ out <- testoutput_ejamit_100pts_1miles
 
 ejam2report(out)
 
-## OR for one site:
-#
-# y <- ejam2report(out, sitenumber = 1, analysis_title = "Site #1")
+# Save the report as a PDF:
+ejam2report(out, fileextension = "pdf")
+
+# Or create a report for one site:
+ejam2report(out, sitenumber = 1, analysis_title = "Site #1")
 ```
 
+See a complete example:
 
-<!-- 1 REMOVE REPORT EXAMPLE FROM THE VIGNETTE UNTIL IT IS WORKING CORRECTLY:
+- [Community report for 100 point locations, using a one-mile
+  radius](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/inst/testdata/examples_of_output/testoutput_ejam2report_100pts_1miles.pdf)
 
-```{r ejam2report1_includeHTML, echo=FALSE, include = FALSE}
-## one approach is to include html report that was already created:
-# fname = system.file("testdata/examples_of_output/testoutput_ejam2report_10pts_1miles.html", package = "EJAM")
-# htmltools::includeHTML(fname)
-```
-
-REMOVED UNTIL FIXED  -->
-
-<!-- 2 REMOVE REPORT EXAMPLE FROM THE VIGNETTE UNTIL IT IS WORKING CORRECTLY:
-
-```{r ejam2report1_gethtml, eval=TRUE, include=FALSE}
-#### xfun::file_string('file.html') # Another method of including some html here
-## 2d approach is get html of report then use results="asis" in R chunk inside html chunk:
-# out <- testoutput_ejamit_100pts_1miles
-# myreport <- ejam2report(out, launch_browser = FALSE, return_html = TRUE)
-```
-
-````{=html}
-```{r ejam2report1_returnhtmlasis, eval=TRUE, echo=FALSE, results='asis'}
-#  myreport
-```
-````
-
-REMOVED UNTIL FIXED  -->
-
-<!-- 3 REMOVE REPORT EXAMPLE FROM THE VIGNETTE UNTIL IT IS WORKING CORRECTLY: 
-
-3d approach to try to insert snapshots of the summary report tables and barplot instead of rendered output of the ejam2report() function... 
-
-![Summary table of environmental and residential population indicators as raw value, average and percentile (in State and in US overall)](images/image-report_top_example.png){width="100%"}
-![Summary table of Summary Indexes, population subgroups, sex, and language indicators](images/image-report_EJ_table_example.png){width="100%"} 
-![US map showing analyzed points](images/image-map_example.png){width="100%"}
-![Barplot comparing residential population indicators as ratios to US average](images/image-barplot_example.png){width="100%"}
-
-REMOVED UNTIL FIXED  -->
+More PDF examples show reports for [selected
+counties](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/inst/testdata/examples_of_output/testoutput_ejam2report_fips_counties.pdf)
+and [uploaded
+shapes](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/inst/testdata/examples_of_output/testoutput_ejam2report_shapes_2.pdf).
 
 
 ## Table of Results in RStudio console
