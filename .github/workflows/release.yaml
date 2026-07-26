@@ -107,9 +107,15 @@ jobs:
             fi
           fi
 
+          # Note whether the tag exists, but do NOT skip on that alone. If a
+          # previous run pushed the tag and then failed before creating the
+          # release, skipping here would strand the release permanently, with
+          # every rerun refusing to finish the job. An existing tag just means
+          # "do not create or move it" - the release still needs making.
+          TAG_EXISTS=false
           if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
-            echo "::notice::Tag v$VERSION already exists. Skipping - this workflow never moves an existing tag."
-            SKIP=true
+            TAG_EXISTS=true
+            echo "::notice::Tag v$VERSION already exists; it will be reused, never moved."
           fi
 
           # Decide how to ship, based on what already exists on the releases page.
@@ -134,6 +140,7 @@ jobs:
 
           echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
 
       - name: Extract the NEWS.md section for this version
         if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'create'
@@ -249,23 +256,34 @@ jobs:
           set -euo pipefail
           TAG='${{ steps.ver.outputs.tag }}'
 
-          git config user.name  'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git tag -a "$TAG" -m "${{ steps.notes.outputs.title }}"
-          git push origin "$TAG"
-
           LATEST_FLAG='--latest=false'
           if [ '${{ github.event_name }}' = 'schedule' ] || [ '${{ inputs.mark_latest }}' = 'true' ]; then
             LATEST_FLAG='--latest'
           fi
 
-          # Pin the release to the exact commit we tagged, not to the branch name -
-          # main could advance between the tag push and the release creation.
-          gh release create "$TAG" \
-            --target '${{ steps.ver.outputs.sha }}' \
-            --title "${{ steps.notes.outputs.title }}" \
-            --notes-file release-notes.md \
-            $LATEST_FLAG
+          if [ '${{ steps.guard.outputs.tag_exists }}' = 'true' ]; then
+            # A previous run tagged but did not get as far as creating the
+            # release. Reuse the tag exactly as it is and just make the release,
+            # so a partial failure can be finished by rerunning.
+            echo "::notice::Reusing existing tag $TAG and creating the missing release."
+            gh release create "$TAG" \
+              --title "${{ steps.notes.outputs.title }}" \
+              --notes-file release-notes.md \
+              $LATEST_FLAG
+          else
+            git config user.name  'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git tag -a "$TAG" -m "${{ steps.notes.outputs.title }}"
+            git push origin "$TAG"
+
+            # Pin the release to the exact commit we tagged, not to the branch name -
+            # main could advance between the tag push and the release creation.
+            gh release create "$TAG" \
+              --target '${{ steps.ver.outputs.sha }}' \
+              --title "${{ steps.notes.outputs.title }}" \
+              --notes-file release-notes.md \
+              $LATEST_FLAG
+          fi
 
           {
             echo "### Released ${{ steps.notes.outputs.title }}"
