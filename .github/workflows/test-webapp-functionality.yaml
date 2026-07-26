@@ -2,8 +2,14 @@
 name: 'Test web app UI and functionality'
 
 on:
+  # Expensive (macos-15, nine sequential shinytest2 app runs), so it stays
+  # scoped to main: PRs into it, and main itself after a merge, since --admin
+  # merges and direct hotfix pushes bypass the PR run.
   pull_request:
     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
