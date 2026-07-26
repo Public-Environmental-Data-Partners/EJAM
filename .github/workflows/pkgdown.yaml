@@ -2,9 +2,14 @@
 name: 'build and deploy documentation website on github pages'
 
 on:
-  # development push -> /dev/ ; release published -> /<tag>/ ; root is deployed only
-  # via an explicit workflow_dispatch (target_folder ".") for the latest release, so
-  # pushing main does not overwrite the live docs root.
+  # development push          -> /dev/
+  # release published, Latest -> the docs ROOT
+  # release published, not    -> nothing (see the gate in "Configure deployment")
+  # workflow_dispatch         -> anywhere, manual override
+  #
+  # Pushing main never deploys: main changes only at releases and hotfixes, and
+  # hotfixes get a patch release, so the release event covers it without ever
+  # publishing docs for an unreleased state.
   push:
     branches: [ "development" ]
   release:
@@ -57,6 +62,7 @@ jobs:
           INPUT_TARGET_FOLDER: ${{ inputs.target_folder }}
           INPUT_PKGDOWN_DEV_MODE: ${{ inputs.pkgdown_dev_mode }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           build_ref="${INPUT_REF:-$GITHUB_REF}"
           ref_name="$GITHUB_REF_NAME"
@@ -65,10 +71,41 @@ jobs:
             ref_name="${ref_name#refs/tags/}"
           fi
 
+          # A manual workflow_dispatch target always wins, so the root or any
+          # folder can still be rebuilt by hand.
           target_folder="$INPUT_TARGET_FOLDER"
+          skip=false
           if [ -z "$target_folder" ]; then
             if [ -n "$RELEASE_TAG" ]; then
-              target_folder="$RELEASE_TAG"
+              # A published release updates the ROOT docs site, but only when it
+              # is the release GitHub marks "Latest".
+              #
+              # This matters because EJAM keeps parallel annual-vintage lines
+              # (v3.2022.x, v3.2023.x, v3.2024.x), so the highest version number
+              # is NOT the recommended one - v3.2022.x is, while v3.2024.0
+              # exists. Publishing a 2023 or 2024 release must not overwrite the
+              # root site with docs for a line users are not being pointed at.
+              # The "Latest" flag is curated by hand and already encodes
+              # "recommended", so it is exactly the right gate.
+              # Retry: this fires immediately on the release event, and the
+              # /releases/latest endpoint can lag a moment behind publication.
+              # Without this, a correct release could be misread as "not Latest"
+              # and silently skip the root deploy - the exact unattended failure
+              # this gate is supposed to prevent.
+              latest_tag=''
+              for attempt in 1 2 3 4 5; do
+                latest_tag="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name 2>/dev/null || echo '')"
+                [ "$latest_tag" = "$RELEASE_TAG" ] && break
+                echo "attempt $attempt: Latest reads '${latest_tag:-unknown}', expected '$RELEASE_TAG'; retrying"
+                sleep 10
+              done
+              if [ -n "$latest_tag" ] && [ "$latest_tag" = "$RELEASE_TAG" ]; then
+                target_folder="."
+                echo "::notice::$RELEASE_TAG is the Latest release - deploying to the docs root."
+              else
+                skip=true
+                echo "::notice::$RELEASE_TAG is not the Latest release (Latest is '${latest_tag:-unknown}'). Leaving the docs root untouched. Rebuild by hand with workflow_dispatch if that is wrong."
+              fi
             elif [ "$ref_name" = "development" ]; then
               target_folder="dev"
             elif [ "$GITHUB_REF_TYPE" = "tag" ]; then
@@ -76,6 +113,12 @@ jobs:
             else
               target_folder="."
             fi
+          fi
+
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
+          if [ "$skip" = "true" ]; then
+            # Nothing further should run, but the remaining steps need a value.
+            target_folder="."
           fi
 
           pkgdown_dev_mode="$INPUT_PKGDOWN_DEV_MODE"
@@ -108,16 +151,20 @@ jobs:
           echo "Building $build_ref as $pkgdown_dev_mode; deploying $build_dir to gh-pages/$target_folder"
 
       - uses: actions/checkout@v7
+        if: steps.deploy.outputs.skip != 'true'
         with:
           ref: ${{ steps.deploy.outputs.build_ref }}
 
       - uses: r-lib/actions/setup-pandoc@v2
+        if: steps.deploy.outputs.skip != 'true'
 
       - uses: r-lib/actions/setup-r@v2
+        if: steps.deploy.outputs.skip != 'true'
         with:
           use-public-rspm: true
 
       - name: System libraries for Arrow/curl
+        if: steps.deploy.outputs.skip != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -127,6 +174,7 @@ jobs:
             pkg-config
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        if: steps.deploy.outputs.skip != 'true'
         with:
           extra-packages: any::pkgdown, local::.
           # Install only hard deps (+ pkgdown) for the docs build. Avoids building
@@ -138,10 +186,12 @@ jobs:
           needs: website
 
       - name: Verify Arrow/curl dependencies
+        if: steps.deploy.outputs.skip != 'true'
         run: source(".github/scripts/check-arrow-curl-deps.R")
         shell: Rscript {0}
 
       - name: Build site
+        if: steps.deploy.outputs.skip != 'true'
         # Do specific steps here to avoid build_llm_docs(), which is slow for
         # this large site and not currently part of the publishing contract.
         env:
@@ -179,6 +229,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages
+        if: steps.deploy.outputs.skip != 'true'
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           clean: true
