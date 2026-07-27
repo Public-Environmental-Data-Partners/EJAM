@@ -145,6 +145,7 @@ class IssueScorePayloadTest(unittest.TestCase):
             "Each issue is scored independently on two dimensions:"
         )
         score_ranges_idx = markdown.index("### Score ranges")
+        focus_rule_idx = markdown.index("### Focus shortlist rule")
         rank_labels_idx = markdown.index(
             "### GitHub rank labels for a later update task"
         )
@@ -156,6 +157,8 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertLess(milestones_idx, how_ranking_idx)
         self.assertLess(how_ranking_idx, dimensions_idx)
         self.assertLess(dimensions_idx, score_ranges_idx)
+        self.assertLess(score_ranges_idx, focus_rule_idx)
+        self.assertLess(focus_rule_idx, rank_labels_idx)
         self.assertLess(score_ranges_idx, rank_labels_idx)
         self.assertLess(rank_labels_idx, scoring_factors_idx)
 
@@ -181,8 +184,8 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertNotIn("────────────────", markdown)
         self.assertIn(
             "| **LOW Cost**<br>cost < median | "
-            "**C — Might As Well**<br>0 issues | "
-            "**A — BEST CANDIDATES**<br>1 issue |",
+            "**C — Other Low-Cost Work**<br>0 issues | "
+            "**A — Focus Shortlist (max 20)**<br>1 issue |",
             markdown,
         )
         self.assertIn("| v3.2022.2 | 1 |", markdown)
@@ -210,6 +213,22 @@ class IssueScorePayloadTest(unittest.TestCase):
 
         self.assertEqual(scored[0]["milestone"], "v3.2022.2")
         self.assertEqual(scored[1]["milestone"], "NA")
+
+    def test_cap_quadrant_a_keeps_only_the_top_twenty_candidates(self):
+        scored = [
+            {
+                "num": number,
+                "cost": number % 3,
+                "benefit": 30 - number,
+                "quad": "A",
+            }
+            for number in range(1, 23)
+        ]
+
+        scoring.cap_quadrant_a(scored)
+
+        self.assertEqual([issue["num"] for issue in scored if issue["quad"] == "A"], list(range(1, 21)))
+        self.assertEqual([issue["num"] for issue in scored if issue["quad"] == "C"], [21, 22])
 
     def test_renderer_applies_issue_table_column_layout(self):
         html = """<!doctype html>
