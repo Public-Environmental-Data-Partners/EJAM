@@ -280,6 +280,47 @@ aws logs filter-log-events --log-group-name /ecs/ejam-prod \
 | ECS tasks failing health checks | confirm the container serves HTTP 200 on the health-check port (2001) and the app port (2000) matches the task definition |
 | Slow local Docker push | use GitHub Actions instead |
 
+## Testing against a local or draft API
+
+The app computes analysis results in-process via `ejamit()` -- it does not call the
+EJAM REST API for analysis. Where the API base URL matters is everywhere the app or
+package **builds URLs that point at the API**: the per-site report links in results
+tables and map popups (built by `url_ejamapi()`), `ejamapi()` calls, and the
+EJScreen-to-EJAM token handoff. All of those read the base URL from one place,
+`url_package("api")`, which normally comes from the `url_api` field of `DESCRIPTION`
+(the production API, https://api.ejanalysis.com).
+
+To test an app release candidate against a **different API** -- most usefully the local
+API served by `EJAM:::ejamapi_local()`, which mirrors the latest EJAM-API code before it
+is deployed anywhere (see the [API article](dev-api.html)) -- override that one lookup.
+Precedence is: `options(ejam.api.baseurl=...)` first, then the environment variable
+`EJAM_API_BASEURL`, then `DESCRIPTION`.
+
+**Local app + local API** (no infrastructure needed):
+
+```{r localapi, eval=FALSE}
+apiproc <- EJAM:::ejamapi_local()               # local API at http://127.0.0.1:3035
+Sys.setenv(EJAM_API_BASEURL = "http://127.0.0.1:3035")
+# or, equivalently: options(ejam.api.baseurl = "http://127.0.0.1:3035")
+EJAM::ejamapp()                                  # report links in tables/popups now
+                                                 # hit the local API, end to end
+# when done:
+Sys.unsetenv("EJAM_API_BASEURL")
+apiproc$kill()
+```
+
+The same override works for one-off calls without the app, e.g.
+`ejamapi(fips = "10001", endpoint = "data")` or `url_ejamapi(lat = 34, lon = -118)`
+will target whatever base is set.
+
+**Deployed app (dev server) + draft API:** the AWS-hosted dev app cannot reach a
+laptop's localhost, so point its `EJAM_API_BASEURL` (an environment variable in the
+ECS task definition) at any reachable draft API deployment -- e.g. a future
+apidev.ejanalysis.com staging service
+([EJAM-API#47](https://github.com/Public-Environmental-Data-Partners/EJAM-API/issues/47)
+tracks setting one up), or a temporary Cloudflare tunnel exposing a locally-run API.
+Unsetting the variable (or omitting it) restores the production API from `DESCRIPTION`.
+
 ## Teardown
 
 ```bash

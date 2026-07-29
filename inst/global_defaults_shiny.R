@@ -511,17 +511,20 @@ msg <- utils::capture.output({
       "`Age` = c('pctunder5', 'pctunder18', 'pctover64')",
       "`Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))]",
       "`Poverty` = names_d_extra",
-      "`Features and Location Information` = c(
-    names_e_other,
-    names_sitesinarea,
+      # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Climate)
+      "`Climate` = names_climate",
+      "`Counts of Features and Overlap with Area Types` = c(
     names_featuresinarea ,
     names_flag
   )",
-      "`Climate` = names_climate",
-      "`Critical Services` = names_criticalservice"
+      "`Critical Services` = c('yesno_houseburden', 'yesno_fooddesert', 'yesno_transdis',
+    'pctnobroadband', 'pctnohealthinsurance')" # names_criticalservice, re-sorted for display: flags first, then percentages
     ),
     `Other` = list(  # just a heading for UI
-      "`Other` = names_d_other_count"
+      "`Facility Counts` = names_sitesinarea",
+      "`Analyzed Sites` = c('distance_min_avgperson', 'distance_min',
+    'sitecount_unique', 'sitecount_avg', 'sitecount_max')", # names_e_other, re-sorted for display: distances first, then site counts
+      "`Other Totals` = names_d_other_count"
       # , "`Count above threshold` = names_countabove"  # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
     )
   )

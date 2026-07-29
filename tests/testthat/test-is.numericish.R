@@ -69,3 +69,16 @@ test_that("is.numericish ok for data.frame", {
      all(x[,6:7] == FALSE)
    )
 })
+
+test_that("is.numericish does not alter a data.table input, and matches the data.frame result", {
+  # it used to setDF() a data.table input by reference and never restore it
+  # (the caller's object was left as a data.frame)
+  df <- data.frame(a = c(1.5, NA, 3), b = c("x", "", "z"), c = c("08", "1.90", NA),
+                   stringsAsFactors = FALSE)
+  dt <- data.table::as.data.table(df)
+  snapshot <- data.table::copy(dt)
+
+  expect_identical(is.numericish(dt), is.numericish(df))
+  expect_true(data.table::is.data.table(dt))
+  expect_identical(dt, snapshot)
+})

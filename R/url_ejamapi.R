@@ -6,7 +6,7 @@
 #' - Relies on the EJAM REST API, whose source code is at
 #'   https://github.com/Public-Environmental-Data-Partners/EJAM-API
 #'   (the API base URL itself comes from `url_package("api")`; see the
-#'   DESCRIPTION file).
+#'   DESCRIPTION field `Config/EJAM/url_api`).
 #'
 #' - To construct a "deep link" that launches the live EJAM *app* (not the API)
 #'   pre-loaded with sites, see [url_ejamapp()], which uses the same query
@@ -52,10 +52,11 @@
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values. Default NULL
 #'   (and an explicitly passed NULL) resolves to the EJAM API base URL from
-#'   the DESCRIPTION file, via [url_package()] with type="api".
+#'   DESCRIPTION field `Config/EJAM/url_api`, via [url_package()] with type="api".
 #' @param baseurl do not change unless endpoint actually changed. Default NULL
-#'   (and an explicitly passed NULL) resolves to url_package("api"), a URL stored in the DESCRIPTION file,
-#'   followed by "/report?". See [ejamapi()] for a better way to handle choice of endpoint.
+#'   (and an explicitly passed NULL) resolves to url_package("api"), a URL stored
+#'   in DESCRIPTION as `Config/EJAM/url_api`, followed by "/report?". See
+#'   [ejamapi()] for a better way to handle choice of endpoint.
 #'
 #' @param sitenumber controls how many URLs are returned and which site(s) each covers:
 #'
@@ -204,8 +205,9 @@ url_ejamapi = function(
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
-  # Single source of truth: the EJAM API base URL lives in DESCRIPTION,
-  # read via url_package("api"). Default NULL (and an explicitly passed NULL) resolve here.
+  # Single source of truth: the EJAM API base URL lives in DESCRIPTION as
+  # Config/EJAM/url_api and is read via url_package("api"). Default NULL (and
+  # an explicitly passed NULL) resolve here.
   if (is.null(ifna))    {ifna    <- url_package("api")}
   if (is.null(baseurl)) {baseurl <- paste0(url_package("api"), "/report?")}
 

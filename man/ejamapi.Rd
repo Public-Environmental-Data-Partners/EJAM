@@ -65,7 +65,8 @@ that is found within the specified fips. For example, all counties in specified 
 or all blockgroups in specified County fips.}
 
 \item{baseurl}{base API URL without the endpoint path. Defaults to \code{url_package("api")},
-the single source of the API endpoint (\code{\link[=url_package]{url_package()}} reads from the DESCRIPTION file).
+the single source of the API endpoint (\code{\link[=url_package]{url_package()}} reads the
+\code{Config/EJAM/url_api} field from DESCRIPTION).
 Pass a different value only to target another API (e.g. a staging server).}
 
 \item{endpoint}{"data", "report", or "query".

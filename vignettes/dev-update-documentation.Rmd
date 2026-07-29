@@ -183,6 +183,52 @@ In normal documentation work, edit and commit source files such as `.R`, `.Rmd`,
 roxygen comments, and `_pkgdown.yml`. Do not edit `docs/` or the `gh-pages`
 branch by hand; those are generated deployment outputs.
 
+#### Published release and development documentation URLs
+
+The stable alias [https://docs.ejanalysis.com](https://docs.ejanalysis.com)
+preserves the path after the hostname. The site root contains the documentation
+built from `main`; the `/dev/` folder contains the version built from the
+`development` branch. This makes
+[https://docs.ejanalysis.com/dev](https://docs.ejanalysis.com/dev) the place to
+check documentation for the development version of the package before a
+release.
+
+The same page paths work in both builds:
+
+| Page | `main` documentation | `development` documentation |
+|---|---|---|
+| Home | <https://docs.ejanalysis.com> | <https://docs.ejanalysis.com/dev> |
+| Function and dataset index | <https://docs.ejanalysis.com/reference> | <https://docs.ejanalysis.com/dev/reference> |
+| `ejamapp()` reference | <https://docs.ejanalysis.com/reference/ejamapp.html> | <https://docs.ejanalysis.com/dev/reference/ejamapp.html> |
+| Article index | <https://docs.ejanalysis.com/articles> | <https://docs.ejanalysis.com/dev/articles> |
+| "What is EJAM?" article | <https://docs.ejanalysis.com/articles/whatis.html> | <https://docs.ejanalysis.com/dev/articles/whatis.html> |
+| API article | <https://docs.ejanalysis.com/articles/dev-api.html> | <https://docs.ejanalysis.com/dev/articles/dev-api.html> |
+
+The API article also has the stable shortcut
+[https://apidocs.ejanalysis.com](https://apidocs.ejanalysis.com). That shortcut
+points to the API article in the root documentation build; use the `/dev/`
+article URL in the table when reviewing the version from `development`.
+
+These URLs can also be obtained from package metadata:
+
+```{r documentation-urls, eval=FALSE}
+# Canonical GitHub Pages URLs
+EJAM::url_package("docs")
+EJAM::url_package("docs", docs_version = "dev")
+EJAM::url_package("apidocs")
+
+# Stable aliases
+docs_alias <- EJAM::url_package("docs", desc_or_alias = "alias")
+docs_alias
+paste0(docs_alias, "/dev")
+EJAM::url_package("apidocs", desc_or_alias = "alias")
+```
+
+Here, `type = "apidocs"` selects the API documentation and
+`desc_or_alias = "alias"` selects its alias. The DESCRIPTION field is named
+`url_apidocs_alias`, but `"apidocs_alias"` is **not** an accepted `type`, so
+`EJAM::url_package("apidocs_alias")` is not correct.
+
 #### Normal workflow for a vignette edit
 
 1.  Edit the relevant `.Rmd` file in `vignettes/`.
@@ -258,9 +304,12 @@ https://public-environmental-data-partners.github.io/EJAM/v3/
     `{pkgdown}` creates HTML files for GitHub Pages.
 
 -   The URL where documentation is published at any given time should be
-    recorded in the `URL` field of the `DESCRIPTION` file in the source package
-    root. That URL can be read with `EJAM::url_package("docs")`, which
-    currently returns `r docs_reponame_url`. Prior to mid-2025, documentation
-    web pages had been on GitHub Pages at URLs related to the `USEPA/EJAM` and
+    recorded in the standard `URL` field of the `DESCRIPTION` file in the
+    source package root and in `Config/EJAM/url_ejamdocs`, which is the field
+    read by `EJAM::url_package("docs")`. The helper currently returns
+    `r docs_reponame_url`. Store stable alias and redirect URLs in
+    `Config/EJAM/url_ejamdocs_alias` and
+    `Config/EJAM/url_ejamdocs_redirect`. Prior to mid-2025, documentation web
+    pages had been on GitHub Pages at URLs related to the `USEPA/EJAM` and
     `USEPA/EJAM-open` repositories, but those pages may now be archived,
     unpublished, or otherwise obsolete.

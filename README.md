@@ -23,12 +23,32 @@ same time.
 [What is
 EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html)
 
-EJAM lets you specify the places to analyze in several ways – uploading a table
-of point locations (latitude/longitude), picking facilities by industry category
-or ID, uploading shapefiles or lists of Census FIPS codes, or clicking on a map
-to specify one or more points – and it returns a summary report comparing
-residents and environmental conditions at those places to the rest of the
-country.
+EJAM lets you specify the places to analyze in several ways – uploading
+a table of point locations (latitude/longitude), picking facilities by
+industry category or ID, uploading shapefiles or lists of Census FIPS
+codes, or clicking on a map to specify one or more points – and it
+returns a summary report comparing residents and environmental
+conditions at those places to the rest of the country.
+
+## What’s New in v3.2022.2 (August 2026)
+
+The web app is quicker: the Details tab’s Site-by-Site table appears in
+under a second for a 1,000-site analysis instead of six, PDF reports
+finish seven seconds sooner, and County reports no longer pause to
+download boundaries.
+
+The community report gained rows showing the share of residents whose
+block group holds a school, hospital, or place of worship, or overlaps a
+Tribal area, impaired waters, or a disadvantaged community, each
+compared to the US and State average. Those ratio columns now show by
+default in the public app, and `?advanced=TRUE` opens the Advanced
+Settings tab.
+
+Fixes: the EJScreen “Send to EJAM” handoff no longer crashes, saved
+reports are no longer empty when given a `filename`, zero-population
+sites work, per-site API links carry the right site number.
+
+A code-and-docs patch; packaged data unchanged. See [NEWS.md](NEWS.md).
 
 ## Status of EJAM package in 2026
 

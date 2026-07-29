@@ -565,7 +565,21 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
     if (length(setdiff2(names(shapes), names(testoutput_ejamit_10pts_1miles$results_overall))) < 3) {
       popup = popup_from_ejscreen(sf::st_drop_geometry(shapes))# linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
     } else {
-      popup <- popup_from_any(sf::st_drop_geometry(shapes))
+      # Some columns (e.g. "EJAM Report", "EJSCREEN Map") hold EJAM-generated <a href>
+      # links, so escaping them would show raw markup like "&lt;a href=..." in the
+      # popup. popup_from_df_with_urls() skips escaping for ONLY those named columns
+      # and still escapes everything else, so arbitrary/user-supplied columns stay
+      # protected (the XSS fix in e28936dd).
+      popdf <- sf::st_drop_geometry(shapes)
+      linkcols <- intersect(
+        names(popdf),
+        as.character(sapply(global_or_param("default_reports"), function(z) z$header))
+      )
+      if (length(linkcols) > 0) {
+        popup <- popup_from_df_with_urls(popdf, column_names_urls = linkcols)
+      } else {
+        popup <- popup_from_any(popdf)
+      }
     }
   }
 

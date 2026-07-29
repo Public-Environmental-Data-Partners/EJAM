@@ -397,12 +397,18 @@ instead of tests/testthat/_logs
         "test-ejscreen-facilities-live.R"
       ),
       test_local_api = c(
-        # Draft local Plumber API tests. Skipped by default via skip_these and
-        # separately gated by EJAM_TEST_LOCAL_API=true in the test file.
+        # Local Plumber API server smoke tests (starts a server on port 3035).
+        # Skipped by default via skip_these and separately gated by
+        # EJAM_TEST_LOCAL_API=true in the test file.
         "test-ejamapi_local.R"
       ),
 
       test_misc = c(
+        # Parse/inventory checks of the plumber API files in inst/plumber/
+        # (no server started), incl. the drift check comparing the verbatim
+        # mirror in inst/plumber/ejam-api/ against the EJAM-API repo's main.
+        "test-plumber-api.R",
+
         "test-sites_from_input.R",
         "test-is.numericish.R",
         "test-create_filename.R",
@@ -412,6 +418,7 @@ instead of tests/testthat/_logs
         "test-plot_vs_us.R",
 
         "test-create_interactive_table.R",
+        "test-table_round.R",
         "test-shinytest2-app-dir.R",
         "test-map_headernames-report-ratio-metadata.R"
       ),
@@ -605,7 +612,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-test2.R", "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R",
               "test-ejamapi.R", "test-url_columns_bysite.R", "test-url_ejamapi.R",
               "test-url_package.R", "test-ejam2boxplot_ratios.R", "test-shiny-1-14-compat.R",
-              "test-build_community_report.R", "test-shapes_from_zip.R"),
+              "test-build_community_report.R", "test-shapes_from_zip.R",
+              "test-table_round.R"),
           seconds_byfile =
             c(0, 0, 0, 0, 0, 0, 0,
               0, 0, 2, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 6, 0, 0, 0,
@@ -614,9 +622,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               23, 0, 7, 0, 12, 0, 4, 5, 1, 0, 3, 0, 3, 0, 0, 0, 0, 1, 0, 4,
               2, 0, 0, 0, 0, 1, 0, 0, 16, 8, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
               0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 12, 0, 4, 0, 0, 0, 0, 1,
-              0)),
+              0, 1)),
           row.names = c(NA,
-                        -128L), class = "data.frame")
+                        -129L), class = "data.frame")
       )
 
 

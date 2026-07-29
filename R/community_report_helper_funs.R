@@ -322,6 +322,47 @@ fill_tbl_full_ej <- function(output_df,
 # 4. Subgroups & Additional info table ####
 
 
+#' Write one color-coded html table cell for a ratio value
+#' @param val a ratio value (single number, or something coercible to one)
+#' @return html text for one td element
+#' @keywords internal
+#' @noRd
+ratio_td_html <- function(val) {
+
+  # helper - one <td> cell of a ratio value, color-coded via the heatmap thresholds
+  # (red >2.9, orange >1.9, yellow >=1.05) used for ratio columns throughout the report.
+  # Used by fill_tbl_row_subgroups() and fill_tbl_flagged_areas_section(),
+  # so any change to the ratio color cutoffs (see issue #288) can be made in one place.
+
+  val <- suppressWarnings(as.numeric(val))
+  # show missing/non-numeric ratios as "N/A", matching how format_ejamit_columns()
+  # displays missing values elsewhere in the table (not the literal string "NA")
+  if (length(val) != 1 || !is.finite(val)) {
+    return('<td>N/A</td>')
+  }
+
+  bg_color <- if (is.numeric(val) && !is.na(val)) {
+    if (val > 2.9) {
+      "red"
+    } else if (val > 1.9) {
+      "orange"
+    } else if (val >= 1.05) {
+      "yellow"
+    } else {
+      NULL
+    }
+  } else {
+    NULL
+  }
+  # Add background color if applicable
+  if (!is.null(bg_color)) {
+    return(paste0('<td style="background-color: ', bg_color, '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', val, '</td>'))
+  } else {
+    return(paste0('<td>', val, '</td>'))
+  }
+}
+################################################################################## #
+
 #' Write a residential population subgroup indicator to an html table row
 #' @seealso used by [build_community_report()]
 #' @param output_df, single row of results table from doaggregate - either results_overall or one row of bysite
@@ -366,27 +407,7 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
       return(paste0('<td>', val, '</td>'))
     } else if (hdr == 'ratio-to-us-avg' || hdr == 'ratio-to-state-avg') {
       # Apply heatmap logic for ratio columns
-      val <- suppressWarnings(as.numeric(val))
-
-      bg_color <- if (is.numeric(val) && !is.na(val)) {
-        if (val > 2.9) {
-          "red"
-        } else if (val > 1.9) {
-          "orange"
-        } else if (val >= 1.05) {
-          "yellow"
-        } else {
-          NULL
-        }
-      } else {
-        NULL
-      }
-      # Add background color if applicable
-      if (!is.null(bg_color)) {
-        return(paste0('<td style="background-color: ', bg_color, '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', val, '</td>'))
-      } else {
-        return(paste0('<td>', val, '</td>'))
-      }
+      return(ratio_td_html(val))
     } else {
       # Default case for other columns
       return(paste0('<td>', val, '</td>'))
@@ -407,6 +428,16 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
 
 ################################################################################## #
 
+# Names of Additional Information sections whose subheader row gets the
+# "report-section-page-break" class, which communityreport.css turns into a page
+# break before that section when the report is printed to PDF. The row order
+# changed in #444, so these are the points where the table now needs to break.
+# Matching ignores case and surrounding whitespace. PDF pagination only - the
+# HTML report is unchanged.
+report_sections_page_break_before <- c(
+  "Language in Limited English Speaking Households",
+  "Facility Counts"
+)
 
 #' Create full demog subgroup/ language/ health/ community/ etc. HTML table of indicator rows
 #' @seealso used by [build_community_report()]
@@ -420,6 +451,13 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
 #' @param extratable_show_ratios_in_report logical, whether to add columns with ratios to US and State overall values
 #' @param hide_missing_rows_for only for the indicators named in this vector,
 #'   leave out rows in table where raw value is NA, as with many of names_d_language
+#' @param flagged_areas_df optional data.frame like ejamit()$results_summarized$flagged_areas
+#'   (see \code{calc_flagged_areas()}). If provided, a section of rows showing the percent of
+#'   analyzed residents with each feature or area type in their blockgroup (with ratios
+#'   to the US and State averages) is inserted just after the
+#'   "Climate" section (or after "Poverty" if there is no Climate section).
+#'   NULL (default) omits that section.
+#' @param flagged_areas_section_title title text for the flagged-areas section subheader row
 #'
 #' @keywords internal
 #'
@@ -428,16 +466,27 @@ fill_tbl_full_subgroups <- function(output_df,
                                     extratable_title_top_row = 'ADDITIONAL INFORMATION', # in the table # 'SELECTED VARIABLES', # or 'ADDITIONAL INFORMATION' or just ''
                                     list_of_sections = NULL,
                                     extratable_show_ratios_in_report = TRUE,
-                                    hide_missing_rows_for = names_d_language
+                                    hide_missing_rows_for = names_d_language,
+                                    flagged_areas_df = NULL,
+                                    flagged_areas_section_title = "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup"
                                     ## more params? ***
 ) {
 
   ########################################### #
   # helper functions to make a table one section at a time
 
-  table_by_section <- function(list_of_sections, df, extratable_show_ratios_in_report) {
+  table_by_section <- function(list_of_sections, df, extratable_show_ratios_in_report, flagged_html = '') {
 
     full_html <- ''
+    flagged_inserted <- !nzchar(flagged_html) # nothing to insert if it is empty
+    # the flagged-areas section goes right below the Climate section (which itself
+    # follows Poverty in the default layout); if the customized list of sections
+    # has no Climate section, it goes right below Poverty instead
+    flagged_anchor <- if (any(grepl("Climate", names(list_of_sections), fixed = TRUE))) {
+      "Climate"
+    } else {
+      "Poverty"
+    }
     for (i in seq_along(list_of_sections)) {
       full_html <- paste0(full_html,
                           table_one_section(section_name = names(list_of_sections)[i],
@@ -446,6 +495,14 @@ fill_tbl_full_subgroups <- function(output_df,
                                             extratable_show_ratios_in_report = extratable_show_ratios_in_report),
                           '\n'
       )
+      if (!flagged_inserted && grepl(flagged_anchor, names(list_of_sections)[i], fixed = TRUE)) {
+        full_html <- paste0(full_html, flagged_html, '\n')
+        flagged_inserted <- TRUE
+      }
+    }
+    if (!flagged_inserted) {
+      # no section named like "Climate" or "Poverty" so just append at the end
+      full_html <- paste0(full_html, flagged_html, '\n')
     }
 
     return(full_html)
@@ -454,7 +511,13 @@ fill_tbl_full_subgroups <- function(output_df,
 
   table_one_section <- function(section_name, varnames, df, extratable_show_ratios_in_report) {
 
-    tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader\">
+    # some sections start a new page in the PDF - see report_sections_page_break_before
+    brk <- if (tolower(trimws(section_name)) %in% tolower(report_sections_page_break_before)) {
+      " report-section-page-break"
+    } else {
+      ""
+    }
+    tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader', brk, '\">
 <th colspan=\"8\">', section_name, '</th>
 </tr>')
 
@@ -537,7 +600,12 @@ fill_tbl_full_subgroups <- function(output_df,
                      table_by_section(
                        list_of_sections = list_of_sections,
                        df = output_df,
-                       extratable_show_ratios_in_report = extratable_show_ratios_in_report
+                       extratable_show_ratios_in_report = extratable_show_ratios_in_report,
+                       flagged_html = fill_tbl_flagged_areas_section(
+                         flagged_areas_df = flagged_areas_df,
+                         extratable_show_ratios_in_report = extratable_show_ratios_in_report,
+                         section_title = flagged_areas_section_title
+                       )
                      ),
                      sep = '\n')
 
@@ -551,6 +619,89 @@ fill_tbl_full_subgroups <- function(output_df,
 }
 ################################################################################## #
 
+#' Write the flagged-areas rows (% of residents with feature/area type in their blockgroup) for the extra table
+#'
+#' Renders one subheader row plus one row per presence/overlap indicator from
+#' the flagged_areas summary table (see \code{calc_flagged_areas()}), showing the
+#' percent of analyzed residents who live in a blockgroup that has the feature
+#' (school, hospital, place of worship) or overlaps the area type, plus
+#' color-coded ratios to the US and State averages (if ratios are shown).
+#' The two percentage indicators (pctnobroadband, pctnohealthinsurance) are
+#' EXCLUDED here - they are average blockgroup percentages, not presence flags,
+#' and already appear in the "Critical Services" section of the report.
+#' @param flagged_areas_df data.frame like ejamit()$results_summarized$flagged_areas.
+#'   Needs at least Indicator and Percent_of_these_People columns; the ratio and
+#'   ratio_to_state_avg columns are shown as NA if absent (e.g., outputs saved by
+#'   older EJAM versions lack ratio_to_state_avg).
+#' @param extratable_show_ratios_in_report logical, must match the columns of the
+#'   surrounding table (2 columns if FALSE, 4 if TRUE)
+#' @param section_title title text for the section subheader row
+#' @return html text of table rows, or "" if flagged_areas_df is unusable (so the
+#'   section is silently omitted, as for outputs saved by older EJAM versions)
+#' @seealso used by [fill_tbl_full_subgroups()]; see \code{calc_flagged_areas()}
+#' @keywords internal
+#' @noRd
+fill_tbl_flagged_areas_section <- function(flagged_areas_df,
+                                           extratable_show_ratios_in_report = TRUE,
+                                           section_title = "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup") {
+
+  neededcols <- c("Indicator", "Percent_of_these_People")
+  if (is.null(flagged_areas_df) || !is.data.frame(flagged_areas_df) ||
+      NROW(flagged_areas_df) == 0 || !all(neededcols %in% names(flagged_areas_df))) {
+    return("")
+  }
+  flagged_areas_df <- as.data.frame(flagged_areas_df)
+
+  # exclude the percentage indicators - they are avg blockgroup percentages, not
+  # "has X in their blockgroup" presence flags, and are already shown in the
+  # Critical Services section of the report with their own US/State ratios
+  pctvars <- c('pctnobroadband', 'pctnohealthinsurance')
+  if ("rname" %in% names(flagged_areas_df)) {
+    flagged_areas_df <- flagged_areas_df[!(flagged_areas_df$rname %in% pctvars), , drop = FALSE]
+  }
+  if (NROW(flagged_areas_df) == 0) {
+    return("")
+  }
+
+  getcol <- function(cn) {
+    if (cn %in% names(flagged_areas_df)) {flagged_areas_df[[cn]]} else {rep(NA_real_, NROW(flagged_areas_df))}
+  }
+  vals     <- suppressWarnings(as.numeric(getcol("Percent_of_these_People")))
+  # ratios display with 1 decimal place, like the other ratio columns in this table
+  ratio_us <- round(suppressWarnings(as.numeric(getcol("ratio"))), 1)
+  ratio_st <- round(suppressWarnings(as.numeric(getcol("ratio_to_state_avg"))), 1)
+
+  # report-section-page-break starts this section on a fresh page in the PDF
+  # (the row order changed in #444, so the old breaks fell mid-section) - see
+  # communityreport.css and report_sections_page_break_before
+  tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader report-section-page-break\">
+<th colspan=\"8\">', section_title, '</th>
+</tr>')
+
+  tbl_rows <- sapply(seq_len(NROW(flagged_areas_df)), function(i) {
+    # whole percents with no decimal places, just like the other percentage rows
+    valtxt <- if (is.na(vals[i])) {"N/A"} else {paste0(round(vals[i], 0), "%")}
+    cells <- paste0('<td>', valtxt, '</td>')
+    if (extratable_show_ratios_in_report) {
+      cells <- paste0(cells,
+                      '\n', ratio_td_html(ratio_us[i]),
+                      '\n', ratio_td_html(ratio_st[i]))
+    }
+    paste0(
+      "<tr>",
+      '\n', '<td headers="data-indicators-table-selected-variables">', flagged_areas_df$Indicator[i], '</td>',
+      '\n', cells,
+      '\n</tr>'
+    )
+  })
+
+  full_html <- paste(tbl_head_text,
+                     paste(tbl_rows, collapse = '\n'),
+                     sep = '', collapse = '\n')
+  return(full_html)
+}
+################################################################################## #
+
 # 5. footnote ####
 
 #' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
@@ -558,13 +709,38 @@ fill_tbl_full_subgroups <- function(output_df,
 #' @param diesel_caveat text - see source code for default
 #' @param show_diesel_caveat logical, default FALSE so the diesel particulate-matter
 #'   caveat is suppressed in reports; set TRUE to include it in the footnotes.
+#' @param areafeatures_note text explaining the feature/facility count rows
+#'   (estimated totals, prorated by the share of each blockgroup's residents
+#'   inside the analyzed area - see issue #410) and the "% of These Residents..."
+#'   rows and their US/State ratios -
+#'   see source code for default. Set to "" to omit.
 #'
 #' @keywords internal
 #'
 generate_report_footnotes <- function(
     diesel_caveat = NULL,
-    show_diesel_caveat = FALSE
+    show_diesel_caveat = FALSE,
+    areafeatures_note = NULL
 ) {
+
+  if (is.null(areafeatures_note)) {
+    areafeatures_note <- paste0(
+      # agreed wording from issue #410 (see the #488 review discussion)
+      "Note: Feature counts shown (such as the count of schools) are estimated totals --",
+      " They use the count of features in each blockgroup and adjust that based on",
+      " what share of the blockgroup's residents are inside the analyzed area.",
+      " They estimate the total in the area rather than using exact coordinates",
+      " of each feature to count inside each mapped area.",
+      " If present, rows showing what % of these residents have a feature or area type in their block group",
+      " show what percent of the residents analyzed live in a block group that contains at least one",
+      " of that type of feature or that overlaps that type of area,",
+      " and the ratio columns compare that percent to the equivalent percent of all US residents",
+      " or of all residents of the state(s) analyzed.",
+      " Where an analysis covers sites in more than one state, the State average here means",
+      " the average among all the residents at these sites, using the statewide value",
+      " in each resident's state."
+    )
+  }
 
   if (is.null(diesel_caveat)) {
     diesel_caveat <-  paste0(
@@ -589,7 +765,7 @@ generate_report_footnotes <- function(
   if (isTRUE(show_diesel_caveat)) {
     dieselnote = paste0("
   <span style= 'font-size: 9pt'>
-  <p tabindex=\'13\' style='font-size: 9pt'><small>", diesel_caveat, "</small></p>
+  <p tabindex=\'13\' style='font-size: 9pt; line-height: 1.25; margin: 2px 0;'><small>", diesel_caveat, "</small></p>
   </span>"
     )
   } else {
@@ -603,9 +779,21 @@ generate_report_footnotes <- function(
   # </span>"
   # )
 
+  if (nzchar(areafeatures_note)) {
+    # compact spacing: tighter line-height and small margins so the long note reads as one tight block
+    areafeaturesnote = paste0("
+  <span style= 'font-size: 9pt'>
+  <p tabindex=\'15\' style='font-size: 9pt; line-height: 1.25; margin: 2px 0;'><small>", areafeatures_note, "</small></p>
+  </span>"
+    )
+  } else {
+    areafeaturesnote = ""
+  }
+
   footnotes <- paste(
     dieselnote,
     ejamnote,
+    areafeaturesnote,
     sep = "   "
   )
   return(HTML(footnotes))

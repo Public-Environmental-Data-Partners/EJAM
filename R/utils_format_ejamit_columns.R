@@ -48,6 +48,10 @@ format_ejamit_columns <- function(df, nms=c()) {
   })
   is.percentage <- as.logical(fixcolnames(nms, 'rname','pct_as_fraction_ejamit'))
   is.percentage[is.na(is.percentage)] <- FALSE
+  # stored as percentage points (0-100), so display with a % sign but no x100 rescaling,
+  # e.g. rateasthma 9.88 -> "10%" (unlike pct_as_fraction_ejamit columns stored as 0-1 fractions)
+  is.pctpoints <- as.logical(fixcolnames(nms, 'rname','pct_as_points_ejamit'))
+  is.pctpoints[is.na(is.pctpoints)] <- FALSE
 
   for (i in seq_along(nms)) {
     colname <- nms[i]
@@ -67,6 +71,11 @@ format_ejamit_columns <- function(df, nms=c()) {
         df[[colname]] <- scales::label_percent(
           scale = 100, accuracy = 1 / (10^decimal_num[i]))(cur_value)
       }
+
+    } else if (isTRUE(is.pctpoints[i])) {
+      df[[colname]] <- scales::label_percent(
+        scale = 1,
+        accuracy = ifelse(is.na(decimal_num[i]), 1, 1 / (10^decimal_num[i])))(cur_value)
 
     } else {
       if (!is.na(decimal_num[i])) {

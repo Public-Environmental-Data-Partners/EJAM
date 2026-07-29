@@ -11,116 +11,170 @@ Features held for the v4 milestone, not part of the v3.2022.x patch line.
   workflow that the Zipcodes article documented as manual steps (#482).
 
 
-# EJAM 3.2022.2 (unreleased)
+# EJAM 3.2022.2 (August 2026)
 
-Faster and more reliable report rendering, and
-fixes to report generation and the EJScreen/API integration.
-This is a patch release for the v3.YYYY.x annual-vintage line 
-(v3.2022.x, v3.2023.x, v3.2024.x). 
-Like v3.2022.1, this is a code-and-docs patch that reuses the already-published
-`ejamdata` data release for this vintage (`v3.2022.0`), with no change to the
-packaged ACS or environmental data.
+A code-and-docs patch over v3.2022.1, led by a faster web app and 
+new information in the community report about where people live.
 
-## Bug Fixes
+## Highlights
 
-- **Percentages displayed as "0" or "1" (or unrounded) in reports, tables, and
-  map popups**: two related metadata problems were fixed. The derived
-  `names_pct_as_fraction_ejamit` / `names_pct_as_fraction_blockgroupstats`
-  datasets had been silently saved as `NA` / empty (a script subset a character
-  column as if it were logical), which disabled the fraction-to-percent (x100)
-  conversion in `ejam2table_tall()`, `ejam2tableviewer()`, `ejam2means()`,
-  `popup_from_ejscreen()`, and `plot_boxplot_vs_ref()`. Separately,
-  `map_headernames` was missing `pct_as_fraction_ejamit` flags for 76
-  fraction-stored indicators (language spoken at home, low-income language,
-  poverty, housing tenure, broadband, health insurance, age, sex, pre-1960
-  housing, 30-year fire/flood risk, and their US/State average rows), so the
-  community report showed values like `avg.pctlan_english = 0.7867` as "1"
-  instead of "79%". Rounding (`decimals`) and Excel `%`-styling (`percentage`)
-  metadata were also filled in for those and related rows, verified against a
-  live `ejamit(testpoints_10, radius = 1)` run.
+- **A quicker web app:** the Details tab's Site-by-Site Table appears in well
+  under a second for a 1,000-site analysis instead of roughly six, PDF reports
+  finish about seven seconds sooner, and County reports no longer pause to
+  download map boundaries.
 
-- **Percentage rows now display whole percents consistently**: the Lead Paint
-  indicator and a few others had stray `decimals` metadata that made them
-  display as "55.30%" / "30.0%" while sibling indicators showed "15%".
-  `pctpre1960`, `avg.pctpre1960`, `state.avg.pctpre1960`,
-  `avg.pctdisability`, `state.avg.pctdisability`, and
-  `avg.lifexyears_synonym` now display 0 decimals after the 0-100 value
-  (e.g. "55%"), matching every other percentage row. The "Count of..." /
-  "Number of..." / flag rows keep their whole-number rounding.
+- **More about where people live:** the community report has new rows showing the
+  share of residents whose blockgroup contains a school, hospital, or place of
+  worship, or overlaps a Tribal area, impaired waters, a
+  disadvantaged community, etc. -- each compared to the US and State average.
+  The "Additional Information" part of the report is also reorganized.
 
-- **App crash on the EJScreen "Send to EJAM" handoff** (#465 fixed by #466): every FIPS
-  (County/Tract) and drawn-polygon handoff, and any lat/lon selection made
-  without a buffer, killed the Shiny session. The API serializes absent payload
-  fields as JSON `{}`, which `jsonlite::fromJSON()` parses as a zero-length list
-  rather than `NULL`; those are now normalized to `NULL` and length-checked.
+- **Ratio columns are now shown by default:** "Ratio to US average" and
+  "Ratio to State average", with their color coding, now show in the public
+  app's report (not just when isPublic=FALSE).
 
-- **Saved reports were empty when `filename` was given** (#385 fixed by #471, #475):
-  `build_community_report()` and `build_barplot_report()` had an unfinished
-  `filename` branch that wrote no file and returned mangled content. They now
-  write the file and return the HTML visibly, and `ejam2report()` accepts a much
-  wider range of `filename` / `fileextension` values (bare names, `./` and
-  multi-folder paths, uppercase or missing extensions, missing folders).
+- **Numbers display correctly:** percentages that had appeared as "0" or "1"
+  instead of, say, "79%" now render properly in the report, tables, and map
+  popups, and percentages and counts round consistently.
 
-- **Reports failed or were wrong for zero-population sites** (#467 fixed by #468):
-  `ejamit()` and `ejam2report()` now handle sites with no residents (open-water
-  block groups, industrial parcels) instead of erroring or silently returning
-  incorrect summary statistics.
+- **New URLs are shorter and provide caching:**
+  - EJScreen app: [ejscreen.ejanalysis.com](https://ejscreen.ejanalysis.com)
+    - docs: [ejscreendocs.ejanalysis.com](https://ejscreendocs.ejanalysis.com)
+  - EJAM app: [ejam.ejanalysis.com](https://ejamapp.ejanalysis.com)
+    - docs: [ejamdocs.ejanalysis.com](https://ejamdocs.ejanalysis.com)
+  - API: [api.ejanalysis.com](https://api.ejanalysis.com)
+    - docs: [apidocs.ejanalysis.com](https://apidocs.ejanalysis.com)
+  
+- **Bugs fixed**, including a crash when arriving from EJScreen's "Send to EJAM"
+  button and downloaded reports that came out empty (details below).
 
-- **API per-site report links were all labeled "Site 1"** (#348 fixed by #470):
-  `url_ejamapi()` now sends `sitenumber=N` with each per-site link and the
-  bundled `GET /report` honors it, so a link for row N produces a report that
-  says "Site N". New `ejam2report(sitenumber_label = )` sets that label
-  independently of which results row is used, and `popup_from_ejscreen()`
-  honors it. `ejam2map()` no longer errors on the aggregate `sitenumber = 0`
-  case, and now applies the site number for FIPS/shapefile sites too (#479).
-
-- **`acs_bybg(year = 2024)` wrongly errored** (#391 fixed by #469): the year gate used
-  tidycensus's own default year, which can lag more than a year behind what the
-  Census Bureau publishes. It now gates on the latest published ACS end year via
-  the new internal `acs_check_year_available()`.
+- **Intermittent upload failures on the hosted app are being fixed alongside
+  this release** (#268), but by a change to the hosting setup rather than by
+  anything in this package. The production app runs on two servers, and an
+  upload could be sent to the one that was not holding your session, which
+  answered "Not Found" -- roughly half the time. The load balancer is being set
+  to keep each session on a single server, the same fix applied in early 2026
+  that was later lost when the servers were rebuilt from their configuration
+  files. Because it is a hosting change, installing v3.2022.2 does not by itself
+  resolve it; the two are simply being done at the same time.
 
 ## Improvements
 
-- **All PDF reports are about 7 seconds (~46%) faster** (#473 helps with #293): 
-  the two unconditional render pauses were trimmed (report-map snapshot 4s -> 1s,
-  print-to-PDF 5s -> 2s), and both are now settable without a rebuild -- via the
-  `EJAM.pdf_map_snapshot_delay` / `EJAM.pdf_print_wait` options or the matching
-  `EJAM_PDF_MAP_SNAPSHOT_DELAY` / `EJAM_PDF_PRINT_WAIT` environment variables --
-  as a rollback lever should a too-short pause ever degrade output on a server.
+- **The Site-by-Site Table builds about 4x faster** (#491, fixes #127): it now
+  starts from a default subset of about 50 columns rather than all ~700 and
+  shows 50 rows per page, and the slow steps in building it were rewritten. Any
+  columns can still be added from the Advanced Settings column picker (which had
+  never appeared -- also fixed), and downloads always include every column.
 
-- **County reports are faster as boundaries are now built into the package** 
-  (#472, part of #446 and helps with #293): the
-  new `counties_shapefile` dataset (Census cartographic boundaries, 1:500k)
-  replaces a download at render time, so County maps and reports are faster and
-  need no Census API key and no boundary-service network call (Puerto Rico
-  counties are now mappable), with automatic fallback to downloading.
+- **PDF reports are about 7 seconds (~50%) faster** (#473, helps #293), from
+  trimming two fixed waits during rendering. Both stay adjustable on a server
+  without a rebuild, in case a shorter pause ever degrades output.
 
-- Set default `version` parameter to NULL in `ejamapi()` and `url_ejamapi()`
-  since API does not support vintage selection yet and the API uses 
-  whatever vintage it has installed.
+- **County reports & maps are faster and more reliable** (#472, part of #446):
+  county boundaries are built into the package instead of downloaded while the
+  report renders, so no Census API key or boundary-service call is needed, and
+  Puerto Rico counties now map correctly.
 
-## Documentation
+- **Report's "Additional Information" table was reorganized** so related
+  rows sit together: feature counts, facility counts, and analyzed-site rows are
+  now separate sections, "Climate" moved up next to "Poverty", and "Flag for..."
+  rows read Yes/No instead of 1/0. A footnote explains what the feature and
+  facility counts mean, and what a State average means for a multisite report
+  (part of #403 and #410).
+  
+- **The State flagged-areas stats are available outside the report too**
+  (closes #242; addresses #156 and #410):
+  `ejamit()$results_summarized$flagged_areas` gains statewide percent and
+  ratio-to-state columns, `ejam2barplot_areafeatures(vs = "state")` plots
+  against State averages, and `ejam2excel()` gains an "Area Features" tab.
 
-- `vignettes/webapp.Rmd` now covers the v3.2022.1 user-facing features: deep
-  links, the EJScreen "Send to EJAM" button, and launching the app pre-loaded
-  with a set of places. `vignettes/analyzing.Rmd` cross-references the API
-  article, and broken R chunks were fixed in `vignettes/naics.Rmd` and
-  `vignettes/dev-app-settings.Rmd`.
+- **A new launch-URL parameter:** `?advanced=TRUE` opens the app with the
+  Advanced Settings tab visible, even on a public deploy.
 
-## Internal / Packaging
 
-- All key project URLs (the EJAM/EJScreen/API apps, their code repositories,
-  and docs sites) are now stored as fields in `DESCRIPTION` and read through
-  `url_package()`, so they live in one place instead of being hardcoded across
-  the code (#485).
+## Bug Fixes
+
+- **Report's percentages no longer shown as "0" or "1", or with stray decimals**
+  in the report, tables, and map popups (#488). The metadata marking which
+  indicators are stored as fractions had been lost, disabling the conversion to
+  percent for 76 indicators (language, poverty, housing, broadband, health
+  insurance, age, sex, pre-1960 housing, fire and flood risk, and their US and
+  State rows).
+
+- **Reports on a site via link to API no longer all say "Site 1"** (#348, fixed
+  by #470 and #479); a link for row N now produces a report labeled "Site N".
+
+- **The EJScreen "Send to EJAM" handoff no longer crashes the session** (#465,
+  fixed by #466), which it did for every County/Tract and drawn-polygon
+  selection, and for any point selection made without a buffer.
+
+- **Zero-population sites no longer error or return wrong statistics** (#467,
+  fixed by #468) -- open-water blockgroups and industrial parcels with no
+  residents.
+
+- **Saved reports are no longer empty when a `filename` is given** (#385, fixed
+  by #471 and #475), and `ejam2report()` accepts a much wider range of file
+  names and extensions.
+
+- **`acs_bybg(year = 2024)` no longer wrongly errors** (#391, fixed by #469).
+  The year check now follows what the Census Bureau has actually published,
+  rather than the tidycensus default year, which can lag by more than a year.
+
+- **Rounding helpers no longer alter their inputs** (#491): `table_round()`,
+  `table_signif()`, `table_x100()`, and `is.numericish()` converted a data.table
+  in the caller's environment into a data.frame; all four now leave the caller's
+  object untouched and return the class they were given.
+
+## For Developers
+
+- **New URLs set up, and all key URLs are single-sourced** as
+  `Config/EJAM/url_*` fields in `DESCRIPTION`, read through `url_package()`,
+  which now also gives a clear error listing the valid types
+  (#485, #501, #502, #503). New short aliases via Cloudflare,
+  like [api.ejanalysis.com](https://api.ejanalysis.com), 
+  [ejam.ejanalysis.com](https://ejam.ejanalysis.com), and 
+  [ejamdev.ejanalysis.com](https://ejamdev.ejanalysis.com), etc. are easy to remember and
+  provide edge caching and 302 redirects to the actual deployed endpoints. URLs  
+  [ejamdocs.ejanalysis.com](https://ejamdocs.ejanalysis.com) and
+  [ejscreendocs.ejanalysis.com](https://ejscreendocs.ejanalysis.com) 
+  now redirect to documentation sites for EJAM and EJScreen and support links like 
+  - [ejamdocs.ejanalysis.com/dev](https://ejamdocs.ejanalysis.com/dev), 
+  - [ejamdocs.ejanalysis.com/dev/articles/dev-api.html](https://ejamdocs.ejanalysis.com/dev/articles/dev-api.html) or 
+  - [ejamdocs.ejanalysis.com/reference/url_package.html](https://ejamdocs.ejanalysis.com/dev/reference/url_package.html).
+
+- **A way to test changes to the API and test draft EJAM use of the API:**
+  `EJAM:::ejamapi_local()` serves a local stand-in for deployed API as a
+  byte-for-byte mirror of the EJAM-API repo at the production paths, with
+  draft-only endpoints under `/draft/...` (grouped as "Draft API Endpoints" in
+  the Swagger page), and `url_package("api")` honors an
+  `options(ejam.api.baseurl=)` / `EJAM_API_BASEURL` override so the package and
+  app can be pointed at a local or draft API (#499, #509).
+
+- The web app article now covers deep links, the EJScreen "Send to EJAM" button,
+  and launching the app pre-loaded with a set of places. The analysis article
+  cross-references the API article. Broken code chunks were fixed in two
+  other articles. Many other cleanup edits were done.
+
+- `ejamapi()` and `url_ejamapi()` no longer send a `version` parameter by
+  default, since the API serves whichever data vintage it has installed.
 
 - The `AOI` geocoding dependency used by `latlon_from_address()` now installs
   from the `ericnost/AOI` fork (#478, fixes #477).
 
-- No change to the packaged data: v3.2022.2 continues to require the existing
-  `ejamdata` v3.2022.0 release (no v3.2022.1/v3.2022.2 `ejamdata` release is
-  needed for a code-only patch). Several hardcoded version strings were removed
-  from the documentation and vignettes.
+- **A new release workflow** tags a release from the `Version` in `DESCRIPTION`
+  and publishes a GitHub Release whose notes are the matching `NEWS.md` section.
+  It defaults to a dry run and refuses to act on an unexpected version (#512).
+
+- The shipped example input and output data and example spreadsheet, HTML, & PDF
+  outputs were regenerated so they carry the new report content (#512).
+
+## Datasets are unchanged
+
+This reuses the existing `ejamdata` **v3.2022.0** data -- the packaged ACS and
+environmental files are byte-identical to v3.2022.0 -- so it is a drop-in update
+over v3.2022.1 with the same demographics, plus code and documentation
+improvements. The same applies across the annual-vintage lines
+(v3.2022.x, v3.2023.x, v3.2024.x).
 
 
 # EJAM 3.2022.1 (July 2026)

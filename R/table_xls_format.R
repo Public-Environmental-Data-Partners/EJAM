@@ -58,6 +58,13 @@
 #' @param notes Text of additional notes to put in the notes tab, optional vector of character elements pasted in as one line each.
 #' @param custom_tab optional table to put in an extra tab
 #' @param custom_tab_name optional name of optional custom_tab
+#' @param flagged_areas_tab optional data.frame like ejamit()$results_summarized$flagged_areas
+#'   (see \code{calc_flagged_areas()}) to put in an extra tab, showing the percent of analyzed
+#'   residents with each feature or area type in their blockgroup, vs the US and State
+#'   averages, with the ratio columns color-coded using heatmap2_cuts and heatmap2_colors.
+#'   If the whole ejamit() output is passed as the overall parameter, this is extracted
+#'   automatically. NULL omits the tab.
+#' @param flagged_areas_tab_name name of the tab for flagged_areas_tab
 #' @param ejscreen_ejam_caveat optional text if you want to change this in the notes tab
 #' @param ... unused
 #'
@@ -126,6 +133,9 @@ table_xls_format <- function(overall,
                              custom_tab = NULL,         # but default in ejam2excel is  ejamitout$results_summarized$cols
                              custom_tab_name = "other", # but default in ejam2excel is  "thresholds"
                              ejscreen_ejam_caveat = NULL,
+                             # (new args go after all pre-existing ones so positional callers are unaffected)
+                             flagged_areas_tab = NULL,  # like ejamitout$results_summarized$flagged_areas
+                             flagged_areas_tab_name = "Area Features",
                              ...) {
 
   if (is.null(ejscreen_ejam_caveat)) {
@@ -168,6 +178,7 @@ table_xls_format <- function(overall,
     if ("formatted"           %in% names(overall) && is.null(formatted)) {formatted <- overall$formatted} # else stays as NULL
     if ("results_bybg_people" %in% names(overall) && is.null(bybg))      {bybg      <- overall$results_bybg_people} # else stays as NULL
     if ("sitetype"            %in% names(overall) && is.null(sitetype))  {sitetype  <- overall$sitetype}
+    if ("results_summarized"  %in% names(overall) && is.null(flagged_areas_tab)) {flagged_areas_tab <- overall$results_summarized$flagged_areas} # else stays as NULL
 
     if (!("results_bysite" %in% names(overall))) {
       eachsite <- NULL # unusual situation we will try to accommodate
@@ -507,6 +518,35 @@ table_xls_format <- function(overall,
   }
   ######################################################################## #
 
+  ## AREA FEATURES - flagged_areas_tab ####
+  # % of analyzed residents with each feature or area type in their blockgroup, vs US and State
+  # (see ejamit()$results_summarized$flagged_areas and calc_flagged_areas())
+
+  if (!is.null(flagged_areas_tab) && is.data.frame(flagged_areas_tab) &&
+      NROW(flagged_areas_tab) > 0 && !is.null(flagged_areas_tab_name)) {
+    fa_tab <- as.data.frame(flagged_areas_tab)
+    fa_tab[] <- lapply(fa_tab, function(z) {if (is.numeric(z)) {ifelse(is.finite(z), z, NA)} else {z}}) # Inf etc. would show as #NUM! in excel
+    openxlsx::addWorksheet(wb, sheetName = flagged_areas_tab_name)
+    openxlsx::writeData(   wb, sheet = flagged_areas_tab_name, x = fa_tab)
+    openxlsx::setColWidths(wb, sheet = flagged_areas_tab_name, cols = 1, widths = 50) # Indicator names are long
+    openxlsx::setColWidths(wb, sheet = flagged_areas_tab_name, cols = 2:max(2, NCOL(fa_tab)), widths = 21.45) # so the header row text can wrap
+    openxlsx::addStyle(    wb, sheet = flagged_areas_tab_name, rows = 1, cols = 1:NCOL(fa_tab),
+                           style = openxlsx::createStyle(wrapText = TRUE, textDecoration = "bold"), stack = TRUE)
+    # color-code the ratio columns like the other ratio columns in this workbook
+    # (same cuts/colors as heatmap2, so the color legend on the notes tab stays accurate)
+    fa_ratiocols <- which(names(fa_tab) %in% c("ratio", "ratio_to_state_avg"))
+    for (fa_cc in fa_ratiocols) {
+      for (fa_i in 1:length(heatmap2_colors)) {
+        openxlsx::conditionalFormatting(wb, flagged_areas_tab_name,
+                                        rows = 2:(1 + NROW(fa_tab)),
+                                        cols = fa_cc,
+                                        style = openxlsx::createStyle(bgFill = heatmap2_colors[fa_i]),
+                                        rule = paste0(">=", heatmap2_cuts[fa_i]))
+      }
+    }
+  }
+  ######################################################################## #
+
   ## DATA tabs - Overall and Each Site ####
 
   if (is.function(updateProgress)) {
@@ -700,6 +740,17 @@ table_xls_format <- function(overall,
   is.percentage_eachsite  <- 1 == fixcolnames(headers_eachsite, oldtype = "r", newtype = "percentage")
   percentage_colnums_eachsite <- which(is.percentage_eachsite)
 
+  # columns stored as percentage points (0-100), e.g. rateasthma = 9.88 meaning 9.88%:
+  # display with a literal % suffix, NOT the "0%" percent style (which multiplies by 100)
+  is.pctpoints_overall <- as.logical(fixcolnames(headers_overall, oldtype = "r", newtype = "pct_as_points_ejamit"))
+  is.pctpoints_overall[is.na(is.pctpoints_overall)] <- FALSE
+  pctpoints_colnums_overall <- which(is.pctpoints_overall)
+  is.pctpoints_eachsite <- as.logical(fixcolnames(headers_eachsite, oldtype = "r", newtype = "pct_as_points_ejamit"))
+  is.pctpoints_eachsite[is.na(is.pctpoints_eachsite)] <- FALSE
+  pctpoints_colnums_eachsite <- which(is.pctpoints_eachsite)
+  percentage_colnums_overall  <- setdiff(percentage_colnums_overall,  pctpoints_colnums_overall)
+  percentage_colnums_eachsite <- setdiff(percentage_colnums_eachsite, pctpoints_colnums_eachsite)
+
   is.dollar_overall <- 1 == fixcolnames(headers_overall, oldtype = "r", newtype = "dollar")
   dollar_colnums_overall <- which(is.dollar_overall)
   is.dollar_eachsite  <- 1 == fixcolnames(headers_eachsite, oldtype = "r", newtype = "dollar")
@@ -869,7 +920,9 @@ table_xls_format <- function(overall,
   ## only loop over unique values
   for (i in unique(decimals_tosee)) {
     perc_cols <- decimals_colnum[which(decimals_tosee == i & decimals_colnum %in%  percentage_colnums_eachsite)]
-    non_perc_cols <- decimals_colnum[which(decimals_tosee == i & !(decimals_colnum %in%  percentage_colnums_eachsite))]
+    # pct_as_points columns are skipped here entirely: their number format is applied
+    # in ONE place only, the pctpoints_style block further below
+    non_perc_cols <- decimals_colnum[which(decimals_tosee == i & !(decimals_colnum %in% c(percentage_colnums_eachsite, pctpoints_colnums_eachsite)))]
     if (testing) {
       print(i); print(paste0(dec2format(i),"%"))
       print("percentages:"); print(names(eachsite)[perc_cols])
@@ -936,6 +989,11 @@ table_xls_format <- function(overall,
   percentage_style <- openxlsx::createStyle(numFmt = "0%")   # specify 0 decimal places plus percentage style
   openxlsx::addStyle(wb, sheet = 'Overall',   rows = 2,                      cols = percentage_colnums_overall, style = percentage_style, stack = TRUE)
   openxlsx::addStyle(wb, sheet = 'Each Site', rows = 2:(1 + NROW(eachsite)), cols = percentage_colnums_eachsite, style = percentage_style, stack = TRUE, gridExpand = TRUE)
+
+  # percentage-points columns (already 0-100): literal % suffix, no x100 rescaling
+  pctpoints_style <- openxlsx::createStyle(numFmt = '0"%"')
+  openxlsx::addStyle(wb, sheet = 'Overall',   rows = 2,                      cols = pctpoints_colnums_overall,  style = pctpoints_style, stack = TRUE)
+  openxlsx::addStyle(wb, sheet = 'Each Site', rows = 2:(1 + NROW(eachsite)), cols = pctpoints_colnums_eachsite, style = pctpoints_style, stack = TRUE, gridExpand = TRUE)
 
   ### Number format total count columns  ####
 

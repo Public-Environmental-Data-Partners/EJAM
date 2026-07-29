@@ -517,6 +517,32 @@ app_server <- function(input, output, session) {
     if (is.null(search) || !nzchar(search)) {return(NULL)}
     q <- shiny::parseQueryString(search)
 
+    ## Advanced Settings tab via launch URL, e.g. ?advanced=TRUE (?advanced=1/yes also work;
+    ## show_advanced_settings is accepted as a synonym). This is a clean, per-visitor query
+    ## param -- unlike ejamapp(default_show_advanced_settings=) which is fixed per deploy, and
+    ## unlike Shiny's bookmark URLs which encode the whole input state. Updating the radio flows
+    ## through the priority=10 observer above that shows/hides the tab; can_show_advanced_settings
+    ## is also enabled so the tab can appear even on a public deploy (where it defaults off), and
+    ## showTab() is called directly so it appears immediately without waiting for the input
+    ## round-trip. An explicit false (?advanced=FALSE/0/no) hides it.
+    adv <- q$advanced %||% q$show_advanced_settings
+    if (!is.null(adv)) {
+      # normalize to ONE lowercase value (repeated ?advanced= params can arrive as a
+      # vector, which would make updateRadioButtons() error), then act ONLY on known
+      # truthy/falsy spellings -- an unrecognized value (e.g. ?advanced=maybe) is
+      # ignored and leaves the deploy defaults untouched, instead of being treated
+      # as false. Explicit false also hideTab()s so hiding is immediate.
+      adv <- tolower(trimws(as.character(adv)[[1]]))
+      if (adv %in% c("1", "true", "t", "yes", "y")) {
+        updateRadioButtons(session, inputId = "show_advanced_settings", selected = "TRUE")
+        updateRadioButtons(session, inputId = "can_show_advanced_settings", selected = "TRUE")
+        showTab(inputId = "all_tabs", target = "Advanced Settings")
+      } else if (adv %in% c("0", "false", "f", "no", "n")) {
+        updateRadioButtons(session, inputId = "show_advanced_settings", selected = "FALSE")
+        hideTab(inputId = "all_tabs", target = "Advanced Settings")
+      }
+    }
+
     # base URL of the EJAM API that mints/resolves handoff tokens. Single source of
     # truth is in the DESCRIPTION file; read it via url_package("api"),
     # and if that is unavailable derive it from url_ejamapi()'s resolved base (its
@@ -2598,8 +2624,18 @@ app_server <- function(input, output, session) {
     ## *** consider replacing this with ejam2report(),
     ## but note doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
     isolate({
+      ## 1-site analyses must read like ejam2report() and the API, not like a
+      ## multisite summary. ejam2report() does this by flipping sitenumber from 0
+      ## to the single valid row when only one site is valid; this in-app renderer
+      ## never did, so a 1-site analysis was titled "EJSCREEN Multisite Summary"
+      ## and its header showed no site or FIPS identifier.
+      report_valid_rows  <- which(data_processed()$results_bysite$valid %in% TRUE)
+      report_sitenumber  <- if (length(report_valid_rows) == 1) report_valid_rows[1] else NULL
+      report_is_one_site <- !is.null(report_sitenumber)
+
       residents_within_xyz <- report_residents_within_xyz_from_ejamit(
         ejamitout = data_processed(), ## this function uses the whole list not just ejamout1 to create the header
+        sitenumber = report_sitenumber, # NULL keeps the multisite header; a row number adds "(Site N, FIPS ...)"
         site_method = submitted_upload_method()
         # isolate() done, so change in site_method (e.g., polygon to lat lon) will not trigger re-render if Start not clicked,
         # BUT, changing title does trigger re-render with old data and new title,
@@ -2610,12 +2646,34 @@ app_server <- function(input, output, session) {
 
       pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
     })
+
+    ## Report TITLE: "EJSCREEN Community Report" for 1 site, "...Multisite Summary" otherwise
+    report_title_now <- if (report_is_one_site) {
+      global_or_param("report_title")
+    } else {
+      global_or_param("report_title_multisite")
+    }
+
+    ## Analysis TITLE: for a 1-site FIPS analysis show the place name, as
+    ## ejam2report() does via fips2name(). Only replaces the untouched default, so
+    ## a title the user typed in the box is never silently overridden.
+    analysis_title_now <- sanitized_analysis_title()
+    if (report_is_one_site && isTRUE(data_processed()$sitetype %in% "fips") &&
+        identical(analysis_title_now, global_or_param("default_standard_analysis_title"))) {
+      fipsname <- tryCatch(
+        fips2name(data_processed()$results_bysite$ejam_uniq_id[report_sitenumber]),
+        error = function(e) NA_character_
+      )
+      if (length(fipsname) == 1 && !is.na(fipsname) && nzchar(fipsname)) {
+        analysis_title_now <- fipsname
+      }
+    }
     full_page <- build_community_report(
 
       logo_path      = pkg_relative_path(global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
       logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
-      report_title   = global_or_param("report_title_multisite"),
-      analysis_title = sanitized_analysis_title(), # changing it will trigger re-render here
+      report_title   = report_title_now,   # Community Report if 1 site, Multisite Summary otherwise
+      analysis_title = analysis_title_now, # changing it will trigger re-render here
       locationstr    = residents_within_xyz,
       totalpop       = popstr,
 
@@ -2627,6 +2685,7 @@ app_server <- function(input, output, session) {
       extratable_title_top_row         = input$extratable_title_top_row,
       extratable_list_of_sections      = global_or_param("default_extratable_list_of_sections"),
       extratable_hide_missing_rows_for = input$extratable_hide_missing_rows_for, # c(names_d_language, names_health),
+      flagged_areas_df = data_processed()$results_summarized$flagged_areas, # % of residents with each feature/area type in their blockgroup, vs US and State
       in_shiny = TRUE,
       filename = NULL
     )
@@ -3290,8 +3349,17 @@ app_server <- function(input, output, session) {
                                  sitereport_download_buttons_show = isTRUE(as.logical(input$sitereport_download_buttons_show)),
                                  sitereport_download_buttons_colname = input$sitereport_download_buttons_colname, # "Download EJAM Report", # for DOWNLOAD BUTTON in each row, to get 1-site reports. could change to be an input$ in advanced tab possibly
 
-                                 columns_used = input$bysite_webtable_colnames
-                                 ## if NULL, uses all available from data_processed()
+                                 ## show the default column subset until the user picks
+                                 ## columns in the advanced tab - showing all ~700
+                                 ## columns made this table several times slower to appear (#127).
+                                 ## length()==0 covers both NULL (picker never rendered)
+                                 ## and character(0) (user cleared every selection), since
+                                 ## an empty columns_used would mean "all columns"
+                                 columns_used = if (length(input$bysite_webtable_colnames) == 0) {
+                                   global_or_param("default_bysite_webtable_colnames")
+                                 } else {
+                                   input$bysite_webtable_colnames
+                                 }
     )
     # enable download button only after DT::renderDT
     download_button_enable_js(id = 'download_results_spreadsheet')
@@ -3302,17 +3370,20 @@ app_server <- function(input, output, session) {
   # but note this is not the same as controlling the url report columns defined by default_reports
   output$bysite_webtable_colnames_ui <- renderUI({
 
-    choicelist =  list(names(testoutput_ejamit_10pts_1miles$results_overall))
-    names(choicelist)  <- fixcolnames(rnames, 'r', 'short')
+    # offer every column the site-by-site table can show, labeled with short names
+    # (this had referenced an undefined object and results_overall, but was never
+    # reached because the ui used renderUI() instead of uiOutput() - fixed in #491)
+    choicevec <- names(testoutput_ejamit_10pts_1miles$results_bysite)
+    choicelabels <- fixcolnames(choicevec, 'r', 'short')
+    choicelabels[is.na(choicelabels)] <- choicevec[is.na(choicelabels)]
 
     shiny::selectInput("bysite_webtable_colnames",
                        label = "Columns to show in interactive table",
                        multiple = TRUE,
-                       ### shows ALL available if this input is  NULL
-                       # choices = names(testoutput_ejamit_10pts_1miles$results_overall), # simpler
-                       choices = choicelist
-                       # comment out selected to start with none picked.
-                       , selected <- global_or_param("default_bysite_webtable_colnames")
+                       choices = stats::setNames(choicevec, choicelabels),
+                       # starts as the default subset; if emptied, the server falls
+                       # back to that same default subset
+                       selected = global_or_param("default_bysite_webtable_colnames")
     )
   })
 

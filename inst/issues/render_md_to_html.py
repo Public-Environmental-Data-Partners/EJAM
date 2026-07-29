@@ -3,9 +3,87 @@ from __future__ import annotations
 
 import argparse
 import html
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+
+ISSUE_TABLE_COLGROUP = """<colgroup>
+<col style="width: 5%" />
+<col style="width: 18%" />
+<col style="width: 14%" />
+<col style="width: 18%" />
+<col style="width: 9%" />
+<col style="width: 16%" />
+<col style="width: 20%" />
+</colgroup>"""
+
+ISSUE_TABLE_STYLE = """
+  <style>
+    body {
+      max-width: 80em;
+    }
+    table.issue-details {
+      display: table;
+      table-layout: fixed;
+      min-width: 64em;
+      width: 100%;
+    }
+    table.issue-details th:first-child,
+    table.issue-details td:first-child {
+      white-space: nowrap;
+    }
+    table.issue-details th:nth-child(5) {
+      white-space: nowrap;
+    }
+    table.issue-details th:nth-child(2),
+    table.issue-details td:nth-child(2) {
+      hyphens: auto;
+      overflow-wrap: break-word;
+      white-space: normal;
+    }
+    table.issue-details th:nth-child(3),
+    table.issue-details td:nth-child(3),
+    table.issue-details th:nth-child(4),
+    table.issue-details td:nth-child(4) {
+      hyphens: none;
+      overflow-wrap: normal;
+      white-space: nowrap;
+    }
+  </style>
+"""
+
+
+def style_issue_tables(html_path: Path) -> None:
+    """Apply report-specific widths to tables with Issue and Labels columns."""
+    document = html_path.read_text(encoding="utf-8")
+    styled_table_count = 0
+
+    def add_issue_table_layout(match: re.Match) -> str:
+        nonlocal styled_table_count
+        table = match.group(0)
+        if "<th>Issue</th>" not in table or "<th>Labels (key)</th>" not in table:
+            return table
+        styled_table_count += 1
+        table = table.replace("<table>", '<table class="issue-details">', 1)
+        return re.sub(
+            r"<colgroup>.*?</colgroup>",
+            ISSUE_TABLE_COLGROUP,
+            table,
+            count=1,
+            flags=re.DOTALL,
+        )
+
+    document = re.sub(
+        r"<table>.*?</table>",
+        add_issue_table_layout,
+        document,
+        flags=re.DOTALL,
+    )
+    if styled_table_count and "</head>" in document:
+        document = document.replace("</head>", f"{ISSUE_TABLE_STYLE}</head>", 1)
+    html_path.write_text(document, encoding="utf-8")
 
 
 def render_with_pandoc(md_path: Path, html_path: Path) -> bool:
@@ -17,6 +95,7 @@ def render_with_pandoc(md_path: Path, html_path: Path) -> bool:
             [str(pandoc_wrapper), "-s", str(md_path), "-o", str(html_path)],
             check=True,
         )
+        style_issue_tables(html_path)
         return True
     except Exception:
         return False
@@ -57,4 +136,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

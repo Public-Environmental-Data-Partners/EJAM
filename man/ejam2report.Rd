@@ -24,10 +24,13 @@ ejam2report(
     `Breakdown by Sex` = c("pctmale", "pctfemale"), Health = names_health, Age =
     c("pctunder5", "pctunder18", "pctover64"), Community =
     names_community[!(names_community \%in\% c("pctmale", "pctfemale",
-    "pctownedunits_dupe"))], Poverty = names_d_extra, `Features and Location Information`
-    = c(names_e_other, names_sitesinarea, names_featuresinarea, 
-     names_flag),
-    Climate = names_climate, `Critical Services` = names_criticalservice, Other =
+    "pctownedunits_dupe"))], Poverty = names_d_extra, Climate = names_climate,
+    `Counts of Features and Overlap with Area Types` = c(names_featuresinarea, 
+    
+    names_flag), `Critical Services` = c("yesno_houseburden", "yesno_fooddesert",
+    "yesno_transdis", "pctnobroadband", "pctnohealthinsurance"), `Facility Counts` =
+    names_sitesinarea, `Analyzed Sites` = c("distance_min_avgperson", "distance_min",
+    "sitecount_unique", "sitecount_avg", "sitecount_max"), `Other Totals` =
     names_d_other_count),
   extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
   footer_version_number = NULL,
@@ -150,6 +153,16 @@ and has side effect of launching browser to view it depending on return_html
 }
 \description{
 Get the html text or the path to the html file with a multisite summary or community report
+}
+\details{
+The report also includes rows showing what percent of the analyzed residents
+have each type of feature (school, hospital, place of worship) or area type
+(Tribal, nonattainment, impaired waters, CEJST/IRA disadvantaged, etc.)
+in (or overlapping) their blockgroup, with ratios to the US and State averages
+(see \code{\link[=ejam2areafeatures]{ejam2areafeatures()}}). For a multisite report those come from
+\code{ejamitout$results_summarized$flagged_areas}; for a 1-site report they are
+calculated for just that site. The rows are omitted if that information
+is unavailable (e.g., for outputs saved by older EJAM versions).
 }
 \examples{
 #out <- ejamit(testpoints_10, radius = 3, include_ejindexes = TRUE)
