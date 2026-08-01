@@ -7,7 +7,7 @@ name: 'Release: tag and publish'
 #
 #   1. Manually (workflow_dispatch) - the normal path. Use dry_run first to see
 #      exactly what would be tagged and what the notes would say.
-#   2. On a schedule - 13:00 UTC on August 1, to ship v3.2022.2 without anyone
+#   2. On a schedule - 21:00 UTC on August 1, to ship v3.2022.2 without anyone
 #      having to be at a keyboard.
 #
 # What it does depends on what is already on the releases page:
@@ -47,8 +47,8 @@ on:
         type: boolean
         default: true
   schedule:
-    # 13:00 UTC = 09:00 EDT on August 1.
-    - cron: '0 13 1 8 *'
+    # 21:00 UTC = 17:00 EDT on August 1.
+    - cron: '0 21 1 8 *'
 
 permissions:
   contents: write
