@@ -559,3 +559,32 @@ test_that("sitenumber_label overrides the displayed site number (issue #348)", {
   # only a number or short text is a valid label (e.g., logical would show as "Site TRUE")
   expect_error(report_residents_within_xyz_from_ejamit(out, sitenumber = 1, sitenumber_label = TRUE))
 })
+
+test_that("a 1-site FIPS header names the site and FIPS, as the app now relies on", {
+  # Contract behind the in-app 1-site report fix in app_server.R: when only one
+  # site is valid, the app passes that row as sitenumber instead of NULL, so the
+  # header matches what ejam2report() and the EJAM API produce for a single site
+  # ("EJSCREEN Community Report" plus "(Site 1, FIPS ...)"), rather than reading
+  # like a multisite summary.
+  out <- testoutput_ejamit_fips_counties
+
+  # multisite framing when no sitenumber is given
+  multi <- report_residents_within_xyz_from_ejamit(out, site_method = "FIPS")
+  expect_false(grepl("FIPS", multi, fixed = TRUE))
+  expect_true(grepl("any of the", multi, fixed = TRUE))
+
+  # single-site framing, with the site number and the FIPS code
+  one <- report_residents_within_xyz_from_ejamit(out, sitenumber = 1, site_method = "FIPS")
+  expect_true(grepl("Site 1", one, fixed = TRUE))
+  expect_true(grepl("FIPS", one, fixed = TRUE))
+  expect_true(grepl(as.character(out$results_bysite$ejam_uniq_id[1]), one, fixed = TRUE))
+  expect_false(grepl("any of the", one, fixed = TRUE))
+
+  # the place name used as the report's analysis title for a 1-site FIPS run
+  nm <- fips2name(out$results_bysite$ejam_uniq_id[1])
+  expect_true(is.character(nm) && length(nm) == 1 && nzchar(nm))
+
+  # the two report titles the app switches between really are different
+  expect_false(identical(global_or_param("report_title"),
+                         global_or_param("report_title_multisite")))
+})
