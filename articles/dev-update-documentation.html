@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -276,6 +277,87 @@ inputs generated from roxygen comments, and <code>_pkgdown.yml</code>.
 Do not edit <code>docs/</code> or the <code>gh-pages</code> branch by
 hand; those are generated deployment outputs.</p>
 <div class="section level4">
+<h4 id="published-release-and-development-documentation-urls">Published release and development documentation URLs<a class="anchor" aria-label="anchor" href="#published-release-and-development-documentation-urls"></a>
+</h4>
+<p>The stable alias <a href="https://docs.ejanalysis.com" class="external-link">https://docs.ejanalysis.com</a>
+preserves the path after the hostname. The site root contains the
+documentation built from <code>main</code>; the <code>/dev/</code>
+folder contains the version built from the <code>development</code>
+branch. This makes <a href="https://docs.ejanalysis.com/dev" class="external-link">https://docs.ejanalysis.com/dev</a>
+the place to check documentation for the development version of the
+package before a release.</p>
+<p>The same page paths work in both builds:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Page</th>
+<th>
+<code>main</code> documentation</th>
+<th>
+<code>development</code> documentation</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Home</td>
+<td><a href="https://docs.ejanalysis.com" class="external-link uri">https://docs.ejanalysis.com</a></td>
+<td><a href="https://docs.ejanalysis.com/dev" class="external-link uri">https://docs.ejanalysis.com/dev</a></td>
+</tr>
+<tr class="even">
+<td>Function and dataset index</td>
+<td><a href="https://docs.ejanalysis.com/reference" class="external-link uri">https://docs.ejanalysis.com/reference</a></td>
+<td><a href="https://docs.ejanalysis.com/dev/reference" class="external-link uri">https://docs.ejanalysis.com/dev/reference</a></td>
+</tr>
+<tr class="odd">
+<td>
+<code><a href="../reference/ejamapp.html">ejamapp()</a></code> reference</td>
+<td><a href="https://docs.ejanalysis.com/reference/ejamapp.html" class="external-link uri">https://docs.ejanalysis.com/reference/ejamapp.html</a></td>
+<td><a href="https://docs.ejanalysis.com/dev/reference/ejamapp.html" class="external-link uri">https://docs.ejanalysis.com/dev/reference/ejamapp.html</a></td>
+</tr>
+<tr class="even">
+<td>Article index</td>
+<td><a href="https://docs.ejanalysis.com/articles" class="external-link uri">https://docs.ejanalysis.com/articles</a></td>
+<td><a href="https://docs.ejanalysis.com/dev/articles" class="external-link uri">https://docs.ejanalysis.com/dev/articles</a></td>
+</tr>
+<tr class="odd">
+<td>“What is EJAM?” article</td>
+<td><a href="https://docs.ejanalysis.com/articles/whatis.html" class="external-link uri">https://docs.ejanalysis.com/articles/whatis.html</a></td>
+<td><a href="https://docs.ejanalysis.com/dev/articles/whatis.html" class="external-link uri">https://docs.ejanalysis.com/dev/articles/whatis.html</a></td>
+</tr>
+<tr class="even">
+<td>API article</td>
+<td><a href="https://docs.ejanalysis.com/articles/dev-api.html" class="external-link uri">https://docs.ejanalysis.com/articles/dev-api.html</a></td>
+<td><a href="https://docs.ejanalysis.com/dev/articles/dev-api.html" class="external-link uri">https://docs.ejanalysis.com/dev/articles/dev-api.html</a></td>
+</tr>
+</tbody>
+</table>
+<p>The API article also has the stable shortcut <a href="https://apidocs.ejanalysis.com" class="external-link">https://apidocs.ejanalysis.com</a>.
+That shortcut points to the API article in the root documentation build;
+use the <code>/dev/</code> article URL in the table when reviewing the
+version from <code>development</code>.</p>
+<p>These URLs can also be obtained from package metadata:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Canonical GitHub Pages URLs</span></span>
+<span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"docs"</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"docs"</span>, docs_version <span class="op">=</span> <span class="st">"dev"</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"apidocs"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Stable aliases</span></span>
+<span><span class="va">docs_alias</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"docs"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span></span>
+<span><span class="va">docs_alias</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">docs_alias</span>, <span class="st">"/dev"</span><span class="op">)</span></span>
+<span><span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"apidocs"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span></span></code></pre></div>
+<p>Here, <code>type = "apidocs"</code> selects the API documentation and
+<code>desc_or_alias = "alias"</code> selects its alias. The DESCRIPTION
+field is named <code>url_apidocs_alias</code>, but
+<code>"apidocs_alias"</code> is <strong>not</strong> an accepted
+<code>type</code>, so <code>EJAM::url_package("apidocs_alias")</code> is
+not correct.</p>
+</div>
+<div class="section level4">
 <h4 id="normal-workflow-for-a-vignette-edit">Normal workflow for a vignette edit<a class="anchor" aria-label="anchor" href="#normal-workflow-for-a-vignette-edit"></a>
 </h4>
 <ol style="list-style-type: decimal">
@@ -283,7 +365,7 @@ hand; those are generated deployment outputs.</p>
 <code>vignettes/</code>.</p></li>
 <li><p>Preview just that article:</p></li>
 </ol>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/pkgdown_preview_article.html">pkgdown_preview_article</a></span><span class="op">(</span><span class="st">"installing"</span><span class="op">)</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li><p>If the article is new, renamed, removed, or moved in the
@@ -312,7 +394,7 @@ rendering, pkgdown site structure, or stale <code>.Rd</code>
 files.</p></li>
 <li><p>For a faster local site preview without publishing:</p></li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/pkgdown_preview_site.html">pkgdown_preview_site</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/pkgdown_preview_site.html">pkgdown_preview_site</a></span><span class="op">(</span>pkgdown_dev_mode <span class="op">=</span> <span class="st">"devel"</span><span class="op">)</span></span></code></pre></div>
 <ul>
@@ -345,9 +427,9 @@ site.</p></li>
 release such as <code>v3</code> and deploy it to the same folder name.
 The resulting URLs should look like:</p></li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span>dev<span class="sc">/</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span>v3<span class="sc">/</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span>dev<span class="sc">/</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span>v3<span class="sc">/</span></span></code></pre></div>
 <ul>
 <li><p>The documentation is created and updated using the
 <a href="https://roxygen2.r-lib.org/" class="external-link">roxygen2</a> and <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> R packages, which
@@ -358,14 +440,17 @@ read information from the <code>.R</code> files in the R folder, from
 <code>man/</code>; <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> creates HTML files for GitHub
 Pages.</p></li>
 <li><p>The URL where documentation is published at any given time should
-be recorded in the <code>URL</code> field of the
-<code>DESCRIPTION</code> file in the source package root. That URL can
-be read with <code>EJAM::url_package("docs")</code>, which currently
-returns <a href="https://public-environmental-data-partners.github.io/EJAM" class="uri">https://public-environmental-data-partners.github.io/EJAM</a>.
-Prior to mid-2025, documentation web pages had been on GitHub Pages at
-URLs related to the <code>USEPA/EJAM</code> and
-<code>USEPA/EJAM-open</code> repositories, but those pages may now be
-archived, unpublished, or otherwise obsolete.</p></li>
+be recorded in the standard <code>URL</code> field of the
+<code>DESCRIPTION</code> file in the source package root and in
+<code>Config/EJAM/url_ejamdocs</code>, which is the field read by
+<code>EJAM::url_package("docs")</code>. The helper currently returns <a href="https://public-environmental-data-partners.github.io/EJAM" class="uri">https://public-environmental-data-partners.github.io/EJAM</a>.
+Store stable alias and redirect URLs in
+<code>Config/EJAM/url_ejamdocs_alias</code> and
+<code>Config/EJAM/url_ejamdocs_redirect</code>. Prior to mid-2025,
+documentation web pages had been on GitHub Pages at URLs related to the
+<code>USEPA/EJAM</code> and <code>USEPA/EJAM-open</code> repositories,
+but those pages may now be archived, unpublished, or otherwise
+obsolete.</p></li>
 </ul>
 </div>
 </div>
@@ -377,11 +462,11 @@ archived, unpublished, or otherwise obsolete.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -115,6 +116,8 @@
 <span>  custom_tab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  custom_tab_name <span class="op">=</span> <span class="st">"other"</span>,</span>
 <span>  ejscreen_ejam_caveat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  flagged_areas_tab <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  flagged_areas_tab_name <span class="op">=</span> <span class="st">"Area Features"</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -286,6 +289,19 @@ second color is for those &gt;=2d cutpoint but &lt;3d, etc.</p></dd>
 <dd><p>optional text if you want to change this in the notes tab</p></dd>
 
 
+<dt id="arg-flagged-areas-tab">flagged_areas_tab<a class="anchor" aria-label="anchor" href="#arg-flagged-areas-tab"></a></dt>
+<dd><p>optional data.frame like ejamit()$results_summarized$flagged_areas
+(see <code>calc_flagged_areas()</code>) to put in an extra tab, showing the percent of analyzed
+residents with each feature or area type in their blockgroup, vs the US and State
+averages, with the ratio columns color-coded using heatmap2_cuts and heatmap2_colors.
+If the whole ejamit() output is passed as the overall parameter, this is extracted
+automatically. NULL omits the tab.</p></dd>
+
+
+<dt id="arg-flagged-areas-tab-name">flagged_areas_tab_name<a class="anchor" aria-label="anchor" href="#arg-flagged-areas-tab-name"></a></dt>
+<dd><p>name of the tab for flagged_areas_tab</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>unused</p></dd>
 
@@ -317,11 +333,11 @@ second color is for those &gt;=2d cutpoint but &lt;3d, etc.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

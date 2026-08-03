@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -121,11 +122,14 @@ updated for the package, documentation, tests, and data-download helpers
 to work correctly.</p>
 <ul>
 <li><p>The full URL of the repository where the R package is stored must
-be recorded in the <code>URL</code> field of the
-<code>DESCRIPTION</code> file in the source package root.</p></li>
+be recorded in the standard <code>URL</code> field of the
+<code>DESCRIPTION</code> file in the source package root. The canonical
+URL used by <code><a href="../reference/url_package.html">url_package()</a></code> must also be stored in
+<code>Config/EJAM/url_ejamrepo</code>; its stable alias and simple
+redirect belong in <code>Config/EJAM/url_ejamrepo_alias</code> and
+<code>Config/EJAM/url_ejamrepo_redirect</code>.</p></li>
 <li><p>The full URL is currently <a href="https://github.com/Public-Environmental-Data-Partners/EJAM" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/EJAM</a>
-as found in the <code>DESCRIPTION</code> file. It can also be checked
-via
+as found in <code>Config/EJAM/url_ejamrepo</code>. It can be checked via
 <code>url_package(type = "code", get_full_url = TRUE)</code>.</p></li>
 <li><p>The <code>_pkgdown.yml</code> file in the root folder should also
 be updated with the new URL.</p></li>
@@ -190,8 +194,11 @@ of the GitHub repository storing large datasets<a class="anchor" aria-label="anc
 <ul>
 <li><p>The owner/name of the repository where external large datasets
 are stored must be recorded as the <code>ejam_data_repo</code> parameter
-in the <code>DESCRIPTION</code> file in the source package root. It can
-be checked via <code>url_package(type = "data")</code>.</p></li>
+in the <code>DESCRIPTION</code> file in the source package root. The
+full canonical URL used by <code><a href="../reference/url_package.html">url_package()</a></code> must be stored in
+<code>Config/EJAM/url_ejamdata</code>, with alias and redirect values in
+the corresponding <code>_alias</code> and <code>_redirect</code>
+fields.</p></li>
 <li><p>The full URL is currently <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>.
 It can be checked via
 <code>url_package(type = "data", get_full_url = TRUE)</code>.</p></li>
@@ -218,9 +225,13 @@ documentation is published<a class="anchor" aria-label="anchor" href="#documenta
 </h2>
 <ul>
 <li><p>The URL where package documentation is published must be recorded
-in the <code>URL</code> field of the <code>DESCRIPTION</code> file in
-the source package root. The website providing documentation for the R
-package is created via <code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code>, as explained in <a href="dev-update-documentation.html">updating
+in the standard <code>URL</code> field of the <code>DESCRIPTION</code>
+file in the source package root. The canonical URL used by
+<code><a href="../reference/url_package.html">url_package()</a></code> must also be stored in
+<code>Config/EJAM/url_ejamdocs</code>, with its alias and redirect in
+the corresponding <code>_alias</code> and <code>_redirect</code> fields.
+The website providing documentation for the R package is created via
+<code><a href="../reference/pkgdown_update.html">pkgdown_update()</a></code>, as explained in <a href="dev-update-documentation.html">updating
 documentation</a>.</p></li>
 <li><p>This URL at least through mid-2026 was associated with the same
 owner name as the R code repository, but the documentation can be
@@ -229,10 +240,34 @@ repository. If the documentation is published on GitHub Pages, the URL
 will look like <code>https://OWNER.github.io/REPONAME</code>;
 <code>OWNER</code> and <code>REPONAME</code> need to be updated if the
 documentation is moved. If the documentation is published on a different
-domain, update that URL in <code>DESCRIPTION</code>.</p></li>
+domain, update both the standard <code>URL</code> field and
+<code>Config/EJAM/url_ejamdocs</code> in
+<code>DESCRIPTION</code>.</p></li>
 <li><p>This URL can be checked via
 <code>url_package(type = "docs")</code>, which should return the full
 URL where documentation is published (currently <a href="https://public-environmental-data-partners.github.io/EJAM" class="uri">https://public-environmental-data-partners.github.io/EJAM</a>).</p></li>
+<li><p>Before a release, compare the published development documentation
+at <a href="https://docs.ejanalysis.com/dev" class="external-link">https://docs.ejanalysis.com/dev</a>
+with the root documentation at <a href="https://docs.ejanalysis.com" class="external-link">https://docs.ejanalysis.com</a>. For
+example, compare <code>/dev/reference/ejamapp.html</code> with
+<code>/reference/ejamapp.html</code>, and
+<code>/dev/articles/whatis.html</code> with
+<code>/articles/whatis.html</code>. The development site is the
+documentation built from <code>development</code>; the root site is
+built from <code>main</code>.</p></li>
+<li><p><code>EJAM::url_package("docs", docs_version = "dev")</code>
+returns the canonical development-site URL.
+<code>EJAM::url_package("docs", desc_or_alias = "alias")</code> returns
+the stable root alias, and appending <code>"/dev"</code> selects its
+development build. The API documentation can be found with
+<code>EJAM::url_package("apidocs")</code> or its stable alias, <a href="https://apidocs.ejanalysis.com" class="external-link uri">https://apidocs.ejanalysis.com</a>. Use
+<code>EJAM::url_package("apidocs", desc_or_alias = "alias")</code> to
+request that alias; <code>EJAM::url_package("apidocs_alias")</code> is
+not valid.</p></li>
+<li><p>See <a href="dev-update-documentation.html">Updating
+Documentation</a> for a table of root and development URLs for the
+reference index, individual help pages, article index, and individual
+articles.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -257,7 +292,7 @@ attached, the name as potentially modified via
 <ul>
 <li><p>Update the EJAM version number in the <code>Version</code> field
 of the <code>DESCRIPTION</code> file in the release/development branch
-(currently 3.2022.1). Tie it to EJScreen version numbers if relevant.
+(currently 3.2022.2). Tie it to EJScreen version numbers if relevant.
 Search globally too, because there may still be files where the version
 number is not read from <code>DESCRIPTION</code>, such as
 <code>_pkgdown.yml</code>, <code>golem-config.yml</code>,
@@ -344,11 +379,11 @@ up a PAT.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer>

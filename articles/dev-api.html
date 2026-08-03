@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -108,8 +109,8 @@
 details, see:</p>
 <ul>
 <li>the <strong><a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link">EJAM-API
-repository</a></strong> and its README – it documents every endpoint,
-parameter, and example;</li>
+repository</a></strong> and its <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API?tab=readme-ov-file#ejam-api" class="external-link">README</a>
+– it documents every endpoint, parameter, and example;</li>
 <li>the help for <strong><code><a href="../reference/ejamapi.html">?ejamapi</a></code></strong> and
 <strong><code><a href="../reference/url_ejamapi.html">?url_ejamapi</a></code></strong>; and</li>
 <li>the <a href="dev-app-settings.html">Defaults and Custom Settings for
@@ -129,6 +130,13 @@ would produce locally.</p>
 <div class="section level2">
 <h2 id="reaching-it-from-r">Reaching it from R<a class="anchor" aria-label="anchor" href="#reaching-it-from-r"></a>
 </h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## API example: build a multisite report URL</span></span>
+<span><span class="va">urlx</span> <span class="op">=</span> <span class="fu">EJAM</span><span class="fu">::</span><span class="fu"><a href="../reference/url_ejamapi.html">url_ejamapi</a></span><span class="op">(</span>fips<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3650617</span>,<span class="st">'0973000'</span><span class="op">)</span>, sitenumber <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">urlx</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [1] "https://api.ejanalysis.com/report?fips=3650617,0973000&amp;buffer=0&amp;sitenumber=0&amp;fileextension=html"</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># browseURL(urlx)</span></span></code></pre></div>
 <p>Two functions wrap the API:</p>
 <ul>
 <li>
@@ -139,7 +147,7 @@ the API, and returns the report or data.</li>
 URL(s) <em>without</em> calling them (useful for a table of shareable
 links, or to open one in a browser).</li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejamapi.html">ejamapi</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fl">33</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">112</span>, radius <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>              <span class="co"># get a report or data back</span></span>
 <span><span class="fu"><a href="../reference/url_ejamapi.html">url_ejamapi</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">33</span>, <span class="fl">34</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">112</span>, <span class="op">-</span><span class="fl">114</span><span class="op">)</span><span class="op">)</span>      <span class="co"># just build the URL(s)</span></span></code></pre></div>
 <p>The API base URL – and a friendlier branded alias such as
@@ -182,6 +190,35 @@ length can be sent via a <code>POST /report</code> request. See the
 parameter notes in the <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link">EJAM-API
 README</a>.</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="running-the-api-locally">Running the API locally<a class="anchor" aria-label="anchor" href="#running-the-api-locally"></a>
+</h2>
+<p>The EJAM package ships a <strong>verbatim mirror</strong> of the
+deployed API’s code (<code>inst/plumber/ejam-api/</code>, kept in sync
+with the EJAM-API repo – see the <code>SYNC.md</code> there), plus
+draft/experimental endpoints that exist only in this package
+(<code>inst/plumber/draft/</code>). Since the EJAM-API has no staging
+server, this is the way to preview how the API will behave – including
+after a proposed EJAM-API code change, before anyone deploys it:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">apiproc</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/ejamapi_local.html">ejamapi_local</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># background server; browse http://127.0.0.1:3035/__docs__/</span></span>
+<span><span class="co"># production paths served locally: /report, /data, /query, /handoff, /assets</span></span>
+<span><span class="co"># draft-only endpoints mounted at:  /draft/echo, /draft/ejamit, /draft/report2, ...</span></span>
+<span><span class="va">apiproc</span><span class="op">$</span><span class="fu">kill</span><span class="op">(</span><span class="op">)</span>                     <span class="co"># stop it when done</span></span></code></pre></div>
+<p>To propose an EJAM-API change: edit the mirror copy, test it via
+<code><a href="../reference/ejamapi_local.html">ejamapi_local()</a></code>, then submit the identical diff as a PR to
+the EJAM-API repo and re-sync the mirror after it merges. See
+<code>inst/plumber/try_the_api.R</code> for worked examples.</p>
+<p>To point the <strong>package and web app at that local API</strong>
+(so report links in the app’s tables and map popups,
+<code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>, and <code><a href="../reference/ejamapi.html">ejamapi()</a></code> all use it
+instead of the production API), set
+<code>EJAM_API_BASEURL=http://127.0.0.1:3035</code> (or
+<code>options(ejam.api.baseurl=...)</code>) – one override honored by
+<code>url_package("api")</code>, the single source of the API base URL.
+Details and the deployed-app variant are in the <a href="dev-deployment.html">deployment article</a> under “Testing against
+a local or draft API”.</p>
 <p>For anything not covered here, the <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link">EJAM-API
 README</a> is the source of truth, and <code><a href="../reference/ejamapi.html">?ejamapi</a></code> /
 <code><a href="../reference/url_ejamapi.html">?url_ejamapi</a></code> document the R interface.</p>
@@ -193,11 +230,11 @@ README</a> is the source of truth, and <code><a href="../reference/ejamapi.html"
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer>

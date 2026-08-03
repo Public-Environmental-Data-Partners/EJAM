@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -90,24 +91,25 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-analysis-title-">analysis_title, <a class="anchor" aria-label="anchor" href="#arg-analysis-title-"></a></dt>
+<dl><dt id="arg-analysis-title">analysis_title<a class="anchor" aria-label="anchor" href="#arg-analysis-title"></a></dt>
 <dd><p>title to use in header of report</p></dd>
 
 
-<dt id="arg-totalpop-">totalpop, <a class="anchor" aria-label="anchor" href="#arg-totalpop-"></a></dt>
+<dt id="arg-totalpop">totalpop<a class="anchor" aria-label="anchor" href="#arg-totalpop"></a></dt>
 <dd><p>total population included in location(s) analyzed</p></dd>
 
 
-<dt id="arg-locationstr-">locationstr, <a class="anchor" aria-label="anchor" href="#arg-locationstr-"></a></dt>
+<dt id="arg-locationstr">locationstr<a class="anchor" aria-label="anchor" href="#arg-locationstr"></a></dt>
 <dd><p>description of the location(s) analyzed</p></dd>
 
 
-<dt id="arg-in-shiny-">in_shiny, <a class="anchor" aria-label="anchor" href="#arg-in-shiny-"></a></dt>
+<dt id="arg-in-shiny">in_shiny<a class="anchor" aria-label="anchor" href="#arg-in-shiny"></a></dt>
 <dd><p>whether the function is being called in or outside of shiny - affects location of header</p></dd>
 
 
-<dt id="arg-filename-">filename, <a class="anchor" aria-label="anchor" href="#arg-filename-"></a></dt>
-<dd><p>path to file to save HTML content to; if null, returns as string (used in Shiny app)</p></dd>
+<dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
+<dd><p>optional path to an .html file; if provided, the HTML content
+is also written to that file. The HTML is returned either way.</p></dd>
 
 
 <dt id="arg-report-title">report_title<a class="anchor" aria-label="anchor" href="#arg-report-title"></a></dt>
@@ -126,7 +128,8 @@ If specified, it overrides logo_path. If omitted, gets created based on logo_pat
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>can return HTML if filename not specified, but otherwise NULL</p>
+    <p>HTML content of the report header as an <code><a href="https://rstudio.github.io/htmltools/reference/HTML.html" class="external-link">htmltools::HTML()</a></code> object,
+whether or not <code>filename</code> was provided.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -139,11 +142,11 @@ see <code><a href="ejam2report.html">ejam2report()</a></code> which relies on <c
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

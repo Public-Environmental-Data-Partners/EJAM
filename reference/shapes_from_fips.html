@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -112,7 +113,10 @@ or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycens
 <dt id="arg-myservice-county">myservice_county<a class="anchor" aria-label="anchor" href="#arg-myservice-county"></a></dt>
 <dd><p>URL of feature service to get shapes from,
 or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
-Note State bounds are built into this package as data so do not need to be downloaded from a service.</p></dd>
+Note State bounds are built into this package as data so do not need to be downloaded from a service.
+County bounds are too, as of the <a href="counties_shapefile.html">counties_shapefile</a> dataset: the default
+"cartographic" County bounds are served from that built-in dataset rather than
+downloaded, falling back to downloading only for any FIPS not found there.</p></dd>
 
 
 <dt id="arg-allow-multiple-fips-types">allow_multiple_fips_types<a class="anchor" aria-label="anchor" href="#arg-allow-multiple-fips-types"></a></dt>
@@ -171,11 +175,11 @@ using the formula  area = pi * (block_radius_miles^2)</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

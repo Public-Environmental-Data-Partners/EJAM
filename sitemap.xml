@@ -9,6 +9,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-deploy-app.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-deployment.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-future-plans.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-github-actions-install-tests.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/articles/dev-run-shinytests.html</loc></url>
@@ -110,6 +111,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/convert_units.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/count_sites_with_n_high_scores.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/counties_as_sites.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/counties_shapefile.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/countpoints_after_getpoints.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/countpoints_nearby.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/create_filename.html</loc></url>
@@ -473,6 +475,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/pctile_from_raw_lookup.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/pctile_x_is_hit_by_score.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/pctiles_lookup_create.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/pdf_wait_seconds.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/pkg_data.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/pkg_dependencies.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/pkg_dupeRfiles.html</loc></url>
@@ -550,6 +553,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/shapefix.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/shapes_blockgroups_from_bgfips.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/shapes_counties_from_countyfips.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/shapes_counties_from_countyfips_local.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/shapes_from_fips.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/shapes_places_from_placefips.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/reference/shapes_state_from_statefips.html</loc></url>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -88,6 +89,7 @@
 <span>  baseurl <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sitenumber <span class="op">=</span> <span class="st">"each"</span>,</span>
 <span>  version <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fileextension <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  shape <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shp <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -138,34 +140,55 @@ hyperlinks (via <code><a href="url_linkify.html">url_linkify()</a></code>) suita
 <dt id="arg-ifna">ifna<a class="anchor" aria-label="anchor" href="#arg-ifna"></a></dt>
 <dd><p>URL shown for missing, NA, NULL, bad input values. Default NULL
 (and an explicitly passed NULL) resolves to the EJAM API base URL from
-DESCRIPTION (<code>ejam_api_url</code>), via <code><a href="url_package.html">url_package()</a></code> with type="api".</p></dd>
+DESCRIPTION field <code>Config/EJAM/url_api</code>, via <code><a href="url_package.html">url_package()</a></code> with type="api".</p></dd>
 
 
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
 <dd><p>do not change unless endpoint actually changed. Default NULL
-(and an explicitly passed NULL) resolves to the DESCRIPTION <code>ejam_api_url</code>
-followed by "/report?". See <code><a href="ejamapi.html">ejamapi()</a></code> for a better way to handle choice of endpoint.</p></dd>
+(and an explicitly passed NULL) resolves to url_package("api"), a URL stored
+in DESCRIPTION as <code>Config/EJAM/url_api</code>, followed by "/report?". See
+<code><a href="ejamapi.html">ejamapi()</a></code> for a better way to handle choice of endpoint.</p></dd>
 
 
 <dt id="arg-sitenumber">sitenumber<a class="anchor" aria-label="anchor" href="#arg-sitenumber"></a></dt>
 <dd><p>controls how many URLs are returned and which site(s) each covers:</p><ul><li><p><code>"each"</code> (or <code>-1</code>) – <strong>the default</strong> – returns a vector of URLs, one per site
 (one single-site report per site). Unlike <code><a href="ejam2report.html">ejam2report()</a></code>/<code><a href="ejam2map.html">ejam2map()</a></code>, which never
 return a vector, the <code>url_*</code> helpers can; that vector-per-site output is the main
-reason this parameter exists.</p></li>
+reason this parameter exists. Each URL sends only its own site to the API but also
+carries <code>sitenumber=N</code> (that site's row number in the inputs) so the API labels the
+report header "Site N" instead of calling every per-site report Site 1
+(Public-Environmental-Data-Partners/EJAM#348).</p></li>
 <li><p><code>"overall"</code> (or <code>0</code>, <code>NULL</code>, or <code>""</code>) – returns a single URL requesting one
 aggregate <em>multisite</em> report combining all sites (sent to the API as <code>sitenumber=0</code>;
 assumes &gt;1 site was provided).</p></li>
 <li><p><code>N</code> (a number <code>&gt; 0</code>) – returns a single URL for just the Nth site found in the
-inputs (e.g. the 3rd point, fips, or polygon).</p></li>
+inputs (e.g. the 3rd point, fips, or polygon). The URL carries <code>sitenumber=N</code> when
+<code>N &gt; 1</code> (as for "each" above; omitted when N is 1 since Site 1 is the API's default label).</p></li>
 </ul><p>Single-site auto-override: when the inputs resolve to exactly one site (one row of
 sitepoints, one fips code, or one polygon), sitenumber is coerced to <code>1</code> regardless of what
-was requested, so a lone place yields a single-site report URL.</p></dd>
+was requested, so a lone place yields a single-site report URL (with no <code>sitenumber</code>
+parameter in it).</p></dd>
 
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
 <dd><p>optional EJAM version tag (e.g. "3.2024.0") sent to the API as
-version=<ver> so the API can serve the matching data vintage. Default NULL
-resolves to the installed package Version (from DESCRIPTION).</ver></p></dd>
+version=<ver> so the API can be asked to serve the matching data vintage
+(but this is irrelevant until a multivintage option is implemented in the API).
+Default is NULL, meaning no version parameter is included in the URL.</ver></p></dd>
+
+
+<dt id="arg-fileextension">fileextension<a class="anchor" aria-label="anchor" href="#arg-fileextension"></a></dt>
+<dd><p>report format requested from the API, sent as
+fileextension=<ext> on each generated report URL. Default "auto" picks the
+format by report type: "html" for an aggregate <em>multisite</em> report URL
+(sitenumber 0/"overall" covering more than one site) since HTML renders
+several times faster and displays directly in the browser tab, but "pdf"
+for <em>single-site</em> report URLs (the traditional printable community report).
+Use "html" or "pdf" to force one format for all URLs, or NULL/"" to omit
+the parameter and get the API's own default. Case/whitespace are
+normalized; any other value is an error (values are placed in a URL, so
+arbitrary text is rejected rather than encoded). Only applied to actual
+API /report URLs, never to app-fallback or ifna links.</ext></p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -186,8 +209,8 @@ to allow for expansion of allowed parameters</p></dd>
 
 <ul><li><p>Relies on the EJAM REST API, whose source code is at
 https://github.com/Public-Environmental-Data-Partners/EJAM-API
-(the API base URL itself comes from <code>url_package("api")</code>; see the <code>ejam_api_url</code>
-field in DESCRIPTION).</p></li>
+(the API base URL itself comes from <code>url_package("api")</code>; see the
+DESCRIPTION field <code>Config/EJAM/url_api</code>).</p></li>
 <li><p>To construct a "deep link" that launches the live EJAM <em>app</em> (not the API)
 pre-loaded with sites, see <code><a href="url_ejamapp.html">url_ejamapp()</a></code>, which uses the same query
 vocabulary (lat, lon, fips, shape, radius, handoff).</p></li>
@@ -198,7 +221,12 @@ note below on unsupported options).</p></li>
 <code>sitenumber = 1</code> requests a single-site report (the API's per-request default when
 none is supplied), and <code>sitenumber = 0</code> (or "overall") produces an aggregate
 <em>multisite</em> report. (Note <code>url_ejamapi()</code>'s own default is <code>sitenumber = "each"</code> –
-see the parameter docs below.) The API leaves the
+see the parameter docs below.) When a URL sends only ONE site to the API but says
+<code>sitenumber=N</code>, N identifies which row that site was in the original multisite
+analysis, so the API can label the report header "Site N" instead of mislabeling
+every per-site report as Site 1
+(Public-Environmental-Data-Partners/EJAM#348) – the per-site URLs this
+function returns carry that. The API leaves the
 report title to <code><a href="ejam2report.html">ejam2report()</a></code>, which uses "EJSCREEN Community Report" for a
 single site and "EJSCREEN Multisite Summary" for the aggregate. Many or large
 polygons can exceed URL length for this GET-based path; the API also provides
@@ -253,11 +281,11 @@ radius_donut_lower_edge).</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

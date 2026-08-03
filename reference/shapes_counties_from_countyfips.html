@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -81,7 +82,8 @@
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/"</span>,</span>
 <span>    <span class="st">"USA_Boundaries_2022/FeatureServer/2/query"</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/"</span>,</span>
-<span>    <span class="st">"USA_Counties_and_States_with_PR/FeatureServer/0/query"</span><span class="op">)</span>, <span class="st">"cartographic"</span>, <span class="st">"tiger"</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span></span>
+<span>    <span class="st">"USA_Counties_and_States_with_PR/FeatureServer/0/query"</span><span class="op">)</span>, <span class="st">"cartographic"</span>, <span class="st">"tiger"</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>,</span>
+<span>  use_local <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -101,7 +103,19 @@ just some variables like SQMI, POPULATION_2020, etc., or none</p></dd>
 
 <dt id="arg-myservice">myservice<a class="anchor" aria-label="anchor" href="#arg-myservice"></a></dt>
 <dd><p>URL of feature service to get shapes from
-or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.</p></dd>
+or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
+Note that "cartographic" (the default) is normally served from the
+<a href="counties_shapefile.html">counties_shapefile</a> dataset built into this package, without downloading - see <code>use_local</code>.</p></dd>
+
+
+<dt id="arg-use-local">use_local<a class="anchor" aria-label="anchor" href="#arg-use-local"></a></dt>
+<dd><p>if TRUE (the default) and <code>myservice</code> is "cartographic",
+County boundaries come from the <a href="counties_shapefile.html">counties_shapefile</a> dataset built into this
+package instead of being downloaded, which avoids a network round-trip
+(and avoids needing a CENSUS_API_KEY) for every County map or report.
+Downloading is still used as a fallback for any FIPS not found in that dataset.
+Set FALSE to force downloading. Ignored when <code>myservice</code> is "tiger" or a
+feature-service URL, since those request different boundaries.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -126,11 +140,11 @@ read_sf returns an sf-tibble rather than an sf-data.frame</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

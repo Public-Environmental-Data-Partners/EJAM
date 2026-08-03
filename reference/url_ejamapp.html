@@ -19,7 +19,7 @@ of ejamapp().'><meta property="og:image" content="https://public-environmental-d
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,6 +55,7 @@ of ejamapp().'><meta property="og:image" content="https://public-environmental-d
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -103,7 +104,7 @@ of <code><a href="ejamapp.html">ejamapp()</a></code>.</p>
 <span>  buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  handoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dTolerance <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  baseurl <span class="op">=</span> <span class="st">"https://ejamapp.ejanalysis.com/"</span>,</span>
+<span>  baseurl <span class="op">=</span> <span class="fu"><a href="url_package.html">url_package</a></span><span class="op">(</span><span class="st">"ejamapp"</span>, desc_or_alias <span class="op">=</span> <span class="st">"alias"</span><span class="op">)</span>,</span>
 <span>  browse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  shp <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -154,7 +155,9 @@ many/large polygons).</p></dd>
 
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
 <dd><p>base URL of the live EJAM app. Defaults to
-<code>https://ejamapp.ejanalysis.com/</code>, a Cloudflare-fronted shortcut on
+<code>url_package("ejamapp", desc_or_alias = "alias")</code> (the DESCRIPTION field
+<code>Config/EJAM/url_ejamapp_alias</code>, currently <code>https://ejam.ejanalysis.com</code> — equivalently
+<code>https://ejamapp.ejanalysis.com</code>), a Cloudflare-fronted shortcut on
 ejanalysis.com that forwards the query string (302 redirect) to the app, so
 the launch parameters arrive intact. Any base works as long as it preserves
 the <code><a href="https://rdrr.io/r/base/dots.html" class="external-link">?...</a></code> query; a plain 301 that drops it would open the app empty (which
@@ -206,11 +209,11 @@ then fetches the places back from <code>GET /handoff/&lt;token&gt;</code> at sta
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

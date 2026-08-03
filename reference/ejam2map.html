@@ -9,7 +9,7 @@ create a map of the points."><meta property="og:image" content="https://public-e
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@ create a map of the points."><meta property="og:image" content="https://public-e
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -86,7 +87,8 @@ create a map of the points.</p>
 <span>  sitenumber <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shape <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shapefile <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  buffer <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sitenumber_label <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -115,7 +117,13 @@ create a map of the points.</p>
 
 
 <dt id="arg-sitenumber">sitenumber<a class="anchor" aria-label="anchor" href="#arg-sitenumber"></a></dt>
-<dd><p>as used in <code><a href="ejam2report.html">ejam2report()</a></code></p></dd>
+<dd><p>Optional integer. If a valid positive integer is provided,
+only that one site (row <code>sitenumber</code> of <code>ejamitout$results_bysite</code>) is
+mapped. If omitted, NULL, zero, negative, or out of range, all sites are mapped.
+Works for all site types (latlon, fips, shp): when <code>sitetype</code> is "fips"
+and <code>shp</code> is provided, both the results table and <code>shp</code> are subsetted to
+the requested row; when <code>shp</code> is not provided, the FIPS polygon is
+downloaded for only that one site.</p></dd>
 
 
 <dt id="arg-shape">shape<a class="anchor" aria-label="anchor" href="#arg-shape"></a></dt>
@@ -128,6 +136,13 @@ create a map of the points.</p>
 
 <dt id="arg-buffer">buffer<a class="anchor" aria-label="anchor" href="#arg-buffer"></a></dt>
 <dd><p>alias (synonym) for radius</p></dd>
+
+
+<dt id="arg-sitenumber-label">sitenumber_label<a class="anchor" aria-label="anchor" href="#arg-sitenumber-label"></a></dt>
+<dd><p>optional, display-only override (a number or short text) of the
+site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
+Only relevant when mapping a single site – see <code><a href="ejam2report.html">ejam2report()</a></code>, whose
+sitenumber_label parameter this supports.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -171,11 +186,11 @@ and see it in your web browser.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

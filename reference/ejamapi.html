@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -153,9 +154,10 @@ or all blockgroups in specified County fips.</p></dd>
 
 
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
-<dd><p>base API URL without the endpoint path. Defaults to <code><a href="url_package.html">url_package()</a></code> with
-type="api" (the DESCRIPTION <code>ejam_api_url</code>), the single source of the API endpoint; pass a
-different value only to target another API (e.g. a staging server).</p></dd>
+<dd><p>base API URL without the endpoint path. Defaults to <code>url_package("api")</code>,
+the single source of the API endpoint (<code><a href="url_package.html">url_package()</a></code> reads the
+<code>Config/EJAM/url_api</code> field from DESCRIPTION).
+Pass a different value only to target another API (e.g. a staging server).</p></dd>
 
 
 <dt id="arg-endpoint">endpoint<a class="anchor" aria-label="anchor" href="#arg-endpoint"></a></dt>
@@ -197,9 +199,10 @@ be just a placeholder, for the first site, not an overall summary across all sit
 
 
 <dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
-<dd><p>optional EJAM version tag (e.g. "3.2024.0") passed to the API as
-version=<ver> via <code><a href="url_ejamapi.html">url_ejamapi()</a></code> so it can serve the matching data vintage.
-Default NULL resolves to the installed package Version (from DESCRIPTION).</ver></p></dd>
+<dd><p>NOT YET IMPLEMENTED. Optional EJAM version tag (e.g. "3.2024.0")
+sent to the API as version=<ver> so the API can be asked to serve the matching
+data vintage (irrelevant until a multivintage option is implemented in the API).
+Default is NULL here, meaning it uses the default found in <code><a href="url_ejamapi.html">url_ejamapi()</a></code>.</ver></p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -251,6 +254,7 @@ deep links that launch the live <em>app</em> pre-loaded, and <code><a href="url_
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># also see ?EJAM::url_ejamapi()</span></span>
+<span><span class="fu"><a href="url_ejamapi.html">url_ejamapi</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">eg</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
 <span></span>
 <span><span class="co"># one blockgroup</span></span>
@@ -311,11 +315,11 @@ deep links that launch the live <em>app</em> pre-loaded, and <code><a href="url_
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>

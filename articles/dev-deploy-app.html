@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -152,14 +153,21 @@ you prefer<a class="anchor" aria-label="anchor" href="#deploy-via-docker-aws-pos
 <div class="section level4">
 <h4 id="using-dockeraws-for-hosting">1. Using Docker/AWS for hosting<a class="anchor" aria-label="anchor" href="#using-dockeraws-for-hosting"></a>
 </h4>
-<p>The live EJAM app in 2025 was being hosted via AWS and Docker using
-the Dockerfile now included with the EJAM package, and is hosted at a
-URL you can be directed to from this shortcut: <a href="https://ejanalysis.org/ejamapp" class="external-link uri">https://ejanalysis.org/ejamapp</a> The EJAM fork at <a href="https://github.com/Environmental-Policy-Innovation-Center/ejam-mc-pedp" class="external-link uri">https://github.com/Environmental-Policy-Innovation-Center/ejam-mc-pedp</a>
-shows how the deployment works, but essentially it is based on the
-Dockerfile.</p>
-<p>The <a href="https://github.com/edgi-govdata-archiving/EJAM-API" class="external-link">EJAM-API</a>
-is deployed via Docker as well, and that repository shows how the
-deployment works.</p>
+<blockquote>
+<p>For the current AWS ECS Fargate hosting architecture and the
+step-by-step deploy procedure, see <a href="dev-deployment.html">Deploying the Web App to AWS (Infrastructure
+&amp; Procedure)</a>.</p>
+</blockquote>
+<p>The live EJAM app is hosted via AWS ECS Fargate and Docker, at <a href="https://ejam.publicenvirodata.org" class="external-link uri">https://ejam.publicenvirodata.org</a>. See also
+<code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code>. The build/deploy files
+(<code>Dockerfile</code>, Terraform config, and GitHub Actions
+workflows) live on the <code>dev-deploy</code>/<code>prod-deploy</code>
+branches of the EJAM repository. For the full hosting architecture and
+the step-by-step deploy procedure, see <a href="dev-deployment.html">Deploying the Web App to AWS (Infrastructure
+&amp; Procedure)</a>.</p>
+<p>The <a href="https://github.com/Public-Environmental-Data-Partners/EJAM-API" class="external-link">EJAM-API</a>
+is deployed via Docker as well (on Google Cloud Run); that repository
+shows how its deployment works. See also the <a href="dev-api.html">Using the EJAM API</a> article.</p>
 <p>The EPA-hosted (pre-2025) app used <a href="https://posit.co/products/enterprise/connect/" class="external-link">Posit Connect</a>
 for hosting.</p>
 </div>
@@ -199,11 +207,11 @@ manifest file.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer>

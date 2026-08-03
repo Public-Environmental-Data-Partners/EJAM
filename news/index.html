@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.1</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,7 @@
     <li><a class="dropdown-item" href="../articles/dev-app-settings.html">Defaults and Custom Settings for the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -68,8 +69,77 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.2022.2" id="ejam-320222-august-2026">EJAM 3.2022.2 (August 2026)<a class="anchor" aria-label="anchor" href="#ejam-320222-august-2026"></a></h2>
+<p>A code-and-docs patch over v3.2022.1, led by a faster web app and new information in the community report about where people live.</p>
+<div class="section level3">
+<h3 id="highlights-3-2022-2">Highlights<a class="anchor" aria-label="anchor" href="#highlights-3-2022-2"></a></h3>
+<ul><li><p><strong>A quicker web app:</strong> the Details tab’s Site-by-Site Table appears in well under a second for a 1,000-site analysis instead of roughly six, PDF reports finish about seven seconds sooner, and County reports no longer pause to download map boundaries.</p></li>
+<li><p><strong>More about where people live:</strong> the community report has new rows showing the share of residents whose blockgroup contains a school, hospital, or place of worship, or overlaps a Tribal area, impaired waters, a disadvantaged community, etc. – each compared to the US and State average. The “Additional Information” part of the report is also reorganized.</p></li>
+<li><p><strong>Ratio columns are now shown by default:</strong> “Ratio to US average” and “Ratio to State average”, with their color coding, now show in the public app’s report (not just when isPublic=FALSE).</p></li>
+<li><p><strong>Numbers display correctly:</strong> percentages that had appeared as “0” or “1” instead of, say, “79%” now render properly in the report, tables, and map popups, and percentages and counts round consistently.</p></li>
+<li>
+<p><strong>New URLs are shorter and provide caching:</strong></p>
+<ul><li>EJScreen app: <a href="https://ejscreen.ejanalysis.com" class="external-link">ejscreen.ejanalysis.com</a>
+<ul><li>docs: <a href="https://ejscreendocs.ejanalysis.com" class="external-link">ejscreendocs.ejanalysis.com</a>
+</li>
+</ul></li>
+<li>EJAM app: <a href="https://ejamapp.ejanalysis.com" class="external-link">ejam.ejanalysis.com</a>
+<ul><li>docs: <a href="https://ejamdocs.ejanalysis.com" class="external-link">ejamdocs.ejanalysis.com</a>
+</li>
+</ul></li>
+<li>API: <a href="https://api.ejanalysis.com" class="external-link">api.ejanalysis.com</a>
+<ul><li>docs: <a href="https://apidocs.ejanalysis.com" class="external-link">apidocs.ejanalysis.com</a>
+</li>
+</ul></li>
+</ul></li>
+<li><p><strong>Bugs fixed</strong>, including a crash when arriving from EJScreen’s “Send to EJAM” button and downloaded reports that came out empty (details below).</p></li>
+<li><p><strong>Intermittent upload failures on the hosted app are being fixed alongside this release</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/268" class="external-link">#268</a>), but by a change to the hosting setup rather than by anything in this package. The production app runs on two servers, and an upload could be sent to the one that was not holding your session, which answered “Not Found” – roughly half the time. The load balancer is being set to keep each session on a single server, the same fix applied in early 2026 that was later lost when the servers were rebuilt from their configuration files. Because it is a hosting change, installing v3.2022.2 does not by itself resolve it; the two are simply being done at the same time.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-3-2022-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-3-2022-2"></a></h3>
+<ul><li><p><strong>The Site-by-Site Table builds about 4x faster</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/491" class="external-link">#491</a>, fixes <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/127" class="external-link">#127</a>): it now starts from a default subset of about 50 columns rather than all ~700 and shows 50 rows per page, and the slow steps in building it were rewritten. Any columns can still be added from the Advanced Settings column picker (which had never appeared – also fixed), and downloads always include every column.</p></li>
+<li><p><strong>PDF reports are about 7 seconds (~50%) faster</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/473" class="external-link">#473</a>, helps <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/293" class="external-link">#293</a>), from trimming two fixed waits during rendering. Both stay adjustable on a server without a rebuild, in case a shorter pause ever degrades output.</p></li>
+<li><p><strong>County reports &amp; maps are faster and more reliable</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/472" class="external-link">#472</a>, part of <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/446" class="external-link">#446</a>): county boundaries are built into the package instead of downloaded while the report renders, so no Census API key or boundary-service call is needed, and Puerto Rico counties now map correctly.</p></li>
+<li><p><strong>Report’s “Additional Information” table was reorganized</strong> so related rows sit together: feature counts, facility counts, and analyzed-site rows are now separate sections, “Climate” moved up next to “Poverty”, and “Flag for…” rows read Yes/No instead of 1/0. A footnote explains what the feature and facility counts mean, and what a State average means for a multisite report (part of <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/403" class="external-link">#403</a> and <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410" class="external-link">#410</a>).</p></li>
+<li><p><strong>The State flagged-areas stats are available outside the report too</strong> (closes <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/242" class="external-link">#242</a>; addresses <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/156" class="external-link">#156</a> and <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410" class="external-link">#410</a>): <code>ejamit()$results_summarized$flagged_areas</code> gains statewide percent and ratio-to-state columns, <code>ejam2barplot_areafeatures(vs = "state")</code> plots against State averages, and <code><a href="../reference/ejam2excel.html">ejam2excel()</a></code> gains an “Area Features” tab.</p></li>
+<li><p><strong>A new launch-URL parameter:</strong> <code>?advanced=TRUE</code> opens the app with the Advanced Settings tab visible, even on a public deploy.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-3-2022-2">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2022-2"></a></h3>
+<ul><li><p><strong>Report’s percentages no longer shown as “0” or “1”, or with stray decimals</strong> in the report, tables, and map popups (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/488" class="external-link">#488</a>). The metadata marking which indicators are stored as fractions had been lost, disabling the conversion to percent for 76 indicators (language, poverty, housing, broadband, health insurance, age, sex, pre-1960 housing, fire and flood risk, and their US and State rows).</p></li>
+<li><p><strong>Reports on a site via link to API no longer all say “Site 1”</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/348" class="external-link">#348</a>, fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/470" class="external-link">#470</a> and <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/479" class="external-link">#479</a>); a link for row N now produces a report labeled “Site N”.</p></li>
+<li><p><strong>The EJScreen “Send to EJAM” handoff no longer crashes the session</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/465" class="external-link">#465</a>, fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/466" class="external-link">#466</a>), which it did for every County/Tract and drawn-polygon selection, and for any point selection made without a buffer.</p></li>
+<li><p><strong>Zero-population sites no longer error or return wrong statistics</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/467" class="external-link">#467</a>, fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/468" class="external-link">#468</a>) – open-water blockgroups and industrial parcels with no residents.</p></li>
+<li><p><strong>Saved reports are no longer empty when a <code>filename</code> is given</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/385" class="external-link">#385</a>, fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/471" class="external-link">#471</a> and <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/475" class="external-link">#475</a>), and <code><a href="../reference/ejam2report.html">ejam2report()</a></code> accepts a much wider range of file names and extensions.</p></li>
+<li><p><strong><code>acs_bybg(year = 2024)</code> no longer wrongly errors</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/391" class="external-link">#391</a>, fixed by <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/469" class="external-link">#469</a>). The year check now follows what the Census Bureau has actually published, rather than the tidycensus default year, which can lag by more than a year.</p></li>
+<li><p><strong>Rounding helpers no longer alter their inputs</strong> (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/491" class="external-link">#491</a>): <code><a href="../reference/table_round.html">table_round()</a></code>, <code><a href="../reference/table_signif.html">table_signif()</a></code>, <code><a href="../reference/table_x100.html">table_x100()</a></code>, and <code><a href="../reference/is.numericish.html">is.numericish()</a></code> converted a data.table in the caller’s environment into a data.frame; all four now leave the caller’s object untouched and return the class they were given.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="for-developers-3-2022-2">For Developers<a class="anchor" aria-label="anchor" href="#for-developers-3-2022-2"></a></h3>
+<ul><li>
+<p><strong>New URLs set up, and all key URLs are single-sourced</strong> as <code>Config/EJAM/url_*</code> fields in <code>DESCRIPTION</code>, read through <code><a href="../reference/url_package.html">url_package()</a></code>, which now also gives a clear error listing the valid types (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/485" class="external-link">#485</a>, <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/501" class="external-link">#501</a>, <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/502" class="external-link">#502</a>, <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/503" class="external-link">#503</a>). New short aliases via Cloudflare, like <a href="https://api.ejanalysis.com" class="external-link">api.ejanalysis.com</a>, <a href="https://ejam.ejanalysis.com" class="external-link">ejam.ejanalysis.com</a>, and <a href="https://ejamdev.ejanalysis.com" class="external-link">ejamdev.ejanalysis.com</a>, etc. are easy to remember and provide edge caching and 302 redirects to the actual deployed endpoints. URLs<br><a href="https://ejamdocs.ejanalysis.com" class="external-link">ejamdocs.ejanalysis.com</a> and <a href="https://ejscreendocs.ejanalysis.com" class="external-link">ejscreendocs.ejanalysis.com</a> now redirect to documentation sites for EJAM and EJScreen and support links like</p>
+<ul><li>
+<a href="https://ejamdocs.ejanalysis.com/dev" class="external-link">ejamdocs.ejanalysis.com/dev</a>,</li>
+<li>
+<a href="https://ejamdocs.ejanalysis.com/dev/articles/dev-api.html" class="external-link">ejamdocs.ejanalysis.com/dev/articles/dev-api.html</a> or</li>
+<li>
+<a href="https://ejamdocs.ejanalysis.com/dev/reference/url_package.html" class="external-link">ejamdocs.ejanalysis.com/reference/url_package.html</a>.</li>
+</ul></li>
+<li><p><strong>A way to test changes to the API and test draft EJAM use of the API:</strong> <code>EJAM:::ejamapi_local()</code> serves a local stand-in for deployed API as a byte-for-byte mirror of the EJAM-API repo at the production paths, with draft-only endpoints under <code>/draft/...</code> (grouped as “Draft API Endpoints” in the Swagger page), and <code>url_package("api")</code> honors an <code>options(ejam.api.baseurl=)</code> / <code>EJAM_API_BASEURL</code> override so the package and app can be pointed at a local or draft API (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/499" class="external-link">#499</a>, <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/509" class="external-link">#509</a>).</p></li>
+<li><p>The web app article now covers deep links, the EJScreen “Send to EJAM” button, and launching the app pre-loaded with a set of places. The analysis article cross-references the API article. Broken code chunks were fixed in two other articles. Many other cleanup edits were done.</p></li>
+<li><p><code><a href="../reference/ejamapi.html">ejamapi()</a></code> and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> no longer send a <code>version</code> parameter by default, since the API serves whichever data vintage it has installed.</p></li>
+<li><p>The <code>AOI</code> geocoding dependency used by <code><a href="../reference/latlon_from_address.html">latlon_from_address()</a></code> now installs from the <code>ericnost/AOI</code> fork (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/478" class="external-link">#478</a>, fixes <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/477" class="external-link">#477</a>).</p></li>
+<li><p><strong>A new release workflow</strong> tags a release from the <code>Version</code> in <code>DESCRIPTION</code> and publishes a GitHub Release whose notes are the matching <code>NEWS.md</code> section. It defaults to a dry run and refuses to act on an unexpected version (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/512" class="external-link">#512</a>).</p></li>
+<li><p>The shipped example input and output data and example spreadsheet, HTML, &amp; PDF outputs were regenerated so they carry the new report content (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/512" class="external-link">#512</a>).</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="datasets-are-unchanged-3-2022-2">Datasets are unchanged<a class="anchor" aria-label="anchor" href="#datasets-are-unchanged-3-2022-2"></a></h3>
+<p>This reuses the existing <code>ejamdata</code> <strong>v3.2022.0</strong> data – the packaged ACS and environmental files are byte-identical to v3.2022.0 – so it is a drop-in update over v3.2022.1 with the same demographics, plus code and documentation improvements. The same applies across the annual-vintage lines (v3.2022.x, v3.2023.x, v3.2024.x).</p>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2022.1" id="ejam-320221-july-2026">EJAM 3.2022.1 (July 2026)<a class="anchor" aria-label="anchor" href="#ejam-320221-july-2026"></a></h2>
-<p>Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1, v3.2024.1). Functionality is identical across all three ACS vintages (2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between branches. This is a code-and-docs patch: it reuses the existing per-vintage ejamdata release, with no change to the packaged ACS or environmental data.</p>
+<p>Patch release for the v3.YYYY.x annual-vintage line (v3.2022.x, v3.2023.x, v3.2024.x). Functionality is identical across all three ACS vintages (2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between branches. This is a code-and-docs patch: it reuses the existing per-vintage ejamdata release, with no change to the packaged ACS or environmental data.</p>
 <p>Changes since v3.YYYY.0:</p>
 <div class="section level3">
 <h3 id="new-features-3-2022-1">New Features<a class="anchor" aria-label="anchor" href="#new-features-3-2022-1"></a></h3>
@@ -91,7 +161,9 @@
 </ul><p>Points and polygons are file-upload inputs that cannot travel in a Shiny url-bookmark, so this is the supported way to pass them in at launch. One place-type loads per launch (points, then FIPS, then polygons); the parsed places are held in per-session reactives (<code>url_sitepoints</code>, <code>url_fips</code>, <code>url_shapefile</code>) that the upload reactives prefer over <code><a href="../reference/ejamapp.html">ejamapp()</a></code>/global defaults. The vocabulary matches <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>. See <code>vignettes/dev-app-settings.Rmd</code>.</p>
 </li>
 <li><p><code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code> now builds a deep link that launches the live app pre-loaded with a set of places: <code>url_ejamapp(lat=, lon=, fips=, shapefile=, radius=)</code> or <code>url_ejamapp(handoff=&lt;token&gt;)</code>, using the same query vocabulary as <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code>. The default app base is now <strong><code>https://ejamapp.ejanalysis.com/</code></strong>, a Cloudflare-fronted shortcut on ejanalysis.com that forwards the query string (302 redirect) to the live app so launch parameters arrive intact.</p></li>
-<li><p>The EJAM API base URL is now <strong>single-sourced</strong>: functions read it from <code>DESCRIPTION</code> (<code>ejam_api_url</code>) via <code>url_package("api")</code>, so the endpoint can be changed in one place instead of being hardcoded in several. A friendlier branded alias, <code>https://api.ejanalysis.com/</code> (also <code>https://ejamapi.ejanalysis.com/</code>), is available via Cloudflare and can be set as <code>ejam_api_url</code> if desired; the default remains the Cloud Run URL. See the new <code>dev-api</code> article.</p></li>
+<li><p><code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code> was rewritten to generate <strong>deep links into EJScreen</strong> that actually draw and select the place(s) on the EJScreen map – <code>?fips=</code> (county, tract, or blockgroup, mixes allowed), <code>?lat=&amp;lon=</code> points (with optional <code>radius=</code>), or <code>?polygon=</code> vertex lists – matching the new inbound deep-link vocabulary EJScreen itself gained (so links from EJAM reports and tables select the analyzed place for an EJScreen report instead of only dropping a centroid pin). Stored test outputs were deliberately not regenerated for the resulting URL-column changes.</p></li>
+<li><p>The EJAM API base URL is now <strong>single-sourced</strong>: functions read it from <code>DESCRIPTION</code> via <code>url_package("api")</code>, so the endpoint can be changed in one place instead of being hardcoded in several. The default is now the branded alias <strong><code>https://api.ejanalysis.com</code></strong> (equivalently <code>https://ejamapi.ejanalysis.com</code>), a Cloudflare edge proxy in front of the Cloud Run API – so report links generated by the app and package route through an edge-cacheable host, and repeat requests for the same report can be served from cache instead of re-running the analysis. See the new <code>dev-api</code> article.</p></li>
+<li><p>Report links generated by the app and package now request the better-suited format by default: <strong><code>html</code> for multisite</strong> summary reports (much faster to generate, and the interactive map has a popup per site) and <strong><code>pdf</code> for single-site</strong> reports (proper page breaks for printing). The <code>fileextension</code> parameter is normalized and strictly validated (<code>html</code>/<code>pdf</code>) and remains overridable per call.</p></li>
 <li><p>The EJAM API now supports multisite reports (<code>sitenumber=0</code>) and also now has a POST <code>/report</code> endpoint for large or numerous polygons. Docs for <code><a href="../reference/ejamapp.html">ejamapp()</a></code>, <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> were updated to reflect that.</p></li>
 </ul></div>
 <div class="section level4">
@@ -108,7 +180,9 @@
 </div>
 <div class="section level3">
 <h3 id="bug-fixes-3-2022-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2022-1"></a></h3>
-<ul><li>Census API key (tidycensus &gt;= 1.8 breaking change): tidycensus now <em>errors</em> (no longer warns) without a key – including for the <code>load_variables()</code> metadata lookup. <code><a href="../reference/calc_blockgroupstats_acs.html">calc_blockgroupstats_acs()</a></code> and <code><a href="../reference/acs_table_info.html">acs_table_info()</a></code> now fail fast with an actionable message when <code>CENSUS_API_KEY</code> is unset. A follow-up scopes this check to the live-download path only: when raw ACS data are supplied (for example, the pipeline rebuilding block-group data from a saved stage), no Census API call is made, so a keyless environment is no longer blocked.</li>
+<ul><li>The multisite-report download button now shows the correct cursor after being manually re-enabled (it previously kept the not-allowed cursor even once the report was ready to download).</li>
+<li>Deep-link <code>?radius=</code> / <code>?buffer=</code> now reliably sets the analysis radius at app launch. Previously the launch handler patched the <code>radius_now</code> slider via <code>updateSliderInput()</code>, but that slider is built by <code>renderUI</code>, so the update raced the (re)render and was clobbered when the site-selection method changed. The launch radius is now stored in a reactive value the slider reads at render time. (The other deep-link params – <code>lat</code>/<code>lon</code>, <code>fips</code>, <code>shape</code>, <code>handoff</code> – were unaffected.)</li>
+<li>Census API key (tidycensus &gt;= 1.8 breaking change): tidycensus now <em>errors</em> (no longer warns) without a key – including for the <code>load_variables()</code> metadata lookup. <code><a href="../reference/calc_blockgroupstats_acs.html">calc_blockgroupstats_acs()</a></code> and <code><a href="../reference/acs_table_info.html">acs_table_info()</a></code> now fail fast with an actionable message when <code>CENSUS_API_KEY</code> is unset. A follow-up scopes this check to the live-download path only: when raw ACS data are supplied (for example, the pipeline rebuilding block-group data from a saved stage), no Census API call is made, so a keyless environment is no longer blocked.</li>
 <li>
 <code><a href="../reference/url_online.html">url_online()</a></code>: corrected default behavior, and now gives the intended “must specify a URL” error on empty, <code>NA</code>, or <code>NULL</code> input instead of a cryptic “missing value where TRUE/FALSE needed”.</li>
 <li>
@@ -944,11 +1018,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>July 2026</p>
+  <p>August 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.1</p>
+  <p>EJAM Version 3.2022.2</p>
 </div>
 
     </footer></div>
