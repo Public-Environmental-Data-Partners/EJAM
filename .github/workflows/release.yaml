@@ -101,11 +101,16 @@ jobs:
           set -euo pipefail
           VERSION='${{ steps.ver.outputs.version }}'
           SKIP=false
+          # Tracked separately from SKIP because a scheduled version mismatch must
+          # suppress the downstream dispatches too, and SKIP alone cannot express
+          # that - see the RELEASED comment below.
+          SCHEDULE_VERSION_MISMATCH=false
 
           if [ '${{ github.event_name }}' = 'schedule' ]; then
             if [ "$VERSION" != "$SCHEDULED_EXPECTED_VERSION" ]; then
               echo "::notice::Scheduled run is a no-op. DESCRIPTION on main is $VERSION but this schedule only ships $SCHEDULED_EXPECTED_VERSION."
               SKIP=true
+              SCHEDULE_VERSION_MISMATCH=true
             fi
           else
             EXPECTED='${{ inputs.expected_version }}'
@@ -160,10 +165,16 @@ jobs:
           # already-published tag is harmless: pkgdown rebuilds identical docs
           # and the install check just runs again.
           #
-          # A scheduled run that bails on a version mismatch keeps mode=create
-          # with SKIP=true, so it correctly dispatches nothing.
+          # A scheduled run that bails on a version mismatch must dispatch
+          # nothing, and needs its own flag to say so. MODE is decided after the
+          # mismatch check and from the release page alone, so on a future annual
+          # firing - DESCRIPTION long past the pinned version, that version's
+          # release already published - it would land on already_published and
+          # dispatch pkgdown and the install check for a run that just announced
+          # itself a no-op.
           RELEASED=false
-          if [ "$MODE" = 'already_published' ] || [ "$SKIP" = 'false' ]; then
+          if [ "$SCHEDULE_VERSION_MISMATCH" = 'false' ] &&
+             { [ "$MODE" = 'already_published' ] || [ "$SKIP" = 'false' ]; }; then
             RELEASED=true
           fi
 
