@@ -2,8 +2,13 @@
 name: 'lintr checks code style and syntax errors'
 
 on:
+  # Cheap (single ubuntu job), so run it broadly - this is the fast feedback
+  # that development PRs currently get none of.
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "development" ]
+  push:
+    branches: [ "main", "development" ]
+  workflow_dispatch:
 
 # lintr provides static code analysis for R.
 # It checks for adherence to a given style,

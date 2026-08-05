@@ -10,6 +10,16 @@ name: 'Release: tag and publish'
 #   2. On a schedule - 13:00 UTC on August 1, to ship v3.2022.2 without anyone
 #      having to be at a keyboard.
 #
+# What it does depends on what is already on the releases page:
+#
+#   * an unpublished DRAFT exists -> that draft is published as-is, keeping the
+#     title and notes someone reviewed. Publishing is what creates the tag.
+#     This is the normal path: prepare a draft, review it, let the schedule
+#     ship it.
+#   * nothing exists -> a tag is created and a release is built from the
+#     matching NEWS.md section.
+#   * already published -> nothing happens; a shipped release is never touched.
+#
 # The scheduled path is deliberately one-shot: it refuses to do anything unless
 # DESCRIPTION on `main` still reads exactly SCHEDULED_EXPECTED_VERSION. So when
 # this cron fires again in later years it will find a different version and exit
@@ -97,24 +107,43 @@ jobs:
             fi
           fi
 
+          # Note whether the tag exists, but do NOT skip on that alone. If a
+          # previous run pushed the tag and then failed before creating the
+          # release, skipping here would strand the release permanently, with
+          # every rerun refusing to finish the job. An existing tag just means
+          # "do not create or move it" - the release still needs making.
+          TAG_EXISTS=false
           if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
-            echo "::notice::Tag v$VERSION already exists. Skipping - this workflow never moves an existing tag."
-            SKIP=true
+            TAG_EXISTS=true
+            echo "::notice::Tag v$VERSION already exists; it will be reused, never moved."
           fi
 
-          # A DRAFT release does not create a tag ref, so the check above cannot
-          # see one. Without this, a draft prepared by hand would be duplicated
-          # (or collide) the next time this workflow ran. Publish the draft
-          # yourself, or delete it first if you want the workflow to do it.
+          # Decide how to ship, based on what already exists on the releases page.
+          #
+          #   published -> nothing to do; never clobber a shipped release.
+          #   draft     -> publish THAT draft, keeping its reviewed title and
+          #                notes. A draft holds a tag *name* but creates no tag
+          #                ref, so the check above cannot see it; publishing is
+          #                what creates the tag.
+          #   none      -> create the tag and a release built from NEWS.md.
+          MODE=create
           if gh release view "v$VERSION" >/dev/null 2>&1; then
-            echo "::notice::A release already exists for v$VERSION (it may be an unpublished draft). Skipping so this workflow does not duplicate or clobber it."
-            SKIP=true
+            if [ "$(gh release view "v$VERSION" --json isDraft --jq .isDraft)" = 'true' ]; then
+              MODE=publish_draft
+              echo "::notice::An unpublished draft exists for v$VERSION. It will be published as-is, keeping its reviewed notes."
+            else
+              MODE=already_published
+              echo "::notice::v$VERSION is already published. Skipping."
+              SKIP=true
+            fi
           fi
 
           echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
 
       - name: Extract the NEWS.md section for this version
-        if: steps.guard.outputs.skip == 'false'
+        if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'create'
         id: notes
         run: |
           set -euo pipefail
@@ -161,46 +190,100 @@ jobs:
 
       - name: Dry run summary
         if: steps.guard.outputs.skip == 'false' && github.event_name == 'workflow_dispatch' && inputs.dry_run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
           {
             echo "### Dry run - nothing was tagged or published"
             echo ""
             echo "- Tag that *would* be created: \`${{ steps.ver.outputs.tag }}\`"
-            echo "- Release title: ${{ steps.notes.outputs.title }}"
             echo "- Target commit: \`${{ steps.ver.outputs.sha }}\` (head of \`main\`)"
-            echo ""
-            echo "<details><summary>Release notes that would be published</summary>"
-            echo ""
-            cat release-notes.md
-            echo ""
-            echo "</details>"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Create the tag and publish the release
-        if: steps.guard.outputs.skip == 'false' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+          if [ '${{ steps.guard.outputs.mode }}' = 'publish_draft' ]; then
+            {
+              echo "- Mode: **publish the existing draft** (its reviewed title and notes are kept; NEWS.md is not used)"
+              echo "- Draft title: $(gh release view '${{ steps.ver.outputs.tag }}' --json name --jq .name)"
+              echo ""
+              echo "<details><summary>Notes the draft would be published with</summary>"
+              echo ""
+              gh release view '${{ steps.ver.outputs.tag }}' --json body --jq .body
+              echo ""
+              echo "</details>"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "- Mode: **create a new release** from the NEWS.md section"
+              echo "- Release title: ${{ steps.notes.outputs.title }}"
+              echo ""
+              echo "<details><summary>Release notes that would be published</summary>"
+              echo ""
+              cat release-notes.md
+              echo ""
+              echo "</details>"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Publish the existing draft
+        if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'publish_draft' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           TAG='${{ steps.ver.outputs.tag }}'
 
-          git config user.name  'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git tag -a "$TAG" -m "${{ steps.notes.outputs.title }}"
-          git push origin "$TAG"
+          # Publishing the draft is what creates the tag, at the draft's target
+          # commitish. Its reviewed title and notes are kept as-is.
+          LATEST_FLAG='--latest=false'
+          if [ '${{ github.event_name }}' = 'schedule' ] || [ '${{ inputs.mark_latest }}' = 'true' ]; then
+            LATEST_FLAG='--latest'
+          fi
+          gh release edit "$TAG" --draft=false $LATEST_FLAG
+
+          {
+            echo "### Published the reviewed draft $TAG"
+            echo ""
+            echo "- https://github.com/${{ github.repository }}/releases/tag/$TAG"
+            echo "- Notes came from the draft, not from NEWS.md."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create the tag and publish the release
+        if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'create' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG='${{ steps.ver.outputs.tag }}'
 
           LATEST_FLAG='--latest=false'
           if [ '${{ github.event_name }}' = 'schedule' ] || [ '${{ inputs.mark_latest }}' = 'true' ]; then
             LATEST_FLAG='--latest'
           fi
 
-          # Pin the release to the exact commit we tagged, not to the branch name -
-          # main could advance between the tag push and the release creation.
-          gh release create "$TAG" \
-            --target '${{ steps.ver.outputs.sha }}' \
-            --title "${{ steps.notes.outputs.title }}" \
-            --notes-file release-notes.md \
-            $LATEST_FLAG
+          if [ '${{ steps.guard.outputs.tag_exists }}' = 'true' ]; then
+            # A previous run tagged but did not get as far as creating the
+            # release. Reuse the tag exactly as it is and just make the release,
+            # so a partial failure can be finished by rerunning.
+            echo "::notice::Reusing existing tag $TAG and creating the missing release."
+            gh release create "$TAG" \
+              --title "${{ steps.notes.outputs.title }}" \
+              --notes-file release-notes.md \
+              $LATEST_FLAG
+          else
+            git config user.name  'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git tag -a "$TAG" -m "${{ steps.notes.outputs.title }}"
+            git push origin "$TAG"
+
+            # Pin the release to the exact commit we tagged, not to the branch name -
+            # main could advance between the tag push and the release creation.
+            gh release create "$TAG" \
+              --target '${{ steps.ver.outputs.sha }}' \
+              --title "${{ steps.notes.outputs.title }}" \
+              --notes-file release-notes.md \
+              $LATEST_FLAG
+          fi
 
           {
             echo "### Released ${{ steps.notes.outputs.title }}"

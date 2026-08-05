@@ -2624,8 +2624,18 @@ app_server <- function(input, output, session) {
     ## *** consider replacing this with ejam2report(),
     ## but note doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
     isolate({
+      ## 1-site analyses must read like ejam2report() and the API, not like a
+      ## multisite summary. ejam2report() does this by flipping sitenumber from 0
+      ## to the single valid row when only one site is valid; this in-app renderer
+      ## never did, so a 1-site analysis was titled "EJSCREEN Multisite Summary"
+      ## and its header showed no site or FIPS identifier.
+      report_valid_rows  <- which(data_processed()$results_bysite$valid %in% TRUE)
+      report_sitenumber  <- if (length(report_valid_rows) == 1) report_valid_rows[1] else NULL
+      report_is_one_site <- !is.null(report_sitenumber)
+
       residents_within_xyz <- report_residents_within_xyz_from_ejamit(
         ejamitout = data_processed(), ## this function uses the whole list not just ejamout1 to create the header
+        sitenumber = report_sitenumber, # NULL keeps the multisite header; a row number adds "(Site N, FIPS ...)"
         site_method = submitted_upload_method()
         # isolate() done, so change in site_method (e.g., polygon to lat lon) will not trigger re-render if Start not clicked,
         # BUT, changing title does trigger re-render with old data and new title,
@@ -2636,12 +2646,34 @@ app_server <- function(input, output, session) {
 
       pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
     })
+
+    ## Report TITLE: "EJSCREEN Community Report" for 1 site, "...Multisite Summary" otherwise
+    report_title_now <- if (report_is_one_site) {
+      global_or_param("report_title")
+    } else {
+      global_or_param("report_title_multisite")
+    }
+
+    ## Analysis TITLE: for a 1-site FIPS analysis show the place name, as
+    ## ejam2report() does via fips2name(). Only replaces the untouched default, so
+    ## a title the user typed in the box is never silently overridden.
+    analysis_title_now <- sanitized_analysis_title()
+    if (report_is_one_site && isTRUE(data_processed()$sitetype %in% "fips") &&
+        identical(analysis_title_now, global_or_param("default_standard_analysis_title"))) {
+      fipsname <- tryCatch(
+        fips2name(data_processed()$results_bysite$ejam_uniq_id[report_sitenumber]),
+        error = function(e) NA_character_
+      )
+      if (length(fipsname) == 1 && !is.na(fipsname) && nzchar(fipsname)) {
+        analysis_title_now <- fipsname
+      }
+    }
     full_page <- build_community_report(
 
       logo_path      = pkg_relative_path(global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
       logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
-      report_title   = global_or_param("report_title_multisite"),
-      analysis_title = sanitized_analysis_title(), # changing it will trigger re-render here
+      report_title   = report_title_now,   # Community Report if 1 site, Multisite Summary otherwise
+      analysis_title = analysis_title_now, # changing it will trigger re-render here
       locationstr    = residents_within_xyz,
       totalpop       = popstr,
 

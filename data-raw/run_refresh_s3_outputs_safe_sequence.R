@@ -23,7 +23,16 @@
 #   These settings do not replace package data, do not run datacreate_ package
 #   data scripts, do not update FRS, and do not publish release assets.
 
-repo_dir <- "/Users/markcorrales/R PACKAGES/EJAM"
+# Path to the EJAM source package folder. Defaults to the working directory, so
+# source this file from the EJAM source folder - the same convention the
+# datacreate_ scripts use. Set EJAM_REPO_DIR to run it from somewhere else.
+repo_dir <- Sys.getenv("EJAM_REPO_DIR", unset = getwd())
+if (!file.exists(file.path(repo_dir, "DESCRIPTION")) ||
+    desc::desc_get(file = file.path(repo_dir, "DESCRIPTION"), keys = "Package") != "EJAM") {
+  stop("repo_dir must be the EJAM source package folder, but '", repo_dir,
+       "' does not look like one. Source this from the EJAM source folder, ",
+       "or set the EJAM_REPO_DIR environment variable.")
+}
 s3_pipeline_root <- "s3://pedp-data-preserved/ejscreen-data-processing/pipeline"
 epa_acs22_reference_dir <- file.path(
   s3_pipeline_root,
