@@ -38,11 +38,11 @@ jobs:
 
       # ── Checkout ───────────────────────────
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # ── AWS Credentials ────────────────────
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           # Option A: Access keys (store in repo/org secrets)
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
