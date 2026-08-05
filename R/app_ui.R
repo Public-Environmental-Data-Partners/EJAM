@@ -588,7 +588,7 @@ app_ui <- function(request) {
                                    inline   = TRUE
                                  ),
                                  downloadButton('download_report_multisite',
-                                                label = 'Download Multisite Summary Report',
+                                                label = 'Download a copy of this report',
                                                 class = 'usa-button',
                                                 # start disabled; app_server.R enables it once the report is ready.
                                                 # enabled = FALSE opts out of Shiny 1.14 auto-enable so the manual
