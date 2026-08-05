@@ -23,6 +23,14 @@
 # export). Writing data.table::setDT() explicitly is a deliberate convention
 # here, so that linter is all noise and would bury the other ~90 findings.
 #
+# missing_package_linter is switched off out of the common_mistakes set for a
+# similar reason: it answers "is this package installed *here*", not "is this
+# package name a typo". The lintr workflow installs EJAM's dependencies but not
+# EJAM itself, so every library(EJAM) in data-raw/, vignettes/ and tests/ came
+# back as "Package 'EJAM' is not installed" - 29 findings, plus 2 more for
+# census2020download, which is only on GitHub. That was 31 of 110 alerts in the
+# first successful run, all of them about the runner rather than the code.
+#
 # NOTE: indentation_linter must stay out of this set for a second reason - it
 # reports column 0 for a line that should be indented but is not, and column 0
 # is invalid in SARIF (startColumn must be >= 1), which made every upload of the
@@ -30,7 +38,7 @@
 # defensively, but not enabling the linter is the real fix.
 
 linters: c(
-    lintr::linters_with_tags("common_mistakes"),
+    lintr::linters_with_tags("common_mistakes", missing_package_linter = NULL),
     list(package_hooks_linter = lintr::package_hooks_linter())
   )
 exclusions: list("docs", "man", "planning", "data-raw/pipeline_outputs")
