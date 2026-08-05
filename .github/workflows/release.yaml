@@ -146,8 +146,30 @@ jobs:
             fi
           fi
 
+          # Whether a published release for this version exists once this job is
+          # done - either because a step below publishes it, or because it was
+          # already published. This is what gates the downstream dispatches, and
+          # it is deliberately NOT the same as "skip".
+          #
+          # Using skip there would make a failed dispatch unrecoverable: the
+          # release is published by the time the dispatch runs, so a rerun sees
+          # already_published -> skip=true, quietly does nothing, and finishes
+          # green with the follow-up workflow still never started. That is the
+          # exact silent gap this workflow is meant to close. Rerunning is
+          # therefore the supported recovery path, and re-dispatching for an
+          # already-published tag is harmless: pkgdown rebuilds identical docs
+          # and the install check just runs again.
+          #
+          # A scheduled run that bails on a version mismatch keeps mode=create
+          # with SKIP=true, so it correctly dispatches nothing.
+          RELEASED=false
+          if [ "$MODE" = 'already_published' ] || [ "$SKIP" = 'false' ]; then
+            RELEASED=true
+          fi
+
           echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "released=$RELEASED" >> "$GITHUB_OUTPUT"
           echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
 
       - name: Extract the NEWS.md section for this version
@@ -321,7 +343,7 @@ jobs:
       # while v3.2022.x is the one users are pointed at - would overwrite the
       # root docs. The gate has to be enforced on this side of the dispatch.
       - name: Start pkgdown and the install check
-        if: steps.guard.outputs.skip == 'false' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        if: steps.guard.outputs.released == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -329,6 +351,7 @@ jobs:
           TAG='${{ steps.ver.outputs.tag }}'
           VERSION='${{ steps.ver.outputs.version }}'
           failed=''
+          : > recovery.txt
 
           # The install check should run for every release, recommended or not.
           if gh workflow run install-release-user-check.yaml --ref main \
@@ -336,6 +359,7 @@ jobs:
             echo "- Started install-release-user-check on \`$TAG\`." >> "$GITHUB_STEP_SUMMARY"
           else
             failed="$failed install-release-user-check"
+            echo "> gh workflow run install-release-user-check.yaml --ref main -f ref=$TAG -f expected_version=$VERSION" >> recovery.txt
           fi
 
           # The docs ROOT is only for the release GitHub marks "Latest". That flag
@@ -355,6 +379,7 @@ jobs:
               echo "- Started pkgdown to rebuild the docs root from \`$TAG\`." >> "$GITHUB_STEP_SUMMARY"
             else
               failed="$failed pkgdown"
+              echo "> gh workflow run pkgdown.yaml --ref main -f ref=$TAG -f target_folder=. -f pkgdown_dev_mode=release" >> recovery.txt
             fi
           else
             echo "::notice::$TAG is not the Latest release (Latest is '${latest_tag:-unknown}'); leaving the docs root alone."
@@ -369,12 +394,12 @@ jobs:
               echo ""
               echo "> [!WARNING]"
               echo "> Could not start:$failed. The release is published; only these follow-ups did not start."
-              echo "> Run them by hand:"
+              echo "> Rerunning this job is the supported fix - it will retry them for the"
+              echo "> already-published tag. To do it by hand instead:"
               echo "> \`\`\`"
-              echo "> gh workflow run pkgdown.yaml --ref main -f ref=$TAG -f target_folder=. -f pkgdown_dev_mode=release"
-              echo "> gh workflow run install-release-user-check.yaml --ref main -f ref=$TAG -f expected_version=$VERSION"
+              cat recovery.txt
               echo "> \`\`\`"
             } >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::Failed to start:$failed. See the job summary for the manual commands."
+            echo "::error::Failed to start:$failed. Rerun this job, or see the summary for the manual command(s)."
             exit 1
           fi
