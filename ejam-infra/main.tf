@@ -285,6 +285,24 @@ resource "aws_lb_target_group" "app" {
     matcher             = "200"
   }
 
+  # Keep each user pinned to one container for the life of their visit.
+  #
+  # Shiny keeps session state in the memory of a single R process, and a file
+  # upload arrives as a SEPARATE HTTP POST from the page load. Without this,
+  # the load balancer round-robins that POST to the other container, which has
+  # never heard of the session and answers 404 "<h1>Not Found</h1>" -- rendered
+  # unescaped in the app's red upload bar. See EJAM#268.
+  #
+  # This must stay in Terraform: the same fix was applied by hand in the AWS
+  # console in Feb 2026, was never codified here, and was silently lost.
+  # Only matters where desired_count > 1 (prod is 2, dev is 1), but it is set
+  # for both so dev cannot drift away from prod behavior.
+  stickiness {
+    type            = "lb_cookie"
+    enabled         = true
+    cookie_duration = 86400 # seconds (1 day); ALB max is 604800
+  }
+
   tags = { Name = "${local.name_prefix}-tg" }
 }
 
