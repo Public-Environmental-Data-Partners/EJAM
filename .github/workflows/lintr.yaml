@@ -60,9 +60,24 @@ jobs:
           extra-packages: lintr
 
       - name: Run lintr
+        # Which linters run is set by the .lintr file at the root of the repo,
+        # which lint_dir() picks up. See the comments in that file.
         run: lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
         shell: Rscript {0}
         continue-on-error: true
+
+      # lintr can report a lint at column 0 (indentation_linter does this for a
+      # line that should be indented but is not), and SARIF requires
+      # startColumn >= 1. One out-of-range value makes GitHub reject the whole
+      # file, so every result is lost - that is what used to fail this job. The
+      # .lintr file does not enable any linter that does this today; this step
+      # just keeps one stray lint from taking the whole upload down again.
+      - name: Fix out-of-range columns in the SARIF file
+        run: |
+          jq '(.. | objects | select(has("startColumn")) | .startColumn) |= (if . < 1 then 1 else . end)
+              | (.. | objects | select(has("endColumn"))   | .endColumn)   |= (if . < 1 then 1 else . end)' \
+            lintr-results.sarif > lintr-results.fixed.sarif
+          mv lintr-results.fixed.sarif lintr-results.sarif
 
       - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@v4
