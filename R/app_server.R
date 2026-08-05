@@ -2844,8 +2844,16 @@ app_server <- function(input, output, session) {
       }
       d_uploads <- data_uploaded() %>%
         dplyr::select(-any_of(c('valid', 'invalid_msg'))) %>%
-        sf::st_zm() # st_zm() was already done? ***
+        ## st_zm() drops any Z/M dimensions so leaflet gets plain 2-D polygons.
+        ## Usually redundant since shapefix() already did it, but shapefile_from_any()
+        ## fast-returns an sf object passed to ejamapp(shapefile = ) without calling
+        ## shapefix(), so keep this here.
+        sf::st_zm()
 
+      # d_uploads has to stay "sf" here (issue #136): map_shapes_leaflet_proxy() calls
+      # sf::st_is_empty(), which has no method for the "SpatialPolygonsDataFrame" that
+      # sf::as_Spatial() used to make, so it printed a UseMethod("st_geometry") error to the
+      # console (inside a try(), so the map still drew). leaflet maps an sf object directly.
       leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
         map_shapes_leaflet_proxy(shapes = d_uploads, popup = popup_from_df(d_uploads %>% sf::st_drop_geometry()))
 
