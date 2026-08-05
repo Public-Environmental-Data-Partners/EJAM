@@ -7,7 +7,7 @@ name: 'Release: tag and publish'
 #
 #   1. Manually (workflow_dispatch) - the normal path. Use dry_run first to see
 #      exactly what would be tagged and what the notes would say.
-#   2. On a schedule - 13:00 UTC on August 1, to ship v3.2022.2 without anyone
+#   2. On a schedule - 21:00 UTC on August 1, to ship v3.2022.2 without anyone
 #      having to be at a keyboard.
 #
 # What it does depends on what is already on the releases page:
@@ -19,6 +19,11 @@ name: 'Release: tag and publish'
 #   * nothing exists -> a tag is created and a release is built from the
 #     matching NEWS.md section.
 #   * already published -> nothing happens; a shipped release is never touched.
+#
+# Whenever something is actually published, the last step starts pkgdown and the
+# install check by hand. It has to: GitHub does not create workflow runs from
+# events raised by the default GITHUB_TOKEN, so the `release: published` event
+# this workflow generates triggers nothing on its own.
 #
 # The scheduled path is deliberately one-shot: it refuses to do anything unless
 # DESCRIPTION on `main` still reads exactly SCHEDULED_EXPECTED_VERSION. So when
@@ -47,11 +52,14 @@ on:
         type: boolean
         default: true
   schedule:
-    # 13:00 UTC = 09:00 EDT on August 1.
-    - cron: '0 13 1 8 *'
+    # 21:00 UTC = 17:00 EDT on August 1.
+    - cron: '0 21 1 8 *'
 
 permissions:
   contents: write
+  # Needed by the final step, which uses `gh workflow run` to start the
+  # workflows that publishing cannot start on its own. See its comment.
+  actions: write
 
 env:
   # Guard for the scheduled run only - see the header comment.
@@ -138,8 +146,30 @@ jobs:
             fi
           fi
 
+          # Whether a published release for this version exists once this job is
+          # done - either because a step below publishes it, or because it was
+          # already published. This is what gates the downstream dispatches, and
+          # it is deliberately NOT the same as "skip".
+          #
+          # Using skip there would make a failed dispatch unrecoverable: the
+          # release is published by the time the dispatch runs, so a rerun sees
+          # already_published -> skip=true, quietly does nothing, and finishes
+          # green with the follow-up workflow still never started. That is the
+          # exact silent gap this workflow is meant to close. Rerunning is
+          # therefore the supported recovery path, and re-dispatching for an
+          # already-published tag is harmless: pkgdown rebuilds identical docs
+          # and the install check just runs again.
+          #
+          # A scheduled run that bails on a version mismatch keeps mode=create
+          # with SKIP=true, so it correctly dispatches nothing.
+          RELEASED=false
+          if [ "$MODE" = 'already_published' ] || [ "$SKIP" = 'false' ]; then
+            RELEASED=true
+          fi
+
           echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "released=$RELEASED" >> "$GITHUB_OUTPUT"
           echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
 
       - name: Extract the NEWS.md section for this version
@@ -291,3 +321,85 @@ jobs:
             echo "- Tag: \`$TAG\`"
             echo "- https://github.com/${{ github.repository }}/releases/tag/$TAG"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # Start the workflows that publishing cannot start by itself.
+      #
+      # GitHub deliberately does NOT create workflow runs from events raised by
+      # the default GITHUB_TOKEN. The steps above publish with that token, so the
+      # `release: published` event they generate triggers nothing: pkgdown never
+      # rebuilds the docs root, and install-release-user-check never runs on the
+      # tag. Proven on 2026-08-01 - v3.2022.2 published cleanly at 21:44 UTC and
+      # neither workflow ran; the docs root still served 3.2022.1 two days later,
+      # until both were dispatched by hand.
+      #
+      # `workflow_dispatch` is the documented exception to that rule, which is
+      # why this works with no PAT and no new secret. It needs `actions: write`,
+      # declared at the top of this file.
+      #
+      # Note this deliberately re-implements pkgdown's "Latest" gate rather than
+      # relying on it. Passing target_folder explicitly overrides that gate
+      # ("a manual workflow_dispatch target always wins"), so without the check
+      # below, publishing a non-recommended line - say v3.2024.0, which exists
+      # while v3.2022.x is the one users are pointed at - would overwrite the
+      # root docs. The gate has to be enforced on this side of the dispatch.
+      - name: Start pkgdown and the install check
+        if: steps.guard.outputs.released == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          TAG='${{ steps.ver.outputs.tag }}'
+          VERSION='${{ steps.ver.outputs.version }}'
+          failed=''
+          : > recovery.txt
+
+          # The install check should run for every release, recommended or not.
+          if gh workflow run install-release-user-check.yaml --ref main \
+               -f ref="$TAG" -f expected_version="$VERSION"; then
+            echo "- Started install-release-user-check on \`$TAG\`." >> "$GITHUB_STEP_SUMMARY"
+          else
+            failed="$failed install-release-user-check"
+            echo "> gh workflow run install-release-user-check.yaml --ref main -f ref=$TAG -f expected_version=$VERSION" >> recovery.txt
+          fi
+
+          # The docs ROOT is only for the release GitHub marks "Latest". That flag
+          # is curated by hand and already encodes "recommended". Retry, because
+          # /releases/latest can lag publication by a moment.
+          latest_tag=''
+          for attempt in 1 2 3 4 5; do
+            latest_tag="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name 2>/dev/null || echo '')"
+            [ "$latest_tag" = "$TAG" ] && break
+            echo "attempt $attempt: Latest reads '${latest_tag:-unknown}', expected '$TAG'; retrying"
+            sleep 10
+          done
+
+          if [ "$latest_tag" = "$TAG" ]; then
+            if gh workflow run pkgdown.yaml --ref main \
+                 -f ref="$TAG" -f target_folder=. -f pkgdown_dev_mode=release; then
+              echo "- Started pkgdown to rebuild the docs root from \`$TAG\`." >> "$GITHUB_STEP_SUMMARY"
+            else
+              failed="$failed pkgdown"
+              echo "> gh workflow run pkgdown.yaml --ref main -f ref=$TAG -f target_folder=. -f pkgdown_dev_mode=release" >> recovery.txt
+            fi
+          else
+            echo "::notice::$TAG is not the Latest release (Latest is '${latest_tag:-unknown}'); leaving the docs root alone."
+            echo "- Skipped pkgdown: \`$TAG\` is not the Latest release." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          # Fail loudly if a dispatch did not go through. The release itself is
+          # already published and is not harmed by a red run here - but a silent
+          # miss is the exact failure this step exists to prevent.
+          if [ -n "$failed" ]; then
+            {
+              echo ""
+              echo "> [!WARNING]"
+              echo "> Could not start:$failed. The release is published; only these follow-ups did not start."
+              echo "> Rerunning this job is the supported fix - it will retry them for the"
+              echo "> already-published tag. To do it by hand instead:"
+              echo "> \`\`\`"
+              cat recovery.txt
+              echo "> \`\`\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Failed to start:$failed. Rerun this job, or see the summary for the manual command(s)."
+            exit 1
+          fi
