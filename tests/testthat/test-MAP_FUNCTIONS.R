@@ -485,8 +485,9 @@ test_that("app_server SHP map path does not coerce uploaded shapes to sp (issue 
   expect_match(shp_block, "map_shapes_leaflet_proxy", fixed = TRUE)
   expect_match(shp_block, "sf::st_drop_geometry(", fixed = TRUE)
 
-  ## sf::st_drop_geometry() has no method for sp objects, so nothing in this branch
-  ## may convert the uploaded shapes to sp. (comments about it are fine, so drop those first)
+  ## map_shapes_leaflet_proxy() calls sf::st_is_empty() on these shapes, and that has no
+  ## method for sp objects, so nothing in this branch may convert the uploaded shapes to sp.
+  ## (mentioning it in a comment is fine, so drop comments before checking)
   shp_code_only <- sub("#.*$", "", strsplit(shp_block, "\n")[[1]])
   expect_false(any(grepl("as_Spatial", shp_code_only, fixed = TRUE)))
 })
