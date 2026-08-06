@@ -17,7 +17,7 @@
 #' @param yr year of ACS data (end year of 5-year period)
 #' @param fiveorone must be 5 or 1
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # requires a Census API key -- see ?tidycensus::census_api_key
 #' url_acs_table_info()
 #' }
