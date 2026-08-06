@@ -421,6 +421,78 @@ test_that("map_shapes_leaflet_proxy() keeps popup alignment after dropping empty
   expect_equal(map2popups_polygon(x3), c("already filtered first", "already filtered third"))
 })
 ############################################## #
+
+test_that("shapefile upload map path logs no console error (issue #136)", {
+  # Regression test for issue #136: uploading a shapefile printed
+  #   Error in UseMethod("st_geometry") : no applicable method for 'st_geometry'
+  #   applied to an object of class "SpatialPolygonsDataFrame" ...
+  # even though the map still rendered. The app's SHP branch had coerced the uploaded
+  # polygons to sp, and map_shapes_leaflet_proxy() calls sf::st_is_empty() inside a
+  # try(), which has no sp method - so the error was printed but not raised.
+  # Note this checks the message stream, not expect_error(), because the message is
+  # exactly what the user saw and nothing actually stops.
+
+  ## d_uploads built the same way the SHP branch of app_server() builds it
+  d_uploads <- testinput_shapes_2 %>%
+    dplyr::select(-any_of(c("valid", "invalid_msg"))) %>%
+    sf::st_zm()
+  expect_s3_class(d_uploads, "sf")
+
+  ## what the app does now: sf all the way through, nothing printed
+  console_sf <- capture.output(type = "message", suppressWarnings(
+    x <- map_shapes_leaflet_proxy(
+      leaflet::leaflet(),
+      shapes = d_uploads,
+      popup = popup_from_df(d_uploads %>% sf::st_drop_geometry())
+    )
+  ))
+  expect_false(any(grepl("st_geometry|Error", console_sf)))
+  expect_s3_class(x, "leaflet")
+
+  ## and what it used to do, to show this test would have caught the bug.
+  ## (skipped if some future sf handles Spatial objects here, leaving nothing to regress against)
+  skip_if_not_installed("sp")
+  d_uploads_sp <- suppressWarnings(sf::as_Spatial(d_uploads))
+  skip_if_not(inherits(try(sf::st_is_empty(d_uploads_sp), silent = TRUE), "try-error"),
+              "sf now handles Spatial objects in st_is_empty(), so the issue #136 error is moot")
+  console_sp <- capture.output(type = "message", suppressWarnings(
+    map_shapes_leaflet_proxy(
+      leaflet::leaflet(),
+      shapes = d_uploads_sp,
+      popup = popup_from_df(sf::st_drop_geometry(d_uploads_sp))
+    )
+  ))
+  expect_match(paste(console_sp, collapse = " "), "st_geometry")
+})
+############################################## #
+
+test_that("app_server SHP map path does not coerce uploaded shapes to sp (issue #136)", {
+  ## The fix for issue #136 is a line inside app_server(), which these unit tests cannot
+  ## call, so check the SOURCE of that branch instead. Inspecting R/app_server.R only works
+  ## from the source tree (devtools/pkgload), not under R CMD check of the installed
+  ## package, so skip visibly there - same approach as test-shiny-1-14-compat.R
+  app_server_path <- testthat::test_path("../../R/app_server.R")
+  skip_if_not(file.exists(app_server_path),
+              "R source not available (installed-package check); source-inspection test runs only from the source tree")
+  app_server_source <- paste(readLines(app_server_path, warn = FALSE), collapse = "\n")
+
+  ## just the leafletProxy() SHP branch, from the "SHP" test up to the next branch
+  shp_block <- sub(
+    '(?s)^.*\\} else if \\("SHP" %in% current_upload_method\\(\\)\\) \\{(.*?)\\} else if \\(.*$',
+    "\\1", app_server_source, perl = TRUE
+  )
+  expect_false(identical(shp_block, app_server_source)) # i.e., the branch was found
+  expect_match(shp_block, "map_shapes_leaflet_proxy", fixed = TRUE)
+  expect_match(shp_block, "sf::st_drop_geometry(", fixed = TRUE)
+
+  ## map_shapes_leaflet_proxy() calls sf::st_is_empty() on these shapes, and that has no
+  ## method for sp objects, so nothing in this branch may convert the uploaded shapes to sp.
+  ## (mentioning it in a comment is fine, so drop comments before checking)
+  shp_code_only <- sub("#.*$", "", strsplit(shp_block, "\n")[[1]])
+  expect_false(any(grepl("as_Spatial", shp_code_only, fixed = TRUE)))
+})
+############################################## #
+
 test_that("map_shapes_mapview() if mapview pkg available works", {
   junk = capture_output({
     suppressWarnings({
