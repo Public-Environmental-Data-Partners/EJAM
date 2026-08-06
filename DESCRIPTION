@@ -130,6 +130,7 @@ Suggests:
     devtools,
     fipio,
     ggridges (>= 0.5.7),
+    here,
     mapview,
     miniUI,
     openssl,
