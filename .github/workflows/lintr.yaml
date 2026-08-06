@@ -74,8 +74,18 @@ jobs:
       # just keeps one stray lint from taking the whole upload down again.
       - name: Fix out-of-range columns in the SARIF file
         run: |
-          jq '(.. | objects | select(has("startColumn")) | .startColumn) |= (if . < 1 then 1 else . end)
-              | (.. | objects | select(has("endColumn"))   | .endColumn)   |= (if . < 1 then 1 else . end)' \
+          # "Run lintr" is continue-on-error, so it can go green having written
+          # nothing. Say so plainly rather than letting jq (and then the upload)
+          # fail with something that reads like a problem with this step.
+          if [ ! -f lintr-results.sarif ]; then
+            echo "::error::lintr produced no lintr-results.sarif - check the 'Run lintr' step above for the R error."
+            exit 1
+          fi
+          # The type check sits on the right of |= so the left stays a plain
+          # path expression. A non-numeric column, should one ever appear, is
+          # passed through untouched rather than compared against 1.
+          jq '(.. | objects | select(has("startColumn")) | .startColumn) |= (if type == "number" and . < 1 then 1 else . end)
+              | (.. | objects | select(has("endColumn"))   | .endColumn)   |= (if type == "number" and . < 1 then 1 else . end)' \
             lintr-results.sarif > lintr-results.fixed.sarif
           mv lintr-results.fixed.sarif lintr-results.sarif
 
