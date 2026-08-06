@@ -81,10 +81,11 @@ jobs:
             echo "::error::lintr produced no lintr-results.sarif - check the 'Run lintr' step above for the R error."
             exit 1
           fi
-          # select(type == "number") so a non-numeric column, should one ever
-          # appear, is passed through untouched instead of being compared.
-          jq '(.. | objects | select(has("startColumn")) | .startColumn | select(type == "number")) |= (if . < 1 then 1 else . end)
-              | (.. | objects | select(has("endColumn"))   | .endColumn   | select(type == "number")) |= (if . < 1 then 1 else . end)' \
+          # The type check sits on the right of |= so the left stays a plain
+          # path expression. A non-numeric column, should one ever appear, is
+          # passed through untouched rather than compared against 1.
+          jq '(.. | objects | select(has("startColumn")) | .startColumn) |= (if type == "number" and . < 1 then 1 else . end)
+              | (.. | objects | select(has("endColumn"))   | .endColumn)   |= (if type == "number" and . < 1 then 1 else . end)' \
             lintr-results.sarif > lintr-results.fixed.sarif
           mv lintr-results.fixed.sarif lintr-results.sarif
 
