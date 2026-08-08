@@ -129,6 +129,7 @@ Suggests:
     datasets,
     devtools,
     fipio,
+    gglorenz,
     ggridges (>= 0.5.7),
     here,
     mapview,

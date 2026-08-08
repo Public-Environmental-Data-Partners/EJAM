@@ -91,7 +91,7 @@ ejamapi_local <- function(
     # so it cannot do this itself; on the deployed API the Docker image bakes
     # the data in instead.
     if (!exists("blockwts", envir = globalenv())) dataload_dynamic("blockwts")
-    if (!EJAM:::localtree_exists()) indexblocks()
+    if (!localtree_exists()) indexblocks()
 
     if (requireNamespace("beepr", quietly = TRUE)) {
       beepr::beep() # alerts when finished with package loading and ready

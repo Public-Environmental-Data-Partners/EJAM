@@ -296,6 +296,28 @@ from_misc_add = sort(setdiff(from_misc, union(from_varlist_add, union(from_datas
 ########################################### #
 ########################################### #
 
+########################################### #
+# Names R CMD check reported as "no visible binding for global variable".
+# All are column names used in data.table / dplyr non-standard evaluation, so
+# they are not really undefined - the checker just cannot see them. Grouped
+# here, rather than mixed into the lists above, so it stays obvious that they
+# came from a specific check run and can be re-derived from one.
+#
+# stat_lorenz was in this NOTE too but is deliberately NOT listed: it is a
+# function from gglorenz, not a column, so listing it would have hidden a
+# genuinely undeclared dependency. It is now called as gglorenz::stat_lorenz()
+# with gglorenz added to Suggests.
+from_rcmdcheck_add <- c(
+  "..display_cols", "CNTY_NAME", "STATE_NAME", "ST_ABBREV", "bysite",
+  "diff_gt_tolerance", "diff_gt_tolerance_non_island", "difference_stage",
+  "difference_stage_order", "differing_rows_non_island", "intptlat", "intptlon",
+  "max_rel_diff", "max_rel_diff_non_island", "max_rel_diff_non_island_pct",
+  "max_rel_diff_pct", "mean_rel_diff", "mean_rel_diff_non_island",
+  "mean_rel_diff_non_island_pct", "mean_rel_diff_pct", "na_mismatch",
+  "na_mismatch_non_island", "site_fips", "varlist"
+)
+########################################### #
+
 if (getRversion() >= "2.15.1") {
   utils::globalVariables(
     sort(
@@ -305,7 +327,8 @@ if (getRversion() >= "2.15.1") {
           from_varlist_add,
           from_datasets_add,
           from_check_var_add,
-          from_islandareas_pipeline_add
+          from_islandareas_pipeline_add,
+          from_rcmdcheck_add
         )
       )
     )

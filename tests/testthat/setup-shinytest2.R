@@ -197,6 +197,21 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
 
     testthat::skip_if_not_installed("shinytest2") # setup-shinytest2.R is sourced automatically by testthat, but shinytest2 itself is only needed for these web app tests
 
+    # These launch the whole app in a real browser and are slow and very
+    # environment-sensitive - waits like app$wait_for_idle(timeout = 5 * 1000)
+    # are tuned for the dedicated test-webapp-functionality.yaml runner, and a
+    # cold R CMD check machine cannot meet them. Left ungated they were the one
+    # ERROR failing R CMD check on every platform, with "An error occurred while
+    # waiting for Shiny to be stable".
+    #
+    # SHINYTEST2_APP_DRIVER_TEST_ON_CRAN is shinytest2's own opt-in variable and
+    # test-webapp-functionality.yaml already sets it to 1, so that workflow runs
+    # the full suite exactly as before. Nothing else sets it, so R CMD check now
+    # skips these instead of failing. Set it locally to run them by hand.
+    if (!ejam_shinytest2_truthy_env("SHINYTEST2_APP_DRIVER_TEST_ON_CRAN")) {
+      testthat::skip("shinytest2 app tests run only when SHINYTEST2_APP_DRIVER_TEST_ON_CRAN is set - see .github/workflows/test-webapp-functionality.yaml")
+    }
+
     test_log_dir <- file.path(tempdir(), "ejam-shinytest2-logs")
     dir.create(test_log_dir, recursive = TRUE, showWarnings = FALSE)
 
