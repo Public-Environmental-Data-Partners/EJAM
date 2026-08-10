@@ -717,7 +717,10 @@ app_server <- function(input, output, session) {
       if (any(sf::st_geometry_type(shp) == "POINT")) {
         shp <- NULL
         disable_buttons[['SHP']] <- TRUE
-        msg <- "Shape file must be of polygon geometry."
+        ## the file is readable and EJAM can analyze it - just via the latlon upload option,
+        ## which has a usable radius slider (this one starts at minradius_shapefile = 0,
+        ## and points buffered by 0 miles would find no blocks). see issue #550
+        msg <- "This is a shapefile of points, not polygons. To analyze points with a buffer distance, choose 'Latitude/Longitude file upload' instead."
         cat(msg, "\n")
         shiny::validate(msg)
       }
