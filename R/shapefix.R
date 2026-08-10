@@ -58,7 +58,8 @@ shapefix = function(shp,
   }
   if (any(sf::st_geometry_type(shp) == "POINT") && !interactive() && shiny::isRunning()) {
     disable_buttons_SHP <- TRUE
-    validate_errmsg <- ("Shape file must be of polygon geometry.") # which does stop() if not in shiny
+    ## keep this wording identical to the copy in app_server.R until the two are merged - see issue #550
+    validate_errmsg <- ("This is a shapefile of points, not polygons. To analyze points with a buffer distance, choose 'Latitude/Longitude file upload' instead.") # which does stop() if not in shiny
   }
   # Drop Z and/or M dimensions from feature geometries, resetting classes appropriately
   shp <- sf::st_zm(shp)
