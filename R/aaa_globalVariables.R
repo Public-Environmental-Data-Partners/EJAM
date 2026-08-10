@@ -303,12 +303,20 @@ from_misc_add = sort(setdiff(from_misc, union(from_varlist_add, union(from_datas
 # here, rather than mixed into the lists above, so it stays obvious that they
 # came from a specific check run and can be re-derived from one.
 #
-# stat_lorenz was in this NOTE too but is deliberately NOT listed: it is a
-# function from gglorenz, not a column, so listing it would have hidden a
-# genuinely undeclared dependency. It is now called as gglorenz::stat_lorenz()
-# with gglorenz added to Suggests.
+# Two names from that NOTE are deliberately NOT listed, because neither is a
+# column and listing them would bury a real defect rather than quiet a false
+# positive:
+#
+#   stat_lorenz - a function from gglorenz, not a column. Now called as
+#     gglorenz::stat_lorenz() with gglorenz added to Suggests.
+#
+#   bysite - undefined inside plot_lorenz_distance_by_dcount(), which takes
+#     bybg_people and then pipes bysite, so it errors on the first call.
+#     Declaring it would have silenced the one signal pointing at that bug.
+#     Leaving it undeclared keeps a 1-name NOTE that is telling the truth.
+#     See Public-Environmental-Data-Partners/EJAM#553.
 from_rcmdcheck_add <- c(
-  "..display_cols", "CNTY_NAME", "STATE_NAME", "ST_ABBREV", "bysite",
+  "..display_cols", "CNTY_NAME", "STATE_NAME", "ST_ABBREV",
   "diff_gt_tolerance", "diff_gt_tolerance_non_island", "difference_stage",
   "difference_stage_order", "differing_rows_non_island", "intptlat", "intptlon",
   "max_rel_diff", "max_rel_diff_non_island", "max_rel_diff_non_island_pct",
