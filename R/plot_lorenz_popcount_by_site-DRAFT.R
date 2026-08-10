@@ -27,7 +27,7 @@ plot_lorenz_popcount_by_site <- function(bysite, radius) {
     # ggplot(aes(pop)) +
     ggplot2::ggplot(ggplot2::aes(x = pop, colour = "Demog Index State Percentile")) +
 
-    stat_lorenz(desc = TRUE) +  # from the gglorenz package, not in Imports or Suggests for now
+    gglorenz::stat_lorenz(desc = TRUE) +  # gglorenz is in Suggests; these draft plots are not exported
     ggplot2::coord_fixed() +
     ggplot2::geom_abline(linetype = "dashed") +
     ggplot2::theme_minimal() +
@@ -59,7 +59,7 @@ plot_lorenz_distance_by_dcount <- function(bybg_people, varname = NULL) {
   bysite |>
     ggplot2::ggplot(ggplot2::aes(x = distance_min_avgperson, n = pop * pctnhaa)) +
 
-    stat_lorenz(desc = TRUE) +    # from the gglorenz package, not in Imports or Suggests for now
+    gglorenz::stat_lorenz(desc = TRUE) +    # gglorenz is in Suggests; these draft plots are not exported
     ggplot2::coord_fixed() +
     ggplot2::geom_abline(linetype = "dashed") +
     ggplot2::theme_minimal() +
