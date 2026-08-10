@@ -307,14 +307,18 @@ from_misc_add = sort(setdiff(from_misc, union(from_varlist_add, union(from_datas
 # column and listing them would bury a real defect rather than quiet a false
 # positive:
 #
-#   stat_lorenz - a function from gglorenz, not a column. Now called as
-#     gglorenz::stat_lorenz() with gglorenz added to Suggests.
+#   stat_lorenz - a function from gglorenz, not a column. gglorenz is in
+#     Suggests for it; the call is commented out for now (see bysite below), so
+#     that entry is currently unused but will be needed again.
 #
-#   bysite - undefined inside plot_lorenz_distance_by_dcount(), which takes
-#     bybg_people and then pipes bysite, so it errors on the first call.
+#   bysite - was undefined inside plot_lorenz_distance_by_dcount(), which takes
+#     bybg_people and then piped bysite, so it errored on the first call.
 #     Declaring it would have silenced the one signal pointing at that bug.
-#     Leaving it undeclared keeps a 1-name NOTE that is telling the truth.
-#     See Public-Environmental-Data-Partners/EJAM#553.
+#     Both draft plot_lorenz_* bodies are now commented out with an early
+#     return(NULL), so the NOTE is gone and there is nothing to declare - but
+#     keep bysite off this list, or the bug comes back invisible when that code
+#     is uncommented. See Public-Environmental-Data-Partners/EJAM#553 for that
+#     defect and the two others in the same file.
 from_rcmdcheck_add <- c(
   "..display_cols", "CNTY_NAME", "STATE_NAME", "ST_ABBREV",
   "diff_gt_tolerance", "diff_gt_tolerance_non_island", "difference_stage",
