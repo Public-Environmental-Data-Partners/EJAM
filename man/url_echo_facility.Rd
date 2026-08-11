@@ -41,7 +41,7 @@ Get URL(s) for EPA ECHO webpage with facility information
 Additional details...
 }
 \examples{
- \donttest{
+ \dontrun{
  browseURL(url_echo_facility(110070874073))
  }
 
