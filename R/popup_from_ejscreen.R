@@ -33,7 +33,7 @@
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
