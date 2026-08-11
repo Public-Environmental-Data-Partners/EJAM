@@ -39,13 +39,20 @@ shapes_from_zip <- function(zipcode, year = NULL, ...) {
   }
   # normalize: drop any +4 suffix, restore leading zeroes lost if read as a number
   zipcode <- trimws(as.character(zipcode))
+  ## keep what the caller actually passed, for the warning below - normalizing strips
+  ## non-digits, so "not a zip" becomes "" and a warning built from the normalized
+  ## vector would name nothing at all, leaving the user unable to tell what was dropped.
+  zipcode_as_supplied <- zipcode
   zipcode <- gsub("[^0-9]", "", sub("-.*$", "", zipcode))
   zipcode[nchar(zipcode) == 9] <- substr(zipcode[nchar(zipcode) == 9], 1, 5) # ZIP+4 without dash
   ok <- !is.na(zipcode) & nchar(zipcode) >= 3 & nchar(zipcode) <= 5
   zipcode[ok] <- sprintf("%05d", as.integer(zipcode[ok]))
   ok <- ok & grepl("^[0-9]{5}$", zipcode)
   if (any(!ok)) {
-    warning("Dropping invalid zip code(s): ", paste(unique(zipcode[!ok]), collapse = ", "))
+    dropped <- unique(zipcode_as_supplied[!ok])
+    dropped[is.na(dropped)] <- "NA"
+    dropped[!nzchar(dropped)] <- '""'
+    warning("Dropping invalid zip code(s): ", paste(dropped, collapse = ", "))
     zipcode <- zipcode[ok]
   }
   if (length(zipcode) == 0) {stop("No valid 5-digit zip codes provided")}

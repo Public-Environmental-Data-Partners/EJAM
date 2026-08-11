@@ -90,19 +90,65 @@ testthat::test_that("shapes_from_zip enables tigris caching without overriding a
   expect_true(getOption("tigris_use_cache"))
 })
 ########################## #
-testthat::test_that("ejam2report zip polygon rebuild accepts zip/ZIP/ZCTA spellings", {
-  ## ejamit() always sets site_method = "ZIP", but site_method2text() already accepts
-  ## both cases and "ZCTA", so a caller passing "zip" should still get polygons.
-  gate <- function(site_method) toupper(site_method) %in% c("ZIP", "ZCTA")
-  expect_true(gate("ZIP"))
-  expect_true(gate("zip"))
-  expect_true(gate("ZCTA"))
-  expect_true(gate("zcta"))
-  expect_false(gate("FIPS"))
-  expect_false(gate("SHP"))
-  # the gate as it actually appears in the source, both branches
-  src <- readLines(testthat::test_path("..", "..", "R", "ejam2report.R"))
-  expect_length(grep('toupper(site_method) %in% c("ZIP", "ZCTA")', src, fixed = TRUE), 2)
+testthat::test_that("shapes_from_zip names what it dropped, using the caller's own text", {
+  ## normalizing strips non-digits, so a warning built from the normalized vector said
+  ## "Dropping invalid zip code(s): " and named nothing -- useless for finding the bad row.
+  expect_warning(try(shapes_from_zip("not a zip"), silent = TRUE), 'not a zip', fixed = TRUE)
+  expect_warning(try(shapes_from_zip(c("10012", "bogus")), silent = TRUE), "bogus", fixed = TRUE)
+  expect_warning(try(shapes_from_zip(NA), silent = TRUE), "NA", fixed = TRUE)
+  # empty string is shown as "" rather than vanishing into a blank list
+  expect_warning(try(shapes_from_zip(c("10012", "")), silent = TRUE), '""', fixed = TRUE)
+})
+########################## #
+testthat::test_that("ejam2report rebuilds zip polygons for zip/ZIP/ZCTA spellings", {
+  ## ejamit() always sets site_method = "ZIP", but site_method2text() accepts both cases
+  ## and "ZCTA", so a caller passing "zip" should still get polygons rather than silence.
+  zip_report_output <- function() list(
+    sitetype = "shp",
+    site_method = "ZIP",
+    zipcode = c("10012", "10506"),
+    results_bysite = data.table::data.table(
+      ejam_uniq_id = 1:2, valid = TRUE, invalid_msg = "", pop = c(10, 20),
+      radius.miles = 0, statename = "New York"),
+    results_overall = data.table::data.table(
+      ejam_uniq_id = "overall", valid = TRUE, invalid_msg = "", pop = 30,
+      radius.miles = 0, statename = "New York")
+  )
+  for (spelling in c("ZIP", "zip", "ZCTA", "zcta", "FIPS")) {
+    called <- new.env(parent = emptyenv()); called$n <- 0L
+    local_mocked_bindings(
+      shapes_from_zip = function(zipcode, ...) {
+        called$n <- called$n + 1L
+        sf::st_as_sf(data.frame(zip = zipcode, geometry = sf::st_sfc(
+          lapply(seq_along(zipcode), function(i) sf::st_polygon(list(rbind(
+            c(-74, 40 + i), c(-73.9, 40 + i), c(-73.9, 40.1 + i), c(-74, 40 + i))))), crs = 4269)))
+      },
+      shapes_from_fips = function(fips, ...) data.frame(fips = fips),
+      report_residents_within_xyz_from_ejamit = function(...) "residents",
+      report_setup_temp_files = function(...) "template.Rmd",
+      create_filename = function(...) "report.html",
+      build_community_report = function(...) "<section>report</section>",
+      plot_barplot_ratios_ez = function(...) ggplot2::ggplot(),
+      ejam2map = function(...) "map",
+      ensure_pandoc_available_for_ejam = function(...) invisible(TRUE),
+      .package = "EJAM"
+    )
+    local_mocked_bindings(
+      pandoc_available = function(...) TRUE,
+      render = function(input, output_format, output_file, params, envir, quiet, ...) {
+        writeLines("<html>report</html>", output_file); output_file
+      }, .package = "rmarkdown"
+    )
+    out <- zip_report_output()
+    out$site_method <- spelling
+    suppressWarnings(try(ejam2report(out, site_method = spelling, return_html = TRUE,
+                                     launch_browser = FALSE), silent = TRUE))
+    if (spelling == "FIPS") {
+      expect_identical(called$n, 0L, info = spelling)   # non-zip method must not rebuild zips
+    } else {
+      expect_gt(called$n, 0L)                            # all four zip spellings do
+    }
+  }
 })
 ########################## #
 testthat::test_that("shapes_from_zip downloads ZCTA polygons (slow 1st time; cached after)", {
