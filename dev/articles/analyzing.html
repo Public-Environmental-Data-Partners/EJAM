@@ -156,8 +156,8 @@ codes.</p>
 you need a more in-depth, custom approach to finding facilities or
 Census places to analyze, there are several groups of functions to help
 with that, as shown in all the examples below. They are also shown in
-the <a href="../reference/index.html">EJAM package reference manual</a>,
-by category.</p>
+the <a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html">EJAM
+package reference manual</a>, by category.</p>
 <p>You can specify locations for analysis in a variety of ways:</p>
 <p><strong>Near each point:</strong> Analyze residents &amp; the area <a href="#near-each-point-proximity-analysis">NEAR EACH POINT (PROXIMITY
 ANALYSIS)</a></p>
@@ -214,8 +214,8 @@ lon (or some synonyms that work). In the web app you can also pick
 points without a file by choosing “Click or draw on map” and clicking
 the map to add one or more points (click a point’s marker again to
 remove it).</p>
-<p>There are also <a href="../reference/index.html#specify-points-by-lat-lon">more detailed
-functions for working with latlon coordinates.</a></p>
+<p>There are also <a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#specify-points-by-lat-lon">more
+detailed functions for working with latlon coordinates.</a></p>
 <p>The simplest way to do that in the RStudio console is something like
 <code>x &lt;- ejamit()</code>, which prompts you to upload a spreadsheet
 with lat lon columns, and asks you for the radius.</p>
@@ -234,8 +234,8 @@ subpart.</p>
 </h3>
 <p>EPA-regulated facilities can be found in the Facility Registry
 Services by identification number.</p>
-<p><a href="../reference/index.html#specify-facilities-by-id">See a list
-of functions related to EPA IDs</a></p>
+<p><a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#specify-facilities-by-id">See
+a list of functions related to EPA IDs</a></p>
 <div class="section level4">
 <h4 id="by-facility-using-epa-registry-id">by Facility, using EPA Registry ID<a class="anchor" aria-label="anchor" href="#by-facility-using-epa-registry-id"></a>
 </h4>
@@ -273,8 +273,9 @@ of functions related to EPA IDs</a></p>
 <div class="section level3">
 <h3 id="facilities-by-type">Facilities by Type<a class="anchor" aria-label="anchor" href="#facilities-by-type"></a>
 </h3>
-<p><a href="../reference/index.html#specify-facility-type">See a list of
-functions related to type of facility (NAICS/SIC/Program/MACT)</a></p>
+<p><a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#specify-facility-type">See
+a list of functions related to type of facility
+(NAICS/SIC/Program/MACT)</a></p>
 <div class="section level4" data-link="by Industry (NAICS)">
 <h4 id="by-industry-naics">by Industry (NAICS)<a class="anchor" aria-label="anchor" href="#by-industry-naics"></a>
 </h4>
@@ -301,14 +302,14 @@ lacks NAICS info for many regulated facilities!</p>
 <span><span class="co">#  x &lt;- ejamit(frs_from_naics("paint and coating"), 1)}</span></span></code></pre></div>
 <p>See many more examples of <a href="#working-with-naics-codes-industry-codes">Working with NAICS Codes
 (Industry Codes)</a>, in a section below.</p>
-<p><a href="../reference/index.html#choosing-naics-sic-industry-codes">Functions
+<p><a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#choosing-naics-sic-industry-codes">Functions
 related to NAICS/SIC codes</a></p>
 </div>
 <div class="section level4">
 <h4 id="by-epa-regulatory-program">by EPA Regulatory Program<a class="anchor" aria-label="anchor" href="#by-epa-regulatory-program"></a>
 </h4>
-<p><a href="../reference/index.html#epa-programs">See a list of
-functions related to EPA programs</a></p>
+<p><a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#epa-programs">See
+a list of functions related to EPA programs</a></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># note latlon_from_programid() requires the frs and frs_by_programid datasets, which it tries to load on demand.</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"frs_by_programid"</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"frs"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -360,8 +361,8 @@ functions related to EPA programs</a></p>
 <div class="section level4">
 <h4 id="by-mact-subpart-hazardous-air-pollutant-source-category">by MACT Subpart (hazardous air pollutant source category)<a class="anchor" aria-label="anchor" href="#by-mact-subpart-hazardous-air-pollutant-source-category"></a>
 </h4>
-<p><a href="../reference/index.html#mact-categories">Functions related
-to MACT codes</a></p>
+<p><a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#mact-categories">Functions
+related to MACT codes</a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># note latlon_from_mactsubpart() requires the frs_by_mact dataset, which it tries to load on demand</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html" class="external-link">exists</a></span><span class="op">(</span><span class="st">"frs_by_mact"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -686,7 +687,7 @@ names</p>
 </h4>
 <p>You can upload polygons in a shapefile, and use EJAM to analyze them.
 See the Shiny app.</p>
-<p>See <code><a href="../reference/shapefile_from_any.html">shapefile_from_any()</a></code> and other <a href="../reference/index.html#specify-places-by-shapefile">shapefile-related
+<p>See <code><a href="../reference/shapefile_from_any.html">shapefile_from_any()</a></code> and other <a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#specify-places-by-shapefile">shapefile-related
 functions</a>:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/shapefile_from_any.html">shapefile_from_any</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -706,8 +707,8 @@ functions</a>:</p>
 </h4>
 <p>You can compare places defined by FIPS code, such as a group of US
 Counties.</p>
-<p>See a list of <a href="../reference/index.html#specify-counties-etc-">functions for
-working with Census FIPS codes</a>.</p>
+<p>See a list of <a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#specify-counties-etc-">functions
+for working with Census FIPS codes</a>.</p>
 <p>Compare all Counties in a State, using EJAM indicators</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -758,12 +759,12 @@ working with Census FIPS codes</a>.</p>
 </h2>
 <p>See also</p>
 <ul>
-<li><p><a href="../reference/index.html#viewing-results">functions for
-mapping</a>.</p></li>
-<li><p><a href="../reference/index.html#plots-mean-of-one-indicator-at-each-site-or-type-of-site-comparing-sites-or-categories-of-sites-">functions
+<li><p><a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#viewing-results">functions
+for mapping</a>.</p></li>
+<li><p><a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#plots-mean-of-one-indicator-at-each-site-or-type-of-site-comparing-sites-or-categories-of-sites-">functions
 for seeing plots/graphics</a></p></li>
-<li><p><a href="../reference/index.html#tables">functions for seeing
-tables of results</a></p></li>
+<li><p><a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#tables">functions
+for seeing tables of results</a></p></li>
 </ul>
 <div class="section level4">
 <h4 id="the-most-striking-findings-e-g--which-group-is-most-over-represented">The most striking findings (e.g., which group is most
@@ -1187,8 +1188,8 @@ barplots below).</p>
 <div class="section level2">
 <h2 id="visualization-of-findings-plots">VISUALIZATION OF FINDINGS (PLOTS)<a class="anchor" aria-label="anchor" href="#visualization-of-findings-plots"></a>
 </h2>
-<p>See examples below, and the <a href="../reference/index.html#viewing-results">list of plot-related
-functions</a>.</p>
+<p>See examples below, and the <a href="https://public-environmental-data-partners.github.io/EJAM/dev/reference/index.html#viewing-results">list
+of plot-related functions</a>.</p>
 <div class="section level3">
 <h3 id="indicators">Indicators<a class="anchor" aria-label="anchor" href="#indicators"></a>
 </h3>

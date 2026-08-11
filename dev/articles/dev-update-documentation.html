@@ -145,16 +145,17 @@ web pages providing all of the above in HTML format</a>, via the
 include the following: <code>DESCRIPTION</code>, <code>README.Rmd</code>
 (for the README, <strong>edit <code>README.Rmd</code>, not the generated
 <code>README.md</code> file</strong>), <code>R/EJAM-package.R</code>
-(for <code>?EJAM-package</code>), <code>NEWS.md</code> used to make <a href="../news/index.html">NEWS</a>, <code>CONTRIBUTING.md</code> used to
-make <a href="../CONTRIBUTING.html">CONTRIBUTING</a>, <a href="../LICENSE.html">LICENSE</a> based on
-<code>inst/LICENSE.md</code>, <a href="../authors.html#citation">CITATION</a> based on
-<code>inst/CITATION</code>, CITATION.cff, and others.</p></li>
+(for <code>?EJAM-package</code>), <code>NEWS.md</code> used to make <a href="https://public-environmental-data-partners.github.io/EJAM/dev/news/index.html">NEWS</a>,
+<code>CONTRIBUTING.md</code> used to make <a href="https://public-environmental-data-partners.github.io/EJAM/dev/CONTRIBUTING.html">CONTRIBUTING</a>,
+<a href="https://public-environmental-data-partners.github.io/EJAM/dev/LICENSE.html">LICENSE</a>
+based on <code>inst/LICENSE.md</code>, <a href="https://public-environmental-data-partners.github.io/EJAM/dev/authors.html#citation">CITATION</a>
+based on <code>inst/CITATION</code>, CITATION.cff, and others.</p></li>
 <li><p>Some of these are used by and shown by the GitHub repository,
 notably the <code>README.md</code> that is generated from the
 <code>README.Rmd</code> file and appears on the GitHub repository as <a href="https://github.com/Public-Environmental-Data-Partners/EJAM?tab=readme-ov-file#readme" class="external-link">README</a>
-and in the pkgdown site as <a href="../index.html">README</a>, and the
-<code>DESCRIPTION</code> file that stores the package version number,
-repository URLs, and related package metadata.</p></li>
+and in the pkgdown site as <a href="https://public-environmental-data-partners.github.io/EJAM/dev/index.html">README</a>,
+and the <code>DESCRIPTION</code> file that stores the package version
+number, repository URLs, and related package metadata.</p></li>
 </ul>
 </div>
 <div class="section level3">
@@ -452,6 +453,21 @@ documentation web pages had been on GitHub Pages at URLs related to the
 <code>USEPA/EJAM</code> and <code>USEPA/EJAM-open</code> repositories,
 but those pages may now be archived, unpublished, or otherwise
 obsolete.</p></li>
+<li><p>When a vignette links to a part of the site that is not itself a
+vignette – the reference manual, NEWS, LICENSE, the home page – write
+the link with <code>EJAM::url_package("docs")</code> rather than a
+relative path like <code>../reference/index.html</code>. Relative paths
+work on the pkgdown site but break in the vignette as installed with the
+package, where there is no <code>reference/</code> folder next to the
+vignettes, and <code>R CMD check</code> reports them under
+<code>checking relative paths in package URLs</code>. Inside a pkgdown
+CI build <code>url_package("docs")</code> honors
+<code>EJAM_DOCS_BASE_URL</code>, so the links still point within the
+version being built, such as the <code>/dev/</code> copy of the site.
+Links from one vignette to another, like
+<code>[Basics](basics.html)</code>, should stay relative – vignettes sit
+in one folder in both places, so those already resolve
+correctly.</p></li>
 </ul>
 </div>
 </div>
