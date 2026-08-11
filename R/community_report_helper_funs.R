@@ -1186,7 +1186,12 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
   ### *** per issue #159 should be reconciled/merged with
   ### buffer_desc_from_sitetype() and its helper site_method2text()
 
-  if (missing(sitetype) || is.null(sitetype)) {
+  ## NA and length-0 are treated like missing/NULL, not passed into the if() chain
+  ## below: ejamit_sitetype_from_output() returns NA when it cannot tell the type
+  ## (see R/ejamit_sitetype_from_.R), and if (NA == "shp") stops with "missing value
+  ## where TRUE/FALSE needed" - so an unknown site type crashed the description
+  ## instead of falling back to the generic wording.
+  if (missing(sitetype) || is.null(sitetype) || length(sitetype) == 0 || is.na(sitetype[1])) {
     buffer_desc <- "Selected Locations"
   } else {
     if (sitetype == "shp") {
@@ -1215,7 +1220,10 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
     ## "Polygons defined by shapefile, based on shapefile". That is the common
     ## case, not a corner one: table_xls_from_ejam() defaults site_method to
     ## sitetype ('shp' -> 'SHP', 'fips' -> 'FIPS') whenever it is not supplied.
-    sitetype_known <- !missing(sitetype) && !is.null(sitetype) && length(sitetype) > 0
+    ## !is.na() here too, so restates_sitetype cannot come out NA and make
+    ## if (!restates_sitetype) error the same way
+    sitetype_known <- !missing(sitetype) && !is.null(sitetype) &&
+      length(sitetype) > 0 && !is.na(sitetype[1])
     restates_sitetype <- sitetype_known &&
       tolower(site_method[1]) %in% c(tolower(sitetype[1]), "mapclick")
     if (!restates_sitetype) {

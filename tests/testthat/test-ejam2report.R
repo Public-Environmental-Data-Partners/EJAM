@@ -742,8 +742,15 @@ testthat::test_that("the polygon-rebuild gates survive a NULL site_method", {
   ## UNGUARDED gate exists. Deliberately phrased as the absence of the bad pattern
   ## rather than a count of the good one, so adding or removing a gate legitimately
   ## does not break it -- only reintroducing a bare if(toupper(...) %in% ...) does.
-  src <- readLines(testthat::test_path("..", "..", "R", "ejam2report.R"))
-  expect_length(grep("if (toupper(site_method) %in%", src, fixed = TRUE), 0)
+  ## skip in the installed-package / R CMD check context, where R/ is not shipped -
+  ## same gate as the source-inspection test in test-MAP_FUNCTIONS.R. Without it this
+  ## errors during check() rather than skipping.
+  src_path <- testthat::test_path("../../R/ejam2report.R")
+  skip_if_not(file.exists(src_path),
+              "R source not available (installed-package check); source-inspection test runs only from the source tree")
+  ## whitespace-insensitive, so reformatting the condition cannot hide a bare gate
+  src <- paste(readLines(src_path, warn = FALSE), collapse = "\n")
+  expect_no_match(src, "if\\s*\\(\\s*toupper\\s*\\(\\s*site_method\\s*\\)\\s*%in%")
 })
 ################ ################# ################# ################# ################# #
 testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings", {
