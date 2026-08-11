@@ -479,7 +479,14 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     selected_location_name_react <- NULL
 
     ## > fips polygons ####
-    if (site_method %in% "FIPS" && is.null(shp)) {
+    ## toupper() for the same reason as the zip gate just below: site_method2text()
+    ## and sitetype2text() both accept either case, so a caller passing "fips"
+    ## should still get polygons. ejamit() itself always sets "FIPS".
+    ## isTRUE(), because site_method can still be NULL here - the defaulting block
+    ## above leaves it unset when ejamitout$site_method is NULL and sitetype is
+    ## none of shp/fips/latlon - and %in% on NULL gives logical(0), which makes
+    ## if() error with "argument is of length zero" rather than skipping the gate.
+    if (isTRUE(toupper(site_method) %in% "FIPS") && is.null(shp)) {
       shp <- shapes_from_fips(ejamitout$results_bysite$ejam_uniq_id)
       if (!is.na(rad) && rad > 0 && rad != 999) {
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
@@ -489,7 +496,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## toupper() and "ZCTA" accepted, because site_method2text() already treats both
     ## spellings and both cases as zip codes, so a caller passing site_method = "zip"
     ## should still get polygons. ejamit() itself always sets "ZIP".
-    if (toupper(site_method) %in% c("ZIP", "ZCTA") && is.null(shp) && !is.null(ejamitout$zipcode)) {
+    if (isTRUE(toupper(site_method) %in% c("ZIP", "ZCTA")) && is.null(shp) && !is.null(ejamitout$zipcode)) {
       shp <- tryCatch(shapes_from_zip(ejamitout$zipcode), error = function(e) {
         warning("Could not get zip code (ZCTA) boundaries to map: ", conditionMessage(e)); NULL})
       if (!is.null(shp) && !is.na(rad) && rad > 0 && rad != 999) {
@@ -536,7 +543,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     ## > zipcode (ZCTA) polygons ####
     ## toupper() / "ZCTA" for the same reason as the multisite branch above.
-    if (toupper(site_method) %in% c("ZIP", "ZCTA") && is.null(shp) && !is.null(ejamitout$zipcode)) {
+    if (isTRUE(toupper(site_method) %in% c("ZIP", "ZCTA")) && is.null(shp) && !is.null(ejamitout$zipcode)) {
       # rebuild all zip polygons here (cached download); subsetted to sitenumber just below
       shp <- tryCatch(shapes_from_zip(ejamitout$zipcode), error = function(e) {
         warning("Could not get zip code (ZCTA) boundaries to map: ", conditionMessage(e)); NULL})
@@ -545,7 +552,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       }
     }
     ## > fips polygons ####
-    if (site_method %in% "FIPS" && is.null(shp)) {
+    ## toupper() for the same reason as the multisite branch above.
+    ## isTRUE(), because site_method can still be NULL here - the defaulting block
+    ## above leaves it unset when ejamitout$site_method is NULL and sitetype is
+    ## none of shp/fips/latlon - and %in% on NULL gives logical(0), which makes
+    ## if() error with "argument is of length zero" rather than skipping the gate.
+    if (isTRUE(toupper(site_method) %in% "FIPS") && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
       if (!is.na(rad) && rad > 0 && rad != 999) {
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
