@@ -350,7 +350,7 @@ naics_url_of_code <- function(naics) {
 #'  # browseURL(naics_from_any("copper smelting", website_url=TRUE) )
 #'
 #'   url_naics.com("copper smelting")
-#'   \donttest{
+#'   \dontrun{
 #'   naics_findwebscrape("copper smelting")
 #'   browseURL(url_naics.com("copper smelting"))
 #'   browseURL(naics_url_of_code(326))
