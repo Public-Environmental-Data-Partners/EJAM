@@ -306,7 +306,17 @@ bad_numbers <- list(
 
 skip_if_naics_web_unavailable <- function(scraped) {
 
-  if (!is.data.frame(scraped) || nrow(scraped) == 0) {
+  # Only the known symptom gets a skip. Anything else - NULL, a list, some other
+  # type - is a scraper regression rather than naics.com blocking a runner, and
+  # skipping it would hide exactly what we want to hear about.
+  if (!is.data.frame(scraped)) {
+    testthat::fail(paste0(
+      "naics_findwebscrape() returned ", class(scraped)[1], ", not a data.frame. ",
+      "That is a scraper regression, not naics.com blocking this runner."
+    ))
+    return(invisible(scraped))
+  }
+  if (nrow(scraped) == 0) {
     testthat::skip(paste(
       "naics.com returned no search results, so it is blocking or failing for this runner.",
       "Blocking is intermittent: it hits some jobs some of the time.",

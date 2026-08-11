@@ -10,9 +10,14 @@
 # website_scrape = TRUE does work however, since it grabs a data frame with the column 'code'
 # the code is stirng instead of numeric, but that doesn't seem to matter to regid_from_naics (in latlon_from_naics.R)
 
-test_that('website_url and website_scrape cause errors',{
+test_that('website_url causes an error',{
   expect_error( expect_warning({  val <- frs_from_naics(21112, website_url = TRUE)})) # "crude petroleum"
-  skip_if(offline()) # website_scrape = TRUE reaches naics.com
+  })
+
+# website_scrape = TRUE reaches naics.com, so it is its own test and stays covered
+# offline only for the website_url case above
+test_that('website_scrape does not cause an error',{
+  skip_if(offline())
   expect_no_error({val <- frs_from_naics(21112, website_scrape = TRUE)}) # "crude petroleum"
   })
 
