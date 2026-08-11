@@ -721,6 +721,31 @@ testthat::test_that("pdf_wait_seconds() rejects an unknown setting name", {
 })
 ################ ################# ################# ################# ################# #
 
+testthat::test_that("the polygon-rebuild gates survive a NULL site_method", {
+  ## site_method can still be NULL at the gates: the defaulting block only sets it
+  ## from ejamitout$site_method or from sitetype shp/fips/latlon, so any other
+  ## sitetype leaves it unset. %in% on NULL is logical(0), and if(logical(0))
+  ## errors with "argument is of length zero" -- so an unguarded gate crashed
+  ## report generation outright rather than simply not rebuilding polygons.
+  for (v in list(NULL, character(0))) {
+    expect_error(if (v %in% "FIPS") TRUE else FALSE)                 # the hazard is real
+    expect_false(isTRUE(toupper(v) %in% "FIPS"))                     # the guard neutralizes it
+    expect_false(isTRUE(toupper(v) %in% c("ZIP", "ZCTA")))
+  }
+  # and the guard does not change the cases that already worked
+  expect_true(isTRUE(toupper("fips") %in% "FIPS"))
+  expect_true(isTRUE(toupper("zcta") %in% c("ZIP", "ZCTA")))
+  expect_false(isTRUE(toupper(NA_character_) %in% "FIPS"))
+
+  ## There are four of these gates, and driving ejam2report() far enough to reach
+  ## each one takes minutes per call, so this asserts the invariant directly: no
+  ## UNGUARDED gate exists. Deliberately phrased as the absence of the bad pattern
+  ## rather than a count of the good one, so adding or removing a gate legitimately
+  ## does not break it -- only reintroducing a bare if(toupper(...) %in% ...) does.
+  src <- readLines(testthat::test_path("..", "..", "R", "ejam2report.R"))
+  expect_length(grep("if (toupper(site_method) %in%", src, fixed = TRUE), 0)
+})
+################ ################# ################# ################# ################# #
 testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings", {
   ## ejamit() always sets site_method = "FIPS", but site_method2text() and
   ## sitetype2text() both accept either case, so a caller passing "fips" should
