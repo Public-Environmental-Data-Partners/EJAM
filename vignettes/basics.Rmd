@@ -322,8 +322,8 @@ mapfast(testpoints_n(300, ST = c('LA','TX'), weighting = 'bg'), radius = 0.1)
 
 # Documentation of Functions and Data
 
--   [README](../index.html){.uri target="_blank" rel="noreferrer noopener"}
--   [Function Reference Document](../reference/index.html){.uri target="_blank"
+-   [README](`r paste0(EJAM::url_package("docs"), "/index.html")`){.uri target="_blank" rel="noreferrer noopener"}
+-   [Function Reference Document](`r paste0(EJAM::url_package("docs"), "/reference/index.html")`){.uri target="_blank"
 rel="noreferrer noopener"}
 -   In RStudio, see `?EJAM`
 

@@ -74,10 +74,10 @@ x$Item[!grepl("names_|^test", x$Item)]
 EJAM relies on datasets mostly stored in the package itself or in a separate,
 data-related repository:
 
--   Datasets stored within the EJAM package (`.rda` files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and
+-   Datasets stored within the EJAM package (`.rda` files): [Documentation](`r paste0(docs_reponame_url, "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and
 [access to package data files](`r paste0(code_reponame_url, "/tree/main/data")`)
 
--   Datasets used by EJAM but stored separately (large `.arrow` files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and
+-   Datasets used by EJAM but stored separately (large `.arrow` files): [Documentation](`r paste0(docs_reponame_url, "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and
 [access to the large data files as GitHub release assets](`r paste0(data_reponame_url, "/releases")`)
 
 ### Why the large datasets are put into the data repository using piggyback instead of committed using Git
@@ -93,7 +93,7 @@ changed ANNUALLY or more often:
 
 -   ***Blockgroup Datasets (Demographic and Environmental Data)***: These
 include datasets included with the package `?blockgroupstats`,
-[usastats](../reference/usastats.html), `?statestats`, and `?bgej`. The
+[usastats](`r paste0(docs_reponame_url, "/reference/usastats.html")`), `?statestats`, and `?bgej`. The
 annual staged workflow for updating these ACS/EJScreen-style blockgroup
 datasets is now documented separately in [Updating EJScreen Datasets Annually
 (via the Pipeline)](dev-update-ejscreen-datasets-yearly.html). That pipeline

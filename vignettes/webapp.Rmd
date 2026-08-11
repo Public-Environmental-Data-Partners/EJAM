@@ -75,7 +75,7 @@ The EJAM software and data are available as open source resources, so that anyon
 
 Analysts or developers using R/RStudio have the option of running a local copy of the EJAM web app on their own computer. This may be even faster than relying on a hosted web app, does not time out after inactivity, and could be customized by a developer. You can also launch it with customized options or use bookmarked settings (and/or use EJAM functions and data directly without the web app, for more complex work).
 
-You can install the EJAM R package and datasets as explained in [Installing the EJAM R package](installing.html). There is also a [Basics - Quick Start Guide](basics.html) and extensive [documentation of EJAM functions/tools/data](../reference/index.html).
+You can install the EJAM R package and datasets as explained in [Installing the EJAM R package](installing.html). There is also a [Basics - Quick Start Guide](basics.html) and extensive [documentation of EJAM functions/tools/data](`r paste0(EJAM::url_package("docs"), "/reference/index.html")`).
 
 Once EJAM is installed, you can launch the local web app from RStudio as follows:
 
