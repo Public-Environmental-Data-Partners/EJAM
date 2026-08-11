@@ -107,6 +107,51 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertEqual(changes["closed_issue_numbers"], [999])
         self.assertEqual(changes["quadrant_changed_issue_numbers"], [101])
 
+    def test_markdown_escapes_dollar_signs_that_would_start_pandoc_math(self):
+        """A "$" in a title opened an inline-math span that ate later rows.
+
+        Titles like doaggregate()$results_bybg_people and "vs input$ ?" left an
+        unclosed <span class="math inline">, swallowing three following table
+        rows into one cell -- so those issues vanished from the rendered HTML.
+        """
+        scored = [
+            {
+                "num": 31,
+                "title": "fix distance_avg in doaggregate()$results_bybg_people",
+                "labels": ["BUG"],
+                "milestone": "NA",
+                "cost": 4,
+                "benefit": 9,
+                "quad": "B",
+            },
+            {
+                "num": 32,
+                "title": "a title with a | pipe that would end a table cell",
+                "labels": ["BUG"],
+                "milestone": "NA",
+                "cost": 4,
+                "benefit": 9,
+                "quad": "B",
+            },
+        ]
+
+        markdown = scoring.generate_markdown(
+            scored, cost_med=4, benefit_med=6, generated_date="2026-06-20"
+        )
+
+        # no bare "$" or in-title "|" survives into the Markdown
+        self.assertNotIn("doaggregate()$results", markdown)
+        self.assertIn(r"doaggregate()\$results_bybg_people", markdown)
+        self.assertIn(r"a title with a \| pipe", markdown)
+
+        # and the escaping is applied everywhere a title is written:
+        # the bullet list, the quadrant table, and the full table
+        self.assertEqual(markdown.count(r"doaggregate()\$results_bybg_people"), 3)
+
+    def test_md_escape_leaves_ordinary_titles_untouched(self):
+        plain = "check/ fix Distance and Site Count summary stats"
+        self.assertEqual(scoring.md_escape(plain), plain)
+
     def test_generate_markdown_puts_methodology_at_end(self):
         scored = [
             {
