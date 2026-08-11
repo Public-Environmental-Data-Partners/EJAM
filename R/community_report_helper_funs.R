@@ -1251,10 +1251,10 @@ site_method2text =  function(site_method) {
     if (site_method %in% tolower("EPA_PROGRAM")) {
       return("EPA-regulated Facilities by EPA program")
     }
-    if (site_method %in% "SIC") {
+    if (site_method %in% tolower("SIC")) {
       return("EPA-regulated facilities by SIC code (industry type)")
     }
-    if (site_method %in% "MACT") {
+    if (site_method %in% tolower("MACT")) {
       return("EPA-regulated facilities by MACT category (air toxics emissions source type)")
     }
     return("")

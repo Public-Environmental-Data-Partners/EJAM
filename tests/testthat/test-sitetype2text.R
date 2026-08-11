@@ -37,6 +37,79 @@ test_that("sitetype2text shp", {
   )
 })
 ########################## #
+## sitetype2text() lowercases site_method and compares against lowercase
+## literals throughout, so SIC and MACT already work in either case.
+## These guard against the tolower() mismatch that site_method2text() had.
+test_that("sitetype2text handles SIC and MACT in either case", {
+  expect_equal(
+    sitetype2text(sitetype = 'latlon', site_method = 'SIC'),
+    "SIC industry-specific site"
+  )
+  expect_equal(
+    sitetype2text(sitetype = 'latlon', site_method = 'sic'),
+    "SIC industry-specific site"
+  )
+  expect_equal(
+    sitetype2text(sitetype = 'latlon', site_method = 'MACT'),
+    "MACT category site"
+  )
+  expect_equal(
+    sitetype2text(sitetype = 'latlon', site_method = 'mact'),
+    "MACT category site"
+  )
+})
+########################## #
+########################## #
+## site_method2text() lowercases site_method up front, so every branch must
+## compare against a lowercase literal. The SIC and MACT branches used to
+## compare against "SIC"/"MACT" directly, making them unreachable and leaving
+## those two methods with a blank description.
+test_that("site_method2text SIC in either case", {
+  expect_equal(
+    EJAM:::site_method2text("SIC"),
+    "EPA-regulated facilities by SIC code (industry type)"
+  )
+  expect_equal(
+    EJAM:::site_method2text("sic"),
+    "EPA-regulated facilities by SIC code (industry type)"
+  )
+})
+########################## #
+test_that("site_method2text MACT in either case", {
+  expect_equal(
+    EJAM:::site_method2text("MACT"),
+    "EPA-regulated facilities by MACT category (air toxics emissions source type)"
+  )
+  expect_equal(
+    EJAM:::site_method2text("mact"),
+    "EPA-regulated facilities by MACT category (air toxics emissions source type)"
+  )
+})
+########################## #
+test_that("site_method2text describes every documented site_method", {
+  ## none of the documented site_method values should fall through to ""
+  site_method_options <- c("latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS",
+                           "NAICS", "SIC", "EPA_PROGRAM", "MACT")
+  expect_false(
+    any(EJAM:::site_method2text(site_method_options) %in% ""),
+    label = "all documented site_method values have text"
+  )
+  expect_false(
+    any(EJAM:::site_method2text(tolower(site_method_options)) %in% ""),
+    label = "all documented site_method values have text when lowercase"
+  )
+})
+########################## #
+test_that("site_method2text is vectorized and returns '' for unknown", {
+  expect_equal(
+    EJAM:::site_method2text(c("SIC", "mact", "shp")),
+    c("EPA-regulated facilities by SIC code (industry type)",
+      "EPA-regulated facilities by MACT category (air toxics emissions source type)",
+      "shapefile")
+  )
+  expect_equal(EJAM:::site_method2text("not_a_method"), "")
+})
+########################## #
 ########################## #
 
 show_sitetype2text_examples = function() {
