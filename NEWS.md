@@ -1,3 +1,16 @@
+# EJAM v4 (unreleased)
+
+Features held for the v4 milestone, not part of the v3.2022.x patch line.
+
+## New Features
+
+- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
+  to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
+  any other shapefile, and `ejam2report()` describes the places as zip codes and
+  maps their boundaries without needing the `shp` parameter. This automates the
+  workflow that the Zipcodes article documented as manual steps (#482).
+
+
 # EJAM 3.2022.2 (August 2026)
 
 A code-and-docs patch over v3.2022.1, led by a faster web app and 
