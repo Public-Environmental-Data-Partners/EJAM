@@ -88,8 +88,11 @@ test_that("site_method2text MACT in either case", {
 ########################## #
 test_that("site_method2text describes every documented site_method", {
   ## none of the documented site_method values should fall through to ""
-  site_method_options <- c("latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS",
-                           "NAICS", "SIC", "EPA_PROGRAM", "MACT")
+  ## must stay in step with the @param site_method roxygen list, which #483 added
+  ## ZIP (and ZCTA, its synonym) to - otherwise "all documented values" is a claim
+  ## this test does not actually check, and a ZIP/ZCTA regression slips through.
+  site_method_options <- c("latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP", "ZCTA",
+                           "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
   expect_false(
     any(EJAM:::site_method2text(site_method_options) %in% ""),
     label = "all documented site_method values have text"

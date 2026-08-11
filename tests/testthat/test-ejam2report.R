@@ -766,6 +766,14 @@ testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings"
                                             launch_browser = FALSE), silent = TRUE))
     if (spelling == "NAICS") {
       expect_identical(called$n, 0L)                     # non-fips method must not rebuild fips
+      ## called$n == 0 on its own would ALSO be satisfied by ejam2report() dying
+      ## before it ever reached the gate, so this case has to show execution got
+      ## past it. It cannot simply complete: with a non-FIPS method against this
+      ## FIPS-shaped fixture, shp stays NULL and the unmapped branch needs
+      ## ratio.to.state.avg.* columns the minimal fixture omits. So pin that
+      ## specific downstream failure - which is only reachable past the gate.
+      expect_true(inherits(res, "try-error"))
+      expect_match(conditionMessage(attr(res, "condition")), "ratio\\.to\\.state\\.avg")
     } else {
       expect_gt(called$n, 0L)                            # both FIPS spellings do
       ## and the report itself must still complete - otherwise "shapes_from_fips()
