@@ -49,7 +49,7 @@ An outline of how to use key functions is provided below. After these examples
 is a discussion of background information and considerations in selecting
 radius.
 
-Also see the list of [functions related to comparing distances](../reference/index.html#comparing-distances-multiple-radius-values).
+Also see the list of [functions related to comparing distances](`r paste0(EJAM::url_package("docs"), "/reference/index.html#comparing-distances-multiple-radius-values")`).
 
 ## RESIDENTIAL POPULATION GROUP PERCENTAGES BY DISTANCE AT BLOCKGROUP RESOLUTION
 
