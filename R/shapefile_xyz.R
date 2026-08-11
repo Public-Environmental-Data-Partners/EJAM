@@ -94,8 +94,14 @@ shapefile_from_any <- function(path = NULL, cleanit = TRUE, crs = 4269, layer = 
     } else {
       path <- sf::st_transform(path, crs = crs)
     }
-    # path = shapefix(path) # also do here?
-    return(path) # input param called "path" actually was already a spatial object so just return it
+    ## shapefix() here too, not only on the file-reading path at the end of this function.
+    ## Callers already assume shapefile_from_any() always runs it - see ejamit(), which
+    ## expects the "valid"/"invalid_msg" columns, and app_server.R data_up_shp(), which
+    ## reads the findings from attributes. A supplied sf object used to skip it, so
+    ## ejamapp(shapefile = <sf points>) arrived with no findings attached and the Start
+    ## button was re-enabled instead of rejecting the upload. see issue #550
+    if (is.null(path)) {return(NULL)} # shapefile_clean() returns NULL when no rows were valid
+    return(shapefix(path)) # input param called "path" actually was already a spatial object
   }
 
   # if it is already just a regular nonspatial data.frame/data.table, try to convert it to spatial if it has lat/lon columns (but we want polygons not points for ejamit or server)
