@@ -711,25 +711,21 @@ app_server <- function(input, output, session) {
     #   ###################################### #
     # do the rest whether it was uploaded or came via ejamapp()
 
-    if (!is.null(shp)) {
-      # if shp contains point features, present message in app
-      ## this case is not caught by shapefile_from_any currently - but could use shapefix somehow? ***
-      if (any(sf::st_geometry_type(shp) == "POINT")) {
-        shp <- NULL
-        disable_buttons[['SHP']] <- TRUE
-        ## the file is readable and EJAM can analyze it - just via the latlon upload option,
-        ## which has a usable radius slider (this one starts at minradius_shapefile = 0,
-        ## and points buffered by 0 miles would find no blocks). see issue #550
-        msg <- "This is a shapefile of points, not polygons. To analyze points with a buffer distance, choose 'Latitude/Longitude file upload' instead."
-        cat(msg, "\n")
-        shiny::validate(msg)
-      }
-    }
-    # note that shapefile_from_any() returns some info in attributes of the returned object, like error messages and counts of valid points
-    if (!is.null(attr(shp, "validate_errmsg")))            {shiny::validate( attr(shp, "validate_errmsg") )}
-    if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
+    ## shapefile_from_any() runs shapefix(), which inspects the geometry and reports what it
+    ## found via attributes on the returned object - including a point-geometry upload, which
+    ## this option does not accept (points-with-buffers is the latlon upload option instead).
+    ## The rule itself lives in shapefix() only; see ?shapefix and issue #550.
+    ##
+    ## Order matters here: shiny::validate() halts this reactive, so anything that must take
+    ## effect on a rejected upload has to be set BEFORE the validate() call, not after it.
     if (!is.null(attr(shp, "num_valid_pts_uploaded_SHP"))) {num_valid_pts_uploaded[['SHP']] <- attr(shp, "num_valid_pts_uploaded_SHP")}
     if (!is.null(attr(shp, "invalid_alert_SHP")))          {invalid_alert[['SHP']]          <- attr(shp, "invalid_alert_SHP")}
+    if (!is.null(attr(shp, "validate_errmsg"))) {
+      disable_buttons[['SHP']] <- TRUE # Start button disabled, and must stay disabled
+      cat(attr(shp, "validate_errmsg"), "\n") # for console / server log
+      shiny::validate( attr(shp, "validate_errmsg") )
+    }
+    if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
     if ("sf" %in% class(shp)) {
       disable_buttons[['SHP']] <- FALSE # Start button enabled
     }
