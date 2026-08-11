@@ -415,6 +415,14 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       } else {
         if (sitetype %in% 'latlon') {
           site_method <- 'latlon'
+        } else {
+          ## final fallback, so site_method is always set from here on. Without it an
+          ## unrecognized sitetype (including the NA that ejamit_sitetype_from_output()
+          ## returns when it cannot tell) left site_method NULL, and every downstream
+          ## use had to defend itself separately - which is how the polygon-rebuild
+          ## gates came to need isTRUE(). "" is what the missing/blank test at the top
+          ## of this block already treats as "not supplied".
+          site_method <- ""
         }
       }
     }

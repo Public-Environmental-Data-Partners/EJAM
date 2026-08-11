@@ -1338,8 +1338,11 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   if (is.null(nsites) || any(is.na(nsites))) {
     nsites <- 99 # just makes it plural, e.g., "places"
   }
-  if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
-  if (is.null(site_method)) {site_method <- sitetype}
+  ## length-0 is handled alongside NULL, not left to fall through: character(0)
+  ## survives the is.na() replacement below unchanged, and then `sitetype %in% ...`
+  ## yields logical(0), which makes the if() below error instead of simply not matching.
+  if (is.null(sitetype)    || length(sitetype) == 0)    {sitetype    <- sitetype_nullna}
+  if (is.null(site_method) || length(site_method) == 0) {site_method <- sitetype}
 
   sitetype[   is.na(sitetype)]    <- sitetype_nullna
   site_method[is.na(site_method)] <- sitetype_nullna

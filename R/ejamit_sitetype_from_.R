@@ -85,6 +85,15 @@ sitetype_from_dt <- function(dt) {
 
   ## dt could be e.g.,  ejamit()$results_bysite
 
+  ## NULL says nothing about the site type, so return the same NA the fallback at the
+  ## bottom returns instead of erroring partway through. ejamit_sitetype_from_output()
+  ## passes whatever out$results_bysite is, and that is NULL for an empty result or a
+  ## list that simply has no such element.
+  if (is.null(dt) || length(dt) == 0) {
+    warning("cannot determine valid sitetype")
+    return(NA)
+  }
+
   #   shp
 
   # if it is class "sf" like a spatial data.frame from [sf::st_as_sf()] or [shapefile_from_any()],
@@ -112,14 +121,17 @@ sitetype_from_dt <- function(dt) {
   # as from output of ejamit(fips="040130610171")$results_bysite
   ## 1st, fips is assumed to be stored as mydf$ejam_uniq_id but
   ## can be provided here as a separate column or parameter
+  ## length() > 0 as well as all(), because all() on zero elements is vacuously TRUE -
+  ## so a 0-row table with an ejam_uniq_id column was reported as "fips" on the strength
+  ## of no values at all. An empty result should be undetermined, not FIPS.
   if ('ejam_uniq_id' %in% names(dt)) {
-    if (all(fips_valid(dt$ejam_uniq_id))) {
+    if (length(dt$ejam_uniq_id) > 0 && all(fips_valid(dt$ejam_uniq_id))) {
       return("fips")
     }
   }
   if ('fips' %in% fixnames_aliases(colnames(dt))) {
     fipsvalues = data.frame(dt)[, which(fixnames_aliases(names(dt)) %in% 'fips')[1]]
-    if (all(fips_valid(fipsvalues))) {
+    if (length(fipsvalues) > 0 && all(fips_valid(fipsvalues))) {
       return("fips")
     }
   }
