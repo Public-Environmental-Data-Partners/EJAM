@@ -486,7 +486,10 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       }
     }
     ## > zipcode (ZCTA) polygons ####
-    if (site_method %in% "ZIP" && is.null(shp) && !is.null(ejamitout$zipcode)) {
+    ## toupper() and "ZCTA" accepted, because site_method2text() already treats both
+    ## spellings and both cases as zip codes, so a caller passing site_method = "zip"
+    ## should still get polygons. ejamit() itself always sets "ZIP".
+    if (toupper(site_method) %in% c("ZIP", "ZCTA") && is.null(shp) && !is.null(ejamitout$zipcode)) {
       shp <- tryCatch(shapes_from_zip(ejamitout$zipcode), error = function(e) {
         warning("Could not get zip code (ZCTA) boundaries to map: ", conditionMessage(e)); NULL})
       if (!is.null(shp) && !is.na(rad) && rad > 0 && rad != 999) {
@@ -532,7 +535,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     selected_location_name_react <- ejamout1$statename
 
     ## > zipcode (ZCTA) polygons ####
-    if (site_method %in% "ZIP" && is.null(shp) && !is.null(ejamitout$zipcode)) {
+    ## toupper() / "ZCTA" for the same reason as the multisite branch above.
+    if (toupper(site_method) %in% c("ZIP", "ZCTA") && is.null(shp) && !is.null(ejamitout$zipcode)) {
       # rebuild all zip polygons here (cached download); subsetted to sitenumber just below
       shp <- tryCatch(shapes_from_zip(ejamitout$zipcode), error = function(e) {
         warning("Could not get zip code (ZCTA) boundaries to map: ", conditionMessage(e)); NULL})

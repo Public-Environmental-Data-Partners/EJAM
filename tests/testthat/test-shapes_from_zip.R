@@ -59,6 +59,52 @@ testthat::test_that("shapes_from_zip picks the 5-digit ZCTA id column, not GEOID
   expect_error(suppressMessages(shapes_from_zip("10012")), "Cannot find zip code")
 })
 ########################## #
+testthat::test_that("shapes_from_zip enables tigris caching without overriding an explicit choice", {
+  ## .onAttach() does not run for EJAM::shapes_from_zip(), so the function sets the
+  ## caching option itself - but only when the caller has expressed no preference.
+  ## An explicit options(tigris_use_cache = FALSE) is the caller's to make.
+  fake_zctas <- function(starts_with = NULL, year = NULL, ...) {
+    d <- data.frame(ZCTA5CE20 = starts_with)
+    d$geometry <- sf::st_sfc(lapply(seq_along(starts_with), function(i) {
+      sf::st_polygon(list(rbind(c(-74, 40 + i), c(-73.9, 40 + i), c(-73.9, 40.1 + i), c(-74, 40 + i))))
+    }), crs = 4269)
+    sf::st_as_sf(d)
+  }
+  testthat::local_mocked_bindings(zctas = fake_zctas, .package = "tigris")
+  old <- getOption("tigris_use_cache")
+  withr::defer(options(tigris_use_cache = old))
+
+  # unset -> we supply the default the docs promise
+  options(tigris_use_cache = NULL)
+  suppressMessages(shapes_from_zip("10012"))
+  expect_true(getOption("tigris_use_cache"))
+
+  # explicitly FALSE -> left alone
+  options(tigris_use_cache = FALSE)
+  suppressMessages(shapes_from_zip("10012"))
+  expect_false(getOption("tigris_use_cache"))
+
+  # explicitly TRUE -> still TRUE
+  options(tigris_use_cache = TRUE)
+  suppressMessages(shapes_from_zip("10012"))
+  expect_true(getOption("tigris_use_cache"))
+})
+########################## #
+testthat::test_that("ejam2report zip polygon rebuild accepts zip/ZIP/ZCTA spellings", {
+  ## ejamit() always sets site_method = "ZIP", but site_method2text() already accepts
+  ## both cases and "ZCTA", so a caller passing "zip" should still get polygons.
+  gate <- function(site_method) toupper(site_method) %in% c("ZIP", "ZCTA")
+  expect_true(gate("ZIP"))
+  expect_true(gate("zip"))
+  expect_true(gate("ZCTA"))
+  expect_true(gate("zcta"))
+  expect_false(gate("FIPS"))
+  expect_false(gate("SHP"))
+  # the gate as it actually appears in the source, both branches
+  src <- readLines(testthat::test_path("..", "..", "R", "ejam2report.R"))
+  expect_length(grep('toupper(site_method) %in% c("ZIP", "ZCTA")', src, fixed = TRUE), 2)
+})
+########################## #
 testthat::test_that("shapes_from_zip downloads ZCTA polygons (slow 1st time; cached after)", {
   testthat::skip_on_cran()
   testthat::skip_on_ci() # the national ZCTA boundaries file is a large download

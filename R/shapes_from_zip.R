@@ -58,8 +58,11 @@ shapes_from_zip <- function(zipcode, year = NULL, ...) {
   ## set here, not only in .onAttach(), which does not run for EJAM::shapes_from_zip()
   ## or EJAM::ejamit() - without it tigris re-downloads the national file every call
   ## and the local caching promised in @details would not actually happen.
-  ## Same as [shapes_from_fips()] does.
-  options(tigris_use_cache = TRUE)
+  ## Only when the caller has expressed no preference, though: an explicit
+  ## options(tigris_use_cache = FALSE) is theirs to make and is left alone.
+  if (is.null(getOption("tigris_use_cache"))) {
+    options(tigris_use_cache = TRUE)
+  }
   shp <- tigris::zctas(starts_with = zipcode, year = year, ...)
 
   # column name varies by vintage, e.g., ZCTA5CE20 / GEOID20 -- but NOT GEOIDFQ20,
