@@ -307,7 +307,13 @@ bad_numbers <- list(
 skip_if_naics_web_unavailable <- function(scraped) {
 
   if (!is.data.frame(scraped) || nrow(scraped) == 0) {
-    testthat::skip("naics.com returned no search results (bot mitigation, or the site changed)")
+    testthat::skip(paste(
+      "naics.com returned no search results, so it is blocking or failing for this runner.",
+      "Blocking is intermittent: it hits some jobs some of the time.",
+      "If instead this skip shows up on every platform on every run, suspect the scraper,",
+      "not the runner - check that the '.first_child a' selector in naics_findwebscrape()",
+      "still matches the page. See Public-Environmental-Data-Partners/EJAM#560"
+    ))
   }
   invisible(scraped)
 }
