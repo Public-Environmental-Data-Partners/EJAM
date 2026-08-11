@@ -120,21 +120,46 @@ service areas. See <code><a href="https://rdrr.io/pkg/tigris/man/zctas.html" cla
 <div class="float">
 <img src="images/many_county_fips_are_also_a_zipcode.png" style="width:75.0%" alt="many county fips are also a zipcode"><div class="figcaption">many county fips are also a zipcode</div>
 </div>
+<div class="section level3">
+<h3 id="the-short-way-ejamitzipcode">The short way: <code>ejamit(zipcode = )</code><a class="anchor" aria-label="anchor" href="#the-short-way-ejamitzipcode"></a>
+</h3>
+<p>The simplest way to analyze zip codes is to pass them directly to
+<code><a href="../reference/ejamit.html">ejamit()</a></code>, which converts them to ZCTA polygons via
+<code><a href="../reference/shapes_from_zip.html">shapes_from_zip()</a></code> and analyzes them like any other
+shapefile (the first use downloads a large national boundaries file,
+which is slow, but it is cached locally so later uses are fast):</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>zipcode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10012"</span>, <span class="st">"10506"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># summary report, with the places described as zip codes and their bounds mapped</span></span>
+<span><span class="fu"><a href="../reference/ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># or just get the ZCTA polygons, to map or inspect them</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shapes_from_zip.html">shapes_from_zip</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10012"</span>, <span class="st">"10506"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span></span></code></pre></div>
+<p>The rest of this article shows the manual, step-by-step version of
+that workflow, which offers more control (e.g., other sources of zip
+code polygons).</p>
+</div>
+<div class="section level3">
+<h3 id="manual-step-by-step-approach">Manual step-by-step approach<a class="anchor" aria-label="anchor" href="#manual-step-by-step-approach"></a>
+</h3>
 <p>The original (pre-2025) EJSCREEN API did not handle zip codes. It can
 show where the center of the zip code is but will not map its bounds or
 provide a report easily via the API.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Just see where the zipcode is, not its boundaries</span></span>
 <span><span class="co"># (use zip= , not wherestr= : a bare 5-digit wherestr is now read as a county FIPS first,</span></span>
 <span><span class="co">#  so wherestr = '10001' would open Kent County, DE instead of this Manhattan zip code)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="st">'10001'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><strong>To map and analyze zip codes you can download shapefiles for
 them and analyze or map them in EJAM as shown below.</strong></p>
+</div>
 <div class="section level3">
 <h3 id="downloading-zcta-polygons">downloading zcta polygons<a class="anchor" aria-label="anchor" href="#downloading-zcta-polygons"></a>
 </h3>
 <p>Takes time to download!</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris" class="external-link">tigris</a></span><span class="op">)</span></span>
 <span><span class="co"># options(tigris_use_cache=TRUE) # done by EJAM load/attach</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>tigris_refresh<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
@@ -147,13 +172,13 @@ them and analyze or map them in EJAM as shown below.</strong></p>
 <div class="section level3">
 <h3 id="mapping-zcta-polygons">mapping zcta polygons<a class="anchor" aria-label="anchor" href="#mapping-zcta-polygons"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="another-source-of-zip-code-polygons-esri-service">Another source of zip code polygons (esri service)<a class="anchor" aria-label="anchor" href="#another-source-of-zip-code-polygons-esri-service"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Download spatial bounds for all zipcodes in Delaware</span></span>
 <span><span class="va">ST1</span> <span class="op">&lt;-</span> <span class="st">"DE"</span></span>
@@ -180,7 +205,7 @@ county FIPS, and EJScreen deep links read a bare 5-digit
 <code>wherestr=</code> as a county FIPS first (EJAM’s convention). The
 <code>zip</code> argument of <code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code> builds the
 unambiguous zip links:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># one zip code: EJScreen opens centered there, with a pin and the site report popup</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="st">"20019"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; opens https://pedp-ejscreen.azurewebsites.net/index.html?zip=20019</span></span>
@@ -204,13 +229,13 @@ boundaries, use the zcta polygons approach above.</p>
 <h3 id="analyzing-zip-codes-in-ejam">analyzing zip codes in EJAM<a class="anchor" aria-label="anchor" href="#analyzing-zip-codes-in-ejam"></a>
 </h3>
 <p>You can analyze zip codes in EJAM like this:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">=</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">z</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="summary-report-on-zipcodes">summary report on zipcodes<a class="anchor" aria-label="anchor" href="#summary-report-on-zipcodes"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">out</span>, </span>
 <span>            analysis_title <span class="op">=</span> <span class="st">"Zip codes"</span>,</span>
 <span>            site_method <span class="op">=</span> <span class="st">'SHP'</span>, </span>
@@ -219,7 +244,7 @@ boundaries, use the zcta polygons approach above.</p>
 <div class="section level3">
 <h3 id="compare-sites">compare sites<a class="anchor" aria-label="anchor" href="#compare-sites"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># put zip code in the x axis labels!</span></span>
 <span><span class="fu"><a href="../reference/ejam2barplot_sites.html">ejam2barplot_sites</a></span><span class="op">(</span><span class="va">out</span>, names.arg <span class="op">=</span> <span class="va">z</span><span class="op">$</span><span class="va">GEOID20</span>, sortby <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="co"># zcta2$GEOID20</span></span>
 <span></span>
@@ -229,7 +254,7 @@ boundaries, use the zcta polygons approach above.</p>
 <div class="section level3">
 <h3 id="map-of-detailed-results">map of detailed results<a class="anchor" aria-label="anchor" href="#map-of-detailed-results"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">out_plus_shape</span> <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span>, <span class="va">z</span><span class="op">)</span></span>

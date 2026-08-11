@@ -123,6 +123,7 @@ or in a set of polygons from a shapefile, or in a list of Census Units like Coun
 <span>  buffer <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shape <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  zipcode <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lat <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lon <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -320,6 +321,14 @@ use shapefile=1 (otherwise it assumes you want to pick a latlon file).</p></dd>
 <dd><p>alias (synonym) for shapefile</p></dd>
 
 
+<dt id="arg-zipcode">zipcode<a class="anchor" aria-label="anchor" href="#arg-zipcode"></a></dt>
+<dd><p>optional vector of one or more 5-digit zip codes to analyze
+(instead of sitepoints, fips, or shapefile). Zip codes are converted to
+ZCTA polygons via <code><a href="shapes_from_zip.html">shapes_from_zip()</a></code> and then analyzed exactly like a
+shapefile (so <code>ejamit()$sitetype</code> is "shp"), with no buffer unless
+radius is specified. See the Zipcodes article/vignette.</p></dd>
+
+
 <dt id="arg-lat-lon">lat, lon<a class="anchor" aria-label="anchor" href="#arg-lat-lon"></a></dt>
 <dd><p>optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.</p></dd>
 
@@ -354,6 +363,8 @@ one blockgroup since it may be near two analyzed sites, for example.</p></li>
 <li><p><strong>longnames</strong>  descriptive long names for the indicators in the above outputs</p></li>
 <li><p><strong>count_of_blocks_near_multiple_sites</strong>  additional detail</p></li>
 <li><p><strong>sitetype</strong> indicates if analysis used latlon, fips, or shp</p></li>
+<li><p><strong>site_method</strong> and <strong>zipcode</strong> are also included if places were specified
+via the <code>zipcode</code> parameter (in which case sitetype is "shp")</p></li>
 <li><p><strong>formatted</strong> another tall format showing averages for all indicators</p></li>
 <li><p><strong>sitetype</strong> the type of analysis done: "latlon", "shp", "fips", etc.</p></li>
 </ul></div>
@@ -407,6 +418,9 @@ one blockgroup since it may be near two analyzed sites, for example.</p></li>
 <span>  <span class="co"># FIPS examples</span></span>
 <span>  <span class="va">out4</span> <span class="op">=</span> <span class="fu">ejamit</span><span class="op">(</span>fips <span class="op">=</span> <span class="va">testinput_fips_cities</span><span class="op">)</span></span>
 <span>  <span class="va">out5</span> <span class="op">=</span> <span class="fu">ejamit</span><span class="op">(</span>fips <span class="op">=</span> <span class="fu"><a href="fips_counties_from_state_abbrev.html">fips_counties_from_state_abbrev</a></span><span class="op">(</span><span class="st">"DE"</span><span class="op">)</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># Zip code example (analyzed as ZCTA polygons - see the Zipcodes article)</span></span>
+<span>  <span class="va">out6</span> <span class="op">=</span> <span class="fu">ejamit</span><span class="op">(</span>zipcode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10012"</span>, <span class="st">"10506"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="co"># View results overall</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_overall</span><span class="op">)</span>, <span class="fl">3.1</span><span class="op">)</span></span>

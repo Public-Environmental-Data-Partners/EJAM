@@ -168,7 +168,7 @@ via <code>ejam2report()</code> and related helper functions like <code><a href="
 or via <code><a href="ejam2excel.html">ejam2excel()</a></code> and related helper functions.</p>
 <p>The <code>site_method</code> parameter provides more detailed info about how sites were specified in the web app,
 beyond what <code>sitetype</code> provides (e.g., from <code>ejamit()$sitetype</code> or <code>ejamitout$sitetype</code>):</p><ul><li><p>sitetype can be "latlon", "fips", or "shp"</p></li>
-<li><p>site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"</p></li>
+<li><p>site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"</p></li>
 </ul><p>The shiny app server provides <code>site_method</code> from the reactive called submitted_upload_method()
 which is much like the one called current_upload_method().</p></dd>
 
