@@ -100,8 +100,11 @@ shapefile_from_any <- function(path = NULL, cleanit = TRUE, crs = 4269, layer = 
     ## reads the findings from attributes. A supplied sf object used to skip it, so
     ## ejamapp(shapefile = <sf points>) arrived with no findings attached and the Start
     ## button was re-enabled instead of rejecting the upload. see issue #550
+    ## crs forwarded, because shapefix() st_transform()s to its own default of 4269 -
+    ## so calling it bare would undo the crs asked for just above. see the same call
+    ## at the end of this function.
     if (is.null(path)) {return(NULL)} # shapefile_clean() returns NULL when no rows were valid
-    return(shapefix(path)) # input param called "path" actually was already a spatial object
+    return(shapefix(path, crs = crs)) # input param called "path" actually was already a spatial object
   }
 
   # if it is already just a regular nonspatial data.frame/data.table, try to convert it to spatial if it has lat/lon columns (but we want polygons not points for ejamit or server)
@@ -218,7 +221,10 @@ shapefile_from_any <- function(path = NULL, cleanit = TRUE, crs = 4269, layer = 
     return(NULL)
   } else {
     return(
-      shapefix(x)
+      ## crs forwarded here for the same reason as on the sf path above: without it,
+      ## shapefix() transforms to its own default of 4269 and a caller asking for any
+      ## other crs silently got 4269 back, contradicting the @param crs contract.
+      shapefix(x, crs = crs)
     )
   }
 }
