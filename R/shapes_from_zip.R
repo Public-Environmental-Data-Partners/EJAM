@@ -55,10 +55,18 @@ shapes_from_zip <- function(zipcode, year = NULL, ...) {
   }
 
   message("Getting ZCTA boundaries of zip codes via tigris package (first download is slow but is cached locally)...")
+  ## set here, not only in .onAttach(), which does not run for EJAM::shapes_from_zip()
+  ## or EJAM::ejamit() - without it tigris re-downloads the national file every call
+  ## and the local caching promised in @details would not actually happen.
+  ## Same as [shapes_from_fips()] does.
+  options(tigris_use_cache = TRUE)
   shp <- tigris::zctas(starts_with = zipcode, year = year, ...)
 
-  # column name varies by vintage, e.g., GEOID20 / ZCTA5CE20
-  idcol <- grep("^GEOID|^ZCTA5", names(shp), value = TRUE)[1]
+  # column name varies by vintage, e.g., ZCTA5CE20 / GEOID20 -- but NOT GEOIDFQ20,
+  # which is the fully qualified id ("8600000US10012") and would match no zip code,
+  # making every lookup fail. Prefer ZCTA5CE*, then a plain GEOID*.
+  idcol <- c(grep("^ZCTA5", names(shp), value = TRUE),
+             grep("^GEOID(?!FQ)", names(shp), value = TRUE, perl = TRUE))[1]
   if (is.na(idcol)) {stop("Cannot find zip code (ZCTA id) column in downloaded boundaries")}
   found <- as.character(shp[[idcol]])
   zips_missing <- setdiff(zipcode, found)
