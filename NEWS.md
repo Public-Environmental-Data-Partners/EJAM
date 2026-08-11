@@ -10,6 +10,28 @@ Features held for the v4 milestone, not part of the v3.2022.x patch line.
   maps their boundaries without needing the `shp` parameter. This automates the
   workflow that the Zipcodes article documented as manual steps (#482).
 
+## Bug Fixes
+
+- The notes tab of the Excel workbook now says how the sites were selected. It
+  had never done so: `buffer_desc_from_sitetype()` only appended that detail when
+  the description so far was empty, which none of its branches can produce, and
+  the test inside was inverted as well. A SIC analysis of latitude/longitude
+  sites now reads "Locations defined by latitude, longitude and radius, based on
+  EPA-regulated facilities by SIC code (industry type)" instead of stopping at
+  the radius. The detail is left off when it would only restate the site type,
+  so plain shapefile analyses do not read "Polygons defined by shapefile, based
+  on shapefile".
+
+- SIC and MACT analyses get their descriptions back. `site_method2text()`
+  lowercases its input, but its SIC and MACT branches compared against the
+  uppercase spellings, so neither could ever match and both fell through to an
+  empty string.
+
+- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
+  "fips" rather than "FIPS". The two gates that rebuild those polygons were
+  case-sensitive, so a lowercase spelling silently produced an unmapped report.
+  Matches how the zip code gates added for #482 already behave.
+
 
 # EJAM 3.2022.2 (August 2026)
 

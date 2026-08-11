@@ -1200,10 +1200,30 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
         } else {
           buffer_desc <- "Selected locations"
         }}}}
-  if (buffer_desc == "") {
-    based_on_txt <- site_method2text(site_method)
-    if (based_on_txt %in% "")
-      buffer_desc <- paste0(buffer_desc, ", based on ", site_method2text(site_method))
+  ## site_method can say more than sitetype does -- sitetype "latlon" with
+  ## site_method "NAICS" means points that are EPA-regulated facilities picked by
+  ## industry code, and sitetype "shp" with "ZIP" means zip code (ZCTA) polygons.
+  ## Append that detail when there is any to add.
+  ##
+  ## This used to be gated on buffer_desc == "", which no branch above can produce,
+  ## so it never ran; and the inner test was inverted, appending only when the text
+  ## was empty. Both are fixed here.
+  based_on_txt <- ""
+  if (!missing(site_method) && !is.null(site_method) && length(site_method) > 0 &&
+      !is.na(site_method[1])) {
+    ## Skip when site_method only restates sitetype, which would read
+    ## "Polygons defined by shapefile, based on shapefile". That is the common
+    ## case, not a corner one: table_xls_from_ejam() defaults site_method to
+    ## sitetype ('shp' -> 'SHP', 'fips' -> 'FIPS') whenever it is not supplied.
+    sitetype_known <- !missing(sitetype) && !is.null(sitetype) && length(sitetype) > 0
+    restates_sitetype <- sitetype_known &&
+      tolower(site_method[1]) %in% c(tolower(sitetype[1]), "mapclick")
+    if (!restates_sitetype) {
+      based_on_txt <- site_method2text(site_method[1])
+    }
+  }
+  if (!(based_on_txt %in% "")) {
+    buffer_desc <- paste0(buffer_desc, ", based on ", based_on_txt)
   }
   return(buffer_desc)
 }

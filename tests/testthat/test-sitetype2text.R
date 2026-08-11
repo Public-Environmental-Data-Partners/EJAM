@@ -111,6 +111,84 @@ test_that("site_method2text is vectorized and returns '' for unknown", {
 })
 ########################## #
 ########################## #
+## buffer_desc_from_sitetype() is what puts site_method2text()'s output in front
+## of a user, in the notes tab of the Excel workbook. Its append step used to be
+## gated on buffer_desc == "", which no branch can produce, so it never ran.
+test_that("buffer_desc_from_sitetype appends the site_method detail", {
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("latlon", "SIC"),
+    paste0("Locations defined by latitude, longitude and radius, based on ",
+           "EPA-regulated facilities by SIC code (industry type)")
+  )
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("latlon", "MACT"),
+    paste0("Locations defined by latitude, longitude and radius, based on ",
+           "EPA-regulated facilities by MACT category (air toxics emissions source type)")
+  )
+  ## same in either case
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("latlon", "sic"),
+    EJAM:::buffer_desc_from_sitetype("latlon", "SIC")
+  )
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("latlon", "mact"),
+    EJAM:::buffer_desc_from_sitetype("latlon", "MACT")
+  )
+  ## and for the other methods that say more than sitetype does
+  expect_match(EJAM:::buffer_desc_from_sitetype("latlon", "FRS"),  ", based on ", fixed = TRUE)
+  expect_match(EJAM:::buffer_desc_from_sitetype("latlon", "NAICS"), ", based on ", fixed = TRUE)
+  expect_match(EJAM:::buffer_desc_from_sitetype("shp", "ZIP"),      ", based on ", fixed = TRUE)
+  expect_match(EJAM:::buffer_desc_from_sitetype("fips", "FIPS_PLACE"), ", based on ", fixed = TRUE)
+})
+########################## #
+test_that("buffer_desc_from_sitetype omits detail that only restates sitetype", {
+  ## table_xls_from_ejam() defaults site_method to sitetype ('shp' -> 'SHP',
+  ## 'fips' -> 'FIPS') when it is not supplied, so these are the common cases,
+  ## and "Polygons defined by shapefile, based on shapefile" would be silly.
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("shp", "SHP"),
+    "Polygons defined by shapefile"
+  )
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("fips", "FIPS"),
+    "Census Units defined by FIPS code"
+  )
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("latlon", "latlon"),
+    "Locations defined by latitude, longitude and radius"
+  )
+  ## map clicks are just coordinates too
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("latlon", "mapclick"),
+    "Locations defined by latitude, longitude and radius"
+  )
+})
+########################## #
+test_that("buffer_desc_from_sitetype handles missing/empty site_method", {
+  ## these two are the documented @examples, and must not error
+  expect_equal(EJAM:::buffer_desc_from_sitetype("shp"),  "Polygons defined by shapefile")
+  expect_equal(EJAM:::buffer_desc_from_sitetype("fips"), "Census Units defined by FIPS code")
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype("latlon", "NAICS"),
+    paste0("Locations defined by latitude, longitude and radius, based on ",
+           "EPA-regulated facilities by NAICS code (industry type)")
+  )
+  ## anything with no text to add leaves the plain description alone
+  latlon_plain <- "Locations defined by latitude, longitude and radius"
+  expect_equal(EJAM:::buffer_desc_from_sitetype("latlon", NULL),           latlon_plain)
+  expect_equal(EJAM:::buffer_desc_from_sitetype("latlon", NA),             latlon_plain)
+  expect_equal(EJAM:::buffer_desc_from_sitetype("latlon", ""),             latlon_plain)
+  expect_equal(EJAM:::buffer_desc_from_sitetype("latlon", character(0)),   latlon_plain)
+  expect_equal(EJAM:::buffer_desc_from_sitetype("latlon", "not_a_method"), latlon_plain)
+  ## unknown sitetype still gets the detail
+  expect_equal(
+    EJAM:::buffer_desc_from_sitetype(NULL, "MACT"),
+    paste0("Selected Locations, based on ",
+           "EPA-regulated facilities by MACT category (air toxics emissions source type)")
+  )
+})
+########################## #
+########################## #
 
 show_sitetype2text_examples = function() {
 

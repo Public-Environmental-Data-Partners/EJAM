@@ -720,3 +720,59 @@ testthat::test_that("pdf_wait_seconds() rejects an unknown setting name", {
   expect_error({EJAM:::pdf_wait_seconds("something_else")})
 })
 ################ ################# ################# ################# ################# #
+
+testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings", {
+  ## ejamit() always sets site_method = "FIPS", but site_method2text() and
+  ## sitetype2text() both accept either case, so a caller passing "fips" should
+  ## still get polygons rather than an unmapped report. Mirrors the zip gate test
+  ## in test-shapes_from_zip.R.
+  fips_report_output <- function() list(
+    sitetype = "fips",
+    site_method = "FIPS",
+    results_bysite = data.table::data.table(
+      ejam_uniq_id = c("10001", "10003"), valid = TRUE, invalid_msg = "", pop = c(10, 20),
+      radius.miles = 0, statename = "Delaware"),
+    results_overall = data.table::data.table(
+      ejam_uniq_id = "overall", valid = TRUE, invalid_msg = "", pop = 30,
+      radius.miles = 0, statename = "Delaware")
+  )
+  for (spelling in c("FIPS", "fips", "Fips", "NAICS")) {
+    called <- new.env(parent = emptyenv()); called$n <- 0L
+    local_mocked_bindings(
+      shapes_from_fips = function(fips, ...) {
+        called$n <- called$n + 1L
+        sf::st_as_sf(data.frame(fips = fips, geometry = sf::st_sfc(
+          lapply(seq_along(fips), function(i) sf::st_polygon(list(rbind(
+            c(-75, 39 + i), c(-74.9, 39 + i), c(-74.9, 39.1 + i), c(-75, 39 + i))))), crs = 4269)))
+      },
+      report_residents_within_xyz_from_ejamit = function(...) "residents",
+      report_setup_temp_files = function(...) "template.Rmd",
+      create_filename = function(...) "report.html",
+      build_community_report = function(...) "<section>report</section>",
+      plot_barplot_ratios_ez = function(...) ggplot2::ggplot(),
+      ejam2map = function(...) "map",
+      ensure_pandoc_available_for_ejam = function(...) invisible(TRUE),
+      .package = "EJAM"
+    )
+    local_mocked_bindings(
+      pandoc_available = function(...) TRUE,
+      render = function(input, output_format, output_file, params, envir, quiet, ...) {
+        writeLines("<html>report</html>", output_file); output_file
+      }, .package = "rmarkdown"
+    )
+    out <- fips_report_output()
+    out$site_method <- spelling
+    res <- suppressWarnings(try(ejam2report(out, site_method = spelling, return_html = TRUE,
+                                            launch_browser = FALSE), silent = TRUE))
+    if (spelling == "NAICS") {
+      expect_identical(called$n, 0L)                     # non-fips method must not rebuild fips
+    } else {
+      expect_gt(called$n, 0L)                            # both FIPS spellings do
+      ## and the report itself must still complete - otherwise "shapes_from_fips()
+      ## was called" would pass even if everything after it blew up.
+      expect_false(inherits(res, "try-error"))
+      expect_type(res, "character")
+    }
+  }
+})
+################ ################# ################# ################# ################# #

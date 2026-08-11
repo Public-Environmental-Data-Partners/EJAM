@@ -479,7 +479,10 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     selected_location_name_react <- NULL
 
     ## > fips polygons ####
-    if (site_method %in% "FIPS" && is.null(shp)) {
+    ## toupper() for the same reason as the zip gate just below: site_method2text()
+    ## and sitetype2text() both accept either case, so a caller passing "fips"
+    ## should still get polygons. ejamit() itself always sets "FIPS".
+    if (toupper(site_method) %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(ejamitout$results_bysite$ejam_uniq_id)
       if (!is.na(rad) && rad > 0 && rad != 999) {
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
@@ -545,7 +548,8 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       }
     }
     ## > fips polygons ####
-    if (site_method %in% "FIPS" && is.null(shp)) {
+    ## toupper() for the same reason as the multisite branch above.
+    if (toupper(site_method) %in% "FIPS" && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
       if (!is.na(rad) && rad > 0 && rad != 999) {
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
