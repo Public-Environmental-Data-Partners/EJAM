@@ -141,12 +141,16 @@ testthat::test_that("ejam2report rebuilds zip polygons for zip/ZIP/ZCTA spelling
     )
     out <- zip_report_output()
     out$site_method <- spelling
-    suppressWarnings(try(ejam2report(out, site_method = spelling, return_html = TRUE,
-                                     launch_browser = FALSE), silent = TRUE))
+    res <- suppressWarnings(try(ejam2report(out, site_method = spelling, return_html = TRUE,
+                                            launch_browser = FALSE), silent = TRUE))
     if (spelling == "FIPS") {
-      expect_identical(called$n, 0L, info = spelling)   # non-zip method must not rebuild zips
+      expect_identical(called$n, 0L)                     # non-zip method must not rebuild zips
     } else {
       expect_gt(called$n, 0L)                            # all four zip spellings do
+      ## and the report itself must still complete - otherwise "shapes_from_zip() was
+      ## called" would pass even if everything after it blew up.
+      expect_false(inherits(res, "try-error"))
+      expect_type(res, "character")
     }
   }
 })
