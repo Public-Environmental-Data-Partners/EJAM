@@ -287,6 +287,48 @@ bad_numbers <- list(
 # rm(x)
 ############################### ################################ #
 
+# helper for tests that scrape naics.com ####
+
+# naics.com sits behind bot mitigation that sometimes serves the search page to a
+# CI runner without any search results in it. rvest::read_html() still succeeds,
+# but the ".first_child a" elements are not there, so naics_findwebscrape() hands
+# back a 0-row data.frame with no error and no warning, and any test that checks
+# the contents then fails for a reason that has nothing to do with EJAM.
+#
+# Seen in R CMD check run 31491603711 (2026-08-11): ubuntu-latest release and
+# oldrel-1 failed these while macOS, Windows, and ubuntu-latest devel passed the
+# very same commit, and the same queries return full results from a laptop.
+# See Public-Environmental-Data-Partners/EJAM#560
+#
+# Every query guarded this way has a known, non-empty answer, so 0 rows means the
+# site did not answer, not that the query found nothing. Skip in that case, so a
+# blocked runner does not turn into a red check.
+
+skip_if_naics_web_unavailable <- function(scraped) {
+
+  # Only the known symptom gets a skip. Anything else - NULL, a list, some other
+  # type - is a scraper regression rather than naics.com blocking a runner, and
+  # skipping it would hide exactly what we want to hear about.
+  if (!is.data.frame(scraped)) {
+    testthat::fail(paste0(
+      "naics_findwebscrape() returned ", class(scraped)[1], ", not a data.frame. ",
+      "That is a scraper regression, not naics.com blocking this runner."
+    ))
+    return(invisible(scraped))
+  }
+  if (nrow(scraped) == 0) {
+    testthat::skip(paste(
+      "naics.com returned no search results, so it is blocking or failing for this runner.",
+      "Blocking is intermittent: it hits some jobs some of the time.",
+      "If instead this skip shows up on every platform on every run, suspect the scraper,",
+      "not the runner - check that the '.first_child a' selector in naics_findwebscrape()",
+      "still matches the page. See Public-Environmental-Data-Partners/EJAM#560"
+    ))
+  }
+  invisible(scraped)
+}
+############################### ################################ #
+
 # helpers to check map functions ####
 
 # these 2 got used in some test files:

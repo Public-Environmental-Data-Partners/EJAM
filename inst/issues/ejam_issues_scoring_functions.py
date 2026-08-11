@@ -110,6 +110,7 @@ URL_BASE = f"https://github.com/{OWNER}/{REPO}/issues/"
 REPORT_SOURCE = f"Live GitHub REST API open issues ({OWNER}/{REPO})"
 DEFAULT_MARKDOWN_OUTPUT = "inst/issues/ejam_issues_scored_by_risk_and_value.MD"
 DEFAULT_SCORES_OUTPUT = "inst/issues/ejam_issues_scored_by_risk_and_value.json"
+MAX_QUADRANT_A_ISSUES = 20
 
 RANK_LABELS = {
     "A": "rank:A-high-value-low-cost",
@@ -358,6 +359,22 @@ def quadrant(cost: int, benefit: int,
     if hi_c     and hi_b:     return "B"
     if not hi_c and not hi_b: return "C"
     return "D"
+
+
+def cap_quadrant_a(scored_issues: list[dict]) -> None:
+    """Keep Quadrant A small enough to serve as an actionable focus list.
+
+    Median thresholds identify the low-cost, high-benefit candidates.  When
+    there are more than the focus-list limit, retain the highest-benefit,
+    lowest-cost candidates in A and move the rest to C as lower-priority
+    low-cost work.
+    """
+    candidates = sorted(
+        (issue for issue in scored_issues if issue["quad"] == "A"),
+        key=lambda issue: (-issue["benefit"], issue["cost"], issue["num"]),
+    )
+    for issue in candidates[MAX_QUADRANT_A_ISSUES:]:
+        issue["quad"] = "C"
 
 
 # ── MARKDOWN GENERATION ───────────────────────────────────────────────────────
@@ -623,8 +640,9 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("|---|---|---|")
     lines.append(
         "| **LOW Cost**<br>cost < median | "
-        f"**C — Might As Well**<br>{issue_count_text(len(quads['C']))} | "
-        f"**A — BEST CANDIDATES**<br>{issue_count_text(len(quads['A']))} |"
+        f"**C — Other Low-Cost Work**<br>{issue_count_text(len(quads['C']))} | "
+        f"**A — Focus Shortlist (max {MAX_QUADRANT_A_ISSUES})**<br>"
+        f"{issue_count_text(len(quads['A']))} |"
     )
     lines.append(
         "| **HIGH Cost**<br>cost ≥ median | "
@@ -636,16 +654,18 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
 
     _write_quad(lines, "A",
-                "BEST CANDIDATES — Low Cost, High Benefit",
-                "Easy fixes with clear high value. Prioritize these above all others.",
+                "FOCUS SHORTLIST — Low Cost, High Benefit",
+                f"The top {MAX_QUADRANT_A_ISSUES} low-cost, high-benefit candidates at most, "
+                "ordered by benefit then cost. Prioritize these above all others.",
                 quads["A"])
     _write_quad(lines, "B",
                 "OK Candidates — High Cost, High Benefit",
                 "Worth doing but require more effort or expertise. Plan carefully before starting.",
                 quads["B"])
     _write_quad(lines, "C",
-                "Might As Well — Low Cost, Low Benefit",
-                "Cheap to do; low urgency. Pick these up when bandwidth allows or combine with nearby work.",
+                "OTHER LOW-COST WORK",
+                "Cheap to do but not in the current focus shortlist. Pick these up when bandwidth allows "
+                "or combine them with nearby work.",
                 quads["C"])
     _write_quad(lines, "D",
                 "WORST CANDIDATES — High Cost, Low Benefit",
@@ -711,6 +731,14 @@ def generate_markdown(scored_issues: list[dict],
     lines.append(
         "Issues at or above the median are **High**; below are **Low** "
         "for that dimension."
+    )
+    lines.append("")
+    lines.append("### Focus shortlist rule")
+    lines.append("")
+    lines.append(
+        f"Quadrant A is capped at **{MAX_QUADRANT_A_ISSUES} issues**. After the median split, "
+        "eligible low-cost, high-benefit issues are ordered by benefit descending, cost ascending, "
+        "then issue number. Any remaining eligible issues are placed in C as other low-cost work."
     )
     lines.append("")
     lines.append("### GitHub rank labels for a later update task")
@@ -809,6 +837,7 @@ def score_issues(issues: list[dict]) -> tuple[list[dict], int, int]:
 
     for r in scored:
         r["quad"] = quadrant(r["cost"], r["benefit"], cost_med, benefit_med)
+    cap_quadrant_a(scored)
 
     return scored, cost_med, benefit_med
 

@@ -439,6 +439,13 @@ report_sections_page_break_before <- c(
   "Facility Counts"
 )
 
+# Heading for the flagged-areas rows, shared by fill_tbl_full_subgroups() and
+# fill_tbl_flagged_areas_section(). A constant rather than a repeated literal
+# for two reasons: it was duplicated in both signatures, and at 94 characters
+# it pushed the \usage line of fill_tbl_full_subgroups.Rd past the 90-character
+# limit R CMD check enforces. The text itself is unchanged.
+flagged_areas_section_title_default <- "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup"
+
 #' Create full demog subgroup/ language/ health/ community/ etc. HTML table of indicator rows
 #' @seealso used by [build_community_report()]
 #' @param output_df single row of results table from doaggregate or possibly ejamit(),
@@ -457,7 +464,9 @@ report_sections_page_break_before <- c(
 #'   to the US and State averages) is inserted just after the
 #'   "Climate" section (or after "Poverty" if there is no Climate section).
 #'   NULL (default) omits that section.
-#' @param flagged_areas_section_title title text for the flagged-areas section subheader row
+#' @param flagged_areas_section_title title text for the flagged-areas section subheader row.
+#'   Defaults to "% of These Residents Who Have This Feature or Area Type in
+#'   (or Overlapping) Their Blockgroup".
 #'
 #' @keywords internal
 #'
@@ -468,7 +477,7 @@ fill_tbl_full_subgroups <- function(output_df,
                                     extratable_show_ratios_in_report = TRUE,
                                     hide_missing_rows_for = names_d_language,
                                     flagged_areas_df = NULL,
-                                    flagged_areas_section_title = "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup"
+                                    flagged_areas_section_title = flagged_areas_section_title_default
                                     ## more params? ***
 ) {
 
@@ -643,7 +652,7 @@ fill_tbl_full_subgroups <- function(output_df,
 #' @noRd
 fill_tbl_flagged_areas_section <- function(flagged_areas_df,
                                            extratable_show_ratios_in_report = TRUE,
-                                           section_title = "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup") {
+                                           section_title = flagged_areas_section_title_default) {
 
   neededcols <- c("Indicator", "Percent_of_these_People")
   if (is.null(flagged_areas_df) || !is.data.frame(flagged_areas_df) ||

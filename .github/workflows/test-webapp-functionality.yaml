@@ -2,8 +2,14 @@
 name: 'Test web app UI and functionality'
 
 on:
+  # Expensive (macos-15, nine sequential shinytest2 app runs), so it stays
+  # scoped to main: PRs into it, and main itself after a merge, since --admin
+  # merges and direct hotfix pushes bypass the PR run.
   pull_request:
     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,6 +37,13 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       NOT_CRAN: true
       SHINYTEST2_APP_DRIVER_TEST_ON_CRAN: 1
+      # Every step below filters to a test-webapp-<category>-functionality.R
+      # file, and those all call shinytest2_webapp_functionality_individual(),
+      # which skips unless this is set. It never was, so all nine steps were
+      # skipping and this workflow reported success while running no tests:
+      #   "Individual web app category tests are skipped by default."
+      # (verified in run 31042164366). Setting it makes them actually run.
+      EJAM_SHINYTEST2_INDIVIDUAL: true
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:

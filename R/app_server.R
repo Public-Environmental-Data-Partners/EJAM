@@ -711,22 +711,21 @@ app_server <- function(input, output, session) {
     #   ###################################### #
     # do the rest whether it was uploaded or came via ejamapp()
 
-    if (!is.null(shp)) {
-      # if shp contains point features, present message in app
-      ## this case is not caught by shapefile_from_any currently - but could use shapefix somehow? ***
-      if (any(sf::st_geometry_type(shp) == "POINT")) {
-        shp <- NULL
-        disable_buttons[['SHP']] <- TRUE
-        msg <- "Shape file must be of polygon geometry."
-        cat(msg, "\n")
-        shiny::validate(msg)
-      }
-    }
-    # note that shapefile_from_any() returns some info in attributes of the returned object, like error messages and counts of valid points
-    if (!is.null(attr(shp, "validate_errmsg")))            {shiny::validate( attr(shp, "validate_errmsg") )}
-    if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
+    ## shapefile_from_any() runs shapefix(), which inspects the geometry and reports what it
+    ## found via attributes on the returned object - including a point-geometry upload, which
+    ## this option does not accept (points-with-buffers is the latlon upload option instead).
+    ## The rule itself lives in shapefix() only; see ?shapefix and issue #550.
+    ##
+    ## Order matters here: shiny::validate() halts this reactive, so anything that must take
+    ## effect on a rejected upload has to be set BEFORE the validate() call, not after it.
     if (!is.null(attr(shp, "num_valid_pts_uploaded_SHP"))) {num_valid_pts_uploaded[['SHP']] <- attr(shp, "num_valid_pts_uploaded_SHP")}
     if (!is.null(attr(shp, "invalid_alert_SHP")))          {invalid_alert[['SHP']]          <- attr(shp, "invalid_alert_SHP")}
+    if (!is.null(attr(shp, "validate_errmsg"))) {
+      disable_buttons[['SHP']] <- TRUE # Start button disabled, and must stay disabled
+      cat(attr(shp, "validate_errmsg"), "\n") # for console / server log
+      shiny::validate( attr(shp, "validate_errmsg") )
+    }
+    if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
     if ("sf" %in% class(shp)) {
       disable_buttons[['SHP']] <- FALSE # Start button enabled
     }
@@ -2844,9 +2843,16 @@ app_server <- function(input, output, session) {
       }
       d_uploads <- data_uploaded() %>%
         dplyr::select(-any_of(c('valid', 'invalid_msg'))) %>%
-        sf::st_zm() %>% sf::as_Spatial() # st_zm() was already done? ***
+        ## st_zm() drops any Z/M dimensions so leaflet gets plain 2-D polygons.
+        ## Usually redundant since shapefix() already did it, but shapefile_from_any()
+        ## fast-returns an sf object passed to ejamapp(shapefile = ) without calling
+        ## shapefix(), so keep this here.
+        sf::st_zm()
 
-      # d_uploads is an object of class "SpatialPolygonsDataFrame" not "sf" and "data.frame" like data_uploaded() here is
+      # d_uploads has to stay "sf" here (issue #136): map_shapes_leaflet_proxy() calls
+      # sf::st_is_empty(), which has no method for the "SpatialPolygonsDataFrame" that
+      # sf::as_Spatial() used to make, so it printed a UseMethod("st_geometry") error to the
+      # console (inside a try(), so the map still drew). leaflet maps an sf object directly.
       leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
         map_shapes_leaflet_proxy(shapes = d_uploads, popup = popup_from_df(d_uploads %>% sf::st_drop_geometry()))
 
