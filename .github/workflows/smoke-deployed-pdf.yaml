@@ -1,0 +1,65 @@
+name: Smoke-test deployed PDF
+
+on:
+  workflow_run:
+    workflows:
+      - Build & Deploy to ECS Fargate (dev)
+      - Build & Deploy to ECS Fargate
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deployed environment to smoke-test
+        required: true
+        type: choice
+        options:
+          - development
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test-pdf:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       ((github.event.workflow_run.name == 'Build & Deploy to ECS Fargate (dev)' &&
+         github.event.workflow_run.head_branch == 'dev-deploy') ||
+        (github.event.workflow_run.name == 'Build & Deploy to ECS Fargate' &&
+         github.event.workflow_run.head_branch == 'prod-deploy')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EJAM_SMOKE_URL: >-
+        ${{
+          ((github.event_name == 'workflow_dispatch' && inputs.environment == 'development') ||
+           github.event.workflow_run.name == 'Build & Deploy to ECS Fargate (dev)')
+          && 'https://ejamdev.ejanalysis.com/'
+          || 'https://ejam.publicenvirodata.org/'
+        }}
+      EJAM_SMOKE_ARTIFACT_DIR: ${{ runner.temp }}/ejam-pdf-smoke
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: false
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.62.0
+          npx playwright install --with-deps chromium
+
+      - name: Generate and validate a deployed PDF
+        run: node .github/scripts/smoke-deployed-pdf.cjs
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: deployed-pdf-smoke-${{ github.run_id }}
+          path: ${{ runner.temp }}/ejam-pdf-smoke
+          if-no-files-found: warn
