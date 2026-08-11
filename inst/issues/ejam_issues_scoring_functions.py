@@ -522,6 +522,23 @@ def issue_count_text(count: int) -> str:
     return f"{count} issue" if count == 1 else f"{count} issues"
 
 
+def md_escape(text: str) -> str:
+    """Escape the characters in an issue title that break the generated report.
+
+    Both of these are structural, not cosmetic:
+
+    * ``$`` opens a Pandoc inline-math span. Titles such as
+      ``doaggregate()$results_bybg_people`` and ``... vs input$ ?`` left an
+      unclosed span that swallowed every following table row into one cell --
+      three issues disappeared from each of two tables in the rendered HTML.
+    * ``|`` would end a table cell early and shift the rest of the row.
+
+    Applied only where a title is written into Markdown; the JSON payload keeps
+    the raw title, since it is data rather than markup.
+    """
+    return text.replace("$", r"\$").replace("|", r"\|")
+
+
 def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
                 issues: list[dict]) -> None:
     lines.append(f"## Quadrant {letter} — {heading}")
@@ -531,7 +548,7 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
     lines.append("")
     for r in issues:
         lines.append(
-            f"- [#{r['num']}]({URL_BASE}{r['num']}) — {r['title']}"
+            f"- [#{r['num']}]({URL_BASE}{r['num']}) — {md_escape(r['title'])}"
         )
     lines.append("")
     lines.append(
@@ -548,7 +565,9 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
             and "PRIORITY" not in l
         ]
         lab_str  = ", ".join(key_labs[:4])
-        short    = r["title"][:70] + ("…" if len(r["title"]) > 70 else "")
+        ## truncate first, then escape - escaping first would let backslashes
+        ## count toward the limit and could cut a "\$" in half
+        short    = md_escape(r["title"][:70] + ("…" if len(r["title"]) > 70 else ""))
         lines.append(
             f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
             f"{r['cost']} ({cost_tier(r['cost'])}) | "
@@ -681,7 +700,7 @@ def generate_markdown(scored_issues: list[dict],
     for letter in ("A", "B", "C", "D"):
         for r in quads[letter]:
             plbl  = get_priority_label(r["labels"])
-            short = r["title"][:72] + ("…" if len(r["title"]) > 72 else "")
+            short = md_escape(r["title"][:72] + ("…" if len(r["title"]) > 72 else ""))
             lines.append(
                 f"| {letter} | [{r['num']}]({URL_BASE}{r['num']}) | "
                 f"{r['cost']} | {r['benefit']} | {r['milestone']} | "

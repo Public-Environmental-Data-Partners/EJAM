@@ -99,10 +99,10 @@
 - [#126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) — enable 1-site report on Polygons / Shapefile, via links/buttons in shiny map popups and table of sites (but NOT outside shiny like in URL-based/link in Excel table)
 - [#279](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/279) — Prepare the package to submit to CRAN (and get it accepted for hosting on CRAN)
 - [#87](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/87) — Enable shiny.telemetry log file that is not just a text file on server
-- [#31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) — fix distance_avg in doaggregate()$results_bybg_people
+- [#31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) — fix distance_avg in doaggregate()\$results_bybg_people
 - [#553](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/553) — plot_lorenz_*() draft plots are broken: undefined bysite, filter on a literal, constant aes mapping
 - [#56](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/56) — check/ fix Distance and Site Count summary stats, in doaggregate()
-- [#135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) — finish work in progress on default_ss_choose_method  vs input$ ?
+- [#135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) — finish work in progress on default_ss_choose_method  vs input\$ ?
 - [#19](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19) — FIPS missing/problems (mostly in Connecticut)
 - [#511](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/511) — CI runs only on PRs into main: development and deploy PRs get no checks at all
 - [#510](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/510) — Smoke-test PDF generation in the built image and after deploy (prod PDF broke undetected)
@@ -151,10 +151,10 @@
 | [126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) | enable 1-site report on Polygons / Shapefile, via links/buttons in shi… | 4 (🟡 Medium) | 11 (🟩🟦 High) | NA | PRIORITY MEDIUM | Affects Web App, API, rank:B-high-value-high-cost |
 | [279](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/279) | Prepare the package to submit to CRAN (and get it accepted for hosting… | 5 (🟡 Medium) | 10 (🟩🟦 High) | NA | PRIORITY MEDIUM | help wanted, Affects R users only - NOT web app users, rank:B-high-value-high-cost |
 | [87](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/87) | Enable shiny.telemetry log file that is not just a text file on server | 6 (🟡 Medium) | 10 (🟩🟦 High) | NA | PRIORITY MEDIUM | datasets-related, Affects Web App, rank:B-high-value-high-cost |
-| [31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) | fix distance_avg in doaggregate()$results_bybg_people | 4 (🟡 Medium) | 9 (🟩🟦 High) | NA | PRIORITY MEDIUM | BUG, distance-related, rank:B-high-value-high-cost |
+| [31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) | fix distance_avg in doaggregate()\$results_bybg_people | 4 (🟡 Medium) | 9 (🟩🟦 High) | NA | PRIORITY MEDIUM | BUG, distance-related, rank:B-high-value-high-cost |
 | [553](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/553) | plot_lorenz_*() draft plots are broken: undefined bysite, filter on a … | 6 (🟡 Medium) | 9 (🟩🟦 High) | NA | PRIORITY LOW | BUG |
 | [56](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/56) | check/ fix Distance and Site Count summary stats, in doaggregate() | 6 (🟡 Medium) | 9 (🟩🟦 High) | NA | PRIORITY MEDIUM | BUG, documentation, calculate/validate to EJScreen, distance-related |
-| [135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) | finish work in progress on default_ss_choose_method  vs input$ ? | 4 (🟡 Medium) | 8 (🟦 Medium) | NA | PRIORITY LOW | BUG, Affects R users only - NOT web app users, rank:B-high-value-high-cost |
+| [135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) | finish work in progress on default_ss_choose_method  vs input\$ ? | 4 (🟡 Medium) | 8 (🟦 Medium) | NA | PRIORITY LOW | BUG, Affects R users only - NOT web app users, rank:B-high-value-high-cost |
 | [19](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19) | FIPS missing/problems (mostly in Connecticut) | 6 (🟡 Medium) | 8 (🟦 Medium) | Data Updates | PRIORITY MEDIUM | BUG, help wanted, maps-related, datasets-related |
 | [511](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/511) | CI runs only on PRs into main: development and deploy PRs get no check… | 4 (🟡 Medium) | 7 (🟦 Medium) | NA | PRIORITY MEDIUM | test, Affects Web App |
 | [510](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/510) | Smoke-test PDF generation in the built image and after deploy (prod PD… | 4 (🟡 Medium) | 7 (🟦 Medium) | NA | PRIORITY MEDIUM | test, Affects Web App |
@@ -385,10 +385,10 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 | B | [126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) | 4 | 11 | NA | PRIORITY MEDIUM | enable 1-site report on Polygons / Shapefile, via links/buttons in shiny… |
 | B | [279](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/279) | 5 | 10 | NA | PRIORITY MEDIUM | Prepare the package to submit to CRAN (and get it accepted for hosting o… |
 | B | [87](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/87) | 6 | 10 | NA | PRIORITY MEDIUM | Enable shiny.telemetry log file that is not just a text file on server |
-| B | [31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) | 4 | 9 | NA | PRIORITY MEDIUM | fix distance_avg in doaggregate()$results_bybg_people |
+| B | [31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) | 4 | 9 | NA | PRIORITY MEDIUM | fix distance_avg in doaggregate()\$results_bybg_people |
 | B | [553](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/553) | 6 | 9 | NA | PRIORITY LOW | plot_lorenz_*() draft plots are broken: undefined bysite, filter on a li… |
 | B | [56](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/56) | 6 | 9 | NA | PRIORITY MEDIUM | check/ fix Distance and Site Count summary stats, in doaggregate() |
-| B | [135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) | 4 | 8 | NA | PRIORITY LOW | finish work in progress on default_ss_choose_method  vs input$ ? |
+| B | [135](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135) | 4 | 8 | NA | PRIORITY LOW | finish work in progress on default_ss_choose_method  vs input\$ ? |
 | B | [19](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19) | 6 | 8 | Data Updates | PRIORITY MEDIUM | FIPS missing/problems (mostly in Connecticut) |
 | B | [511](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/511) | 4 | 7 | NA | PRIORITY MEDIUM | CI runs only on PRs into main: development and deploy PRs get no checks … |
 | B | [510](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/510) | 4 | 7 | NA | PRIORITY MEDIUM | Smoke-test PDF generation in the built image and after deploy (prod PDF … |
