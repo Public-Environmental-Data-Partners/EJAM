@@ -100,7 +100,25 @@ whether or not in a reactive context</p>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>returns all rows of shp, but adds columns "valid" and "invalid_msg"
 and adds attributes shiny can use to update some reactives,
-and standardizes "geometry" as the sfc column name.</p>
+and standardizes "geometry" as the sfc column name.
+Attributes set: <code>validate_errmsg</code>, <code>disable_buttons_SHP</code>,
+<code>num_valid_pts_uploaded_SHP</code>, <code>invalid_alert_SHP</code>, <code>an_map_text_shp</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>This function only <em>reports</em> problems - it never decides what to do about them.
+Findings come back as attributes on the returned object, and each caller reacts as suits it:</p><ul><li><p>the <strong>web app</strong> (app_server.R) reads the attributes, shows <code>validate_errmsg</code> via
+<code><a href="https://rdrr.io/pkg/shiny/man/validate.html" class="external-link">shiny::validate()</a></code>, and disables the Start button.</p></li>
+<li><p><strong><code><a href="ejamit.html">ejamit()</a></code></strong>, via <code><a href="shapefile_from_any.html">shapefile_from_any()</a></code>, ignores the attributes entirely.</p></li>
+</ul><p>That asymmetry is deliberate. Uploading points to the app's "Shapefile of polygons"
+option is blocked, because that option's radius slider starts at <code>minradius_shapefile = 0</code>
+and points buffered by 0 miles would find no blocks - the app has a separate
+"Latitude/Longitude file upload" option for points-with-buffers. But an R user calling
+<code>ejamit(shapefile = &lt;points&gt;, radius = 3)</code> supplies a real radius, so that works and is
+not blocked here. See issue #550.</p>
+<p>Because the decision belongs to the caller, this function deliberately does NOT test
+<code><a href="https://rdrr.io/pkg/shiny/man/isRunning.html" class="external-link">shiny::isRunning()</a></code>. An earlier version did, which meant the point-geometry check
+silently did nothing in a locally launched app (where <code><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive()</a></code> is TRUE).</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
