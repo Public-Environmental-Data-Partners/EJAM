@@ -345,6 +345,33 @@ test_that("live web calibration covers radius-matched FIPS and shape runs", {
   )
 })
 
+test_that("the web app degrades to no ETA for buffered FIPS, rather than a wrong one", {
+  ## app_server.R show_ejamit_runtime_estimate() wraps the call in try(silent = TRUE)
+  ## and returns invisible(NULL) on error, so a buffered FIPS submission shows no
+  ## numeric ETA and the analysis still runs. That silence is deliberate (a buffered
+  ## FIPS/polygon estimate has to be its own calibration, not this model), so pin it
+  ## down here instead of leaving it as an untested side effect of the stop() above.
+  app_estimate <- function(rows, radius, analysis_subtype) {
+    est <- try(
+      EJAM:::speed_ejamit_runtime_estimate(
+        rows = rows, radius = radius,
+        analysis_type = "fips", analysis_subtype = analysis_subtype,
+        target = "webapp_report", profile = "live_v3.2022.2"
+      ),
+      silent = TRUE
+    )
+    if (inherits(est, "try-error")) NULL else est
+  }
+  # buffered: no ETA, and no error reaches the app
+  expect_null(app_estimate(rows = 1, radius = 0.5, analysis_subtype = "county"))
+  expect_null(app_estimate(rows = 20, radius = 3.1, analysis_subtype = "county"))
+  # unbuffered: the calibrated ETA the app does display
+  unbuffered <- app_estimate(rows = 1, radius = 0, analysis_subtype = "county")
+  expect_false(is.null(unbuffered))
+  expect_true(is.finite(unbuffered$seconds_fit))
+  expect_true(nzchar(unbuffered$message))
+})
+
 test_that("operational failures are not treated as ETA calibration rows", {
   evidence_path <- testthat::test_path(
     "..", "..", "data-raw",
