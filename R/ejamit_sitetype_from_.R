@@ -91,7 +91,7 @@ sitetype_from_dt <- function(dt) {
   ## list that simply has no such element.
   if (is.null(dt) || length(dt) == 0) {
     warning("cannot determine valid sitetype")
-    return(NA)
+    return(NA_character_)
   }
 
   #   shp
@@ -137,6 +137,6 @@ sitetype_from_dt <- function(dt) {
   }
 
   warning("cannot determine valid sitetype")
-  return(NA)
+  return(NA_character_)
 }
 ############################ ############################# #

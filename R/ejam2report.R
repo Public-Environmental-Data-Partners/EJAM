@@ -406,7 +406,7 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   ## already safe in every test below, and keeping it distinguishes "could not tell"
   ## from "shp"/"fips"/"latlon".
   if (is.null(sitetype) || length(sitetype) == 0) {
-    sitetype <- NA
+    sitetype <- NA_character_ # character, since sitetype is otherwise "latlon"/"fips"/"shp"
     ejamitout$sitetype <- sitetype # keep the two in step
   }
 
@@ -414,7 +414,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   # which server stores as the submitted_upload_method() reactive
   # and as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
   # which is useful for providing report header info
-  if (missing(site_method) || is.null(site_method) || site_method %in% "") {
+  ## length(): a supplied character(0) is not NULL and not missing, so it reached
+  ## `site_method %in% ""`, which is logical(0) and errors in the if(). [1] with
+  ## isTRUE() also makes a length > 1 site_method well defined rather than another
+  ## multi-element condition.
+  if (missing(site_method) || is.null(site_method) || length(site_method) == 0 ||
+      isTRUE(site_method[1] %in% "")) {
     if (!is.null(ejamitout$site_method)) {
       # e.g., "ZIP" if ejamit(zipcode = ...) was used (which analyzes via the shp path)
       site_method <- ejamitout$site_method
