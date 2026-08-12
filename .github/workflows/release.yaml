@@ -3,19 +3,20 @@ name: 'Release: tag and publish'
 # Tags the version currently in DESCRIPTION on `main` and publishes a GitHub
 # Release whose notes are the matching section of NEWS.md.
 #
-# Two ways to run it:
+# ONE way to run it: manually (workflow_dispatch). Use dry_run first to see exactly
+# what would be tagged and what the notes would say.
 #
-#   1. Manually (workflow_dispatch) - the normal path. Use dry_run first to see
-#      exactly what would be tagged and what the notes would say.
-#   2. On a schedule - 21:00 UTC on August 1, to ship v3.2022.2 without anyone
-#      having to be at a keyboard.
+# THERE IS NO SCHEDULED RELEASE. An annual cron used to ship the August release
+# unattended; it was removed for the v4 line - see the comment where the `schedule:`
+# trigger used to be, just above `permissions:`. Do not re-add one without the
+# maintainer's explicit approval for that specific release.
 #
 # What it does depends on what is already on the releases page:
 #
 #   * an unpublished DRAFT exists -> that draft is published as-is, keeping the
 #     title and notes someone reviewed. Publishing is what creates the tag.
-#     This is the normal path: prepare a draft, review it, let the schedule
-#     ship it.
+#     This is the normal path: prepare a draft, review it, then dispatch this
+#     workflow to ship it.
 #   * nothing exists -> a tag is created and a release is built from the
 #     matching NEWS.md section.
 #   * already published -> nothing happens; a shipped release is never touched.
@@ -25,13 +26,10 @@ name: 'Release: tag and publish'
 # events raised by the default GITHUB_TOKEN, so the `release: published` event
 # this workflow generates triggers nothing on its own.
 #
-# THERE IS NO SCHEDULED RELEASE. This workflow only runs when a human dispatches it.
-# The scheduled path and its cron were removed for the v4 line - see the comment where
-# the `schedule:` trigger used to be, above the `permissions:` block. The
-# SCHEDULED_EXPECTED_VERSION guard is retained but inert: it refuses to do anything
-# unless DESCRIPTION on `main` reads exactly that version, which is the safety net if a
-# schedule is ever deliberately restored. Re-running by hand is always safe: if the tag
-# already exists, the job skips.
+# SCHEDULED_EXPECTED_VERSION below is retained but inert: it refuses to do anything
+# unless DESCRIPTION on `main` reads exactly that version. It is the safety net if a
+# schedule is ever deliberately restored. Re-running by hand is always safe: if the
+# tag already exists, the job skips.
 #
 # VERSION NUMBERING: EJAM versions are MAJOR.ACSENDYEAR.PATCH - the second field is
 # the ACS vintage end year, not a minor number (3.2022.2, 4.2022.0, 4.2024.0). Two
@@ -78,7 +76,9 @@ permissions:
   actions: write
 
 env:
-  # Guard for the scheduled run only - see the header comment.
+  # Guard for the scheduled run only, and therefore INERT while there is no `schedule:`
+  # trigger - the code reading it runs only when github.event_name == 'schedule'. Kept so
+  # the safety net still works if a schedule is ever deliberately restored. See the header.
   SCHEDULED_EXPECTED_VERSION: '4.2022.0'
 
 jobs:
