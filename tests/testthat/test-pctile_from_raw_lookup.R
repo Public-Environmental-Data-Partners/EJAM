@@ -90,7 +90,7 @@ test_that("significant-digit comparison can match near-boundary reference values
   # this raw value is about one ULP below the cutoff listed for percentile 87,
   # which is the ACS22 P_DISABILITYPCT boundary case
   raw_value <- 0.2469572914361584103915
-  expect_lt(abs(raw_value - lookup$pctdisability[3]) / raw_value, 1e-15)
+  expect_lt(abs(raw_value - lookup$pctdisability[lookup$PCTILE == 87]) / raw_value, 1e-15)
 
   # Used to report 86 here, because the raw value is a hair below the cutoff.
   # Since EJAM#555 a value within float noise of a cutoff is snapped onto it, so
@@ -205,8 +205,11 @@ test_that('a value sitting on a lookup cutoff gets the same pctile despite ULP n
   # every nudge must agree, and on the LOWEST of the tied percentiles
   expect_equal(unique(nudged), 29)
 
-  # and where cutoffs are not tied, a cutoff value is still stable either side
-  p79 <- statestats[statestats$REGION == "VT", "pctlan_english"][80]
+  # and where cutoffs are not tied, a cutoff value is still stable either side.
+  # Pick the row by its PCTILE value, not its position, so that reordering the
+  # lookup table cannot quietly point this at a different cutoff.
+  p79 <- vt$pctlan_english[as.numeric(vt$PCTILE) == 79]
+  expect_length(p79, 1)
   nudged79 <- sapply(c(-4, -2, -1, 0, 1, 2, 4), function(k) {
     pctile_from_raw_lookup(ulp_shift(p79, k), "pctlan_english",
                            lookup = statestats, zone = "VT")
