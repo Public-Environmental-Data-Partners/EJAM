@@ -3,19 +3,20 @@ name: 'Release: tag and publish'
 # Tags the version currently in DESCRIPTION on `main` and publishes a GitHub
 # Release whose notes are the matching section of NEWS.md.
 #
-# Two ways to run it:
+# ONE way to run it: manually (workflow_dispatch). Use dry_run first to see exactly
+# what would be tagged and what the notes would say.
 #
-#   1. Manually (workflow_dispatch) - the normal path. Use dry_run first to see
-#      exactly what would be tagged and what the notes would say.
-#   2. On a schedule - 21:00 UTC on August 1, to ship v3.2022.2 without anyone
-#      having to be at a keyboard.
+# THERE IS NO SCHEDULED RELEASE. An annual cron used to ship the August release
+# unattended; it was removed for the v4 line - see the comment where the `schedule:`
+# trigger used to be, just above `permissions:`. Do not re-add one without the
+# maintainer's explicit approval for that specific release.
 #
 # What it does depends on what is already on the releases page:
 #
 #   * an unpublished DRAFT exists -> that draft is published as-is, keeping the
 #     title and notes someone reviewed. Publishing is what creates the tag.
-#     This is the normal path: prepare a draft, review it, let the schedule
-#     ship it.
+#     This is the normal path: prepare a draft, review it, then dispatch this
+#     workflow to ship it.
 #   * nothing exists -> a tag is created and a release is built from the
 #     matching NEWS.md section.
 #   * already published -> nothing happens; a shipped release is never touched.
@@ -25,14 +26,10 @@ name: 'Release: tag and publish'
 # events raised by the default GITHUB_TOKEN, so the `release: published` event
 # this workflow generates triggers nothing on its own.
 #
-# The scheduled path is deliberately one-shot: it refuses to do anything unless
-# DESCRIPTION on `main` still reads exactly SCHEDULED_EXPECTED_VERSION. So when
-# this cron fires again in later years it will find a different version and exit
-# quietly instead of releasing something nobody asked for. Re-running it is
-# always safe: if the tag already exists, the job skips.
-#
-# NOTE: scheduled workflows only fire from the default branch (`main`), so this
-# file has to be merged to `main` before the scheduled run can happen.
+# SCHEDULED_EXPECTED_VERSION below is retained but inert: it refuses to do anything
+# unless DESCRIPTION on `main` reads exactly that version. It is the safety net if a
+# schedule is ever deliberately restored. Re-running by hand is always safe: if the
+# tag already exists, the job skips.
 #
 # VERSION NUMBERING: EJAM versions are MAJOR.ACSENDYEAR.PATCH - the second field is
 # the ACS vintage end year, not a minor number (3.2022.2, 4.2022.0, 4.2024.0). Two
@@ -57,13 +54,20 @@ on:
         required: true
         type: boolean
         default: true
-  schedule:
-    # 21:00 UTC = 17:00 EDT on September 1.
-    #
-    # Retargeted from August 1 (which shipped 3.2022.2 on 2026-08-01) to the
-    # 4.2022.0 window. The guard below makes a mistimed firing a clean no-op, so
-    # if the v4 date slips this simply does nothing until DESCRIPTION catches up.
-    - cron: '0 21 1 9 *'
+  # NO `schedule:` TRIGGER. Releasing is a deliberate, human-initiated act: run this
+  # workflow by hand from the Actions tab (workflow_dispatch above).
+  #
+  # There used to be an annual August 1 cron, which shipped 3.2022.2 on 2026-08-01.
+  # It is deliberately NOT carried forward to the v4 line. The SCHEDULED_EXPECTED_VERSION
+  # guard below only protects against firing on the WRONG version; it cannot tell a
+  # release that is ready from one that is merely dated. So if the code freeze landed on
+  # time but the release were being held back - for more testing, or a deploy window, or
+  # any reason at all - a cron would publish it anyway. That is the failure this removal
+  # prevents.
+  #
+  # Do not re-add a cron here without the maintainer's explicit approval for that
+  # specific release. The env var below is kept only so the guard still works if a
+  # schedule is ever deliberately restored.
 
 permissions:
   contents: write
@@ -72,7 +76,9 @@ permissions:
   actions: write
 
 env:
-  # Guard for the scheduled run only - see the header comment.
+  # Guard for the scheduled run only, and therefore INERT while there is no `schedule:`
+  # trigger - the code reading it runs only when github.event_name == 'schedule'. Kept so
+  # the safety net still works if a schedule is ever deliberately restored. See the header.
   SCHEDULED_EXPECTED_VERSION: '4.2022.0'
 
 jobs:
