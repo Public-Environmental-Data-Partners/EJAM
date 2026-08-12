@@ -1,6 +1,9 @@
-# EJAM v4 (unreleased)
+# EJAM 4.2022.0 (unreleased)
 
 Features held for the v4 milestone, not part of the v3.2022.x patch line.
+
+This is the v4 code line still carrying the ACS 2018-2022 vintage; it becomes the
+frozen 2022 build. The 2020-2024 vintage ships separately as `4.2024.0`.
 
 ## New Features
 

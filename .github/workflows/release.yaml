@@ -32,7 +32,13 @@ name: 'Release: tag and publish'
 # always safe: if the tag already exists, the job skips.
 #
 # NOTE: scheduled workflows only fire from the default branch (`main`), so this
-# file has to be merged to `main` before the August 1 run can happen.
+# file has to be merged to `main` before the scheduled run can happen.
+#
+# VERSION NUMBERING: EJAM versions are MAJOR.ACSENDYEAR.PATCH - the second field is
+# the ACS vintage end year, not a minor number (3.2022.2, 4.2022.0, 4.2024.0). Two
+# vintages are supported at once, so the highest version is the live line and the
+# lower one is the frozen snapshot. The release title and the drift guard both read
+# DESCRIPTION's VersionACS rather than parsing the version string.
 
 on:
   workflow_dispatch:
@@ -52,8 +58,12 @@ on:
         type: boolean
         default: true
   schedule:
-    # 21:00 UTC = 17:00 EDT on August 1.
-    - cron: '0 21 1 8 *'
+    # 21:00 UTC = 17:00 EDT on September 1.
+    #
+    # Retargeted from August 1 (which shipped 3.2022.2 on 2026-08-01) to the
+    # 4.2022.0 window. The guard below makes a mistimed firing a clean no-op, so
+    # if the v4 date slips this simply does nothing until DESCRIPTION catches up.
+    - cron: '0 21 1 9 *'
 
 permissions:
   contents: write
@@ -63,7 +73,7 @@ permissions:
 
 env:
   # Guard for the scheduled run only - see the header comment.
-  SCHEDULED_EXPECTED_VERSION: '3.2022.2'
+  SCHEDULED_EXPECTED_VERSION: '4.2022.0'
 
 jobs:
   release:
@@ -197,9 +207,14 @@ jobs:
           #
           # The version is escaped before being used as a regex, since an unescaped
           # "." would match any character and could latch onto the wrong heading.
+          #
+          # The "v" is optional: release TAGS carry it (v4.2022.0) while DESCRIPTION's
+          # Version does not (4.2022.0), and NEWS.md has used both conventions over
+          # time ("# EJAM 3.2022.2" but "# EJAM v2.32.5"). Accepting either means a
+          # heading written to match the tag no longer fails the release.
           awk -v v="$VERSION" '
             BEGIN { esc = v; gsub(/\./, "\\.", esc) }
-            !inside && $0 ~ "^# EJAM " esc "([^0-9.]|$)" { inside = 1; next }
+            !inside && $0 ~ "^# EJAM v?" esc "([^0-9.]|$)" { inside = 1; next }
             inside && /^# EJAM / { exit }
             inside { if (started || NF) { started = 1; print } }
           ' NEWS.md > release-notes.md
@@ -209,14 +224,32 @@ jobs:
             exit 1
           fi
 
-          # Derive the ACS vintage from a 3.YYYY.x version, to match the naming
-          # used by the existing releases (e.g. "EJAM v3.2022.2 (ACS 2018-2022)").
+          # Derive the ACS vintage for the release title, matching the naming used
+          # by the existing releases (e.g. "EJAM v3.2022.2 (ACS 2018-2022)").
+          #
+          # Read it from DESCRIPTION's VersionACS, the single source of truth for the
+          # vintage. The previous approach parsed field 2 out of a `3.YYYY.x` version
+          # with `grep -qE '^3\.[0-9]{4}\.'`, which silently stopped matching once the
+          # major went to 4 - a 4.2022.0 release would have been titled with no vintage
+          # at all.
           TITLE="EJAM v$VERSION"
-          if printf '%s' "$VERSION" | grep -qE '^3\.[0-9]{4}\.'; then
-            END_YEAR="$(printf '%s' "$VERSION" | cut -d. -f2)"
-            TITLE="EJAM v$VERSION (ACS $((END_YEAR - 4))-$END_YEAR)"
+          ACS_VINTAGE="$(sed -n 's/^VersionACS:[[:space:]]*//p' DESCRIPTION | head -n1 | tr -d '[:space:]')"
+          if [ -n "$ACS_VINTAGE" ]; then
+            TITLE="EJAM v$VERSION (ACS $ACS_VINTAGE)"
           fi
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+
+          # Guard against the version number and the vintage drifting apart. EJAM
+          # versions are MAJOR.ACSENDYEAR.PATCH (3.2022.2, 4.2022.0, 4.2024.0), so
+          # field 2 must equal the end year of VersionACS. Nothing else enforces this,
+          # and a mismatch would mislabel the release and ship data that disagrees
+          # with its own version number.
+          VERSION_YEAR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+          ACS_END_YEAR="${ACS_VINTAGE##*-}"
+          if [ -n "$ACS_VINTAGE" ] && [ "$VERSION_YEAR" != "$ACS_END_YEAR" ]; then
+            echo "::error::Version $VERSION declares ACS end year $VERSION_YEAR but DESCRIPTION VersionACS is $ACS_VINTAGE. Fix one of them before releasing."
+            exit 1
+          fi
 
           {
             echo ""
