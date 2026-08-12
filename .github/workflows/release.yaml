@@ -25,14 +25,13 @@ name: 'Release: tag and publish'
 # events raised by the default GITHUB_TOKEN, so the `release: published` event
 # this workflow generates triggers nothing on its own.
 #
-# The scheduled path is deliberately one-shot: it refuses to do anything unless
-# DESCRIPTION on `main` still reads exactly SCHEDULED_EXPECTED_VERSION. So when
-# this cron fires again in later years it will find a different version and exit
-# quietly instead of releasing something nobody asked for. Re-running it is
-# always safe: if the tag already exists, the job skips.
-#
-# NOTE: scheduled workflows only fire from the default branch (`main`), so this
-# file has to be merged to `main` before the scheduled run can happen.
+# THERE IS NO SCHEDULED RELEASE. This workflow only runs when a human dispatches it.
+# The scheduled path and its cron were removed for the v4 line - see the comment where
+# the `schedule:` trigger used to be, above the `permissions:` block. The
+# SCHEDULED_EXPECTED_VERSION guard is retained but inert: it refuses to do anything
+# unless DESCRIPTION on `main` reads exactly that version, which is the safety net if a
+# schedule is ever deliberately restored. Re-running by hand is always safe: if the tag
+# already exists, the job skips.
 #
 # VERSION NUMBERING: EJAM versions are MAJOR.ACSENDYEAR.PATCH - the second field is
 # the ACS vintage end year, not a minor number (3.2022.2, 4.2022.0, 4.2024.0). Two
@@ -57,13 +56,20 @@ on:
         required: true
         type: boolean
         default: true
-  schedule:
-    # 21:00 UTC = 17:00 EDT on September 1.
-    #
-    # Retargeted from August 1 (which shipped 3.2022.2 on 2026-08-01) to the
-    # 4.2022.0 window. The guard below makes a mistimed firing a clean no-op, so
-    # if the v4 date slips this simply does nothing until DESCRIPTION catches up.
-    - cron: '0 21 1 9 *'
+  # NO `schedule:` TRIGGER. Releasing is a deliberate, human-initiated act: run this
+  # workflow by hand from the Actions tab (workflow_dispatch above).
+  #
+  # There used to be an annual August 1 cron, which shipped 3.2022.2 on 2026-08-01.
+  # It is deliberately NOT carried forward to the v4 line. The SCHEDULED_EXPECTED_VERSION
+  # guard below only protects against firing on the WRONG version; it cannot tell a
+  # release that is ready from one that is merely dated. So if the code freeze landed on
+  # time but the release were being held back - for more testing, or a deploy window, or
+  # any reason at all - a cron would publish it anyway. That is the failure this removal
+  # prevents.
+  #
+  # Do not re-add a cron here without the maintainer's explicit approval for that
+  # specific release. The env var below is kept only so the guard still works if a
+  # schedule is ever deliberately restored.
 
 permissions:
   contents: write
