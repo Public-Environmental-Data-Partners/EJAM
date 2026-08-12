@@ -673,14 +673,32 @@ identifiers match (all <code>v3.YYYY.0</code>):</p>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span>                          <span class="co"># from DESCRIPTION; must equal the marker</span></span></code></pre></div>
 <p>git release tag = <code>ejamdata</code> release tag = DESCRIPTION
 <code>ejamdata_required_tag</code> =
-<code>data/ejamdata_version.txt</code>. A code-only
-<strong>patch</strong> release (for example <code>v3.2022.1</code> or
-<code>v3.2022.2</code>) keeps <code>ejamdata_required_tag</code> and the
-marker at the existing <code>v3.2022.0</code>, because the data did not
-change and the patch reuses the already-published <code>ejamdata</code>
-release. (There is no <code>v3.2022.1</code> or <code>v3.2022.2</code>
-release of <code>ejamdata</code>, and none is needed for a code-only
-patch.)</p>
+<code>data/ejamdata_version.txt</code>.</p>
+<p><strong>The rule applies only when the bundled data changes.</strong>
+Any release that ships code changes on top of already-published data
+keeps <code>ejamdata_required_tag</code> and the marker pointing at the
+<code>ejamdata</code> release the data actually came from. That covers
+two cases:</p>
+<ul>
+<li>a code-only <strong>patch</strong> (for example
+<code>v3.2022.1</code> or <code>v3.2022.2</code>), which stays on the
+existing <code>v3.2022.0</code> data; and</li>
+<li>a release that changes only the <strong>version scheme or major
+version</strong> while keeping the same vintage — for example
+<code>v4.2022.0</code>, which also stays on <code>v3.2022.0</code>
+data.</li>
+</ul>
+<p>In both cases there is no matching <code>ejamdata</code> release and
+none is needed. A new <code>ejamdata</code> release is required only
+when the bundled ACS data itself changes, which is what a vintage bump
+such as <code>v4.2024.0</code> does (that one pins
+<code>v3.2024.0</code>).</p>
+<blockquote>
+<p>EJAM versions read <code>MAJOR.ACSENDYEAR.PATCH</code>, so the middle
+field names the ACS vintage while <code>ejamdata_required_tag</code>
+names the data release. They move independently: <code>v4.2022.0</code>
+and <code>v3.2022.2</code> share <code>v3.2022.0</code> data.</p>
+</blockquote>
 <p>This previously had been handled with a GitHub Actions workflow that
 tried to use Git LFS. That automatic workflow is no longer used and will
 not be restored.</p>

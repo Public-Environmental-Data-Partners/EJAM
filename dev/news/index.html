@@ -69,6 +69,21 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="4.2022.0" id="ejam-420220-unreleased">EJAM 4.2022.0 (unreleased)<a class="anchor" aria-label="anchor" href="#ejam-420220-unreleased"></a></h2>
+<p>Features held for the v4 milestone, not part of the v3.2022.x patch line.</p>
+<p>This is the v4 code line still carrying the ACS 2018-2022 vintage; it becomes the frozen 2022 build. The 2020-2024 vintage ships separately as <code>4.2024.0</code>.</p>
+<div class="section level3">
+<h3 id="new-features-4-2022-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-4-2022-0"></a></h3>
+<ul><li>Zip code analysis: <code>ejamit(zipcode = 10605)</code> now works. Zip codes are converted to Census ZCTA polygons by the new <code><a href="../reference/shapes_from_zip.html">shapes_from_zip()</a></code> helper and analyzed like any other shapefile, and <code><a href="../reference/ejam2report.html">ejam2report()</a></code> describes the places as zip codes and maps their boundaries without needing the <code>shp</code> parameter. This automates the workflow that the Zipcodes article documented as manual steps (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/482" class="external-link">#482</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-4-2022-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-4-2022-0"></a></h3>
+<ul><li><p>The notes tab of the Excel workbook now says how the sites were selected. It had never done so: <code><a href="../reference/buffer_desc_from_sitetype.html">buffer_desc_from_sitetype()</a></code> only appended that detail when the description so far was empty, which none of its branches can produce, and the test inside was inverted as well. A SIC analysis of latitude/longitude sites now reads “Locations defined by latitude, longitude and radius, based on EPA-regulated facilities by SIC code (industry type)” instead of stopping at the radius. The detail is left off when it would only restate the site type, so plain shapefile analyses do not read “Polygons defined by shapefile, based on shapefile”.</p></li>
+<li><p>SIC and MACT analyses get their descriptions back. <code>site_method2text()</code> lowercases its input, but its SIC and MACT branches compared against the uppercase spellings, so neither could ever match and both fell through to an empty string.</p></li>
+<li><p><code><a href="../reference/ejam2report.html">ejam2report()</a></code> now fetches FIPS boundaries when <code>site_method</code> is given as “fips” rather than “FIPS”. The two gates that rebuild those polygons were case-sensitive, so a lowercase spelling silently produced an unmapped report. Matches how the zip code gates added for <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/482" class="external-link">#482</a> already behave.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2022.2" id="ejam-320222-august-2026">EJAM 3.2022.2 (August 2026)<a class="anchor" aria-label="anchor" href="#ejam-320222-august-2026"></a></h2>
 <p>A code-and-docs patch over v3.2022.1, led by a faster web app and new information in the community report about where people live.</p>
 <div class="section level3">
