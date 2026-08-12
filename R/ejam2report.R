@@ -398,6 +398,17 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ejamitout$sitetype <- ejamit_sitetype_from_output(ejamitout)
   }
   sitetype <- ejamitout$sitetype
+  ## Normalized once here, so none of the ~9 `sitetype %in% ...` tests below can see a
+  ## length-0 value: NULL %in% "shp" is logical(0), which if() cannot use. This is
+  ## reachable - an ejamitout carrying an explicit NULL sitetype still has "sitetype"
+  ## in names(), so the inference above is skipped and NULL arrives here.
+  ## NA is deliberately left as NA: %in% returns FALSE for it, never NA, so it is
+  ## already safe in every test below, and keeping it distinguishes "could not tell"
+  ## from "shp"/"fips"/"latlon".
+  if (is.null(sitetype) || length(sitetype) == 0) {
+    sitetype <- NA
+    ejamitout$sitetype <- sitetype # keep the two in step
+  }
 
   # 2d, get more detailed info about how site was specified, from "site_method" parameter,
   # which server stores as the submitted_upload_method() reactive
