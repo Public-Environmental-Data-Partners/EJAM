@@ -398,12 +398,28 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ejamitout$sitetype <- ejamit_sitetype_from_output(ejamitout)
   }
   sitetype <- ejamitout$sitetype
+  ## Normalized once here, so none of the ~9 `sitetype %in% ...` tests below can see a
+  ## length-0 value: NULL %in% "shp" is logical(0), which if() cannot use. This is
+  ## reachable - an ejamitout carrying an explicit NULL sitetype still has "sitetype"
+  ## in names(), so the inference above is skipped and NULL arrives here.
+  ## NA is deliberately left as NA: %in% returns FALSE for it, never NA, so it is
+  ## already safe in every test below, and keeping it distinguishes "could not tell"
+  ## from "shp"/"fips"/"latlon".
+  if (is.null(sitetype) || length(sitetype) == 0) {
+    sitetype <- NA_character_ # character, since sitetype is otherwise "latlon"/"fips"/"shp"
+    ejamitout$sitetype <- sitetype # keep the two in step
+  }
 
   # 2d, get more detailed info about how site was specified, from "site_method" parameter,
   # which server stores as the submitted_upload_method() reactive
   # and as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
   # which is useful for providing report header info
-  if (missing(site_method) || is.null(site_method) || site_method %in% "") {
+  ## length(): a supplied character(0) is not NULL and not missing, so it reached
+  ## `site_method %in% ""`, which is logical(0) and errors in the if(). [1] with
+  ## isTRUE() also makes a length > 1 site_method well defined rather than another
+  ## multi-element condition.
+  if (missing(site_method) || is.null(site_method) || length(site_method) == 0 ||
+      isTRUE(site_method[1] %in% "")) {
     if (!is.null(ejamitout$site_method)) {
       # e.g., "ZIP" if ejamit(zipcode = ...) was used (which analyzes via the shp path)
       site_method <- ejamitout$site_method
@@ -415,6 +431,14 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       } else {
         if (sitetype %in% 'latlon') {
           site_method <- 'latlon'
+        } else {
+          ## final fallback, so site_method is always set from here on. Without it an
+          ## unrecognized sitetype (including the NA that ejamit_sitetype_from_output()
+          ## returns when it cannot tell) left site_method NULL, and every downstream
+          ## use had to defend itself separately - which is how the polygon-rebuild
+          ## gates came to need isTRUE(). "" is what the missing/blank test at the top
+          ## of this block already treats as "not supplied".
+          site_method <- ""
         }
       }
     }

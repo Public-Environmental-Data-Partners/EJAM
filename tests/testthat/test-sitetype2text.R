@@ -310,3 +310,20 @@ rm(show_sitetype2text_examples)
 # TEXT: 'specified cities'                 sitetype2text(nsites=10, sitetype='fips', site_method='FIPS_PLACE', census_unit_type = 'city')
 # TEXT: 'specified blockgroups'            sitetype2text(nsites=10, sitetype='fips', site_method='FIPS_PLACE', census_unit_type = 'blockgroup')
 # TEXT: 'specified blocks'                 sitetype2text(nsites=10, sitetype='fips', site_method='FIPS_PLACE', census_unit_type = 'block')
+
+########################## #
+testthat::test_that("sitetype2text handles a length-0 sitetype or site_method", {
+  ## character(0) is not NULL, so it slipped past the is.null() defaults and survived
+  ## the is.na() replacement unchanged; `sitetype %in% ...` then gave logical(0) and
+  ## the if() errored instead of simply not matching.
+  expect_no_error(res <- sitetype2text(character(0)))
+  expect_equal(res, "place")                                   # same as sitetype2text(NULL)
+  expect_no_error(res2 <- sitetype2text("latlon", site_method = character(0)))
+  expect_equal(res2, "specified point")
+  expect_equal(sitetype2text(character(0)), sitetype2text(NULL))
+
+  ## unchanged for ordinary values
+  expect_equal(sitetype2text(sitetype = "shp"), "specified polygon")
+  expect_equal(sitetype2text(nsites = 10, sitetype = "shp", site_method = "ZIP"),
+               "specified zip codes")
+})

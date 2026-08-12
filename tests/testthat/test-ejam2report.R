@@ -721,6 +721,52 @@ testthat::test_that("pdf_wait_seconds() rejects an unknown setting name", {
 })
 ################ ################# ################# ################# ################# #
 
+testthat::test_that("a NULL or length-0 sitetype does not crash the site_method defaulting", {
+  ## An ejamitout carrying an explicit NULL sitetype still has "sitetype" in names(),
+  ## so the inference is skipped and NULL reaches the `sitetype %in% ...` chain, where
+  ## NULL %in% "shp" is logical(0) and if() cannot use it. NA is fine there already --
+  ## %in% returns FALSE for NA, never NA -- which is why NA is left as NA.
+  chain <- function(sitetype) {
+    site_method <- NULL
+    if (is.null(sitetype) || length(sitetype) == 0) sitetype <- NA_character_  # the normalization
+    if (is.null(site_method) || site_method %in% "") {
+      if (sitetype %in% "shp") site_method <- "SHP"
+      else if (sitetype %in% "fips") site_method <- "FIPS"
+      else if (sitetype %in% "latlon") site_method <- "latlon"
+      else site_method <- ""
+    }
+    site_method
+  }
+  expect_equal(chain(NULL), "")
+  expect_equal(chain(character(0)), "")
+  expect_equal(chain(NA), "")
+  expect_equal(chain(NA_character_), "")
+  expect_equal(chain("zzz"), "")
+  # unchanged for the recognized types
+  expect_equal(chain("shp"), "SHP")
+  expect_equal(chain("fips"), "FIPS")
+  expect_equal(chain("latlon"), "latlon")
+
+  ## %in% never yields NA, so NA needs no isTRUE() wrapper in that chain
+  expect_false(NA %in% "shp")
+  expect_false(is.na(NA %in% "shp"))
+  expect_false(NA_character_ %in% "shp")
+  ## whereas length-0 does need the normalization
+  expect_length(NULL %in% "shp", 0L)
+
+  ## the opening condition of the same block had the identical length-0 problem:
+  ## a supplied character(0) site_method is neither missing nor NULL, so it reached
+  ## `site_method %in% ""` -> logical(0) -> if() error.
+  opens_defaulting <- function(site_method) {
+    is.null(site_method) || length(site_method) == 0 || isTRUE(site_method[1] %in% "")
+  }
+  expect_true(opens_defaulting(NULL))
+  expect_true(opens_defaulting(character(0)))
+  expect_true(opens_defaulting(""))
+  expect_false(opens_defaulting("SHP"))
+  expect_false(opens_defaulting(c("SHP", "FIPS")))   # length > 1 is well defined, not an error
+})
+################ ################# ################# ################# ################# #
 testthat::test_that("the polygon-rebuild gates survive a NULL site_method", {
   ## site_method can still be NULL at the gates: the defaulting block only sets it
   ## from ejamitout$site_method or from sitetype shp/fips/latlon, so any other
