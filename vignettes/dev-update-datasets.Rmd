@@ -499,11 +499,25 @@ EJAM:::ejamdata_required_tag()                          # from DESCRIPTION; must
 ```
 
 git release tag = `ejamdata` release tag = DESCRIPTION `ejamdata_required_tag` =
-`data/ejamdata_version.txt`. A code-only **patch** release (for example
-`v3.2022.1` or `v3.2022.2`) keeps `ejamdata_required_tag` and the marker at
-the existing `v3.2022.0`, because the data did not change and the patch reuses the
-already-published `ejamdata` release. (There is no `v3.2022.1` or `v3.2022.2`
-release of `ejamdata`, and none is needed for a code-only patch.)
+`data/ejamdata_version.txt`.
+
+**The rule applies only when the bundled data changes.** Any release that ships
+code changes on top of already-published data keeps `ejamdata_required_tag` and the
+marker pointing at the `ejamdata` release the data actually came from. That covers
+two cases:
+
+- a code-only **patch** (for example `v3.2022.1` or `v3.2022.2`), which stays on
+  the existing `v3.2022.0` data; and
+- a release that changes only the **version scheme or major version** while keeping
+  the same vintage — for example `v4.2022.0`, which also stays on `v3.2022.0` data.
+
+In both cases there is no matching `ejamdata` release and none is needed. A new
+`ejamdata` release is required only when the bundled ACS data itself changes, which
+is what a vintage bump such as `v4.2024.0` does (that one pins `v3.2024.0`).
+
+> EJAM versions read `MAJOR.ACSENDYEAR.PATCH`, so the middle field names the ACS
+> vintage while `ejamdata_required_tag` names the data release. They move
+> independently: `v4.2022.0` and `v3.2022.2` share `v3.2022.0` data.
 
 This previously had been handled with a GitHub Actions workflow that tried to
 use Git LFS. That automatic workflow is no longer used and will not be restored.
