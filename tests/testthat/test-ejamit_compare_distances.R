@@ -305,15 +305,6 @@ test_that(
 test_that(
   "out_bydistance2results_bydistance() still returns same #s as before",
   {
-    # Windows computes a few percentile values differently, so this exact-equality
-    # comparison against the saved testoutput_* data cannot pass there. It is not
-    # data drift: the local ejamdata matches the pinned v3.2022.0 release
-    # byte-for-byte, and ubuntu and macOS both agree with the saved numbers. The
-    # difference is not float noise either - one site differed by 7 percentile
-    # points, so no tolerance loose enough to pass would still catch a real
-    # regression. Suspected percentile tie/bin handling; see EJAM#555.
-    # Strict comparison is retained on every other platform.
-    testthat::skip_on_os("windows")
 
     suppressWarnings({
       junk <- capture_output({

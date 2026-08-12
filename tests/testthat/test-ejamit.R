@@ -385,15 +385,6 @@ test_that("ejamit() still returns results_overall identical to what it used to r
           (saved as testoutput_ejamit_10pts_1miles$results_overall)", {
             testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
 
-            # Windows computes a few percentile values differently, so this exact-equality
-            # comparison against the saved testoutput_* data cannot pass there. It is not
-            # data drift: the local ejamdata matches the pinned v3.2022.0 release
-            # byte-for-byte, and ubuntu and macOS both agree with the saved numbers. The
-            # difference is not float noise either - one site differed by 7 percentile
-            # points, so no tolerance loose enough to pass would still catch a real
-            # regression. Suspected percentile tie/bin handling; see EJAM#555.
-            # Strict comparison is retained on every other platform.
-            testthat::skip_on_os("windows")
 
             checkthese <- intersect(names(testoutput_ejamit_10pts_1miles$results_overall), names_all_r)
             # # omits from testing no change in:
@@ -418,15 +409,6 @@ test_that("ejamit() still returns results_overall identical to what it used to r
 ########################################################## #
 
 test_that("ejamit() still returns results_bysite identical to numbers it used to return (except 1st column)", {
-  # Windows computes a few percentile values differently, so this exact-equality
-  # comparison against the saved testoutput_* data cannot pass there. It is not
-  # data drift: the local ejamdata matches the pinned v3.2022.0 release
-  # byte-for-byte, and ubuntu and macOS both agree with the saved numbers. The
-  # difference is not float noise either - one site differed by 7 percentile
-  # points, so no tolerance loose enough to pass would still catch a real
-  # regression. Suspected percentile tie/bin handling; see EJAM#555.
-  # Strict comparison is retained on every other platform.
-  testthat::skip_on_os("windows")
 
   testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
 
