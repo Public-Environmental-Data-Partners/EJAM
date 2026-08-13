@@ -15,9 +15,16 @@ test_that('website_url causes an error',{
   })
 
 # website_scrape = TRUE reaches naics.com, so it is its own test and stays covered
-# offline only for the website_url case above
+# offline only for the website_url case above.
+#
+# frs_from_naics() passes website_scrape through to naics_from_any() and feeds the
+# resulting $code straight into regid_from_naics(). When naics.com serves a runner
+# the search page with no results in it, that $code is character(0), so this test
+# failed for the same reason as its siblings below rather than for anything to do
+# with EJAM. Scrape once up front and skip on that known symptom, as they do.
 test_that('website_scrape does not cause an error',{
   skip_if(offline())
+  skip_if_naics_web_unavailable(naics_from_any(21112, website_scrape = TRUE))
   expect_no_error({val <- frs_from_naics(21112, website_scrape = TRUE)}) # "crude petroleum"
   })
 

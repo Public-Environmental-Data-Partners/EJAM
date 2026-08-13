@@ -329,6 +329,85 @@ skip_if_naics_web_unavailable <- function(scraped) {
 }
 ############################### ################################ #
 
+# helper for tests that need a live external URL to answer ####
+
+# skip_if_offline() only proves that SOME host is reachable. It says nothing about
+# whether the specific service a test needs is up, so a test that asserts
+# url_online(x) still fails when EPA, EJScreen, or the EJAM API is down or
+# throttling the runner - a red check that tells us nothing about EJAM.
+#
+# Seen in R CMD check run 31491603711 (2026-08-11): the url_by_id example took the
+# whole "checking examples" step to ERROR when
+# frs-public.epa.gov/ords/frs_public2/frs_rest_services.get_facilities returned 503.
+# Same failure class as the naics.com blocking above.
+# See Public-Environmental-Data-Partners/EJAM#548
+#
+# The point of these tests is that OUR URL BUILDERS still produce URLs the service
+# accepts, so the two cases have to stay separate:
+#
+#   the service could not answer  -> not an EJAM problem  -> skip
+#   the service answered "no"     -> our URL is wrong     -> fail, loudly
+#
+# So: connection failure, timeout, 5xx, and 429 skip. 4xx does NOT skip - a 404 or
+# 400 is exactly the regression these tests exist to catch, and skipping it would
+# make them permanently vacuous.
+
+# skip_if_url_unreachable() is the probe: it only ever skips or returns quietly, so
+# use it to gate a test whose real subject is something else (the DATA an API sends
+# back, say). expect_url_online_or_skip() adds the 200 assertion on top, for tests
+# whose subject IS the URL.
+
+skip_if_url_unreachable <- function(url, what = NULL) {
+
+  what <- if (is.null(what)) url else what
+  if (length(url) != 1 || is.na(url) || !nzchar(trimws(as.character(url)))) {
+    testthat::fail(paste0(
+      "expected a single non-empty URL for ", what,
+      ", got ", class(url)[1], " of length ", length(url),
+      ". That is a URL-builder regression, not a service outage."
+    ))
+    return(invisible(NA_integer_))
+  }
+
+  # A request that never gets an HTTP reply (DNS, TLS, refused, timeout) throws
+  # rather than returning a status, so treat it as "service unreachable".
+  resp <- tryCatch(
+    httr2::req_perform(httr2::req_error(
+      httr2::req_timeout(httr2::request(url), 30),
+      is_error = function(resp) FALSE   # keep 4xx/5xx as responses so we can tell them apart
+    )),
+    error = function(e) e
+  )
+  if (inherits(resp, "condition")) {
+    testthat::skip(paste0(
+      "could not reach ", what, " (no HTTP response): ", conditionMessage(resp)
+    ))
+  }
+
+  status <- httr2::resp_status(resp)
+  if (status >= 500 || status == 429) {
+    testthat::skip(paste0(
+      what, " returned HTTP ", status,
+      " - the service is down or throttling this runner, not an EJAM regression."
+    ))
+  }
+  invisible(status)
+}
+
+expect_url_online_or_skip <- function(url, what = NULL) {
+
+  what   <- if (is.null(what)) url else what
+  status <- skip_if_url_unreachable(url, what = what)
+
+  testthat::expect_equal(
+    status, 200L,
+    label = paste0("HTTP status of ", what),
+    expected.label = "200 (a 4xx here means the URL EJAM built is wrong, not that the service is down)"
+  )
+  invisible(status)
+}
+############################### ################################ #
+
 # helpers to check map functions ####
 
 # these 2 got used in some test files:
