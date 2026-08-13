@@ -439,6 +439,13 @@ report_sections_page_break_before <- c(
   "Facility Counts"
 )
 
+# Heading for the flagged-areas rows, shared by fill_tbl_full_subgroups() and
+# fill_tbl_flagged_areas_section(). A constant rather than a repeated literal
+# for two reasons: it was duplicated in both signatures, and at 94 characters
+# it pushed the \usage line of fill_tbl_full_subgroups.Rd past the 90-character
+# limit R CMD check enforces. The text itself is unchanged.
+flagged_areas_section_title_default <- "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup"
+
 #' Create full demog subgroup/ language/ health/ community/ etc. HTML table of indicator rows
 #' @seealso used by [build_community_report()]
 #' @param output_df single row of results table from doaggregate or possibly ejamit(),
@@ -457,7 +464,9 @@ report_sections_page_break_before <- c(
 #'   to the US and State averages) is inserted just after the
 #'   "Climate" section (or after "Poverty" if there is no Climate section).
 #'   NULL (default) omits that section.
-#' @param flagged_areas_section_title title text for the flagged-areas section subheader row
+#' @param flagged_areas_section_title title text for the flagged-areas section subheader row.
+#'   Defaults to "% of These Residents Who Have This Feature or Area Type in
+#'   (or Overlapping) Their Blockgroup".
 #'
 #' @keywords internal
 #'
@@ -468,7 +477,7 @@ fill_tbl_full_subgroups <- function(output_df,
                                     extratable_show_ratios_in_report = TRUE,
                                     hide_missing_rows_for = names_d_language,
                                     flagged_areas_df = NULL,
-                                    flagged_areas_section_title = "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup"
+                                    flagged_areas_section_title = flagged_areas_section_title_default
                                     ## more params? ***
 ) {
 
@@ -643,7 +652,7 @@ fill_tbl_full_subgroups <- function(output_df,
 #' @noRd
 fill_tbl_flagged_areas_section <- function(flagged_areas_df,
                                            extratable_show_ratios_in_report = TRUE,
-                                           section_title = "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup") {
+                                           section_title = flagged_areas_section_title_default) {
 
   neededcols <- c("Indicator", "Percent_of_these_People")
   if (is.null(flagged_areas_df) || !is.data.frame(flagged_areas_df) ||
@@ -1155,7 +1164,7 @@ generate_extra_header <- function(title = 'Additional Information') {
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -1177,7 +1186,12 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
   ### *** per issue #159 should be reconciled/merged with
   ### buffer_desc_from_sitetype() and its helper site_method2text()
 
-  if (missing(sitetype) || is.null(sitetype)) {
+  ## NA and length-0 are treated like missing/NULL, not passed into the if() chain
+  ## below: ejamit_sitetype_from_output() returns NA when it cannot tell the type
+  ## (see R/ejamit_sitetype_from_.R), and if (NA == "shp") stops with "missing value
+  ## where TRUE/FALSE needed" - so an unknown site type crashed the description
+  ## instead of falling back to the generic wording.
+  if (missing(sitetype) || is.null(sitetype) || length(sitetype) == 0 || is.na(sitetype[1])) {
     buffer_desc <- "Selected Locations"
   } else {
     if (sitetype == "shp") {
@@ -1191,16 +1205,39 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
         } else {
           buffer_desc <- "Selected locations"
         }}}}
-  if (buffer_desc == "") {
-    based_on_txt <- site_method2text(site_method)
-    if (based_on_txt %in% "")
-      buffer_desc <- paste0(buffer_desc, ", based on ", site_method2text(site_method))
+  ## site_method can say more than sitetype does -- sitetype "latlon" with
+  ## site_method "NAICS" means points that are EPA-regulated facilities picked by
+  ## industry code, and sitetype "shp" with "ZIP" means zip code (ZCTA) polygons.
+  ## Append that detail when there is any to add.
+  ##
+  ## This used to be gated on buffer_desc == "", which no branch above can produce,
+  ## so it never ran; and the inner test was inverted, appending only when the text
+  ## was empty. Both are fixed here.
+  based_on_txt <- ""
+  if (!missing(site_method) && !is.null(site_method) && length(site_method) > 0 &&
+      !is.na(site_method[1])) {
+    ## Skip when site_method only restates sitetype, which would read
+    ## "Polygons defined by shapefile, based on shapefile". That is the common
+    ## case, not a corner one: table_xls_from_ejam() defaults site_method to
+    ## sitetype ('shp' -> 'SHP', 'fips' -> 'FIPS') whenever it is not supplied.
+    ## !is.na() here too, so restates_sitetype cannot come out NA and make
+    ## if (!restates_sitetype) error the same way
+    sitetype_known <- !missing(sitetype) && !is.null(sitetype) &&
+      length(sitetype) > 0 && !is.na(sitetype[1])
+    restates_sitetype <- sitetype_known &&
+      tolower(site_method[1]) %in% c(tolower(sitetype[1]), "mapclick")
+    if (!restates_sitetype) {
+      based_on_txt <- site_method2text(site_method[1])
+    }
+  }
+  if (!(based_on_txt %in% "")) {
+    buffer_desc <- paste0(buffer_desc, ", based on ", based_on_txt)
   }
   return(buffer_desc)
 }
 ##################################################################################### #
 
-# eg = c("latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
+# eg = c("latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
 # cbind(eg, site_method2text(eg))
 
 # used by buffer_desc_from_sitetype()
@@ -1230,6 +1267,9 @@ site_method2text =  function(site_method) {
     if (site_method %in% tolower("FIPS_PLACE")) {
       return("names of places")
     }
+    if (site_method %in% tolower(c("ZIP", "ZCTA"))) {
+      return("zip codes (ZCTA boundaries)")
+    }
     if (site_method %in% tolower("NAICS")) {
       return("EPA-regulated facilities by NAICS code (industry type)")
     }
@@ -1239,10 +1279,10 @@ site_method2text =  function(site_method) {
     if (site_method %in% tolower("EPA_PROGRAM")) {
       return("EPA-regulated Facilities by EPA program")
     }
-    if (site_method %in% "SIC") {
+    if (site_method %in% tolower("SIC")) {
       return("EPA-regulated facilities by SIC code (industry type)")
     }
-    if (site_method %in% "MACT") {
+    if (site_method %in% tolower("MACT")) {
       return("EPA-regulated facilities by MACT category (air toxics emissions source type)")
     }
     return("")
@@ -1272,7 +1312,7 @@ site_method2text =  function(site_method) {
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -1298,8 +1338,11 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   if (is.null(nsites) || any(is.na(nsites))) {
     nsites <- 99 # just makes it plural, e.g., "places"
   }
-  if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
-  if (is.null(site_method)) {site_method <- sitetype}
+  ## length-0 is handled alongside NULL, not left to fall through: character(0)
+  ## survives the is.na() replacement below unchanged, and then `sitetype %in% ...`
+  ## yields logical(0), which makes the if() below error instead of simply not matching.
+  if (is.null(sitetype)    || length(sitetype) == 0)    {sitetype    <- sitetype_nullna}
+  if (is.null(site_method) || length(site_method) == 0) {site_method <- sitetype}
 
   sitetype[   is.na(sitetype)]    <- sitetype_nullna
   site_method[is.na(site_method)] <- sitetype_nullna
@@ -1327,7 +1370,10 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   # uploaded each site (detailed site_method) ---------------------------------- -
   # # These detailed designations will override simple ones above, if available (as in server/shiny app)
 
-  if (site_method %in% 'frs') {
+  if (site_method %in% c('zip', 'zcta')) {
+    location_type <- paste0("specified ",            pluralize_maybe("zip code", nsites)) # zips analyzed as ZCTA polygons, so sitetype is shp
+
+  } else if (site_method %in% 'frs') {
     location_type <- paste0("FRS ID-specified ",     pluralize_maybe("site",     nsites)) # "FRS ID-specified site"
 
   } else if (site_method %in% 'epa_program_up') {

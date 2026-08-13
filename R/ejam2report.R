@@ -235,7 +235,7 @@ ejam2report_site_is_reportable <- function(site_result) {
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -398,13 +398,32 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ejamitout$sitetype <- ejamit_sitetype_from_output(ejamitout)
   }
   sitetype <- ejamitout$sitetype
+  ## Normalized once here, so none of the ~9 `sitetype %in% ...` tests below can see a
+  ## length-0 value: NULL %in% "shp" is logical(0), which if() cannot use. This is
+  ## reachable - an ejamitout carrying an explicit NULL sitetype still has "sitetype"
+  ## in names(), so the inference above is skipped and NULL arrives here.
+  ## NA is deliberately left as NA: %in% returns FALSE for it, never NA, so it is
+  ## already safe in every test below, and keeping it distinguishes "could not tell"
+  ## from "shp"/"fips"/"latlon".
+  if (is.null(sitetype) || length(sitetype) == 0) {
+    sitetype <- NA_character_ # character, since sitetype is otherwise "latlon"/"fips"/"shp"
+    ejamitout$sitetype <- sitetype # keep the two in step
+  }
 
   # 2d, get more detailed info about how site was specified, from "site_method" parameter,
   # which server stores as the submitted_upload_method() reactive
   # and as used in server, this could be SHP, FIPS, latlon, MACT, FRS, EPA_PROGRAM_up, etc. etc.
   # which is useful for providing report header info
-  if (missing(site_method) || is.null(site_method) || site_method %in% "") {
-    if (sitetype %in% 'shp') {
+  ## length(): a supplied character(0) is not NULL and not missing, so it reached
+  ## `site_method %in% ""`, which is logical(0) and errors in the if(). [1] with
+  ## isTRUE() also makes a length > 1 site_method well defined rather than another
+  ## multi-element condition.
+  if (missing(site_method) || is.null(site_method) || length(site_method) == 0 ||
+      isTRUE(site_method[1] %in% "")) {
+    if (!is.null(ejamitout$site_method)) {
+      # e.g., "ZIP" if ejamit(zipcode = ...) was used (which analyzes via the shp path)
+      site_method <- ejamitout$site_method
+    } else if (sitetype %in% 'shp') {
       site_method <- 'SHP'
     } else {
       if (sitetype %in% 'fips') {
@@ -412,6 +431,14 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
       } else {
         if (sitetype %in% 'latlon') {
           site_method <- 'latlon'
+        } else {
+          ## final fallback, so site_method is always set from here on. Without it an
+          ## unrecognized sitetype (including the NA that ejamit_sitetype_from_output()
+          ## returns when it cannot tell) left site_method NULL, and every downstream
+          ## use had to defend itself separately - which is how the polygon-rebuild
+          ## gates came to need isTRUE(). "" is what the missing/blank test at the top
+          ## of this block already treats as "not supplied".
+          site_method <- ""
         }
       }
     }
@@ -476,9 +503,27 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     selected_location_name_react <- NULL
 
     ## > fips polygons ####
-    if (site_method %in% "FIPS" && is.null(shp)) {
+    ## toupper() for the same reason as the zip gate just below: site_method2text()
+    ## and sitetype2text() both accept either case, so a caller passing "fips"
+    ## should still get polygons. ejamit() itself always sets "FIPS".
+    ## isTRUE(), because site_method can still be NULL here - the defaulting block
+    ## above leaves it unset when ejamitout$site_method is NULL and sitetype is
+    ## none of shp/fips/latlon - and %in% on NULL gives logical(0), which makes
+    ## if() error with "argument is of length zero" rather than skipping the gate.
+    if (isTRUE(toupper(site_method) %in% "FIPS") && is.null(shp)) {
       shp <- shapes_from_fips(ejamitout$results_bysite$ejam_uniq_id)
       if (!is.na(rad) && rad > 0 && rad != 999) {
+        shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
+      }
+    }
+    ## > zipcode (ZCTA) polygons ####
+    ## toupper() and "ZCTA" accepted, because site_method2text() already treats both
+    ## spellings and both cases as zip codes, so a caller passing site_method = "zip"
+    ## should still get polygons. ejamit() itself always sets "ZIP".
+    if (isTRUE(toupper(site_method) %in% c("ZIP", "ZCTA")) && is.null(shp) && !is.null(ejamitout$zipcode)) {
+      shp <- tryCatch(shapes_from_zip(ejamitout$zipcode), error = function(e) {
+        warning("Could not get zip code (ZCTA) boundaries to map: ", conditionMessage(e)); NULL})
+      if (!is.null(shp) && !is.na(rad) && rad > 0 && rad != 999) {
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
       }
     }
@@ -520,8 +565,23 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > filename will include name of location ####
     selected_location_name_react <- ejamout1$statename
 
+    ## > zipcode (ZCTA) polygons ####
+    ## toupper() / "ZCTA" for the same reason as the multisite branch above.
+    if (isTRUE(toupper(site_method) %in% c("ZIP", "ZCTA")) && is.null(shp) && !is.null(ejamitout$zipcode)) {
+      # rebuild all zip polygons here (cached download); subsetted to sitenumber just below
+      shp <- tryCatch(shapes_from_zip(ejamitout$zipcode), error = function(e) {
+        warning("Could not get zip code (ZCTA) boundaries to map: ", conditionMessage(e)); NULL})
+      if (!is.null(shp) && !is.na(rad) && rad > 0 && rad != 999) {
+        shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
+      }
+    }
     ## > fips polygons ####
-    if (site_method %in% "FIPS" && is.null(shp)) {
+    ## toupper() for the same reason as the multisite branch above.
+    ## isTRUE(), because site_method can still be NULL here - the defaulting block
+    ## above leaves it unset when ejamitout$site_method is NULL and sitetype is
+    ## none of shp/fips/latlon - and %in% on NULL gives logical(0), which makes
+    ## if() error with "argument is of length zero" rather than skipping the gate.
+    if (isTRUE(toupper(site_method) %in% "FIPS") && is.null(shp)) {
       shp <- shapes_from_fips(fips = ejamitout$results_bysite$ejam_uniq_id[sitenumber])
       if (!is.na(rad) && rad > 0 && rad != 999) {
         shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)

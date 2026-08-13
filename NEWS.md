@@ -1,3 +1,41 @@
+# EJAM 4.2022.0 (unreleased)
+
+Features held for the v4 milestone, not part of the v3.2022.x patch line.
+
+This is the v4 code line still carrying the ACS 2018-2022 vintage; it becomes the
+frozen 2022 build. The 2020-2024 vintage ships separately as `4.2024.0`.
+
+## New Features
+
+- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
+  to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
+  any other shapefile, and `ejam2report()` describes the places as zip codes and
+  maps their boundaries without needing the `shp` parameter. This automates the
+  workflow that the Zipcodes article documented as manual steps (#482).
+
+## Bug Fixes
+
+- The notes tab of the Excel workbook now says how the sites were selected. It
+  had never done so: `buffer_desc_from_sitetype()` only appended that detail when
+  the description so far was empty, which none of its branches can produce, and
+  the test inside was inverted as well. A SIC analysis of latitude/longitude
+  sites now reads "Locations defined by latitude, longitude and radius, based on
+  EPA-regulated facilities by SIC code (industry type)" instead of stopping at
+  the radius. The detail is left off when it would only restate the site type,
+  so plain shapefile analyses do not read "Polygons defined by shapefile, based
+  on shapefile".
+
+- SIC and MACT analyses get their descriptions back. `site_method2text()`
+  lowercases its input, but its SIC and MACT branches compared against the
+  uppercase spellings, so neither could ever match and both fell through to an
+  empty string.
+
+- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
+  "fips" rather than "FIPS". The two gates that rebuild those polygons were
+  case-sensitive, so a lowercase spelling silently produced an unmapped report.
+  Matches how the zip code gates added for #482 already behave.
+
+
 # EJAM 3.2022.2 (August 2026)
 
 A code-and-docs patch over v3.2022.1, led by a faster web app and 
@@ -33,8 +71,17 @@ new information in the community report about where people live.
     - docs: [apidocs.ejanalysis.com](https://apidocs.ejanalysis.com)
   
 - **Bugs fixed**, including a crash when arriving from EJScreen's "Send to EJAM"
-  button, intermittent problems uploading files, and 
-  downloaded reports that came out empty (details below).
+  button and downloaded reports that came out empty (details below).
+
+- **Intermittent upload failures on the hosted app are being fixed alongside
+  this release** (#268), but by a change to the hosting setup rather than by
+  anything in this package. The production app runs on two servers, and an
+  upload could be sent to the one that was not holding your session, which
+  answered "Not Found" -- roughly half the time. The load balancer is being set
+  to keep each session on a single server, the same fix applied in early 2026
+  that was later lost when the servers were rebuilt from their configuration
+  files. Because it is a hosting change, installing v3.2022.2 does not by itself
+  resolve it; the two are simply being done at the same time.
 
 ## Improvements
 

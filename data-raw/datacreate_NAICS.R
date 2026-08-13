@@ -50,11 +50,11 @@ metadata_add_and_use_this("NAICS")
 dataset_documenter(varname = "NAICS",
                    title = "NAICS (DATA) named vector of all NAICS code numbers and industry name for each",
                    description = "A named vector of more than 2,000 NAICS code numbers and industry name for each",
-                   details = "This is a named set of numeric codes, where a name has the code and title,
+                   details = paste0("This is a named set of numeric codes, where a name has the code and title,
 like '22132 - Sewage Treatment Facilities' or '22 - Utilities'
 Revised codes have been published every five years, such as in 2017 and 2022.
 
-", paste0("This dataset is based on the NAICS codes released in", vintage_naics_codes_to_get, ".)","
+This dataset is based on the NAICS codes released in ", vintage_naics_codes_to_get, ".
 
 The version used should match the version used in assigning codes to the EPA FRS facilities.
 As of 5/2026, the 2017 NAICS codes were being used in EJAM because
@@ -66,5 +66,5 @@ For more info, see [naics_download()] and (https://naics.com)
 and [2022 codes](https://www.census.gov/naics/?58967?yearbck=2022)
 
 and [2017 codes](https://www.census.gov/naics/?58967?yearbck=2017)
-                   ",
+                   "),
                    seealso = " [naics_download()] [naicstable] [naics_from_any()] [naics_categories()] [NAICS]")

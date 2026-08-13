@@ -201,6 +201,7 @@ USGS
 UST
 USTs
 USVI
+Unsetting
 VPC
 WFM
 WKID
@@ -226,6 +227,7 @@ addedbuffermiles
 addin
 aoimap
 api
+apidev
 apidocs
 apinames
 apirepo
@@ -462,6 +464,7 @@ grepv
 gridded
 handoff
 hardcoded
+hardcoding
 headernames
 hhlds
 hisp

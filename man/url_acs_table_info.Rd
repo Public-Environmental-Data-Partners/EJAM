@@ -27,7 +27,7 @@ vector of URLs
 get URL(s) of Census Bureau pages showing ACS 5-year tables examples
 }
 \examples{
-\donttest{
+\dontrun{
 # requires a Census API key -- see ?tidycensus::census_api_key
 url_acs_table_info()
 }

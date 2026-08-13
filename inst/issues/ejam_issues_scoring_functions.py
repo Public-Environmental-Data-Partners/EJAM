@@ -110,6 +110,7 @@ URL_BASE = f"https://github.com/{OWNER}/{REPO}/issues/"
 REPORT_SOURCE = f"Live GitHub REST API open issues ({OWNER}/{REPO})"
 DEFAULT_MARKDOWN_OUTPUT = "inst/issues/ejam_issues_scored_by_risk_and_value.MD"
 DEFAULT_SCORES_OUTPUT = "inst/issues/ejam_issues_scored_by_risk_and_value.json"
+MAX_QUADRANT_A_ISSUES = 20
 
 RANK_LABELS = {
     "A": "rank:A-high-value-low-cost",
@@ -360,6 +361,22 @@ def quadrant(cost: int, benefit: int,
     return "D"
 
 
+def cap_quadrant_a(scored_issues: list[dict]) -> None:
+    """Keep Quadrant A small enough to serve as an actionable focus list.
+
+    Median thresholds identify the low-cost, high-benefit candidates.  When
+    there are more than the focus-list limit, retain the highest-benefit,
+    lowest-cost candidates in A and move the rest to C as lower-priority
+    low-cost work.
+    """
+    candidates = sorted(
+        (issue for issue in scored_issues if issue["quad"] == "A"),
+        key=lambda issue: (-issue["benefit"], issue["cost"], issue["num"]),
+    )
+    for issue in candidates[MAX_QUADRANT_A_ISSUES:]:
+        issue["quad"] = "C"
+
+
 # ── MARKDOWN GENERATION ───────────────────────────────────────────────────────
 
 def get_priority_label(labels: list[str]) -> str:
@@ -505,6 +522,23 @@ def issue_count_text(count: int) -> str:
     return f"{count} issue" if count == 1 else f"{count} issues"
 
 
+def md_escape(text: str) -> str:
+    """Escape the characters in an issue title that break the generated report.
+
+    Both of these are structural, not cosmetic:
+
+    * ``$`` opens a Pandoc inline-math span. Titles such as
+      ``doaggregate()$results_bybg_people`` and ``... vs input$ ?`` left an
+      unclosed span that swallowed every following table row into one cell --
+      three issues disappeared from each of two tables in the rendered HTML.
+    * ``|`` would end a table cell early and shift the rest of the row.
+
+    Applied only where a title is written into Markdown; the JSON payload keeps
+    the raw title, since it is data rather than markup.
+    """
+    return text.replace("$", r"\$").replace("|", r"\|")
+
+
 def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
                 issues: list[dict]) -> None:
     lines.append(f"## Quadrant {letter} — {heading}")
@@ -514,7 +548,7 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
     lines.append("")
     for r in issues:
         lines.append(
-            f"- [#{r['num']}]({URL_BASE}{r['num']}) — {r['title']}"
+            f"- [#{r['num']}]({URL_BASE}{r['num']}) — {md_escape(r['title'])}"
         )
     lines.append("")
     lines.append(
@@ -531,7 +565,9 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
             and "PRIORITY" not in l
         ]
         lab_str  = ", ".join(key_labs[:4])
-        short    = r["title"][:70] + ("…" if len(r["title"]) > 70 else "")
+        ## truncate first, then escape - escaping first would let backslashes
+        ## count toward the limit and could cut a "\$" in half
+        short    = md_escape(r["title"][:70] + ("…" if len(r["title"]) > 70 else ""))
         lines.append(
             f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
             f"{r['cost']} ({cost_tier(r['cost'])}) | "
@@ -623,8 +659,9 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("|---|---|---|")
     lines.append(
         "| **LOW Cost**<br>cost < median | "
-        f"**C — Might As Well**<br>{issue_count_text(len(quads['C']))} | "
-        f"**A — BEST CANDIDATES**<br>{issue_count_text(len(quads['A']))} |"
+        f"**C — Other Low-Cost Work**<br>{issue_count_text(len(quads['C']))} | "
+        f"**A — Focus Shortlist (max {MAX_QUADRANT_A_ISSUES})**<br>"
+        f"{issue_count_text(len(quads['A']))} |"
     )
     lines.append(
         "| **HIGH Cost**<br>cost ≥ median | "
@@ -636,16 +673,18 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
 
     _write_quad(lines, "A",
-                "BEST CANDIDATES — Low Cost, High Benefit",
-                "Easy fixes with clear high value. Prioritize these above all others.",
+                "FOCUS SHORTLIST — Low Cost, High Benefit",
+                f"The top {MAX_QUADRANT_A_ISSUES} low-cost, high-benefit candidates at most, "
+                "ordered by benefit then cost. Prioritize these above all others.",
                 quads["A"])
     _write_quad(lines, "B",
                 "OK Candidates — High Cost, High Benefit",
                 "Worth doing but require more effort or expertise. Plan carefully before starting.",
                 quads["B"])
     _write_quad(lines, "C",
-                "Might As Well — Low Cost, Low Benefit",
-                "Cheap to do; low urgency. Pick these up when bandwidth allows or combine with nearby work.",
+                "OTHER LOW-COST WORK",
+                "Cheap to do but not in the current focus shortlist. Pick these up when bandwidth allows "
+                "or combine them with nearby work.",
                 quads["C"])
     _write_quad(lines, "D",
                 "WORST CANDIDATES — High Cost, Low Benefit",
@@ -661,7 +700,7 @@ def generate_markdown(scored_issues: list[dict],
     for letter in ("A", "B", "C", "D"):
         for r in quads[letter]:
             plbl  = get_priority_label(r["labels"])
-            short = r["title"][:72] + ("…" if len(r["title"]) > 72 else "")
+            short = md_escape(r["title"][:72] + ("…" if len(r["title"]) > 72 else ""))
             lines.append(
                 f"| {letter} | [{r['num']}]({URL_BASE}{r['num']}) | "
                 f"{r['cost']} | {r['benefit']} | {r['milestone']} | "
@@ -711,6 +750,14 @@ def generate_markdown(scored_issues: list[dict],
     lines.append(
         "Issues at or above the median are **High**; below are **Low** "
         "for that dimension."
+    )
+    lines.append("")
+    lines.append("### Focus shortlist rule")
+    lines.append("")
+    lines.append(
+        f"Quadrant A is capped at **{MAX_QUADRANT_A_ISSUES} issues**. After the median split, "
+        "eligible low-cost, high-benefit issues are ordered by benefit descending, cost ascending, "
+        "then issue number. Any remaining eligible issues are placed in C as other low-cost work."
     )
     lines.append("")
     lines.append("### GitHub rank labels for a later update task")
@@ -809,6 +856,7 @@ def score_issues(issues: list[dict]) -> tuple[list[dict], int, int]:
 
     for r in scored:
         r["quad"] = quadrant(r["cost"], r["benefit"], cost_med, benefit_med)
+    cap_quadrant_a(scored)
 
     return scored, cost_med, benefit_med
 

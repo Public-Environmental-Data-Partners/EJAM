@@ -47,7 +47,7 @@ https://frs-public.epa.gov/ords/frs_public2/frs_rest_services.get_facilities?reg
 }
 \examples{
 EJAM:::url_by_id(testinput_regid)
-\donttest{
+\dontrun{
 browseURL(EJAM:::url_by_id(testinput_regid)[1])
 
 urlx = EJAM:::url_by_id(testinput_regid[1])

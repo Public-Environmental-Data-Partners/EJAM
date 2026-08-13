@@ -13,6 +13,7 @@ test_that('the function works for naics codes (numeric or string) and query text
   expect_no_warning({
     val <- naics_findwebscrape(212221)
     })
+  skip_if_naics_web_unavailable(val)
   expect_true(212221 %in% val$code)
 })
 
@@ -29,6 +30,7 @@ test_that('you can filter the results of webscrape', {
   skip_if(offline())
   query = "gold mining"
   expect_no_warning({val <- naics_findwebscrape(query)})
+  skip_if_naics_web_unavailable(val)
 
   query_split = strsplit(query, " ")
   query_mod = paste0(unlist(query_split), collapse = ".*")
