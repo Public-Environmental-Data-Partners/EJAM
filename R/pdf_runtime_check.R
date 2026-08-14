@@ -45,11 +45,11 @@ assert_valid_pdf_file <- function(path, min_size = 100L) {
 ################################################## #
 # helper
 
-smoke_test_pdf_runtime <- function() {
+verify_pdf_runtime <- function() {
 
   if (!requireNamespace("pagedown", quietly = TRUE)) {
     stop(
-      "The 'pagedown' package is required for the PDF build smoke test.",
+      "The 'pagedown' package is required to verify PDF generation during the build.",
       call. = FALSE
     )
   }
@@ -59,7 +59,7 @@ smoke_test_pdf_runtime <- function() {
   on.exit(unlink(c(input_file, output_file)), add = TRUE)
 
   writeLines(
-    "<html><body><p>EJAM PDF build smoke test</p></body></html>",
+    "<html><body><p>EJAM PDF build verification</p></body></html>",
     input_file,
     useBytes = TRUE
   )
@@ -74,6 +74,6 @@ smoke_test_pdf_runtime <- function() {
   )
   assert_valid_pdf_file(output_file)
 
-  message("EJAM PDF build smoke test produced a valid PDF.")
+  message("EJAM PDF build verification produced a valid PDF.")
   invisible(TRUE)
 }

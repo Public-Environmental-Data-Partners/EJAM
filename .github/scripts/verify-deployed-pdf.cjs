@@ -3,21 +3,21 @@ const os = require("node:os");
 const path = require("node:path");
 const { chromium } = require("playwright");
 
-const targetUrl = process.env.EJAM_SMOKE_URL;
+const targetUrl = process.env.EJAM_PDF_VERIFICATION_URL;
 if (!targetUrl) {
-  throw new Error("EJAM_SMOKE_URL is required.");
+  throw new Error("EJAM_PDF_VERIFICATION_URL is required.");
 }
 
 const parsedUrl = new URL(targetUrl);
 if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-  throw new Error("EJAM_SMOKE_URL must use http or https.");
+  throw new Error("EJAM_PDF_VERIFICATION_URL must use http or https.");
 }
 
-const artifactDir = process.env.EJAM_SMOKE_ARTIFACT_DIR ||
-  path.join(os.tmpdir(), "ejam-pdf-smoke");
+const artifactDir = process.env.EJAM_PDF_VERIFICATION_ARTIFACT_DIR ||
+  path.join(os.tmpdir(), "ejam-pdf-verification");
 fs.mkdirSync(artifactDir, { recursive: true });
 
-const pdfPath = path.join(artifactDir, "deployed-ejam-smoke.pdf");
+const pdfPath = path.join(artifactDir, "deployed-ejam-verification.pdf");
 const screenshotPath = path.join(artifactDir, "failure.png");
 
 function assertPdf(filePath, suggestedFilename) {

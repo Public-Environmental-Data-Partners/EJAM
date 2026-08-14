@@ -137,25 +137,25 @@ feature / fix  ──PR──►  main  ──PR──►  dev-deploy  ──PR�
 The workflows can also be run manually from **GitHub → Actions → (deploy workflow)
 → Run workflow**.
 
-### PDF smoke gates
+### PDF checks
 
-PDF support is checked at three different layers because a source-only test cannot
-detect a broken container configuration:
+PDF support is verified at three points because source-only testing does not
+exercise the image's configuration:
 
 1. **During the image build:** the package `configure` script performs a real
    `pagedown::chrome_print()` render whenever the build advertises Chrome through
    `CHROMOTE_CHROME` or `PAGEDOWN_CHROME` (or explicitly sets
-   `EJAM_PDF_BUILD_SMOKE_TEST=true`). It verifies both the output size and `%PDF`
+   `EJAM_VERIFY_PDF_BUILD=true`). It verifies both the output size and `%PDF`
    magic bytes. A Chrome executable lookup alone is not treated as success.
 2. **In the Shiny browser suite:** the full `latlon` case requests both PDF and
    HTML report downloads. Missing Pandoc is an error for this test, not a silent
    pass.
-3. **After deployment:** `Smoke-test deployed PDF` runs after either successful
+3. **After deployment:** `Verify deployed PDF generation` runs after either successful
    ECS deploy workflow. It performs a one-point analysis against the deployed
    development or production app, downloads the report, and verifies the `.pdf`
    filename and `%PDF` bytes. The workflow can also be dispatched manually.
 
-The post-deploy smoke workflow lives on the default branch, as required by
+The post-deployment verification workflow lives on the default branch, as required by
 GitHub's `workflow_run` event, while the operational build/deploy workflows stay
 on `dev-deploy` and `prod-deploy`.
 

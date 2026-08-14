@@ -1,4 +1,4 @@
-name: Smoke-test deployed PDF
+name: Verify deployed PDF generation
 
 on:
   workflow_run:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: Deployed environment to smoke-test
+        description: Deployed environment to verify
         required: true
         type: choice
         options:
@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 jobs:
-  smoke-test-pdf:
+  verify-deployed-pdf:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.workflow_run.conclusion == 'success' &&
@@ -31,14 +31,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      EJAM_SMOKE_URL: >-
+      EJAM_PDF_VERIFICATION_URL: >-
         ${{
           ((github.event_name == 'workflow_dispatch' && inputs.environment == 'development') ||
            github.event.workflow_run.name == 'Build & Deploy to ECS Fargate (dev)')
           && 'https://ejamdev.ejanalysis.com/'
           || 'https://ejam.publicenvirodata.org/'
         }}
-      EJAM_SMOKE_ARTIFACT_DIR: ${{ runner.temp }}/ejam-pdf-smoke
+      EJAM_PDF_VERIFICATION_ARTIFACT_DIR: ${{ runner.temp }}/ejam-pdf-verification
 
     steps:
       - uses: actions/checkout@v7
@@ -54,12 +54,12 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Generate and validate a deployed PDF
-        run: node .github/scripts/smoke-deployed-pdf.cjs
+        run: node .github/scripts/verify-deployed-pdf.cjs
 
       - name: Upload failure diagnostics
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: deployed-pdf-smoke-${{ github.run_id }}
-          path: ${{ runner.temp }}/ejam-pdf-smoke
+          name: deployed-pdf-verification-${{ github.run_id }}
+          path: ${{ runner.temp }}/ejam-pdf-verification
           if-no-files-found: warn
