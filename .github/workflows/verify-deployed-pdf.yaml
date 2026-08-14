@@ -38,8 +38,6 @@ jobs:
           && 'https://ejamdev.ejanalysis.com/'
           || 'https://ejam.publicenvirodata.org/'
         }}
-      EJAM_PDF_VERIFICATION_ARTIFACT_DIR: ${{ runner.temp }}/ejam-pdf-verification
-
     steps:
       - uses: actions/checkout@v7
 
@@ -55,6 +53,8 @@ jobs:
 
       - name: Generate and validate a deployed PDF
         run: node .github/scripts/verify-deployed-pdf.cjs
+        env:
+          EJAM_PDF_VERIFICATION_ARTIFACT_DIR: ${{ runner.temp }}/ejam-pdf-verification
 
       - name: Upload failure diagnostics
         if: failure()
