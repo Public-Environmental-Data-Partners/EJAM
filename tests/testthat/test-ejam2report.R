@@ -33,6 +33,26 @@ test_that("assert_pdf_report_available() stops with a descriptive message when P
   )
 })
 
+test_that("assert_valid_pdf_file() checks actual PDF bytes", {
+  valid_pdf <- tempfile(fileext = ".pdf")
+  html_error <- tempfile(fileext = ".pdf")
+  on.exit(unlink(c(valid_pdf, html_error)), add = TRUE)
+
+  writeBin(c(charToRaw("%PDF"), as.raw(rep(0, 100))), valid_pdf)
+  writeLines("<html><body>500 error</body></html>", html_error)
+
+  expect_no_error(EJAM:::assert_valid_pdf_file(valid_pdf))
+  expect_error(
+    EJAM:::assert_valid_pdf_file(html_error),
+    regexp = "%PDF",
+    fixed = TRUE
+  )
+  expect_error(
+    EJAM:::assert_valid_pdf_file(file.path(tempdir(), "missing.pdf")),
+    regexp = "none was created"
+  )
+})
+
 test_that("PDF footer CSS handles missing, vector, and escaped footer text", {
   expect_no_error(
     footer <- as.character(EJAM:::generate_report_footer(
