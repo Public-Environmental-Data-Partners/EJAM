@@ -368,6 +368,37 @@ merge, Actions deploys the <em>same validated commit</em> to production.
 </ol>
 <p>The workflows can also be run manually from <strong>GitHub → Actions
 → (deploy workflow) → Run workflow</strong>.</p>
+<div class="section level3">
+<h3 id="pdf-checks">PDF checks<a class="anchor" aria-label="anchor" href="#pdf-checks"></a>
+</h3>
+<p>PDF support is verified at three points because source-only testing
+does not exercise the image’s configuration:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>During the image build:</strong> the package
+<code>configure</code> script performs a real
+<code><a href="https://rdrr.io/pkg/pagedown/man/chrome_print.html" class="external-link">pagedown::chrome_print()</a></code> render whenever the build
+advertises Chrome through <code>CHROMOTE_CHROME</code> or
+<code>PAGEDOWN_CHROME</code> (or explicitly sets
+<code>EJAM_VERIFY_PDF_BUILD=true</code>). It verifies both the output
+size and <code>%PDF</code> magic bytes. A Chrome executable lookup alone
+is not treated as success.</li>
+<li>
+<strong>In the Shiny browser suite:</strong> the full
+<code>latlon</code> case requests both PDF and HTML report downloads.
+Missing Pandoc is an error for this test, not a silent pass.</li>
+<li>
+<strong>After deployment:</strong>
+<code>Verify deployed PDF generation</code> runs after either successful
+ECS deploy workflow. It performs a one-point analysis against the
+deployed development or production app, downloads the report, and
+verifies the <code>.pdf</code> filename and <code>%PDF</code> bytes. The
+workflow can also be dispatched manually.</li>
+</ol>
+<p>The post-deployment verification workflow lives on the default
+branch, as required by GitHub’s <code>workflow_run</code> event, while
+the operational build/deploy workflows stay on <code>dev-deploy</code>
+and <code>prod-deploy</code>.</p>
 <p><strong>Required GitHub Actions secrets</strong> (repo → Settings →
 Secrets and variables → Actions):</p>
 <table class="table">
@@ -417,6 +448,7 @@ predates that update instead installs EJAM from the build context via
 <code>EJAMDATA_VERSION</code> to the latest ejamdata release — so
 confirm the <code>Dockerfile</code> on the branch you deploy.)</em></p>
 </blockquote>
+</div>
 </div>
 <div class="section level2">
 <h2 id="first-time-setup-manual-infrastructure">First-time setup (manual / infrastructure)<a class="anchor" aria-label="anchor" href="#first-time-setup-manual-infrastructure"></a>
