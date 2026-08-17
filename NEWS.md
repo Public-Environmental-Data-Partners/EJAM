@@ -53,24 +53,10 @@ frozen 2022 build. The 2020-2024 vintage ships separately as `4.2024.0`.
   the ACS22 `pctdisability` boundary case without needing the `signif_digits`
   argument.
 
-- A GitHub outage no longer looks like missing data. When the GitHub API is
-  degraded it can answer a request for a repository's releases with an empty
-  list instead of an error. `piggyback` cannot tell that apart from a release
-  with no assets, so it downloaded nothing and returned quietly, and the only
-  thing anyone saw was a later "Unable to load required EJAM dataset: quaddata"
-  -- which sends whoever is debugging it toward the `ejamdata` release instead
-  of toward the failed API call. That is what broke every platform of the
-  2026-08-17 install checks while `v3.2022.0` was fine and complete.
-
-  `download_latest_arrow_data()` now asks GitHub for the one release it needs
-  before downloading anything, and reports four separate outcomes: the listing
-  failed and the release may be unreachable rather than empty; the release does
-  not exist; the release really does have zero assets; or the release has assets
-  but not the requested files. Transient failures (5xx, rate limiting, network
-  trouble) are retried with backoff, a download that silently produces no file is
-  retried after clearing `piggyback`'s session-long listing cache, and the
-  diagnosis is carried forward so a later "cannot find that dataset" error says
-  what actually went wrong.
+- A GitHub outage no longer looks like missing data. When the API cannot list a
+  release's assets, `download_latest_arrow_data()` now says so and retries,
+  instead of treating the empty answer as an empty release and reporting a
+  missing `quaddata.arrow` much later.
 
 
 # EJAM 3.2022.2 (August 2026)
