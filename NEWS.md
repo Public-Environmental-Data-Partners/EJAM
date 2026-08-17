@@ -53,6 +53,11 @@ frozen 2022 build. The 2020-2024 vintage ships separately as `4.2024.0`.
   the ACS22 `pctdisability` boundary case without needing the `signif_digits`
   argument.
 
+- A GitHub outage no longer looks like missing data. When the API cannot list a
+  release's assets, `download_latest_arrow_data()` now says so and retries,
+  instead of treating the empty answer as an empty release and reporting a
+  missing `quaddata.arrow` much later.
+
 
 # EJAM 3.2022.2 (August 2026)
 
