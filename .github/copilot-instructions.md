@@ -3,7 +3,7 @@
 ## Repository Overview
 
 EJAM (Environmental Justice Analysis Multisite tool) is an R package with Shiny web app for environmental justice analysis and proximity assessment.
-Large repository: Can be roughly ~737MB, 621 R files, 618 man pages, 115MB datasets. However, several very large .arrow data files are used by the package but not part of the bundle that gets downloaded to be installed.
+Large repository: roughly ~737MB, ~450 R source files, ~665 man pages, 115MB datasets (counts drift; re-count rather than trusting these). However, several very large .arrow data files are used by the package but not part of the bundle that gets downloaded to be installed.
 
 **Tech Stack:** See the DESCRIPTION file for a list of dependencies, such as these: R with a specific version specified, Golem Shiny framework, data.table, sf (spatial), arrow
 
@@ -112,12 +112,17 @@ shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 
 ## Linting
 
-**Lintr is configured in `.github/workflows/lintr.yaml`, but as of 2026-07 that workflow (and
-`R CMD check` in `.github/workflows/check-standard.yaml`) is manually disabled in this repo's
-GitHub Actions settings.** Neither currently runs on PRs -- re-check the repo's Actions tab if
-you need current CI-enforcement status, since this can change. Separately, even if `lintr.yaml`
-is re-enabled, its `Run lintr` step has `continue-on-error: true` -- lint findings alone won't
-fail the workflow/block a PR unless that setting is also changed.
+**Lintr is configured in `.github/workflows/lintr.yaml`. As of 2026-08-17 that workflow and
+`R CMD check` (`.github/workflows/check-standard.yaml`) are both `active`** -- they had been
+manually disabled in the Actions settings through mid-2026 and have since been re-enabled.
+Enablement is a repo setting, not something visible in the YAML, so re-check the Actions tab
+(or `gh api repos/OWNER/REPO/actions/workflows`) rather than trusting this paragraph.
+
+Note what each one actually gates: `check-standard.yaml` runs the 5-platform matrix on PRs into
+`main` and pushes to `main` only -- **development PRs deliberately get only the cheap gates**
+(lintr, quick install), because the full matrix is expensive. And `lintr.yaml`'s `Run lintr`
+step has `continue-on-error: true`, so lint findings alone do not fail the workflow or block a
+PR unless that setting changes.
 
 To run lintr locally anyway:
 ```r
@@ -127,7 +132,7 @@ lintr::lint_dir(".")
 lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
 ```
 
-**Important:** Lintr is not currently enforced by CI, but you should still address violations when reasonable.
+**Important:** Lint findings do not block a PR (see `continue-on-error` above), but you should still address violations when reasonable.
 
 ## Building Documentation
 
@@ -304,7 +309,7 @@ And note it might be useful to look at the live web app and/or the hosted API, b
 
 ## Trust These Instructions
 
-These instructions have been carefully validated (originally as of May 1, 2026; re-verified/corrected against the live repo, GitHub Actions state, and open PRs as of July 2, 2026; the version-scheme, ACS-vintage, and no-scheduled-release sections added August 17, 2026),
+These instructions have been carefully validated (originally as of May 1, 2026; re-verified/corrected against the live repo, GitHub Actions state, and open PRs as of July 2, 2026; the version-scheme, ACS-vintage, and no-scheduled-release sections added and the CI-enablement, lint-enforcement, and repository-size statements re-verified against the live repo and Actions API on August 17, 2026),
 except where they explicitly mention the latest updates or need for updates.
 
 For most development tasks, following these instructions should allow you to work efficiently without extensive exploration outside this package or repository.
