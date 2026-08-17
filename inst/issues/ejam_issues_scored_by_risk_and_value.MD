@@ -23,7 +23,7 @@
 
 | Cost / Benefit | **LOW Benefit**<br>value < median | **HIGH Benefit**<br>value ≥ median |
 |---|---|---|
-| **LOW Cost**<br>cost < median | **C — Other Low-Cost Work**<br>39 issues | **A — Focus Shortlist (max 20)**<br>20 issues |
+| **LOW Cost**<br>cost < median | **C — Other Low-Cost Work**<br>39 issues<br><em>Includes overflow from A (max 20).</em> | **A — Focus Shortlist (max 20)**<br>20 issues |
 | **HIGH Cost**<br>cost ≥ median | **D — WORST CANDIDATES**<br>28 issues | **B — OK Candidates**<br>50 issues |
 
 ---
