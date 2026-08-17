@@ -368,6 +368,7 @@ instead of tests/testthat/_logs
         "test-ejscreen-reference-adjustments.R",
         "test-datasets_arrow_publish.R",
         "test-download_latest_arrow_data.R",
+        "test-utils_release_assets.R",
         "test-ejscreen-stats.R",
         "test-map-headernames-review-artifacts.R",
         "test-ejscreen-pipeline-config.R",

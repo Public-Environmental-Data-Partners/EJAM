@@ -38,6 +38,14 @@ ejamdata_local_arrow_tag_write <- function(tag, path) {
 #'
 #'   Relies on [piggyback::pb_download()] to download data files that have been
 #'   stored as assets of a specific release on the data repository.
+#'
+#'   Before downloading, it asks GitHub what assets that one release actually
+#'   has, and says so distinctly when the answer is a failed listing (the release
+#'   may be unreachable rather than empty), a release that does not exist, a
+#'   release with no assets at all, or a release missing the requested files.
+#'   Transient failures are retried with backoff. Without that check, a degraded
+#'   GitHub API that answers with an empty list looks exactly like a release with
+#'   nothing in it, and nothing gets downloaded without any error being raised.
 #'   For details, see [technical details of how datasets are updated](`r paste0(EJAM::url_package(type = "docs", get_full_url = TRUE), "/articles/dev-update-datasets.html")`)
 #'
 #' @param varnames use defaults, or vector of names like "bgej" or use "all" to get all available
@@ -114,7 +122,12 @@ download_latest_arrow_data <- function(
       warning("Arrow-format datasets (blocks, etc.) were all found, but the local ejamdata release marker does not match required release ", target_arrow_tag, " and no internet connection seems to be available.")
       return(invisible(FALSE))
     } else {
-      warning("One or more arrow-format datasets (blocks, etc.) are missing, but no internet connection seems to be available, so cannot download missing files!")
+      offline_problem <- paste0(
+        "One or more arrow-format datasets (blocks, etc.) are missing, ",
+        "but no internet connection seems to be available, so cannot download missing files!"
+      )
+      ejamdata_download_problem_set(offline_problem)
+      warning(offline_problem)
       return(invisible(FALSE))
     }
   }
@@ -161,6 +174,7 @@ download_latest_arrow_data <- function(
 
     if (length(missing_files) == 0) {
       message("Arrow-format datasets (blocks, etc.) are up-to-date -- locally-installed and package-compatible data repository versions match.")
+      ejamdata_download_problem_clear()
       return(invisible(TRUE))
     } else {
       message("One or more arrow-format datasets (blocks, etc.) are missing. Downloading release ", target_arrow_tag, " from this github repository: ", repository)
@@ -177,41 +191,82 @@ download_latest_arrow_data <- function(
     }
   }
 
-  # otherwise, download the data from EJAM package's release assets
-  tried <- tryCatch({
-    piggyback::pb_download(
-      file = missing_files,
-      dest = installed_data_folder,
-      repo = repository,
-      tag = target_arrow_tag,
-      overwrite = TRUE,
-      use_timestamps = FALSE,
-      .token = github_token
-    )},
-    error = function(e) {
-      message(paste0("\u274C Failed trying to get datasets from github repository ", repository, " release ", target_arrow_tag, "..."))
-      FALSE
-    }
+  # Before downloading anything, ask GitHub directly what assets this release
+  # actually has. piggyback cannot tell an unreachable listing apart from an
+  # empty one -- it treats both as "nothing to download", downloads nothing, and
+  # returns without an error -- so the only symptom used to be a missing local
+  # file reported much later, which points at the data release instead of at the
+  # failed API call. See R/utils_release_assets.R
+  listing <- ejamdata_release_assets(
+    repository = repository,
+    tag = target_arrow_tag,
+    .token = github_token
   )
-  if (isFALSE(tried)) {
+  listing_problem <- ejamdata_release_listing_problem(listing, needed = missing_files)
+  if (!is.null(listing_problem)) {
+    ejamdata_download_problem_set(listing_problem)
+    # Reported as a message as well as a warning: .onAttach() suppresses warnings
+    # while relaying messages, so a warning alone is invisible during install.
+    message(listing_problem)
+    warning(listing_problem, call. = FALSE)
     return(invisible(FALSE))
   }
 
-  downloaded_paths <- file.path(installed_data_folder, missing_files)
-  downloaded_valid <- vapply(downloaded_paths, function(path) {
+  # otherwise, download the data from EJAM package's release assets
+  arrow_file_is_valid <- function(path) {
     file.exists(path) &&
       isTRUE(file.info(path)$size >= 1024) &&
       !inherits(try(arrow::read_ipc_file(path, as_data_frame = FALSE), silent = TRUE), "try-error")
-  }, logical(1))
-  if (!all(downloaded_valid)) {
-    bad_files <- basename(downloaded_paths[!downloaded_valid])
-    unlink(downloaded_paths[!downloaded_valid])
-    warning(
-      "Download failed or did not produce valid Arrow IPC file(s): ",
-      paste(bad_files, collapse = ", "),
-      ". These files were removed and the local data version marker was not updated.",
-      call. = FALSE
+  }
+
+  still_needed <- missing_files
+  download_tries <- 3L
+  for (attempt in seq_len(download_tries)) {
+    if (attempt > 1) {
+      pause_for <- 2 * 2^(attempt - 2L)
+      message(
+        "Retrying download of ", paste(still_needed, collapse = ", "),
+        " in ", pause_for, " seconds (attempt ", attempt, " of ", download_tries, ")..."
+      )
+      Sys.sleep(pause_for)
+      # piggyback memoises release listings for the whole R session, so one empty
+      # answer from a degraded API would make every retry fail identically.
+      piggyback_listing_cache_clear()
+    }
+    tryCatch({
+      piggyback::pb_download(
+        file = still_needed,
+        dest = installed_data_folder,
+        repo = repository,
+        tag = target_arrow_tag,
+        overwrite = TRUE,
+        use_timestamps = FALSE,
+        .token = github_token
+      )},
+      error = function(e) {
+        message(paste0("\u274C Failed trying to get datasets from github repository ", repository, " release ", target_arrow_tag, ": ", conditionMessage(e)))
+        FALSE
+      }
     )
+    still_needed <- still_needed[!vapply(
+      file.path(installed_data_folder, still_needed), arrow_file_is_valid, logical(1)
+    )]
+    if (length(still_needed) == 0) break
+  }
+
+  if (length(still_needed) > 0) {
+    unlink(file.path(installed_data_folder, still_needed))
+    download_problem <- paste0(
+      "\u274C Download did not produce valid Arrow file(s) after ", download_tries,
+      " attempt(s): ", paste(still_needed, collapse = ", "), "\n",
+      "   Release ", target_arrow_tag, " in ", repository, " does list these as assets, ",
+      "so the files exist -- the transfer itself failed or was incomplete.\n",
+      "   The partial files were removed and the local data version marker was not updated. ",
+      "Check your network and disk space, then try again in a new R session."
+    )
+    ejamdata_download_problem_set(download_problem)
+    message(download_problem)
+    warning(download_problem, call. = FALSE)
     return(invisible(FALSE))
   }
   message(paste0("Finished downloading release ", target_arrow_tag, " versions of datasets."))
@@ -228,5 +283,6 @@ download_latest_arrow_data <- function(
   if (isFALSE(tried)) {
     return(invisible(FALSE))
   }
+  ejamdata_download_problem_clear()
   invisible(TRUE)
 }
