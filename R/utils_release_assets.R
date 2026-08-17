@@ -138,7 +138,13 @@ ejamdata_release_assets <- function(repository,
     return(out)
   }
 
-  token <- if (nzchar(.token)) .token else gh::gh_token()
+  # Treat NULL, NA, and "" alike as "no token was supplied, let gh decide".
+  token <- as.character(.token)
+  token <- if (length(token) == 1 && !is.na(token) && nzchar(token)) {
+    token
+  } else {
+    gh::gh_token()
+  }
 
   attempt <- 0L
   release <- NULL

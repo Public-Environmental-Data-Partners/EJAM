@@ -204,6 +204,39 @@ test_that("a short or failed paged assets answer never shrinks what the release 
   expect_identical(listing$status, "ok")
 })
 
+test_that("ejamdata_release_assets treats NULL and NA tokens the same as no token", {
+  env_token <- paste0("ghp_", strrep("A", 36)) # shaped like a real PAT, so gh does not object
+  withr::local_envvar(c(GITHUB_PAT = env_token, GITHUB_TOKEN = NA))
+  seen <- new.env(parent = emptyenv())
+
+  local_mocked_bindings(
+    gh = function(endpoint, ..., .token = NULL) {
+      seen$token <- .token
+      list(id = 7L, draft = FALSE, assets = list(list(name = "quaddata.arrow")))
+    },
+    .package = "gh"
+  )
+
+  for (bad_token in list(NULL, NA, NA_character_, "", character(0))) {
+    listing <- EJAM:::ejamdata_release_assets(
+      repository = "Public-Environmental-Data-Partners/ejamdata",
+      tag = "v3.2022.0",
+      .token = bad_token
+    )
+    expect_true(listing$ok)
+    # gh_token() returns a classed string, so compare the value it carries
+    expect_identical(as.character(seen$token), env_token)
+  }
+
+  # and an actual token is still passed through unchanged
+  EJAM:::ejamdata_release_assets(
+    repository = "Public-Environmental-Data-Partners/ejamdata",
+    tag = "v3.2022.0",
+    .token = "explicit-token"
+  )
+  expect_identical(seen$token, "explicit-token")
+})
+
 test_that("ejamdata_release_assets rejects a repository that is not owner/name", {
   listing <- EJAM:::ejamdata_release_assets(repository = "ejamdata", tag = "v3.2022.0")
   expect_false(listing$ok)
