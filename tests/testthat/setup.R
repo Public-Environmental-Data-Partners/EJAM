@@ -351,6 +351,13 @@ skip_if_naics_web_unavailable <- function(scraped) {
 # So: connection failure, timeout, 5xx, and 429 skip. 4xx does NOT skip - a 404 or
 # 400 is exactly the regression these tests exist to catch, and skipping it would
 # make them permanently vacuous.
+#
+# A URL that never reaches the wire at all belongs on the fail side too, and it does
+# not arrive as a status code, so it has to be caught before the request goes out.
+# curl reports "not a url", "htp://example.com", and "http://" (no host) as the same
+# httr2_failure condition class as a genuine outage, so without a check on the URL
+# string first, a builder regression would be skipped - the exact outcome this helper
+# exists to prevent. Hence the url_parse() and scheme/host checks below.
 
 # skip_if_url_unreachable() is the probe: it only ever skips or returns quietly, so
 # use it to gate a test whose real subject is something else (the DATA an API sends
@@ -369,8 +376,34 @@ skip_if_url_unreachable <- function(url, what = NULL) {
     return(invisible(NA_integer_))
   }
 
+  # Everything from here to the request is about the URL EJAM BUILT, and fails.
+  # Everything after it is about the SERVICE, and skips.
+  parsed <- tryCatch(httr2::url_parse(url), error = function(e) e)
+  if (inherits(parsed, "condition")) {
+    testthat::fail(paste0(
+      "the URL built for ", what, " cannot be parsed as a URL at all: ",
+      conditionMessage(parsed),
+      ". That is a URL-builder regression, not a service outage. The URL was: ", url
+    ))
+    return(invisible(NA_integer_))
+  }
+  scheme   <- if (is.null(parsed$scheme))   "" else tolower(as.character(parsed$scheme))
+  hostname <- if (is.null(parsed$hostname)) "" else as.character(parsed$hostname)
+  if (!(scheme %in% c("http", "https")) || !nzchar(hostname)) {
+    testthat::fail(paste0(
+      "the URL built for ", what, " is not an http(s) URL with a host",
+      " (scheme '", scheme, "', host '", hostname, "').",
+      " That is a URL-builder regression, not a service outage. The URL was: ", url
+    ))
+    return(invisible(NA_integer_))
+  }
+
   # A request that never gets an HTTP reply (DNS, TLS, refused, timeout) throws
-  # rather than returning a status, so treat it as "service unreachable".
+  # rather than returning a status, so treat it as "service unreachable". DNS failure
+  # stays on the skip side deliberately: a runner with no DNS and a hostname EJAM got
+  # wrong look identical from here, and a blocked runner is much the likelier of the
+  # two. The checks above are what keep that leniency from covering the cases where
+  # the two DON'T look alike.
   resp <- tryCatch(
     httr2::req_perform(httr2::req_error(
       httr2::req_timeout(httr2::request(url), 30),

@@ -22,9 +22,26 @@ test_that('website_url causes an error',{
 # the search page with no results in it, that $code is character(0), so this test
 # failed for the same reason as its siblings below rather than for anything to do
 # with EJAM. Scrape once up front and skip on that known symptom, as they do.
+#
+# The scrape has to be the ONLY one in this test. Guarding the scrape and then letting
+# frs_from_naics() go scrape again gives naics.com a second chance to block us after
+# the guard already said it was up, which is the flake we came here to remove. So the
+# guarded result is handed back to frs_from_naics() through naics_from_any(). What is
+# under test is unchanged - that a scraped character $code feeds regid_from_naics()
+# without error - it just runs on data fetched once.
 test_that('website_scrape does not cause an error',{
   skip_if(offline())
-  skip_if_naics_web_unavailable(naics_from_any(21112, website_scrape = TRUE))
+  scraped <- naics_from_any(21112, website_scrape = TRUE)
+  skip_if_naics_web_unavailable(scraped)
+  # The scraped value is baked into the mock's body rather than looked up from here.
+  # frs_from_naics() makes its naics_from_any() call inside an arrow filter(), which
+  # re-evaluates that call in an arrow data mask, and a plain function(...) scraped
+  # then fails with "object 'scraped' not found". Inlining the value leaves nothing
+  # to look up.
+  testthat::local_mocked_bindings(
+    naics_from_any = eval(bquote(function(...) .(scraped))),
+    .package = "EJAM"
+  )
   expect_no_error({val <- frs_from_naics(21112, website_scrape = TRUE)}) # "crude petroleum"
   })
 
