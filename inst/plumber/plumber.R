@@ -20,6 +20,12 @@
 #* @plumber
 function(pr) {
 
+  # Specify the EJAM version in the Swagger UI (otherwise it shows "0.0.0.9000" for dev builds).
+  plumber::pr_set_api_spec(pr, function(spec) {
+    spec$info$version <- Sys.getenv("EJAM_VERSION", unset = "development")
+    spec
+  })
+
   # Locate the two route files: prefer the source tree when running from a
   # checkout of the EJAM repo (so edits are picked up without reinstalling),
   # else use the installed package's copies.
