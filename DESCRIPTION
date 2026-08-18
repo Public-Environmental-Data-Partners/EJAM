@@ -133,6 +133,7 @@ Suggests:
     ggridges (>= 0.5.7),
     here,
     mapview,
+    memoise,
     miniUI,
     openssl,
     pak,

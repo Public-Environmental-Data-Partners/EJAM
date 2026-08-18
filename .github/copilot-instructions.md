@@ -3,7 +3,7 @@
 ## Repository Overview
 
 EJAM (Environmental Justice Analysis Multisite tool) is an R package with Shiny web app for environmental justice analysis and proximity assessment.
-Large repository: Can be roughly ~737MB, 621 R files, 618 man pages, 115MB datasets. However, several very large .arrow data files are used by the package but not part of the bundle that gets downloaded to be installed.
+Large repository: roughly ~737MB, ~450 R source files, ~665 man pages, 115MB datasets (counts drift; re-count rather than trusting these). However, several very large .arrow data files are used by the package but not part of the bundle that gets downloaded to be installed.
 
 **Tech Stack:** See the DESCRIPTION file for a list of dependencies, such as these: R with a specific version specified, Golem Shiny framework, data.table, sf (spatial), arrow
 
@@ -112,12 +112,17 @@ shinytest2::test_app(".", filter = "NAICS-functionality", check_setup = FALSE)
 
 ## Linting
 
-**Lintr is configured in `.github/workflows/lintr.yaml`, but as of 2026-07 that workflow (and
-`R CMD check` in `.github/workflows/check-standard.yaml`) is manually disabled in this repo's
-GitHub Actions settings.** Neither currently runs on PRs -- re-check the repo's Actions tab if
-you need current CI-enforcement status, since this can change. Separately, even if `lintr.yaml`
-is re-enabled, its `Run lintr` step has `continue-on-error: true` -- lint findings alone won't
-fail the workflow/block a PR unless that setting is also changed.
+**Lintr is configured in `.github/workflows/lintr.yaml`. As of 2026-08-17 that workflow and
+`R CMD check` (`.github/workflows/check-standard.yaml`) are both `active`** -- they had been
+manually disabled in the Actions settings through mid-2026 and have since been re-enabled.
+Enablement is a repo setting, not something visible in the YAML, so re-check the Actions tab
+(or `gh api repos/OWNER/REPO/actions/workflows`) rather than trusting this paragraph.
+
+Note what each one actually gates: `check-standard.yaml` runs the 5-platform matrix on PRs into
+`main` and pushes to `main` only -- **development PRs deliberately get only the cheap gates**
+(lintr, quick install), because the full matrix is expensive. And `lintr.yaml`'s `Run lintr`
+step has `continue-on-error: true`, so lint findings alone do not fail the workflow or block a
+PR unless that setting changes.
 
 To run lintr locally anyway:
 ```r
@@ -127,7 +132,7 @@ lintr::lint_dir(".")
 lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
 ```
 
-**Important:** Lintr is not currently enforced by CI, but you should still address violations when reasonable.
+**Important:** Lint findings do not block a PR (see `continue-on-error` above), but you should still address violations when reasonable.
 
 ## Building Documentation
 
@@ -258,15 +263,32 @@ These conventions are used consistently across the maintainer's AI tooling (Clau
 - **Resolve addressed PR review threads:** When a PR review comment/thread has been fully addressed (fixed or confirmed obsolete), resolve the conversation rather than leaving it open.
 - **Don't hardcode live-service URLs in docs or code:** The Shiny app URL, the API base URL, and related repo URLs can change (proxies, domain moves, etc.). They are stored in the `Config/EJAM/url_*` namespace in `DESCRIPTION`; prefer reading them via `url_package()`/`url_ejamapp()`/`url_ejamapi()` rather than hardcoding a URL string, per the "Live EJAM web app" / "API" sections above (which also have the current, verified specifics on AWS ECS Fargate vs. Cloud Run hosting).
 - **Obsolete worktree or branch cleanup:** If it is clear that a worktree or local or remote branch is obsolete since it has already been used for a PR that is merged or issue that it closed, then it should be deleted, but if it is somewhat unclear or not easy to confirm then make a note of it asking for confirmation before deleting it.
+- **Never schedule a release:** Do not add, re-target, or leave in place any `cron`/`schedule:` trigger, scheduled task, or automation that can tag, publish, or deploy a release. A release requires the maintainer's explicit approval at the time. A version guard is *not* a readiness guard -- it only blocks firing on the wrong version and cannot tell a release that is ready from one that merely matches a date, and release dates slip routinely. `release.yaml` is intentionally `workflow_dispatch`-only. Scheduled *read-only* status checks are fine; the prohibition is on scheduled actions that publish, tag, or deploy.
 
 ## Package Version Management
+
+**Version scheme: `MAJOR.ACSENDYEAR.PATCH`.** The middle field is the ACS vintage end year, not a minor number (`3.2022.2`, `4.2022.0`, `4.2024.0`). A breaking code change bumps the major (`5.YYYY.0`).
+
+- Release **tags carry a leading `v`** (`v4.2022.0`); the `DESCRIPTION` `Version:` field does **not** (`4.2022.0`). `CITATION.cff` uses the tag spelling. Do not "normalize" one into the other.
+- Because the version encodes the vintage, it can disagree with `DESCRIPTION`'s `VersionACS`. `.github/workflows/release.yaml` fails the release if version field 2 does not equal the `VersionACS` end year, and derives the release title from `VersionACS` rather than parsing the version string.
+- The NEWS.md heading for a release must be `# EJAM <Version>` matching `DESCRIPTION` (a leading `v` is tolerated). The release workflow extracts its notes from that section and hard-fails if it finds none.
 
 Version of package and versions of critical data sources like ACS are tracked in multiple files and must be updated consistently:
 - `DESCRIPTION` (primary source)
 - `NEWS.md` (changelog)
-- `_pkgdown.yml` (documentation site)
-- `inst/golem-config.yml`
+- `_pkgdown.yml` (documentation site -- regenerated from `DESCRIPTION` by `R/utils_pkgdown_update.R`, so prefer regenerating over hand-editing)
+- `inst/golem-config.yml` (hand-maintained; nothing regenerates it)
 - `CITATION.cff` and `inst/CITATION` (check for any other CITATION files too)
+
+### ACS data vintages
+
+Two ACS vintages are supported at once: a **frozen** one and a **live** one (the highest version number is the live line). The vintage-defining fields in `DESCRIPTION` are `VersionACS`, `ReleaseDateACS`, `ejamdata_required_tag`, and `VersionCensus` -- these move independently of `Version`, and a release that ships only code changes keeps the existing `ejamdata_required_tag` (see `vignettes/dev-update-datasets.Rmd`).
+
+- **A vintage is a data property, not a code property.** Comparing two vintages shows no differences under `R/`. Only a handful of bundled `data/*.rda` files carry real content differences (`blockgroupstats`, `usastats`, `statestats`, `avg.in.us`); the rest differ only by stamped metadata attributes. Changing vintage means swapping those datasets and restamping metadata -- not migrating code.
+- Those bundled `.rda` datasets are **not** in `ejamdata` releases. The git tag for a vintage is their source. `ejamdata` releases hold the `.arrow` files, of which only `bgej` is vintage-specific (geography and FRS files are shared).
+- **Do not backport code into the `ACS2022`/`ACS2023`/`ACS2024` branches.** They are stale historical branches, not active release lines; `development`/`main` carry the currently-shipping vintage. A new vintage is produced by swapping data onto the main line.
+- `data/testoutput_*.rda` fixtures are vintage-sensitive and must be regenerated when the vintage changes -- several tests assert exact equality against them. Do not reuse fixtures from an older vintage branch.
+- The annual pipeline runbook is `vignettes/dev-update-ejscreen-datasets-yearly.Rmd`; dataset/release identifier rules are in `vignettes/dev-update-datasets.Rmd`.
 
 ## Additional Resources
 
@@ -287,7 +309,7 @@ And note it might be useful to look at the live web app and/or the hosted API, b
 
 ## Trust These Instructions
 
-These instructions have been carefully validated (originally as of May 1, 2026, and re-verified/corrected against the live repo, GitHub Actions state, and open PRs as of July 2, 2026),
+These instructions have been carefully validated (originally as of May 1, 2026; re-verified/corrected against the live repo, GitHub Actions state, and open PRs as of July 2, 2026; the version-scheme, ACS-vintage, and no-scheduled-release sections added and the CI-enablement, lint-enforcement, and repository-size statements re-verified against the live repo and Actions API on August 17, 2026),
 except where they explicitly mention the latest updates or need for updates.
 
 For most development tasks, following these instructions should allow you to work efficiently without extensive exploration outside this package or repository.

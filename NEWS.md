@@ -35,6 +35,29 @@ frozen 2022 build. The 2020-2024 vintage ships separately as `4.2024.0`.
   case-sensitive, so a lowercase spelling silently produced an unmapped report.
   Matches how the zip code gates added for #482 already behave.
 
+- Percentiles no longer depend on which operating system the analysis runs on.
+  A raw score is normally a population-weighted average, so it carries a few
+  units in the last place of rounding error, and how much differs between macOS,
+  Linux, and Windows. Because percentile lookup is a step function, a score that
+  lands exactly on a cutoff could fall either side of it, and where the lookup
+  table has several percentiles tied at one cutoff the reported percentile could
+  move by the whole width of that tie block. One test site's state asthma
+  percentile differed by 7 points between operating systems for this reason.
+  Scores that sit within floating-point noise of a cutoff are now snapped onto
+  it, so every platform reports the same percentile, and a tied cutoff correctly
+  reports the lowest of the tied percentiles as documented (#555).
+
+  This corrects saved percentiles in the eight `testoutput_ejamit_*` and
+  `testoutput_doaggregate_*` datasets, which had recorded the higher end of a tie
+  block. Only percentile columns changed. It also means `lookup_pctile()` handles
+  the ACS22 `pctdisability` boundary case without needing the `signif_digits`
+  argument.
+
+- A GitHub outage no longer looks like missing data. When the API cannot list a
+  release's assets, `download_latest_arrow_data()` now says so and retries,
+  instead of treating the empty answer as an empty release and reporting a
+  missing `quaddata.arrow` much later.
+
 
 # EJAM 3.2022.2 (August 2026)
 
