@@ -96,7 +96,7 @@ function(req, res) {
 ####################################################### #
 # . ####
 
-# dataset ####
+# /dataset ####
 
 #* Return a dataset from the EJAM package (lazy-loaded .rda or downloaded .arrow), as JSON
 #* @param fname name of the dataset, like "blockgroupstats" (a trailing .rda or .arrow is ignored)
@@ -144,14 +144,13 @@ function(fname = "blockgroupstats", attachment = "false", res) {
 }
 ####################################################### #
 
-# report2 ####
+# /report2 ####
 
 ##  This endpoint is essentially doing  ejam2report(ejamit(  ))
 ##  exposing most ejamit() parameters,
 ##  so inputs are point(s) or polygon(s) or fip(s), and output is html summary report.
 
-#* Get EJAM analysis results report as HTML (on one site or the aggregate of multiple sites overall)
-#* See ejanalysis.org/ejamdocs for more information about the ejamit() and ejam2report() functions
+#* Get EJAM analysis results report as HTML (on one site or the aggregate of multiple sites overall) - See ejanalysis.org/ejamdocs for more information about the ejamit() and ejam2report() functions
 #*
 #* @param lat if provided, a vector of latitudes in decimal degrees (comma-separated values)
 #* @param lon if provided, a vector of longitudes in decimal degrees (comma-separated values)
@@ -255,11 +254,9 @@ function(
 }
 ####################################################################################################### #
 
-# reportpost ####
+# /reportpost ####
 
-##  Leaner variant of /report2: essentially ejam2report(ejamit( )) with just the core inputs.
-
-#* inputs are like those to ejamit(), returns html EJAM summary report
+##  Leaner variant of /report2: essentially ejam2report(ejamit( )) with just the core inputs. Inputs are like those to ejamit(), returns html EJAM summary report
 #*
 #* @param lat Latitude decimal degrees (single point or vector of comma-separated values like lat=34,35,32)
 #* @param lon Longitude decimal degrees
@@ -327,7 +324,7 @@ function(lat = "", lon = "", radius = "", shapefile = "", fips = "",
 ####################################################################################################### #
 # ~ ####
 
-# ejam2report ####
+# /ejam2report ####
 
 #* like `ejam2report()`, returns html EJAM summary report given the list that is the output of `ejamit()`
 #*
@@ -381,7 +378,7 @@ function(ejamitout = NULL, sitenumber = "", attachment = "true", res) {
 }
 ####################################################################################################### #
 
-# ejam2excel ####
+# /ejam2excel ####
 
 #* like ejam2excel(), returns xlsx file of EJAM analysis results
 #*
@@ -434,10 +431,9 @@ function(lat = "", lon = "", radius = 3, fips = "", shapefile = "", test = "fals
 }
 ####################################################################################################### #
 
-# ejamit_csv ####
+# /ejamit_csv ####
 
-#* csv table of EJAM analysis summary results for all residents within X miles of point(s), in FIPS area(s), or in polygon(s).
-#* Like EJAM::ejamit()$results_overall (but with friendlier column names for indicators).
+#* csv table of EJAM analysis summary results for all residents within X miles of point(s), in FIPS area(s), or in polygon(s). Like EJAM::ejamit()$results_overall (but with friendlier column names for indicators).
 #*
 #* @param lat Latitude decimal degrees (comma-separated for multiple sites)
 #* @param lon Longitude decimal degrees
@@ -485,10 +481,9 @@ function(lat = 40.81417, lon = -96.69963, radius = 1, shapefile = "", fips = "",
 }
 ####################################################### #
 
-# ejamit ####
+# /ejamit ####
 
-#* json table of EJAM analysis summary results for all residents within X miles of point(s), in FIPS area(s), or in polygon(s).
-#* Like EJAM::ejamit()$results_overall (but with friendlier column names for indicators).
+#* json table of EJAM analysis summary results for all residents within X miles of point(s), in FIPS area(s), or in polygon(s). Like EJAM::ejamit()$results_overall (but with friendlier column names for indicators).
 #*
 #* @param lat Latitude decimal degrees (comma-separated for multiple sites)
 #* @param lon Longitude decimal degrees
@@ -550,7 +545,7 @@ function(lat = 40.81417, lon = -96.69963, radius = 1, shapefile = "", fips = "",
 }
 ####################################################################################################### #
 
-# getblocksnearby ####
+# /getblocksnearby ####
 
 #* json table of distances to all Census blocks near given point(s).
 #*
@@ -598,7 +593,7 @@ function(lat, lon, radius, attachment = "false", res) {
 }
 ####################################################### #
 
-# get_blockpoints_in_shape ####
+# /get_blockpoints_in_shape ####
 
 #* json table of Census blocks in each polygon
 #*
@@ -653,9 +648,9 @@ function(polys,
 }
 ####################################################### #
 
-# doaggregate ####
+# /doaggregate ####
 
-#* List of tables and other info summarizing demog and envt based on sites2blocks table
+#* /List of tables and other info summarizing demog and envt based on sites2blocks table
 #*
 #* @param sites2blocks table like the output of getblocksnearby(): one row per block per site,
 #*   with columns ejam_uniq_id, blockid, distance (posted as JSON). see [doaggregate()]
