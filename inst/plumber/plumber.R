@@ -20,35 +20,39 @@
 #* @plumber
 function(pr) {
 
-  # Show, in the Swagger UI, the EJAM version this API is actually serving
-  # (otherwise it shows "0.0.0.9000" for dev builds).
+  # Report the installed EJAM package version in the Swagger/OpenAPI metadata, and
+  # preserve the build-time git ref separately as provenance. Kept deliberately
+  # identical in behavior to EJAM-API's main.r, so the local API and the deployed API
+  # describe themselves the same way.
   #
   # packageVersion() is the source of truth: it reports the EJAM that is installed and
   # answering requests. EJAM_VERSION is a *git ref* picked at build time - a tag such as
   # "v3.2022.2" (with a leading "v", which DESCRIPTION's Version field does not carry), or
-  # even a branch name such as "development", which is not a version at all. It can also
+  # a branch name such as "development", which is not a version at all. It can also
   # disagree with what was installed, since an image may be built with a --build-arg
-  # override while the Dockerfile's pinned default goes stale. So the ref is recorded as
-  # build provenance in the description rather than used as the version itself.
+  # override while the Dockerfile's pinned default goes stale.
   #
-  # Note Sys.getenv(unset=) fires only when the variable is ABSENT. A variable exported as
+  # Note Sys.getenv(unset=) fires only when the variable is ABSENT; a variable exported as
   # an empty string - which `ENV EJAM_VERSION=${EJAM_VERSION}` produces from an empty
-  # build-arg - returns "", so nzchar() is what actually guards the fallback.
+  # build-arg - returns "", so nzchar() is what actually guards this.
   plumber::pr_set_api_spec(pr, function(spec) {
-    installed <- as.character(utils::packageVersion("EJAM"))
-    spec$info$version <- installed
+    spec$info$version <- as.character(utils::packageVersion("EJAM"))
 
-    build_ref <- Sys.getenv("EJAM_VERSION")
-    # Only worth showing when it says something the version does not: a branch name, or a
-    # ref that disagrees with what actually got installed. "v3.2022.2" alongside 3.2022.2
-    # is just the tag spelling of the same thing, so it is left out as noise.
-    if (nzchar(build_ref) &&
-        !identical(build_ref, installed) &&
-        !identical(build_ref, paste0("v", installed))) {
-      prior <- spec$info$description
-      if (is.null(prior)) prior <- ""
-      spec$info$description <- paste0(prior, "\n\nBuilt from EJAM git ref: ", build_ref)
+    ejam_ref <- Sys.getenv("EJAM_VERSION")
+    if (nzchar(ejam_ref)) {
+      description <- spec$info$description
+      if (is.null(description) || !length(description) || is.na(description)) {
+        description <- ""
+      }
+      separator <- if (nzchar(description)) "\n\n" else ""
+      spec$info$description <- paste0(
+        description,
+        separator,
+        "Built from EJAM ref: ",
+        ejam_ref
+      )
     }
+
     spec
   })
 
