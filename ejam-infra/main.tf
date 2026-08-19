@@ -108,6 +108,28 @@ variable "desired_count" {
   default = 2
 }
 
+# Extra environment variables injected into the app container, as a map.
+#
+# This is what lets two vintages run side by side: each environment's tfvars can
+# point its app at its own API without any further Terraform change. For example
+# a 2024-vintage environment would set
+#
+#   app_env_vars = { EJAM_API_BASEURL = "https://api2024.ejanalysis.com" }
+#
+# while the 2022-vintage environment leaves it unset and keeps the DESCRIPTION
+# default. EJAM reads this via url_package("api"), whose precedence is
+# options(ejam.api.baseurl) > EJAM_API_BASEURL > DESCRIPTION > hardcoded.
+#
+# Terraform iterates a map in lexical key order, so the rendered list is stable
+# and an unchanged map produces no diff. The default is empty, which renders as
+# `environment = []` - the same as the current task definition, so adding this
+# variable changes nothing until a tfvars file sets it.
+variable "app_env_vars" {
+  description = "Environment variables for the app container (name => value)"
+  type        = map(string)
+  default     = {}
+}
+
 variable "vpc_cidr" {
   default = "10.0.0.0/16"
 }
@@ -514,6 +536,8 @@ resource "aws_ecs_task_definition" "app" {
       { containerPort = var.app_port,          protocol = "tcp" },
       { containerPort = var.health_check_port, protocol = "tcp" }
     ]
+
+    environment = [for k, v in var.app_env_vars : { name = k, value = v }]
 
     logConfiguration = {
       logDriver = "awslogs"
