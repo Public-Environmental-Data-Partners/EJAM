@@ -487,7 +487,7 @@ function(attribute = "pctunemployed", value = .9, page = 1, limit = QUERY_DEFAUL
 # /assets ####
 
 #* Serve static assets from the ./assets directory at /assets.
-#* @tag Data
+#* @tag Data Files (assets)
 #* NOTE: do NOT mount at root "/", which shadows plumber's OpenAPI/Swagger
 #* docs UI at /__docs__/ and makes the documentation page return 404.
 #* @assets ./assets /assets
