@@ -267,9 +267,9 @@ These conventions are used consistently across the maintainer's AI tooling (Clau
 
 ## Package Version Management
 
-**Version scheme: `MAJOR.ACSENDYEAR.PATCH`.** The middle field is the ACS vintage end year, not a minor number (`3.2022.2`, `4.2022.0`, `4.2024.0`). A breaking code change bumps the major (`5.YYYY.0`).
+**Version scheme: `MAJOR.ACSENDYEAR.PATCH`.** The middle field is the ACS vintage end year, not a minor number (`3.2022.2`, `3.2022.3`, `4.2024.0`). A breaking code change bumps the major (`5.YYYY.0`).
 
-- Release **tags carry a leading `v`** (`v4.2022.0`); the `DESCRIPTION` `Version:` field does **not** (`4.2022.0`). `CITATION.cff` uses the tag spelling. Do not "normalize" one into the other.
+- Release **tags carry a leading `v`** (`v3.2022.3`); the `DESCRIPTION` `Version:` field does **not** (`3.2022.3`). `CITATION.cff` uses the tag spelling. Do not "normalize" one into the other.
 - Because the version encodes the vintage, it can disagree with `DESCRIPTION`'s `VersionACS`. `.github/workflows/release.yaml` fails the release if version field 2 does not equal the `VersionACS` end year, and derives the release title from `VersionACS` rather than parsing the version string.
 - The NEWS.md heading for a release must be `# EJAM <Version>` matching `DESCRIPTION` (a leading `v` is tolerated). The release workflow extracts its notes from that section and hard-fails if it finds none.
 
@@ -282,7 +282,7 @@ Version of package and versions of critical data sources like ACS are tracked in
 
 ### ACS data vintages
 
-Two ACS vintages are supported at once: a **frozen** one and a **live** one (the highest version number is the live line). The vintage-defining fields in `DESCRIPTION` are `VersionACS`, `ReleaseDateACS`, `ejamdata_required_tag`, and `VersionCensus` -- these move independently of `Version`, and a release that ships only code changes keeps the existing `ejamdata_required_tag` (see `vignettes/dev-update-datasets.Rmd`).
+Two ACS vintages are supported at once: a **frozen** one and a **live** one (the highest version number is the live line). As decided by the team on 2026-08-19, those are **`3.2022.3`** (ACS 2018-2022, frozen from release onward) and **`4.2024.0`** (ACS 2020-2024, where development continues). Each is hosted as its own EJAM app, EJScreen app, and API. The vintage-defining fields in `DESCRIPTION` are `VersionACS`, `ReleaseDateACS`, `ejamdata_required_tag`, and `VersionCensus` -- these move independently of `Version`, and a release that ships only code changes keeps the existing `ejamdata_required_tag` (see `vignettes/dev-update-datasets.Rmd`).
 
 - **A vintage is a data property, not a code property.** Comparing two vintages shows no differences under `R/`. Only a handful of bundled `data/*.rda` files carry real content differences (`blockgroupstats`, `usastats`, `statestats`, `avg.in.us`); the rest differ only by stamped metadata attributes. Changing vintage means swapping those datasets and restamping metadata -- not migrating code.
 - Those bundled `.rda` datasets are **not** in `ejamdata` releases. The git tag for a vintage is their source. `ejamdata` releases hold the `.arrow` files, of which only `bgej` is vintage-specific (geography and FRS files are shared).
