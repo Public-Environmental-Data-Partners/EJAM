@@ -650,7 +650,7 @@ function(polys,
 
 # /doaggregate ####
 
-#* /List of tables and other info summarizing demog and envt based on sites2blocks table
+#* List of tables and other info summarizing demog and envt based on sites2blocks table
 #*
 #* @param sites2blocks table like the output of getblocksnearby(): one row per block per site,
 #*   with columns ejam_uniq_id, blockid, distance (posted as JSON). see [doaggregate()]
