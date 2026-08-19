@@ -150,7 +150,8 @@ new information in the community report about where people live.
   versioned web curves, while local R calls retain a separate `ejamit()`
   profile. Multi-state live estimates are labeled as provisional lower bounds
   after repeated service failures, and buffered polygon/FIPS runs require a
-  separate calibration.
+  separate calibration. The point curve is calibrated on live production, and
+  now varies with buffer radius as well as site count.
 
 - **Report's percentages no longer shown as "0" or "1", or with stray decimals**
   in the report, tables, and map popups (#488). The metadata marking which

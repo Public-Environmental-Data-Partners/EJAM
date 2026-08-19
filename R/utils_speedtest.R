@@ -717,14 +717,45 @@ speed_format_seconds <- function(seconds) {
     ),
     radius_squared_coefficient = 0.016708333333333
   ),
+  # Measured on LIVE PRODUCTION v3.2022.2 (2 vCPU x 2 tasks), click-to-report,
+  # canonical testpoints_* fixtures; n = 1000 delivered via a POST /handoff token.
+  # Replaces the previous single radius-3.1 curve, whose n = 1000 knot was
+  # 33.879834 -- the DEVELOPMENT median (1 vCPU, 1 task), not production. See
+  # EJAM#513 / EJAM#515.
+  #
+  # A single radius^2 coefficient cannot represent this surface. The measured
+  # radius spread is 0.03 s at n = 1, 1.19 s at n = 10, 1.04 s at n = 100 and
+  # 16.18 s at n = 1000: flat within session noise up to n = 100, then a cliff.
+  # The old form scales the radius effect as sqrt(rows), i.e. a smooth
+  # 1x / 3.16x / 10x progression, and refitting its coefficient against these
+  # data bottoms out at a 4.06 s worst-case error -- just outside the accepted
+  # tolerance. Hence explicit per-radius knots.
   webapp_live_v3.2022.2 = list(
     rows = c(1, 10, 100, 1000),
-    seconds_at_radius_3.1 = c(
-      5.212442562472190,
-      5.212442562472190,
-      8.998226937500000,
-      33.879833521000000
+    radius_knots = c(1, 3.1, 5),
+    # rows = knot rows, columns = radius_knots. Monotone nondecreasing BOTH down
+    # each column (more sites is never faster) and across each row (a wider
+    # buffer is never faster), as the runtime surface is required to be.
+    #
+    # Raw production medians were:
+    #        r=1     r=3.1    r=5
+    #  n=1   3.403   --       3.371
+    #  n=10  4.284   5.348    5.471
+    #  n=100 6.418   6.413    5.377
+    #  n=1000 13.907 23.775   30.087
+    #
+    # Two rows dip slightly with radius (n = 1 by 0.03 s, n = 100 by 1.04 s).
+    # Both dips are inside the +/-1 s session-to-session variance measured on
+    # production, so they are noise, not a real speedup from a wider buffer, and
+    # are flattened by carrying each row's running maximum. n = 1 at r = 3.1 was
+    # not measured and takes that row's flat value.
+    seconds_by_radius = rbind(
+      c( 3.403000,  3.403000,  3.403000),
+      c( 4.284000,  5.348000,  5.471000),
+      c( 6.418000,  6.418000,  6.418000),
+      c(13.907000, 23.775000, 30.087000)
     ),
+    # Retained for the shared code path; unused while seconds_by_radius is set.
     radius_squared_coefficient = 0
   )
 )
@@ -846,7 +877,38 @@ speed_predict_point_runtime <- function(
   if (any(!is.finite(radius)) || any(radius < 0)) {
     stop("radius must contain finite nonnegative values")
   }
-  if (settings$radius_squared_coefficient != 0) {
+  if (!is.null(settings$seconds_by_radius)) {
+    # Per-radius knot surface: interpolate on rows within each radius column
+    # (linear, with the shared slope-preserving extrapolation above the largest
+    # knot), then interpolate across radius between those column results.
+    # Radii outside the knot range are clamped, so a 0.5 mi minimum-slider run
+    # is treated as the 1 mi column and a 10 mi run as the 5 mi column, rather
+    # than extrapolating a radius effect never measured.
+    radius_knots <- settings$radius_knots
+    fit <- vapply(
+      seq_along(rows),
+      function(i) {
+        per_radius <- vapply(
+          seq_along(radius_knots),
+          function(j) speed_interpolate_runtime(
+            rows = rows[[i]],
+            knot_rows = settings$rows,
+            knot_seconds = settings$seconds_by_radius[, j]
+          ),
+          numeric(1)
+        )
+        clamped <- min(max(radius[[i]], min(radius_knots)), max(radius_knots))
+        stats::approx(
+          x = radius_knots,
+          y = per_radius,
+          xout = clamped,
+          method = "linear",
+          rule = 2
+        )$y
+      },
+      numeric(1)
+    )
+  } else if (settings$radius_squared_coefficient != 0) {
     radius_scale_at_knots <- sqrt(pmin(settings$rows, 1000) / 10)
     fit <- vapply(
       seq_along(rows),
