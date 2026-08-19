@@ -731,7 +731,7 @@ speed_format_seconds <- function(seconds) {
   # data bottoms out at a 4.06 s worst-case error -- just outside the accepted
   # tolerance. Hence explicit per-radius knots.
   webapp_live_v3.2022.2 = list(
-    rows = c(1, 10, 100, 1000),
+    rows = c(1, 10, 100, 300, 1000),
     radius_knots = c(1, 3.1, 5),
     # rows = knot rows, columns = radius_knots. Monotone nondecreasing BOTH down
     # each column (more sites is never faster) and across each row (a wider
@@ -739,10 +739,25 @@ speed_format_seconds <- function(seconds) {
     #
     # Raw production medians were:
     #        r=1     r=3.1    r=5
-    #  n=1   3.403   --       3.371
-    #  n=10  4.284   5.348    5.471
-    #  n=100 6.418   6.413    5.377
-    #  n=1000 13.907 23.775   30.087
+    #  n=1    3.403   --       3.371
+    #  n=10   4.284   5.348    5.471
+    #  n=100  6.418   6.413    5.377
+    #  n=300  6.656   7.489    9.538
+    #  n=1000 13.907  23.775   30.087
+    #
+    # n = 300 was first measured as a HOLDOUT, to test the interpolation rather
+    # than the knots. All three of its cells passed, but every prediction ran
+    # high by 1.4-2.8 s: the true curve between n = 100 and n = 1000 is convex,
+    # so straight-line interpolation overshoots the middle. The row is folded in
+    # as a knot to remove that bias -- the holdout result stands as evidence
+    # that the surface was already within tolerance before it was added.
+    #
+    # Its r=1 value is the median of two runs (6.772, 6.540); a third read
+    # 17.843 s and is excluded, being slower than n = 1000 at the same radius
+    # and therefore impossible as a workload measurement. That outlier is the
+    # clearest evidence that production variance is occasionally MULTIPLICATIVE
+    # (about 2.6x here on an identical repeat 40 s later), not the small
+    # additive jitter the small-n spreads suggest.
     #
     # Two rows dip slightly with radius (n = 1 by 0.03 s, n = 100 by 1.04 s).
     # Both dips are inside the +/-1 s session-to-session variance measured on
@@ -753,6 +768,7 @@ speed_format_seconds <- function(seconds) {
       c( 3.403000,  3.403000,  3.403000),
       c( 4.284000,  5.348000,  5.471000),
       c( 6.418000,  6.418000,  6.418000),
+      c( 6.656000,  7.489000,  9.538000),
       c(13.907000, 23.775000, 30.087000)
     ),
     # Retained for the shared code path; unused while seconds_by_radius is set.
