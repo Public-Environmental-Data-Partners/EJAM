@@ -151,7 +151,9 @@ new information in the community report about where people live.
   profile. Multi-state live estimates are labeled as provisional lower bounds
   after repeated service failures, and buffered polygon/FIPS runs require a
   separate calibration. The point curve is calibrated on live production, and
-  now varies with buffer radius as well as site count.
+  now varies with buffer radius as well as site count. Beyond the measured
+  range -- more than 1,000 points, or a radius over 5 miles -- the app reports a
+  lower bound rather than an expected time.
 
 - **Report's percentages no longer shown as "0" or "1", or with stray decimals**
   in the report, tables, and map popups (#488). The metadata marking which

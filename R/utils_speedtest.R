@@ -772,7 +772,24 @@ speed_format_seconds <- function(seconds) {
       c(13.907000, 23.775000, 30.087000)
     ),
     # Retained for the shared code path; unused while seconds_by_radius is set.
-    radius_squared_coefficient = 0
+    radius_squared_coefficient = 0,
+    # Edges of the measured envelope. Beyond either, the prediction is an
+    # extrapolation with no production evidence behind it, and is reported as a
+    # lower bound ("allow at least ...") rather than an expected time.
+    #
+    # rows: 5,000 points was attempted on production and did not complete -- it
+    # disconnected the Shiny session twice out of two (87 s, then 18 s), the
+    # same failure class as EJAM#504. So there is no measured anchor above
+    # 1,000, and quoting a confident number there would tell a user to wait for
+    # a result that is not coming.
+    #
+    # radius: nothing above 5 miles has been measured on production, while the
+    # slider allows 10 and the advanced cap is higher. Radius is the dominant
+    # term at large site counts (13.907 s vs 30.087 s across 1-5 miles at
+    # n = 1000), so silently treating 10 or 31 miles as 5 would understate the
+    # work badly.
+    calibrated_max_rows = 1000,
+    calibrated_max_radius = 5
   )
 )
 
@@ -913,14 +930,30 @@ speed_predict_point_runtime <- function(
           ),
           numeric(1)
         )
-        clamped <- min(max(radius[[i]], min(radius_knots)), max(radius_knots))
-        stats::approx(
-          x = radius_knots,
-          y = per_radius,
-          xout = clamped,
-          method = "linear",
-          rule = 2
-        )$y
+        r_i <- radius[[i]]
+        r_max <- max(radius_knots)
+        if (r_i > r_max) {
+          # Extrapolate above the measured range on the slope of the final
+          # radius segment, mirroring how rows are extended above their largest
+          # knot. Clamping instead would return the 5-mile time for a 10- or
+          # 31-mile analysis, which understates it rather than merely being
+          # imprecise. Callers are told this is uncalibrated via
+          # calibrated_max_radius.
+          n_r <- length(radius_knots)
+          final_slope <- (per_radius[n_r] - per_radius[n_r - 1]) /
+            (radius_knots[n_r] - radius_knots[n_r - 1])
+          per_radius[n_r] + final_slope * (r_i - r_max)
+        } else {
+          # Below the smallest measured radius, hold flat: the work only
+          # shrinks, and extrapolating down a slope can cross zero.
+          stats::approx(
+            x = radius_knots,
+            y = per_radius,
+            xout = max(r_i, min(radius_knots)),
+            method = "linear",
+            rule = 2
+          )$y
+        }
       },
       numeric(1)
     )
@@ -1282,11 +1315,29 @@ speed_predict_ejamit_runtime <- function(
   if (analysis_type == "points" &&
       target == "webapp_report" &&
       identical(profile, "live_v3.2022.2")) {
-    return(speed_predict_point_runtime(
+    prediction <- speed_predict_point_runtime(
       rows = rows,
       radius = radius,
       profile = "webapp_live_v3.2022.2"
-    ))
+    )
+    # Outside the measured envelope the number is an extrapolation with no
+    # production evidence behind it. Report it the same way multi-state FIPS
+    # already is -- as a lower bound ("allow at least ...") rather than an
+    # expected time -- instead of presenting it with unearned confidence. This
+    # matters most above 1,000 points, where production did not merely run slow
+    # but failed to complete at all.
+    settings <- .speed_point_runtime_profiles$webapp_live_v3.2022.2
+    inputs <- speed_recycle_runtime_inputs(rows, radius)
+    beyond <- inputs$rows > settings$calibrated_max_rows |
+      inputs$radius > settings$calibrated_max_radius
+    estimate_kind <- rep("expected", length(beyond))
+    if (any(beyond)) {
+      estimate_kind[beyond] <- "lower_bound"
+      prediction[beyond, "lwr"] <- prediction[beyond, "fit"]
+      prediction[beyond, "upr"] <- NA_real_
+    }
+    attr(prediction, "estimate_kind") <- estimate_kind
+    return(prediction)
   }
   if (target == "webapp_report" &&
       identical(profile, "live_v3.2022.2")) {

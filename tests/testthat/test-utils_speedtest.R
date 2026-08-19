@@ -254,6 +254,50 @@ test_that("current point runtime profiles match canonical benchmark medians", {
   }
 })
 
+test_that("point estimates outside the measured envelope are lower bounds, not expected times", {
+  envelope <- EJAM:::.speed_point_runtime_profiles$webapp_live_v3.2022.2
+  expect_equal(envelope$calibrated_max_rows, 1000)
+  expect_equal(envelope$calibrated_max_radius, 5)
+
+  point_estimate <- function(rows, radius) EJAM:::speed_predict_ejamit_runtime(
+    rows = rows, radius = radius, analysis_type = "points",
+    target = "webapp_report", profile = "live_v3.2022.2"
+  )
+
+  # Inside the envelope the estimate is presented as an expected time.
+  expect_equal(attr(point_estimate(1000, 5), "estimate_kind"), "expected")
+  expect_equal(attr(point_estimate(300, 3.1), "estimate_kind"), "expected")
+
+  # Beyond the largest measured radius. The app's slider allows 10 miles and the
+  # advanced cap is higher, but nothing above 5 was measured on production, so
+  # these must not be quoted as expected times.
+  expect_equal(attr(point_estimate(1000, 10), "estimate_kind"), "lower_bound")
+  expect_equal(attr(point_estimate(1000, 31), "estimate_kind"), "lower_bound")
+
+  # Beyond the largest measured site count. 5,000 points did not complete at all
+  # on production, so a confident number there would be worse than no number.
+  expect_equal(attr(point_estimate(5000, 3.1), "estimate_kind"), "lower_bound")
+
+  # A wider radius must not be predicted as flat once past the last knot --
+  # clamping would return the 5-mile time for a 10- or 31-mile analysis.
+  five <- point_estimate(1000, 5)[, "fit"]
+  expect_gt(point_estimate(1000, 10)[, "fit"], five)
+  expect_gt(point_estimate(1000, 31)[, "fit"], point_estimate(1000, 10)[, "fit"])
+
+  # Monotone in radius across the whole supported range, not just the knots.
+  radius_sweep <- vapply(seq(0.5, 31, by = 0.5),
+                         function(r) point_estimate(1000, r)[, "fit"], numeric(1))
+  expect_true(all(diff(radius_sweep) >= -1e-9))
+
+  # A lower bound reads as one, and carries no upper limit.
+  beyond <- EJAM:::speed_ejamit_runtime_estimate(
+    rows = 5000, radius = 3.1, analysis_type = "points",
+    target = "webapp_report", profile = "live_v3.2022.2"
+  )
+  expect_match(beyond$message, "allow at least")
+  expect_false(grepl("upper estimate", beyond$message))
+})
+
 test_that("live web calibration covers radius-matched FIPS and shape runs", {
   predictions <- c(
     EJAM:::speed_predict_ejamit_runtime(

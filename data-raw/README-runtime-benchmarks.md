@@ -4,8 +4,8 @@ This directory contains the durable ETA benchmark evidence collected on
 2026-07-25. It separates the two prediction targets:
 
 - `target = "ejamit"` measures only `system.time(EJAM::ejamit(...))`.
-- `target = "web_app"` measures from clicking **Start Analysis** until the
-  multisite report is visible.
+- `target = "webapp_report"` measures from clicking **Start Analysis** until
+  the multisite report is visible.
 
 The curated 78-row record is
 `Analysis_timing_results_runtime_scenarios.csv`. It retains successful runs,
@@ -18,6 +18,58 @@ The runner writes a raw 22-column local-R timing table. The curated evidence
 adds browser outcomes, source provenance, cohort decisions, and comparison
 metrics to produce the 39-column table committed here.
 
+## Status: what is current and what is superseded
+
+**Read this first.** This file was written on 2026-07-25, when production still ran
+**v3.2022.1** and the only v3.2022.2 web evidence came from the *development* service. That is no
+longer the situation, and parts of the narrative below are historical rather than current.
+
+| Curve | Calibration evidence | Status |
+|---|---|---|
+| Point (`points` / `point_buffer`) | **Live production v3.2022.2**, measured 2026-08-19 | **Current.** Supersedes the development point evidence described below |
+| FIPS and shapefile | Live development v3.2022.2, July 2026 | Still the July evidence; **not yet re-measured on production** |
+| Local `ejamit()` | Local R, July 2026 | Unchanged |
+
+Production was confirmed as `EJAM v3.2022.2, 8/1/26, ACS 2018-2022` from the running app.
+The point-curve numbers now in `.speed_point_runtime_profiles$webapp_live_v3.2022.2` are
+production medians, not development ones; the previous n=1000 knot of 33.879834 was the
+*development* median and has been replaced. Where sections below say production is v3.2022.1, or
+that development is the v3.2022.2 calibration target, that is true of the July cohort only.
+
+### 2026-08-19 production recalibration (point curve)
+
+Measured on live production v3.2022.2, click to rendered multisite report, canonical
+`testpoints_*` fixtures; n = 1000 and above delivered via a `POST /handoff` token.
+
+| n | r=1 | r=3.1 | r=5 |
+|---:|---:|---:|---:|
+| 1 | 3.403 s | -- | 3.371 s |
+| 10 | 4.284 s | 5.348 s | 5.471 s |
+| 100 | 6.418 s | 6.413 s | 5.377 s |
+| 300 | 6.656 s | 7.489 s | 9.538 s |
+| 1000 | 13.907 s | 23.775 s | 30.087 s |
+| **5000** | -- | **did not complete** | -- |
+
+Radius is flat within session noise through n = 100 and then dominant at n = 1000, which a single
+`radius^2` coefficient scaled by `sqrt(rows)` cannot express -- refitting that form bottoms out at
+a 4.06 s worst-case error. Hence explicit per-radius knots.
+
+**Known gaps, deliberately recorded rather than papered over:**
+
+- **Above 1000 rows is uncalibrated.** The 5,000-point production run was attempted and
+  **disconnects the Shiny session** (2 of 2; 87 s and 18 s), so it yields no completion time.
+  The 2-polygon fixture behaves the same way (3 of 3). Both look like the failure class in
+  EJAM#504.
+- **Above 5 miles is uncalibrated.** No production measurement exists beyond r = 5, though the
+  app's slider allows 10 and the advanced cap is higher.
+- **Most cells are single runs.** Production variance is occasionally *multiplicative*: an
+  identical repeat 40 s apart differed by 2.6x. Replication is a real gap, not a cosmetic one.
+- **Measurement caveat:** a browser harness using `setInterval` from a hidden tab is throttled to
+  1 Hz, quantising runtimes to whole seconds and biasing them high. These numbers use a
+  `MutationObserver` clock.
+- Every production run above was taken while EJAM#268 (ALB session stickiness) was **unfixed**,
+  proven on 2026-08-19 by 16 identical session-scoped requests returning a perfect 200/404 split.
+
 ## Environments and timing boundary
 
 | Environment | EJAM version | Interpretation |
@@ -25,7 +77,7 @@ metrics to produce the 39-column table committed here.
 | Local `ejamit()` | 3.2022.2 | Local R compute only; package and fixtures were loaded before the clock |
 | Local web app | 3.2022.2 | One local Shiny process; click to visible report |
 | Live development | 3.2022.2 | Shared development service; click to visible report |
-| Live production | 3.2022.1 | Shared production service; context only, not the v3.2022.2 calibration target |
+| Live production | 3.2022.1 *(July 2026)*; **3.2022.2 since 2026-08-01** | Shared production service. In July it was context only. **It is now the calibration target for the point curve** -- see "2026-08-19 production recalibration" below |
 
 For browser rows, the monotonic clock starts immediately before clicking
 `#bt_get_results`. It stops when `#comm_report_html` exists and has more than

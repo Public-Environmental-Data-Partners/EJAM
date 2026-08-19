@@ -151,11 +151,16 @@ runtime_benchmark_browser_boundary <- list(
   )
 )
 
+# Versions the committed evidence was collected on. live_production was
+# "3.2022.1" for the July 2026 cohort; production was upgraded to 3.2022.2 on
+# 2026-08-01 and the point curve was re-measured against it on 2026-08-19, so
+# production is now the point calibration target rather than context only.
+# The FIPS and shapefile curves still rest on the July live_dev evidence.
 runtime_benchmark_versions <- c(
   local_ejamit = "3.2022.2",
   local_app = "3.2022.2",
   live_dev = "3.2022.2",
-  live_production = "3.2022.1"
+  live_production = "3.2022.2"
 )
 
 runtime_benchmark_fips <- list(
