@@ -415,7 +415,7 @@ ejamit <- function(sitepoints = NULL,
       analysis_type = "shapefile",
       analysis_subtype = "polygon"
     )
-    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    predicted_time <- ejamit_runtime_estimate$seconds_fit
     if (predicted_time > 120) {
       print(ejamit_runtime_estimate$message)
     }
@@ -548,7 +548,7 @@ ejamit <- function(sitepoints = NULL,
       analysis_type = "fips",
       analysis_subtype = fips_runtime_subtype
     )
-    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    predicted_time <- ejamit_runtime_estimate$seconds_fit
     if (predicted_time > 120) {
       print(ejamit_runtime_estimate$message)
     }
@@ -704,10 +704,9 @@ ejamit <- function(sitepoints = NULL,
       analysis_type = "points",
       analysis_subtype = "point_buffer"
     )
-    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    predicted_time <- ejamit_runtime_estimate$seconds_fit
 
     ## print runtime if predicted time > 2 minutes / 120 seconds
-    ## note: models may over-estimate runtime for small analyses
     if (predicted_time > 120) {
       print(ejamit_runtime_estimate$message)
     }

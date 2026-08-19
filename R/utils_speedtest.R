@@ -700,26 +700,327 @@ speed_format_seconds <- function(seconds) {
 }
 ######################################################################### #
 
+# The point-runtime curves below are empirical, monotone click-to-result or
+# ejamit-runtime models. They use current small-run anchors, where the legacy
+# regression has no training data, and retain linear extrapolation beyond the
+# largest measured count.
+.speed_point_runtime_profiles <- list(
+  ejamit_v3.2022.2 = list(
+    rows = c(1, 10, 100, 1000, 3000, 10000),
+    seconds_at_radius_3.1 = c(
+      0.934492131134475,
+      1.161358750000000,
+      1.701500000000000,
+      5.704000000000000,
+      15.046000000000000,
+      43.779000000000000
+    ),
+    radius_squared_coefficient = 0.016708333333333
+  ),
+  # Measured on LIVE PRODUCTION v3.2022.2 (2 vCPU x 2 tasks), click-to-report,
+  # canonical testpoints_* fixtures; n = 1000 delivered via a POST /handoff token.
+  # Replaces the previous single radius-3.1 curve, whose n = 1000 knot was
+  # 33.879834 -- the DEVELOPMENT median (1 vCPU, 1 task), not production. See
+  # EJAM#513 / EJAM#515.
+  #
+  # A single radius^2 coefficient cannot represent this surface. The measured
+  # radius spread is 0.03 s at n = 1, 1.19 s at n = 10, 1.04 s at n = 100 and
+  # 16.18 s at n = 1000: flat within session noise up to n = 100, then a cliff.
+  # The old form scales the radius effect as sqrt(rows), i.e. a smooth
+  # 1x / 3.16x / 10x progression, and refitting its coefficient against these
+  # data bottoms out at a 4.06 s worst-case error -- just outside the accepted
+  # tolerance. Hence explicit per-radius knots.
+  webapp_live_v3.2022.2 = list(
+    rows = c(1, 10, 100, 300, 1000),
+    radius_knots = c(1, 3.1, 5),
+    # rows = knot rows, columns = radius_knots. Monotone nondecreasing BOTH down
+    # each column (more sites is never faster) and across each row (a wider
+    # buffer is never faster), as the runtime surface is required to be.
+    #
+    # Raw production medians were:
+    #        r=1     r=3.1    r=5
+    #  n=1    3.403   --       3.371
+    #  n=10   4.284   5.348    5.471
+    #  n=100  6.418   6.413    5.377
+    #  n=300  6.656   7.489    9.538
+    #  n=1000 13.907  23.775   30.087
+    #
+    # n = 300 was first measured as a HOLDOUT, to test the interpolation rather
+    # than the knots. All three of its cells passed, but every prediction ran
+    # high by 1.4-2.8 s: the true curve between n = 100 and n = 1000 is convex,
+    # so straight-line interpolation overshoots the middle. The row is folded in
+    # as a knot to remove that bias -- the holdout result stands as evidence
+    # that the surface was already within tolerance before it was added.
+    #
+    # Its r=1 value is the median of two runs (6.772, 6.540); a third read
+    # 17.843 s and is excluded, being slower than n = 1000 at the same radius
+    # and therefore impossible as a workload measurement. That outlier is the
+    # clearest evidence that production variance is occasionally MULTIPLICATIVE
+    # (about 2.6x here on an identical repeat 40 s later), not the small
+    # additive jitter the small-n spreads suggest.
+    #
+    # Two rows dip slightly with radius (n = 1 by 0.03 s, n = 100 by 1.04 s).
+    # Both dips are inside the +/-1 s session-to-session variance measured on
+    # production, so they are noise, not a real speedup from a wider buffer, and
+    # are flattened by carrying each row's running maximum. n = 1 at r = 3.1 was
+    # not measured and takes that row's flat value.
+    seconds_by_radius = rbind(
+      c( 3.403000,  3.403000,  3.403000),
+      c( 4.284000,  5.348000,  5.471000),
+      c( 6.418000,  6.418000,  6.418000),
+      c( 6.656000,  7.489000,  9.538000),
+      c(13.907000, 23.775000, 30.087000)
+    ),
+    # Retained for the shared code path; unused while seconds_by_radius is set.
+    radius_squared_coefficient = 0,
+    # Edges of the measured envelope. Beyond either, the prediction is an
+    # extrapolation with no production evidence behind it, and is reported as a
+    # lower bound ("allow at least ...") rather than an expected time.
+    #
+    # rows: 5,000 points was attempted on production and did not complete -- it
+    # disconnected the Shiny session twice out of two (87 s, then 18 s), the
+    # same failure class as EJAM#504. So there is no measured anchor above
+    # 1,000, and quoting a confident number there would tell a user to wait for
+    # a result that is not coming.
+    #
+    # radius: nothing above 5 miles has been measured on production, while the
+    # slider allows 10 and the advanced cap is higher. Radius is the dominant
+    # term at large site counts (13.907 s vs 30.087 s across 1-5 miles at
+    # n = 1000), so silently treating 10 or 31 miles as 5 would understate the
+    # work badly.
+    calibrated_max_rows = 1000,
+    calibrated_max_radius = 5
+  )
+)
+
+.speed_fips_state_runtime_profile <- list(
+  ejamit_rows = c(1, 52),
+  ejamit_seconds = c(1.306, 19.451),
+  # The only completed live development state run with the requested radius
+  # actually set to zero took 26.125 seconds. Live 2-state and 52-state runs
+  # did not complete within 120 seconds and returned repeated 502s. Those are
+  # censored operational outcomes, so counts of 2 or more use a provisional
+  # lower bound rather than an expected completion time.
+  webapp_live_v3.2022.2_rows = c(1, 2, 52),
+  webapp_live_v3.2022.2_seconds = c(26.125235958, 120, 120),
+  webapp_live_v3.2022.2_lower_bound_from_rows = 2
+)
+
+.speed_nonpoint_web_profiles <- list(
+  # County knots balance the completed radius-zero 1/3/20-county runs.
+  fips_county = list(
+    rows = c(1, 3, 20),
+    seconds = c(
+      13.5805752752911,
+      13.6325631233282,
+      14.0744598925148
+    )
+  ),
+  # Other FIPS subtypes have sparse v3.2022.2 evidence; this conservative
+  # monotone curve is anchored at the completed 2-city run and checked against
+  # the production-version blockgroup and city comparisons.
+  fips_other = list(
+    rows = c(1, 2, 20, 52),
+    seconds = c(9.5, 10, 14, 20)
+  ),
+  # Median of the two completed live-development two-polygon runs.
+  shapefile = list(
+    rows = c(1, 2),
+    seconds = c(5.4995653125, 5.4995653125)
+  )
+)
+
+# Calibration for callers that explicitly request an lm-based custom profile.
+# The active live profile uses absolute versioned curves above, with empirical
+# anchors where completed live runs exist and conservative monotone anchors for
+# sparsely observed FIPS counts. It does not depend on legacy coefficients.
+.speed_runtime_calibration_profiles <- data.frame(
+  profile = "default",
+  runtime_model_key = "default",
+  intercept_seconds = 0,
+  multiplier = 1,
+  stringsAsFactors = FALSE
+)
+######################################################################### #
+
+speed_interpolate_runtime <- function(rows, knot_rows, knot_seconds) {
+  rows <- as.numeric(rows)
+  if (length(rows) == 0 || any(!is.finite(rows)) || any(rows < 0)) {
+    stop("rows must contain finite nonnegative values")
+  }
+  fit <- stats::approx(
+    x = knot_rows,
+    y = knot_seconds,
+    xout = pmin(rows, max(knot_rows)),
+    method = "linear",
+    rule = 2
+  )$y
+  above <- rows > max(knot_rows)
+  if (any(above)) {
+    last <- length(knot_rows)
+    final_slope <- (
+      knot_seconds[last] - knot_seconds[last - 1]
+    ) / (
+      knot_rows[last] - knot_rows[last - 1]
+    )
+    fit[above] <- knot_seconds[last] +
+      final_slope * (rows[above] - knot_rows[last])
+  }
+  fit
+}
+######################################################################### #
+
+speed_recycle_runtime_inputs <- function(rows, radius) {
+  input_lengths <- c(length(rows), length(radius))
+  common_length <- max(input_lengths)
+  if (common_length == 0 ||
+      any(!input_lengths %in% c(1, common_length))) {
+    stop("rows and radius must have compatible lengths")
+  }
+  list(
+    rows = rep_len(rows, common_length),
+    radius = rep_len(radius, common_length)
+  )
+}
+######################################################################### #
+
+speed_runtime_prediction_matrix <- function(fit) {
+  fit <- pmax(0, as.numeric(fit))
+  cbind(
+    fit = fit,
+    lwr = pmax(0, 0.75 * fit),
+    upr = 1.25 * fit
+  )
+}
+######################################################################### #
+
+speed_predict_point_runtime <- function(
+    rows,
+    radius,
+    profile = c("ejamit_v3.2022.2", "webapp_live_v3.2022.2")) {
+
+  profile <- match.arg(profile)
+  settings <- .speed_point_runtime_profiles[[profile]]
+  inputs <- speed_recycle_runtime_inputs(rows, radius)
+  rows <- as.numeric(inputs$rows)
+  radius <- as.numeric(inputs$radius)
+  if (any(!is.finite(rows)) || any(rows < 0)) {
+    stop("rows must contain finite nonnegative values")
+  }
+  if (any(!is.finite(radius)) || any(radius < 0)) {
+    stop("radius must contain finite nonnegative values")
+  }
+  if (!is.null(settings$seconds_by_radius)) {
+    # Per-radius knot surface: interpolate on rows within each radius column
+    # (linear, with the shared slope-preserving extrapolation above the largest
+    # knot), then interpolate across radius between those column results.
+    # Radii outside the knot range are clamped, so a 0.5 mi minimum-slider run
+    # is treated as the 1 mi column and a 10 mi run as the 5 mi column, rather
+    # than extrapolating a radius effect never measured.
+    radius_knots <- settings$radius_knots
+    fit <- vapply(
+      seq_along(rows),
+      function(i) {
+        per_radius <- vapply(
+          seq_along(radius_knots),
+          function(j) speed_interpolate_runtime(
+            rows = rows[[i]],
+            knot_rows = settings$rows,
+            knot_seconds = settings$seconds_by_radius[, j]
+          ),
+          numeric(1)
+        )
+        r_i <- radius[[i]]
+        r_max <- max(radius_knots)
+        if (r_i > r_max) {
+          # Extrapolate above the measured range on the slope of the final
+          # radius segment, mirroring how rows are extended above their largest
+          # knot. Clamping instead would return the 5-mile time for a 10- or
+          # 31-mile analysis, which understates it rather than merely being
+          # imprecise. Callers are told this is uncalibrated via
+          # calibrated_max_radius.
+          n_r <- length(radius_knots)
+          final_slope <- (per_radius[n_r] - per_radius[n_r - 1]) /
+            (radius_knots[n_r] - radius_knots[n_r - 1])
+          per_radius[n_r] + final_slope * (r_i - r_max)
+        } else {
+          # Below the smallest measured radius, hold flat: the work only
+          # shrinks, and extrapolating down a slope can cross zero.
+          stats::approx(
+            x = radius_knots,
+            y = per_radius,
+            xout = max(r_i, min(radius_knots)),
+            method = "linear",
+            rule = 2
+          )$y
+        }
+      },
+      numeric(1)
+    )
+  } else if (settings$radius_squared_coefficient != 0) {
+    radius_scale_at_knots <- sqrt(pmin(settings$rows, 1000) / 10)
+    fit <- vapply(
+      seq_along(rows),
+      function(i) {
+        radius_adjusted_knots <- settings$seconds_at_radius_3.1 +
+          settings$radius_squared_coefficient *
+            (radius[[i]]^2 - 3.1^2) * radius_scale_at_knots
+        radius_adjusted_knots <- cummax(pmax(0, radius_adjusted_knots))
+        speed_interpolate_runtime(
+          rows = rows[[i]],
+          knot_rows = settings$rows,
+          knot_seconds = radius_adjusted_knots
+        )
+      },
+      numeric(1)
+    )
+  } else {
+    fit <- speed_interpolate_runtime(
+      rows = rows,
+      knot_rows = settings$rows,
+      knot_seconds = settings$seconds_at_radius_3.1
+    )
+  }
+  speed_runtime_prediction_matrix(fit)
+}
+######################################################################### #
+
 #' Create a short runtime estimate message
 #'
 #' @param rows number of locations to analyze.
 #' @param radius buffer radius in miles.
 #' @param analysis_type input mode.
 #' @param analysis_subtype optional subtype.
+#' @param target whether to estimate the [ejamit()] runtime or the time until
+#'   the web app displays its multisite report.
+#' @param profile web-app calibration profile. Ignored for `target = "ejamit"`.
 #' @return List with prediction table and message.
 #'
 #' @keywords internal
 #'
-speed_ejamit_runtime_estimate <- function(rows, radius = 0, analysis_type = c("points", "latlon", "fips", "shapefile", "shp"), analysis_subtype = NULL) {
+speed_ejamit_runtime_estimate <- function(
+    rows,
+    radius = 0,
+    analysis_type = c("points", "latlon", "fips", "shapefile", "shp"),
+    analysis_subtype = NULL,
+    target = c("ejamit", "webapp_report"),
+    profile = "live_v3.2022.2") {
 
+  target <- match.arg(target)
   prediction <- speed_predict_ejamit_runtime(
     rows = rows,
     radius = radius,
     analysis_type = analysis_type,
-    analysis_subtype = analysis_subtype
+    analysis_subtype = analysis_subtype,
+    target = target,
+    profile = profile
   )
   seconds_fit <- as.numeric(prediction[, "fit"])
   seconds_upper <- as.numeric(prediction[, "upr"])
+  estimate_kind <- attr(prediction, "estimate_kind", exact = TRUE)
+  if (is.null(estimate_kind)) {
+    estimate_kind <- rep("expected", length(seconds_fit))
+  }
   label_type <- match.arg(analysis_type)
   if (label_type == "latlon") {
     label_type <- "points"
@@ -737,23 +1038,41 @@ speed_ejamit_runtime_estimate <- function(rows, radius = 0, analysis_type = c("p
       "FIPS"
     }
   )
-  list(
-    prediction = prediction,
-    seconds_fit = seconds_fit,
-    seconds_upper = seconds_upper,
-    message = paste0(
-      "Estimated analysis time: about ",
-      speed_format_seconds(seconds_fit),
-      " for ",
-      prettyNum(rows, big.mark = ","),
-      " ",
-      label,
-      " location",
-      ifelse(rows == 1, "", "s"),
+  message_prefix <- ifelse(
+    estimate_kind == "lower_bound",
+    "Live timing is unstable; allow at least ",
+    if (target == "webapp_report") {
+      "Estimated time until results: about "
+    } else {
+      "Estimated analysis time: about "
+    }
+  )
+  runtime_message <- paste0(
+    message_prefix,
+    speed_format_seconds(seconds_fit),
+    " for ",
+    prettyNum(rows, big.mark = ","),
+    " ",
+    label,
+    " location",
+    ifelse(rows == 1, "", "s")
+  )
+  if (target == "ejamit") {
+    runtime_message <- paste0(
+      runtime_message,
       " (upper estimate ",
       speed_format_seconds(seconds_upper),
       ")."
     )
+  } else {
+    runtime_message <- paste0(runtime_message, ".")
+  }
+  list(
+    prediction = prediction,
+    seconds_fit = seconds_fit,
+    seconds_upper = seconds_upper,
+    estimate_kind = estimate_kind,
+    message = runtime_message
   )
 }
 ######################################################################### #
@@ -779,6 +1098,8 @@ speed_ejamit_runtime_estimate <- function(rows, radius = 0, analysis_type = c("p
 #' @param run_points,run_fips,run_fips_counties,run_fips_cities,run_shapefile
 #'   logical flags indicating which analysis types to run.
 #'   run_fips is for the optional custom fips.
+#' @param test_ejamit whether point scenarios should time full [ejamit()] runs
+#'   instead of only its component functions.
 #' @param ... passed to [speedtest()].
 #' @return A list with one speed table per analysis type. The combined detailed
 #'   timing rows are also attached as attribute `"detailed_results"`.
@@ -787,7 +1108,7 @@ speed_ejamit_runtime_estimate <- function(rows, radius = 0, analysis_type = c("p
 #' @keywords internal
 #'
 speedtest_runtime_scenarios <- function(
-    detailed_csv = file.path("data-raw", "Analysis_timing_results_runtime_scenarios.csv"),
+    detailed_csv = NULL,
     point_counts = c(1L, 10L, 100L, 1000L, 3000L, 10000L),
     point_radii = c(1, 3.106856, 5),
     fips = NULL,
@@ -801,6 +1122,7 @@ speedtest_runtime_scenarios <- function(
     run_fips_counties = TRUE,
     run_fips_cities = TRUE,
     run_shapefile = TRUE,
+    test_ejamit = TRUE,
     ...) {
 
   results <- list()
@@ -810,6 +1132,7 @@ speedtest_runtime_scenarios <- function(
       n = point_counts,
       radii = point_radii,
       analysis_type = "points",
+      test_ejamit = test_ejamit,
       collect_detailed = TRUE,
       detail_point_counts = point_counts,
       plot = FALSE,
@@ -916,12 +1239,23 @@ speedtest_runtime_scenarios <- function(
 #'   `"shapefile"` for polygon analyses.
 #' @param analysis_subtype optional subtype. For FIPS analysis, this is usually
 #'   from [fipstype()], such as `"city"` or `"county"`.
+#' @param target whether to estimate the [ejamit()] runtime or the time until
+#'   the web app displays its multisite report.
+#' @param profile web-app calibration profile. Ignored for `target = "ejamit"`.
 #'
 #' @keywords internal
 #'
-speed_predict_ejamit_runtime <- function(rows, radius = 0, analysis_type = c("points", "latlon", "fips", "shapefile", "shp"), analysis_subtype = NULL) {
+speed_predict_ejamit_runtime <- function(
+    rows, radius = 0,
+    analysis_type = c("points", "latlon", "fips", "shapefile", "shp"),
+    analysis_subtype = NULL, target = c("ejamit", "webapp_report"),
+    profile = "live_v3.2022.2") {
 
+  target <- match.arg(target)
   analysis_type <- match.arg(analysis_type)
+  inputs <- speed_recycle_runtime_inputs(rows, radius)
+  rows <- inputs$rows
+  radius <- inputs$radius
   if (analysis_type == "latlon") {
     analysis_type <- "points"
   }
@@ -929,6 +1263,99 @@ speed_predict_ejamit_runtime <- function(rows, radius = 0, analysis_type = c("po
     analysis_type <- "shapefile"
   }
   runtime_model_key <- speed_runtime_model_key(analysis_type, analysis_subtype)
+
+  if (analysis_type == "fips" &&
+      target == "webapp_report" &&
+      identical(profile, "live_v3.2022.2") &&
+      any(radius > 0)) {
+    stop(
+      "No calibrated live web-app ETA is available for buffered FIPS ",
+      "analyses (radius > 0)."
+    )
+  }
+
+  if (identical(runtime_model_key, "fips_state") &&
+      (target == "ejamit" ||
+       (target == "webapp_report" &&
+        identical(profile, "live_v3.2022.2")))) {
+    if (target == "webapp_report") {
+      knot_rows <-
+        .speed_fips_state_runtime_profile$webapp_live_v3.2022.2_rows
+      knot_seconds <-
+        .speed_fips_state_runtime_profile$webapp_live_v3.2022.2_seconds
+    } else {
+      knot_rows <- .speed_fips_state_runtime_profile$ejamit_rows
+      knot_seconds <- .speed_fips_state_runtime_profile$ejamit_seconds
+    }
+    fit <- speed_interpolate_runtime(
+      rows = rows,
+      knot_rows = knot_rows,
+      knot_seconds = knot_seconds
+    )
+    prediction <- speed_runtime_prediction_matrix(fit)
+    estimate_kind <- rep("expected", length(fit))
+    if (target == "webapp_report") {
+      is_lower_bound <- rows >=
+        .speed_fips_state_runtime_profile$
+          webapp_live_v3.2022.2_lower_bound_from_rows
+      estimate_kind[is_lower_bound] <- "lower_bound"
+      prediction[is_lower_bound, "lwr"] <- fit[is_lower_bound]
+      prediction[is_lower_bound, "upr"] <- NA_real_
+    }
+    attr(prediction, "estimate_kind") <- estimate_kind
+    return(prediction)
+  }
+  if (analysis_type == "points" && target == "ejamit") {
+    return(speed_predict_point_runtime(
+      rows = rows,
+      radius = radius,
+      profile = "ejamit_v3.2022.2"
+    ))
+  }
+  if (analysis_type == "points" &&
+      target == "webapp_report" &&
+      identical(profile, "live_v3.2022.2")) {
+    prediction <- speed_predict_point_runtime(
+      rows = rows,
+      radius = radius,
+      profile = "webapp_live_v3.2022.2"
+    )
+    # Outside the measured envelope the number is an extrapolation with no
+    # production evidence behind it. Report it the same way multi-state FIPS
+    # already is -- as a lower bound ("allow at least ...") rather than an
+    # expected time -- instead of presenting it with unearned confidence. This
+    # matters most above 1,000 points, where production did not merely run slow
+    # but failed to complete at all.
+    settings <- .speed_point_runtime_profiles$webapp_live_v3.2022.2
+    inputs <- speed_recycle_runtime_inputs(rows, radius)
+    beyond <- inputs$rows > settings$calibrated_max_rows |
+      inputs$radius > settings$calibrated_max_radius
+    estimate_kind <- rep("expected", length(beyond))
+    if (any(beyond)) {
+      estimate_kind[beyond] <- "lower_bound"
+      prediction[beyond, "lwr"] <- prediction[beyond, "fit"]
+      prediction[beyond, "upr"] <- NA_real_
+    }
+    attr(prediction, "estimate_kind") <- estimate_kind
+    return(prediction)
+  }
+  if (target == "webapp_report" &&
+      identical(profile, "live_v3.2022.2")) {
+    web_profile_key <- if (identical(runtime_model_key, "fips_county")) {
+      "fips_county"
+    } else if (analysis_type == "fips") {
+      "fips_other"
+    } else {
+      "shapefile"
+    }
+    web_profile <- .speed_nonpoint_web_profiles[[web_profile_key]]
+    fit <- speed_interpolate_runtime(
+      rows = rows,
+      knot_rows = web_profile$rows,
+      knot_seconds = web_profile$seconds
+    )
+    return(speed_runtime_prediction_matrix(fit))
+  }
 
   runtime_model <- NULL
   if (exists("modelEjamitByAnalysisType", inherits = TRUE)) {
@@ -958,6 +1385,47 @@ speed_predict_ejamit_runtime <- function(rows, radius = 0, analysis_type = c("po
             interval = "prediction",
             level = 0.95)
   )
+  if (target == "webapp_report") {
+    if (length(profile) != 1 || is.na(profile) || !nzchar(profile)) {
+      stop("profile must be one non-empty string")
+    }
+    calibration_rows <- .speed_runtime_calibration_profiles[
+      .speed_runtime_calibration_profiles$profile == profile,
+      ,
+      drop = FALSE
+    ]
+    if (nrow(calibration_rows) == 0) {
+      stop("Unknown runtime calibration profile: ", profile)
+    }
+    calibration <- calibration_rows[
+      calibration_rows$runtime_model_key == runtime_model_key,
+      ,
+      drop = FALSE
+    ]
+    if (nrow(calibration) == 0) {
+      calibration <- calibration_rows[
+        calibration_rows$runtime_model_key == "default",
+        ,
+        drop = FALSE
+      ]
+    }
+    if (nrow(calibration) != 1) {
+      stop("Invalid runtime calibration for profile ", profile,
+           " and model key ", runtime_model_key)
+    }
+    calibration_values <- unlist(
+      calibration[1, c("intercept_seconds", "multiplier")],
+      use.names = FALSE
+    )
+    if (any(!is.finite(calibration_values)) ||
+        calibration_values[[1]] < 0 ||
+        calibration_values[[2]] <= 0) {
+      stop("Invalid runtime calibration for profile ", profile,
+           " and model key ", runtime_model_key)
+    }
+    predicted_runtime[] <- calibration_values[[1]] +
+      calibration_values[[2]] * predicted_runtime
+  }
   return(predicted_runtime)
 }
 ######################################################################### #

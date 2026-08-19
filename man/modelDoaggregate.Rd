@@ -3,7 +3,7 @@
 \docType{data}
 \name{modelDoaggregate}
 \alias{modelDoaggregate}
-\title{Regression model to predict runtime for doaggregate}
+\title{Legacy regression model for doaggregate runtime}
 \format{
 An object of class \code{lm} of length 13.
 }
@@ -11,11 +11,11 @@ An object of class \code{lm} of length 13.
 modelDoaggregate
 }
 \description{
-Weighted runtime model for doaggregate, fit from Analysis_timing_results*.csv files with extra emphasis on small point-count runs.
+Regression model retained for compatibility and refit only when the current timing files contain enough doaggregate rows.
 }
 \details{
-Regression model to predict runtime for doaggregate
+Legacy regression model for doaggregate runtime
 
-The model is trained from all Analysis_timing_results*.csv files in data-raw/. Small runs such as 1, 2, and 10 points are up-weighted so predictions are more accurate for small analyses. doaggregate runtime is modeled from nrows_blocks using weighted least squares.
+When at least five usable doaggregate timing rows are available in Analysis_timing_results*.csv files, the data-creation script models runtime from nrows_blocks with weighted least squares and up-weights small input counts when input_number is available. Otherwise it preserves the existing packaged model rather than replacing it with an unsupported sparse fit.
 }
 \keyword{datasets}
