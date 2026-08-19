@@ -605,7 +605,7 @@ function(method = NULL, sites = NULL, fips = NULL, shape = NULL, radius = NULL, 
 # /handoff GET ####
 
 #* Retrieve a previously stored handoff payload by token.
-#* @tag Handoff
+#* @tag Handoff to EJAM app
 #* @param token The handoff token returned by POST /handoff
 #* @get /handoff/<token>
 function(token, res) {
