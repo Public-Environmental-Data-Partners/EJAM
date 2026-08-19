@@ -199,6 +199,9 @@ use:</p>
 <code class="sourceCode R"><span><span class="va">scenario_speeds</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest_runtime_scenarios.html">speedtest_runtime_scenarios</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># uses defaults</span></span>
 <span></span>
 <span><span class="va">scenario_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">scenario_speeds</span>, <span class="st">"detailed_results"</span><span class="op">)</span></span></code></pre></div>
+<p>Point scenarios time the full <code><a href="../reference/ejamit.html">ejamit()</a></code> call by default.
+Set <code>test_ejamit = FALSE</code> only when collecting component
+timings rather than training the total-runtime estimate.</p>
 <p>The combined detailed table includes <code>analysis_type</code> and
 <code>analysis_subtype</code>. For FIPS runs, the subtype is based on
 <code>fipstype(fips)</code>, so city/place FIPS and county FIPS can be
@@ -209,16 +212,94 @@ uses the Portland example shapefile in
 <code>inst/testdata/shapes/portland_folder_shp/</code>. You can provide
 different FIPS vectors or a different shapefile if you want the timing
 data to reflect another expected workload.</p>
+<div class="section level3">
+<h3 id="local-runtime-versus-web-app-completion-time">Local runtime versus web-app completion time<a class="anchor" aria-label="anchor" href="#local-runtime-versus-web-app-completion-time"></a>
+</h3>
+<p>The runtime displayed by the web app is a different target from the
+runtime of an <code><a href="../reference/ejamit.html">ejamit()</a></code> call in a local R session. The web
+target includes normal deployment overhead and the time to summarize and
+render the multisite report. Transient service contention and upstream
+failures must be recorded separately because they cannot be predicted
+from the input count alone. Use:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speed_ejamit_runtime_estimate.html">speed_ejamit_runtime_estimate</a></span><span class="op">(</span></span>
+<span>  rows <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  radius <span class="op">=</span> <span class="fl">3.1</span>,</span>
+<span>  analysis_type <span class="op">=</span> <span class="st">"points"</span>,</span>
+<span>  target <span class="op">=</span> <span class="st">"ejamit"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speed_ejamit_runtime_estimate.html">speed_ejamit_runtime_estimate</a></span><span class="op">(</span></span>
+<span>  rows <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  radius <span class="op">=</span> <span class="fl">3.1</span>,</span>
+<span>  analysis_type <span class="op">=</span> <span class="st">"points"</span>,</span>
+<span>  target <span class="op">=</span> <span class="st">"webapp_report"</span>,</span>
+<span>  profile <span class="op">=</span> <span class="st">"live_v3.2022.2"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Browser benchmarks for the web profile start when <strong>Start
+Analysis</strong> is clicked and stop when
+<code>#comm_report_html</code> contains the multisite report. Benchmark
+local, live development, and live production separately and record the
+exact app version. Do not train the active web profile from another
+deployment version. Record cold and warm/cache runs separately, because
+FIPS boundary downloads and server contention can produce large
+differences or timeouts. For FIPS benchmarks, verify the observed radius
+as well as the requested radius: a nonzero FIPS radius is a real
+buffered workload and must not be used to calibrate an unbuffered
+run.</p>
+<p>The current live profile is calibrated only for unbuffered FIPS runs.
+It deliberately omits a numeric web ETA for a nonzero FIPS radius until
+controlled matched repeats exist. Two-state and all-state live
+development runs also failed after the click rather than producing
+completed timings, so estimates for two or more states are labeled as
+lower bounds rather than expected completion times.</p>
+<p>The canonical point matrix now spans 1, 10, 100, 300 and 1,000 points
+at radii of 1, 3.1 and 5 miles, measured on <strong>live production
+v3.2022.2</strong> (the July 2026 cohort was measured on live
+development, when production still ran v3.2022.1). Runs of 1,000 points
+and above are delivered with a <code>POST /handoff</code> token, since
+that many coordinates will not fit in a launch URL. The broader scenario
+matrix also includes county, state, tract, blockgroup, city, and mixed
+FIPS files plus uploaded polygon examples. See
+<code>data-raw/README-runtime-benchmarks.md</code> for the current
+benchmark results, exclusions, and calibration accuracy.</p>
+<p>The point profile is calibrated <strong>up to 1,000 points and up to
+a 5-mile radius</strong>. Outside that envelope the app reports a lower
+bound (“allow at least …”) rather than an expected time, in the same way
+it does for multi-state FIPS. Two things sit outside it:</p>
+<ul>
+<li>
+<strong>More than 1,000 points.</strong> A 5,000-point production
+run does not merely run slowly, it disconnects the Shiny session (twice
+out of two attempts). Note this is not the site cap being hit:
+<code>max_pts_run</code> defaults to 10,000.</li>
+<li>
+<strong>A radius above 5 miles.</strong> The slider allows 10 miles
+and the advanced cap is higher, but nothing above 5 has been measured on
+production. Predictions there extrapolate along the last measured
+segment instead of being clamped, so a 10-mile analysis is not quoted
+the 5-mile time.</li>
+</ul>
+<p>When re-running these benchmarks, note two measurement traps. A
+browser harness that drives its clock with <code>setInterval</code> is
+throttled to 1 Hz in a background tab, which quantises every runtime to
+whole seconds and biases it high; use a <code>MutationObserver</code>
+instead. And a deep-linked <code>radius=0</code> is silently clamped to
+the point-method minimum of 0.5 miles (EJAM#455), so a FIPS or polygon
+run that was meant to be unbuffered may not be – check the report’s own
+wording, which says “Residents within 0.5 mile of …” when a buffer was
+applied.</p>
 <p>For small numbers of points, the radius and number of points do not
 have a large impact on total time, but for larger radius values the
 number of points matters more. Likewise, for larger numbers of points,
 the radius starts to have a bigger impact on time required. You can see
 this in plots below, where the lines are steeper for the larger radius
 values or for the larger counts of points.</p>
+</div>
 <div class="section level3">
 <h3 id="time-needed">Time Needed<a class="anchor" aria-label="anchor" href="#time-needed"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Time Needed</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">$</span><span class="va">points</span><span class="op">[</span><span class="va">speeds</span><span class="op">$</span><span class="va">miles</span> <span class="op">==</span> <span class="fl">5</span><span class="op">]</span>, <span class="va">speeds</span><span class="op">$</span><span class="va">seconds</span><span class="op">[</span><span class="va">speeds</span><span class="op">$</span><span class="va">miles</span> <span class="op">==</span> <span class="fl">5</span><span class="op">]</span><span class="op">/</span><span class="fl">60</span>, </span>
 <span>     type <span class="op">=</span> <span class="st">"b"</span>, col<span class="op">=</span><span class="st">"blue"</span>, </span>
@@ -239,7 +320,7 @@ of sites &amp; radius (distance from each point)</div>
 <div class="section level3">
 <h3 id="time-per-site">Time per Site<a class="anchor" aria-label="anchor" href="#time-per-site"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Time per Site</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest_plot.html">speedtest_plot</a></span><span class="op">(</span><span class="va">speeds</span>, secondsperthousand <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
@@ -250,7 +331,7 @@ by # of sites &amp; radius (distance from each point)</div>
 <div class="section level3">
 <h3 id="rate-sites-per-hour">Rate (Sites per Hour)<a class="anchor" aria-label="anchor" href="#rate-sites-per-hour"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Rate (Sites per Hour)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/speedtest_plot.html">speedtest_plot</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
@@ -261,7 +342,7 @@ by # of sites &amp; radius (distance from each point)</div>
 <div class="section level3">
 <h3 id="detailed-results">Detailed Results<a class="anchor" aria-label="anchor" href="#detailed-results"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">speeds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">$</span><span class="va">points</span>, <span class="va">speeds</span><span class="op">$</span><span class="va">miles</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
