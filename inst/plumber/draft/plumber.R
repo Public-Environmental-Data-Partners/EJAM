@@ -150,7 +150,8 @@ function(fname = "blockgroupstats", attachment = "false", res) {
 ##  exposing most ejamit() parameters,
 ##  so inputs are point(s) or polygon(s) or fip(s), and output is html summary report.
 
-#* Get EJAM analysis results report as HTML (on one site or the aggregate of multiple sites overall) - See <https://ejanalysis.org/ejamdocs> for more information about the ejamit() and ejam2report() functions
+#* Get EJAM analysis results report as HTML (on one site or the aggregate of multiple sites overall)
+#* See <https://ejanalysis.org/ejamdocs> for more information about the ejamit() and ejam2report() functions
 #*
 #* @param lat if provided, a vector of latitudes in decimal degrees (comma-separated values)
 #* @param lon if provided, a vector of longitudes in decimal degrees (comma-separated values)
