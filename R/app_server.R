@@ -2268,7 +2268,9 @@ app_server <- function(input, output, session) {
           rows = rows,
           radius = radius,
           analysis_type = analysis_type,
-          analysis_subtype = analysis_subtype
+          analysis_subtype = analysis_subtype,
+          target = "webapp_report",
+          profile = "live_v3.2022.2"
         ),
         silent = TRUE
       )
@@ -2276,7 +2278,7 @@ app_server <- function(input, output, session) {
         return(invisible(NULL))
       }
       progress_all$set(value = 0, message = 'Step 1 of 3', detail = runtime_estimate$message)
-      if (runtime_estimate$seconds_upper > 30) {
+      if (runtime_estimate$seconds_fit > 30) {
         ejamitRunTimeNotification <<- showNotification(
           runtime_estimate$message,
           type = 'message',
@@ -2298,7 +2300,7 @@ app_server <- function(input, output, session) {
       fips_for_prediction <- fips_for_prediction[fips_valid(fips_for_prediction)]
       show_ejamit_runtime_estimate(
         rows = length(fips_for_prediction),
-        radius = 0,
+        radius = submitted_radius_val(),
         analysis_type = "fips",
         analysis_subtype = speed_fips_analysis_subtype(fips_for_prediction)
       )

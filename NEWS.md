@@ -1,9 +1,9 @@
-# EJAM 4.2022.0 (unreleased)
+# EJAM 3.2022.3 (unreleased)
 
-Features held for the v4 milestone, not part of the v3.2022.x patch line.
+Features from the v4 milestone, shipping on the ACS 2018-2022 vintage.
 
-This is the v4 code line still carrying the ACS 2018-2022 vintage; it becomes the
-frozen 2022 build. The 2020-2024 vintage ships separately as `4.2024.0`.
+This is the final ACS 2018-2022 release; it is frozen from here on. The 2020-2024
+vintage ships separately as `4.2024.0`, which is where development continues.
 
 ## New Features
 
@@ -141,6 +141,19 @@ new information in the community report about where people live.
 
 
 ## Bug Fixes
+
+- **Web-app completion estimates now reflect current live performance** (#513):
+  the app uses a v3.2022.2 click-to-report calibration instead of presenting
+  the local `ejamit()` regression's much wider 95% upper prediction limit as
+  an ETA. Point estimates use measured small-run anchors and remain monotone
+  across site counts. Unbuffered FIPS and shapefile estimates use separate
+  versioned web curves, while local R calls retain a separate `ejamit()`
+  profile. Multi-state live estimates are labeled as provisional lower bounds
+  after repeated service failures, and buffered polygon/FIPS runs require a
+  separate calibration. The point curve is calibrated on live production, and
+  now varies with buffer radius as well as site count. Beyond the measured
+  range -- more than 1,000 points, or a radius over 5 miles -- the app reports a
+  lower bound rather than an expected time.
 
 - **Report's percentages no longer shown as "0" or "1", or with stray decimals**
   in the report, tables, and map popups (#488). The metadata marking which

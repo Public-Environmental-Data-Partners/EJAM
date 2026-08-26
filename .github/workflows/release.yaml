@@ -32,7 +32,7 @@ name: 'Release: tag and publish'
 # tag already exists, the job skips.
 #
 # VERSION NUMBERING: EJAM versions are MAJOR.ACSENDYEAR.PATCH - the second field is
-# the ACS vintage end year, not a minor number (3.2022.2, 4.2022.0, 4.2024.0). Two
+# the ACS vintage end year, not a minor number (3.2022.2, 3.2022.3, 4.2024.0). Two
 # vintages are supported at once, so the highest version is the live line and the
 # lower one is the frozen snapshot. The release title and the drift guard both read
 # DESCRIPTION's VersionACS rather than parsing the version string.
@@ -79,7 +79,7 @@ env:
   # Guard for the scheduled run only, and therefore INERT while there is no `schedule:`
   # trigger - the code reading it runs only when github.event_name == 'schedule'. Kept so
   # the safety net still works if a schedule is ever deliberately restored. See the header.
-  SCHEDULED_EXPECTED_VERSION: '4.2022.0'
+  SCHEDULED_EXPECTED_VERSION: '3.2022.3'
 
 jobs:
   release:
@@ -214,8 +214,8 @@ jobs:
           # The version is escaped before being used as a regex, since an unescaped
           # "." would match any character and could latch onto the wrong heading.
           #
-          # The "v" is optional: release TAGS carry it (v4.2022.0) while DESCRIPTION's
-          # Version does not (4.2022.0), and NEWS.md has used both conventions over
+          # The "v" is optional: release TAGS carry it (v3.2022.3) while DESCRIPTION's
+          # Version does not (3.2022.3), and NEWS.md has used both conventions over
           # time ("# EJAM 3.2022.2" but "# EJAM v2.32.5"). Accepting either means a
           # heading written to match the tag no longer fails the release.
           awk -v v="$VERSION" '
@@ -236,7 +236,7 @@ jobs:
           # Read it from DESCRIPTION's VersionACS, the single source of truth for the
           # vintage. The previous approach parsed field 2 out of a `3.YYYY.x` version
           # with `grep -qE '^3\.[0-9]{4}\.'`, which silently stopped matching once the
-          # major went to 4 - a 4.2022.0 release would have been titled with no vintage
+          # major went to 4 - a 4.2024.0 release would have been titled with no vintage
           # at all.
           TITLE="EJAM v$VERSION"
           ACS_VINTAGE="$(sed -n 's/^VersionACS:[[:space:]]*//p' DESCRIPTION | head -n1 | tr -d '[:space:]')"
@@ -246,7 +246,7 @@ jobs:
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
 
           # Guard against the version number and the vintage drifting apart. EJAM
-          # versions are MAJOR.ACSENDYEAR.PATCH (3.2022.2, 4.2022.0, 4.2024.0), so
+          # versions are MAJOR.ACSENDYEAR.PATCH (3.2022.2, 3.2022.3, 4.2024.0), so
           # field 2 must equal the end year of VersionACS. Nothing else enforces this,
           # and a mismatch would mislabel the release and ship data that disagrees
           # with its own version number.
