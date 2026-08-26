@@ -509,7 +509,7 @@ two cases:
 - a code-only **patch** (for example `v3.2022.1` or `v3.2022.2`), which stays on
   the existing `v3.2022.0` data; and
 - a release that changes only the **version scheme or major version** while keeping
-  the same vintage — for example `v4.2022.0`, which also stays on `v3.2022.0` data.
+  the same vintage — for example `v3.2022.3`, which also stays on `v3.2022.0` data.
 
 In both cases there is no matching `ejamdata` release and none is needed. A new
 `ejamdata` release is required only when the bundled ACS data itself changes, which
@@ -517,7 +517,7 @@ is what a vintage bump such as `v4.2024.0` does (that one pins `v3.2024.0`).
 
 > EJAM versions read `MAJOR.ACSENDYEAR.PATCH`, so the middle field names the ACS
 > vintage while `ejamdata_required_tag` names the data release. They move
-> independently: `v4.2022.0` and `v3.2022.2` share `v3.2022.0` data.
+> independently: `v3.2022.3` and `v3.2022.2` share `v3.2022.0` data.
 
 This previously had been handled with a GitHub Actions workflow that tried to
 use Git LFS. That automatic workflow is no longer used and will not be restored.
