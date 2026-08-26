@@ -155,6 +155,38 @@ terraform init -backend-config="key=dev/terraform.tfstate" -reconfigure
 terraform apply -var-file=dev.tfvars -var="aws_account_id=<ACCOUNT_ID>"
 ```
 
+### Setting environment variables on the app container
+
+`app_env_vars` is a `map(string)` rendered into the task definition's `environment`
+list. Set it per environment in that environment's `.tfvars`:
+
+```hcl
+app_env_vars = {
+  EJAM_API_BASEURL = "https://api2024.ejanalysis.com"
+}
+```
+
+This is what lets two ACS vintages run side by side: each app instance points at
+its own API without another Terraform change. EJAM resolves the API base through
+`url_package("api")`, whose precedence is
+`options(ejam.api.baseurl)` > `EJAM_API_BASEURL` > `DESCRIPTION` > built-in default —
+so leaving `app_env_vars` unset keeps today's behavior exactly.
+
+Two things to know about how it takes effect:
+
+- **`terraform apply` alone does not change what is running.** The service has
+  `lifecycle { ignore_changes = [task_definition] }`, so apply registers a new task
+  definition revision but leaves the service on its current one. The new variables
+  reach the running app on the **next deploy**.
+- **The deploy workflow preserves them.** It resolves the latest revision of the task
+  family, copies the whole definition through `jq`, swaps only the container image, and
+  re-registers. `environment` is carried through untouched, so the values persist across
+  deploys without being restated in the workflow.
+
+The default is an empty map, which renders as `environment = []`. That is equivalent to
+the current definition, but it does change the rendered JSON, so the first apply after
+this lands will create one new task definition revision even with no variables set.
+
 ### Adding a custom domain (HTTPS)
 Set `domain_name = "ejam.yourdomain.com"` in the relevant `.tfvars`, run `terraform apply`.
 Terraform outputs the CNAME records to add in Squarespace DNS for cert validation.
