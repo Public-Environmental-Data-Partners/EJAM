@@ -4,10 +4,12 @@
 \alias{latlon_from_shapefile_centroids}
 \title{get coordinates of each polygon centroid, using INTPTLAT,INTPTLON if those columns already exist}
 \usage{
-latlon_from_shapefile_centroids(shapefile)
+latlon_from_shapefile_centroids(shapefile = NULL, shape = NULL, shp = NULL)
 }
 \arguments{
 \item{shapefile}{spatial data.frame of polygons}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 data.frame with columns lat,lon

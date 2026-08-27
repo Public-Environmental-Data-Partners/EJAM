@@ -53,8 +53,15 @@ test_that("ejam2excel saves key tables, tabs, saved numbers match original", {
                  "Community Report",
                  "plot_ratios",
                  "notes",
-                 "thresholds")
+                 "thresholds",
+                 "Area Features")
   )
+
+  # Area Features tab matches results_summarized$flagged_areas
+  tab_areafeatures <- readxl::read_excel(fname, sheet = "Area Features") %>% as.data.frame()
+  expect_equal(NROW(tab_areafeatures), NROW(testoutput_ejamit_10pts_1miles$results_summarized$flagged_areas))
+  expect_equal(names(tab_areafeatures), names(testoutput_ejamit_10pts_1miles$results_summarized$flagged_areas))
+  expect_equal(tab_areafeatures$Indicator, testoutput_ejamit_10pts_1miles$results_summarized$flagged_areas$Indicator)
 
   tab_bysite <- readxl::read_excel(fname, sheet = "Each Site") %>% as.data.frame()
   expect_equal(

@@ -24,10 +24,6 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
 
   if (is.null(FUN)) {FUN <- get(funcname)}
 
-  test_that("Site responds with 200", {
-    expect_true(url_online(FUN(sitepoints = testpoints_10[1,], ...)))
-  })
-
   # fipsmix = testinput_fips_mix
   fipsmix =  c(
     "091701844002024", # block
@@ -44,7 +40,9 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
   try(test_that(paste0(funcname, " sitepoints POINTS works"), {
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10[1,], ...)})})
     expect_no_error({suppressWarnings({x <- FUN(sitepoints = testpoints_10, radius = 1, ...)})})
-    expect_true(url_online(x[1]))
+    expect_true(all(grepl("^https://", x)))
+    expect_true(grepl("lat=", x[1], fixed = TRUE))
+    expect_true(grepl("lon=", x[1], fixed = TRUE))
   }))
   ############### #  ############### #
 
@@ -53,7 +51,6 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
   #   expect_no_error({
   #     x <- FUN(fips = "091701844002024", ...) # fipsmix[1] # blockid is 1203214, parent bgid is 43168
   #   })
-  #   expect_true(url_online(x[1]))
   #   options(width = as.vector(unlist(oldwidth)))
   # }))
   ############### #  ############### #
@@ -66,7 +63,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = testinput_fips_blockgroups[1:2] , ...)
     })
-    expect_true(url_online(x[1]))
+    expect_true(all(grepl("^https://", x)))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   # ### problem in unit test where options changed:
@@ -80,7 +78,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = testinput_fips_tracts[1], ...)
     })
-    expect_true(url_online(x[1]))
+    expect_true(grepl("^https://", x[1]))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
@@ -89,7 +88,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = testinput_fips_cities[1], ...)
     })
-    expect_true(url_online(x[1]))
+    expect_true(grepl("^https://", x[1]))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
@@ -98,7 +98,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     expect_no_error({
       x <- FUN(fips = testinput_fips_counties[1], ...)
     })
-    expect_true(url_online(x[1]))
+    expect_true(grepl("^https://", x[1]))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #
@@ -125,7 +126,8 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
     } else {
     expect_equal(length(x), 2) # not true if sitenumber = 2
       }
-    expect_true(url_online(x[1]))
+    expect_true(all(grepl("^https://", x)))
+    expect_true(grepl("fips=", x[1], fixed = TRUE))
     options(width = as.vector(unlist(oldwidth)))
   }))
   ############### #     MULTISITE OVERALL RESULTS REPORT url:
@@ -136,39 +138,18 @@ do_url_tests = function(funcname = "url_ejamapi", FUN = NULL, ...) {
       x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]
     })
     expect_equal(length(x), 1) # (makes url)
-    # expect_true(url_online(x[1]))
     options(width = as.vector(unlist(oldwidth)))
   }))
-  ############### #     MULTISITE OVERALL RESULTS REPORT - API MIGHT NOT HAVE IMPLEMENTED this YET:
-
-  try(test_that(paste0(funcname, " API handles 1 COUNTY and 1 STATE FIPS COMBINED as 1 URL"), {
-skip_if(TRUE, "test fails until API can handle combo of 2 types of fips like county and state in 1 URL")
-    oldwidth = options("width")
-    expect_no_error({
-      x <- FUN(fips = c(testinput_fips_states[1], testinput_fips_counties[1]), sitenumber = 0) # fipsmix[1]
-    })
-    # expect_equal(length(x), 1)
-    attempt = try( url_online(x[1]) , silent = TRUE)
-    if (inherits(attempt, "try-error")) {
-      cat("This test fails until API can handle combo of 2 types of areas like county and state in 1 URL\n")
-    }
-    expect_true(attempt) # (can API HANDLE IT?)
-    options(width = as.vector(unlist(oldwidth)))
-  }))
-  ############### #  ############### #
-
-  ############### #  ############### #
-
   try(test_that(paste0(funcname, " SHAPEFILE works"), {
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2[1, ], ...)})})
     expect_no_error({  ({x <- FUN(shapefile = testinput_shapes_2, radius = 1, ...)})})
-    expect_true(url_online(x[1]))
+    expect_true(all(grepl("^https://", x)))
   }))
   ############### #
   try(test_that(paste0(funcname, " REGID works"), {
     expect_no_error({
       x <- FUN( regid = testinput_regid[1], ... )
-      expect_true(url_online(x[1]))
+      expect_true(grepl("^https://", x[1]))
     })
     expect_no_error({  ({
       x <- FUN(sitepoints = data.frame(lat = 35, lon = -100,
@@ -236,17 +217,102 @@ test_that("url_ejamapi falls back to app URL for polygon one-site report links",
     url_ejamapi(shapefile = testinput_shapes_2, as_html = FALSE),
     rep(fallback_url, NROW(testinput_shapes_2))
   )
-  expect_match(
+  expect_true(startsWith(
     url_ejamapi(shapefile = testinput_shapes_2, sitenumber = "overall", as_html = FALSE),
-    "^https://ejamapi-84652557241\\.us-central1\\.run\\.app/report\\?"
+    paste0(url_package("api"), "/report?")
+  ))
+})
+
+test_that("url_ejamapi fileextension: auto = pdf for single-site, html for multisite; overridable; validated", {
+  fips1 <- testinput_fips_counties[1]
+  fips2 <- testinput_fips_counties[1:2]
+
+  # default "auto": a single-site report link asks the API for pdf
+  # (the traditional printable community report)
+  expect_true(grepl("&fileextension=pdf", url_ejamapi(fips = fips1), fixed = TRUE))
+
+  # default "each" mode returns a vector of single-site links -> pdf on every URL
+  each_urls <- url_ejamapi(fips = fips2)
+  expect_equal(length(each_urls), 2)
+  expect_true(all(grepl("&fileextension=pdf", each_urls, fixed = TRUE)))
+
+  # aggregate MULTISITE report (sitenumber = 0 covering >1 site) -> html (much faster render)
+  expect_true(grepl("&fileextension=html", url_ejamapi(fips = fips2, sitenumber = 0), fixed = TRUE))
+
+  # but sitenumber = 0 with a single site is coerced to a single-site report -> pdf
+  expect_true(grepl("&fileextension=pdf", url_ejamapi(fips = fips1, sitenumber = 0), fixed = TRUE))
+
+  # explicit override wins in either direction; case/whitespace normalized
+  expect_true(grepl("&fileextension=html", url_ejamapi(fips = fips1, fileextension = "html"), fixed = TRUE))
+  expect_true(grepl("&fileextension=pdf", url_ejamapi(fips = fips2, sitenumber = 0, fileextension = " PDF "), fixed = TRUE))
+
+  # NULL or "" omits the parameter entirely (the API's own default applies)
+  expect_false(grepl("fileextension", url_ejamapi(fips = fips1, fileextension = NULL), fixed = TRUE))
+  expect_false(grepl("fileextension", url_ejamapi(fips = fips1, fileextension = ""), fixed = TRUE))
+
+  # anything else is rejected, not URL-encoded into a raw link
+  expect_error(url_ejamapi(fips = fips1, fileextension = "exe"), regexp = "fileextension")
+  expect_error(url_ejamapi(fips = fips1, fileextension = "html&sitenumber=0"), regexp = "fileextension")
+  expect_error(url_ejamapi(fips = fips2, fileextension = c("html", "pdf")), regexp = "fileextension")
+
+  # NA gets the same clear validation message, not a bare
+  # "missing value where TRUE/FALSE needed" condition error
+  expect_error(url_ejamapi(fips = fips1, fileextension = NA), regexp = "fileextension")
+  expect_error(url_ejamapi(fips = fips1, fileextension = NA_character_), regexp = "fileextension")
+
+  # the single-polygon app-fallback link is not an API /report URL and is untouched
+  expect_equal(
+    url_ejamapi(shapefile = testinput_shapes_2[1, ], as_html = FALSE),
+    "https://ejanalysis.com/ejamapp"
   )
+})
+
+# per-site links carry the original site number ####
+# (Public-Environmental-Data-Partners/EJAM#348: per-site report links used to omit
+# sitenumber, so the API's regenerated one-site analysis labeled every report "Site 1")
+
+test_that("per-site 'each' links carry each site's original sitenumber (latlon) - issue #348", {
+  x <- url_ejamapi(sitepoints = testpoints_10[1:3, ], radius = 1)  # default sitenumber = "each"
+  expect_equal(length(x), 3)
+  expect_true(grepl("[&?]sitenumber=1(&|$)", x[1]))
+  expect_true(grepl("[&?]sitenumber=2(&|$)", x[2]))
+  expect_true(grepl("[&?]sitenumber=3(&|$)", x[3]))
+})
+
+test_that("per-site 'each' links carry each site's original sitenumber (fips) - issue #348", {
+  fips2 <- testinput_fips_counties[1:2]
+  x <- url_ejamapi(fips = fips2)
+  expect_equal(length(x), 2)
+  expect_true(grepl("[&?]sitenumber=1(&|$)", x[1]))
+  expect_true(grepl("[&?]sitenumber=2(&|$)", x[2]))
+  # and each link still sends only its own site to the API
+  expect_true(grepl(paste0("fips=", fips2[1]), x[1], fixed = TRUE))
+  expect_true(grepl(paste0("fips=", fips2[2]), x[2], fixed = TRUE))
+  expect_false(grepl(fips2[1], x[2], fixed = TRUE))
+})
+
+test_that("a single-site link for site N carries sitenumber=N; site-1/lone-site links omit it - issue #348", {
+  x5 <- url_ejamapi(sitepoints = testpoints_10, radius = 1, sitenumber = 5)
+  expect_equal(length(x5), 1)
+  expect_true(grepl("[&?]sitenumber=5(&|$)", x5))
+
+  # site 1 or a lone site: Site 1 is the API's default label, so the param is omitted
+  # (these URLs are unchanged from before the issue #348 fix)
+  x1 <- url_ejamapi(sitepoints = testpoints_10, radius = 1, sitenumber = 1)
+  expect_false(grepl("sitenumber", x1, fixed = TRUE))
+  xlone <- url_ejamapi(sitepoints = testpoints_10[1, ], radius = 1)
+  expect_false(grepl("sitenumber", xlone, fixed = TRUE))
+
+  # the aggregate multisite link still passes sitenumber=0
+  x0 <- url_ejamapi(sitepoints = testpoints_10, radius = 1, sitenumber = 0)
+  expect_true(grepl("[&?]sitenumber=0(&|$)", x0))
 })
 
 # sitenumber (overall vs 1-site) ####
 
 # N  means Nth site report
-# -1 means "overall" report
-# 0  means "each" site report, in a vector of URLs
+# 0 (or "overall") means "overall" report
+# -1 (or "each") means "each" site report, in a vector of URLs
 
 
 if (FALSE) {

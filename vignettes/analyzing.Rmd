@@ -27,6 +27,14 @@ knitr::opts_chunk$set(eval = FALSE, warning = FALSE)
 # https://r-pkgs.org/vignettes.html
 ```
 
+```{r SETUP_urls, eval=TRUE, echo=FALSE, include=FALSE}
+
+docs_reponame_url <- EJAM::url_package(type = "docs", get_full_url = TRUE)  # "https://OWNER.github.io/REPONAME"
+# Used for links into the reference manual. Absolute, not "../reference/...",
+# so the links also work in the vignette as installed with the package.
+
+```
+
 ```{r libraryEJAM, eval = TRUE, echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
 # rm(list = ls()); golem::detach_all_attached(); devtools::load_all()
  
@@ -67,7 +75,10 @@ groups or which facilities have notable findings.
 # Tools for Selecting Locations to Analyze
 
 EJAM offers a variety of ways to specify the places to be analyzed and compared.
-The web app helps you select locations in several ways.
+The web app helps you select locations in several ways, including uploading a
+table of points, selecting facilities by industry category or ID, uploading
+shapefiles or lists of FIPS codes, and clicking on a map to specify one or more
+points.
 
 If you are working in RStudio, and you already have identified the points or
 areas to analyze, the `ejamit()` function will accept 1) point coordinates, 2) a
@@ -77,7 +88,7 @@ However, if you first need to get the points (lat, lon values), or you need a
 more in-depth, custom approach to finding facilities or Census places to
 analyze, there are several groups of functions to help with that, as shown in
 all the examples below. They are also shown in the [EJAM package reference
-manual](../reference/index.html), by category.
+manual](`r paste0(docs_reponame_url, "/reference/index.html")`), by category.
 
 You can specify locations for analysis in a variety of ways:
 
@@ -121,9 +132,12 @@ You can define locations as all residents within X miles of any one or more of
 the specified points, and you can define those points in a few ways. One way is
 to upload a table of coordinates -- latitude and longitude for each point, one
 row per site, with columns called lat and lon (or some synonyms that work).
+In the web app you can also pick points without a file by choosing
+"Click or draw on map" and clicking the map to add one or more points (click a
+point's marker again to remove it).
 
 There are also [more detailed functions for working with latlon
-coordinates.](../reference/index.html#specify-points-by-lat-lon)
+coordinates.](`r paste0(docs_reponame_url, "/reference/index.html#specify-points-by-lat-lon")`)
 
 The simplest way to do that in the RStudio console is something like
 `x <- ejamit()`, which prompts you to upload a spreadsheet with lat lon columns,
@@ -143,7 +157,7 @@ greenhouse gas reporters), or a Clean Air Act MACT subpart.
 EPA-regulated facilities can be found in the Facility Registry Services by
 identification number.
 
-[See a list of functions related to EPA IDs](../reference/index.html#specify-facilities-by-id)
+[See a list of functions related to EPA IDs](`r paste0(docs_reponame_url, "/reference/index.html#specify-facilities-by-id")`)
 
 ### by Facility, using EPA Registry ID
 
@@ -183,7 +197,7 @@ if (exists("frs_by_programid")) {
 
 ## Facilities by Type
 
-[See a list of functions related to type of facility (NAICS/SIC/Program/MACT)](../reference/index.html#specify-facility-type)
+[See a list of functions related to type of facility (NAICS/SIC/Program/MACT)](`r paste0(docs_reponame_url, "/reference/index.html#specify-facility-type")`)
 
 ### by Industry (NAICS) {#by-industry-naics data-link="by Industry (NAICS)"}
 
@@ -204,11 +218,11 @@ naics_from_any("paint and coating", children = T)
 See many more examples of [Working with NAICS Codes (Industry
 Codes)](#working-with-naics-codes-industry-codes), in a section below.
 
-[Functions related to NAICS/SIC codes](../reference/index.html#choosing-naics-sic-industry-codes)
+[Functions related to NAICS/SIC codes](`r paste0(docs_reponame_url, "/reference/index.html#choosing-naics-sic-industry-codes")`)
 
 ### by EPA Regulatory Program
 
-[See a list of functions related to EPA programs](../reference/index.html#epa-programs)
+[See a list of functions related to EPA programs](`r paste0(docs_reponame_url, "/reference/index.html#epa-programs")`)
 
 ```{r tryload_frs_AND_frs_by_programid, include=FALSE}
 dataload_dynamic("frs_by_programid")
@@ -237,7 +251,7 @@ if (exists("frs_by_programid") && exists("frs")) {
 
 ### by MACT Subpart (hazardous air pollutant source category) {#by-mact-subpart-hazardous-air-pollutant-source-category}
 
-[Functions related to MACT codes](../reference/index.html#mact-categories)
+[Functions related to MACT codes](`r paste0(docs_reponame_url, "/reference/index.html#mact-categories")`)
 
 ```{r tryload_frs_by_mact, include=FALSE}
 dataload_dynamic("frs_by_mact")
@@ -380,8 +394,14 @@ industryword <- "chemical manuf"
 # }
 ```
 
+Here `url_ejamapi()` builds links to EJSCREEN-style community reports from the
+hosted EJAM API, and `url_ejscreenmap()` builds deep links that open each place
+on the EJSCREEN map. See the [Using the EJAM API](dev-api.html) article and
+`?url_ejamapi` / `?url_ejscreenmap` for the full options (multisite reports,
+radius, combined links, and the EJSCREEN "Send to EJAM" hand-off).
+
 Map of facilities in an industry, plus popups with links to each facility in
-ECHO and EJSCREEN 
+ECHO and EJSCREEN
 
 ```{r map2, eval = FALSE, fig.height=5, fig.width=5}
 mapfast(mysites)
@@ -438,7 +458,7 @@ if (exists("frs") & exists("frs_from_naics")) {
 You can upload polygons in a shapefile, and use EJAM to analyze them. See the
 Shiny app.
 
-See `shapefile_from_any()` and other [shapefile-related functions](../reference/index.html#specify-places-by-shapefile):
+See `shapefile_from_any()` and other [shapefile-related functions](`r paste0(docs_reponame_url, "/reference/index.html#specify-places-by-shapefile")`):
 
 ```{r notrun_shapefile_functionlist, eval=FALSE, echo=TRUE}
 shapefile_from_any()
@@ -457,7 +477,7 @@ shp1 <- shapefile_from_any(system.file("testdata/shapes/portland.gdb.zip", packa
 
 You can compare places defined by FIPS code, such as a group of US Counties.
 
-See a list of [functions for working with Census FIPS codes](../reference/index.html#specify-counties-etc-).
+See a list of [functions for working with Census FIPS codes](`r paste0(docs_reponame_url, "/reference/index.html#specify-counties-etc-")`).
 
 Compare all Counties in a State, using EJAM indicators
 
@@ -514,11 +534,11 @@ mapfastej_counties(xmd$results_bysite, 'state.pctile.pctlowinc')
 
 See also 
 
--  [functions for mapping](../reference/index.html#viewing-results). 
+-  [functions for mapping](`r paste0(docs_reponame_url, "/reference/index.html#viewing-results")`). 
 
--  [functions for seeing plots/graphics](../reference/index.html#plots-mean-of-one-indicator-at-each-site-or-type-of-site-comparing-sites-or-categories-of-sites-)
+-  [functions for seeing plots/graphics](`r paste0(docs_reponame_url, "/reference/index.html#plots-mean-of-one-indicator-at-each-site-or-type-of-site-comparing-sites-or-categories-of-sites-")`)
 
--  [functions for seeing tables of results](../reference/index.html#tables)
+-  [functions for seeing tables of results](`r paste0(docs_reponame_url, "/reference/index.html#tables")`)
 
 ### The most striking findings (e.g., which group is most over-represented?)
 
@@ -695,7 +715,7 @@ statestats_means(ST = c("MD", "VA"), varnames = names_e[1:3])
 
 # VISUALIZATION OF FINDINGS (PLOTS) {#visualization-of-findings-plots}
 
-See examples below, and the [list of plot-related functions](../reference/index.html#viewing-results).
+See examples below, and the [list of plot-related functions](`r paste0(docs_reponame_url, "/reference/index.html#viewing-results")`).
 
 ## Indicators
 

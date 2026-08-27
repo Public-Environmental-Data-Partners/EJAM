@@ -16,7 +16,10 @@ ejamit_compare_distances(
   ylab = "Ratio of Avg. within X miles to Avg. Statewide or Nationwide",
   ylim = c(0, 5),
   n = 1,
-  ...
+  ...,
+  buffers = NULL,
+  buffer = NULL,
+  radius = NULL
 )
 }
 \arguments{
@@ -50,6 +53,8 @@ etc.}
 when reporting which indicators most strongly increase as radius decreases.}
 
 \item{...}{optional, passed to \code{\link[=ejamit]{ejamit()}}}
+
+\item{buffers, buffer, radius}{aliases (synonyms) for radii}
 }
 \value{
 table in \href{https://r-datatable.com}{data.table} format you can call results_bydistance,

@@ -74,10 +74,10 @@ x$Item[!grepl("names_|^test", x$Item)]
 EJAM relies on datasets mostly stored in the package itself or in a separate,
 data-related repository:
 
--   Datasets stored within the EJAM package (`.rda` files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and
+-   Datasets stored within the EJAM package (`.rda` files): [Documentation](`r paste0(docs_reponame_url, "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and
 [access to package data files](`r paste0(code_reponame_url, "/tree/main/data")`)
 
--   Datasets used by EJAM but stored separately (large `.arrow` files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and
+-   Datasets used by EJAM but stored separately (large `.arrow` files): [Documentation](`r paste0(docs_reponame_url, "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and
 [access to the large data files as GitHub release assets](`r paste0(data_reponame_url, "/releases")`)
 
 ### Why the large datasets are put into the data repository using piggyback instead of committed using Git
@@ -93,7 +93,7 @@ changed ANNUALLY or more often:
 
 -   ***Blockgroup Datasets (Demographic and Environmental Data)***: These
 include datasets included with the package `?blockgroupstats`,
-[usastats](../reference/usastats.html), `?statestats`, and `?bgej`. The
+[usastats](`r paste0(docs_reponame_url, "/reference/usastats.html")`), `?statestats`, and `?bgej`. The
 annual staged workflow for updating these ACS/EJScreen-style blockgroup
 datasets is now documented separately in [Updating EJScreen Datasets Annually
 (via the Pipeline)](dev-update-ejscreen-datasets-yearly.html). That pipeline
@@ -499,14 +499,53 @@ EJAM:::ejamdata_required_tag()                          # from DESCRIPTION; must
 ```
 
 git release tag = `ejamdata` release tag = DESCRIPTION `ejamdata_required_tag` =
-`data/ejamdata_version.txt`. A code-only **patch** release (for example
-`v3.2022.1`) is the exception: it keeps `ejamdata_required_tag` and the marker at
-the existing `v3.2022.0`, because the data did not change and the patch reuses the
-already-published `ejamdata` release.
+`data/ejamdata_version.txt`.
+
+**The rule applies only when the bundled data changes.** Any release that ships
+code changes on top of already-published data keeps `ejamdata_required_tag` and the
+marker pointing at the `ejamdata` release the data actually came from. That covers
+two cases:
+
+- a code-only **patch** (for example `v3.2022.1` or `v3.2022.2`), which stays on
+  the existing `v3.2022.0` data; and
+- a release that changes only the **version scheme or major version** while keeping
+  the same vintage — for example `v3.2022.3`, which also stays on `v3.2022.0` data.
+
+In both cases there is no matching `ejamdata` release and none is needed. A new
+`ejamdata` release is required only when the bundled ACS data itself changes, which
+is what a vintage bump such as `v4.2024.0` does (that one pins `v3.2024.0`).
+
+> EJAM versions read `MAJOR.ACSENDYEAR.PATCH`, so the middle field names the ACS
+> vintage while `ejamdata_required_tag` names the data release. They move
+> independently: `v3.2022.3` and `v3.2022.2` share `v3.2022.0` data.
 
 This previously had been handled with a GitHub Actions workflow that tried to
-use Git LFS. That automatic workflow is no longer used and should not be
-restored.
+use Git LFS. That automatic workflow is no longer used and will not be restored.
+
+### Bump the package version number
+
+The package version (`Version: 3.YYYY.x` in `DESCRIPTION`) is recorded verbatim
+in several other files. When cutting a release, bump all of them together so the
+version shown in the app, the docs site, and the citation agree:
+
+- `DESCRIPTION` — `Version:`, plus the human-readable release fields
+  `VersionDate:`, `ReleaseDateEJAM:`, `VersionEJSCREEN:`, `ReleaseDateEJSCREEN:`.
+  (`ejamdata_required_tag:` is *not* a code version — see above; a code-only
+  patch keeps it at the existing `v3.YYYY.0`.)
+- `_pkgdown.yml` — the footer `components:` (`datefooter:` and `versionmsg:`),
+  shown on every docs page.
+- `CITATION.cff` — `version:` and `date-released:`. (`inst/CITATION` reads
+  `Version`/`VersionDate` from `DESCRIPTION` at build time, so it needs no edit.)
+- `inst/golem-config.yml` — `golem_version:`.
+- `NEWS.md` — when publishing, retitle the top `# EJAM 3.YYYY.x (unreleased)`
+  heading to the dated release heading (for example `# EJAM 3.2022.1 (July 2026)`).
+
+`README.Rmd` or `README.md` carries no hard-coded version (only a lifecycle badge), so it needs
+no edit. The deployed-API repo (EJAM-API) selects which EJAM version to build via
+the `EJAM_VERSION` build arg in its `Dockerfile` (with a matching mention in its
+`README.md`); bump that to the new tag when redeploying the API.
+EJScreen has no EJAM-version string of its own — it reaches EJAM through
+the API URL — so it needs no version edit for an EJAM release.
 
 
 ## Potential Improvements

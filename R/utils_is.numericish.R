@@ -60,22 +60,26 @@ is.numericish <- function(
   } else {
     # table not vector
 
-    if (data.table::is.data.table(x)) {data.table::setDF(x); wasdt <- TRUE} else {wasdt <- FALSE}
+    # Check one column at a time, without converting x.
+    # (This used to setDF() a data.table input, which leaked out: the caller's
+    # object was converted to a data.frame by reference and never restored,
+    # because the copy made while replacing NA values broke the reference
+    # before the restoring setDT() ran.)
 
     answer <- vector(length = NCOL(x))
 
-    # if it is just NA, treat it as potentially a number.
-    x[is.na(x)] <- 0 # this works cell by cell in a table, faster than in loop
     for (i in 1:NCOL(x)) {
-
+      # x[[i]] gets the column from a data.frame or data.table; a matrix needs x[ , i]
+      coli <- if (is.data.frame(x)) x[[i]] else x[ , i]
+      # if it is just NA, treat it as potentially a number.
+      coli[is.na(coli)] <- 0
       answer[i] <-  all(suppressWarnings(
-        !is.na(as.numeric(x[,i]))
-        # x[ , i] == as.numeric(x[ , i]) # this way had trouble with trailing zeroes
+        !is.na(as.numeric(coli))
+        # coli == as.numeric(coli) # this way had trouble with trailing zeroes
         ))
       # answer[i][is.na(answer[i])] <- FALSE
     }
 
-    if (wasdt) {data.table::setDT(x)}
     return(answer)
   }
 

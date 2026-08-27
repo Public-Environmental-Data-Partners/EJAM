@@ -27,7 +27,10 @@ vector of URLs
 get URL(s) of Census Bureau pages showing ACS 5-year tables examples
 }
 \examples{
+\dontrun{
+# requires a Census API key -- see ?tidycensus::census_api_key
 url_acs_table_info()
+}
 }
 \seealso{
 \link{tables_ejscreen_acs} \code{\link[=acs_table_info]{acs_table_info()}}

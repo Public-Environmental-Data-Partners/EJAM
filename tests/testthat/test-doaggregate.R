@@ -116,6 +116,7 @@ test_that("doaggregate returns no normal output when every blockgroup is unsuppo
 
 test_that("still returns same results_overall as saved", {
 
+
   # # data created/saved was this:
   # out_data_doagg <- doaggregate(out_data_getblocks, sites2states_or_latlon = testpoints_data, radius = myrad, include_ejindexes = TRUE) # not the default but want to test this way
 

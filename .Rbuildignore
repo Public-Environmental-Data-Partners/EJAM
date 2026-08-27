@@ -10,6 +10,7 @@
 ^\.github$
 ^\.positai$
 ^\.claude$
+^\.lintr$
 ^data/.*[.]arrow$
 ^data-raw/pipeline_outputs$
 ^data-raw/pipeline_outputs/.*
@@ -23,3 +24,5 @@
 ^README\.html$
 ^logo\.svg$
 ^shiny_bookmarks$
+^planning$
+^figure$

@@ -58,6 +58,10 @@ global_defaults_shiny_public <- list(
   ############################################################################## #
 
   ## SITE SELECTION  ####
+  ## The top-level method is chosen by default_site_method: "dropdown" (select a category),
+  ## "upload" (upload a file), or "mapclick" (click or draw on the map to specify points).
+  ## The default_choices_* settings below configure the sub-options for the "dropdown" and
+  ## "upload" methods only; the "mapclick" method has no sub-options.
 
   # 'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',  # but NOT all fips of one category (unlike for NAICS etc.)
 
@@ -66,7 +70,7 @@ global_defaults_shiny_public <- list(
   ## default_choices_for_type_of_site_category defines the range of options
   ## If you want all the options available but want the app to default to NAICS, in ejamapp() use these params:
   # ejamapp(
-  #   default_upload_dropdown = "dropdown",
+  #   default_site_method = "dropdown",
   #   default_choices_for_type_of_site_category = c(
   #     'by Industry (NAICS) Code' = 'NAICS',
   #     'by Census place name (Cities, Counties, States)' = 'FIPS_PLACE',
@@ -105,7 +109,7 @@ global_defaults_shiny_public <- list(
   ## If you want all the options available but want the app to default to polygons, in ejamapp() use these params:
   #
   # ejamapp(
-  #   default_upload_dropdown = "upload",
+  #   default_site_method = "upload",
   #   default_choices_for_type_of_site_upload = c(
   #     'Shapefile of polygons file upload'              = 'SHP',
   #     'Latitude/Longitude file upload'                 = 'latlon',
@@ -119,7 +123,12 @@ global_defaults_shiny_public <- list(
     c(
       'Latitude/Longitude file upload'                = 'latlon',
       'EPA Facility IDs (FRS Identifiers)'            = 'FRS',
-      'Shapefile of polygons'                         = 'SHP'
+      'Shapefile of polygons'                         = 'SHP',
+      # FIPS is included in the public app too: ?fips= deep links (and the
+      # EJScreen "Send to EJAM" handoff of FIPS place selections) select this
+      # option programmatically, and updateSelectInput() cannot select a value
+      # that is not among the choices.
+      'Census place FIPS Codes file upload'           = 'FIPS'
     )
   } else {
     c(
@@ -138,9 +147,9 @@ global_defaults_shiny_public <- list(
 
   ## ------------------------ Short report options ####
 
-  default_show_ratios_in_report = !isTRUE(isPublic), # used by app_ui to affect input$show_ratios_in_report which server uses in ejam2report(), etc.
+  default_show_ratios_in_report = TRUE, # show ratio-to-US-avg and ratio-to-State-avg columns (with their color coding) by DEFAULT in BOTH public and private apps; user can still toggle off in report options. Used by app_ui to set input$show_ratios_in_report, which the server passes to build_community_report()/ejam2report(). (was !isTRUE(isPublic))
 
-  default_extratable_show_ratios_in_report = !isTRUE(isPublic), # same
+  default_extratable_show_ratios_in_report = TRUE, # same, for the Additional Information (extra) table. (was !isTRUE(isPublic))
 
   ## normally would be the same as the defaults in ejam2report() or defaults in build_community_report()
 
@@ -154,15 +163,22 @@ global_defaults_shiny_public <- list(
     `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
     `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
     `Poverty` = names_d_extra,
-    `Features and Location Information` = c(
-      names_e_other,
-      names_sitesinarea,
+    # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Climate)
+    `Climate` = names_climate,
+    `Counts of Features and Overlap with Area Types` = c(
       names_featuresinarea,
       names_flag
     ),
-    `Climate` = names_climate,
-    `Critical Services` = names_criticalservice,
-    `Other` = names_d_other_count
+    `Critical Services` = c( # names_criticalservice, re-sorted for display: flags first, then percentages
+      'yesno_houseburden', 'yesno_fooddesert', 'yesno_transdis',
+      'pctnobroadband', 'pctnohealthinsurance'
+    ),
+    `Facility Counts` = names_sitesinarea,
+    `Analyzed Sites` = c( # names_e_other, re-sorted for display: distances first, then site counts
+      'distance_min_avgperson', 'distance_min',
+      'sitecount_unique', 'sitecount_avg', 'sitecount_max'
+    ),
+    `Other Totals` = names_d_other_count
     # , `Count above threshold` = names_countabove  # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
   )
 

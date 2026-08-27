@@ -42,7 +42,13 @@ ejamit(
   showpctowned = TRUE,
   download_city_fips_bounds = TRUE,
   download_noncity_fips_bounds = FALSE,
-  ...
+  ...,
+  buffer = NULL,
+  shape = NULL,
+  shp = NULL,
+  zipcode = NULL,
+  lat = NULL,
+  lon = NULL
 )
 }
 \arguments{
@@ -67,10 +73,7 @@ It can be automatically created when the package is attached via the .onAttach()
 \item{fips}{optional FIPS code vector to provide if using FIPS instead of sitepoints to specify places to analyze,
 such as a list of US Counties or tracts. Passed to \code{\link[=getblocksnearby_from_fips]{getblocksnearby_from_fips()}}}
 
-\item{shapefile}{optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
-e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)}
-If in RStudio you want it to interactively prompt you to pick a file,
-use shapefile=1 (otherwise it assumes you want to pick a latlon file).}
+\item{shapefile}{optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.}
 
 \item{countcols}{character vector of names of variables to aggregate within a buffer using a sum of counts,
 like, for example, the number of people for whom a poverty ratio is known,
@@ -147,6 +150,23 @@ passed to \code{\link[=doaggregate]{doaggregate()}} also. app server sets this t
 \item{download_noncity_fips_bounds}{passed to \code{\link[=area_sqmi]{area_sqmi()}}}
 
 \item{...}{passed to \code{\link[=getblocksnearby]{getblocksnearby()}} etc. such as  report_progress_every_n = 0}
+
+\item{buffer}{Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.}
+
+\item{shape}{Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
+e.g., \code{out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)}
+If in RStudio you want it to interactively prompt you to pick a file,
+use shapefile=1 (otherwise it assumes you want to pick a latlon file).}
+
+\item{shp}{alias (synonym) for shapefile}
+
+\item{zipcode}{optional vector of one or more 5-digit zip codes to analyze
+(instead of sitepoints, fips, or shapefile). Zip codes are converted to
+ZCTA polygons via \code{\link[=shapes_from_zip]{shapes_from_zip()}} and then analyzed exactly like a
+shapefile (so \code{ejamit()$sitetype} is "shp"), with no buffer unless
+radius is specified. See the Zipcodes article/vignette.}
+
+\item{lat, lon}{optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.}
 }
 \value{
 This returns a named list of results.
@@ -181,6 +201,8 @@ one blockgroup since it may be near two analyzed sites, for example.
 \item \strong{longnames}  descriptive long names for the indicators in the above outputs
 \item \strong{count_of_blocks_near_multiple_sites}  additional detail
 \item \strong{sitetype} indicates if analysis used latlon, fips, or shp
+\item \strong{site_method} and \strong{zipcode} are also included if places were specified
+via the \code{zipcode} parameter (in which case sitetype is "shp")
 \item \strong{formatted} another tall format showing averages for all indicators
 \item \strong{sitetype} the type of analysis done: "latlon", "shp", "fips", etc.
 }
@@ -233,6 +255,9 @@ See examples in vignettes/ articles at https://public-environmental-data-partner
   # FIPS examples
   out4 = ejamit(fips = testinput_fips_cities)
   out5 = ejamit(fips = fips_counties_from_state_abbrev("DE"), radius = 0)
+
+  # Zip code example (analyzed as ZCTA polygons - see the Zipcodes article)
+  out6 = ejamit(zipcode = c("10012", "10506"))
 
   # View results overall
   round(t(out$results_overall), 3.1)

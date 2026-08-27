@@ -16,7 +16,9 @@ url_state_health(
   ifna = "https://www.countyhealthrankings.org",
   baseurl = "https://www.countyhealthrankings.org/health-data/",
   statereport = TRUE,
-  ...
+  ...,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -41,6 +43,8 @@ url_state_health(
 \item{statereport}{Do not use directly here. passed here by \code{\link[=url_county_health]{url_county_health()}}}
 
 \item{...}{unused}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 vector of URLs to reports on enclosing states (or generic link if fips invalid)

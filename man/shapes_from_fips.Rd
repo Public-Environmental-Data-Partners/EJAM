@@ -29,7 +29,10 @@ or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycens
 
 \item{myservice_county}{URL of feature service to get shapes from,
 or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
-Note State bounds are built into this package as data so do not need to be downloaded from a service.}
+Note State bounds are built into this package as data so do not need to be downloaded from a service.
+County bounds are too, as of the \link{counties_shapefile} dataset: the default
+"cartographic" County bounds are served from that built-in dataset rather than
+downloaded, falling back to downloading only for any FIPS not found there.}
 
 \item{allow_multiple_fips_types}{if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips}
 

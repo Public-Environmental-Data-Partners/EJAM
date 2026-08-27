@@ -2,8 +2,20 @@
 name: 'R CMD check'
 
 on:
+  # Runs where the risk actually is: PRs into main, and main itself - main is
+  # what a release tag is cut from, and merges here are sometimes made with
+  # --admin (which bypasses PR checks) or pushed directly as hotfixes, so the
+  # post-merge run is the only thing that catches what a bypass skipped.
+  #
+  # Deliberately NOT run on PRs into development: this is a 5-platform matrix
+  # (macOS bills at 10x, Windows at 2x) on a package whose check takes ~12
+  # minutes. development PRs get the cheap ubuntu gates (lintr, quick install)
+  # instead. Revisit if breakage keeps reaching main.
   pull_request:
     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
@@ -32,7 +44,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      - uses: actions/checkout@v4.3.0
+      - uses: actions/checkout@v7
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -42,12 +54,38 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: System libraries for Arrow/curl (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            pkg-config
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Verify Arrow/curl dependencies
+        run: source(".github/scripts/check-arrow-curl-deps.R")
+        shell: Rscript {0}
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: false
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+          # Fail the job only on an ERROR. The action's default is "warning",
+          # which also fails on any WARNING - and this package currently emits
+          # 12 of them, so the job could stay red even at 0 ERRORs and 0 NOTEs,
+          # with the red telling you nothing about whether anything broke.
+          #
+          # WARNINGs and NOTEs are still reported: rcmdcheck prints every one in
+          # the log and the "Status: N ERRORs, N WARNINGs, N NOTEs" summary is
+          # always shown. They just no longer gate the build.
+          #
+          # Tighten this back to "warning" once those 12 warnings are dealt
+          # with, so warnings cannot creep back in unnoticed.
+          error-on: '"error"'

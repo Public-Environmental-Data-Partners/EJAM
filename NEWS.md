@@ -1,15 +1,349 @@
-# EJAM 3.2022.1 / 3.2023.1 / 3.2024.1 (unreleased)
+# EJAM 3.2022.3 (unreleased)
 
-Patch release for the v3.YYYY.0 annual-vintage line (v3.2022.1, v3.2023.1,
-v3.2024.1). Functionality is identical across all three ACS vintages
+Features from the v4 milestone, shipping on the ACS 2018-2022 vintage.
+
+This is the final ACS 2018-2022 release; it is frozen from here on. The 2020-2024
+vintage ships separately as `4.2024.0`, which is where development continues.
+
+## New Features
+
+- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
+  to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
+  any other shapefile, and `ejam2report()` describes the places as zip codes and
+  maps their boundaries without needing the `shp` parameter. This automates the
+  workflow that the Zipcodes article documented as manual steps (#482).
+
+## Bug Fixes
+
+- The notes tab of the Excel workbook now says how the sites were selected. It
+  had never done so: `buffer_desc_from_sitetype()` only appended that detail when
+  the description so far was empty, which none of its branches can produce, and
+  the test inside was inverted as well. A SIC analysis of latitude/longitude
+  sites now reads "Locations defined by latitude, longitude and radius, based on
+  EPA-regulated facilities by SIC code (industry type)" instead of stopping at
+  the radius. The detail is left off when it would only restate the site type,
+  so plain shapefile analyses do not read "Polygons defined by shapefile, based
+  on shapefile".
+
+- SIC and MACT analyses get their descriptions back. `site_method2text()`
+  lowercases its input, but its SIC and MACT branches compared against the
+  uppercase spellings, so neither could ever match and both fell through to an
+  empty string.
+
+- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
+  "fips" rather than "FIPS". The two gates that rebuild those polygons were
+  case-sensitive, so a lowercase spelling silently produced an unmapped report.
+  Matches how the zip code gates added for #482 already behave.
+
+- Percentiles no longer depend on which operating system the analysis runs on.
+  A raw score is normally a population-weighted average, so it carries a few
+  units in the last place of rounding error, and how much differs between macOS,
+  Linux, and Windows. Because percentile lookup is a step function, a score that
+  lands exactly on a cutoff could fall either side of it, and where the lookup
+  table has several percentiles tied at one cutoff the reported percentile could
+  move by the whole width of that tie block. One test site's state asthma
+  percentile differed by 7 points between operating systems for this reason.
+  Scores that sit within floating-point noise of a cutoff are now snapped onto
+  it, so every platform reports the same percentile, and a tied cutoff correctly
+  reports the lowest of the tied percentiles as documented (#555).
+
+  This corrects saved percentiles in the eight `testoutput_ejamit_*` and
+  `testoutput_doaggregate_*` datasets, which had recorded the higher end of a tie
+  block. Only percentile columns changed. It also means `lookup_pctile()` handles
+  the ACS22 `pctdisability` boundary case without needing the `signif_digits`
+  argument.
+
+- A GitHub outage no longer looks like missing data. When the API cannot list a
+  release's assets, `download_latest_arrow_data()` now says so and retries,
+  instead of treating the empty answer as an empty release and reporting a
+  missing `quaddata.arrow` much later.
+
+
+# EJAM 3.2022.2 (August 2026)
+
+A code-and-docs patch over v3.2022.1, led by a faster web app and 
+new information in the community report about where people live.
+
+## Highlights
+
+- **A quicker web app:** the Details tab's Site-by-Site Table appears in well
+  under a second for a 1,000-site analysis instead of roughly six, PDF reports
+  finish about seven seconds sooner, and County reports no longer pause to
+  download map boundaries.
+
+- **More about where people live:** the community report has new rows showing the
+  share of residents whose blockgroup contains a school, hospital, or place of
+  worship, or overlaps a Tribal area, impaired waters, a
+  disadvantaged community, etc. -- each compared to the US and State average.
+  The "Additional Information" part of the report is also reorganized.
+
+- **Ratio columns are now shown by default:** "Ratio to US average" and
+  "Ratio to State average", with their color coding, now show in the public
+  app's report (not just when isPublic=FALSE).
+
+- **Numbers display correctly:** percentages that had appeared as "0" or "1"
+  instead of, say, "79%" now render properly in the report, tables, and map
+  popups, and percentages and counts round consistently.
+
+- **New URLs are shorter and provide caching:**
+  - EJScreen app: [ejscreen.ejanalysis.com](https://ejscreen.ejanalysis.com)
+    - docs: [ejscreendocs.ejanalysis.com](https://ejscreendocs.ejanalysis.com)
+  - EJAM app: [ejam.ejanalysis.com](https://ejamapp.ejanalysis.com)
+    - docs: [ejamdocs.ejanalysis.com](https://ejamdocs.ejanalysis.com)
+  - API: [api.ejanalysis.com](https://api.ejanalysis.com)
+    - docs: [apidocs.ejanalysis.com](https://apidocs.ejanalysis.com)
+  
+- **Bugs fixed**, including a crash when arriving from EJScreen's "Send to EJAM"
+  button and downloaded reports that came out empty (details below).
+
+- **Intermittent upload failures on the hosted app are being fixed alongside
+  this release** (#268), but by a change to the hosting setup rather than by
+  anything in this package. The production app runs on two servers, and an
+  upload could be sent to the one that was not holding your session, which
+  answered "Not Found" -- roughly half the time. The load balancer is being set
+  to keep each session on a single server, the same fix applied in early 2026
+  that was later lost when the servers were rebuilt from their configuration
+  files. Because it is a hosting change, installing v3.2022.2 does not by itself
+  resolve it; the two are simply being done at the same time.
+
+## Improvements
+
+- **The Site-by-Site Table builds about 4x faster** (#491, fixes #127): it now
+  starts from a default subset of about 50 columns rather than all ~700 and
+  shows 50 rows per page, and the slow steps in building it were rewritten. Any
+  columns can still be added from the Advanced Settings column picker (which had
+  never appeared -- also fixed), and downloads always include every column.
+
+- **PDF reports are about 7 seconds (~50%) faster** (#473, helps #293), from
+  trimming two fixed waits during rendering. Both stay adjustable on a server
+  without a rebuild, in case a shorter pause ever degrades output.
+
+- **County reports & maps are faster and more reliable** (#472, part of #446):
+  county boundaries are built into the package instead of downloaded while the
+  report renders, so no Census API key or boundary-service call is needed, and
+  Puerto Rico counties now map correctly.
+
+- **Report's "Additional Information" table was reorganized** so related
+  rows sit together: feature counts, facility counts, and analyzed-site rows are
+  now separate sections, "Climate" moved up next to "Poverty", and "Flag for..."
+  rows read Yes/No instead of 1/0. A footnote explains what the feature and
+  facility counts mean, and what a State average means for a multisite report
+  (part of #403 and #410).
+  
+- **The State flagged-areas stats are available outside the report too**
+  (closes #242; addresses #156 and #410):
+  `ejamit()$results_summarized$flagged_areas` gains statewide percent and
+  ratio-to-state columns, `ejam2barplot_areafeatures(vs = "state")` plots
+  against State averages, and `ejam2excel()` gains an "Area Features" tab.
+
+- **A new launch-URL parameter:** `?advanced=TRUE` opens the app with the
+  Advanced Settings tab visible, even on a public deploy.
+
+
+## Bug Fixes
+
+- **Web-app completion estimates now reflect current live performance** (#513):
+  the app uses a v3.2022.2 click-to-report calibration instead of presenting
+  the local `ejamit()` regression's much wider 95% upper prediction limit as
+  an ETA. Point estimates use measured small-run anchors and remain monotone
+  across site counts. Unbuffered FIPS and shapefile estimates use separate
+  versioned web curves, while local R calls retain a separate `ejamit()`
+  profile. Multi-state live estimates are labeled as provisional lower bounds
+  after repeated service failures, and buffered polygon/FIPS runs require a
+  separate calibration. The point curve is calibrated on live production, and
+  now varies with buffer radius as well as site count. Beyond the measured
+  range -- more than 1,000 points, or a radius over 5 miles -- the app reports a
+  lower bound rather than an expected time.
+
+- **Report's percentages no longer shown as "0" or "1", or with stray decimals**
+  in the report, tables, and map popups (#488). The metadata marking which
+  indicators are stored as fractions had been lost, disabling the conversion to
+  percent for 76 indicators (language, poverty, housing, broadband, health
+  insurance, age, sex, pre-1960 housing, fire and flood risk, and their US and
+  State rows).
+
+- **Reports on a site via link to API no longer all say "Site 1"** (#348, fixed
+  by #470 and #479); a link for row N now produces a report labeled "Site N".
+
+- **The EJScreen "Send to EJAM" handoff no longer crashes the session** (#465,
+  fixed by #466), which it did for every County/Tract and drawn-polygon
+  selection, and for any point selection made without a buffer.
+
+- **Zero-population sites no longer error or return wrong statistics** (#467,
+  fixed by #468) -- open-water blockgroups and industrial parcels with no
+  residents.
+
+- **Saved reports are no longer empty when a `filename` is given** (#385, fixed
+  by #471 and #475), and `ejam2report()` accepts a much wider range of file
+  names and extensions.
+
+- **`acs_bybg(year = 2024)` no longer wrongly errors** (#391, fixed by #469).
+  The year check now follows what the Census Bureau has actually published,
+  rather than the tidycensus default year, which can lag by more than a year.
+
+- **Rounding helpers no longer alter their inputs** (#491): `table_round()`,
+  `table_signif()`, `table_x100()`, and `is.numericish()` converted a data.table
+  in the caller's environment into a data.frame; all four now leave the caller's
+  object untouched and return the class they were given.
+
+## For Developers
+
+- **New URLs set up, and all key URLs are single-sourced** as
+  `Config/EJAM/url_*` fields in `DESCRIPTION`, read through `url_package()`,
+  which now also gives a clear error listing the valid types
+  (#485, #501, #502, #503). New short aliases via Cloudflare,
+  like [api.ejanalysis.com](https://api.ejanalysis.com), 
+  [ejam.ejanalysis.com](https://ejam.ejanalysis.com), and 
+  [ejamdev.ejanalysis.com](https://ejamdev.ejanalysis.com), etc. are easy to remember and
+  provide edge caching and 302 redirects to the actual deployed endpoints. URLs  
+  [ejamdocs.ejanalysis.com](https://ejamdocs.ejanalysis.com) and
+  [ejscreendocs.ejanalysis.com](https://ejscreendocs.ejanalysis.com) 
+  now redirect to documentation sites for EJAM and EJScreen and support links like 
+  - [ejamdocs.ejanalysis.com/dev](https://ejamdocs.ejanalysis.com/dev), 
+  - [ejamdocs.ejanalysis.com/dev/articles/dev-api.html](https://ejamdocs.ejanalysis.com/dev/articles/dev-api.html) or 
+  - [ejamdocs.ejanalysis.com/reference/url_package.html](https://ejamdocs.ejanalysis.com/dev/reference/url_package.html).
+
+- **A way to test changes to the API and test draft EJAM use of the API:**
+  `EJAM:::ejamapi_local()` serves a local stand-in for deployed API as a
+  byte-for-byte mirror of the EJAM-API repo at the production paths, with
+  draft-only endpoints under `/draft/...` (grouped as "Draft API Endpoints" in
+  the Swagger page), and `url_package("api")` honors an
+  `options(ejam.api.baseurl=)` / `EJAM_API_BASEURL` override so the package and
+  app can be pointed at a local or draft API (#499, #509).
+
+- The web app article now covers deep links, the EJScreen "Send to EJAM" button,
+  and launching the app pre-loaded with a set of places. The analysis article
+  cross-references the API article. Broken code chunks were fixed in two
+  other articles. Many other cleanup edits were done.
+
+- `ejamapi()` and `url_ejamapi()` no longer send a `version` parameter by
+  default, since the API serves whichever data vintage it has installed.
+
+- The `AOI` geocoding dependency used by `latlon_from_address()` now installs
+  from the `ericnost/AOI` fork (#478, fixes #477).
+
+- **A new release workflow** tags a release from the `Version` in `DESCRIPTION`
+  and publishes a GitHub Release whose notes are the matching `NEWS.md` section.
+  It defaults to a dry run and refuses to act on an unexpected version (#512).
+
+- The shipped example input and output data and example spreadsheet, HTML, & PDF
+  outputs were regenerated so they carry the new report content (#512).
+
+## Datasets are unchanged
+
+This reuses the existing `ejamdata` **v3.2022.0** data -- the packaged ACS and
+environmental files are byte-identical to v3.2022.0 -- so it is a drop-in update
+over v3.2022.1 with the same demographics, plus code and documentation
+improvements. The same applies across the annual-vintage lines
+(v3.2022.x, v3.2023.x, v3.2024.x).
+
+
+# EJAM 3.2022.1 (July 2026)
+
+Patch release for the v3.YYYY.x annual-vintage line (v3.2022.x, v3.2023.x,
+v3.2024.x). Functionality is identical across all three ACS vintages
 (2018-2022, 2019-2023, 2020-2024); only the ACS data vintage differs between
 branches. This is a code-and-docs patch: it reuses the existing per-vintage
 ejamdata release, with no change to the packaged ACS or environmental data.
 
 Changes since v3.YYYY.0:
 
+## New Features
+
+### EJScreen integration via API and deep-linking to EJAM
+
+New features across the EJAM API, the EJScreen web app, and the EJAM web app now
+work together so that EJScreen users can select several places directly on the
+EJScreen map -- clicking points, picking a "Select an Area" FIPS area, or drawing
+a polygon -- and then either get a single multisite report covering all of those
+places at once, or hand the same selected places off to the EJAM ("multisite")
+web app with the sites already loaded and ready to analyze. The supporting pieces:
+
+- Launch-URL site handoff (pre-load the web app from an external site). The app
+  server now reads custom launch query parameters so another app -- notably the
+  EJScreen Report tool's new "Send to EJAM" button -- can open EJAM already
+  pre-loaded with a set of places:
+    - `?lat=33,34&lon=-112,-114` -- one or more points, each a site
+    - `?fips=10001,10003` -- one or more FIPS codes, each a separate site
+    - `?shape=<url-encoded GeoJSON>` -- a polygon or FeatureCollection
+    - `?radius=` / `?buffer=` -- analysis radius in miles
+    - `?handoff=<token>` -- a token minted by the EJAM API `POST /handoff` and
+      fetched back via `GET /handoff/<token>`, for large polygon sets that exceed
+      URL-length limits
+
+  Points and polygons are file-upload inputs that cannot travel in a Shiny
+  url-bookmark, so this is the supported way to pass them in at launch. One
+  place-type loads per launch (points, then FIPS, then polygons); the parsed
+  places are held in per-session reactives (`url_sitepoints`, `url_fips`,
+  `url_shapefile`) that the upload reactives prefer over `ejamapp()`/global
+  defaults. The vocabulary matches `url_ejamapi()`. See
+  `vignettes/dev-app-settings.Rmd`.
+
+- `url_ejamapp()` now builds a deep link that launches the live app pre-loaded
+  with a set of places: `url_ejamapp(lat=, lon=, fips=, shapefile=, radius=)` or
+  `url_ejamapp(handoff=<token>)`, using the same query vocabulary as
+  `url_ejamapi()`. The default app base is now **`https://ejamapp.ejanalysis.com/`**,
+  a Cloudflare-fronted shortcut on ejanalysis.com that forwards the query string
+  (302 redirect) to the live app so launch parameters arrive intact.
+
+- `url_ejscreenmap()` was rewritten to generate **deep links into EJScreen** that
+  actually draw and select the place(s) on the EJScreen map -- `?fips=` (county,
+  tract, or blockgroup, mixes allowed), `?lat=&lon=` points (with optional
+  `radius=`), or `?polygon=` vertex lists -- matching the new inbound deep-link
+  vocabulary EJScreen itself gained (so links from EJAM reports and tables select
+  the analyzed place for an EJScreen report instead of only dropping a centroid
+  pin). Stored test outputs were deliberately not regenerated for the resulting
+  URL-column changes.
+
+- The EJAM API base URL is now **single-sourced**: functions read it from
+  `DESCRIPTION` via `url_package("api")`, so the endpoint can be
+  changed in one place instead of being hardcoded in several. The default is now
+  the branded alias **`https://api.ejanalysis.com`** (equivalently
+  `https://ejamapi.ejanalysis.com`), a Cloudflare edge proxy in front of the Cloud
+  Run API -- so report links generated by the app and package route through an
+  edge-cacheable host, and repeat requests for the same report can be served
+  from cache instead of re-running the analysis. See the new `dev-api` article.
+
+- Report links generated by the app and package now request the better-suited
+  format by default: **`html` for multisite** summary reports (much faster to
+  generate, and the interactive map has a popup per site) and **`pdf` for
+  single-site** reports (proper page breaks for printing). The `fileextension`
+  parameter is normalized and strictly validated (`html`/`pdf`) and remains
+  overridable per call.
+
+- The EJAM API now supports multisite reports (`sitenumber=0`) and also now has a
+  POST `/report` endpoint for large or numerous polygons. Docs for `ejamapp()`,
+  `ejamapi()`, and `url_ejamapi()` were updated to reflect that.
+
+### Parameter aliases and flexible site inputs
+
+- Parameter aliases for consistency across the place-input functions -- `ejamit()`,
+  `ejamapp()`, `custom_ejamit()`, `ejamapi()`, `url_ejamapp()`, `url_ejamapi()`,
+  `ejam2report()`, `ejam2map()`, `shapefile_from_any()`, `sites_from_input()`,
+  `ejamit_compare_distances()`/`_fulloutput()`, `ejamit_compare_types_of_places()`,
+  `ejamit_sitetype_from_input()`, `latlon_from_shapefile_centroids()`,
+  `shape_buffered_from_shapefile()`, the `url_*` map/report-link builders
+  (`url_ejscreenmap`, `url_enviromapper`, `url_county_health`/`_equityatlas`,
+  `url_state_health`/`_equityatlas`), and the EJAM API:
+    - **`buffer`** is a synonym for **`radius`** (and **`buffers`** for the `radii`
+      vector) -- it reads more naturally for FIPS or polygon analysis;
+    - **`shape`** and **`shp`** are synonyms for the polygon input (**`shapefile`**).
+  Canonical names are unchanged; the aliases are accepted wherever relevant.
+
+- `ejamit()` now accepts `lat` and `lon` vectors directly (it builds `sitepoints`
+  from them), in addition to a `sitepoints` data.frame. Closes #171.
+
 ## Bug Fixes
 
+- The multisite-report download button now shows the correct cursor after being
+  manually re-enabled (it previously kept the not-allowed cursor even once the
+  report was ready to download).
+- Deep-link `?radius=` / `?buffer=` now reliably sets the analysis radius at app
+  launch. Previously the launch handler patched the `radius_now` slider via
+  `updateSliderInput()`, but that slider is built by `renderUI`, so the update raced
+  the (re)render and was clobbered when the site-selection method changed. The launch
+  radius is now stored in a reactive value the slider reads at render time. (The other
+  deep-link params -- `lat`/`lon`, `fips`, `shape`, `handoff` -- were unaffected.)
 - Census API key (tidycensus >= 1.8 breaking change): tidycensus now *errors*
   (no longer warns) without a key -- including for the `load_variables()`
   metadata lookup. `calc_blockgroupstats_acs()` and `acs_table_info()` now fail

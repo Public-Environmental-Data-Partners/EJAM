@@ -35,6 +35,36 @@ See ejanalysis.org/ejam on where to find a public, non-EPA version of the EJAM w
 
 The version designed for use by the general public was specifically configured for non-expert users, so it does not include some less-frequently-used, complex features. More features are available in the web app version that was invoked using "isPublic=FALSE." Those needing even more tools -- the full set of complex analytic features -- can find them in the open source R package described below.
 
+# Launching the app pre-loaded with places
+
+You can open the EJAM web app with a set of places already loaded and ready to
+analyze, by adding launch parameters to the app's URL. This is a *deep link*.
+
+The most common way this happens is the **"Send to EJAM" button in the EJScreen
+map tool**: after selecting one or more places in EJScreen (clicking points,
+picking a "Select an Area" FIPS area, or drawing a polygon), that button opens
+EJAM with the same places pre-loaded, so you can run a multisite analysis
+without re-entering them.
+
+You can also build such a deep link yourself. A few examples (the query
+vocabulary is the same for points, FIPS codes, and a radius):
+
+- `https://ejamapp.ejanalysis.com/?lat=33,34&lon=-112,-114&radius=3` -- two
+  points, each a site, with a 3-mile analysis radius
+- `https://ejamapp.ejanalysis.com/?fips=10001,10003` -- two counties, each a
+  site
+
+Points and drawn polygons are file-upload inputs that cannot travel in a saved
+Shiny bookmark, so these launch parameters (and, for large polygon sets, a token
+`?handoff=` minted by the EJAM API) are the supported way to arrive pre-loaded.
+
+From R, `url_ejamapp()` builds these links, and `url_ejscreenmap()` builds the
+reverse links that open a place in the EJScreen map. See `?url_ejamapp` and, for
+the full launch-URL vocabulary, precedence rules, bookmarking, and the token
+hand-off, the [Defaults and Custom Settings for the Web App](dev-app-settings.html)
+article. The hosted [EJAM REST API](dev-api.html) (`?ejamapi` / `?url_ejamapi`)
+can return the same reports directly, without the web app.
+
 # Web app for expert users
 
 Expert users can launch and use the so-called "internal" version of the web app. It is specifically configured just for use by expert users. This is the same as the version any developer can run locally using the public code repository described below.
@@ -45,7 +75,7 @@ The EJAM software and data are available as open source resources, so that anyon
 
 Analysts or developers using R/RStudio have the option of running a local copy of the EJAM web app on their own computer. This may be even faster than relying on a hosted web app, does not time out after inactivity, and could be customized by a developer. You can also launch it with customized options or use bookmarked settings (and/or use EJAM functions and data directly without the web app, for more complex work).
 
-You can install the EJAM R package and datasets as explained in [Installing the EJAM R package](installing.html). There is also a [Basics - Quick Start Guide](basics.html) and extensive [documentation of EJAM functions/tools/data](../reference/index.html).
+You can install the EJAM R package and datasets as explained in [Installing the EJAM R package](installing.html). There is also a [Basics - Quick Start Guide](basics.html) and extensive [documentation of EJAM functions/tools/data](`r paste0(EJAM::url_package("docs"), "/reference/index.html")`).
 
 Once EJAM is installed, you can launch the local web app from RStudio as follows:
 

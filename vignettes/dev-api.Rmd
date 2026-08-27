@@ -1,0 +1,113 @@
+---
+title: "Using the EJAM API"
+description: "A brief overview of the hosted EJAM REST API and how to reach it from R"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Using the EJAM API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE, comment = "#>")
+```
+
+This is a short overview. For the authoritative and most current details, see:
+
+- the **[EJAM-API repository](https://github.com/Public-Environmental-Data-Partners/EJAM-API)**
+  and its [README](https://github.com/Public-Environmental-Data-Partners/EJAM-API?tab=readme-ov-file#ejam-api) -- it documents every endpoint, parameter, and example;
+- the help for **`?ejamapi`** and **`?url_ejamapi`**; and
+- the [Defaults and Custom Settings for the Web App](dev-app-settings.html) article, for the
+  *deep links* (launch-URL parameters + token handoff) that pre-load the EJAM web app.
+
+## What the API is
+
+Besides the R package and the web app, EJAM is available as a hosted **REST API** that
+returns EJScreen-style community reports (and the underlying data) for a point, a set of
+points, a polygon, or US Census areas (FIPS). It runs the same engine as the package, so an
+API report matches what `ejamit()` / `ejam2report()` would produce locally.
+
+## Reaching it from R
+
+```{r api, eval=TRUE}
+## API example: build a multisite report URL
+urlx = EJAM::url_ejamapi(fips=c(3650617,'0973000'), sitenumber = 0)
+urlx
+
+# browseURL(urlx)
+```
+
+Two functions wrap the API:
+
+- **`ejamapi()`** -- builds the request, calls the API, and returns the report or data.
+- **`url_ejamapi()`** -- builds the API request URL(s) *without* calling them (useful for a
+  table of shareable links, or to open one in a browser).
+
+```r
+ejamapi(lat = 33, lon = -112, radius = 3)              # get a report or data back
+url_ejamapi(lat = c(33, 34), lon = c(-112, -114))      # just build the URL(s)
+```
+
+The API base URL -- and a friendlier branded alias such as `https://api.ejanalysis.com` --
+are described in the
+[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API). You do not
+normally need to set the base URL yourself.
+
+## Deep linking: launch the app pre-loaded
+
+Separately from the data API, the EJAM web app can be **launched pre-loaded with a set of
+places** by opening it with launch query parameters in the URL -- the basis for the EJScreen
+"Send to EJAM" hand-off, which moves a selection straight into the full app. Points and FIPS
+codes travel directly in the URL; larger sets and drawn polygons use a token **handoff**
+(`POST /handoff` returns a token, and the app fetches the places back from
+`GET /handoff/<token>` at startup) so they are not limited by URL length. Use
+`url_ejamapp()` to build these launch URLs from R.
+
+For the launch-URL vocabulary and the handoff endpoints, see the
+[Defaults and Custom Settings for the Web App](dev-app-settings.html) article and the
+[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
+
+## A few notes on parameters
+
+- Provide one input type per request: points (`lat`/`lon`), **or** `fips`, **or** `shape`.
+- `buffer` is a synonym for `radius`; `fileextension` is `html` or `pdf`.
+- For an aggregate **multisite** report over several places at once, pass `sitenumber=0`
+  (the default for a single site is `sitenumber=1`; a positive `N` reports on just the Nth
+  site). Many or large polygons that would exceed a GET URL's length can be sent via a
+  `POST /report` request. See the parameter notes in the
+  [EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
+
+## Running the API locally
+
+The EJAM package ships a **verbatim mirror** of the deployed API's code
+(`inst/plumber/ejam-api/`, kept in sync with the EJAM-API repo -- see the `SYNC.md` there),
+plus draft/experimental endpoints that exist only in this package (`inst/plumber/draft/`).
+Since the EJAM-API has no staging server, this is the way to preview how the API will
+behave -- including after a proposed EJAM-API code change, before anyone deploys it:
+
+```{r apilocal, eval=FALSE}
+apiproc <- EJAM:::ejamapi_local()  # background server; browse http://127.0.0.1:3035/__docs__/
+# production paths served locally: /report, /data, /query, /handoff, /assets
+# draft-only endpoints mounted at:  /draft/echo, /draft/ejamit, /draft/report2, ...
+apiproc$kill()                     # stop it when done
+```
+
+To propose an EJAM-API change: edit the mirror copy, test it via `ejamapi_local()`, then
+submit the identical diff as a PR to the EJAM-API repo and re-sync the mirror after it
+merges. See `inst/plumber/try_the_api.R` for worked examples.
+
+To point the **package and web app at that local API** (so report links in the app's
+tables and map popups, `url_ejamapi()`, and `ejamapi()` all use it instead of the
+production API), set `EJAM_API_BASEURL=http://127.0.0.1:3035` (or
+`options(ejam.api.baseurl=...)`) -- one override honored by `url_package("api")`, the
+single source of the API base URL. Details and the deployed-app variant are in the
+[deployment article](dev-deployment.html) under "Testing against a local or draft API".
+
+For anything not covered here, the
+[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API) is the
+source of truth, and `?ejamapi` / `?url_ejamapi` document the R interface.

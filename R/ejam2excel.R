@@ -35,7 +35,7 @@
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -81,6 +81,9 @@
 #' @param notes Text of additional notes to put in the notes tab, optional vector of character elements pasted in as one line each.
 #' @param custom_tab optional table to put in an extra tab
 #' @param custom_tab_name optional name of optional custom_tab
+#' @param flagged_areas_add logical, whether to include an "Area Features" tab with the
+#'   ejamitout$results_summarized$flagged_areas table (percent of analyzed residents with
+#'   each feature or area type in their blockgroup, vs the US and State averages)
 #' @param ejscreen_ejam_caveat optional text if you want to change this in the notes tab
 #'
 #' @param ... optional additional parameters passed to [table_xls_format()], currently unused
@@ -150,6 +153,8 @@ ejam2excel <- function(ejamitout,
                        custom_tab = ejamitout$results_summarized$cols,
                        custom_tab_name = "thresholds",
                        ejscreen_ejam_caveat = NULL,
+                       # (new args go after all pre-existing ones so positional callers are unaffected)
+                       flagged_areas_add = TRUE,
                        ...
 ) {
 
@@ -216,6 +221,7 @@ ejam2excel <- function(ejamitout,
     notes = notes,
     custom_tab = custom_tab,
     custom_tab_name = custom_tab_name,
+    flagged_areas_add = flagged_areas_add,
     ejscreen_ejam_caveat = ejscreen_ejam_caveat,
     ...
   )

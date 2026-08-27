@@ -12,8 +12,22 @@
 #' @param column_names can be "ej", passed to [mapfast()]
 #' @param launch_browser logical optional whether to open the web browser to view the map
 #' @param shp shapefile it can map if analysis was for polygons, for example
+#' @param shape alias (synonym) for shp
+#' @param shapefile alias (synonym) for shp
+#' @param radius optional radius in miles
+#' @param buffer alias (synonym) for radius
 #'
-#' @param sitenumber as used in [ejam2report()]
+#' @param sitenumber Optional integer. If a valid positive integer is provided,
+#'   only that one site (row `sitenumber` of `ejamitout$results_bysite`) is
+#'   mapped. If omitted, NULL, zero, negative, or out of range, all sites are mapped.
+#'   Works for all site types (latlon, fips, shp): when `sitetype` is "fips"
+#'   and `shp` is provided, both the results table and `shp` are subsetted to
+#'   the requested row; when `shp` is not provided, the FIPS polygon is
+#'   downloaded for only that one site.
+#' @param sitenumber_label optional, display-only override (a number or short text) of the
+#'   site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
+#'   Only relevant when mapping a single site -- see [ejam2report()], whose
+#'   sitenumber_label parameter this supports.
 #'
 #' @return like what [mapfastej()] returns
 #' @examples
@@ -43,7 +57,17 @@
 #'
 ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp = NULL,
                      radius = NULL,
-                     sitenumber = NULL) {
+                     sitenumber = NULL,
+                     shape = NULL,     # alias (synonym) for shp
+                     shapefile = NULL, # alias (synonym) for shp
+                     buffer = NULL,    # alias (synonym) for radius
+                     sitenumber_label = NULL # name-only, at end to avoid arg shift
+                     ) {
+
+  # Aliases (synonyms) for naming consistency with ejamit()/ejamapp() etc.
+  if (is.null(shp) && !is.null(shape))     {shp <- shape}
+  if (is.null(shp) && !is.null(shapefile)) {shp <- shapefile}
+  if (is.null(radius)) {radius <- buffer}
 
   if (is.data.frame(ejamitout)) {
     # if it's a data.frame not the whole list output of ejamit(), assume it's the results_bysite, so make it look like we expected
@@ -68,7 +92,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
   # sitenumber (overall vs 1-site) ####
 
   if (all(is.na(sitenumber)) || is.null(sitenumber) || length(sitenumber) == 0 || length(sitenumber) > 1 ||
-      all(sitenumber %in% "") || all(sitenumber %in% "overall") || all(sitenumber < 0)) {
+      all(sitenumber %in% "") || all(sitenumber %in% "overall") || all(sitenumber <= 0)) {
     sitenumber <- -1
   }
   sitenumber <- as.numeric(sitenumber)
@@ -93,7 +117,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
   } else {
 
     ejamitout$results_bysite <- ejamitout$results_bysite[sitenumber, ]
-    if (sitetype %in% "shp" && !is.null(shp)) {
+    if (sitetype %in% c("shp", "fips") && !is.null(shp)) {
       shp <- shp[sitenumber, ]
     }
   }
@@ -121,7 +145,8 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     map_ejam_plus_shp(shp = shp,
                       out = ejamitout,
                       radius_buffer = radius,
-                      launch_browser = launch_browser)
+                      launch_browser = launch_browser,
+                      sitenumber_label = sitenumber_label)
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {
       stop("cannot map results of shapefile analysis if no polygons provided in shp parameter")
@@ -130,7 +155,8 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     mapfast(mydf = ejamitout$results_bysite,
             radius = radius,
             column_names = column_names,
-            launch_browser = launch_browser
+            launch_browser = launch_browser,
+            sitenumber_label = sitenumber_label
     )
   }
 }

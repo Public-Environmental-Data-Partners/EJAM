@@ -22,7 +22,8 @@ download ACS 5year data from Census API, at County resolution
 }
 \examples{
 ## also see examples for acs_bybg()
-\donttest{
+# requires a Census API key -- see ?tidycensus::census_api_key
+\dontrun{
   x     <- acs_bycounty(myvars = "B03002_003", myst = "NY",
     yr = acs_endyear(guess_always = TRUE, guess_census_has_published = TRUE)) # nhwa
   denom <- acs_bycounty(myvars = "B03002_001", myst = "NY",

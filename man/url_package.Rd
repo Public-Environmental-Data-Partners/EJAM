@@ -3,37 +3,98 @@
 \name{url_package}
 \alias{url_package}
 \title{Get URL, or just owner/reponame, for the package code, datasets, or documentation website
-as specified in the DESCRIPTION file or by redirects from aliases}
+as specified in the DESCRIPTION file or by redirects or aliases}
 \usage{
 url_package(
-  type = c("code", "data", "docs")[1],
+  type = c("code", "ejamrepo", "ejscreenrepo", "apirepo", "data", "datarepo", "docs",
+    "ejamdocs", "ejscreendocs", "apidocs", "app", "ejam", "ejamapp", "ejamdev",
+    "ejamappdev", "ejscreen", "ejscreenapp", "api")[1],
   get_full_url = FALSE,
-  desc_or_alias = c("desc", "alias")[1],
+  desc_or_alias = c("desc", "alias", "redirect")[1],
   docs_version = NULL,
   domain = NULL
 )
 }
 \arguments{
-\item{type}{Which type of URL is needed? Can be "data", "code", or "docs".
+\item{type}{Which type of URL is needed, such as
+"docs", "app", "api", "code", or "data",
+but more specifically, "ejamapp", "ejscreenapp", "ejamrepo", etc.
+
+The basic type "xyz" is stored in the DESCRIPTION field
+\code{Config/EJAM/url_xyz}, as listed below, but a URL also can be an alias or
+simple 301 redirect, stored in a field that has
+"_alias" or "_redirect" as a suffix,
+such as \code{Config/EJAM/url_ejamdocs_alias} providing the URL for
+\code{type = "ejamdocs"} and \code{desc_or_alias = "alias"}.
+The "_alias" suffix is part of the DESCRIPTION field name, not a \code{type}
+value: use \code{url_package("apidocs", desc_or_alias = "alias")}, not
+\code{url_package("apidocs_alias")}.
+
+DOCUMENTATION SITES:
 \itemize{
-\item "code" is for the github.com repository of R package code
-\item "data" is for the github.com repository of datasets
-\item "docs" is for the documentation website
+\item "ejamdocs" or "docs" (\code{Config/EJAM/url_ejamdocs}, also recorded in part
+in the standard \code{URL} field) is for the EJAM (and EJScreen to some extent)
+documentation website.
+\item "ejscreendocs" (\code{Config/EJAM/url_ejscreendocs}) is for the EJScreen
+documentation website.
+\item "apidocs" (\code{Config/EJAM/url_apidocs}) is for the EJAM API documentation website.
+}
+
+APP OR API SERVERS:
+\itemize{
+\item "ejam" or "ejamapp" or "app" (\code{Config/EJAM/url_ejamapp}) is for the EJAM Shiny app.
+\item "ejamdev" or "ejamappdev" (\code{Config/EJAM/url_ejamapp_dev}) is for the EJAM Shiny app development server.
+\item "ejscreen" or "ejscreenapp" (\code{Config/EJAM/url_ejscreenapp}) is for the live EJScreen app.
+\item "api" (\code{Config/EJAM/url_api}) is for the EJAM REST API base URL.
+Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
+endpoint can be changed in one place (by editing \code{Config/EJAM/url_api}).
+It is the branded Cloudflare edge proxy \verb{https://api.ejanalysis.com}
+(equivalently \verb{https://ejamapi.ejanalysis.com}, stored in
+\code{Config/EJAM/url_api_alias}), which fronts the direct Cloud Run origin
+recorded informationally in \code{Config/EJAM/url_api_direct}.
+
+For development/testing, the API base can be overridden without editing
+DESCRIPTION: \code{options(ejam.api.baseurl = ...)} takes highest precedence,
+then the environment variable \code{EJAM_API_BASEURL}, then DESCRIPTION as usual.
+Setting either (e.g. to \verb{http://127.0.0.1:3035}, where \code{EJAM:::ejamapi_local()}
+serves the API locally) makes every API URL the package builds -- report links
+in the app's tables and map popups, \code{\link[=url_ejamapi]{url_ejamapi()}}, \code{\link[=ejamapi]{ejamapi()}} -- point at
+that base instead of the production API. The override applies only to the
+canonical lookup (\code{desc_or_alias = "desc"}); explicit "alias"/"redirect"
+lookups are unaffected. See the "Testing against a local or draft API"
+section of the deployment article (\code{vignette("dev-deployment")}).
+}
+
+CODE OR DATA REPOSITORIES:
+\itemize{
+\item "ejamrepo" or "code" (\code{Config/EJAM/url_ejamrepo}, also recorded in part
+in the standard \code{URL} field) is for the github.com repository of EJAM R package code.
+\item "ejscreenrepo" (\code{Config/EJAM/url_ejscreenrepo}) is for the EJScreen code repository.
+\item "apirepo" (\code{Config/EJAM/url_apirepo}) is for the API source-code
+repository on github.com and is informational only -- it is not the API endpoint.
+\item "datarepo" or "data" (\code{Config/EJAM/url_ejamdata}, with owner/repository
+shorthand also stored in \code{ejam_data_repo}) is for the github.com
+repository of datasets.
 }}
 
 \item{get_full_url}{logical, whether to return full URL or just the owner/reponame info.
-Ignored if type = "docs", where full URL is always returned.}
+Only meaningful for the github repository types ("code", "ejamrepo", "ejscreenrepo",
+"apirepo", "data", "datarepo"); for all other types (and whenever
+desc_or_alias is "alias" or "redirect") a full URL is always returned.}
 
-\item{desc_or_alias}{must be "desc" or "alias" to use info from DESCRIPTION file
-or the URL based on a redirect from the aliases at
+\item{desc_or_alias}{must be "desc" or "alias" or "redirect" to use info from DESCRIPTION file
+or the URL based on a cloudflare alias or a simple 301 redirect such as
 \itemize{
-\item https://ejanalysis.org/code
-\item https://ejanalysis.org/data
-\item https://ejanalysis.org/docs
-}}
+\item https://api.ejanalysis.com (if "desc", use the basic URL from the "url_xyz" field)
+\item https://ejamapi.ejanalysis.com (if "alias", use the cloudflare alias from the "url_xyz_alias" field, which can handle subpaths and query strings passed through to the final URL)
+\item https://ejanalysis.com/api (if "redirect", use the simple 301 redirect from the "url_xyz_redirect" field, which cannot handle subpaths or query strings)
+}
 
-\item{docs_version}{optional, only used when type = "docs". A docs subpath such as
-"dev", "v3.2024.0", "v3.2023.0", or "v3.2022.0" to append to the canonical root
+If the "_alias" or "_redirect" field is missing from DESCRIPTION, the basic
+"url_xyz" field is used as a fallback.}
+
+\item{docs_version}{optional, only used when type = "docs" or "ejamdocs". A docs subpath such as
+"dev", "v3.2024.0", or "v3.2022.2" to append to the canonical root
 docs URL (e.g. returns ".../EJAM/v3.2024.0"). If the environment variable
 \code{EJAM_DOCS_BASE_URL} is set (as the pkgdown CI workflow does while building a
 given version), that value overrides everything so rendered Rd/Rmd links stay
@@ -47,10 +108,65 @@ a single URL or owner/repo as a character string
 }
 \description{
 Get URL, or just owner/reponame, for the package code, datasets, or documentation website
-as specified in the DESCRIPTION file or by redirects from aliases
+as specified in the DESCRIPTION file or by redirects or aliases
 }
 \details{
-See https://ejanalysis.com/ejam-code   for a list of URLs
+This function reads \verb{Config/EJAM/url_*} fields from the DESCRIPTION file.
+Below is a snapshot of those fields at the time of writing (7/2026):
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Config/EJAM/url_api: https://api.ejanalysis.com
+Config/EJAM/url_api_alias: https://ejamapi.ejanalysis.com
+Config/EJAM/url_api_redirect: https://ejanalysis.com/api
+Config/EJAM/url_api_direct: https://ejamapi-84652557241.us-central1.run.app
+
+Config/EJAM/url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
+Config/EJAM/url_apirepo_alias: https://apirepo.ejanalysis.com
+Config/EJAM/url_apirepo_redirect: https://ejanalysis.com/apirepo
+
+Config/EJAM/url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
+Config/EJAM/url_apidocs_alias: https://apidocs.ejanalysis.com
+Config/EJAM/url_apidocs_redirect: https://ejanalysis.com/apidocs
+
+Config/EJAM/url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
+
+Config/EJAM/url_ejamapp: https://ejam.publicenvirodata.org
+Config/EJAM/url_ejamapp_alias: https://ejam.ejanalysis.com
+Config/EJAM/url_ejamapp_redirect: https://ejanalysis.com/ejamapp
+
+Config/EJAM/url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
+Config/EJAM/url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
+Config/EJAM/url_ejamapp_dev_redirect: https://ejanalysis.com/ejamdev
+
+Config/EJAM/url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
+Config/EJAM/url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
+Config/EJAM/url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
+
+Config/EJAM/url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
+Config/EJAM/url_ejamdocs_alias: https://docs.ejanalysis.com
+Config/EJAM/url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
+
+Config/EJAM/url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
+Config/EJAM/url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
+Config/EJAM/url_ejscreenapp_redirect: https://ejanalysis.com/ejscreenapp
+
+Config/EJAM/url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
+Config/EJAM/url_ejscreenrepo_alias: https://ejscreenrepo.ejanalysis.com
+Config/EJAM/url_ejscreenrepo_redirect: https://ejanalysis.com/ejscreenrepo
+
+Config/EJAM/url_ejscreendocs: https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html
+Config/EJAM/url_ejscreendocs_alias: https://ejscreendocs.ejanalysis.com
+Config/EJAM/url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
+
+Config/EJAM/url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
+
+Config/EJAM/url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
+Config/EJAM/url_ejamdata_alias: https://ejamdata.ejanalysis.com
+Config/EJAM/url_ejamdata_redirect: https://ejanalysis.com/ejamdata
+}\if{html}{\out{</div>}}
+
+(\code{Config/EJAM/url_api_direct}, \code{Config/EJAM/url_apidocker}, and
+\code{Config/EJAM/url_ejscreendocs_old} are informational only -- they are stored
+in DESCRIPTION but are not \code{type} values this function accepts.)
 }
 \examples{
  owner_repo <- url_package()
@@ -58,6 +174,7 @@ See https://ejanalysis.com/ejam-code   for a list of URLs
  reponame
 
  url_package("docs")
+ url_package("docs", docs_version = "dev")
 
  url_package("code")
  url_package("code", get_full_url = TRUE)
@@ -65,9 +182,26 @@ See https://ejanalysis.com/ejam-code   for a list of URLs
  url_package("data")
  url_package("data", get_full_url = TRUE)
 
- url_package("docs", desc_or_alias="alias")
- url_package("code", desc_or_alias="alias")
- url_package("data", desc_or_alias="alias")
+ url_package("api")
 
+ url_package("ejamapp")
+ url_package("ejamapp", desc_or_alias = "alias")
+ url_package("ejscreenapp")
+
+ url_package("docs", desc_or_alias = "alias")
+ paste0(url_package("docs", desc_or_alias = "alias"), "/dev")
+ url_package("docs", desc_or_alias = "redirect")
+
+ url_package("apidocs")
+ url_package("apidocs", desc_or_alias = "alias")
+ # Not url_package("apidocs_alias"): select the alias separately as above.
+
+ url_package("code", desc_or_alias = "alias")
+ url_package("data", desc_or_alias = "alias")
+
+}
+\seealso{
+\code{\link[=url_ejamapi]{url_ejamapi()}} \code{\link[=ejamapi]{ejamapi()}} \code{\link[=url_ejamapp]{url_ejamapp()}} -- the functions that build/call EJAM API
+and app URLs; \code{url_package("api")} is their single source for the API base URL.
 }
 \keyword{internal}

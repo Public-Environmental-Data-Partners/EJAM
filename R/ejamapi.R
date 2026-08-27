@@ -27,13 +27,17 @@
 #' to convert the parameters to a URL for the API as a GET request to obtain an HTML report.
 #'
 #'
-#' @seealso [url_ejamapi()]
+#' @seealso [url_ejamapi()] for building API request URLs, [url_ejamapp()] for
+#'   deep links that launch the live *app* pre-loaded, and [url_package()] (type
+#'   "api") for the single-sourced API base URL. See also the `dev-api` and
+#'   "Defaults and Custom Settings for the Web App" articles.
 #'
 #' @param lat,lon Coordinates of point(s) for analysis of residents nearby.
 #'   To specify point(s), provide either lat and lon, or sites, or sitepoints --
 #'   they are alternative ways to specify point(s).
-#'   For the "report" endpoint, specify only one point
-#'   (until the API supports summary analysis over multiple locations).
+#'   For the "report" endpoint you may specify one or more points; pass
+#'   sitenumber=0 (via ...) for an aggregate multisite report over all of them
+#'   (otherwise the default is a single-site report on the first site).
 #'   For the "data" endpoint, specify one or more points.
 #' @param sites,sitepoints Only one of these should be provided - they are synonymous.
 #'   Coordinates of point(s) for analysis of residents nearby.
@@ -41,8 +45,9 @@
 #'   Like the sitepoints param in [url_ejamapi()]
 #'
 #' @param shape,shapefile  Only one of these should be provided - they are synonymous.
-#'   A GeoJSON string representing the area of interest,
-#'   like shapefile param in [url_ejamapi()]
+#'   The area of interest, as either an `sf` polygon object (auto-converted to GeoJSON) or a
+#'   ready-made GeoJSON string, like the shapefile param in [url_ejamapi()].
+#' @param shp alias (synonym) for shapefile/shape
 #' @param fips A FIPS code for a specific US Census geography, like "050014801001",
 #'   and must be consistent with the scale parameter
 #'
@@ -60,7 +65,10 @@
 #'   that is found within the specified fips. For example, all counties in specified State fips,
 #'   or all blockgroups in specified County fips.
 #'
-#' @param baseurl base API URL without the endpoint path
+#' @param baseurl base API URL without the endpoint path. Defaults to `url_package("api")`,
+#'   the single source of the API endpoint ([url_package()] reads the
+#'   `Config/EJAM/url_api` field from DESCRIPTION).
+#'   Pass a different value only to target another API (e.g. a staging server).
 #'
 #' @param endpoint "data", "report", or "query".
 #'
@@ -95,6 +103,7 @@
 #'
 #' @examples
 #' # also see ?EJAM::url_ejamapi()
+#' url_ejamapi()
 #' eg <- TRUE
 #'
 #' # one blockgroup
@@ -174,9 +183,10 @@
 #'
 #'    - if fileextension is "pdf", invisibly returns a list of file paths
 #'
-#' @param version optional EJAM version tag (e.g. "3.2024.0") passed to the API as
-#'   version=<ver> via [url_ejamapi()] so it can serve the matching data vintage.
-#'   Default NULL resolves to the installed package Version (from DESCRIPTION).
+#' @param version NOT YET IMPLEMENTED. Optional EJAM version tag (e.g. "3.2024.0")
+#'   sent to the API as version=<ver> so the API can be asked to serve the matching
+#'   data vintage (irrelevant until a multivintage option is implemented in the API).
+#'   Default is NULL here, meaning it uses the default found in [url_ejamapi()].
 #'
 #' @export
 #'
@@ -188,7 +198,7 @@ ejamapi <- function(
     buffer = NULL, radius = NULL,
     geometries = FALSE,
     scale = c("blockgroup", "county"),
-    baseurl = "https://ejamapi-84652557241.us-central1.run.app/",
+    baseurl = paste0(url_package("api"), "/"),   # canonical API base from DESCRIPTION Config/EJAM/url_api
     endpoint = c("data", "report", "query"),
     browse = TRUE,
     save_and_return_html = TRUE,
@@ -196,9 +206,12 @@ ejamapi <- function(
     fileextension = c("html", "pdf"),
     dry_run = FALSE,
     version = NULL,
-    ...
+    ...,
+    shp = NULL   # name-only alias (synonym for shape/shapefile), after ... so it can't bind positionally
 ) {
-  # API repo at https://github.com/edgi-govdata-archiving/EJAM-API/blob/main/rest_controller.r
+  # shp is an alias (synonym) for shape/shapefile
+  if (is.null(shape) && is.null(shapefile) && !is.null(shp)) {shape <- shp}
+  # API repo at https://github.com/Public-Environmental-Data-Partners/EJAM-API/blob/main/rest_controller.r
 
   ############################################################## #
 
@@ -216,11 +229,9 @@ ejamapi <- function(
   }
   scale <- match.arg(scale)
 
-  # EJAM version tag passed to the API as version=<ver> so it can serve the matching
-  # data vintage. Default = the package Version from DESCRIPTION (NULL/omitted standalone).
-  if (is.null(version)) {
-    version <- tryCatch(as.character(utils::packageVersion("EJAM")), error = function(e) NULL)
-  }
+  ## EJAM version tag passed to the API as version=<ver> so it can serve the matching
+  ## data vintage, if/when the API implements multivintage selection.
+  ## Default is NULL, so no version is sent unless the caller passes one explicitly.
 
   dotz = rlang::list2(...)
   if ("no_ejam" %in% names(dotz)) {
@@ -400,9 +411,16 @@ ejamapi <- function(
       # just needs functions in URL_API_NON_EJAM_FUNCTIONS.R
 
       latlon_length_mismatch <- !is.null(lat) && !is.null(lon) && length(lat) != length(lon)
-      if (length(lat) > 1 || length(lon) > 1 || latlon_length_mismatch ||
-          length(fips) > 1 || NROW(shape) > 1) {
-        warning("may not yet support multisite report for endpoint='report' ")
+      if (latlon_length_mismatch) {
+        warning("lat and lon should have the same length for a multisite report")
+      }
+      # The API now supports multisite reports for endpoint='report': pass
+      # sitenumber=0 (or "overall") via ... for an aggregate report over all sites.
+      # Many/large polygons may exceed URL length for this GET-based path; for
+      # those, use the API's POST /report endpoint.
+      if (NROW(shape) > 1) {
+        message("Multiple polygons in a GET report URL may exceed URL-length limits; ",
+                "consider the API's POST /report endpoint for many/large polygons.")
       }
 
       # . params as list ####
@@ -501,9 +519,9 @@ ejamapi <- function(
       reports = list()
       for (i in seq_along(urlx)) {
 
-        # handled this way while/if sitenumber = 1 is still hard coded in API.
-        # in url_ejamapi(), sitenumber 0 means overall combo report, -1 means N reports on 1 site each, 1 means just site #1.
-        # and note a better way to get multiple reports once EJAM is installed may be just ejam2report(ejamit())
+        # The API now honors sitenumber (default 1; pass sitenumber=0 / "overall" via ... for a multisite report).
+        # In url_ejamapi(), sitenumber 0 means overall combo report, -1 means N reports (one per site), 1 means just site #1.
+        # Note a better way to get reports once EJAM is installed is ejam2report(ejamit()) directly.
 
         if (fileextension %in% "pdf") {
 

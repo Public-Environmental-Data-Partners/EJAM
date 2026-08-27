@@ -10,7 +10,9 @@ fill_tbl_full_subgroups(
   extratable_title_top_row = "ADDITIONAL INFORMATION",
   list_of_sections = NULL,
   extratable_show_ratios_in_report = TRUE,
-  hide_missing_rows_for = names_d_language
+  hide_missing_rows_for = names_d_language,
+  flagged_areas_df = NULL,
+  flagged_areas_section_title = flagged_areas_section_title_default
 )
 }
 \arguments{
@@ -29,6 +31,17 @@ and each vector is the vector of colnames of output_df that are indicators to sh
 
 \item{hide_missing_rows_for}{only for the indicators named in this vector,
 leave out rows in table where raw value is NA, as with many of names_d_language}
+
+\item{flagged_areas_df}{optional data.frame like ejamit()$results_summarized$flagged_areas
+(see \code{calc_flagged_areas()}). If provided, a section of rows showing the percent of
+analyzed residents with each feature or area type in their blockgroup (with ratios
+to the US and State averages) is inserted just after the
+"Climate" section (or after "Poverty" if there is no Climate section).
+NULL (default) omits that section.}
+
+\item{flagged_areas_section_title}{title text for the flagged-areas section subheader row.
+Defaults to "\% of These Residents Who Have This Feature or Area Type in
+(or Overlapping) Their Blockgroup".}
 }
 \description{
 Create full demog subgroup/ language/ health/ community/ etc. HTML table of indicator rows

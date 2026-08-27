@@ -96,7 +96,10 @@ count_sites_with_n_high_scores <- function(
 
   if (is.null(thresholds)) {
     if (indicator_type == "percentile") {thresholds <- c(80, 90, 95, 99)[2]}
-    if (indicator_type == "ratio")      {thresholds <- c(1.01, 2, 5, 10)}
+    # 1.05, not 1.01: matches the yellow ratio cutoff set everywhere ratios are
+    # color-coded (see EJAM#369 / EJAM#288). A ratio that rounds to a displayed
+    # "1.0" should not be counted as elevated here either.
+    if (indicator_type == "ratio")      {thresholds <- c(1.05, 2, 5, 10)}
     if (indicator_type == "other") {stop("must specify threshold(s) if indicator_type is 'other' ")}
   }
 
@@ -112,7 +115,7 @@ count_sites_with_n_high_scores <- function(
   ## library... need to have data.table pkg
   # out <- setDF(copy(out))
   #
-  # ratio_benchmarks <- c(1.01, 1.50, 2, 3, 5, 10)
+  # ratio_benchmarks <- c(1.05, 1.50, 2, 3, 5, 10)
   # ratiodata <- out[, names_d_ratio_to_state_avg]
 
   ratiodata[is.na(ratiodata)] <- NA

@@ -1,4 +1,32 @@
 
+test_ejam_group_names <- function(x) {
+  if (is.null(x) || length(x) == 0) {
+    return(character())
+  }
+  x <- unlist(strsplit(gsub(" ", "", as.character(x)), ","))
+  x <- x[nzchar(x)]
+  paste0("test_", sub("^test_", "", x))
+}
+
+test_ejam_requests_live_groups <- function(run_these = NULL,
+                                           skip_these = NULL,
+                                           y_runall = TRUE,
+                                           y_runsome = FALSE,
+                                           live_groups = c("live_url", "live_api")) {
+  live_groups <- test_ejam_group_names(live_groups)
+
+  if (!is.null(run_these)) {
+    y_runsome <- TRUE
+  }
+  if (isTRUE(y_runsome)) {
+    return(any(test_ejam_group_names(run_these) %in% live_groups))
+  }
+  if (isTRUE(y_runall)) {
+    return(any(!(live_groups %in% test_ejam_group_names(skip_these))))
+  }
+  FALSE
+}
+
 #' run group(s) of unit tests for EJAM package
 #' run tests of local source pkg EJAM, by group of functions, quietly, interactively or not, with compact summary of test results
 #'
@@ -15,6 +43,8 @@
 #'
 #'     [testthat::test_check()]     to test the installed version of a package, in the way used by R CMD check or [utils::check()]
 #'
+#' Note: shinytest2 diagnostics are saved on failure, under
+#'   `file.path(tempdir(), "ejam-shinytest2-logs")`
 #' @param ask logical, whether it should ask in RStudio what parameter values to use
 #' @param noquestions logical, whether to avoid questions later on about where to save shapefiles
 #' @param useloadall logical, TRUE means use [pkgload::load_all()], FALSE means use [library()].
@@ -33,6 +63,9 @@
 #'   shinytest2 functionality suite; use 'webapp_individual' only when debugging
 #'   one-category web app test files.
 #' @param skip_these if y_runall = TRUE, a vector of group names to skip, like 'fips', 'naics', etc.
+#'   By default, live URL/API integration groups and local draft API tests are
+#'   skipped so routine unit testing does not depend on network/API availability
+#'   or a locally running draft Plumber API.
 #' @param y_seeresults logical, whether to show results in console
 #' @param y_save logical, whether to save files of results
 #' @param y_tempdir logical, whether to save in tempdir
@@ -48,6 +81,15 @@
 #'       y_runsome = TRUE, run_these = c('test', 'maps'),
 #'       mydir = "~/../Downloads/unit testing") # for example
 #'
+#' # To run slower tests, live api/url tests for a pre-release check:
+#'
+#' Sys.setenv(NOT_CRAN = "true")
+#' EJAM:::test_ejam(
+#'   ask = FALSE,
+#'   y_runsome = TRUE,
+#'   run_these = c("live_url", "live_api"),
+#'   skip_these = NULL
+#'   )
 #'   }
 #'
 #' @return a named list of objects with tables in [data.table](https://r-datatable.com) format, e.g., named
@@ -68,9 +110,9 @@ test_ejam <- function(ask = TRUE,
                       run_these = NULL,  ## or...
                       # run_these = c("fips", "naics", "frs", "latlon", "maps",
                       #   "shape", "getblocks", "fixcolnames", "doag",
-                      #   "ejamit", "misc",  "mod", "webapp",
+                      #   "ejamit", "misc",  "mod", "webapp", "modules",
                       #   "test", "golem"),
-                      skip_these = NULL, # c(  "webapp"),
+                      skip_these = c("live_url", "live_api", "local_api"), # c("webapp"),
 
                       y_stopif = FALSE,
                       y_seeresults = TRUE,
@@ -91,8 +133,6 @@ test_ejam <- function(ask = TRUE,
   #   "seconds_bygroup", "seconds_byfile", "seconds_bygroup_predicted",
   #   "untested_cant", "untested_skipped", "warned"
   # ))
-  x <- offline_cat(); if (x) {stop("cannot use test_ejam() if offline")}
-
   if (ask) {
     # how to use test_ejam() ####
     cat('\n
@@ -127,12 +167,18 @@ x <- test_ejam(
   #   "ejamit", "misc", "mod", "webapp",
   #   "test", "golem"),
 
+  skip_these = c("live_url", "live_api", "local_api"),
+
   y_stopif     = FALSE, # stop as soon as problem is hit?
   y_seeresults = TRUE,
   y_save       = TRUE,
   y_tempdir    = TRUE,
   mydir = NULL
 )
+
+Note: shinytest2 diagnostics are saved on failure, under
+  file.path(tempdir(), "ejam-shinytest2-logs")
+instead of tests/testthat/_logs
 
 ')
   }
@@ -245,9 +291,10 @@ x <- test_ejam(
       ),
       test_shape = c(
         "test-latlon_from_shapefile.R",
-
+        "test-shapefix.R",
         "test-shapefile_xyz.R",
         "test-shapes_from_fips.R",
+        "test-shapes_from_zip.R",
         "test-ejam2shapefile.R",
         "test-shape2zip.R",
         "test-shape2geojson.R"
@@ -296,10 +343,13 @@ x <- test_ejam(
         "test-ejamit_sitetype_from_output.R",
 
         "test-ejam2report.R",
+        "test-build_community_report.R",
         "test-ejam2excel.R",
         "test-ejam2barplot_sites.R",
         "test-ejam2barplot_indicators.R",
-        "test-ejam2histogram.R"
+        "test-ejam2boxplot_ratios.R",
+        "test-ejam2histogram.R",
+        "test-table_validated_ejamit_row.R"
       ),
 
       test_data_pipeline = c(
@@ -309,6 +359,7 @@ x <- test_ejam(
         "test-ejscreen-pipeline-io.R",
         "test-acs_bybg.R",
         "test-acs_endyear.R",
+        "test-calc_blockgroupstats_acs_keyguard.R",
         "test-calc_bg_acsdata.R",
         "test-calc_bg_geodata.R",
         "test-calc_bg_extra_indicators.R",
@@ -317,6 +368,7 @@ x <- test_ejam(
         "test-ejscreen-reference-adjustments.R",
         "test-datasets_arrow_publish.R",
         "test-download_latest_arrow_data.R",
+        "test-utils_release_assets.R",
         "test-ejscreen-stats.R",
         "test-map-headernames-review-artifacts.R",
         "test-ejscreen-pipeline-config.R",
@@ -324,44 +376,72 @@ x <- test_ejam(
         "test-ejscreen-export.R"
       ),
 
-      test_misc = c(
-        "test-sites_from_input.R",
-
-        "test-url_ejamapi.R",
+      test_url = c(
+        # Fast URL/API request construction and formatting tests that do not
+        # hit the network.
         "test-ejamapi.R",
-        "test-ejamapi_local.R",
-
+        "test-url_ejamapi.R",
         "test-URL_FUNCTIONS_part1.R",
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
+        "test-url_package.R"
+      ),
+      test_live_url = c(
+        # Live url_online() smoke tests. Skipped by default via skip_these.
+        "test-url_ejamapi-live.R",
+        "test-URL_FUNCTIONS_part2-live.R",
+        "test-url_package-live.R"
+      ),
+      test_live_api = c(
+        # Live EJAM/EJScreen API calls. Skipped by default via skip_these.
+        "test-ejamapi-live.R",
+        "test-ejscreen-facilities-live.R"
+      ),
+      test_local_api = c(
+        # Local Plumber API server smoke tests (starts a server on port 3035).
+        # Skipped by default via skip_these and separately gated by
+        # EJAM_TEST_LOCAL_API=true in the test file.
+        "test-ejamapi_local.R"
+      ),
 
+      test_misc = c(
+        # Parse/inventory checks of the plumber API files in inst/plumber/
+        # (no server started), incl. the drift check comparing the verbatim
+        # mirror in inst/plumber/ejam-api/ against the EJAM-API repo's main.
+        "test-plumber-api.R",
+
+        "test-sites_from_input.R",
         "test-is.numericish.R",
         "test-create_filename.R",
         "test-grepn.R",
         "test-utils_PACKAGE_DEV.R",
-        "test-url_package.R",
         "test-pctile_x_is_hit_by_score.R",
         "test-plot_vs_us.R",
+        "test-count_sites_with_n_high_scores.R",
 
         "test-create_interactive_table.R",
+        "test-table_round.R",
         "test-shinytest2-app-dir.R",
         "test-map_headernames-report-ratio-metadata.R"
       ),
-      test_mod = c(
-        "test-mod_save_report.R",
-        "test-mod_specify_sites.R",
-        "test-mod_view_results.R"
+      test_modules = c(
+        "test-MODULE_latlontypedin.R",
+        "test-MODULE_latlon_from_map_click.R"
       ),
       test_webapp = c(
         "test-webapp-ui_and_server.R",
-        "test-webapp-all-functionality.R"
+        "test-webapp-all-functionality.R",
+        "test-ejscreen-webapp-layers.R",
+        "test-shiny-1-14-compat.R"
       ),
       test_webapp_individual = c(
         "test-webapp-FIPS-functionality.R",
         "test-webapp-FIPS-picker-functionality.R",
         "test-webapp-FRS-functionality.R",
         "test-webapp-latlon-functionality.R",
+        "test-webapp-mapclick-functionality.R",
         "test-webapp-NAICS-functionality.R",
+        "test-webapp-SIC-functionality.R",
         "test-webapp-shp-gdb-zip-functionality.R",
         "test-webapp-shp-json-functionality.R",
         "test-webapp-shp-unzip-functionality.R",
@@ -483,62 +563,73 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
       timebyfile <- data.table(
-        file =
-          c("test-latlon_from_address.R", "test-address_xyz.R",
-            "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_anything.R",
-            "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
-            "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
-            "test-mod_save_report.R", "test-mod_specify_sites.R", "test-mod_view_results.R",
-            "test-MAP_FUNCTIONS.R", "test-ejam2map.R", "test-create_interactive_table.R",
-            "test-url_ejamapi.R", "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R",
-            "test-create_filename.R", "test-ejamapi.R", "test-ejamapi_local.R",
-            "test-grepn.R", "test-is.numericish.R", "test-pctile_x_is_hit_by_score.R",
-            "test-plot_vs_us.R", "test-shinytest2-app-dir.R", "test-sites_from_input.R",
-            "test-url_columns_bysite.R", "test-url_package.R", "test-utils_PACKAGE_DEV.R",
-            "test-proxistat.R", "test-bgid_from_blockid.R", "test-distances.all.R",
-            "test-get_blockpoints_in_shape.R", "test-getblocks_summarize_blocks_per_site.R",
-            "test-getblocksnearby.R", "test-getblocksnearby_from_fips.R",
-            "test-getblocksnearbyviaQuadTree.R", "test-radius_inferred.R",
-            "test-report_residents_within_xyz.R", "test-sitetype2text.R",
-            "test-utils_indexpoints.R", "test-webapp-ui_and_server.R", "test-webapp-all-functionality.R",
-            "test-acs_bybg.R", "test-acs_endyear.R", "test-calc_bg_acsdata.R",
-            "test-calc_bg_extra_indicators.R", "test-calc_bg_geodata.R",
-            "test-calc_byformula.R", "test-calc_ejscreen_dataset.R",
-            "test-calc_ejscreen_pctile_lookup_export.R", "test-ejscreen-export.R",
-            "test-ejscreen-pipeline-io.R", "test-ejscreen-pipeline-config.R",
-            "test-ejscreen-pipeline-validate-vs-prior.R",
-            "test-ejscreen-stats.R", "test-datasets_arrow_publish.R",
-            "test-download_latest_arrow_data.R", "test-map-headernames-review-artifacts.R",
-            "test-pctiles_lookup_create.R", "test-area_sqmi.R",
-            "test-batch.summarize.R", "test-calc_avg_columns.R", "test-calc_pctile_columns.R",
-            "test-calc_ratio_columns.R", "test-doaggregate.R", "test-pctile_from_raw_lookup.R",
-            "test-utils_flagged_FUNCTIONS.R", "test-utils_speedtest.R", "test-ejam2barplot_indicators.R",
-            "test-ejam2barplot_sites.R", "test-ejam2excel.R", "test-ejam2histogram.R",
-            "test-ejam2report.R", "test-ejamit.R", "test-ejamit_compare_distances.R",
-            "test-ejamit_compare_types_of_places.R", "test-ejamit_sitetype_from_input.R",
-            "test-ejamit_sitetype_from_output.R", "test-FIPS_FUNCTIONS.R",
-            "test-fips2countyfips.R", "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R",
-            "test-fips_bgs_in_fips.R", "test-is.numerictext.R", "test-latlon_from_fips.R",
-            "test-state_from_fips_bybg.R", "test-state_from_latlon.R", "test-fixcolnames.R",
-            "test-fixcolnames_infer.R", "test-fixnames.R", "test-fixnames_to_type.R",
-            "test-utils_metadata_add.R", "test-varinfo.R", "test-frs_from_naics.R",
-            "test-frs_from_programid.R", "test-frs_from_regid.R", "test-frs_from_sic.R",
-            "test-frs_is_valid.R", "test-regid_from_input.R", "test-regid_from_naics.R",
-            "test-golem_utils_server.R", "test-golem_utils_ui.R", "test-naics2children.R",
-            "test-naics_categories.R", "test-naics_findwebscrape.R", "test-naics_from_any.R",
-            "test-naics_from_code.R", "test-naics_from_name.R", "test-naics_is.valid.R",
-            "test-naics_subcodes_from_code.R", "test-ejam2shapefile.R", "test-latlon_from_shapefile.R",
-            "test-shape2geojson.R", "test-shape2zip.R", "test-shapefile_xyz.R",
-            "test-shapes_from_fips.R", "test-test1.R", "test-test2.R"),
-        seconds_byfile =
-          c(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 16, 5, 0, 393, 0,
-            17, 0, 28, 0, 0, 0, 1, 0, 0, 0, 4, 3, 0, 0, 0, 0, 1, 0,
-            3, 34, 2, 1, 0, 0, 0, 1, 104, 1, 0, 0, 0, 0, 2, 0, 0, 0,
-            4, 0, 0, 1, 7, 0, 2, 2, 17, 0, 5, 0, 0, 0, 0, 6, 9, 0, 0, 0, 0, 24,
-            19, 4, 0, 4, 11, 0, 4, 8, 1, 0, 8, 0, 3, 0, 0, 0, 0, 1,
-            0, 3, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0,
-            0, 0, 0, 1, 6, 0, 0)
+        structure(list(
+          file =
+            c("test-latlon_from_address.R", "test-address_xyz.R",
+              "test-latlon_as.numeric.R", "test-latlon_df_clean.R", "test-latlon_from_anything.R",
+              "test-latlon_from_sic.R", "test-latlon_from_vectorofcsvpairs.R",
+              "test-latlon_infer.R", "test-latlon_is.valid.R", "test-state_from_sitetable.R",
+              "test-calc_ejscreen_dataset.R", "test-acs_bybg.R", "test-acs_endyear.R",
+              "test-calc_bg_acsdata.R", "test-calc_bg_extra_indicators.R",
+              "test-calc_bg_geodata.R", "test-calc_blockgroupstats_acs_keyguard.R",
+              "test-calc_byformula.R", "test-calc_ejscreen_pctile_lookup_export.R",
+              "test-datasets_arrow_publish.R", "test-download_latest_arrow_data.R",
+              "test-ejscreen-export.R", "test-ejscreen-pipeline-config.R",
+              "test-ejscreen-pipeline-io.R", "test-ejscreen-pipeline-validate-vs-prior.R",
+              "test-ejscreen-reference-adjustments.R", "test-ejscreen-stats.R",
+              "test-map-headernames-review-artifacts.R", "test-pctiles_lookup_create.R",
+              "test-proxistat.R", "test-bgid_from_blockid.R", "test-distances.all.R",
+              "test-get_blockpoints_in_shape.R", "test-getblocks_summarize_blocks_per_site.R",
+              "test-getblocksnearby.R", "test-getblocksnearby_from_fips.R",
+              "test-getblocksnearbyviaQuadTree.R", "test-radius_inferred.R",
+              "test-report_residents_within_xyz.R", "test-sitetype2text.R",
+              "test-utils_indexpoints.R", "test-shape2geojson.R", "test-ejam2shapefile.R",
+              "test-latlon_from_shapefile.R", "test-shape2zip.R", "test-shapefile_xyz.R",
+              "test-shapefix.R", "test-shapes_from_fips.R", "test-ejamit.R",
+              "test-ejam2barplot_indicators.R", "test-ejam2barplot_sites.R",
+              "test-ejam2excel.R", "test-ejam2histogram.R", "test-ejam2report.R",
+              "test-ejamit_compare_distances.R", "test-ejamit_compare_types_of_places.R",
+              "test-ejamit_sitetype_from_input.R", "test-ejamit_sitetype_from_output.R",
+              "test-table_validated_ejamit_row.R", "test-webapp-ui_and_server.R",
+              "test-ejscreen-webapp-layers.R", "test-webapp-all-functionality.R",
+              "test-area_sqmi.R", "test-batch.summarize.R", "test-calc_avg_columns.R",
+              "test-calc_pctile_columns.R", "test-calc_ratio_columns.R", "test-doaggregate.R",
+              "test-pctile_from_raw_lookup.R", "test-utils_flagged_FUNCTIONS.R",
+              "test-utils_speedtest.R", "test-FIPS_FUNCTIONS.R", "test-fips2countyfips.R",
+              "test-fips_bg_from_latlon.R", "test-fips_bgs_in_city.R", "test-fips_bgs_in_fips.R",
+              "test-is.numerictext.R", "test-latlon_from_fips.R", "test-state_from_fips_bybg.R",
+              "test-state_from_latlon.R", "test-fixcolnames.R", "test-fixcolnames_infer.R",
+              "test-fixnames.R", "test-fixnames_to_type.R", "test-utils_metadata_add.R",
+              "test-varinfo.R", "test-frs_from_naics.R", "test-frs_from_programid.R",
+              "test-frs_from_regid.R", "test-frs_from_sic.R", "test-frs_is_valid.R",
+              "test-regid_from_input.R", "test-regid_from_naics.R", "test-golem_utils_server.R",
+              "test-golem_utils_ui.R", "test-MAP_FUNCTIONS.R", "test-ejam2map.R",
+              "test-create_filename.R", "test-create_interactive_table.R",
+              "test-grepn.R", "test-is.numericish.R", "test-map_headernames-report-ratio-metadata.R",
+              "test-pctile_x_is_hit_by_score.R", "test-plot_vs_us.R", "test-shinytest2-app-dir.R",
+              "test-sites_from_input.R", "test-utils_PACKAGE_DEV.R", "test-MODULE_latlontypedin.R",
+              "test-naics2children.R", "test-naics_categories.R", "test-naics_findwebscrape.R",
+              "test-naics_from_any.R", "test-naics_from_code.R", "test-naics_from_name.R",
+              "test-naics_is.valid.R", "test-naics_subcodes_from_code.R", "test-test1.R",
+              "test-test2.R", "test-URL_FUNCTIONS_part1.R", "test-URL_FUNCTIONS_part2.R",
+              "test-ejamapi.R", "test-url_columns_bysite.R", "test-url_ejamapi.R",
+              "test-url_package.R", "test-ejam2boxplot_ratios.R", "test-shiny-1-14-compat.R",
+              "test-build_community_report.R", "test-shapes_from_zip.R",
+              "test-table_round.R", "test-utils_release_assets.R",
+              "test-count_sites_with_n_high_scores.R"),
+          seconds_byfile =
+            c(0, 0, 0, 0, 0, 0, 0,
+              0, 0, 2, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 6, 0, 0, 0,
+              0, 0, 0, 0, 1, 0, 3, 37, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 5,
+              39, 0, 11, 11, 0, 5, 32, 5, 0, 5, 0, 2, 0, 140, 2, 8, 0, 3, 2,
+              23, 0, 7, 0, 12, 0, 4, 5, 1, 0, 3, 0, 3, 0, 0, 0, 0, 1, 0, 4,
+              2, 0, 0, 0, 0, 1, 0, 0, 16, 8, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+              0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 12, 0, 4, 0, 0, 0, 0, 1,
+              0, 1, 0, 0)),
+          row.names = c(NA,
+                        -131L), class = "data.frame")
       )
+
 
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
@@ -591,6 +682,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
           # The individual webapp files are kept for focused debugging but are
           # intentionally omitted from the default full suite.
           timing_testlist <- timing_testlist[names(timing_testlist) != "test_webapp_individual"]
+          timing_skip_these <- paste0("test_", unlist(strsplit(gsub(" ", "", skip_these), ",")))
+          if (length(timing_skip_these) > 0 && !is.null(timing_skip_these)) {
+            timing_testlist <- timing_testlist[!(names(timing_testlist) %in% timing_skip_these)]
+          }
         }
         missingtime_tests <- setdiff(as.vector(unlist(timing_testlist)), timebyfile$file)
         if (length(missingtime_tests) > 0) {
@@ -757,6 +852,14 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       if (length(skip_these) > 0 && !is.null(skip_these)) {
         partial_testlist <-  partial_testlist[!(names(partial_testlist) %in% skip_these)]
       }
+    }
+
+    offline_now <- offline_cat()
+    if (offline_now && test_ejam_requests_live_groups(run_these = run_these,
+                                                      skip_these = skip_these,
+                                                      y_runall = y_runall,
+                                                      y_runsome = y_runsome)) {
+      stop("cannot run test_ejam() live URL/API groups if offline")
     }
     ################################### #  ################################### #
     if (!isTRUE(y_runall) && !isTRUE(y_runsome)) {

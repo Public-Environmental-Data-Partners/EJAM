@@ -1,0 +1,383 @@
+---
+title: "Deploying the Web App to AWS (Infrastructure & Procedure)"
+description: "How the live EJAM Shiny app is hosted on AWS ECS Fargate, and the routine procedure for deploying updates"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Deploying the Web App to AWS (Infrastructure & Procedure)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE, comment = "#>")
+```
+
+This article documents how the **live EJAM Shiny web app** is hosted on
+**AWS ECS Fargate**, and the routine procedure for deploying updates. It is a
+companion to [Deploying the Web App](dev-deploy-app.html), which covers the
+higher-level *choices* (Docker/AWS vs. Posit Connect) and the app-configuration
+options (`isPublic`, logos, titles); this article is the concrete, current
+AWS procedure.
+
+> **Not to be confused with the EJAM API.** This is the **Shiny app** (the
+> interactive website), hosted on **AWS ECS Fargate**. The separate
+> [EJAM REST API](dev-api.html) is hosted on **Google Cloud Run** and deployed
+> from the [EJAM-API repository](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
+
+## Where the operational files live
+
+The files that actually build and deploy the app are kept on the two
+**deploy branches** (`dev-deploy` and `prod-deploy`) of the EJAM repository, **not
+on `main`/`development`**. This keeps the branch-triggered deploy workflows and
+AWS/Terraform config out of the package source (so they cannot misfire on a
+`main` push and do not clutter the R package). This article is the human-readable
+guide to those files; edit the files themselves on the deploy branches.
+
+| File (on the deploy branches) | Purpose |
+|---|---|
+| [`ejam-infra/main.tf`](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/dev-deploy/ejam-infra/main.tf) | Terraform — the full AWS infrastructure definition (VPC, ALB, ECR, ECS, IAM, logs) |
+| [`ejam-infra/prod.tfvars`](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/dev-deploy/ejam-infra/prod.tfvars), [`ejam-infra/dev.tfvars`](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/dev-deploy/ejam-infra/dev.tfvars) | Per-environment Terraform variables (task size, retention, etc.) |
+| `Dockerfile` | Container image build for the Shiny app |
+| `app.R` | The Shiny app entry point run inside the container (also sets `isPublic`) |
+| `.dockerignore` | Files excluded from the Docker build context |
+| `.github/workflows/deploy.yaml` | GitHub Actions — build + deploy to **prod** (on push to `prod-deploy`) |
+| `.github/workflows/deploy-dev.yaml` | GitHub Actions — build + deploy to **dev** (on push to `dev-deploy`) |
+
+## Architecture at a glance
+
+| Layer | Technology |
+|---|---|
+| App | R Shiny (rocker/rstudio base image) |
+| PDF generation | Google Chrome stable + chromote/pagedown |
+| Containerization | Docker |
+| Container registry | AWS ECR (shared repo `ejam`; the prod stack owns it, dev shares it) |
+| Hosting | AWS ECS Fargate (region `us-east-1`) |
+| Load balancing | AWS Application Load Balancer (ALB) |
+| HTTPS / TLS | AWS ACM (DNS-validated) |
+| Infrastructure-as-code | Terraform (S3 state backend, separate state per environment) |
+| CI/CD | GitHub Actions |
+| DNS | Squarespace (CNAME → ALB) |
+
+```
+  Each deploy branch triggers its own GitHub Actions workflow, which builds the
+  image, pushes it to ECR, and updates that environment's ECS Fargate service:
+
+    dev-deploy   ──push──► deploy-dev.yaml ──► ECR (ejam) ──► ECS Fargate: ejam-dev   ──► dev ALB
+    prod-deploy  ──push──► deploy.yaml     ──► ECR (ejam) ──► ECS Fargate: ejam-prod  ──► prod ALB
+                                               image tags:                                 │
+                                               dev = dev-<sha>, prod = <sha>               ▼
+                                                                          Squarespace CNAME ──► ejam.publicenvirodata.org
+
+  How code gets onto dev-deploy / prod-deploy -- the main -> dev-deploy -> prod-deploy
+  promotion -- is described under "Branching and deploy model" below.
+```
+
+**URLs**
+
+| Environment | URL |
+|---|---|
+| Production | <https://ejam.publicenvirodata.org> (Squarespace CNAME → prod ALB, ACM TLS) |
+| Dev | the dev ALB DNS name printed by `terraform output` (an `…elb.amazonaws.com` address) |
+
+**Task sizing** (set in the `.tfvars` files)
+
+| | vCPU / memory | Task count | Logs |
+|---|---|---|---|
+| Prod | 2 vCPU / 7 GB | 2 | CloudWatch `/ecs/ejam-prod`, 30-day retention |
+| Dev | 1 vCPU / 6 GB | 1 | CloudWatch `/ecs/ejam-dev`, 7-day retention |
+
+The container serves the app on **port 2000** and a health-check endpoint on
+**port 2001** (`app_port` / `health_check_port` in `ejam-infra/main.tf`, which
+default to 2000/2001; the `Dockerfile` `EXPOSE`s `2000 2001` and runs
+`run_app(port = 2000)` with a small health server on 2001).
+
+## Branching and deploy model
+
+The two environments are promoted **in sequence** — code is validated on **dev**,
+then the *same commit* is promoted to **prod**:
+
+```
+feature / fix  ──PR──►  main  ──PR──►  dev-deploy  ──PR──►  prod-deploy
+                                       (deploys dev;        (deploys prod)
+                                        validate here)
+```
+
+- Merging a PR into `dev-deploy` triggers a **dev** deploy; merging into
+  `prod-deploy` triggers a **prod** deploy. The environment is chosen by *which
+  branch you push to* — each branch's workflow uses its own `*.tfvars` and its own
+  AWS resources — so the same tree can deploy to either environment.
+- `dev` is the **validation step**: merge `main` → `dev-deploy`, confirm it works,
+  then promote by merging **`dev-deploy` → `prod-deploy`**. Promoting the validated
+  branch (rather than re-merging `main`) guarantees prod deploys the *exact* commit
+  that was tested on dev, with no chance of `main` having moved on in between.
+- **Hotfix exception:** for an urgent prod-only fix you can open a PR straight from
+  `main` (or a fix branch) → `prod-deploy`, skipping dev. Use sparingly — it bypasses
+  dev validation.
+- Both `dev-deploy` and `prod-deploy` are **protected**: a PR is required (direct
+  pushes are blocked for everyone, including admins); no approvals are required
+  (a maintainer may merge their own PR).
+
+## Routine deploy (GitHub Actions) — the normal path
+
+1. **Develop**, and merge your changes to `main` via PR (or keep them on a feature
+   branch ready to deploy).
+2. **Deploy to dev:** open a PR from `main` (or your feature branch) → `dev-deploy`.
+   On merge, GitHub Actions builds the image, pushes it to ECR, and updates the dev
+   ECS service (~15 min).
+3. **Validate on dev** at the dev URL. A human must green-light before promoting.
+4. **Promote to prod:** open a PR to merge **`dev-deploy` → `prod-deploy`**. On
+   merge, Actions deploys the *same validated commit* to production. (For an urgent
+   prod-only hotfix you can instead PR `main` → `prod-deploy` directly, skipping dev.)
+
+The workflows can also be run manually from **GitHub → Actions → (deploy workflow)
+→ Run workflow**.
+
+### PDF checks
+
+PDF support is verified at three points because source-only testing does not
+exercise the image's configuration:
+
+1. **During the image build:** the package `configure` script performs a real
+   `pagedown::chrome_print()` render whenever the build advertises Chrome through
+   `CHROMOTE_CHROME` or `PAGEDOWN_CHROME` (or explicitly sets
+   `EJAM_VERIFY_PDF_BUILD=true`). It verifies both the output size and `%PDF`
+   magic bytes. A Chrome executable lookup alone is not treated as success.
+2. **In the Shiny browser suite:** the full `latlon` case requests both PDF and
+   HTML report downloads. Missing Pandoc is an error for this test, not a silent
+   pass.
+3. **After deployment:** `Verify deployed PDF generation` runs after either successful
+   ECS deploy workflow. It performs a one-point analysis against the deployed
+   development or production app, downloads the report, and verifies the `.pdf`
+   filename and `%PDF` bytes. The workflow can also be dispatched manually.
+
+The post-deployment verification workflow lives on the default branch, as required by
+GitHub's `workflow_run` event, while the operational build/deploy workflows stay
+on `dev-deploy` and `prod-deploy`.
+
+**Required GitHub Actions secrets** (repo → Settings → Secrets and variables → Actions):
+
+| Secret | Purpose |
+|---|---|
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | deploy credentials for ECR/ECS |
+| `EJAMDATA_PAT` | a GitHub PAT, passed to the build as the `GITHUB_PAT` build-arg, used to download the `ejamdata` arrow files from the ejamdata GitHub release |
+
+> **Which EJAM version deploys:** the `Dockerfile` installs EJAM from a **pinned
+> GitHub release tag** via the `EJAM_VERSION` build-arg (e.g., `v3.2022.2`;
+> override with `--build-arg EJAM_VERSION=vX.Y.Z`), so the deployed version is
+> explicit and reproducible rather than tied to whatever source happens to be
+> checked out on the deploy branch. The `ejamdata` arrow files are fetched
+> separately from the ejamdata GitHub release via the `EJAMDATA_VERSION` build-arg
+> (e.g., `v3.2022.0` — the release that the given EJAM version requires,
+> i.e. its `ejamdata_required_tag`; note a code-only patch such as `v3.2022.1`
+> or `v3.2022.2` still uses the existing `v3.2022.0` data release);
+> keep the two in sync when bumping to a new release.
+>
+> *(These pinned build-args are set in the deploy-branch `Dockerfile`. A deploy
+> branch whose `Dockerfile` predates that update instead installs EJAM from the
+> build context via `remotes::install_local` and defaults `EJAMDATA_VERSION` to the
+> latest ejamdata release — so confirm the `Dockerfile` on the branch you deploy.)*
+
+## First-time setup (manual / infrastructure)
+
+Only needed when standing up the infrastructure or running Terraform locally;
+day-to-day app deploys use GitHub Actions (above).
+
+**Prerequisites** (macOS shown; use your platform's package manager):
+
+```bash
+# Homebrew, then:
+brew install hashicorp/tap/terraform
+brew install awscli
+# plus Docker Desktop (docker.com), running before any Docker step
+```
+
+**AWS credentials.** Request credentials from the AWS account administrator, then:
+
+```bash
+aws configure          # region us-east-1, output json
+aws sts get-caller-identity   # verify
+```
+
+Your IAM user needs the custom `ejam-terraform-deploy` policy to provision
+infrastructure — request the policy JSON from the deployment manager and attach it
+(AWS Console → IAM → Users → your user → Add permissions).
+
+**Provision / update infrastructure with Terraform.** Run from `ejam-infra/`.
+State lives in the S3 bucket `ejam-terraform-state-<ACCOUNT_ID>`, with a **separate
+state key per environment**:
+
+```bash
+cd ejam-infra
+
+# Prod
+terraform init -backend-config="key=prod/terraform.tfstate"
+terraform plan  -var-file=prod.tfvars -var="aws_account_id=<ACCOUNT_ID>"
+terraform apply -var-file=prod.tfvars -var="aws_account_id=<ACCOUNT_ID>"
+
+# Dev (separate state; -reconfigure switches the backend key)
+terraform init -backend-config="key=dev/terraform.tfstate" -reconfigure
+terraform apply -var-file=dev.tfvars -var="aws_account_id=<ACCOUNT_ID>"
+```
+
+Get your account ID with
+`aws sts get-caller-identity --query Account --output text`.
+
+### Manual Docker build & push (fallback)
+
+Prefer GitHub Actions — the uncompressed image is large (~4 GB) and local pushes
+are slow. If you must build/push by hand (from the deploy branch, which has the
+`Dockerfile`):
+
+```bash
+# Authenticate Docker to ECR
+aws ecr get-login-password --region us-east-1 \
+  | docker login --username AWS --password-stdin \
+    <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+
+# The ECR repo is created with image_tag_mutability = IMMUTABLE, so every push
+# needs a UNIQUE tag -- re-pushing an existing tag (e.g. :latest) will fail.
+# Match the workflows' commit-SHA convention:
+TAG="manual-$(git rev-parse --short HEAD)"
+docker build -t ejam:$TAG .
+docker tag  ejam:$TAG <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:$TAG
+docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:$TAG
+```
+
+The `.dockerignore` (on the deploy branch) excludes `.RData`, `.Rhistory`,
+`.Rproj.user`, `.git`, `.github`, and `ejam-infra/` from the build context.
+
+## Infrastructure changes (Terraform)
+
+App **code** deploys happen via GitHub Actions. AWS **infrastructure** changes
+(resize a task, add HTTPS, change retention) are made by editing the `.tf`/`.tfvars`
+files and running `terraform apply` locally from `ejam-infra/` as shown above.
+
+**Custom domain / HTTPS:** set `domain_name = "ejam.yourdomain.com"` in the relevant
+`.tfvars`, run `terraform apply`; Terraform outputs the CNAME records to add at the
+DNS provider (Squarespace) for ACM certificate validation. Run `terraform apply`
+once more after adding them — HTTP then redirects to HTTPS automatically.
+
+## Rollback
+
+Point the ECS service back at an earlier task-definition revision:
+
+```bash
+# List recent revisions
+aws ecs list-task-definitions --family-prefix ejam --sort DESC \
+  --query 'taskDefinitionArns[:5]' --output text
+
+# Prod
+aws ecs update-service --cluster ejam-prod-cluster \
+  --service ejam-prod-service --task-definition ejam:<REVISION>
+
+# Dev
+aws ecs update-service --cluster ejam-dev-cluster \
+  --service ejam-dev-service --task-definition ejam-dev:<REVISION>
+```
+
+## Logs and debugging
+
+```bash
+# Service health (running vs. desired)
+aws ecs describe-services --cluster ejam-prod-cluster --services ejam-prod-service \
+  --query 'services[0].{Status:status,Running:runningCount,Desired:desiredCount}'
+
+# Recent errors in the last 30 minutes (prod). `date +%s` (current epoch) is
+# portable across macOS and Linux; 1800 s = 30 min. CloudWatch wants milliseconds.
+aws logs filter-log-events --log-group-name /ecs/ejam-prod \
+  --filter-pattern "Error" \
+  --start-time $(( ($(date +%s) - 1800) * 1000 )) \
+  --query 'events[*].message' --output text
+```
+
+| Symptom | Likely fix |
+|---|---|
+| `UnauthorizedOperation` on an EC2/ECS/IAM action | add the missing action to the `ejam-terraform-deploy` IAM policy |
+| Docker build fails | confirm Docker Desktop is running and `.dockerignore` is present |
+| ECS tasks failing health checks | confirm the container serves HTTP 200 on the health-check port (2001) and the app port (2000) matches the task definition |
+| Slow local Docker push | use GitHub Actions instead |
+
+## Testing against a local or draft API
+
+The app computes analysis results in-process via `ejamit()` -- it does not call the
+EJAM REST API for analysis. Where the API base URL matters is everywhere the app or
+package **builds URLs that point at the API**: the per-site report links in results
+tables and map popups (built by `url_ejamapi()`), `ejamapi()` calls, and the
+EJScreen-to-EJAM token handoff. All of those read the base URL from one place,
+`url_package("api")`, which normally comes from the `url_api` field of `DESCRIPTION`
+(the production API, https://api.ejanalysis.com).
+
+To test an app release candidate against a **different API** -- most usefully the local
+API served by `EJAM:::ejamapi_local()`, which mirrors the latest EJAM-API code before it
+is deployed anywhere (see the [API article](dev-api.html)) -- override that one lookup.
+Precedence is: `options(ejam.api.baseurl=...)` first, then the environment variable
+`EJAM_API_BASEURL`, then `DESCRIPTION`.
+
+**Local app + local API** (no infrastructure needed):
+
+```{r localapi, eval=FALSE}
+apiproc <- EJAM:::ejamapi_local()               # local API at http://127.0.0.1:3035
+Sys.setenv(EJAM_API_BASEURL = "http://127.0.0.1:3035")
+# or, equivalently: options(ejam.api.baseurl = "http://127.0.0.1:3035")
+EJAM::ejamapp()                                  # report links in tables/popups now
+                                                 # hit the local API, end to end
+# when done:
+Sys.unsetenv("EJAM_API_BASEURL")
+apiproc$kill()
+```
+
+The same override works for one-off calls without the app, e.g.
+`ejamapi(fips = "10001", endpoint = "data")` or `url_ejamapi(lat = 34, lon = -118)`
+will target whatever base is set.
+
+**Deployed app (dev server) + draft API:** the AWS-hosted dev app cannot reach a
+laptop's localhost, so point its `EJAM_API_BASEURL` (an environment variable in the
+ECS task definition) at any reachable draft API deployment -- e.g. a future
+apidev.ejanalysis.com staging service
+([EJAM-API#47](https://github.com/Public-Environmental-Data-Partners/EJAM-API/issues/47)
+tracks setting one up), or a temporary Cloudflare tunnel exposing a locally-run API.
+Unsetting the variable (or omitting it) restores the production API from `DESCRIPTION`.
+
+## Teardown
+
+```bash
+cd ejam-infra
+terraform destroy -var-file=prod.tfvars -var="aws_account_id=<ACCOUNT_ID>"
+```
+
+The prod ALB has **deletion protection** enabled; disable it in the AWS Console
+first (EC2 → Load Balancers → `ejam-prod-alb` → Edit attributes → Deletion
+protection: off) before `terraform destroy` will succeed on prod.
+
+## Future direction
+
+The long-lived `dev-deploy` / `prod-deploy` branches are a workable pattern, but
+they drift from `main` and must be re-synced before each release. The modern,
+trunk-based alternative is to keep the infra + `Dockerfile` in subdirectories on
+`main` (marked in `.Rbuildignore` so they don't affect the R package build) and
+deploy via `workflow_dispatch`/tag triggers targeting **GitHub Environments**
+(`dev`/`prod`) with approval gates — which removes the environment branches and
+their divergence entirely. This is a larger change and is the deployment
+maintainer's call; it is noted here as the recommended target state.
+
+## About this document
+
+This article consolidates two documents that previously lived only on the deploy
+branches: `DEPLOY-GUIDE.md` (root) and `ejam-infra/README.md`. Where they
+disagreed, it follows the **actual deploy-branch files** (`main.tf`, `Dockerfile`,
+the deploy workflows): **GitHub Actions deploys are live** (the older
+`DEPLOY-GUIDE.md` said "coming soon"), and the container serves on **ports
+2000/2001** (as in `DEPLOY-GUIDE.md` and the current `main.tf`/`Dockerfile` — the
+`ejam-infra/README.md` wireframe's "3838" was inaccurate). For the branch model it
+follows the **sequential** `main → dev-deploy → prod-deploy` promotion (as in
+`DEPLOY-GUIDE.md`), which guarantees prod deploys the exact commit validated on
+dev; the deploy workflows are branch-triggered, so either model works mechanically.
+Concrete AWS account IDs and individual contact names have been replaced with
+`<ACCOUNT_ID>` and role descriptions; substitute the real values from the deploy
+branch files. If you own the deployment, treat this as the single source of truth
+and retire the two originals (or replace them with a pointer here).

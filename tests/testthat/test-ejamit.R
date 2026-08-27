@@ -54,7 +54,7 @@ test_that("bgej is classified as EJSCREEN annual update data", {
 
 test_that("Arrow datasets use the DESCRIPTION-required ejamdata tag by default", {
   # Derive from DESCRIPTION rather than hardcoding, so this stays correct across
-  # the annual-vintage release branches (v3.2024.0 / v3.2023.0 / v3.2022.0).
+  # annual-vintage release branches (e.g., v3.2024.x / v3.2023.x / v3.2022.x).
   expected_tag <- EJAM:::ejamdata_required_tag()
   expect_match(expected_tag, "^v[0-9]")
 
@@ -142,6 +142,16 @@ test_that("local Arrow release marker reader treats blank markers as missing", {
 ########################################################## #
 
 test_that("ejamit no-block-centroid invalid messages distinguish site types", {
+  expect_setequal(
+    unname(EJAM:::ejamit_reportable_invalid_messages()),
+    c(
+      "no block centroids (fips boundaries not obtained)",
+      "no block centroids (polygon too small for low pop density)",
+      "no block centroids (radius too small for low pop density)",
+      "blocks with residents found but unable to aggregate",
+      "blocks found but zero residents"
+    )
+  )
   expect_equal(
     EJAM:::ejamit_no_block_centroids_message("fips"),
     "no block centroids (fips boundaries not obtained)"
@@ -154,6 +164,21 @@ test_that("ejamit no-block-centroid invalid messages distinguish site types", {
     EJAM:::ejamit_no_block_centroids_message("latlon"),
     "no block centroids (radius too small for low pop density)"
   )
+})
+########################################################## #
+
+test_that("ejamit final output uses zero population for invalid sites", {
+  bysite <- data.table::data.table(
+    valid = c(TRUE, FALSE, FALSE),
+    pop = c(NA_real_, NA_real_, 12),
+    pctlowinc = c(NA_real_, NA_real_, NA_real_)
+  )
+
+  result <- EJAM:::ejamit_invalid_site_pop_zero(bysite)
+
+  expect_equal(result$pop, c(NA_real_, 0, 0))
+  expect_true(all(is.na(result$pctlowinc)))
+  expect_equal(result$valid, c(TRUE, FALSE, FALSE))
 })
 ########################################################## #
 
@@ -360,6 +385,7 @@ test_that("ejamit() still returns results_overall identical to what it used to r
           (saved as testoutput_ejamit_10pts_1miles$results_overall)", {
             testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
 
+
             checkthese <- intersect(names(testoutput_ejamit_10pts_1miles$results_overall), names_all_r)
             # # omits from testing no change in:
             # > setdiff(names(testoutput_ejamit_10pts_1miles$results_overall), names_all_r)
@@ -383,6 +409,7 @@ test_that("ejamit() still returns results_overall identical to what it used to r
 ########################################################## #
 
 test_that("ejamit() still returns results_bysite identical to numbers it used to return (except 1st column)", {
+
   testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
 
   # checkthese <- intersect(names(testoutput_ejamit_10pts_1miles$results_bysite), names_all_r)
@@ -394,14 +421,22 @@ test_that("ejamit() still returns results_bysite identical to numbers it used to
     suppressMessages({
       # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
+      ## Compare all columns except the two hyperlink columns ("EJAM Report" =
+      ## column 1, and "EJSCREEN Map"): link formats legitimately change (e.g.,
+      ## EJSCREEN links now use lat/lon/radius deep-link parameters instead of
+      ## wherestr=), the stored reference is deliberately NOT regenerated for
+      ## URL-format-only changes, and link formats are covered by the dedicated
+      ## URL tests (test-URL_FUNCTIONS_part2.R etc.). This check is about the
+      ## data values.
+      linkcols <- c("EJAM Report", "EJSCREEN Map")
+      keptcols <- setdiff(names(testoutput_ejamit_10pts_1miles$results_bysite), linkcols)
       expect_equal(
-        ## Compare all columns expect column 1, the url of the EJAM Report
-        ejamitoutnow$results_bysite[,-1],
-        testoutput_ejamit_10pts_1miles$results_bysite[,-1]
-        ,
-        ignore_attr = ".internal.selfref" # intended to ignore attribute
-        # but does not ignore attributes that are metadata like date saved to package, ACS version, etc. that are part of testoutput_ejamit_10pts_1miles, etc.
+        as.data.frame(ejamitoutnow$results_bysite)[, keptcols],
+        as.data.frame(testoutput_ejamit_10pts_1miles$results_bysite)[, keptcols]
       )
+      ## sanity check the links column still holds links (format details are
+      ## checked by the URL function tests, not against the stored copy)
+      expect_true(all(grepl('^<a href="https://', ejamitoutnow$results_bysite[["EJSCREEN Map"]])))
       # all.equal(    ejamitoutnow$results_bysite,
       #               testoutput_ejamit_10pts_1miles$results_bysite)
     } )
@@ -414,10 +449,21 @@ test_that("ejamit() still returns results_bysite with same EJAM Report column", 
     suppressMessages({
       # if (!exists("ejamitoutnow")) {stop("ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")}
       # ejamitoutnow <- ejamit(testpoints_10, radius = 1, quiet = T, silentinteractive = TRUE) # see setup.R - takes roughly 5-10 seconds
+      ## Compare column 1, the EJAM Report URLs. The stored reference was regenerated
+      ## in #488, so it now matches current url_ejamapi() output exactly (branded
+      ## api.ejanalysis.com host, no version= tag, per-site sitenumber=, current
+      ## lat/lon formatting). The workarounds that were needed while the reference was
+      ## stale are therefore gone, and this is now a strict comparison -- which also
+      ## means it again covers sitenumber=, the host, and fileextension=.
+      ## The one thing still normalized is version=: url_ejamapi() omits it by default,
+      ## but if it is ever re-enabled it embeds the package version, which changes on
+      ## every release and would otherwise break this check at each version bump.
+      norm_report_url <- function(x) {
+        gsub("&version=[^&\"]*", "", x)
+      }
       expect_equal(
-        ## Compare column 1, the EJAM Report URLs
-        as.vector(unlist(ejamitoutnow$results_bysite[,1])),
-        as.vector(unlist(testoutput_ejamit_10pts_1miles$results_bysite[,1]))
+        norm_report_url(as.vector(unlist(ejamitoutnow$results_bysite[,1]))),
+        norm_report_url(as.vector(unlist(testoutput_ejamit_10pts_1miles$results_bysite[,1])))
       )
       # all.equal(    ejamitoutnow$results_bysite,
       #               testoutput_ejamit_10pts_1miles$results_bysite)

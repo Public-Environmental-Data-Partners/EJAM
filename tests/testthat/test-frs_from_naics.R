@@ -10,17 +10,55 @@
 # website_scrape = TRUE does work however, since it grabs a data frame with the column 'code'
 # the code is stirng instead of numeric, but that doesn't seem to matter to regid_from_naics (in latlon_from_naics.R)
 
-test_that('website_url and website_scrape cause errors',{
+test_that('website_url causes an error',{
   expect_error( expect_warning({  val <- frs_from_naics(21112, website_url = TRUE)})) # "crude petroleum"
+  })
+
+# website_scrape = TRUE reaches naics.com, so it is its own test and stays covered
+# offline only for the website_url case above.
+#
+# frs_from_naics() passes website_scrape through to naics_from_any() and feeds the
+# resulting $code straight into regid_from_naics(). When naics.com serves a runner
+# the search page with no results in it, that $code is character(0), so this test
+# failed for the same reason as its siblings below rather than for anything to do
+# with EJAM. Scrape once up front and skip on that known symptom, as they do.
+#
+# The scrape has to be the ONLY one in this test. Guarding the scrape and then letting
+# frs_from_naics() go scrape again gives naics.com a second chance to block us after
+# the guard already said it was up, which is the flake we came here to remove. So the
+# guarded result is handed back to frs_from_naics() through naics_from_any(). What is
+# under test is unchanged - that a scraped character $code feeds regid_from_naics()
+# without error - it just runs on data fetched once.
+test_that('website_scrape does not cause an error',{
+  skip_if(offline())
+  scraped <- naics_from_any(21112, website_scrape = TRUE)
+  skip_if_naics_web_unavailable(scraped)
+  # The scraped value is baked into the mock's body rather than looked up from here.
+  # frs_from_naics() makes its naics_from_any() call inside an arrow filter(), which
+  # re-evaluates that call in an arrow data mask, and a plain function(...) scraped
+  # then fails with "object 'scraped' not found". Inlining the value leaves nothing
+  # to look up.
+  testthat::local_mocked_bindings(
+    naics_from_any = eval(bquote(function(...) .(scraped))),
+    .package = "EJAM"
+  )
   expect_no_error({val <- frs_from_naics(21112, website_scrape = TRUE)}) # "crude petroleum"
   })
 
 # however, even using naics_from_any gave an error that the function naics_url_of_query does not exist
 # after renaming this to naics_url_of_code, it worked successfully (in script naics_url_of_code.R)
-test_that('naics_from_any URL and scrape lookup works', {
+test_that('naics_from_any URL lookup works', {
   expect_equal(naics_from_any("crude petroleum")$code, c(21112, 211120))
   expect_equal(naics_from_any(21112, website_url = TRUE), "https://www.naics.com/six-digit-naics/?v=2017&code=21112")
-  expect_equal(naics_from_any(21112, website_scrape = TRUE),
+  })
+
+# The scrape needs naics.com to actually answer, so it is its own test and gets
+# skipped, not failed, when the site does not. See skip_if_naics_web_unavailable() in setup.R
+test_that('naics_from_any scrape lookup works', {
+  skip_if(offline())
+  scraped <- naics_from_any(21112, website_scrape = TRUE)
+  skip_if_naics_web_unavailable(scraped)
+  expect_equal(scraped,
                data.frame("code" = "211120", "name" = "Crude Petroleum Extraction"))
   })
 

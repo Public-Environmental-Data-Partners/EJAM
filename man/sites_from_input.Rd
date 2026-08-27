@@ -10,7 +10,9 @@ sites_from_input(
   lat = NULL,
   lon = NULL,
   shapefile = NULL,
-  fips = NULL
+  fips = NULL,
+  shape = NULL,
+  shp = NULL
 )
 }
 \arguments{
@@ -21,6 +23,8 @@ sites_from_input(
 \item{shapefile}{optional polygons in a spatial data.frame}
 
 \item{fips}{optional Census units as a fips code vector}
+
+\item{shape, shp}{aliases (synonyms) for shapefile}
 }
 \value{
 a list with names sitetype, sitepoints, fips, and shapefile.

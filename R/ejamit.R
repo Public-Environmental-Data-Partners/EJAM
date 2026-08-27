@@ -1,4 +1,27 @@
 
+#' Messages for analysis-invalid sites that can still have reports
+#'
+#' These messages describe usable analysis requests that returned no population
+#' results. Keeping the emitter and reportability check on one canonical list
+#' prevents message wording changes from silently disabling reports.
+#' @return a named character vector of reportable analysis-invalid messages
+#' @noRd
+#'
+ejamit_reportable_invalid_messages <- function() {
+  c(
+    no_block_centroids_fips =
+      "no block centroids (fips boundaries not obtained)",
+    no_block_centroids_shp =
+      "no block centroids (polygon too small for low pop density)",
+    no_block_centroids_latlon =
+      "no block centroids (radius too small for low pop density)",
+    unable_to_aggregate =
+      "blocks with residents found but unable to aggregate",
+    zero_residents =
+      "blocks found but zero residents"
+  )
+}
+
 #' Message describing why no block centroids were found near a site
 #'
 #' Internal helper used by [ejamit()] to explain empty results by site type.
@@ -7,13 +30,38 @@
 #' @noRd
 #'
 ejamit_no_block_centroids_message <- function(sitetype) {
+  messages <- ejamit_reportable_invalid_messages()
   if (sitetype %in% "fips") {
-    return("no block centroids (fips boundaries not obtained)")
+    return(unname(messages[["no_block_centroids_fips"]]))
   }
   if (sitetype %in% "shp") {
-    return("no block centroids (polygon too small for low pop density)")
+    return(unname(messages[["no_block_centroids_shp"]]))
   }
-  "no block centroids (radius too small for low pop density)"
+  unname(messages[["no_block_centroids_latlon"]])
+}
+
+#' Normalize population for invalid sites in final `ejamit()` output
+#'
+#' `doaggregate()` omits sites it cannot aggregate. When [ejamit()] merges those
+#' original input rows back into `results_bysite`, their result columns are
+#' unavailable, but their contribution to analyzed population is zero. Preserve
+#' `NA` for the unavailable indicators while using zero for population.
+#' @param results_bysite final site-level results table from [ejamit()]
+#' @return `results_bysite` with `pop = 0` where `valid = FALSE`
+#' @noRd
+#'
+ejamit_invalid_site_pop_zero <- function(results_bysite) {
+  if (!is.data.frame(results_bysite) ||
+      !all(c("valid", "pop") %in% names(results_bysite))) {
+    return(results_bysite)
+  }
+
+  if (data.table::is.data.table(results_bysite)) {
+    results_bysite[valid %in% FALSE, pop := 0]
+  } else {
+    results_bysite$pop[results_bysite$valid %in% FALSE] <- 0
+  }
+  results_bysite
 }
 
 #' Get an EJ analysis (residential population and environmental indicators) in or near a list of locations
@@ -27,6 +75,7 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #' @param radius in miles, defining circular buffer around a site point (defaults to zero in shapefile case).
 #'   For the FIPS case, if radius > 0 is specified a buffer of that size is added around each FIPS boundary
 #'   before finding blocks; if not specified, no buffer is added (only blocks within the FIPS boundaries).
+#' @param buffer Alias (synonym) for radius. "buffer" reads more naturally for FIPS or polygon analysis. If provided, it is used as radius.
 #' @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
 #' @param maxradius miles distance (max distance to check if not even 1 block point is within radius)
 #' @param avoidorphans logical If TRUE, then where not even 1 BLOCK internal point is within radius of a SITE,
@@ -38,9 +87,17 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #' @param fips optional FIPS code vector to provide if using FIPS instead of sitepoints to specify places to analyze,
 #'   such as a list of US Counties or tracts. Passed to [getblocksnearby_from_fips()]
 #' @param shapefile optional. A sf shapefile object or path to .zip, .gdb, .json, .kml, etc., or folder that has a shapefiles, to analyze polygons.
+#' @param shape Alias (synonym) for shapefile. If provided (and shapefile is not), it is used as shapefile.
 #'   e.g., `out = ejamit(shapefile = testdata("portland.json", quiet = TRUE), radius = 0)`
 #'   If in RStudio you want it to interactively prompt you to pick a file,
 #'   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
+#' @param shp alias (synonym) for shapefile
+#' @param zipcode optional vector of one or more 5-digit zip codes to analyze
+#'   (instead of sitepoints, fips, or shapefile). Zip codes are converted to
+#'   ZCTA polygons via [shapes_from_zip()] and then analyzed exactly like a
+#'   shapefile (so `ejamit()$sitetype` is "shp"), with no buffer unless
+#'   radius is specified. See the Zipcodes article/vignette.
+#' @param lat,lon optional vectors of coordinates; if provided (and sitepoints is not), sitepoints is built from them. Implements issue #171.
 #' @param countcols character vector of names of variables to aggregate within a buffer using a sum of counts,
 #'   like, for example, the number of people for whom a poverty ratio is known,
 #'   the count of which is the exact denominator needed to correctly calculate percent low income.
@@ -131,6 +188,9 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #'
 #'   * **sitetype** indicates if analysis used latlon, fips, or shp
 #'
+#'   * **site_method** and **zipcode** are also included if places were specified
+#'     via the `zipcode` parameter (in which case sitetype is "shp")
+#'
 #'   * **formatted** another tall format showing averages for all indicators
 #'
 #'   * **sitetype** the type of analysis done: "latlon", "shp", "fips", etc.
@@ -175,6 +235,9 @@ ejamit_no_block_centroids_message <- function(sitetype) {
 #'   # FIPS examples
 #'   out4 = ejamit(fips = testinput_fips_cities)
 #'   out5 = ejamit(fips = fips_counties_from_state_abbrev("DE"), radius = 0)
+#'
+#'   # Zip code example (analyzed as ZCTA polygons - see the Zipcodes article)
+#'   out6 = ejamit(zipcode = c("10012", "10506"))
 #'
 #'   # View results overall
 #'   round(t(out$results_overall), 3.1)
@@ -253,8 +316,33 @@ ejamit <- function(sitepoints = NULL,
                    showpctowned = TRUE,
                    download_city_fips_bounds = TRUE,
                    download_noncity_fips_bounds = FALSE,
-                   ...
+                   ...,
+                   # name-only aliases (after ... so any positional args still flow into ... as before):
+                   buffer = NULL,  # alias (synonym) for radius
+                   shape = NULL,   # alias (synonym) for shapefile
+                   shp = NULL,     # alias (synonym) for shapefile
+                   zipcode = NULL, # zip code(s) to convert to ZCTA polygons analyzed like a shapefile
+                   lat = NULL, lon = NULL  # optional coordinates to build sitepoints (issue #171)
 ) {
+  # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
+  # read more naturally for FIPS or polygon analysis; "radius"/"shapefile" remain
+  # the canonical names. The alias is used only when the canonical name was not
+  # supplied, so an explicit radius/shapefile always wins (consistent with the
+  # other helpers, e.g. url_ejamapp()).
+  if (!is.null(buffer) && (missing(radius) || is.null(radius))) {radius <- buffer}
+  if (!is.null(shape) && (missing(shapefile) || is.null(shapefile))) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp)) {shapefile <- shp}
+  if (is.null(sitepoints) && !is.null(lat) && !is.null(lon)) {sitepoints <- data.frame(lat = lat, lon = lon)}
+
+  # zipcode gets converted to ZCTA polygons here, then analyzed exactly like any shapefile
+  if (!is.null(zipcode)) {
+    if (!is.null(shapefile) || !is.null(fips) || !is.null(sitepoints)) {
+      stop("zipcode cannot be combined with sitepoints, fips, or shapefile - specify places to analyze in only 1 way")
+    }
+    shapefile <- shapes_from_zip(zipcode)
+    zipcode <- shapefile$zip # normalized, and only the zips actually found, in row order
+  }
+
   # note on avoidorphans parameter:
   # What EJSCREEN does in that case is report NA, right?
   # So, does EJAM really need to report stats on residents presumed to be within radius,
@@ -327,7 +415,7 @@ ejamit <- function(sitepoints = NULL,
       analysis_type = "shapefile",
       analysis_subtype = "polygon"
     )
-    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    predicted_time <- ejamit_runtime_estimate$seconds_fit
     if (predicted_time > 120) {
       print(ejamit_runtime_estimate$message)
     }
@@ -460,7 +548,7 @@ ejamit <- function(sitepoints = NULL,
       analysis_type = "fips",
       analysis_subtype = fips_runtime_subtype
     )
-    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    predicted_time <- ejamit_runtime_estimate$seconds_fit
     if (predicted_time > 120) {
       print(ejamit_runtime_estimate$message)
     }
@@ -616,10 +704,9 @@ ejamit <- function(sitepoints = NULL,
       analysis_type = "points",
       analysis_subtype = "point_buffer"
     )
-    predicted_time <- ejamit_runtime_estimate$seconds_upper
+    predicted_time <- ejamit_runtime_estimate$seconds_fit
 
     ## print runtime if predicted time > 2 minutes / 120 seconds
-    ## note: models may over-estimate runtime for small analyses
     if (predicted_time > 120) {
       print(ejamit_runtime_estimate$message)
     }
@@ -801,12 +888,13 @@ ejamit <- function(sitepoints = NULL,
 
   data_uploaded$valid[site_in_results_pop0 | !site_in_results] <- FALSE  # NOTE this also says invalid if zero population
 
+  reportable_invalid_messages <- ejamit_reportable_invalid_messages()
   data_uploaded$invalid_msg[!dropped_before_getblocks & !site_in_blocksfound] <-
     ejamit_no_block_centroids_message(sitetype)
   data_uploaded$invalid_msg[site_in_blocksfound & !site_in_results] <-
-    "blocks with residents found but unable to aggregate" # why?
+    unname(reportable_invalid_messages[["unable_to_aggregate"]]) # why?
   data_uploaded$invalid_msg[site_in_results_pop0]   <-
-    "blocks found but zero residents" # msg differed from server version?
+    unname(reportable_invalid_messages[["zero_residents"]]) # msg differed from server version?
 
   # Merge invalid and valid sites and msg, so results_bysite has ALL sites originally provided for analysis.
   setDT(data_uploaded)
@@ -926,10 +1014,23 @@ ejamit <- function(sitepoints = NULL,
 
   out$formatted <- table_tall_from_overall(out$results_overall, fixcolnames(names(out$results_overall), 'r', 'long')) # out$longnames)
 
+  ## * invalid site population ####
+
+  # Keep the historical batch-summary treatment of unavailable rows above, then
+  # expose their population as zero in final site-level output. `valid` and the
+  # other NA result columns still distinguish sites that were not analyzed.
+  out$results_bysite <- ejamit_invalid_site_pop_zero(out$results_bysite)
+
   ###################################### #
   ## * sitetype ####
 
   out$sitetype <- sitetype
+  if (!is.null(zipcode)) {
+    # zipcode analysis ran via the shp path, so sitetype is "shp", but these let
+    # ejam2report() etc. describe the places as zip codes and rebuild their polygons
+    out$site_method <- "ZIP"
+    out$zipcode <- zipcode
+  }
 
   ###################################### #
   if (interactive() && !silentinteractive && !in_shiny) {

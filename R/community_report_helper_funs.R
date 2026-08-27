@@ -322,6 +322,47 @@ fill_tbl_full_ej <- function(output_df,
 # 4. Subgroups & Additional info table ####
 
 
+#' Write one color-coded html table cell for a ratio value
+#' @param val a ratio value (single number, or something coercible to one)
+#' @return html text for one td element
+#' @keywords internal
+#' @noRd
+ratio_td_html <- function(val) {
+
+  # helper - one <td> cell of a ratio value, color-coded via the heatmap thresholds
+  # (red >2.9, orange >1.9, yellow >=1.05) used for ratio columns throughout the report.
+  # Used by fill_tbl_row_subgroups() and fill_tbl_flagged_areas_section(),
+  # so any change to the ratio color cutoffs (see issue #288) can be made in one place.
+
+  val <- suppressWarnings(as.numeric(val))
+  # show missing/non-numeric ratios as "N/A", matching how format_ejamit_columns()
+  # displays missing values elsewhere in the table (not the literal string "NA")
+  if (length(val) != 1 || !is.finite(val)) {
+    return('<td>N/A</td>')
+  }
+
+  bg_color <- if (is.numeric(val) && !is.na(val)) {
+    if (val > 2.9) {
+      "red"
+    } else if (val > 1.9) {
+      "orange"
+    } else if (val >= 1.05) {
+      "yellow"
+    } else {
+      NULL
+    }
+  } else {
+    NULL
+  }
+  # Add background color if applicable
+  if (!is.null(bg_color)) {
+    return(paste0('<td style="background-color: ', bg_color, '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', val, '</td>'))
+  } else {
+    return(paste0('<td>', val, '</td>'))
+  }
+}
+################################################################################## #
+
 #' Write a residential population subgroup indicator to an html table row
 #' @seealso used by [build_community_report()]
 #' @param output_df, single row of results table from doaggregate - either results_overall or one row of bysite
@@ -366,27 +407,7 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
       return(paste0('<td>', val, '</td>'))
     } else if (hdr == 'ratio-to-us-avg' || hdr == 'ratio-to-state-avg') {
       # Apply heatmap logic for ratio columns
-      val <- suppressWarnings(as.numeric(val))
-
-      bg_color <- if (is.numeric(val) && !is.na(val)) {
-        if (val > 2.9) {
-          "red"
-        } else if (val > 1.9) {
-          "orange"
-        } else if (val >= 1.05) {
-          "yellow"
-        } else {
-          NULL
-        }
-      } else {
-        NULL
-      }
-      # Add background color if applicable
-      if (!is.null(bg_color)) {
-        return(paste0('<td style="background-color: ', bg_color, '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', val, '</td>'))
-      } else {
-        return(paste0('<td>', val, '</td>'))
-      }
+      return(ratio_td_html(val))
     } else {
       # Default case for other columns
       return(paste0('<td>', val, '</td>'))
@@ -407,6 +428,23 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
 
 ################################################################################## #
 
+# Names of Additional Information sections whose subheader row gets the
+# "report-section-page-break" class, which communityreport.css turns into a page
+# break before that section when the report is printed to PDF. The row order
+# changed in #444, so these are the points where the table now needs to break.
+# Matching ignores case and surrounding whitespace. PDF pagination only - the
+# HTML report is unchanged.
+report_sections_page_break_before <- c(
+  "Language in Limited English Speaking Households",
+  "Facility Counts"
+)
+
+# Heading for the flagged-areas rows, shared by fill_tbl_full_subgroups() and
+# fill_tbl_flagged_areas_section(). A constant rather than a repeated literal
+# for two reasons: it was duplicated in both signatures, and at 94 characters
+# it pushed the \usage line of fill_tbl_full_subgroups.Rd past the 90-character
+# limit R CMD check enforces. The text itself is unchanged.
+flagged_areas_section_title_default <- "% of These Residents Who Have This Feature or Area Type in (or Overlapping) Their Blockgroup"
 
 #' Create full demog subgroup/ language/ health/ community/ etc. HTML table of indicator rows
 #' @seealso used by [build_community_report()]
@@ -420,6 +458,15 @@ fill_tbl_row_subgroups <- function(output_df, Rname, longname, extratable_show_r
 #' @param extratable_show_ratios_in_report logical, whether to add columns with ratios to US and State overall values
 #' @param hide_missing_rows_for only for the indicators named in this vector,
 #'   leave out rows in table where raw value is NA, as with many of names_d_language
+#' @param flagged_areas_df optional data.frame like ejamit()$results_summarized$flagged_areas
+#'   (see \code{calc_flagged_areas()}). If provided, a section of rows showing the percent of
+#'   analyzed residents with each feature or area type in their blockgroup (with ratios
+#'   to the US and State averages) is inserted just after the
+#'   "Climate" section (or after "Poverty" if there is no Climate section).
+#'   NULL (default) omits that section.
+#' @param flagged_areas_section_title title text for the flagged-areas section subheader row.
+#'   Defaults to "% of These Residents Who Have This Feature or Area Type in
+#'   (or Overlapping) Their Blockgroup".
 #'
 #' @keywords internal
 #'
@@ -428,16 +475,27 @@ fill_tbl_full_subgroups <- function(output_df,
                                     extratable_title_top_row = 'ADDITIONAL INFORMATION', # in the table # 'SELECTED VARIABLES', # or 'ADDITIONAL INFORMATION' or just ''
                                     list_of_sections = NULL,
                                     extratable_show_ratios_in_report = TRUE,
-                                    hide_missing_rows_for = names_d_language
+                                    hide_missing_rows_for = names_d_language,
+                                    flagged_areas_df = NULL,
+                                    flagged_areas_section_title = flagged_areas_section_title_default
                                     ## more params? ***
 ) {
 
   ########################################### #
   # helper functions to make a table one section at a time
 
-  table_by_section <- function(list_of_sections, df, extratable_show_ratios_in_report) {
+  table_by_section <- function(list_of_sections, df, extratable_show_ratios_in_report, flagged_html = '') {
 
     full_html <- ''
+    flagged_inserted <- !nzchar(flagged_html) # nothing to insert if it is empty
+    # the flagged-areas section goes right below the Climate section (which itself
+    # follows Poverty in the default layout); if the customized list of sections
+    # has no Climate section, it goes right below Poverty instead
+    flagged_anchor <- if (any(grepl("Climate", names(list_of_sections), fixed = TRUE))) {
+      "Climate"
+    } else {
+      "Poverty"
+    }
     for (i in seq_along(list_of_sections)) {
       full_html <- paste0(full_html,
                           table_one_section(section_name = names(list_of_sections)[i],
@@ -446,6 +504,14 @@ fill_tbl_full_subgroups <- function(output_df,
                                             extratable_show_ratios_in_report = extratable_show_ratios_in_report),
                           '\n'
       )
+      if (!flagged_inserted && grepl(flagged_anchor, names(list_of_sections)[i], fixed = TRUE)) {
+        full_html <- paste0(full_html, flagged_html, '\n')
+        flagged_inserted <- TRUE
+      }
+    }
+    if (!flagged_inserted) {
+      # no section named like "Climate" or "Poverty" so just append at the end
+      full_html <- paste0(full_html, flagged_html, '\n')
     }
 
     return(full_html)
@@ -454,7 +520,13 @@ fill_tbl_full_subgroups <- function(output_df,
 
   table_one_section <- function(section_name, varnames, df, extratable_show_ratios_in_report) {
 
-    tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader\">
+    # some sections start a new page in the PDF - see report_sections_page_break_before
+    brk <- if (tolower(trimws(section_name)) %in% tolower(report_sections_page_break_before)) {
+      " report-section-page-break"
+    } else {
+      ""
+    }
+    tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader', brk, '\">
 <th colspan=\"8\">', section_name, '</th>
 </tr>')
 
@@ -537,7 +609,12 @@ fill_tbl_full_subgroups <- function(output_df,
                      table_by_section(
                        list_of_sections = list_of_sections,
                        df = output_df,
-                       extratable_show_ratios_in_report = extratable_show_ratios_in_report
+                       extratable_show_ratios_in_report = extratable_show_ratios_in_report,
+                       flagged_html = fill_tbl_flagged_areas_section(
+                         flagged_areas_df = flagged_areas_df,
+                         extratable_show_ratios_in_report = extratable_show_ratios_in_report,
+                         section_title = flagged_areas_section_title
+                       )
                      ),
                      sep = '\n')
 
@@ -551,6 +628,89 @@ fill_tbl_full_subgroups <- function(output_df,
 }
 ################################################################################## #
 
+#' Write the flagged-areas rows (% of residents with feature/area type in their blockgroup) for the extra table
+#'
+#' Renders one subheader row plus one row per presence/overlap indicator from
+#' the flagged_areas summary table (see \code{calc_flagged_areas()}), showing the
+#' percent of analyzed residents who live in a blockgroup that has the feature
+#' (school, hospital, place of worship) or overlaps the area type, plus
+#' color-coded ratios to the US and State averages (if ratios are shown).
+#' The two percentage indicators (pctnobroadband, pctnohealthinsurance) are
+#' EXCLUDED here - they are average blockgroup percentages, not presence flags,
+#' and already appear in the "Critical Services" section of the report.
+#' @param flagged_areas_df data.frame like ejamit()$results_summarized$flagged_areas.
+#'   Needs at least Indicator and Percent_of_these_People columns; the ratio and
+#'   ratio_to_state_avg columns are shown as NA if absent (e.g., outputs saved by
+#'   older EJAM versions lack ratio_to_state_avg).
+#' @param extratable_show_ratios_in_report logical, must match the columns of the
+#'   surrounding table (2 columns if FALSE, 4 if TRUE)
+#' @param section_title title text for the section subheader row
+#' @return html text of table rows, or "" if flagged_areas_df is unusable (so the
+#'   section is silently omitted, as for outputs saved by older EJAM versions)
+#' @seealso used by [fill_tbl_full_subgroups()]; see \code{calc_flagged_areas()}
+#' @keywords internal
+#' @noRd
+fill_tbl_flagged_areas_section <- function(flagged_areas_df,
+                                           extratable_show_ratios_in_report = TRUE,
+                                           section_title = flagged_areas_section_title_default) {
+
+  neededcols <- c("Indicator", "Percent_of_these_People")
+  if (is.null(flagged_areas_df) || !is.data.frame(flagged_areas_df) ||
+      NROW(flagged_areas_df) == 0 || !all(neededcols %in% names(flagged_areas_df))) {
+    return("")
+  }
+  flagged_areas_df <- as.data.frame(flagged_areas_df)
+
+  # exclude the percentage indicators - they are avg blockgroup percentages, not
+  # "has X in their blockgroup" presence flags, and are already shown in the
+  # Critical Services section of the report with their own US/State ratios
+  pctvars <- c('pctnobroadband', 'pctnohealthinsurance')
+  if ("rname" %in% names(flagged_areas_df)) {
+    flagged_areas_df <- flagged_areas_df[!(flagged_areas_df$rname %in% pctvars), , drop = FALSE]
+  }
+  if (NROW(flagged_areas_df) == 0) {
+    return("")
+  }
+
+  getcol <- function(cn) {
+    if (cn %in% names(flagged_areas_df)) {flagged_areas_df[[cn]]} else {rep(NA_real_, NROW(flagged_areas_df))}
+  }
+  vals     <- suppressWarnings(as.numeric(getcol("Percent_of_these_People")))
+  # ratios display with 1 decimal place, like the other ratio columns in this table
+  ratio_us <- round(suppressWarnings(as.numeric(getcol("ratio"))), 1)
+  ratio_st <- round(suppressWarnings(as.numeric(getcol("ratio_to_state_avg"))), 1)
+
+  # report-section-page-break starts this section on a fresh page in the PDF
+  # (the row order changed in #444, so the old breaks fell mid-section) - see
+  # communityreport.css and report_sections_page_break_before
+  tbl_head_text <- paste0('<tr class=\"color-alt-table-subheader report-section-page-break\">
+<th colspan=\"8\">', section_title, '</th>
+</tr>')
+
+  tbl_rows <- sapply(seq_len(NROW(flagged_areas_df)), function(i) {
+    # whole percents with no decimal places, just like the other percentage rows
+    valtxt <- if (is.na(vals[i])) {"N/A"} else {paste0(round(vals[i], 0), "%")}
+    cells <- paste0('<td>', valtxt, '</td>')
+    if (extratable_show_ratios_in_report) {
+      cells <- paste0(cells,
+                      '\n', ratio_td_html(ratio_us[i]),
+                      '\n', ratio_td_html(ratio_st[i]))
+    }
+    paste0(
+      "<tr>",
+      '\n', '<td headers="data-indicators-table-selected-variables">', flagged_areas_df$Indicator[i], '</td>',
+      '\n', cells,
+      '\n</tr>'
+    )
+  })
+
+  full_html <- paste(tbl_head_text,
+                     paste(tbl_rows, collapse = '\n'),
+                     sep = '', collapse = '\n')
+  return(full_html)
+}
+################################################################################## #
+
 # 5. footnote ####
 
 #' helper - make footnote for summary report, like caveat about diesel PM, accuracy, or other notes
@@ -558,13 +718,38 @@ fill_tbl_full_subgroups <- function(output_df,
 #' @param diesel_caveat text - see source code for default
 #' @param show_diesel_caveat logical, default FALSE so the diesel particulate-matter
 #'   caveat is suppressed in reports; set TRUE to include it in the footnotes.
+#' @param areafeatures_note text explaining the feature/facility count rows
+#'   (estimated totals, prorated by the share of each blockgroup's residents
+#'   inside the analyzed area - see issue #410) and the "% of These Residents..."
+#'   rows and their US/State ratios -
+#'   see source code for default. Set to "" to omit.
 #'
 #' @keywords internal
 #'
 generate_report_footnotes <- function(
     diesel_caveat = NULL,
-    show_diesel_caveat = FALSE
+    show_diesel_caveat = FALSE,
+    areafeatures_note = NULL
 ) {
+
+  if (is.null(areafeatures_note)) {
+    areafeatures_note <- paste0(
+      # agreed wording from issue #410 (see the #488 review discussion)
+      "Note: Feature counts shown (such as the count of schools) are estimated totals --",
+      " They use the count of features in each blockgroup and adjust that based on",
+      " what share of the blockgroup's residents are inside the analyzed area.",
+      " They estimate the total in the area rather than using exact coordinates",
+      " of each feature to count inside each mapped area.",
+      " If present, rows showing what % of these residents have a feature or area type in their block group",
+      " show what percent of the residents analyzed live in a block group that contains at least one",
+      " of that type of feature or that overlaps that type of area,",
+      " and the ratio columns compare that percent to the equivalent percent of all US residents",
+      " or of all residents of the state(s) analyzed.",
+      " Where an analysis covers sites in more than one state, the State average here means",
+      " the average among all the residents at these sites, using the statewide value",
+      " in each resident's state."
+    )
+  }
 
   if (is.null(diesel_caveat)) {
     diesel_caveat <-  paste0(
@@ -589,7 +774,7 @@ generate_report_footnotes <- function(
   if (isTRUE(show_diesel_caveat)) {
     dieselnote = paste0("
   <span style= 'font-size: 9pt'>
-  <p tabindex=\'13\' style='font-size: 9pt'><small>", diesel_caveat, "</small></p>
+  <p tabindex=\'13\' style='font-size: 9pt; line-height: 1.25; margin: 2px 0;'><small>", diesel_caveat, "</small></p>
   </span>"
     )
   } else {
@@ -603,9 +788,21 @@ generate_report_footnotes <- function(
   # </span>"
   # )
 
+  if (nzchar(areafeatures_note)) {
+    # compact spacing: tighter line-height and small margins so the long note reads as one tight block
+    areafeaturesnote = paste0("
+  <span style= 'font-size: 9pt'>
+  <p tabindex=\'15\' style='font-size: 9pt; line-height: 1.25; margin: 2px 0;'><small>", areafeatures_note, "</small></p>
+  </span>"
+    )
+  } else {
+    areafeaturesnote = ""
+  }
+
   footnotes <- paste(
     dieselnote,
     ejamnote,
+    areafeaturesnote,
     sep = "   "
   )
   return(HTML(footnotes))
@@ -967,7 +1164,7 @@ generate_extra_header <- function(title = 'Additional Information') {
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -989,7 +1186,12 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
   ### *** per issue #159 should be reconciled/merged with
   ### buffer_desc_from_sitetype() and its helper site_method2text()
 
-  if (missing(sitetype) || is.null(sitetype)) {
+  ## NA and length-0 are treated like missing/NULL, not passed into the if() chain
+  ## below: ejamit_sitetype_from_output() returns NA when it cannot tell the type
+  ## (see R/ejamit_sitetype_from_.R), and if (NA == "shp") stops with "missing value
+  ## where TRUE/FALSE needed" - so an unknown site type crashed the description
+  ## instead of falling back to the generic wording.
+  if (missing(sitetype) || is.null(sitetype) || length(sitetype) == 0 || is.na(sitetype[1])) {
     buffer_desc <- "Selected Locations"
   } else {
     if (sitetype == "shp") {
@@ -1003,16 +1205,39 @@ buffer_desc_from_sitetype <- function(sitetype, site_method) {
         } else {
           buffer_desc <- "Selected locations"
         }}}}
-  if (buffer_desc == "") {
-    based_on_txt <- site_method2text(site_method)
-    if (based_on_txt %in% "")
-      buffer_desc <- paste0(buffer_desc, ", based on ", site_method2text(site_method))
+  ## site_method can say more than sitetype does -- sitetype "latlon" with
+  ## site_method "NAICS" means points that are EPA-regulated facilities picked by
+  ## industry code, and sitetype "shp" with "ZIP" means zip code (ZCTA) polygons.
+  ## Append that detail when there is any to add.
+  ##
+  ## This used to be gated on buffer_desc == "", which no branch above can produce,
+  ## so it never ran; and the inner test was inverted, appending only when the text
+  ## was empty. Both are fixed here.
+  based_on_txt <- ""
+  if (!missing(site_method) && !is.null(site_method) && length(site_method) > 0 &&
+      !is.na(site_method[1])) {
+    ## Skip when site_method only restates sitetype, which would read
+    ## "Polygons defined by shapefile, based on shapefile". That is the common
+    ## case, not a corner one: table_xls_from_ejam() defaults site_method to
+    ## sitetype ('shp' -> 'SHP', 'fips' -> 'FIPS') whenever it is not supplied.
+    ## !is.na() here too, so restates_sitetype cannot come out NA and make
+    ## if (!restates_sitetype) error the same way
+    sitetype_known <- !missing(sitetype) && !is.null(sitetype) &&
+      length(sitetype) > 0 && !is.na(sitetype[1])
+    restates_sitetype <- sitetype_known &&
+      tolower(site_method[1]) %in% c(tolower(sitetype[1]), "mapclick")
+    if (!restates_sitetype) {
+      based_on_txt <- site_method2text(site_method[1])
+    }
+  }
+  if (!(based_on_txt %in% "")) {
+    buffer_desc <- paste0(buffer_desc, ", based on ", based_on_txt)
   }
   return(buffer_desc)
 }
 ##################################################################################### #
 
-# eg = c("latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
+# eg = c("latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT")
 # cbind(eg, site_method2text(eg))
 
 # used by buffer_desc_from_sitetype()
@@ -1033,7 +1258,7 @@ site_method2text =  function(site_method) {
     if (site_method %in% tolower("SHP")) {
       return("shapefile")
     }
-    if (site_method %in% tolower("latlon")) {
+    if (site_method %in% tolower(c("latlon", "mapclick"))) {  # mapclick = lat/lon points the user clicked on the map
       return("coordinates")
     }
     if (site_method %in% tolower("FIPS")) {
@@ -1041,6 +1266,9 @@ site_method2text =  function(site_method) {
     }
     if (site_method %in% tolower("FIPS_PLACE")) {
       return("names of places")
+    }
+    if (site_method %in% tolower(c("ZIP", "ZCTA"))) {
+      return("zip codes (ZCTA boundaries)")
     }
     if (site_method %in% tolower("NAICS")) {
       return("EPA-regulated facilities by NAICS code (industry type)")
@@ -1051,10 +1279,10 @@ site_method2text =  function(site_method) {
     if (site_method %in% tolower("EPA_PROGRAM")) {
       return("EPA-regulated Facilities by EPA program")
     }
-    if (site_method %in% "SIC") {
+    if (site_method %in% tolower("SIC")) {
       return("EPA-regulated facilities by SIC code (industry type)")
     }
-    if (site_method %in% "MACT") {
+    if (site_method %in% tolower("MACT")) {
       return("EPA-regulated facilities by MACT category (air toxics emissions source type)")
     }
     return("")
@@ -1084,7 +1312,7 @@ site_method2text =  function(site_method) {
 #'
 #'   - sitetype can be "latlon", "fips", or "shp"
 #'
-#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+#'   - site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 #'
 #'   The shiny app server provides `site_method` from the reactive called submitted_upload_method()
 #'   which is much like the one called current_upload_method().
@@ -1110,8 +1338,11 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   if (is.null(nsites) || any(is.na(nsites))) {
     nsites <- 99 # just makes it plural, e.g., "places"
   }
-  if (is.null(sitetype))    {sitetype    <- sitetype_nullna}
-  if (is.null(site_method)) {site_method <- sitetype}
+  ## length-0 is handled alongside NULL, not left to fall through: character(0)
+  ## survives the is.na() replacement below unchanged, and then `sitetype %in% ...`
+  ## yields logical(0), which makes the if() below error instead of simply not matching.
+  if (is.null(sitetype)    || length(sitetype) == 0)    {sitetype    <- sitetype_nullna}
+  if (is.null(site_method) || length(site_method) == 0) {site_method <- sitetype}
 
   sitetype[   is.na(sitetype)]    <- sitetype_nullna
   site_method[is.na(site_method)] <- sitetype_nullna
@@ -1139,7 +1370,10 @@ sitetype2text <- function(sitetype = NULL, site_method = sitetype, sitetype_null
   # uploaded each site (detailed site_method) ---------------------------------- -
   # # These detailed designations will override simple ones above, if available (as in server/shiny app)
 
-  if (site_method %in% 'frs') {
+  if (site_method %in% c('zip', 'zcta')) {
+    location_type <- paste0("specified ",            pluralize_maybe("zip code", nsites)) # zips analyzed as ZCTA polygons, so sitetype is shp
+
+  } else if (site_method %in% 'frs') {
     location_type <- paste0("FRS ID-specified ",     pluralize_maybe("site",     nsites)) # "FRS ID-specified site"
 
   } else if (site_method %in% 'epa_program_up') {
@@ -1243,13 +1477,22 @@ report_xmilesof <- function(radius = NA, unitsingular = 'mile') {
 #'   For example, if it is a 1-site report as via sitenumber=2,
 #'    and you set ejam_uniq_id = "Jones Mill Site" it will use that in the header
 #'   instead of using "ejam_uniq_id 2" (but ejam_uniq_id is ignored for a multisite summary report).
+#' @param sitenumber_label optional, display-only override (a number or short text) of the
+#'   site identifier shown in a 1-site report header, in place of the `sitenumber` row index.
+#'   Useful when one site from a larger analysis has been re-analyzed alone -- e.g., the
+#'   EJAM API per-site report links made by [url_ejamapi()] re-analyze a single site that
+#'   was row N of the original multisite results, so its row index here (1) is not the
+#'   site number the user expects to see. A number N is shown as "Site N"; text is shown
+#'   as-is. Ignored for a multisite/overall summary report.
 #'
 #' @return text string such as "Residents within 1 mile of any of the 99 specified points<br>Area in Square Miles: 311.02"
 #'
 #' @export
 #' @keywords internal
 #'
-report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL, site_method = NULL, ...) {
+report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL, site_method = NULL, ...,
+                                                   sitenumber_label = NULL # name-only (after ... so positional args are unchanged)
+                                                   ) {
 
   out <- ejamitout
   if (!missing(...)) {params = list(...)} else {params = NULL}
@@ -1258,6 +1501,7 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
   if (!is.null(sitenumber) && sitenumber %in% 0) {sitenumber <- NULL} # because ejam2report() allows 0 to mean summary report
   stopifnot(!is.na(sitenumber), (is.null(sitenumber) | is.atomic(sitenumber)), length(sitenumber) < 2)
   stopifnot(is.numeric(sitenumber) | is.null(sitenumber))
+  stopifnot(is.null(sitenumber_label) || ((is.numeric(sitenumber_label) || is.character(sitenumber_label)) && length(sitenumber_label) == 1 && !is.na(sitenumber_label)))
   if (!is.null(sitenumber)) {
     if (sitenumber < 1 || sitenumber > NROW(out$results_bysite)) {
       message("sitenumber was < 1 or > number of rows in results_bysite, so ignoring sitenumber parameter")
@@ -1373,6 +1617,25 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
     census_unit_type <- ft
   } else {
     census_unit_type <- NULL
+  }
+
+  # sitenumber_label: display-only override of the site number/label shown in the header.
+  # A per-site report regenerated from a larger analysis (e.g., the EJAM API per-site links
+  # from url_ejamapi()) analyzes 1 site whose row index here is 1, but it was row N of the
+  # original analysis, so showing "Site 1" would mislabel it
+  # (Public-Environmental-Data-Partners/EJAM#348). All row lookups above still use the
+  # numeric sitenumber row index; only what is displayed changes here.
+  if (!is.null(sitenumber) && !is.null(sitenumber_label)) {
+    ejam_uniq_id_explicit <- !is.null(params) && ("ejam_uniq_id" %in% names(params))
+    if (!ejam_uniq_id_explicit && is.numeric(ejam_uniq_id) && !(sitetype %in% "fips") &&
+        isTRUE(ejam_uniq_id == sitenumber)) {
+      # drop the auto-assigned row-number id of this results table -- it is just the row
+      # index of the (possibly regenerated, 1-site) run and would contradict the label.
+      # A numeric id that does NOT equal the row index is not the auto row-number,
+      # so it may be meaningful and is kept alongside the label.
+      ejam_uniq_id <- NULL
+    }
+    sitenumber <- sitenumber_label
   }
 
   report_residents_within_xyz(

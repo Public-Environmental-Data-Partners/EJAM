@@ -10,7 +10,11 @@ ejam2map(
   launch_browser = TRUE,
   shp = NULL,
   radius = NULL,
-  sitenumber = NULL
+  sitenumber = NULL,
+  shape = NULL,
+  shapefile = NULL,
+  buffer = NULL,
+  sitenumber_label = NULL
 )
 }
 \arguments{
@@ -22,9 +26,26 @@ ejam2map(
 
 \item{shp}{shapefile it can map if analysis was for polygons, for example}
 
-\item{radius}{radius in miles}
+\item{radius}{optional radius in miles}
 
-\item{sitenumber}{as used in \code{\link[=ejam2report]{ejam2report()}}}
+\item{sitenumber}{Optional integer. If a valid positive integer is provided,
+only that one site (row \code{sitenumber} of \code{ejamitout$results_bysite}) is
+mapped. If omitted, NULL, zero, negative, or out of range, all sites are mapped.
+Works for all site types (latlon, fips, shp): when \code{sitetype} is "fips"
+and \code{shp} is provided, both the results table and \code{shp} are subsetted to
+the requested row; when \code{shp} is not provided, the FIPS polygon is
+downloaded for only that one site.}
+
+\item{shape}{alias (synonym) for shp}
+
+\item{shapefile}{alias (synonym) for shp}
+
+\item{buffer}{alias (synonym) for radius}
+
+\item{sitenumber_label}{optional, display-only override (a number or short text) of the
+site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
+Only relevant when mapping a single site -- see \code{\link[=ejam2report]{ejam2report()}}, whose
+sitenumber_label parameter this supports.}
 }
 \value{
 like what \code{\link[=mapfastej]{mapfastej()}} returns

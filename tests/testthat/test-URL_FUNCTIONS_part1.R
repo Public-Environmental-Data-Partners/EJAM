@@ -97,7 +97,7 @@ test_that("url_from_keylist for args not in a list", {
 
   expect_equal(
     url_from_keylist(lat = c(35,36), lon = c(-100,-99), radius = 3.14),
-    "https://ejamapi-84652557241.us-central1.run.app/report?lat=35,36&lon=-100,-99&radius=3.14"
+    paste0(url_package("api"), "/report?lat=35,36&lon=-100,-99&radius=3.14")
   )
 })
 
@@ -205,5 +205,74 @@ test_that("url_online rejects empty/NA/NULL input with a clear message (no offli
   expect_error(EJAM:::url_online(NULL),             regexp = "must specify a URL")
   # multiple URLs still rejected distinctly
   expect_error(EJAM:::url_online(c("a", "b")),      regexp = "one URL at a time")
+})
+############################ #
+
+test_that("launch-URL handler parses ?fips=/?lat=/?shape= query params with correct precedence and guards", {
+  # Contract test for the app_server() launch observer that pre-loads sites from
+  # the URL (see R/app_server.R, the `observe({ search <- session$clientData$url_search ... })`
+  # block, ~lines 485-520). That logic is inline in a Shiny observer driven by
+  # session$clientData$url_search, which the testServer() mock hard-codes, so we
+  # instead verify the parsing rules directly. The observer's direct-param branch
+  # is mirrored here in launch_spec_from_query() and MUST be kept in sync with it.
+  skip_if_not_installed("shiny")
+
+  # mirrors the observer's direct-param parsing + precedence + GeoJSON guard
+  launch_spec_from_query <- function(search) {
+    q <- shiny::parseQueryString(search)
+    spec <- list()
+    if (!is.null(q$lat) && !is.null(q$lon)) {
+      spec$lat <- as.numeric(trimws(strsplit(q$lat, ",")[[1]]))
+      spec$lon <- as.numeric(trimws(strsplit(q$lon, ",")[[1]]))
+    }
+    if (!is.null(q$fips)  && nzchar(q$fips))  {spec$fips  <- trimws(strsplit(q$fips, ",")[[1]])}
+    if (!is.null(q$shape) && nzchar(q$shape)) {spec$shape <- q$shape}
+    spec$radius <- if (!is.null(q$radius)) q$radius else q$buffer  # buffer is an alias for radius
+    # precedence: points (matching lat/lon counts), then fips, then inline-GeoJSON polygons
+    if (!is.null(spec$lat) && !is.null(spec$lon) && length(spec$lat) == length(spec$lon)) {
+      spec$loaded <- "latlon"
+    } else if (!is.null(spec$fips) && length(spec$fips) > 0) {
+      spec$loaded <- "fips"
+    } else if (!is.null(spec$shape)) {
+      shape_txt <- trimws(as.character(spec$shape))
+      looks_geojson <- grepl("^\\{", shape_txt) &&
+        grepl("\"type\"[[:space:]]*:[[:space:]]*\"(FeatureCollection|Feature|Polygon|MultiPolygon)\"", shape_txt)
+      spec$loaded <- if (looks_geojson) "shp" else NA_character_
+    } else {
+      spec$loaded <- NA_character_
+    }
+    spec
+  }
+
+  # The URL vocabulary the observer consumes is exactly what url_ejamapp() emits,
+  # so build the query strings with the real builder and parse them with real shiny.
+  ## ?fips= : comma-separated -> character vector; radius carried through
+  s <- launch_spec_from_query(sub("^[^?]*\\?", "?", url_ejamapp(fips = c("10001", "10003"), radius = 2)))
+  expect_equal(s$fips, c("10001", "10003"))
+  expect_equal(s$radius, "2")
+  expect_equal(s$loaded, "fips")
+
+  ## ?lat=&lon= : comma-separated numerics, equal counts -> latlon wins (over nothing)
+  s <- launch_spec_from_query(sub("^[^?]*\\?", "?", url_ejamapp(lat = c(33.5, 34), lon = c(-112, -111.9), radius = 1)))
+  expect_equal(s$lat, c(33.5, 34))
+  expect_equal(s$lon, c(-112, -111.9))
+  expect_equal(s$loaded, "latlon")
+
+  ## mismatched lat/lon counts are NOT loaded as points (guard against silent recycling)
+  s <- launch_spec_from_query("?lat=33,34&lon=-112")
+  expect_true(is.na(s$loaded))
+
+  ## ?buffer= is accepted as a synonym for ?radius=
+  expect_equal(launch_spec_from_query("?fips=10001&buffer=5")$radius, "5")
+
+  ## ?shape= : only inline GeoJSON text passes the guard; a path/URL that merely
+  ## contains a "type" substring is rejected (would otherwise be read as a file)
+  geojson_txt <- shape2geojson(testinput_shapes_2[1, ])
+  expect_equal(launch_spec_from_query(paste0("?shape=", utils::URLencode(geojson_txt, reserved = TRUE)))$loaded, "shp")
+  expect_true(is.na(launch_spec_from_query("?shape=/tmp/whatever_type_Feature.json")$loaded))
+  expect_true(is.na(launch_spec_from_query("?shape=https://x/y?type=Feature")$loaded))
+
+  ## a guard-accepted GeoJSON string is in fact readable downstream by shapefile_from_any()
+  expect_s3_class(shapefile_from_any(geojson_txt, cleanit = FALSE, silentinteractive = TRUE), "sf")
 })
 ############################ #

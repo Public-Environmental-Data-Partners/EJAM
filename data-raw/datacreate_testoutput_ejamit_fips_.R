@@ -30,7 +30,7 @@ EJAM:::dataset_documenter("testoutput_ejamit_fips_cities",
 
 # save as EXCEL via ejam2excel() COUNTIES ####
 
-fname <- paste0("testoutput_ejamit_fips_counties" )  #  COUNTIES
+fname <- paste0("testoutput_ejam2excel_fips_counties" )  #  COUNTIES
 junk <- ejam2excel(
   (testoutput_ejamit_fips_counties),
   analysis_title = "Example of outputs of ejamit(fips= testinput_fips_counties) for Counties being formatted and saved using ejam2excel()",
@@ -63,7 +63,7 @@ junk <- ejam2excel(
 
   # save as HTML Report via ejam2report() COUNTIES ####
 
-  fname <- paste0("testoutput_ejamit_fips_counties")  #  COUNTIES
+  fname <- paste0("testoutput_ejam2report_fips_counties")  #  COUNTIES
   url_html <- ejam2report(
     (testoutput_ejamit_fips_counties),
     analysis_title = "Sample Summary Report for County FIPS",

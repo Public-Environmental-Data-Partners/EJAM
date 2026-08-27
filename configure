@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -eu
+
+# The deployed image advertises Chrome to chromote and/or pagedown. When either
+# variable is set, this package installation can generate PDFs, so verify that
+# capability now. This runs while the Dockerfile installs EJAM and fails the
+# image build if Chrome cannot actually produce a PDF.
+if [ -n "${CHROMOTE_CHROME:-}" ] || [ -n "${PAGEDOWN_CHROME:-}" ] || [ "${EJAM_VERIFY_PDF_BUILD:-}" = "true" ]; then
+  echo "Verifying EJAM PDF generation during the build"
+  Rscript --vanilla -e 'source("R/pdf_runtime_check.R", local = TRUE); verify_pdf_runtime()'
+fi

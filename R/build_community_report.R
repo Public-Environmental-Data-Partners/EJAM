@@ -101,10 +101,19 @@ report_setup_temp_files <- function(Rmd_name = 'community_report_template.Rmd',
 #' @param extratable_hide_missing_rows_for only for the indicators named in this vector,
 #'   leave out rows in table where raw value is NA,
 #'   as with many of names_d_language, in extra table of demog. subgroups, etc.'
+#' @param flagged_areas_df optional data.frame like ejamit()$results_summarized$flagged_areas
+#'   (see \code{calc_flagged_areas()}). If provided, a section of rows is added just below the
+#'   "Climate" section (or "Poverty" if there is no Climate section) of the extra table, showing what percent of
+#'   the analyzed residents have each type of feature or area type in (or overlapping) their
+#'   blockgroup, with color-coded ratios to the US and State averages.
+#'   NULL (the default) omits that section, as for outputs of older EJAM versions.
 #'
 #' @param in_shiny whether the function is being called in or outside of shiny - affects location of header
-#' @param filename path to file to save HTML content to; if null, returns as string (used in Shiny app)
+#' @param filename optional path to an .html file; if provided, the assembled HTML
+#'   content is also written to that file. The HTML is returned either way.
 #'
+#' @return HTML content of the report body (header and tables) as an
+#'   [htmltools::HTML()] object, whether or not `filename` was provided.
 #'
 #' @seealso [ejam2report()]
 #'
@@ -135,19 +144,28 @@ build_community_report <- function(
       `Age` = c('pctunder5', 'pctunder18', 'pctover64'),
       `Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))],
       `Poverty` = names_d_extra,
-      `Features and Location Information` = c(
-        names_e_other,
-        names_sitesinarea,
+      # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Climate)
+      `Climate` = names_climate,
+      `Counts of Features and Overlap with Area Types` = c(
         names_featuresinarea,
         names_flag
       ),
-      `Climate` = names_climate,
-      `Critical Services` = names_criticalservice,
-      `Other` = names_d_other_count
+      `Critical Services` = c( # names_criticalservice, re-sorted for display: flags first, then percentages
+        'yesno_houseburden', 'yesno_fooddesert', 'yesno_transdis',
+        'pctnobroadband', 'pctnohealthinsurance'
+      ),
+      `Facility Counts` = names_sitesinarea,
+      `Analyzed Sites` = c( # names_e_other, re-sorted for display: distances first, then site counts
+        'distance_min_avgperson', 'distance_min',
+        'sitecount_unique', 'sitecount_avg', 'sitecount_max'
+      ),
+      `Other Totals` = names_d_other_count
       # , `Count above threshold` = names_countabove # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
     ),
     ## all the indicators that are in extratable_list_of_sections:
     extratable_hide_missing_rows_for = as.vector(unlist(extratable_list_of_sections)),
+
+    flagged_areas_df = NULL, # data.frame like ejamit()$results_summarized$flagged_areas - if provided, adds rows showing % of residents with each feature/area type in their blockgroup, vs US and State
 
     in_shiny = FALSE,
     filename = NULL
@@ -177,11 +195,32 @@ build_community_report <- function(
   output_df_rounded <-   as.data.frame(output_df)
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded))
 
+  # Feature/facility count rows are estimated totals (see issue #410), so like other
+  # totals they use the 0-decimal rounding from map_headernames via format_ejamit_columns()
+  # above; sitecount_avg is the only average-person count row and its metadata keeps 1 decimal.
+
+  # "Flag for ..." (yesno_*) rows display Yes/No rather than 1/0
+  flagcols <- grep("^yesno_", names(output_df_rounded), value = TRUE)
+  for (fc in flagcols) {
+    rawvals <- suppressWarnings(as.numeric(as.data.frame(output_df)[[fc]]))
+    output_df_rounded[[fc]] <- ifelse(is.na(rawvals), output_df_rounded[[fc]],
+                                      ifelse(rawvals != 0, "Yes", "No"))
+  }
+
   if (missing(totalpop) || is.null(totalpop)) {
-    if ("pop" %in% names(output_df_rounded)) {
-      totalpop <- output_df_rounded$pop # prettyNum(round(output_df_rounded$pop, 0), big.mark = ',') # already rounded and got comma via format_ejamit_columns() above
+
+    if ("pop" %in% names(output_df)) {
+      # use pop from output_df not output_df_rounded - format_ejamit_columns()
+      # already turned the rounded copy into text like "10,000" so round() would fail on it
+      pop_raw <- as.data.frame(output_df)$pop
+      pop_num <- suppressWarnings(as.numeric(gsub(",", "", pop_raw)))
+      if (!anyNA(pop_num)) {
+        totalpop <- prettyNum(round(pop_num, 0), big.mark = ',')
+      } else {
+        totalpop <- as.character(pop_raw) # was already formatted text, or not numeric
+      }
     } else {
-      warning('totalpop parameter or output_df_rounded$pop is required')
+      warning('totalpop parameter or output_df$pop is required')
       totalpop <- "NA" # text works here rather than NA
     }
   }
@@ -244,7 +283,8 @@ build_community_report <- function(
                             extratable_title_top_row = extratable_title_top_row, # inside table, e.g.,  'Additional Information' or 'Additional Indicators'
                             extratable_show_ratios_in_report = extratable_show_ratios_in_report,
                             list_of_sections      = extratable_list_of_sections,
-                            hide_missing_rows_for = extratable_hide_missing_rows_for
+                            hide_missing_rows_for = extratable_hide_missing_rows_for,
+                            flagged_areas_df      = flagged_areas_df
     ),
     ############################################################# #
 
@@ -258,13 +298,13 @@ build_community_report <- function(
 #   > map, barplot, footer are elsewhere < ####
 
   ############################################################# #
-  if (is.null(filename)) {
-    return(HTML(full_page))
-  } else {
-    junk <- capture.output({
-      cat(HTML(full_page))
-    })
-    # DO WE NEED TO RENDER  HERE? ***
-    # OR CAN WE WRITE junk TO A .html FILE - WILL THAT WORK?
+  if (!is.null(filename)) {
+    if (!dir.exists(dirname(filename))) {
+      stop("Cannot save the report HTML because the folder does not exist: ", dirname(filename))
+    }
+    writeLines(as.character(full_page), con = filename)
   }
+  # Return visibly in both cases - community_report_template.Rmd relies on this
+  # value auto-printing from its chunk, even when a filename is provided.
+  return(HTML(full_page))
 }

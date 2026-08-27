@@ -64,6 +64,10 @@ msg <- utils::capture.output({
     default_max_pts_select  =   10 * 1000,
     maxmax_pts_select  =  35 * 1000, #   cap selected points
 
+    # input$max_pts_click
+    default_max_pts_click  =   30,
+    maxmax_pts_click  =  100, #   cap click-to-select points
+
     # input$max_pts_map uses these as its starting value and max allowed value
     default_max_pts_map   = 5 * 1000,
     maxmax_pts_map       = 15 * 1000, # max we will show on map
@@ -112,10 +116,12 @@ msg <- utils::capture.output({
 
     ## ------------------------ Site Selection options  #####
 
-    # upload or dropdown method of site selection
-    default_upload_dropdown = "upload",
-    # global_default or ejamapp() parameter: default_upload_dropdown, which is initial selected value of
-    # input in advanced tab: input$default_ss_choose_method, which is initial selected value of
+    # method of site selection: "dropdown" (select a category), "upload" (upload a file of
+    # points/IDs/FIPS/shapefile), or "mapclick" (click or draw on the map to specify points)
+    default_site_method = "upload",
+    # global_default or ejamapp() parameter: default_site_method (formerly named default_upload_dropdown,
+    # which still works as a back-compat alias), which is the initial selected value of
+    # input in advanced tab: input$default_ss_choose_method, which (via updateRadioButtons in the server) sets
     # input in server:              input$ss_choose_method
 
     # NAICS
@@ -505,17 +511,20 @@ msg <- utils::capture.output({
       "`Age` = c('pctunder5', 'pctunder18', 'pctover64')",
       "`Community` = names_community[!(names_community %in% c( 'pctmale', 'pctfemale', 'pctownedunits_dupe'))]",
       "`Poverty` = names_d_extra",
-      "`Features and Location Information` = c(
-    names_e_other,
-    names_sitesinarea,
+      # (the flagged-areas "% of These Residents..." section, if any, is inserted right after Climate)
+      "`Climate` = names_climate",
+      "`Counts of Features and Overlap with Area Types` = c(
     names_featuresinarea ,
     names_flag
   )",
-      "`Climate` = names_climate",
-      "`Critical Services` = names_criticalservice"
+      "`Critical Services` = c('yesno_houseburden', 'yesno_fooddesert', 'yesno_transdis',
+    'pctnobroadband', 'pctnohealthinsurance')" # names_criticalservice, re-sorted for display: flags first, then percentages
     ),
     `Other` = list(  # just a heading for UI
-      "`Other` = names_d_other_count"
+      "`Facility Counts` = names_sitesinarea",
+      "`Analyzed Sites` = c('distance_min_avgperson', 'distance_min',
+    'sitecount_unique', 'sitecount_avg', 'sitecount_max')", # names_e_other, re-sorted for display: distances first, then site counts
+      "`Other Totals` = names_d_other_count"
       # , "`Count above threshold` = names_countabove"  # need to fix map_headernames longname and calctype and weight and drop 2 of the 6
     )
   )
@@ -715,7 +724,8 @@ help_texts <- list(
   <div id="selectFrom1" class="form-group shiny-input-radiogroup shiny-input-container shiny-input-container-inline">
   <label class="control-label" for="selectFrom1">
 
-  <p>You may upload a list of location coordinates (latitudes and longitudes).</p>',
+  <p>You may upload a list of location coordinates (latitudes and longitudes).</p>
+  <p>You can also specify points without a file by choosing the "Click or draw on map" method and clicking the map to add one or more points.</p>',
 
                            # example file
 

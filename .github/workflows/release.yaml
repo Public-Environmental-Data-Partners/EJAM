@@ -1,0 +1,455 @@
+name: 'Release: tag and publish'
+
+# Tags the version currently in DESCRIPTION on `main` and publishes a GitHub
+# Release whose notes are the matching section of NEWS.md.
+#
+# ONE way to run it: manually (workflow_dispatch). Use dry_run first to see exactly
+# what would be tagged and what the notes would say.
+#
+# THERE IS NO SCHEDULED RELEASE. An annual cron used to ship the August release
+# unattended; it was removed for the v4 line - see the comment where the `schedule:`
+# trigger used to be, just above `permissions:`. Do not re-add one without the
+# maintainer's explicit approval for that specific release.
+#
+# What it does depends on what is already on the releases page:
+#
+#   * an unpublished DRAFT exists -> that draft is published as-is, keeping the
+#     title and notes someone reviewed. Publishing is what creates the tag.
+#     This is the normal path: prepare a draft, review it, then dispatch this
+#     workflow to ship it.
+#   * nothing exists -> a tag is created and a release is built from the
+#     matching NEWS.md section.
+#   * already published -> nothing happens; a shipped release is never touched.
+#
+# Whenever something is actually published, the last step starts pkgdown and the
+# install check by hand. It has to: GitHub does not create workflow runs from
+# events raised by the default GITHUB_TOKEN, so the `release: published` event
+# this workflow generates triggers nothing on its own.
+#
+# SCHEDULED_EXPECTED_VERSION below is retained but inert: it refuses to do anything
+# unless DESCRIPTION on `main` reads exactly that version. It is the safety net if a
+# schedule is ever deliberately restored. Re-running by hand is always safe: if the
+# tag already exists, the job skips.
+#
+# VERSION NUMBERING: EJAM versions are MAJOR.ACSENDYEAR.PATCH - the second field is
+# the ACS vintage end year, not a minor number (3.2022.2, 3.2022.3, 4.2024.0). Two
+# vintages are supported at once, so the highest version is the live line and the
+# lower one is the frozen snapshot. The release title and the drift guard both read
+# DESCRIPTION's VersionACS rather than parsing the version string.
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_version:
+        description: 'Version you expect to release, e.g. 3.2022.2. Must match DESCRIPTION or the run fails.'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Print what would happen; create no tag and no release.'
+        required: true
+        type: boolean
+        default: true
+      mark_latest:
+        description: 'Mark this release as "Latest" on the releases page.'
+        required: true
+        type: boolean
+        default: true
+  # NO `schedule:` TRIGGER. Releasing is a deliberate, human-initiated act: run this
+  # workflow by hand from the Actions tab (workflow_dispatch above).
+  #
+  # There used to be an annual August 1 cron, which shipped 3.2022.2 on 2026-08-01.
+  # It is deliberately NOT carried forward to the v4 line. The SCHEDULED_EXPECTED_VERSION
+  # guard below only protects against firing on the WRONG version; it cannot tell a
+  # release that is ready from one that is merely dated. So if the code freeze landed on
+  # time but the release were being held back - for more testing, or a deploy window, or
+  # any reason at all - a cron would publish it anyway. That is the failure this removal
+  # prevents.
+  #
+  # Do not re-add a cron here without the maintainer's explicit approval for that
+  # specific release. The env var below is kept only so the guard still works if a
+  # schedule is ever deliberately restored.
+
+permissions:
+  contents: write
+  # Needed by the final step, which uses `gh workflow run` to start the
+  # workflows that publishing cannot start on its own. See its comment.
+  actions: write
+
+env:
+  # Guard for the scheduled run only, and therefore INERT while there is no `schedule:`
+  # trigger - the code reading it runs only when github.event_name == 'schedule'. Kept so
+  # the safety net still works if a schedule is ever deliberately restored. See the header.
+  SCHEDULED_EXPECTED_VERSION: '3.2022.3'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Read version from DESCRIPTION
+        id: ver
+        run: |
+          set -euo pipefail
+          VERSION="$(grep -E '^Version:' DESCRIPTION | head -1 | sed -E 's/^Version:[[:space:]]*//' | tr -d '[:space:]')"
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not read a Version field from DESCRIPTION."
+            exit 1
+          fi
+          # Pin the exact commit we checked out. github.sha is NOT reliable here:
+          # on a workflow_dispatch from another ref it points at that ref, not at
+          # the head of main that we actually tag.
+          SHA="$(git rev-parse HEAD)"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION"    >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA"         >> "$GITHUB_OUTPUT"
+          echo "DESCRIPTION on main is version $VERSION (tag would be v$VERSION) at commit $SHA."
+
+      - name: Confirm the version is the one we meant to release
+        id: guard
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION='${{ steps.ver.outputs.version }}'
+          SKIP=false
+          # Tracked separately from SKIP because a scheduled version mismatch must
+          # suppress the downstream dispatches too, and SKIP alone cannot express
+          # that - see the RELEASED comment below.
+          SCHEDULE_VERSION_MISMATCH=false
+
+          if [ '${{ github.event_name }}' = 'schedule' ]; then
+            if [ "$VERSION" != "$SCHEDULED_EXPECTED_VERSION" ]; then
+              echo "::notice::Scheduled run is a no-op. DESCRIPTION on main is $VERSION but this schedule only ships $SCHEDULED_EXPECTED_VERSION."
+              SKIP=true
+              SCHEDULE_VERSION_MISMATCH=true
+            fi
+          else
+            EXPECTED='${{ inputs.expected_version }}'
+            if [ -n "$EXPECTED" ] && [ "$EXPECTED" != "$VERSION" ]; then
+              echo "::error::You asked to release $EXPECTED but DESCRIPTION on main says $VERSION. Nothing was tagged."
+              exit 1
+            fi
+          fi
+
+          # Note whether the tag exists, but do NOT skip on that alone. If a
+          # previous run pushed the tag and then failed before creating the
+          # release, skipping here would strand the release permanently, with
+          # every rerun refusing to finish the job. An existing tag just means
+          # "do not create or move it" - the release still needs making.
+          TAG_EXISTS=false
+          if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
+            TAG_EXISTS=true
+            echo "::notice::Tag v$VERSION already exists; it will be reused, never moved."
+          fi
+
+          # Decide how to ship, based on what already exists on the releases page.
+          #
+          #   published -> nothing to do; never clobber a shipped release.
+          #   draft     -> publish THAT draft, keeping its reviewed title and
+          #                notes. A draft holds a tag *name* but creates no tag
+          #                ref, so the check above cannot see it; publishing is
+          #                what creates the tag.
+          #   none      -> create the tag and a release built from NEWS.md.
+          MODE=create
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            if [ "$(gh release view "v$VERSION" --json isDraft --jq .isDraft)" = 'true' ]; then
+              MODE=publish_draft
+              echo "::notice::An unpublished draft exists for v$VERSION. It will be published as-is, keeping its reviewed notes."
+            else
+              MODE=already_published
+              echo "::notice::v$VERSION is already published. Skipping."
+              SKIP=true
+            fi
+          fi
+
+          # Whether a published release for this version exists once this job is
+          # done - either because a step below publishes it, or because it was
+          # already published. This is what gates the downstream dispatches, and
+          # it is deliberately NOT the same as "skip".
+          #
+          # Using skip there would make a failed dispatch unrecoverable: the
+          # release is published by the time the dispatch runs, so a rerun sees
+          # already_published -> skip=true, quietly does nothing, and finishes
+          # green with the follow-up workflow still never started. That is the
+          # exact silent gap this workflow is meant to close. Rerunning is
+          # therefore the supported recovery path, and re-dispatching for an
+          # already-published tag is harmless: pkgdown rebuilds identical docs
+          # and the install check just runs again.
+          #
+          # A scheduled run that bails on a version mismatch must dispatch
+          # nothing, and needs its own flag to say so. MODE is decided after the
+          # mismatch check and from the release page alone, so on a future annual
+          # firing - DESCRIPTION long past the pinned version, that version's
+          # release already published - it would land on already_published and
+          # dispatch pkgdown and the install check for a run that just announced
+          # itself a no-op.
+          RELEASED=false
+          if [ "$SCHEDULE_VERSION_MISMATCH" = 'false' ] &&
+             { [ "$MODE" = 'already_published' ] || [ "$SKIP" = 'false' ]; }; then
+            RELEASED=true
+          fi
+
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "released=$RELEASED" >> "$GITHUB_OUTPUT"
+          echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
+
+      - name: Extract the NEWS.md section for this version
+        if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'create'
+        id: notes
+        run: |
+          set -euo pipefail
+          VERSION='${{ steps.ver.outputs.version }}'
+
+          # Take the body that FOLLOWS the "# EJAM <version>" heading, up to (not
+          # including) the next top-level "# EJAM " heading. The heading itself is
+          # deliberately left out: it would just repeat the release title. Leading
+          # blank lines are stripped so the notes don't open with whitespace.
+          #
+          # The version is escaped before being used as a regex, since an unescaped
+          # "." would match any character and could latch onto the wrong heading.
+          #
+          # The "v" is optional: release TAGS carry it (v3.2022.3) while DESCRIPTION's
+          # Version does not (3.2022.3), and NEWS.md has used both conventions over
+          # time ("# EJAM 3.2022.2" but "# EJAM v2.32.5"). Accepting either means a
+          # heading written to match the tag no longer fails the release.
+          awk -v v="$VERSION" '
+            BEGIN { esc = v; gsub(/\./, "\\.", esc) }
+            !inside && $0 ~ "^# EJAM v?" esc "([^0-9.]|$)" { inside = 1; next }
+            inside && /^# EJAM / { exit }
+            inside { if (started || NF) { started = 1; print } }
+          ' NEWS.md > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::error::Found no '# EJAM $VERSION' section in NEWS.md, so there are no release notes to publish."
+            exit 1
+          fi
+
+          # Derive the ACS vintage for the release title, matching the naming used
+          # by the existing releases (e.g. "EJAM v3.2022.2 (ACS 2018-2022)").
+          #
+          # Read it from DESCRIPTION's VersionACS, the single source of truth for the
+          # vintage. The previous approach parsed field 2 out of a `3.YYYY.x` version
+          # with `grep -qE '^3\.[0-9]{4}\.'`, which silently stopped matching once the
+          # major went to 4 - a 4.2024.0 release would have been titled with no vintage
+          # at all.
+          TITLE="EJAM v$VERSION"
+          ACS_VINTAGE="$(sed -n 's/^VersionACS:[[:space:]]*//p' DESCRIPTION | head -n1 | tr -d '[:space:]')"
+          if [ -n "$ACS_VINTAGE" ]; then
+            TITLE="EJAM v$VERSION (ACS $ACS_VINTAGE)"
+          fi
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+
+          # Guard against the version number and the vintage drifting apart. EJAM
+          # versions are MAJOR.ACSENDYEAR.PATCH (3.2022.2, 3.2022.3, 4.2024.0), so
+          # field 2 must equal the end year of VersionACS. Nothing else enforces this,
+          # and a mismatch would mislabel the release and ship data that disagrees
+          # with its own version number.
+          VERSION_YEAR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+          ACS_END_YEAR="${ACS_VINTAGE##*-}"
+          if [ -n "$ACS_VINTAGE" ] && [ "$VERSION_YEAR" != "$ACS_END_YEAR" ]; then
+            echo "::error::Version $VERSION declares ACS end year $VERSION_YEAR but DESCRIPTION VersionACS is $ACS_VINTAGE. Fix one of them before releasing."
+            exit 1
+          fi
+
+          {
+            echo ""
+            echo "---"
+            echo ""
+            echo "Full changelog: [NEWS.md](https://github.com/${{ github.repository }}/blob/main/NEWS.md)"
+          } >> release-notes.md
+
+          echo "Release title: $TITLE"
+          echo "--- notes preview (first 40 lines) ---"
+          head -40 release-notes.md
+
+      - name: Dry run summary
+        if: steps.guard.outputs.skip == 'false' && github.event_name == 'workflow_dispatch' && inputs.dry_run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Dry run - nothing was tagged or published"
+            echo ""
+            echo "- Tag that *would* be created: \`${{ steps.ver.outputs.tag }}\`"
+            echo "- Target commit: \`${{ steps.ver.outputs.sha }}\` (head of \`main\`)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ '${{ steps.guard.outputs.mode }}' = 'publish_draft' ]; then
+            {
+              echo "- Mode: **publish the existing draft** (its reviewed title and notes are kept; NEWS.md is not used)"
+              echo "- Draft title: $(gh release view '${{ steps.ver.outputs.tag }}' --json name --jq .name)"
+              echo ""
+              echo "<details><summary>Notes the draft would be published with</summary>"
+              echo ""
+              gh release view '${{ steps.ver.outputs.tag }}' --json body --jq .body
+              echo ""
+              echo "</details>"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "- Mode: **create a new release** from the NEWS.md section"
+              echo "- Release title: ${{ steps.notes.outputs.title }}"
+              echo ""
+              echo "<details><summary>Release notes that would be published</summary>"
+              echo ""
+              cat release-notes.md
+              echo ""
+              echo "</details>"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Publish the existing draft
+        if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'publish_draft' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG='${{ steps.ver.outputs.tag }}'
+
+          # Publishing the draft is what creates the tag, at the draft's target
+          # commitish. Its reviewed title and notes are kept as-is.
+          LATEST_FLAG='--latest=false'
+          if [ '${{ github.event_name }}' = 'schedule' ] || [ '${{ inputs.mark_latest }}' = 'true' ]; then
+            LATEST_FLAG='--latest'
+          fi
+          gh release edit "$TAG" --draft=false $LATEST_FLAG
+
+          {
+            echo "### Published the reviewed draft $TAG"
+            echo ""
+            echo "- https://github.com/${{ github.repository }}/releases/tag/$TAG"
+            echo "- Notes came from the draft, not from NEWS.md."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create the tag and publish the release
+        if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'create' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG='${{ steps.ver.outputs.tag }}'
+
+          LATEST_FLAG='--latest=false'
+          if [ '${{ github.event_name }}' = 'schedule' ] || [ '${{ inputs.mark_latest }}' = 'true' ]; then
+            LATEST_FLAG='--latest'
+          fi
+
+          if [ '${{ steps.guard.outputs.tag_exists }}' = 'true' ]; then
+            # A previous run tagged but did not get as far as creating the
+            # release. Reuse the tag exactly as it is and just make the release,
+            # so a partial failure can be finished by rerunning.
+            echo "::notice::Reusing existing tag $TAG and creating the missing release."
+            gh release create "$TAG" \
+              --title "${{ steps.notes.outputs.title }}" \
+              --notes-file release-notes.md \
+              $LATEST_FLAG
+          else
+            git config user.name  'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git tag -a "$TAG" -m "${{ steps.notes.outputs.title }}"
+            git push origin "$TAG"
+
+            # Pin the release to the exact commit we tagged, not to the branch name -
+            # main could advance between the tag push and the release creation.
+            gh release create "$TAG" \
+              --target '${{ steps.ver.outputs.sha }}' \
+              --title "${{ steps.notes.outputs.title }}" \
+              --notes-file release-notes.md \
+              $LATEST_FLAG
+          fi
+
+          {
+            echo "### Released ${{ steps.notes.outputs.title }}"
+            echo ""
+            echo "- Tag: \`$TAG\`"
+            echo "- https://github.com/${{ github.repository }}/releases/tag/$TAG"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Start the workflows that publishing cannot start by itself.
+      #
+      # GitHub deliberately does NOT create workflow runs from events raised by
+      # the default GITHUB_TOKEN. The steps above publish with that token, so the
+      # `release: published` event they generate triggers nothing: pkgdown never
+      # rebuilds the docs root, and install-release-user-check never runs on the
+      # tag. Proven on 2026-08-01 - v3.2022.2 published cleanly at 21:44 UTC and
+      # neither workflow ran; the docs root still served 3.2022.1 two days later,
+      # until both were dispatched by hand.
+      #
+      # `workflow_dispatch` is the documented exception to that rule, which is
+      # why this works with no PAT and no new secret. It needs `actions: write`,
+      # declared at the top of this file.
+      #
+      # Note this deliberately re-implements pkgdown's "Latest" gate rather than
+      # relying on it. Passing target_folder explicitly overrides that gate
+      # ("a manual workflow_dispatch target always wins"), so without the check
+      # below, publishing a non-recommended line - say v3.2024.0, which exists
+      # while v3.2022.x is the one users are pointed at - would overwrite the
+      # root docs. The gate has to be enforced on this side of the dispatch.
+      - name: Start pkgdown and the install check
+        if: steps.guard.outputs.released == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          TAG='${{ steps.ver.outputs.tag }}'
+          VERSION='${{ steps.ver.outputs.version }}'
+          failed=''
+          : > recovery.txt
+
+          # The install check should run for every release, recommended or not.
+          if gh workflow run install-release-user-check.yaml --ref main \
+               -f ref="$TAG" -f expected_version="$VERSION"; then
+            echo "- Started install-release-user-check on \`$TAG\`." >> "$GITHUB_STEP_SUMMARY"
+          else
+            failed="$failed install-release-user-check"
+            echo "> gh workflow run install-release-user-check.yaml --ref main -f ref=$TAG -f expected_version=$VERSION" >> recovery.txt
+          fi
+
+          # The docs ROOT is only for the release GitHub marks "Latest". That flag
+          # is curated by hand and already encodes "recommended". Retry, because
+          # /releases/latest can lag publication by a moment.
+          latest_tag=''
+          for attempt in 1 2 3 4 5; do
+            latest_tag="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name 2>/dev/null || echo '')"
+            [ "$latest_tag" = "$TAG" ] && break
+            echo "attempt $attempt: Latest reads '${latest_tag:-unknown}', expected '$TAG'; retrying"
+            sleep 10
+          done
+
+          if [ "$latest_tag" = "$TAG" ]; then
+            if gh workflow run pkgdown.yaml --ref main \
+                 -f ref="$TAG" -f target_folder=. -f pkgdown_dev_mode=release; then
+              echo "- Started pkgdown to rebuild the docs root from \`$TAG\`." >> "$GITHUB_STEP_SUMMARY"
+            else
+              failed="$failed pkgdown"
+              echo "> gh workflow run pkgdown.yaml --ref main -f ref=$TAG -f target_folder=. -f pkgdown_dev_mode=release" >> recovery.txt
+            fi
+          else
+            echo "::notice::$TAG is not the Latest release (Latest is '${latest_tag:-unknown}'); leaving the docs root alone."
+            echo "- Skipped pkgdown: \`$TAG\` is not the Latest release." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          # Fail loudly if a dispatch did not go through. The release itself is
+          # already published and is not harmed by a red run here - but a silent
+          # miss is the exact failure this step exists to prevent.
+          if [ -n "$failed" ]; then
+            {
+              echo ""
+              echo "> [!WARNING]"
+              echo "> Could not start:$failed. The release is published; only these follow-ups did not start."
+              echo "> Rerunning this job is the supported fix - it will retry them for the"
+              echo "> already-published tag. To do it by hand instead:"
+              echo "> \`\`\`"
+              cat recovery.txt
+              echo "> \`\`\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Failed to start:$failed. Rerun this job, or see the summary for the manual command(s)."
+            exit 1
+          fi

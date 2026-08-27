@@ -79,7 +79,7 @@
 #' @seealso  [url_ejamapi()]  [url_ejscreenmap()]
 #'   [url_echo_facility()] [url_frs_facility()]  [url_enviromapper()]
 #' @return URL(s)
-#' @examples  \donttest{
+#' @examples  \dontrun{
 #'  browseURL(url_echo_facility(110070874073))
 #'  }
 #'
@@ -151,7 +151,7 @@ url_echo_facility <- function(regid = NULL,
 #' @return URL(s)
 #' @examples
 #' x = url_frs_facility(testinput_regid)
-#' \donttest{
+#' \dontrun{
 #' browseURL(x[1])
 #' }
 #' url_frs_facility(testinput_registry_id)
@@ -556,42 +556,102 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 # functions using lat,lon (sometimes from regid) ####
 # . ####
 
-#' Get URL(s) for (new) EJSCREEN app with map centered at given point(s)
+#' Get URL(s) for (new) EJSCREEN app with the given place(s) selected on the map
+#'
+#' @details These are deep links into the EJScreen map app. For county, tract, or
+#'   blockgroup FIPS codes, for points (with a radius), and for small polygons,
+#'   the URL makes EJScreen actually draw and select the place(s) for analysis
+#'   (boundary drawn, report popup or multisite list ready), using the
+#'   `?fips=`, `?lat=&lon=&radius=`, and `?polygon=` parameters of the app.
+#'
+#'   Note the selection-drawing parameters require the version of the EJScreen app
+#'   that supports deep links (PEDP EJScreen as of mid-2026 or later); older
+#'   deployments ignore them and just open the map. The `wherestr=` style links
+#'   (the default for points when no radius is given, and the fallback for state
+#'   or city/CDP FIPS) work on all versions of the app.
 #'
 #' @param sitepoints data.frame with colnames lat, lon (or lat, lon parameters can be provided separately)
 #' @param lat,lon vectors of coordinates, ignored if sitepoints provided, can be used otherwise, if shapefile and fips not used
-#' @param fips The FIPS code of a place to center map on (blockgroup, tract, city/cdp, county, state FIPS).
-#'   It gets translated into the right wherestr parameter if fips is provided.
+#' @param fips FIPS code(s) of place(s) to select on the map.
+#'   County (5-digit), tract (11), and blockgroup (12) codes become `?fips=`
+#'   deep links that make the EJScreen app draw and select the boundary.
+#'   State (2-digit) and city/CDP (7-digit) codes are not supported by the app's
+#'   boundary services, so those are translated via [fips2name()] into a
+#'   `?wherestr=` place-name search (map centers there without a boundary).
 #'
 #' @param wherestr If fips and sitepoints (or lat and lon) are not provided,
 #'   wherestr should be the street address, zip code, or place name (not FIPS code!).
 #'
 #'   Note that nearly half of all county fips codes are impossible to distinguish from
-#'   5-digit zipcodes because the same numbers are used for both purposes.
+#'   5-digit zipcodes because the same numbers are used for both purposes, so a
+#'   bare 5-digit wherestr is ambiguous. The EJScreen app's deep links resolve
+#'   the ambiguity the way EJAM does: a bare 5-digit wherestr is tried as a
+#'   county FIPS first (drawing that county's boundary), and only geocoded as a
+#'   zip code if no county has that code. So:
 #'
-#'   For zipcode 10001, use url_ejscreenmap(wherestr =  '10001')
+#'   For County FIPS code 10001, use url_ejscreenmap(fips = "10001") - unambiguous.
 #'
-#'   For County FIPS code 10001, use url_ejscreenmap(fips = "10001")
+#'   For zipcode 10001, use url_ejscreenmap(zip = "10001") - unambiguous - since
+#'   a bare wherestr = "10001" would open Kent County, DE (10001 happens
+#'   to be a county fips as well as a zip code). Adding context also works,
+#'   like url_ejscreenmap(wherestr = "10001, NY").
 #'
-#'   This parameter is passed to the API as wherestr= , if point and fips are not specified.
+#'   (The interactive search box inside the EJScreen app is different from
+#'   these launch-URL deep links: it still reads a bare 5-digit number as a zip.)
+#'
+#'   This parameter is passed to the app as wherestr= , if point and fips are not specified.
 #'
 #'   Can be State abbrev like "NY" or full state name,
 #'   or city like "New Rochelle, NY" as from fips2name() -- using fips2name()
 #'   works for state, county, or city FIPS code converted to name,
 #'   but using the fips parameter is probably a better idea.
 #'
-#' @param shapefile shows URL of a EJSCREEN app map centered on the centroid of a given polygon,
-#'   but does not actually show the polygon.
+#' @param shapefile polygon(s) as from [shapefile_from_any()]. The outline of each
+#'   polygon (exterior ring, simplified as needed to fit in a URL) is passed via
+#'   the app's `?polygon=` parameter so EJScreen draws and selects it. If an
+#'   outline is too complex to fit even after simplification, that site falls
+#'   back to a link centered on the polygon's centroid (no boundary drawn):
+#'   `?wherestr=lat,lon`, or `?lat=&lon=&radius=` when radius is provided so
+#'   the report buffer is still prefilled.
+#' @param shape,shp aliases (synonyms) for shapefile
+#' @param zip 5-digit zip code(s) - the unambiguous way to open EJScreen at zip
+#'   code(s), via the app's `?zip=` parameter: always geocoded as zips, never
+#'   read as county fips (unlike a bare 5-digit wherestr). Each zip gets a pin
+#'   with the report popup; one zip centers the map, several fit the view to
+#'   all of them (or use combined = FALSE, the default, for one URL per zip).
+#'   Used only if sitepoints (or lat,lon), shapefile, and fips are not provided;
+#'   takes precedence over wherestr. A zip passed as a number gets its leading
+#'   zeroes restored.
+#' @param radius optional buffer distance in miles for the EJScreen report around
+#'   each point (or polygon). When provided, point links use the app's
+#'   `?lat=&lon=&radius=` parameters (instead of `?wherestr=lat,lon`) so the
+#'   report buffer is prefilled. Must be a single number greater than zero:
+#'   zero (or a negative or non-numeric value) means no buffer is prefilled,
+#'   so it is left out of the URL, which EJScreen treats the same way
+#'   (its deep links only apply a `radius=` that is greater than zero).
+#' @param combined set TRUE to get ONE URL that loads ALL of the sites together
+#'   in a single EJScreen session (drawn on the map and accumulated into the
+#'   app's Multisite list, ready for a Multisite Report or Send to EJAM),
+#'   instead of the default of one URL per site. Works when all sites are
+#'   county/tract/blockgroup fips, or all are points, or all are zip codes, or
+#'   all are small polygons. If the combined URL would be too long to be
+#'   reliable (over roughly 1900 characters), it falls back to one URL per
+#'   site, with a warning.
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values
 #' @param baseurl do not change unless endpoint actually changed
-#' @param ... unused
+#' @param ... regid can be provided (used to look up lat,lon as a last resort if no sites provided); other arguments ignored
 #'
-#' @return URL(s)
+#' @return URL(s), or a single URL if combined = TRUE
 #' @seealso [url_ejamapp] [url_ejamapi()]  [url_ejscreenmap()]
 #'   [url_echo_facility()] [url_frs_facility()]  [url_enviromapper()]
 #' @examples
+#' url_ejscreenmap(fips = "10001") # county FIPS 10001 = Kent County, DE
+#' url_ejscreenmap(zip = "10001")  # zip code 10001 = Manhattan, NY
+#' url_ejscreenmap(fips = c("10001", "10003"))
+#' url_ejscreenmap(fips = c("10001", "10003"), combined = TRUE)
+#' url_ejscreenmap(lat = c(39, 39.7), lon = c(-75.5, -75.6), radius = 3, combined = TRUE)
 #' # browseURL(url_ejscreenmap(fips = '10001'))
 #' # browseURL(url_ejscreenmap(sitepoints = testpoints_10[1,]))
 #' # shp = shapefile_from_any(  testdata("portland.*zip")[1])[1, ]
@@ -608,17 +668,59 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                             linktext = "EJSCREEN",
                             ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
                             baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
-                            ...) {
+                            ...,
+                            # new params are after ... so they must be passed by name -
+                            # this keeps the original positional order (as_html, linktext,
+                            # ifna, baseurl) working for any existing positional callers
+                            zip = NULL,
+                            radius = NULL,
+                            combined = FALSE,
+                            shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   if (is.null(linktext)) {linktext <- paste0("EJSCREEN")}
 
   ##   linktext could also} be numbered:
   # linktext = paste0("EJSCREEN Map ", 1:NROW(sitepoints))
 
-  ######################## #  ######################## #  ######################## #
+  if (!is.null(radius)) {
+    radius <- suppressWarnings(as.numeric(radius[1])) # one radius applies to all sites, as in the app
+    if (!isTRUE(radius > 0)) {radius <- NULL}
+  }
+  radpart <- if (is.null(radius)) {""} else {paste0("&radius=", radius)}
+
+  ## shared finishing: NAs become ifna, and optionally linkify, as before
+  finish_urls <- function(urlx) {
+    ok <- !is.na(urlx)
+    urlx[!ok] <- ifna
+    ok <- !is.na(urlx)  # now !ok mean it was a bad input and also  ifna=NA
+    if (as_html) {
+      urlx[ok] <- URLencode(urlx[ok]) # consider if we want  reserved = TRUE
+      urlx[ok] <- url_linkify(urlx[ok], text = linktext, encode = FALSE) # already encoded just above
+    }
+    ## use generic URL if site is NA, ifna  again in case linkified an NA
+    urlx[!ok] <- ifna # only use non-linkified ifna for the ones where user set ifna=NA and it had to use ifna
+    return(urlx)
+  }
+
   ######################## #  ######################## #  ######################## #
 
-  # GET SITEPOINTS OR APPROX SITEPOINTS FROM FIPS/SHAPEFILE/SITEPOINTS/LAT,LON
+  ## if new API is down, return general links to info page ### #
+  if (isTRUE(global_or_param("ejamapi_is_down"))) {
+    n <- max(1, NROW(sitepoints), length(lat), length(lon), length(fips), NROW(shapefile), length(wherestr), length(zip))
+    if (combined) {n <- 1}
+    urlx <- rep('https://ejanalysis.org', n)
+    if (as_html) {
+      urlx <- URLencode(urlx)
+      urlx <- url_linkify(urlx, text = linktext, encode = FALSE) # already encoded just above
+    }
+    return(urlx)
+  }
+  ######################## #  ######################## #  ######################## #
+
+  # SORT OUT WHICH TYPE OF SITES WERE PROVIDED (FIPS/SHAPEFILE/SITEPOINTS/LAT,LON)
   ## sites_from_input ####
   sites <- sites_from_input(sitepoints = sitepoints, lon = lon, lat = lat, shapefile = shapefile, fips = fips)
   sitetype <- sites$sitetype
@@ -641,80 +743,188 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     }
   }
 
-  # GET lat,lon at EACH SITE ### #
+  ######################## #  ######################## #  ######################## #
 
+  ## > FIPS deep links ####
+  # county/tract/blockgroup fips get ?fips= links that draw & select the boundary;
+  # state and city/CDP fips are not in the app's boundary services, so they fall
+  # back to a ?wherestr= place-name search
   if ("fips" %in% sitetype) {
-    ##  latlon_from_fips ####
-    sitepoints <- latlon_from_fips(sites$fips) # draft
+    fips <- fips_lead_zero(sites$fips, quiet = TRUE)
+    ftype <- fipstype(fips, quiet = TRUE)
+    linkable <- !is.na(fips) & ftype %in% c("county", "tract", "blockgroup")
+    if (combined) {
+      if (all(linkable) && length(fips) > 0) {
+        urlx <- paste0(baseurl, "?fips=", paste(fips, collapse = ","))
+        if (nchar(urlx) <= 1900) {return(finish_urls(urlx))} # keep combined URLs a safe length for servers/browsers
+        warning("combined = TRUE but too many fips to fit in one URL - returning one URL per site")
+      } else {
+        warning("combined = TRUE needs all fips to be county/tract/blockgroup codes - returning one URL per site")
+      }
+    }
+    urlx <- rep(NA_character_, length(fips))
+    urlx[linkable] <- paste0(baseurl, "?fips=", fips[linkable])
+    byname <- !linkable & !is.na(fips)
+    if (any(byname)) {
+      nm <- suppressWarnings(fips2name(fips[byname]))
+      nm[!is.na(nm)] <- utils::URLencode(nm[!is.na(nm)], reserved = TRUE)
+      urlx[byname] <- ifelse(is.na(nm), NA, paste0(baseurl, "?wherestr=", nm))
+    }
+    return(finish_urls(urlx))
   }
+
+  ## > POLYGON deep links ####
+  # pass each polygon's (simplified) outline via ?polygon= so the app draws it;
+  # fall back to old behavior (?wherestr=centroid) if it cannot fit in a URL
   if ("shp" %in% sitetype) {
-    ## latlon_from_shapefile_centroids ####
-    # at least get points that are coordinates of centroids of polygons if cannnot open ejscreen app showing the actual polygon
-    sitepoints = latlon_from_shapefile_centroids(sites$shapefile)
+    polystr <- polygons_as_deeplink_strings(sites$shapefile)
+    if (combined) {
+      if (!anyNA(polystr) && length(polystr) > 0) {
+        urlx <- paste0(baseurl, "?polygon=", paste(polystr, collapse = "&polygon="), radpart)
+        if (nchar(urlx) <= 1900) {return(finish_urls(urlx))} # keep combined URLs a safe length for servers/browsers
+      }
+      warning("combined = TRUE but polygon outlines do not fit in one URL - returning one URL per site")
+    }
+    urlx <- rep(NA_character_, length(polystr))
+    urlx[!is.na(polystr)] <- paste0(baseurl, "?polygon=", polystr[!is.na(polystr)], radpart)
+    if (anyNA(polystr)) {
+      ## latlon_from_shapefile_centroids ####
+      # subset by row for sf, by element for a bare geometry column (sfc)
+      shpneedingcentroid <- if (inherits(sites$shapefile, "sfc")) {
+        sites$shapefile[is.na(polystr)]
+      } else {
+        sites$shapefile[is.na(polystr), , drop = FALSE]
+      }
+      cpts <- latlon_from_shapefile_centroids(shpneedingcentroid)
+      if (is.null(radius)) {
+        centroidq <- paste0("?wherestr=", paste(cpts$lat, cpts$lon, sep = ","))
+      } else {
+        # keep the radius prefill even when falling back to the polygon's centroid
+        centroidq <- paste0("?lat=", cpts$lat, "&lon=", cpts$lon, radpart)
+      }
+      centroidq[is.na(cpts$lat) | is.na(cpts$lon)] <- NA
+      urlx[is.na(polystr)] <- ifelse(is.na(centroidq), NA, paste0(baseurl, centroidq))
+    }
+    return(finish_urls(urlx))
   }
+
+  ## > POINTS ####
   if ("latlon" %in% sitetype) {
-    ## points ####
     sitepoints <- sites$sitepoints
   }
   lat = sitepoints$lat
   lon = sitepoints$lon
 
   if (is.null(lat) || is.null(lon) || length(lat) == 0 || length(lon) == 0) {
-    ## handle NA or length 0 ####
+    ## > ZIP CODES ####
+    # ?zip= is the app's explicit way to take zip code(s): always geocoded as
+    # zips, never read as county fips (used when no points/fips/shapefile given)
+    if (!is.null(zip) && length(zip) > 0 && any(!is.na(zip))) {
+      zip <- as.character(zip)
+      needpad <- !is.na(zip) & grepl("^[0-9]{3,4}$", zip) # a zip passed as a number can lose leading zeroes
+      zip[needpad] <- sprintf("%05d", as.integer(zip[needpad]))
+      okzip <- !is.na(zip) & grepl("^[0-9]{5}$", zip)
+      if (any(!okzip & !is.na(zip))) {
+        warning("zip should be 5-digit zip code(s); using the generic URL for: ",
+                paste(zip[!okzip & !is.na(zip)], collapse = ", "))
+      }
+      if (combined) {
+        if (any(okzip)) {
+          urlx <- paste0(baseurl, "?zip=", paste(zip[okzip], collapse = ","), radpart)
+          if (nchar(urlx) <= 1900) {return(finish_urls(urlx))} # keep combined URLs a safe length for servers/browsers
+          warning("combined = TRUE but too many zip codes to fit in one URL - returning one URL per site")
+        } else {
+          return(finish_urls(NA_character_))
+        }
+      }
+      urlx <- rep(NA_character_, length(zip))
+      urlx[okzip] <- paste0(baseurl, "?zip=", zip[okzip], radpart)
+      return(finish_urls(urlx))
+    }
+    ## wherestr-only, or nothing usable ####
+    if (!is.null(wherestr) && length(wherestr) > 0 && any(!is.na(wherestr) & nzchar(wherestr))) {
+      wherestr <- as.character(wherestr) # e.g., a zip code passed as a number
+      ok <- !is.na(wherestr) & nzchar(wherestr)
+      whereq <- rep(NA_character_, length(wherestr))
+      # encode the free-text value once here; the app unescape()s it
+      # (idempotent under the as_html re-encode, which uses reserved = FALSE)
+      whereq[ok] <- utils::URLencode(wherestr[ok], reserved = TRUE)
+      urlx <- ifelse(is.na(whereq), NA, paste0(baseurl, "?wherestr=", whereq))
+      return(finish_urls(urlx))
+    }
     urlx <- ifna
     return(urlx) # length is 0   # or # return(NULL)  ??
   }
-  ######################## #  ######################## #  ######################## #
-  ######################## #  ######################## #  ######################## #
 
-  ## if new API is down, return general links to info page ### #
-  if (TRUE) { # was checking old epa api now obsolete
-    if (isTRUE(global_or_param("ejamapi_is_down"))) {
-      urlx <- rep('https://ejanalysis.org', length(urlx))
-      if (as_html) {
-        urlx <- URLencode(urlx)
-        urlx <- url_linkify(urlx, text = linktext)
+  badpt <- is.na(lat) | is.na(lon)
+  if (combined) {
+    if (all(badpt)) {return(finish_urls(NA_character_))}
+    if (any(badpt)) {warning("dropping site(s) with missing lat/lon from the combined URL")}
+    # Note slight changes can occur in lat,lon values if using paste() instead of format() as per ?as.character()
+    urlx <- paste0(baseurl, "?lat=", paste(lat[!badpt], collapse = ","),
+                   "&lon=", paste(lon[!badpt], collapse = ","), radpart)
+    if (nchar(urlx) <= 1900) {return(finish_urls(urlx))} # keep combined URLs a safe length for servers/browsers
+    warning("combined = TRUE but too many points to fit in one URL - returning one URL per site")
+  }
+  if (!is.null(radius)) {
+    # newer form: the app drops a pin AND prefills the report buffer radius
+    urlx <- paste0(baseurl, "?lat=", lat, "&lon=", lon, radpart)
+  } else {
+    # original form, works on all versions of the app: center map & drop a pin
+    urlx <- paste0(baseurl, "?wherestr=", paste(lat, lon, sep = ","))
+  }
+  urlx[badpt] <- NA
+  return(finish_urls(urlx))
+}
+################################################### #################################################### #
+
+#' Encode polygon outlines as EJScreen ?polygon= deep link strings
+#'
+#' One "lat,lon;lat,lon;..." string per row of shp (the exterior ring with the
+#' most vertices, simplified as needed to fit in a URL), or NA for any row whose
+#' outline cannot be simplified enough - see [url_ejscreenmap()].
+#' Holes and secondary parts of multipolygons are not included in the outline.
+#'
+#' @param shp sf object (or sfc) with one row per site
+#' @param digits decimal places for coordinates (4 is about 11 meters)
+#' @param maxchars longest allowed string per polygon, so the URL stays a safe length
+#' @return character vector, one string or NA per row of shp
+#' @keywords internal
+#' @noRd
+#'
+polygons_as_deeplink_strings <- function(shp, digits = 4, maxchars = 1500) {
+  if (is.null(shp) || NROW(shp) == 0) {return(character(0))}
+  out <- rep(NA_character_, NROW(shp))
+  geo <- try(suppressWarnings(sf::st_geometry(shp)), silent = TRUE)
+  if (inherits(geo, "try-error")) {return(out)}
+  for (i in seq_len(NROW(shp))) {
+    stri <- try(suppressWarnings({
+      g3857 <- sf::st_transform(geo[i], 3857)
+      result <- NA_character_
+      for (tol in c(0, 50, 250, 1000, 5000)) { # simplification tolerance in meters
+        gs <- if (tol > 0) {sf::st_simplify(g3857, dTolerance = tol)} else {g3857}
+        if (length(gs) == 0 || any(sf::st_is_empty(gs))) {next}
+        coords <- sf::st_coordinates(sf::st_transform(gs, 4326))
+        if (NROW(coords) < 4) {next} # a closed ring repeats its 1st point, so 3 vertices = 4 rows
+        # keep only exterior rings (ring index L1 == 1; higher values are holes),
+        # then use the exterior ring with the most vertices (the main part)
+        if ("L1" %in% colnames(coords)) {coords <- coords[coords[, "L1"] == 1, , drop = FALSE]}
+        if (NROW(coords) < 4) {next}
+        ringid <- apply(coords[, -(1:2), drop = FALSE], 1, paste, collapse = "_")
+        coords <- coords[ringid == names(which.max(table(ringid))), , drop = FALSE]
+        if (NROW(coords) < 4) {next}
+        if (all(coords[1, c("X", "Y")] == coords[NROW(coords), c("X", "Y")])) {
+          coords <- coords[-NROW(coords), , drop = FALSE]
+        }
+        if (NROW(coords) < 3) {next}
+        candidate <- paste(round(coords[, "Y"], digits), round(coords[, "X"], digits), sep = ",", collapse = ";")
+        if (nchar(candidate) <= maxchars) {result <- candidate; break}
       }
-      return(urlx)
-    }
+      result
+    }), silent = TRUE)
+    if (!inherits(stri, "try-error") && length(stri) == 1) {out[i] <- stri}
   }
-  ######################## #  ######################## #  ######################## #
-  ######################## #  ######################## #  ######################## #
-
-  ## > MAKE URL ####
-
-  baseurl_query <- paste0(baseurl, "?wherestr=")
-  whereq <- ""
-  if (!is.null(lat)) {
-    # Note slight changes can occur in lat,lon values if using paste(lat,lon,sep=',) instead of format() as per ?as.character()
-    whereq <- paste( lat,  lon, sep = ',') # points (or centroids of polygons)
-    whereq[is.na(lat) | is.na(lon)] <- NA
-  }
-  if (!is.null(fips) && is.null(wherestr)) {
-    wherestr <- fips2name(fips) # fips-based
-    wherestr[is.na(fips)] <- NA
-  }
-  if (!is.null(wherestr) && is.null(lat)) {
-    whereq <- wherestr # name-based not latlon-based
-  }
-  urlx <- paste0(baseurl_query, whereq)
-
-  ######################## #
-  ### NAs ####
-  ok <- !is.na(whereq)
-  ######################## #
-  urlx[!ok] <- ifna
-  ok <- !is.na(urlx)  # now !ok mean it was a bad input and also  ifna=NA
-  ######################## #
-
-  ### as_html ####
-  if (as_html) {
-    urlx[ok] <- URLencode(urlx[ok]) # consider if we want  reserved = TRUE
-    urlx[ok] <- url_linkify(urlx[ok], text = linktext)
-  }
-  ## use generic URL if site is NA, ifna  again in case linkified an NA
-  urlx[!ok] <- ifna # only use non-linkified ifna for the ones where user set ifna=NA and it had to use ifna
-  return(urlx)
+  return(out)
 }
 ################################################### #################################################### #
 ################################################### #################################################### #
@@ -729,6 +939,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
 #' @param sitepoints data.frame with colnames lat, lon (or lat, lon parameters can be provided separately)
 #' @param lat,lon ignored if sitepoints provided, can be used otherwise, if shapefile and fips not used
 #' @param shapefile if provided function uses centroids of polygons for lat lon
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param fips ignored
 #' @param zoom initial map zoom extent
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
@@ -756,7 +967,11 @@ url_enviromapper <- function(sitepoints = NULL, lon = NULL, lat = NULL, shapefil
                              linktext = "EnviroMapper",
                              ifna = "https://geopub.epa.gov/myem/efmap/",
                              baseurl = "https://geopub.epa.gov/myem/efmap/index.html?ve=",
-                             ...) {
+                             ...,
+                             shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   if (is.null(linktext)) {linktext <- paste0("EnviroMapper")}
 
@@ -850,6 +1065,7 @@ url_enviromapper <- function(sitepoints = NULL, lon = NULL, lat = NULL, shapefil
 #' @param sitepoints if provided and fips is NULL, gets county fips from lat,lon columns of sitepoints
 #' @param lat,lon ignored if sitepoints provided, can be used otherwise, if shapefile and fips not used
 #' @param shapefile if provided and fips is NULL, gets county fips from lat,lon of polygon centroid
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values
@@ -875,7 +1091,11 @@ url_county_health <- function(fips = NULL, year = 2025,
                               ifna = "https://www.countyhealthrankings.org",
                               baseurl = "https://www.countyhealthrankings.org/health-data/",
                               statereport = FALSE,
-                              ...) {
+                              ...,
+                              shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
   ####### #
   if (missing(year) && year != as.numeric(substr(Sys.Date(), 1, 4))) {
     message("Note that default year used is ", year, " but newer data might be available now or soon.")
@@ -1027,7 +1247,11 @@ url_state_health = function(fips = NULL, year = 2025,
                             ifna = "https://www.countyhealthrankings.org",
                             baseurl = "https://www.countyhealthrankings.org/health-data/",
                             statereport = TRUE,
-                            ...) {
+                            ...,
+                            shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
   url_county_health(
     fips = fips, year = year,
@@ -1055,6 +1279,7 @@ url_state_health = function(fips = NULL, year = 2025,
 #' @param sitepoints if provided and fips is NULL, gets county fips from lat,lon columns of sitepoints
 #' @param lat,lon ignored if sitepoints provided, can be used otherwise, if shapefile and fips not used
 #' @param shapefile if provided and fips is NULL, gets county fips from lat,lon of polygon centroid
+#' @param shape,shp aliases (synonyms) for shapefile
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
 #' @param ifna URL shown for missing, NA, NULL, bad input values
@@ -1081,7 +1306,12 @@ url_county_equityatlas <- function(fips = NULL, # year = 2025,
                                    ifna    = "https://nationalequityatlas.org",
                                    baseurl = "https://nationalequityatlas.org/research/data_summary",
                                    statereport = FALSE,
-                                   ...) {
+                                   ...,
+                                   shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
+
   if (is.null(linktext)) {linktext <- paste0("County (Equity Atlas)")}
 
   ######################## #  ######################## #  ######################## #
@@ -1669,7 +1899,12 @@ url_state_equityatlas <- function(fips = NULL,
                                   baseurl = "https://nationalequityatlas.org/research/data_summary",
 
                                   statereport = TRUE,
-                                  ...) {
+                                  ...,
+                                  shape = NULL, shp = NULL) {
+
+  if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
+  if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
+
   url_county_equityatlas(
     fips = fips,
     sitepoints = sitepoints, lat = lat, lon = lon,

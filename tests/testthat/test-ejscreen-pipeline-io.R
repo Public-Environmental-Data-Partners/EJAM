@@ -15,6 +15,18 @@ test_that("pipeline stage files round trip RDS and RDA formats", {
   expect_equal(as.data.frame(EJAM:::ejscreen_pipeline_load("sample_csv", pipeline_dir, format = "csv")), x)
 })
 
+test_that("pipeline stage files round trip Arrow IPC format", {
+  pipeline_dir <- file.path(tempdir(), "ejam-pipeline-arrow-io-test")
+  x <- data.frame(a = 1:3, b = c("x", "y", "z"))
+
+  arrow_path <- EJAM:::ejscreen_pipeline_save(x, "sample_arrow", pipeline_dir, format = "arrow")
+  expect_true(file.exists(arrow_path))
+  expect_equal(
+    as.data.frame(EJAM:::ejscreen_pipeline_load("sample_arrow", pipeline_dir, format = "arrow")),
+    x
+  )
+})
+
 test_that("pipeline R-native stage saves use the ACS vintage from the pipeline year", {
   pipeline_dir <- file.path(tempdir(), "ejam-pipeline-metadata-test")
   x <- data.frame(bgfips = "010010201001", pop = 100)
@@ -332,7 +344,7 @@ test_that("bg_envirodata stage validation requires pctpre1960", {
   expect_true(file.exists(path))
   bg_envirodata_loaded <- EJAM:::ejscreen_pipeline_load("bg_envirodata", pipeline_dir, format = "rds")
   expect_equal(bg_envirodata_loaded, bg_envirodata, ignore_attr = TRUE)
-  expect_equal(attr(bg_envirodata_loaded, "acs_version"), "2020-2024")
+  expect_equal(attr(bg_envirodata_loaded, "acs_version"), as.vector(desc::desc_get("VersionACS", file = system.file("DESCRIPTION", package = "EJAM")))) # "2020-2024")
 })
 
 test_that("ejscreen_export stage validation requires usable ID and helper fields", {
@@ -379,7 +391,7 @@ test_that("ejscreen_export stage validation requires usable ID and helper fields
   expect_true(file.exists(path))
   good_loaded <- EJAM:::ejscreen_pipeline_load("ejscreen_export", pipeline_dir, format = "rds")
   expect_equal(good_loaded, good, ignore_attr = TRUE)
-  expect_equal(attr(good_loaded, "acs_version"), "2020-2024")
+  expect_equal(attr(good_loaded, "acs_version"), as.vector(desc::desc_get("VersionACS", file = system.file("DESCRIPTION", package = "EJAM")))) #"2020-2024")
 
   statepct_path <- EJAM:::ejscreen_pipeline_save(good, "ejscreen_export_statepct", pipeline_dir, format = "rds")
   expect_true(file.exists(statepct_path))

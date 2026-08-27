@@ -470,3 +470,64 @@ testthat::test_that("shape_buffered_from_shapefile_points(testshape_points) not 
   rm(JUNK)
 })
 ######################################################### #
+
+test_that("shapefile_from_any() accepts shape/shp/shapefile aliases for path", {
+  gj <- '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-112.02,33.51],[-112.02,33.47],[-111.95,33.47],[-111.95,33.51],[-112.02,33.51]]]}}]}'
+  viapath <- shapefile_from_any(gj, cleanit = FALSE)
+  expect_s3_class(viapath, "sf")
+  expect_s3_class(shapefile_from_any(shape = gj, cleanit = FALSE), "sf")
+  expect_s3_class(shapefile_from_any(shapefile = gj, cleanit = FALSE), "sf")
+  expect_s3_class(shapefile_from_any(shp = gj, cleanit = FALSE), "sf")
+  # path (canonical) wins when both path and an alias are supplied
+  expect_equal(NROW(shapefile_from_any(gj, shape = "bogus", cleanit = FALSE)), NROW(viapath))
+})
+
+test_that("shapefile_from_any() reads bare Feature/Polygon/MultiPolygon GeoJSON, not just FeatureCollection", {
+  # The ?shape= launch-URL guard accepts these GeoJSON root types, so the parser
+  # must read them too (previously only FeatureCollection was recognized).
+  ring <- "[[[-112.02,33.51],[-112.02,33.47],[-111.95,33.47],[-111.95,33.51],[-112.02,33.51]]]"
+  polygon <- paste0('{"type":"Polygon","coordinates":', ring, '}')
+  feature <- paste0('{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":', ring, '}}')
+  multipolygon <- paste0('{"type":"MultiPolygon","coordinates":[', ring, ']}')
+  for (gj in list(polygon, feature, multipolygon)) {
+    expect_s3_class(shapefile_from_geojson_text(gj, quiet = TRUE), "sf")
+    expect_s3_class(shapefile_from_any(gj, cleanit = FALSE, silentinteractive = TRUE), "sf")
+  }
+})
+
+test_that("shapefile_from_any() runs shapefix() on a supplied sf object too", {
+  # A supplied sf object took a fast-return path that skipped shapefix(), so a
+  # caller could not tell points from polygons: ejamapp(shapefile = <sf points>)
+  # arrived with no findings attached and app_server.R re-enabled Start. Both
+  # ejamit() and app_server.R assume this function always runs shapefix(). see issue #550
+  pts <- sf::st_as_sf(data.frame(lat = c(40.1, 40.2), lon = c(-74.1, -74.2)),
+                      coords = c("lon", "lat"), crs = 4269)
+  ring <- list(rbind(c(-74.1, 40.1), c(-74.0, 40.1), c(-74.0, 40.2), c(-74.1, 40.1)))
+  poly <- sf::st_as_sf(data.frame(id = 1L, geometry = sf::st_sfc(sf::st_polygon(ring), crs = 4269)))
+
+  pts_out <- shapefile_from_any(pts, cleanit = FALSE, silentinteractive = TRUE)
+  expect_true(grepl("shapefile of points", attr(pts_out, "validate_errmsg")))
+  expect_true(attr(pts_out, "disable_buttons_SHP"))
+
+  # polygons still pass, and get the columns ejamit() expects from shapefix()
+  poly_out <- shapefile_from_any(poly, cleanit = FALSE, silentinteractive = TRUE)
+  expect_null(attr(poly_out, "validate_errmsg"))
+  expect_false(attr(poly_out, "disable_buttons_SHP"))
+  expect_true(all(c("ejam_uniq_id", "valid", "invalid_msg") %in% names(poly_out)))
+  expect_s3_class(poly_out, "sf")
+
+  # same on the cleanit = TRUE branch, which reaches shapefix() via shapefile_clean()
+  expect_true(grepl("shapefile of points",
+                    attr(shapefile_from_any(pts, cleanit = TRUE, silentinteractive = TRUE), "validate_errmsg")))
+
+  # and shapefix() must not undo the requested crs: it st_transform()s to its own
+  # default of 4269, so calling it bare made any non-default crs silently come back
+  # as 4269 -- on the file path as well, where that was already true before this PR.
+  expect_equal(sf::st_crs(shapefile_from_any(poly, cleanit = FALSE, crs = 3857, silentinteractive = TRUE))$epsg, 3857L)
+  json_file <- system.file("testdata/shapes/portland.json", package = "EJAM")
+  junk <- capture.output(from_file <- suppressWarnings(
+    shapefile_from_any(json_file, cleanit = FALSE, crs = 3857, silentinteractive = TRUE)))
+  expect_equal(sf::st_crs(from_file)$epsg, 3857L)
+  # default is still 4269 on both paths
+  expect_equal(sf::st_crs(shapefile_from_any(poly, cleanit = FALSE, silentinteractive = TRUE))$epsg, 4269L)
+})

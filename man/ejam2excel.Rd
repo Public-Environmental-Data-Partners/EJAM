@@ -43,6 +43,7 @@ ejam2excel(
   custom_tab = ejamitout$results_summarized$cols,
   custom_tab_name = "thresholds",
   ejscreen_ejam_caveat = NULL,
+  flagged_areas_add = TRUE,
   ...
 )
 }
@@ -79,7 +80,7 @@ The \code{site_method} parameter provides more detailed info about how sites wer
 beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):
 \itemize{
 \item sitetype can be "latlon", "fips", or "shp"
-\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 }
 
 The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()
@@ -145,6 +146,10 @@ second color is for those >=2d cutpoint but <3d, etc.}
 \item{custom_tab_name}{optional name of optional custom_tab}
 
 \item{ejscreen_ejam_caveat}{optional text if you want to change this in the notes tab}
+
+\item{flagged_areas_add}{logical, whether to include an "Area Features" tab with the
+ejamitout$results_summarized$flagged_areas table (percent of analyzed residents with
+each feature or area type in their blockgroup, vs the US and State averages)}
 
 \item{...}{optional additional parameters passed to \code{\link[=table_xls_format]{table_xls_format()}}, currently unused}
 }

@@ -1,38 +1,75 @@
 Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
-Version: 3.2022.0
+Version: 3.2022.2
+VersionEJSCREEN: 3.2022.2
 ejamdata_required_tag: v3.2022.0
-VersionDate: June 2026
-ReleaseDateEJAM: 2026-06-15
+VersionACS: 2018-2022
+ReleaseDateACS: 2023-12-07
+VersionDate: August 2026
+ReleaseDateEJAM: 2026-08-01
+ReleaseDateEJSCREEN: 2026-08-01
+VersionCensus: 2020
 Description: Actively maintained non-EPA version of EJAM, the web app
-    and set of tools that supported the EJSCREEN multisite capability.
+    and set of tools that supports the EJScreen Community Report 
+    and multisite capability.
     EJAM lets you easily summarize demographic and environmental indicators
     for residents in or near a large number of areas or specific sites.
     Sites can be specified in a variety of ways - lat/lon coordinates, 
-    EPA-regulated facility IDs, type of facility (industry), polygons (shapefile), 
-    or Census units FIPS (eg., cities, counties).  Very fast
-    identification of nearby blocks and distances, aggregation of
+    EPA-regulated facility IDs, type of facility (industry), 
+    polygons (shapefile), or Census units FIPS (eg., cities, counties).
+    Very fast identification of nearby blocks and distances, aggregation of
     indicators by site and overall (all sites as a whole), in maps/plots/reports.
     This version grew from a fork of the last version EPA released before it was archived.
 License: MIT + file LICENSE
 URL: https://public-environmental-data-partners.github.io/EJAM, https://github.com/Public-Environmental-Data-Partners/EJAM, https://ejanalysis.org
+Config/EJAM/url_api: https://api.ejanalysis.com
+Config/EJAM/url_api_alias: https://ejamapi.ejanalysis.com
+Config/EJAM/url_api_redirect: https://ejanalysis.com/api
+Config/EJAM/url_api_direct: https://ejamapi-84652557241.us-central1.run.app
+Config/EJAM/url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
+Config/EJAM/url_apirepo_alias: https://apirepo.ejanalysis.com
+Config/EJAM/url_apirepo_redirect: https://ejanalysis.com/apirepo
+Config/EJAM/url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
+Config/EJAM/url_apidocs_alias: https://apidocs.ejanalysis.com
+Config/EJAM/url_apidocs_redirect: https://ejanalysis.com/apidocs
+Config/EJAM/url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
+Config/EJAM/url_ejamapp: https://ejam.publicenvirodata.org
+Config/EJAM/url_ejamapp_alias: https://ejam.ejanalysis.com
+Config/EJAM/url_ejamapp_redirect: https://ejanalysis.com/ejamapp
+Config/EJAM/url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
+Config/EJAM/url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
+Config/EJAM/url_ejamapp_dev_redirect: https://ejanalysis.com/ejamdev
+Config/EJAM/url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
+Config/EJAM/url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
+Config/EJAM/url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
+Config/EJAM/url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
+Config/EJAM/url_ejamdocs_alias: https://docs.ejanalysis.com
+Config/EJAM/url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
+Config/EJAM/url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
+Config/EJAM/url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
+Config/EJAM/url_ejscreenapp_redirect: https://ejanalysis.com/ejscreenapp
+Config/EJAM/url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
+Config/EJAM/url_ejscreenrepo_alias: https://ejscreenrepo.ejanalysis.com
+Config/EJAM/url_ejscreenrepo_redirect: https://ejanalysis.com/ejscreenrepo
+Config/EJAM/url_ejscreendocs: https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html
+Config/EJAM/url_ejscreendocs_alias: https://ejscreendocs.ejanalysis.com
+Config/EJAM/url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
+Config/EJAM/url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
+Config/EJAM/url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
+Config/EJAM/url_ejamdata_alias: https://ejamdata.ejanalysis.com
+Config/EJAM/url_ejamdata_redirect: https://ejanalysis.com/ejamdata
 ejam_data_repo: Public-Environmental-Data-Partners/ejamdata
 Authors@R: person("Mark A.", "Corrales", , "ejam@ejanalysis.com", role = c("cre", "aut"), comment = c(ORCID = "0000-0002-1696-5638"))
 Author: Mark A. Corrales <ejam@ejanalysis.com>
 Maintainer: Mark A. Corrales <ejam@ejanalysis.com>
-VersionEJSCREEN: 3.2022.0
-ReleaseDateEJSCREEN: 2026-06-15
-VersionACS: 2018-2022
-ReleaseDateACS: 2023-12-07
-VersionCensus: 2020
 Depends:
     R (>= 4.3.0)
 Imports:
-    arrow (>= 20.0.0),
+    arrow (>= 24.0.0),
     collapse (>= 2.1.0),
     colorspace,
     config (>= 0.3.1),
-    curl (>= 6.4.0),
+    curl (>= 7.1.0),
     data.table (>= 1.17.2),
     desc,
     dplyr (>= 1.1.4),
@@ -71,7 +108,7 @@ Imports:
     scales (>= 1.4.0),
     SearchTrees,
     sf (>= 1.0-20),
-    shiny (>= 1.12.0),
+    shiny (>= 1.14.0),
     shinycssloaders (>= 1.1.0),
     shinydisconnect,
     shinyjs (>= 2.1.0),
@@ -92,9 +129,13 @@ Suggests:
     datasets,
     devtools,
     fipio,
+    gglorenz,
     ggridges (>= 0.5.7),
+    here,
     mapview,
+    memoise,
     miniUI,
+    openssl,
     pak,
     pkgdown (>= 2.1.2),
     plumber,
@@ -116,7 +157,7 @@ Suggests:
     zip
 Remotes:
     ejanalysis/ACSdownload,
-    mikejohnson51/AOI
+    ericnost/AOI
 VignetteBuilder: 
     knitr,
     rmarkdown
