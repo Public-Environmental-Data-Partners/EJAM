@@ -207,8 +207,8 @@
 <body>
 <h1 id="ejam-open-issues-scored-by-cost-benefit">EJAM Open Issues —
 Scored by Cost &amp; Benefit</h1>
-<p><strong>Total open issues:</strong> 141 | <strong>Generated:</strong>
-2026-08-23 | <strong>Source:</strong> Live GitHub REST API open issues
+<p><strong>Total open issues:</strong> 142 | <strong>Generated:</strong>
+2026-08-30 | <strong>Source:</strong> Live GitHub REST API open issues
 (Public-Environmental-Data-Partners/EJAM)</p>
 <p><strong>Score payload:</strong>
 <code>inst/issues/ejam_issues_scored_by_risk_and_value.json</code></p>
@@ -225,15 +225,15 @@ Scored by Cost &amp; Benefit</h1>
 <tbody>
 <tr>
 <td>Previous run</td>
-<td>2026-08-16</td>
+<td>2026-08-23</td>
 </tr>
 <tr>
 <td>Issues opened since previous run</td>
-<td>4</td>
+<td>2</td>
 </tr>
 <tr>
 <td>Issues closed since previous run</td>
-<td>0</td>
+<td>1</td>
 </tr>
 <tr>
 <td>Issues whose quadrant changed</td>
@@ -264,7 +264,7 @@ Scored by Cost &amp; Benefit</h1>
 </tr>
 <tr>
 <td><strong>HIGH Cost</strong><br>cost ≥ median</td>
-<td><strong>D — WORST CANDIDATES</strong><br>31 issues</td>
+<td><strong>D — WORST CANDIDATES</strong><br>32 issues</td>
 <td><strong>B — OK Candidates</strong><br>50 issues</td>
 </tr>
 </tbody>
@@ -320,10 +320,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/137">#13
 — fix bug in popshare_at_top_x_pct() - results sometimes not quite
 right. seems to interpolate badly.</li>
 <li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/268">#268</a>
-— Uploading a file failing intermittently when live app hosted using AWS
-with load balancing</li>
-<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73">#73</a>
 — in web app, add ways to analyze multiple radii at once or even
 continuous radius</li>
@@ -352,6 +348,9 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/91">#91<
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">#161</a>
 — ejamapp() should be able to handle mix of fips types</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">#136</a>
+— in web app, fix console error msg when uploading a shapefile</li>
 </ul>
 <table class="issue-details">
 <colgroup>
@@ -395,7 +394,7 @@ tas…</td>
 <td>17 (🟩🟩 Very High)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, Affects Web App</td>
+<td>BUG, Affects Web App, rank:A-high-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -406,7 +405,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/458">458
 <td>17 (🟩🟩 Very High)</td>
 <td>v4</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>Affects Web App, Community Report</td>
+<td>Affects Web App, Community Report, rank:A-high-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -501,17 +500,6 @@ right…</td>
 </tr>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/268">268</a></td>
-<td>Uploading a file failing intermittently when live app hosted using
-AWS…</td>
-<td>2 (🔵 Low)</td>
-<td>11 (🟩🟦 High)</td>
-<td>v3.2022.2</td>
-<td>—</td>
-<td>BUG, Affects Web App</td>
-</tr>
-<tr>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73">73</a></td>
 <td>in web app, add ways to analyze multiple radii at once or even
 continu…</td>
@@ -595,6 +583,16 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">161
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
 <td>Affects Web App, rank:A-high-value-low-cost</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">136</a></td>
+<td>in web app, fix console error msg when uploading a shapefile</td>
+<td>1 (🟢 Very Low)</td>
+<td>7 (🟦 Medium)</td>
+<td>v4</td>
+<td>PRIORITY LOW</td>
+<td>BUG, rank:C-low-value-low-cost</td>
 </tr>
 </tbody>
 </table>
@@ -838,7 +836,8 @@ hig…</td>
 <td>17 (🟩🟩 Very High)</td>
 <td>v4</td>
 <td>PRIORITY HIGH</td>
-<td>BUG, speed / performance (see #226), Affects Web App</td>
+<td>BUG, speed / performance (see #226), Affects Web App,
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -937,7 +936,7 @@ L…</td>
 <td>12 (🟩🟦 High)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, test</td>
+<td>BUG, test, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -948,7 +947,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/560">560
 <td>11 (🟩🟦 High)</td>
 <td>v4</td>
 <td>—</td>
-<td>BUG, Affects R users only - NOT web app users</td>
+<td>BUG, Affects R users only - NOT web app users,
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -959,7 +959,8 @@ bui…</td>
 <td>11 (🟩🟦 High)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, test, Affects R users only - NOT web app users</td>
+<td>BUG, test, Affects R users only - NOT web app users,
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1014,7 +1015,7 @@ a …</td>
 <td>9 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG</td>
+<td>BUG, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1045,7 +1046,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19">19</
 <td>FIPS missing/problems (mostly in Connecticut)</td>
 <td>6 (🟡 Medium)</td>
 <td>8 (🟦 Medium)</td>
-<td>Data Updates</td>
+<td>v4</td>
 <td>PRIORITY MEDIUM</td>
 <td>BUG, help wanted, maps-related, datasets-related</td>
 </tr>
@@ -1058,7 +1059,7 @@ check…</td>
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>test, Affects Web App</td>
+<td>test, Affects Web App, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1069,7 +1070,7 @@ PD…</td>
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>test, Affects Web App</td>
+<td>test, Affects Web App, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1205,7 +1206,8 @@ insightf…</td>
 <td>6 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>plots-graphs-related, future plan list, rank:D-defer</td>
+<td>plots-graphs-related, future plan list,
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1217,7 +1219,7 @@ block_radius_m…</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
 <td>BUG, calculate/validate to EJScreen, distance-related,
-rank:D-defer</td>
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1229,7 +1231,7 @@ or US…</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
 <td>BUG, calculate/validate to EJScreen, Community Report,
-rank:D-defer</td>
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1239,7 +1241,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/83">83</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>shapefile-related, Affects Web App, rank:D-defer</td>
+<td>shapefile-related, Affects Web App, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1250,7 +1252,7 @@ pe…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>rank:D-defer</td>
+<td>rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1260,7 +1262,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/72">72</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>shapefile-related, maps-related, rank:D-defer</td>
+<td>shapefile-related, maps-related, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1270,7 +1272,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/26">26</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>LongReport_output, rank:D-defer</td>
+<td>LongReport_output, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1281,7 +1283,7 @@ files</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, server, rank:D-defer</td>
+<td>refactor, server, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1293,7 +1295,7 @@ consistent …</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
 <td>refactor, Affects R users only - NOT web app users,
-rank:D-defer</td>
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1304,7 +1306,7 @@ data)</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, server, rank:D-defer</td>
+<td>refactor, server, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1315,7 +1317,8 @@ feat…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>shapefile-related, refactor, distance-related, rank:D-defer</td>
+<td>shapefile-related, refactor, distance-related,
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1326,7 +1329,7 @@ ejscr…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>shapefile-related, Affects Web App, rank:D-defer</td>
+<td>shapefile-related, Affects Web App, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1337,7 +1340,8 @@ code…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>tasklist, speed / performance (see #226), rank:D-defer</td>
+<td>tasklist, speed / performance (see #226),
+rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1359,7 +1363,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/32">32</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, tasklist, server, rank:D-defer</td>
+<td>refactor, tasklist, server, rank:B-high-value-high-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1396,8 +1400,8 @@ radius)</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">#162</a>
 — rename “in_how_many_states” column in table of results</li>
 <li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">#136</a>
-— in web app, fix console error msg when uploading a shapefile</li>
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">#588</a>
+— Web app: production serves several static assets as 404</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/70">#70</a>
 — set up alerts that monitor and alert staff when the app goes down -
@@ -1552,7 +1556,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">490
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, Community Report</td>
+<td>Affects Web App, Community Report, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1562,7 +1566,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/361">361
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:A-high-value-low-cost</td>
+<td>Affects Web App, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1573,7 +1577,7 @@ r…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:A-high-value-low-cost</td>
+<td>Affects Web App, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1583,17 +1587,17 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">162
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:A-high-value-low-cost</td>
+<td>Affects Web App, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">136</a></td>
-<td>in web app, fix console error msg when uploading a shapefile</td>
-<td>1 (🟢 Very Low)</td>
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">588</a></td>
+<td>Web app: production serves several static assets as 404</td>
+<td>2 (🔵 Low)</td>
 <td>7 (🟦 Medium)</td>
-<td>v4</td>
+<td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, rank:A-high-value-low-cost</td>
+<td>BUG</td>
 </tr>
 <tr>
 <td><a
@@ -1604,7 +1608,7 @@ en…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>rank:A-high-value-low-cost</td>
+<td>rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1614,7 +1618,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/484">484
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App</td>
+<td>Affects Web App, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1624,7 +1628,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486">486
 <td>6 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App</td>
+<td>Affects Web App, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1657,7 +1661,7 @@ us…</td>
 <td>5 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>BUG</td>
+<td>BUG, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1720,7 +1724,7 @@ method-specific …</td>
 <td>5 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>BUG</td>
+<td>BUG, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1830,7 +1834,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464">464
 <td>3 (⬜ Low)</td>
 <td>NA</td>
 <td>—</td>
-<td>Affects Web App</td>
+<td>Affects Web App, rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1841,7 +1845,8 @@ cross-vignett…</td>
 <td>2 (⬜ Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>documentation, Affects R users only - NOT web app users</td>
+<td>documentation, Affects R users only - NOT web app users,
+rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1925,7 +1930,7 @@ k…</td>
 <td>1 (⬜ Very Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td></td>
+<td>rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1976,7 +1981,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">60</
 WORST CANDIDATES — High Cost, Low Benefit</h2>
 <p><em>Expensive to fix, limited payoff. Defer or deprioritize unless
 circumstances change.</em></p>
-<p><strong>31 issues</strong></p>
+<p><strong>32 issues</strong></p>
 <ul>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/508">#508</a>
@@ -2019,6 +2024,10 @@ seconds</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/55">#55</a>
 — add links to COUNTY-LEVEL reports - on a place - from other tools/
 sources</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/592">#592</a>
+— test_ejam(): 19 test files are missing timing estimates in
+timebyfile</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/585">#585</a>
 — CI: ‘Quick install check’ intermittently hangs to its 60-minute
@@ -2126,7 +2135,7 @@ touching …</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td></td>
+<td>rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2137,7 +2146,7 @@ tag</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td></td>
+<td>rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2170,7 +2179,7 @@ app …</td>
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>—</td>
-<td></td>
+<td>rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2180,8 +2189,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/536">536
 <td>2 (⬜ Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>documentation, refactor, Affects R users only - NOT web app
-users</td>
+<td>documentation, refactor, Affects R users only - NOT web app users,
+rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2202,7 +2211,7 @@ inconsisten…</td>
 <td>1 (⬜ Very Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>LongReport_output</td>
+<td>LongReport_output, rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2239,6 +2248,17 @@ sou…</td>
 </tr>
 <tr>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/592">592</a></td>
+<td>test_ejam(): 19 test files are missing timing estimates in
+timebyfile</td>
+<td>4 (🟡 Medium)</td>
+<td>0 (⬜ Very Low)</td>
+<td>NA</td>
+<td>—</td>
+<td></td>
+</tr>
+<tr>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/585">585</a></td>
 <td>CI: ‘Quick install check’ intermittently hangs to its 60-minute
 timeou…</td>
@@ -2246,7 +2266,7 @@ timeou…</td>
 <td>0 (⬜ Very Low)</td>
 <td>NA</td>
 <td>—</td>
-<td></td>
+<td>rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2256,7 +2276,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/584">584
 <td>0 (⬜ Very Low)</td>
 <td>v4</td>
 <td>—</td>
-<td></td>
+<td>rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2266,7 +2286,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/548">548
 <td>0 (⬜ Very Low)</td>
 <td>v4</td>
 <td>—</td>
-<td></td>
+<td>rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2277,7 +2297,7 @@ hal…</td>
 <td>4 (⬜ Low)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, Community Report</td>
+<td>refactor, Community Report, rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2287,7 +2307,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/497">497
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>refactor, Affects R users only - NOT web app users</td>
+<td>refactor, Affects R users only - NOT web app users,
+rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2298,7 +2319,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/86">86</
 <td>NA</td>
 <td>PRIORITY LOW</td>
 <td>still relevant?, refactor, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2364,7 +2385,7 @@ bo…</td>
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>—</td>
-<td>speed / performance (see #226), API</td>
+<td>speed / performance (see #226), API, rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2385,7 +2406,7 @@ dedupe …</td>
 <td>4 (⬜ Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>shapefile-related, refactor, Affects Web App</td>
+<td>shapefile-related, refactor, Affects Web App, rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2458,7 +2479,7 @@ code</td>
 </tbody>
 </table>
 <hr />
-<h2 id="full-table-all-141-issues">Full Table — All 141 Issues</h2>
+<h2 id="full-table-all-142-issues">Full Table — All 142 Issues</h2>
 <p>Sorted: A first (best), then B, C, D; within each group by benefit
 DESC.</p>
 <table>
@@ -2607,17 +2628,6 @@ right. …</td>
 <tr>
 <td>A</td>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/268">268</a></td>
-<td>2</td>
-<td>11</td>
-<td>v3.2022.2</td>
-<td>—</td>
-<td>Uploading a file failing intermittently when live app hosted using
-AWS w…</td>
-</tr>
-<tr>
-<td>A</td>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73">73</a></td>
 <td>3</td>
 <td>10</td>
@@ -2699,6 +2709,16 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">161
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
 <td>ejamapp() should be able to handle mix of fips types</td>
+</tr>
+<tr>
+<td>A</td>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">136</a></td>
+<td>1</td>
+<td>7</td>
+<td>v4</td>
+<td>PRIORITY LOW</td>
+<td>in web app, fix console error msg when uploading a shapefile</td>
 </tr>
 <tr>
 <td>B</td>
@@ -2920,7 +2940,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135">135
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19">19</a></td>
 <td>6</td>
 <td>8</td>
-<td>Data Updates</td>
+<td>v4</td>
 <td>PRIORITY MEDIUM</td>
 <td>FIPS missing/problems (mostly in Connecticut)</td>
 </tr>
@@ -3281,12 +3301,12 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">162
 <tr>
 <td>C</td>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">136</a></td>
-<td>1</td>
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">588</a></td>
+<td>2</td>
 <td>7</td>
-<td>v4</td>
+<td>NA</td>
 <td>PRIORITY LOW</td>
-<td>in web app, fix console error msg when uploading a shapefile</td>
+<td>Web app: production serves several static assets as 404</td>
 </tr>
 <tr>
 <td>C</td>
@@ -3777,6 +3797,17 @@ sourc…</td>
 <tr>
 <td>D</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/592">592</a></td>
+<td>4</td>
+<td>0</td>
+<td>NA</td>
+<td>—</td>
+<td>test_ejam(): 19 test files are missing timing estimates in
+timebyfile</td>
+</tr>
+<tr>
+<td>D</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/585">585</a></td>
 <td>4</td>
 <td>0</td>
@@ -4001,20 +4032,12 @@ code</td>
 </thead>
 <tbody>
 <tr>
-<td>Data Updates</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr>
-<td>v3.2022.2</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr>
 <td>v4</td>
-<td style="text-align: right;">30</td>
+<td style="text-align: right;">31</td>
 </tr>
 <tr>
 <td>NA</td>
-<td style="text-align: right;">109</td>
+<td style="text-align: right;">111</td>
 </tr>
 </tbody>
 </table>
