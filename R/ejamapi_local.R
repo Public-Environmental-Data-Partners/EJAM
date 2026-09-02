@@ -91,7 +91,9 @@ ejamapi_local <- function(
     # so it cannot do this itself; on the deployed API the Docker image bakes
     # the data in instead.
     if (!exists("blockwts", envir = globalenv())) dataload_dynamic("blockwts")
-    if (!localtree_exists()) indexblocks()
+    # This background callr process attaches EJAM, so non-exported helpers
+    # must be resolved through the package namespace.
+    if (!EJAM:::localtree_exists()) indexblocks()
 
     if (requireNamespace("beepr", quietly = TRUE)) {
       beepr::beep() # alerts when finished with package loading and ready
