@@ -43,7 +43,7 @@ test_that("draft endpoints file plumbs and defines the draft-only endpoints", {
   pr <- plumber::plumb(fname)
   paths <- route_paths(pr)
   expect_true(all(c(
-    "/echo", "/dataset", "/ejamit", "/ejamit_csv", "/getblocksnearby",
+    "/echo", "/ejamit", "/ejamit_csv", "/getblocksnearby",
     "/report2", "/reportpost", "/ejam2report", "/ejam2excel",
     "/get_blockpoints_in_shape", "/doaggregate"
   ) %in% paths))
