@@ -43,8 +43,8 @@ This file is a status/ground-truth snapshot to sit next to it.
 
 | | EJAM-API repo (`rest_controller.r`) | EJAM package draft (`inst/plumber/plumber.R`) |
 |---|---|---|
-| Role | **Deployed, hardened.** 7 endpoints. | **Experimental kitchen-sink** it was forked from. ~13 endpoints, most "NOT TESTED". |
-| Has | CORS, `escape_html`, `html_error` (no-store + correct Content-Type), multisite comma-lists, GET+POST `/report`, cache headers, zero-pop fail-safe, `/query`, `/handoff` (+token store) | `/dataset`, `/ejamit`, `/ejamit_csv`, `/getblocksnearby`, `/echo`, `/report2`, `/reportpost`, `/ejam2report`, `/ejam2excel`, `/doaggregate`, `/get_blockpoints_in_shape`, logger filter |
+| Role | **Deployed, hardened.** 7 endpoints. | **Experimental kitchen-sink** it was forked from. Remaining endpoints are mostly "NOT TESTED". |
+| Has | CORS, `escape_html`, `html_error` (no-store + correct Content-Type), multisite comma-lists, GET+POST `/report`, cache headers, zero-pop fail-safe, `/query`, `/handoff` (+token store) | `/ejamit`, `/ejamit_csv`, `/getblocksnearby`, `/echo`, `/report2`, `/reportpost`, `/ejam2report`, `/ejam2excel`, `/doaggregate`, `/get_blockpoints_in_shape`, logger filter |
 | Missing | the draft-only experimental endpoints | CORS, POST `/report`, `/query`, `/handoff`, multisite, caching, escaping; `/data` present but disabled (`if(FALSE)`) |
 
 **The plumber-sync plan's job:** reconcile these — mirror the deployed `rest_controller.r` into
@@ -79,8 +79,8 @@ Variants: **Live** (api.ejanalysis.com) · **main** (EJAM-API main) · **PRs** (
 
 **`POST /data`** — main/live. draft/#470: present but disabled (`if(FALSE)`).
 
-**Draft-only endpoints** (exist only in EJAM inst/plumber; #470 touches none): `/dataset` ✅,
-`/echo` ✅, `/getblocksnearby` ⚠️("1 point"), `/report2` ⚠️, `/reportpost` ⚠️, `/ejam2report`
+**Draft-only endpoints** (exist only in EJAM inst/plumber; #470 touches none): `/echo` ✅,
+`/getblocksnearby` ⚠️("1 point"), `/report2` ⚠️, `/reportpost` ⚠️, `/ejam2report`
 ⚠️(has a `future({})` bug — `out` not returned), `/ejam2excel` ⚠️, `/ejamit` ⚠️(shapefile
 "not working yet"), `/ejamit_csv` ⚠️, `/get_blockpoints_in_shape` ❌, `/doaggregate` ⚠️.
 
