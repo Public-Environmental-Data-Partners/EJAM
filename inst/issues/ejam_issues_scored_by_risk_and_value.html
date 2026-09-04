@@ -207,8 +207,8 @@
 <body>
 <h1 id="ejam-open-issues-scored-by-cost-benefit">EJAM Open Issues —
 Scored by Cost &amp; Benefit</h1>
-<p><strong>Total open issues:</strong> 142 | <strong>Generated:</strong>
-2026-08-30 | <strong>Source:</strong> Live GitHub REST API open issues
+<p><strong>Total open issues:</strong> 148 | <strong>Generated:</strong>
+2026-09-04 | <strong>Source:</strong> Live GitHub REST API open issues
 (Public-Environmental-Data-Partners/EJAM)</p>
 <p><strong>Score payload:</strong>
 <code>inst/issues/ejam_issues_scored_by_risk_and_value.json</code></p>
@@ -225,15 +225,15 @@ Scored by Cost &amp; Benefit</h1>
 <tbody>
 <tr>
 <td>Previous run</td>
-<td>2026-08-23</td>
+<td>2026-08-30</td>
 </tr>
 <tr>
 <td>Issues opened since previous run</td>
-<td>2</td>
+<td>6</td>
 </tr>
 <tr>
 <td>Issues closed since previous run</td>
-<td>1</td>
+<td>0</td>
 </tr>
 <tr>
 <td>Issues whose quadrant changed</td>
@@ -259,7 +259,7 @@ Scored by Cost &amp; Benefit</h1>
 <tbody>
 <tr>
 <td><strong>LOW Cost</strong><br>cost &lt; median</td>
-<td><strong>C — Other Low-Cost Work</strong><br>40 issues</td>
+<td><strong>C — Other Low-Cost Work</strong><br>46 issues</td>
 <td><strong>A — Focus Shortlist (max 20)</strong><br>20 issues</td>
 </tr>
 <tr>
@@ -277,13 +277,13 @@ benefit then cost. Prioritize these above all others.</em></p>
 <p><strong>20 issues</strong></p>
 <ul>
 <li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16">#16</a>
-— need new/updated “User Guide” (“Help” in header at right) since UI has
-changed a lot, etc.</li>
-<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504">#504</a>
 — Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate
 task during blockgroup join</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16">#16</a>
+— need new/updated “EJAM User Guide” (“Help” in header at right) since
+UI has changed a lot, etc.</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/458">#458</a>
 — Share one report-header rule across in-app, download, and API paths
@@ -312,6 +312,9 @@ columns doaggregate() can produce for the report</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/400">#400</a>
 — improve how webapp users can find info on data vintage (in EJAM web
 app UI, from community report, and from EJScreen UI)</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/599">#599</a>
+— fix links in vignettes/webapp.Rmd</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/580">#580</a>
 — API version number displayed should reflect EJAM version it uses</li>
@@ -348,9 +351,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/91">#91<
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">#161</a>
 — ejamapp() should be able to handle mix of fips types</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">#136</a>
-— in web app, fix console error msg when uploading a shapefile</li>
 </ul>
 <table class="issue-details">
 <colgroup>
@@ -376,25 +376,25 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">#13
 <tbody>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16">16</a></td>
-<td>need new/updated “User Guide” (“Help” in header at right) since UI
-has…</td>
-<td>2 (🔵 Low)</td>
-<td>17 (🟩🟩 Very High)</td>
-<td>v4</td>
-<td>PRIORITY HIGH</td>
-<td>BUG, documentation, help wanted, good first issue</td>
-</tr>
-<tr>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504">504</a></td>
 <td>Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate
 tas…</td>
 <td>3 (🔵 Low)</td>
+<td>23 (🟩🟩 Very High)</td>
+<td>v4</td>
+<td>PRIORITY HIGH</td>
+<td>rank:A-high-value-low-cost, BUG, Affects Web App</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16">16</a></td>
+<td>need new/updated “EJAM User Guide” (“Help” in header at right) since
+U…</td>
+<td>2 (🔵 Low)</td>
 <td>17 (🟩🟩 Very High)</td>
 <td>v4</td>
-<td>PRIORITY MEDIUM</td>
-<td>BUG, Affects Web App, rank:A-high-value-low-cost</td>
+<td>PRIORITY HIGH</td>
+<td>rank:A-high-value-low-cost, BUG, documentation, help wanted</td>
 </tr>
 <tr>
 <td><a
@@ -405,7 +405,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/458">458
 <td>17 (🟩🟩 Very High)</td>
 <td>v4</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>Affects Web App, Community Report, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -416,8 +416,8 @@ o…</td>
 <td>15 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>test, Affects Web App, Community Report,
-rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, test, Affects Web App, Community
+Report</td>
 </tr>
 <tr>
 <td><a
@@ -428,7 +428,7 @@ the…</td>
 <td>15 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>Affects Web App, Community Report, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -439,8 +439,7 @@ installe…</td>
 <td>15 (🟩🟩 Very High)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, documentation, URL-related, Affects R users only - NOT web app
-users</td>
+<td>rank:A-high-value-low-cost, BUG, documentation, URL-related</td>
 </tr>
 <tr>
 <td><a
@@ -451,7 +450,7 @@ packag…</td>
 <td>15 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>help wanted, Affects Web App, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, help wanted, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -462,7 +461,7 @@ with …</td>
 <td>15 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>Affects Web App, Community Report, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -473,7 +472,17 @@ ap…</td>
 <td>13 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH</td>
-<td>Affects Web App, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/599">599</a></td>
+<td>fix links in vignettes/webapp.Rmd</td>
+<td>0 (🟢 Very Low)</td>
+<td>11 (🟩🟦 High)</td>
+<td>NA</td>
+<td>PRIORITY HIGH</td>
+<td>rank:A-high-value-low-cost, documentation, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -484,8 +493,8 @@ uses</td>
 <td>11 (🟩🟦 High)</td>
 <td>v4</td>
 <td>—</td>
-<td>BUG, documentation, Affects R users only - NOT web app users,
-API</td>
+<td>rank:A-high-value-low-cost, BUG, documentation, Affects R users only
+- NOT web app users</td>
 </tr>
 <tr>
 <td><a
@@ -496,7 +505,7 @@ right…</td>
 <td>11 (🟩🟦 High)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, Affects Web App, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, BUG, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -507,7 +516,7 @@ continu…</td>
 <td>10 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -518,7 +527,7 @@ map…</td>
 <td>9 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, Community Report, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -529,7 +538,7 @@ t…</td>
 <td>9 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, API, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App, API</td>
 </tr>
 <tr>
 <td><a
@@ -539,7 +548,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/223">223
 <td>8 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, Affects Web App, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, BUG, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -550,7 +559,7 @@ ej…</td>
 <td>8 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, Affects Web App, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, BUG, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -561,8 +570,8 @@ c…</td>
 <td>8 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, Affects R users only - NOT web app users,
-rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, BUG, Affects R users only - NOT web app
+users</td>
 </tr>
 <tr>
 <td><a
@@ -572,7 +581,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/91">91</
 <td>8 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:A-high-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -582,17 +591,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">161
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:A-high-value-low-cost</td>
-</tr>
-<tr>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">136</a></td>
-<td>in web app, fix console error msg when uploading a shapefile</td>
-<td>1 (🟢 Very Low)</td>
-<td>7 (🟦 Medium)</td>
-<td>v4</td>
-<td>PRIORITY LOW</td>
-<td>BUG, rank:C-low-value-low-cost</td>
+<td>rank:A-high-value-low-cost, Affects Web App</td>
 </tr>
 </tbody>
 </table>
@@ -824,8 +823,8 @@ clicks</td>
 <td>19 (🟩🟩 Very High)</td>
 <td>v4</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>speed / performance (see #226), Affects Web App, API,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, speed / performance (see #226), Affects
+Web App, API</td>
 </tr>
 <tr>
 <td><a
@@ -836,8 +835,8 @@ hig…</td>
 <td>17 (🟩🟩 Very High)</td>
 <td>v4</td>
 <td>PRIORITY HIGH</td>
-<td>BUG, speed / performance (see #226), Affects Web App,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG, speed / performance (see #226),
+Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -848,7 +847,7 @@ pr…</td>
 <td>17 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>distance-related, future plan list, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, distance-related, future plan list</td>
 </tr>
 <tr>
 <td><a
@@ -859,8 +858,8 @@ for …</td>
 <td>17 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>datasets-related, speed / performance (see #226), API,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, datasets-related, speed / performance
+(see #226), API</td>
 </tr>
 <tr>
 <td><a
@@ -870,8 +869,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/226">226
 <td>16 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>speed / performance (see #226), Affects Web App,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, speed / performance (see #226), Affects
+Web App</td>
 </tr>
 <tr>
 <td><a
@@ -882,7 +881,8 @@ GeoJSON</td>
 <td>15 (🟩🟩 Very High)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, shapefile-related, URL-related, Affects Web App</td>
+<td>rank:B-high-value-high-cost, BUG, shapefile-related,
+URL-related</td>
 </tr>
 <tr>
 <td><a
@@ -892,7 +892,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/153">153
 <td>15 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>test, Affects Web App, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, test, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -903,8 +903,8 @@ I…</td>
 <td>15 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>LongReport_output, Affects Web App, future plan list,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, LongReport_output, Affects Web App,
+future plan list</td>
 </tr>
 <tr>
 <td><a
@@ -924,8 +924,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46">46</
 <td>13 (🟩🟩 Very High)</td>
 <td>NA</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
-<td>LongReport_output, future plan list,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, LongReport_output, future plan
+list</td>
 </tr>
 <tr>
 <td><a
@@ -936,7 +936,7 @@ L…</td>
 <td>12 (🟩🟦 High)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, test, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG, test</td>
 </tr>
 <tr>
 <td><a
@@ -947,8 +947,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/560">560
 <td>11 (🟩🟦 High)</td>
 <td>v4</td>
 <td>—</td>
-<td>BUG, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG, Affects R users only - NOT web app
+users</td>
 </tr>
 <tr>
 <td><a
@@ -959,8 +959,8 @@ bui…</td>
 <td>11 (🟩🟦 High)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, test, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG, test, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -971,7 +971,7 @@ shi…</td>
 <td>11 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, API, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, Affects Web App, API</td>
 </tr>
 <tr>
 <td><a
@@ -982,8 +982,8 @@ hosting…</td>
 <td>10 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>help wanted, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, help wanted, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -994,7 +994,7 @@ server</td>
 <td>10 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>datasets-related, Affects Web App, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, datasets-related, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1004,7 +1004,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31">31</
 <td>9 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, distance-related, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG, distance-related</td>
 </tr>
 <tr>
 <td><a
@@ -1015,7 +1015,7 @@ a …</td>
 <td>9 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG</td>
 </tr>
 <tr>
 <td><a
@@ -1026,8 +1026,8 @@ doaggregate()</td>
 <td>9 (🟩🟦 High)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, documentation, calculate/validate to EJScreen,
-distance-related</td>
+<td>rank:B-high-value-high-cost, BUG, documentation, calculate/validate
+to EJScreen</td>
 </tr>
 <tr>
 <td><a
@@ -1037,8 +1037,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135">135
 <td>8 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG, Affects R users only - NOT web app
+users</td>
 </tr>
 <tr>
 <td><a
@@ -1048,7 +1048,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19">19</
 <td>8 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>BUG, help wanted, maps-related, datasets-related</td>
+<td>rank:B-high-value-high-cost, BUG, help wanted, maps-related</td>
 </tr>
 <tr>
 <td><a
@@ -1059,7 +1059,7 @@ check…</td>
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>test, Affects Web App, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, test, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1070,7 +1070,7 @@ PD…</td>
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>test, Affects Web App, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, test, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1081,8 +1081,8 @@ specify…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1093,7 +1093,7 @@ tit…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>still relevant?, Affects Web App, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, still relevant?, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1104,7 +1104,7 @@ stuf…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>still relevant?, Affects Web App, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, still relevant?, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1115,7 +1115,7 @@ user-prov…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, future plan list, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, Affects Web App, future plan list</td>
 </tr>
 <tr>
 <td><a
@@ -1125,8 +1125,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/167">167
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, dependencies-related, Affects R users only - NOT web app
-users, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, dependencies-related, Affects
+R users only - NOT web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1136,7 +1136,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/34">34</
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, server, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, server</td>
 </tr>
 <tr>
 <td><a
@@ -1147,8 +1147,8 @@ or…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1159,7 +1159,7 @@ values</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, server, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, server</td>
 </tr>
 <tr>
 <td><a
@@ -1170,8 +1170,8 @@ glo…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, Affects R users only - NOT web app users, Community
-Report, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, Affects R users only - NOT
+web app users, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1182,8 +1182,8 @@ large…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>datasets-related, speed / performance (see #226), Affects Web App,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, datasets-related, speed / performance
+(see #226), Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1194,8 +1194,8 @@ paths</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1206,8 +1206,8 @@ insightf…</td>
 <td>6 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>plots-graphs-related, future plan list,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, plots-graphs-related, future plan
+list</td>
 </tr>
 <tr>
 <td><a
@@ -1218,8 +1218,8 @@ block_radius_m…</td>
 <td>6 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, calculate/validate to EJScreen, distance-related,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG, calculate/validate to EJScreen,
+distance-related</td>
 </tr>
 <tr>
 <td><a
@@ -1230,8 +1230,8 @@ or US…</td>
 <td>6 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>BUG, calculate/validate to EJScreen, Community Report,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, BUG, calculate/validate to EJScreen,
+Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1241,7 +1241,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/83">83</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>shapefile-related, Affects Web App, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, shapefile-related, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1262,7 +1262,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/72">72</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>shapefile-related, maps-related, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, shapefile-related, maps-related</td>
 </tr>
 <tr>
 <td><a
@@ -1272,7 +1272,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/26">26</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>LongReport_output, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, LongReport_output</td>
 </tr>
 <tr>
 <td><a
@@ -1283,7 +1283,7 @@ files</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, server, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, server</td>
 </tr>
 <tr>
 <td><a
@@ -1294,8 +1294,8 @@ consistent …</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>refactor, Affects R users only - NOT web app users,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1306,7 +1306,7 @@ data)</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, server, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, server</td>
 </tr>
 <tr>
 <td><a
@@ -1317,8 +1317,8 @@ feat…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>shapefile-related, refactor, distance-related,
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, shapefile-related, refactor,
+distance-related</td>
 </tr>
 <tr>
 <td><a
@@ -1329,7 +1329,7 @@ ejscr…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>shapefile-related, Affects Web App, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, shapefile-related, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1340,8 +1340,8 @@ code…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>tasklist, speed / performance (see #226),
-rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, tasklist, speed / performance (see
+#226)</td>
 </tr>
 <tr>
 <td><a
@@ -1352,8 +1352,8 @@ renami…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, server, speed / performance (see #226),
-plots-graphs-related</td>
+<td>rank:B-high-value-high-cost, refactor, server, speed / performance
+(see #226)</td>
 </tr>
 <tr>
 <td><a
@@ -1363,7 +1363,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/32">32</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, tasklist, server, rank:B-high-value-high-cost</td>
+<td>rank:B-high-value-high-cost, refactor, tasklist, server</td>
 </tr>
 <tr>
 <td><a
@@ -1374,8 +1374,8 @@ Das…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>shapefile-related, maps-related, Affects Web App, future plan
-list</td>
+<td>rank:B-high-value-high-cost, shapefile-related, maps-related,
+Affects Web App</td>
 </tr>
 </tbody>
 </table>
@@ -1384,8 +1384,11 @@ list</td>
 WORK</h2>
 <p><em>Cheap to do but not in the current focus shortlist. Pick these up
 when bandwidth allows or combine them with nearby work.</em></p>
-<p><strong>40 issues</strong></p>
+<p><strong>46 issues</strong></p>
 <ul>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595">#595</a>
+— improve API documentation vignette</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">#490</a>
 — swap us and state ratio columns</li>
@@ -1400,12 +1403,18 @@ radius)</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">#162</a>
 — rename “in_how_many_states” column in table of results</li>
 <li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">#136</a>
+— in web app, fix console error msg when uploading a shapefile</li>
+<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">#588</a>
 — Web app: production serves several static assets as 404</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/70">#70</a>
 — set up alerts that monitor and alert staff when the app goes down -
 ensure available</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/596">#596</a>
+— EJAM v4.2024.0 pipeline incorrectly reports some ACS variables</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/484">#484</a>
 — in overall table, change EJAM Report link for 1-site analysis</li>
@@ -1516,12 +1525,21 @@ key functions</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/183">#183</a>
 — use more standardized format in NEWS / changelog?</li>
 <li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/600">#600</a>
+— Expose a Community Report example in public pkgdown docs</li>
+<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/343">#343</a>
 — check/loosen/drop minimum required version of each package specified
 in DESCRIPTION file</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/42">#42</a>
 — Remove unused report template files</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/602">#602</a>
+— fix vignette on analyzing</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/597">#597</a>
+— Add Donate button</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">#60</a>
 — Rename community report functions with common convention</li>
@@ -1550,13 +1568,24 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">#60<
 <tbody>
 <tr>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595">595</a></td>
+<td>improve API documentation vignette</td>
+<td>0 (🟢 Very Low)</td>
+<td>7 (🟦 Medium)</td>
+<td>NA</td>
+<td>PRIORITY MEDIUM</td>
+<td>rank:C-low-value-low-cost, documentation, Affects R users only - NOT
+web app users</td>
+</tr>
+<tr>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">490</a></td>
 <td>swap us and state ratio columns</td>
 <td>1 (🟢 Very Low)</td>
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, Community Report, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1566,7 +1595,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/361">361
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1577,7 +1606,7 @@ r…</td>
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1587,7 +1616,17 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">162
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">136</a></td>
+<td>in web app, fix console error msg when uploading a shapefile</td>
+<td>1 (🟢 Very Low)</td>
+<td>7 (🟦 Medium)</td>
+<td>v4</td>
+<td>PRIORITY LOW</td>
+<td>rank:C-low-value-low-cost, BUG</td>
 </tr>
 <tr>
 <td><a
@@ -1597,7 +1636,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">588
 <td>7 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG</td>
+<td>rank:C-low-value-low-cost, BUG</td>
 </tr>
 <tr>
 <td><a
@@ -1612,13 +1651,23 @@ en…</td>
 </tr>
 <tr>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/596">596</a></td>
+<td>EJAM v4.2024.0 pipeline incorrectly reports some ACS variables</td>
+<td>3 (🔵 Low)</td>
+<td>7 (🟦 Medium)</td>
+<td>v4</td>
+<td>—</td>
+<td>rank:C-low-value-low-cost, BUG</td>
+</tr>
+<tr>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/484">484</a></td>
 <td>in overall table, change EJAM Report link for 1-site analysis</td>
 <td>3 (🔵 Low)</td>
 <td>7 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1628,7 +1677,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486">486
 <td>6 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1639,7 +1688,7 @@ up…</td>
 <td>6 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1649,8 +1698,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/102">102
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Affects R users only - NOT web app users,
-rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects R users only - NOT web app
+users</td>
 </tr>
 <tr>
 <td><a
@@ -1661,7 +1710,7 @@ us…</td>
 <td>5 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>BUG, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, BUG</td>
 </tr>
 <tr>
 <td><a
@@ -1672,7 +1721,7 @@ me…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>documentation, Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, documentation, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1683,7 +1732,7 @@ an…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, test, Community Report, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, BUG, test, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1693,7 +1742,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/96">96</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1703,7 +1752,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/92">92</
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1724,7 +1773,7 @@ method-specific …</td>
 <td>5 (🟦 Medium)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>BUG, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, BUG</td>
 </tr>
 <tr>
 <td><a
@@ -1735,7 +1784,7 @@ via…</td>
 <td>5 (🟦 Medium)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>BUG, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, BUG</td>
 </tr>
 <tr>
 <td><a
@@ -1757,7 +1806,7 @@ sf_nearest_points()…</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1768,7 +1817,7 @@ settings?</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App, Community Report, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1779,7 +1828,7 @@ and …</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1789,8 +1838,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/159">159
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>refactor, Affects Web App, Community Report,
-rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, refactor, Affects Web App, Community
+Report</td>
 </tr>
 <tr>
 <td><a
@@ -1801,7 +1850,7 @@ cluttered,…</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>map-popups-related, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, map-popups-related</td>
 </tr>
 <tr>
 <td><a
@@ -1812,8 +1861,8 @@ o…</td>
 <td>3 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>refactor, Affects R users only - NOT web app users,
-rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, refactor, Affects R users only - NOT web
+app users</td>
 </tr>
 <tr>
 <td><a
@@ -1824,7 +1873,7 @@ re…</td>
 <td>3 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Affects Web App, Community Report, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1834,7 +1883,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464">464
 <td>3 (⬜ Low)</td>
 <td>NA</td>
 <td>—</td>
-<td>Affects Web App, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1845,8 +1894,8 @@ cross-vignett…</td>
 <td>2 (⬜ Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>documentation, Affects R users only - NOT web app users,
-rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, documentation, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1856,8 +1905,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/181">181
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>documentation, refactor, Affects R users only - NOT web app users,
-rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, documentation, refactor, Affects R users
+only - NOT web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1868,7 +1917,7 @@ prominent</td>
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Community Report, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1888,8 +1937,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/184">184
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>documentation, refactor, Affects R users only - NOT web app users,
-rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, documentation, refactor, Affects R users
+only - NOT web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1899,7 +1948,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/43">43</
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>maps-related, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, maps-related</td>
 </tr>
 <tr>
 <td><a
@@ -1909,7 +1958,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/41">41</
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Community Report, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1919,7 +1968,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/39">39</
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>test, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, test</td>
 </tr>
 <tr>
 <td><a
@@ -1940,8 +1989,18 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/183">183
 <td>0 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>documentation, refactor, Affects R users only - NOT web app users,
-rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, documentation, refactor, Affects R users
+only - NOT web app users</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/600">600</a></td>
+<td>Expose a Community Report example in public pkgdown docs</td>
+<td>1 (🟢 Very Low)</td>
+<td>0 (⬜ Very Low)</td>
+<td>NA</td>
+<td>—</td>
+<td>rank:C-low-value-low-cost, documentation</td>
 </tr>
 <tr>
 <td><a
@@ -1962,7 +2021,27 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/42">42</
 <td>0 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>Community Report, rank:C-low-value-low-cost</td>
+<td>rank:C-low-value-low-cost, Community Report</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/602">602</a></td>
+<td>fix vignette on analyzing</td>
+<td>2 (🔵 Low)</td>
+<td>0 (⬜ Very Low)</td>
+<td>NA</td>
+<td>—</td>
+<td>rank:C-low-value-low-cost</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/597">597</a></td>
+<td>Add Donate button</td>
+<td>2 (🔵 Low)</td>
+<td>0 (⬜ Very Low)</td>
+<td>NA</td>
+<td>—</td>
+<td>rank:C-low-value-low-cost</td>
 </tr>
 <tr>
 <td><a
@@ -1972,7 +2051,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">60</
 <td>0 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>documentation, refactor, server, Community Report</td>
+<td>rank:C-low-value-low-cost, documentation, refactor, server</td>
 </tr>
 </tbody>
 </table>
@@ -2156,8 +2235,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/182">182
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>refactor, Affects R users only - NOT web app users,
-rank:D-defer</td>
+<td>rank:D-defer, refactor, Affects R users only - NOT web app
+users</td>
 </tr>
 <tr>
 <td><a
@@ -2168,7 +2247,7 @@ type (i…</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>still relevant?, Affects Web App, rank:D-defer</td>
+<td>rank:D-defer, still relevant?, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -2189,8 +2268,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/536">536
 <td>2 (⬜ Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>documentation, refactor, Affects R users only - NOT web app users,
-rank:D-defer</td>
+<td>rank:D-defer, documentation, refactor, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -2200,7 +2279,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/35">35</
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>test, URL-related, rank:D-defer</td>
+<td>rank:D-defer, test, URL-related</td>
 </tr>
 <tr>
 <td><a
@@ -2211,7 +2290,7 @@ inconsisten…</td>
 <td>1 (⬜ Very Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>LongReport_output, rank:D-defer</td>
+<td>rank:D-defer, LongReport_output</td>
 </tr>
 <tr>
 <td><a
@@ -2222,7 +2301,7 @@ Sc…</td>
 <td>1 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>still relevant?, plots-graphs-related, rank:D-defer</td>
+<td>rank:D-defer, still relevant?, plots-graphs-related</td>
 </tr>
 <tr>
 <td><a
@@ -2233,7 +2312,7 @@ s…</td>
 <td>1 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>still relevant?, rank:D-defer</td>
+<td>rank:D-defer, still relevant?</td>
 </tr>
 <tr>
 <td><a
@@ -2244,7 +2323,7 @@ sou…</td>
 <td>1 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>still relevant?, rank:D-defer</td>
+<td>rank:D-defer, still relevant?</td>
 </tr>
 <tr>
 <td><a
@@ -2255,7 +2334,7 @@ timebyfile</td>
 <td>0 (⬜ Very Low)</td>
 <td>NA</td>
 <td>—</td>
-<td></td>
+<td>rank:D-defer</td>
 </tr>
 <tr>
 <td><a
@@ -2297,7 +2376,7 @@ hal…</td>
 <td>4 (⬜ Low)</td>
 <td>v4</td>
 <td>PRIORITY MEDIUM</td>
-<td>refactor, Community Report, rank:D-defer</td>
+<td>rank:D-defer, refactor, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -2307,8 +2386,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/497">497
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>refactor, Affects R users only - NOT web app users,
-rank:D-defer</td>
+<td>rank:D-defer, refactor, Affects R users only - NOT web app
+users</td>
 </tr>
 <tr>
 <td><a
@@ -2318,8 +2397,8 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/86">86</
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>still relevant?, refactor, Affects R users only - NOT web app users,
-rank:D-defer</td>
+<td>rank:D-defer, still relevant?, refactor, Affects R users only - NOT
+web app users</td>
 </tr>
 <tr>
 <td><a
@@ -2330,7 +2409,7 @@ distance…</td>
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>calculate/validate to EJScreen, distance-related, rank:D-defer</td>
+<td>rank:D-defer, calculate/validate to EJScreen, distance-related</td>
 </tr>
 <tr>
 <td><a
@@ -2341,7 +2420,7 @@ extra…</td>
 <td>1 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>datasets-related, rank:D-defer</td>
+<td>rank:D-defer, datasets-related</td>
 </tr>
 <tr>
 <td><a
@@ -2351,7 +2430,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/63">63</
 <td>1 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>still relevant?, refactor, rank:D-defer</td>
+<td>rank:D-defer, still relevant?, refactor</td>
 </tr>
 <tr>
 <td><a
@@ -2362,8 +2441,8 @@ functions?)</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>refactor, Affects R users only - NOT web app users,
-rank:D-defer</td>
+<td>rank:D-defer, refactor, Affects R users only - NOT web app
+users</td>
 </tr>
 <tr>
 <td><a
@@ -2374,7 +2453,7 @@ parame…</td>
 <td>3 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
-<td>documentation, refactor, server, Community Report</td>
+<td>rank:D-defer, documentation, refactor, server</td>
 </tr>
 <tr>
 <td><a
@@ -2385,7 +2464,7 @@ bo…</td>
 <td>2 (⬜ Low)</td>
 <td>NA</td>
 <td>—</td>
-<td>speed / performance (see #226), API, rank:D-defer</td>
+<td>rank:D-defer, speed / performance (see #226), API</td>
 </tr>
 <tr>
 <td><a
@@ -2395,7 +2474,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/18">18</
 <td>0 (⬜ Very Low)</td>
 <td>NA</td>
 <td>—</td>
-<td>datasets-related, rank:D-defer</td>
+<td>rank:D-defer, datasets-related</td>
 </tr>
 <tr>
 <td><a
@@ -2406,7 +2485,7 @@ dedupe …</td>
 <td>4 (⬜ Low)</td>
 <td>v4</td>
 <td>PRIORITY LOW</td>
-<td>shapefile-related, refactor, Affects Web App, rank:D-defer</td>
+<td>rank:D-defer, shapefile-related, refactor, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -2417,8 +2496,8 @@ popups/ …</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>map-popups-related, still relevant?, datasets-related, Affects R
-users only - NOT web app users</td>
+<td>rank:D-defer, map-popups-related, still relevant?,
+datasets-related</td>
 </tr>
 <tr>
 <td><a
@@ -2429,7 +2508,7 @@ EJAM::doa…</td>
 <td>3 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>still relevant?, refactor, rank:D-defer</td>
+<td>rank:D-defer, still relevant?, refactor</td>
 </tr>
 <tr>
 <td><a
@@ -2440,7 +2519,7 @@ lo…</td>
 <td>1 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>refactor, rank:D-defer</td>
+<td>rank:D-defer, refactor</td>
 </tr>
 <tr>
 <td><a
@@ -2462,8 +2541,8 @@ demograp…</td>
 <td>4 (⬜ Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>calculate/validate to EJScreen, datasets-related, Affects Web App,
-rank:D-defer</td>
+<td>rank:D-defer, calculate/validate to EJScreen, datasets-related,
+Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -2474,12 +2553,12 @@ code</td>
 <td>1 (⬜ Very Low)</td>
 <td>NA</td>
 <td>PRIORITY LOW</td>
-<td>shapefile-related, still relevant?, rank:D-defer</td>
+<td>rank:D-defer, shapefile-related, still relevant?</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="full-table-all-142-issues">Full Table — All 142 Issues</h2>
+<h2 id="full-table-all-148-issues">Full Table — All 148 Issues</h2>
 <p>Sorted: A first (best), then B, C, D; within each group by benefit
 DESC.</p>
 <table>
@@ -2507,24 +2586,24 @@ DESC.</p>
 <tr>
 <td>A</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504">504</a></td>
+<td>3</td>
+<td>23</td>
+<td>v4</td>
+<td>PRIORITY HIGH</td>
+<td>Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate
+task …</td>
+</tr>
+<tr>
+<td>A</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16">16</a></td>
 <td>2</td>
 <td>17</td>
 <td>v4</td>
 <td>PRIORITY HIGH</td>
-<td>need new/updated “User Guide” (“Help” in header at right) since UI
-has c…</td>
-</tr>
-<tr>
-<td>A</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504">504</a></td>
-<td>3</td>
-<td>17</td>
-<td>v4</td>
-<td>PRIORITY MEDIUM</td>
-<td>Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate
-task …</td>
+<td>need new/updated “EJAM User Guide” (“Help” in header at right) since
+UI …</td>
 </tr>
 <tr>
 <td>A</td>
@@ -2602,6 +2681,16 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/400">400
 <td>PRIORITY HIGH</td>
 <td>improve how webapp users can find info on data vintage (in EJAM web
 app …</td>
+</tr>
+<tr>
+<td>A</td>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/599">599</a></td>
+<td>0</td>
+<td>11</td>
+<td>NA</td>
+<td>PRIORITY HIGH</td>
+<td>fix links in vignettes/webapp.Rmd</td>
 </tr>
 <tr>
 <td>A</td>
@@ -2709,16 +2798,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">161
 <td>NA</td>
 <td>PRIORITY MEDIUM</td>
 <td>ejamapp() should be able to handle mix of fips types</td>
-</tr>
-<tr>
-<td>A</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">136</a></td>
-<td>1</td>
-<td>7</td>
-<td>v4</td>
-<td>PRIORITY LOW</td>
-<td>in web app, fix console error msg when uploading a shapefile</td>
 </tr>
 <tr>
 <td>B</td>
@@ -3260,6 +3339,16 @@ Dasym…</td>
 <tr>
 <td>C</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595">595</a></td>
+<td>0</td>
+<td>7</td>
+<td>NA</td>
+<td>PRIORITY MEDIUM</td>
+<td>improve API documentation vignette</td>
+</tr>
+<tr>
+<td>C</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">490</a></td>
 <td>1</td>
 <td>7</td>
@@ -3301,6 +3390,16 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">162
 <tr>
 <td>C</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136">136</a></td>
+<td>1</td>
+<td>7</td>
+<td>v4</td>
+<td>PRIORITY LOW</td>
+<td>in web app, fix console error msg when uploading a shapefile</td>
+</tr>
+<tr>
+<td>C</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">588</a></td>
 <td>2</td>
 <td>7</td>
@@ -3318,6 +3417,16 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/70">70</
 <td>PRIORITY MEDIUM</td>
 <td>set up alerts that monitor and alert staff when the app goes down -
 ensu…</td>
+</tr>
+<tr>
+<td>C</td>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/596">596</a></td>
+<td>3</td>
+<td>7</td>
+<td>v4</td>
+<td>—</td>
+<td>EJAM v4.2024.0 pipeline incorrectly reports some ACS variables</td>
 </tr>
 <tr>
 <td>C</td>
@@ -3648,6 +3757,16 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/183">183
 <tr>
 <td>C</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/600">600</a></td>
+<td>1</td>
+<td>0</td>
+<td>NA</td>
+<td>—</td>
+<td>Expose a Community Report example in public pkgdown docs</td>
+</tr>
+<tr>
+<td>C</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/343">343</a></td>
 <td>1</td>
 <td>0</td>
@@ -3665,6 +3784,26 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/42">42</
 <td>NA</td>
 <td>PRIORITY LOW</td>
 <td>Remove unused report template files</td>
+</tr>
+<tr>
+<td>C</td>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/602">602</a></td>
+<td>2</td>
+<td>0</td>
+<td>NA</td>
+<td>—</td>
+<td>fix vignette on analyzing</td>
+</tr>
+<tr>
+<td>C</td>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/597">597</a></td>
+<td>2</td>
+<td>0</td>
+<td>NA</td>
+<td>—</td>
+<td>Add Donate button</td>
 </tr>
 <tr>
 <td>C</td>
@@ -4033,11 +4172,11 @@ code</td>
 <tbody>
 <tr>
 <td>v4</td>
-<td style="text-align: right;">31</td>
+<td style="text-align: right;">32</td>
 </tr>
 <tr>
 <td>NA</td>
-<td style="text-align: right;">111</td>
+<td style="text-align: right;">116</td>
 </tr>
 </tbody>
 </table>
@@ -4089,7 +4228,7 @@ crash/wrong-calculation signals, CRAN visibility</td>
 </tr>
 <tr>
 <td>Benefit</td>
-<td>0 – 19</td>
+<td>0 – 23</td>
 <td>5</td>
 </tr>
 </tbody>
