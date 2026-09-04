@@ -15,6 +15,13 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 
 ## Bug Fixes
 
+- Language counts from the tract-only ACS table C16001 (`lan_universe`,
+  `lan_spanish`, and the other `lan_*` counts) are now apportioned to block groups
+  by population share instead of repeating each tract's total on every block
+  group, so sums across block groups (in `ejamit()` results and the pipeline's
+  `acs_by_tract`, `acs_by_county`, and `acs_by_state` layers) no longer come out
+  about three times too high. Takes effect when `bg_acsdata` is rebuilt (#596).
+
 - The notes tab of the Excel workbook now says how the sites were selected. It
   had never done so: `buffer_desc_from_sitetype()` only appended that detail when
   the description so far was empty, which none of its branches can produce, and

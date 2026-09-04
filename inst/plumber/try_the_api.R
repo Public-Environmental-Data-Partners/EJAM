@@ -11,7 +11,7 @@
 #           /draft/echo, /draft/ejamit, /draft/ejamit_csv, /draft/report2,
 #           /draft/reportpost, /draft/ejam2report, /draft/ejam2excel,
 #           /draft/getblocksnearby, /draft/get_blockpoints_in_shape,
-#           /draft/doaggregate, /draft/dataset
+#           /draft/doaggregate
 #
 # START IT (in a background R process; returns a handle you can $kill()):
 
@@ -81,9 +81,6 @@ if (FALSE) {
   # precalculated sample result, as json or csv
   browseURL(paste0(test_url, "/draft/ejamit?test=true"))
   browseURL(paste0(test_url, "/draft/ejamit_csv?lon=-101&lat=36&radius=1"))
-
-  # a package dataset
-  # browseURL(paste0(test_url, "/draft/dataset?fname=testpoints_10"))
 
   ############## #
   # stop the background server when done

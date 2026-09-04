@@ -118,7 +118,6 @@ Implementation findings (things learned that the plan didn't know):
     EJAM#470 `sitenumber_label` logic)
   - `POST /data` and `@assets` — present but disabled inside `if (FALSE)` blocks
 - **Draft-only work to RETAIN** (exists nowhere in EJAM-API):
-  - `GET /dataset` — serve any EJAM .rda/.arrow dataset
   - `POST /report2` — full `ejamit()` parameter surface (~40 params) → html report
   - `POST /reportpost` — ejamit+ejam2report draft
   - `POST /ejam2report` — report from a supplied ejamit output object
@@ -169,7 +168,7 @@ pr_api$run(host = host, port = port)
 So locally:
 - `http://127.0.0.1:3035/report?...`, `/data`, `/query`, `/handoff`, `/__docs__/` behave
   **exactly like the production API paths** (preview fidelity — the whole point), and
-- every draft endpoint survives at `/draft/dataset`, `/draft/report2`, `/draft/echo`, ... with
+- every draft endpoint survives at `/draft/report2`, `/draft/echo`, ... with
   zero possibility of route collision, now or after any future sync.
 
 ### Why this beats the alternatives
@@ -267,7 +266,7 @@ request against the live API (`https://api.ejanalysis.com/...`):
 | Query endpoint | `POST /query?attribute=pctlowinc&value=0.9` — expect `{results, pagination}` envelope; also try `page=2&limit=100` and a bad `value` (expect 400) |
 | Handoff round trip | `POST /handoff` → token → `GET /handoff/<token>` |
 | CORS preflight | `OPTIONS /handoff` returns the CORS headers |
-| Drafts intact | `GET /draft/echo?msg=hi`, `GET /draft/getblocksnearby?...`, `GET /draft/dataset` |
+| Drafts intact | `GET /draft/echo?msg=hi`, `GET /draft/getblocksnearby?...` |
 
 Plus `R CMD check` / the plumber test group in `test_ejam()`.
 

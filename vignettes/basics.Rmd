@@ -165,7 +165,10 @@ ejam2report(out, fileextension = "html")
 ejam2report(out, sitenumber = 1, analysis_title = "Site #1")
 ```
 
-See a complete example:
+See complete examples:
+
+- [Community Report for Charles County, Maryland (single
+  site)](`r paste0(EJAM::url_package("api"), "/report?fips=24029&fileextension=pdf")`)
 
 - [Interactive HTML Multisite Report for a 10-site analysis of point locations,
   using a one-mile radius](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/inst/testdata/examples_of_output/testoutput_ejam2report_10pts_1miles.html)

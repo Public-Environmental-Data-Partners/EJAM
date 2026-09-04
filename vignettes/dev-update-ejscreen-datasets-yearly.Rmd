@@ -390,6 +390,21 @@ for Connecticut only. In normal package use, the decennial weights are created
 from packaged `bg_cenpop2020` data. If that data is unavailable, EJAM falls back
 to `tidycensus::get_decennial()` and caches the downloaded weights locally.
 
+## Tract-only ACS tables
+
+Disability (B18101), detailed language (C16001), and health insurance (B27010)
+are published only at tract resolution. `calc_blockgroupstats_from_tract_data()`
+apportions each tract count to its blockgroups by population share (`bgwt`) and
+repeats each tract's percentage on every blockgroup in the tract. Counts must be
+apportioned, not repeated, because `map_headernames` marks them `"sum of
+counts"`: `doaggregate()` and `calc_acs_by_geography()` add them up across
+blockgroups, so a tract total repeated on each blockgroup is counted once per
+blockgroup. The ACS 2022 and 2024 draft builds saved before this was fixed
+(EJAM#596) carried repeated language counts, which is why their `acs_by_state`
+files reported about three times the true `lan_universe`. Rebuilding
+`bg_acsdata` from the saved raw ACS stage (`force_bg_acsdata = TRUE`, with
+`force_acs = FALSE`) corrects every downstream stage.
+
 ## New or renamed indicators
 
 ### map_headernames
@@ -829,8 +844,13 @@ EJ-index threshold layers), **not** as archived CSVs in the S3 pipeline folders 
 so the replication fetches the reference live and uses
 [EJAM:::ejscreen_compare_geography_to_epa()] (which repairs FIPS leading zeros with
 [fips_lead_zero()], maps EPA names with `fixcolnames(., "acs", "r")`, joins on the
-full GEOID, and reports correlation + median difference per indicator). This
-verified an **exact** match for the ACS indicators EJAM carries.
+full GEOID, and reports correlation + median difference per indicator). For the
+2022 replication this verified an **exact** match for the eleven indicators the
+comparison covered (population, low income, people of color, limited-English
+households, under age 5, over age 64, and their percentages). The tract-derived
+language counts were not part of that comparison, which is how the repeated
+tract totals (EJAM#596) went unnoticed; include `LAN_UNIVERSE` and the other
+`LAN_*` fields in `outFields` when repeating it.
 
 The feature server returns at most ~2000 features per query (`maxRecordCount`), so a
 single call validates only the first page. For a full national check, **paginate**
