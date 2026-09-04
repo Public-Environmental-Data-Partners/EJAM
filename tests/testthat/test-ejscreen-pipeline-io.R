@@ -398,3 +398,25 @@ test_that("ejscreen_export stage validation requires usable ID and helper fields
   statepct_loaded <- EJAM:::ejscreen_pipeline_load("ejscreen_export_statepct", pipeline_dir, format = "rds")
   expect_equal(statepct_loaded, good, ignore_attr = TRUE)
 })
+
+test_that("bg_acsdata validation warns when tract language counts are repeated instead of apportioned (EJAM#596)", {
+  repeated <- data.frame(
+    bgfips = c("100010001001", "100010001002", "100010001003"),
+    pop = c(100, 300, 0),
+    pctmin = 0.2, pctlowinc = 0.1, pctlingiso = 0.02, pctlths = 0.05, pctdisability = 0.1,
+    lan_universe = c(380, 380, 380) # the tract total repeated on every blockgroup
+  )
+  expect_warning(
+    EJAM:::ejscreen_pipeline_validate(repeated, "bg_acsdata"),
+    "repeated on each blockgroup"
+  )
+  res <- suppressWarnings(EJAM:::ejscreen_pipeline_validate(repeated, "bg_acsdata"))
+  expect_true(any(grepl("EJAM#596", res$warnings)))
+  expect_length(res$errors, 0)
+
+  apportioned <- repeated
+  apportioned$lan_universe <- c(95, 285, 0) # blockgroup shares that sum to the tract total
+  res <- suppressWarnings(EJAM:::ejscreen_pipeline_validate(apportioned, "bg_acsdata"))
+  expect_false(any(grepl("EJAM#596", res$warnings)))
+  expect_length(res$errors, 0)
+})

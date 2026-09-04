@@ -105,6 +105,25 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       add_warning(paste0("percentage/fraction columns have values outside 0-1: ", paste(bad, collapse = ", ")))
     }
   }
+  check_tract_counts_apportioned <- function() {
+    # Tract-only ACS counts (language, from C16001) must be apportioned to blockgroups so
+    # they add up across blockgroups. If a tract total was repeated on every blockgroup,
+    # the population age 5+ for whom language is known (lan_universe) sums to more than
+    # the total population (issue EJAM#596).
+    if (all(c("pop", "lan_universe") %in% names(x)) &&
+        is.numeric(x[["pop"]]) && is.numeric(x[["lan_universe"]])) {
+      total_pop <- sum(x[["pop"]], na.rm = TRUE)
+      total_lan <- sum(x[["lan_universe"]], na.rm = TRUE)
+      if (total_pop > 0 && total_lan > total_pop) {
+        add_warning(paste0(
+          "lan_universe sums to ", format(total_lan, big.mark = ","),
+          " but pop sums to ", format(total_pop, big.mark = ","),
+          ": tract-level language counts appear to be repeated on each blockgroup ",
+          "instead of apportioned, so sums across blockgroups will be inflated (EJAM#596)"
+        ))
+      }
+    }
+  }
   check_all_na_numeric <- function(cols) {
     cols <- intersect(cols, names(x))
     bad <- cols[vapply(cols, function(col) {
@@ -414,6 +433,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       check_bgfips()
       check_nonnegative(c("pop"))
       check_fraction_percent_cols()
+      check_tract_counts_apportioned()
       check_islandareas_contract(check_demographics = TRUE)
       ###################################################### #
       # bg_envirodata ####
@@ -469,6 +489,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       expected_env <- if (exists("names_e")) names_e else character()
       warn_missing_cols(expected_env)
       check_fraction_percent_cols()
+      check_tract_counts_apportioned()
       check_islandareas_contract(check_demographics = TRUE)
       ###################################################### #
       # bgej ####
