@@ -564,6 +564,11 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
             if l not in ("enhancement", "retain-0325", "from archive")
             and "PRIORITY" not in l
         ]
+        ## The rank label is the whole point of this report, so it must survive
+        ## truncation even when an issue carries more than 4 other key labels.
+        rank_lbl = RANK_LABELS.get(r["quad"])
+        if rank_lbl in key_labs:
+            key_labs = [rank_lbl] + [l for l in key_labs if l != rank_lbl]
         lab_str  = ", ".join(key_labs[:4])
         ## truncate first, then escape - escaping first would let backslashes
         ## count toward the limit and could cut a "\$" in half
