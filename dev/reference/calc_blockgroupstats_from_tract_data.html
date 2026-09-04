@@ -133,11 +133,25 @@ staged pipeline recipe/config helpers documented in
 <p>Relies on the function get_acs_new() which is available from the package ACSdownload (on github) as ACSdownload::get_acs_new()</p>
 <p>Needs Census API key for <code><a href="https://walker-data.com/tidycensus/reference/get_decennial.html" class="external-link">tidycensus::get_decennial()</a></code>.</p>
 <p>Takes some time to download data for every State!</p>
-<p>First get tract counts, then apportion tract counts into blockgroup counts
-where that is how legacy EJSCREEN handled the indicator. Detailed language
-counts from C16001 are tract-level values repeated on each blockgroup in the
-tract, so language percentages are also tract-level percentages repeated on
-each blockgroup.</p>
+<p>First get tract counts, then apportion every tract count into blockgroup
+counts (the tract count times the blockgroup's share of the tract
+population, <code>bgwt</code>), then carry each tract's percentages onto its
+blockgroups.</p>
+<p>Apportioning applies to the language counts from C16001 (<code>lan_universe</code>,
+<code>lan_spanish</code>, etc.) exactly as it does to disability and health insurance.
+<code>map_headernames</code> marks all of these as <code>"sum of counts"</code>, so
+<code><a href="doaggregate.html">doaggregate()</a></code> and <code><a href="calc_acs_by_geography.html">calc_acs_by_geography()</a></code> add them up across
+blockgroups. A tract total repeated on every blockgroup would be counted
+once per blockgroup, about three times over, in every buffer, county, and
+state total (issue EJAM#596). Apportioned counts add back up to the tract
+total, to rounding, which is also how EPA's EJScreen block group layer
+reports language counts.</p>
+<p>Percentages such as <code>pctlan_spanish</code> are calculated at tract level and
+repeated on each blockgroup in the tract. That equals the ratio of the
+apportioned counts wherever <code>bgwt &gt; 0</code>, and it keeps the tract rate on
+zero-population blockgroups instead of reporting 0 there, the same
+convention <code>pctdisability</code> uses. Apportioned counts are rounded to whole
+persons after the percentages are set.</p>
 <p>For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region
 county equivalents while 2020 Decennial blockgroup FIPS use the older county
 equivalents. When <code>tract_weight_source = "decennial2020"</code> and <code>acs_raw</code> is

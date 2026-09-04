@@ -639,6 +639,25 @@ back to <code><a href="https://walker-data.com/tidycensus/reference/get_decennia
 downloaded weights locally.</p>
 </div>
 <div class="section level2">
+<h2 id="tract-only-acs-tables">Tract-only ACS tables<a class="anchor" aria-label="anchor" href="#tract-only-acs-tables"></a>
+</h2>
+<p>Disability (B18101), detailed language (C16001), and health insurance
+(B27010) are published only at tract resolution.
+<code><a href="../reference/calc_blockgroupstats_from_tract_data.html">calc_blockgroupstats_from_tract_data()</a></code> apportions each
+tract count to its blockgroups by population share (<code>bgwt</code>)
+and repeats each tract’s percentage on every blockgroup in the tract.
+Counts must be apportioned, not repeated, because
+<code>map_headernames</code> marks them <code>"sum of counts"</code>:
+<code><a href="../reference/doaggregate.html">doaggregate()</a></code> and <code><a href="../reference/calc_acs_by_geography.html">calc_acs_by_geography()</a></code> add
+them up across blockgroups, so a tract total repeated on each blockgroup
+is counted once per blockgroup. The ACS 2022 and 2024 draft builds saved
+before this was fixed (EJAM#596) carried repeated language counts, which
+is why their <code>acs_by_state</code> files reported about three times
+the true <code>lan_universe</code>. Rebuilding <code>bg_acsdata</code>
+from the saved raw ACS stage (<code>force_bg_acsdata = TRUE</code>, with
+<code>force_acs = FALSE</code>) corrects every downstream stage.</p>
+</div>
+<div class="section level2">
 <h2 id="new-or-renamed-indicators">New or renamed indicators<a class="anchor" aria-label="anchor" href="#new-or-renamed-indicators"></a>
 </h2>
 <div class="section level3">
@@ -1109,9 +1128,15 @@ archived CSVs in the S3 pipeline folders — so the replication fetches
 the reference live and uses [EJAM:::ejscreen_compare_geography_to_epa()]
 (which repairs FIPS leading zeros with [fips_lead_zero()], maps EPA
 names with <code>fixcolnames(., "acs", "r")</code>, joins on the full
-GEOID, and reports correlation + median difference per indicator). This
-verified an <strong>exact</strong> match for the ACS indicators EJAM
-carries.</p>
+GEOID, and reports correlation + median difference per indicator). For
+the 2022 replication this verified an <strong>exact</strong> match for
+the eleven indicators the comparison covered (population, low income,
+people of color, limited-English households, under age 5, over age 64,
+and their percentages). The tract-derived language counts were not part
+of that comparison, which is how the repeated tract totals (EJAM#596)
+went unnoticed; include <code>LAN_UNIVERSE</code> and the other
+<code>LAN_*</code> fields in <code>outFields</code> when repeating
+it.</p>
 <p>The feature server returns at most ~2000 features per query
 (<code>maxRecordCount</code>), so a single call validates only the first
 page. For a full national check, <strong>paginate</strong> with
