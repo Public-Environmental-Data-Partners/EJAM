@@ -96,54 +96,6 @@ function(req, res) {
 ####################################################### #
 # . ####
 
-# /dataset ####
-
-#* Return a dataset from the EJAM package (lazy-loaded .rda or downloaded .arrow), as JSON
-#* @param fname name of the dataset, like "blockgroupstats" (a trailing .rda or .arrow is ignored)
-#* @param attachment "true" to return as a download attachment
-#* @tag "Draft API Endpoints"
-#* @get /dataset
-#*
-function(fname = "blockgroupstats", attachment = "false", res) {
-
-  # accept "blockgroupstats", "blockgroupstats.rda", "bgej.arrow", etc.
-  itemname <- sub("\\.(rda|arrow)$", "", fname, ignore.case = TRUE)
-
-  data_items <- data(package = "EJAM")$results[, "Item"]
-
-  out <- NULL
-  if (itemname %in% data_items) {
-    env <- new.env(parent = emptyenv())
-    data(list = itemname, package = "EJAM", envir = env)
-    out <- get(itemname, envir = env)
-  } else {
-    # .arrow datasets (downloaded on demand); dataload_dynamic() loads into globalenv.
-    # It can throw on an unknown name or a failed download -- treat that as
-    # not-found rather than letting the endpoint 500.
-    tryCatch(
-      dataload_dynamic(itemname, silent = TRUE),
-      error = function(e) NULL, warning = function(w) NULL
-    )
-    if (exists(itemname, envir = globalenv())) {
-      out <- get(itemname, envir = globalenv())
-    }
-  }
-  if (is.null(out)) {
-    res$status <- 404
-    return(handle_error(paste0("No EJAM dataset found named ", itemname)))
-  }
-
-  if (api_true(attachment)) {
-    plumber::as_attachment(
-      value = out,
-      filename = paste0(itemname, ".json")
-    )
-  } else {
-    out
-  }
-}
-####################################################### #
-
 # /report2 ####
 
 ##  This endpoint is essentially doing  ejam2report(ejamit(  ))
