@@ -1,6 +1,6 @@
 # EJAM Open Issues — Scored by Cost & Benefit
 
-**Total open issues:** 148  |  **Generated:** 2026-09-04  |  **Source:** Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)
+**Total open issues:** 148  |  **Generated:** 2026-09-06  |  **Source:** Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)
 
 **Score payload:** `inst/issues/ejam_issues_scored_by_risk_and_value.json`
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Previous run | 2026-08-30 |
-| Issues opened since previous run | 6 |
+| Previous run | 2026-09-04 |
+| Issues opened since previous run | 0 |
 | Issues closed since previous run | 0 |
-| Issues whose quadrant changed | 1 |
+| Issues whose quadrant changed | 0 |
 
 ---
 
