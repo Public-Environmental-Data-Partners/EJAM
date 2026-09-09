@@ -10,7 +10,7 @@ popshare_at_top_n(pop, n = 10, astext = FALSE, dig = 0)
 \item{pop}{vector of population totals across places,
 like out$results_bysite$pop where out is the output of ejamit()}
 
-\item{n}{the number of places to consider}
+\item{n}{nonnegative whole number of places to consider, capped at the number of sites}
 
 \item{astext}{if TRUE, return text of description of results}
 
@@ -21,6 +21,10 @@ A fraction of 1
 }
 \description{
 What fraction of total population is accounted for by the top N places?
+}
+\details{
+Missing populations are treated as zero with a warning. Empty or all-zero
+populations return NA shares because the population fraction is undefined.
 }
 \examples{
  x <- testoutput_ejamit_100pts_1miles$results_bysite
