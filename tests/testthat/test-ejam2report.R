@@ -356,6 +356,18 @@ test_that("ejam2report normalizes default_format1pager fallback without a leadin
     .package = "EJAM"
   )
 
+  # This unit test checks extension routing; the renderer is already mocked.
+  # Keep Chrome mocked too, and assert that the PDF branch actually calls it.
+  printed <- FALSE
+  local_mocked_bindings(
+    chrome_print = function(input, output, ...) {
+      printed <<- TRUE
+      writeBin(c(charToRaw("%PDF"), raw(100)), output)
+      output
+    },
+    .package = "pagedown"
+  )
+
   expect_warning(
     result <- ejam2report(
       fips_report_test_output(radius = 1),
@@ -369,6 +381,7 @@ test_that("ejam2report normalizes default_format1pager fallback without a leadin
     fixed = TRUE
   )
   expect_match(basename(result), "\\.pdf$")
+  expect_true(printed)
 })
 ############################################################################## #
 
@@ -985,4 +998,23 @@ test_that("the actual in-app renderer uses the shared report header", {
       })
     }
   }
+})
+
+
+test_that("report selection rejects empty results and preserves explicit zero-population sites", {
+  out <- fips_report_test_output(radius = 0, valid = c(TRUE, FALSE), pop = c(10, 0),
+                                  invalid_msg = c("", unname(ejamit_reportable_invalid_messages())[1]))
+  default <- report_header_from_ejamit(out)
+  explicit <- report_header_from_ejamit(out, sitenumber = 2, analysis_title = "No population")
+  expect_equal(default$sitenumber, 1)
+  expect_equal(explicit$sitenumber, 2)
+  expect_true(explicit$reportable)
+  expect_identical(explicit$analysis_title, "No population")
+  expect_match(explicit$locationstr, "Site 2", fixed = TRUE)
+  out$results_bysite <- out$results_bysite[0, ]
+  empty <- report_header_from_ejamit(out)
+  expect_false(empty$reportable)
+  expect_null(empty$locationstr)
+  expect_message(expect_identical(ejam2report(out, launch_browser = FALSE), NA),
+                  "no reportable results")
 })
