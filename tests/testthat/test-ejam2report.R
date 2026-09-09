@@ -188,6 +188,8 @@ local_ejam2report_fips_mocks <- function(buffer_state, .env = parent.frame()) {
     create_filename = function(...) "report.html",
     build_community_report = function(...) {
       args <- list(...)
+      buffer_state$header <- args[c("report_title", "analysis_title", "locationstr")]
+      buffer_state$report_output <- args$output_df
       buffer_state$reported_fips <- c(
         buffer_state$reported_fips,
         as.character(args$output_df$ejam_uniq_id)
@@ -882,3 +884,105 @@ testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings"
   }
 })
 ################ ################# ################# ################# ################# #
+
+
+test_that("report headers preserve custom FIPS titles in rendered downloads", {
+  state <- new.env(parent = emptyenv())
+  local_ejam2report_fips_mocks(state)
+  for (title in list(NULL, global_or_param("default_standard_analysis_title"), "My county analysis")) {
+    out <- fips_report_test_output(radius = 0, valid = TRUE, pop = 10)
+    header <- report_header_from_ejamit(out, analysis_title = title, site_method = "FIPS")
+    ejam2report(out, analysis_title = title, return_html = TRUE, launch_browser = FALSE)
+    expect_identical(state$header, header[c("report_title", "analysis_title", "locationstr")])
+    expect_identical(state$header$analysis_title,
+                     if (identical(title, "My county analysis")) title else "FIPS 10001")
+    expect_identical(state$header$report_title, global_or_param("report_title"))
+  }
+})
+
+test_that("shared headers select the actual valid site and reject malformed results", {
+  out <- fips_report_test_output(radius = 0, valid = c(FALSE, TRUE), pop = c(0, 20))
+  header <- report_header_from_ejamit(out)
+  expect_identical(header$sitenumber, 2L)
+  expect_match(header$locationstr, "Site 2", fixed = TRUE)
+  expect_match(header$locationstr, "10003", fixed = TRUE)
+  expect_identical(header$analysis_title, fips2name("10003"))
+  expect_false(report_header_from_ejamit(out, sitenumber = 1)$reportable)
+
+  out$results_bysite$valid <- FALSE
+  expect_false(report_header_from_ejamit(out)$reportable)
+  expect_message(expect_identical(ejam2report(out, launch_browser = FALSE), NA), "no reportable results")
+
+  out$results_bysite$invalid_msg[2] <- unname(ejamit_reportable_invalid_messages())[1]
+  out$results_bysite$pop <- 0
+  header <- report_header_from_ejamit(out)
+  expect_true(header$reportable)
+  expect_identical(header$sitenumber, 2L)
+  expect_identical(header$report_title, global_or_param("report_title"))
+  out$results_bysite$invalid_msg <- unname(ejamit_reportable_invalid_messages())[1]
+  header <- report_header_from_ejamit(out)
+  expect_true(header$reportable)
+  expect_match(header$locationstr, "2", fixed = TRUE)
+  expect_false(grepl("0 places", header$locationstr, fixed = TRUE))
+})
+
+test_that("shared report headers cover points polygons and multisite selection", {
+  for (sitetype in c("latlon", "shp", "fips")) {
+    out <- data.table::copy(testoutput_ejamit_10pts_1miles)
+    out$sitetype <- sitetype
+    if (sitetype == "fips") out$results_bysite$ejam_uniq_id <- rep("10001", NROW(out$results_bysite))
+    multi <- report_header_from_ejamit(out, analysis_title = "Custom")
+    expect_identical(multi$sitenumber, 0L)
+    expect_identical(multi$report_title, global_or_param("report_title_multisite"))
+    expect_identical(multi$analysis_title, "Custom")
+    one <- report_header_from_ejamit(out, sitenumber = 2, analysis_title = "Custom",
+                                   sitenumber_label = 7)
+    expect_identical(one$report_title, global_or_param("report_title"))
+    expect_identical(one$analysis_title, "Custom")
+    expect_match(one$locationstr, "Site 7", fixed = TRUE)
+    expect_identical(report_header_from_ejamit(out, sitenumber = "bad")$sitenumber, 0L)
+    custom <- report_header_from_ejamit(out, report_title = "Custom report")
+    expect_identical(custom$report_title, "Custom report")
+  }
+})
+
+
+test_that("the actual in-app renderer uses the shared report header", {
+  # Exercise the production renderUI expression with a small server, without
+  # starting uploads, maps, or other unrelated app observers.
+  renderer <- Filter(function(expr) {
+    is.call(expr) && identical(expr[[1]], quote(`<-`)) &&
+      identical(expr[[2]], quote(output$comm_report_html))
+  }, as.list(body(app_server)))
+  expect_length(renderer, 1)
+  local_mocked_bindings(
+    build_community_report = function(report_title, analysis_title, locationstr, ...) {
+      htmltools::HTML(paste(report_title, analysis_title, locationstr))
+    },
+    .package = "EJAM"
+  )
+  for (sitetype in c("fips", "latlon", "shp")) {
+    for (n in c(1, 2)) {
+      out <- data.table::copy(testoutput_ejamit_10pts_1miles)
+      out$results_bysite <- out$results_bysite[seq_len(n), ]
+      out$sitetype <- sitetype
+      if (sitetype == "fips") out$results_bysite$ejam_uniq_id <- c("10001", "10003")[seq_len(n)]
+      shiny::testServer(function(input, output, session) {
+        data_processed <- function() out
+        sanitized_analysis_title <- shiny::reactive(input$analysis_title)
+        submitted_upload_method <- function() sitetype
+        download_ready_for_report_header_and_tables <- function(...) NULL
+        eval(renderer[[1]])
+      }, {
+        session$setInputs(analysis_title = "My analysis")
+        header <- report_header_from_ejamit(out, analysis_title = "My analysis", site_method = sitetype)
+        html <- output$comm_report_html$html
+        expect_match(html, header$report_title, fixed = TRUE)
+        expect_match(html, header$analysis_title, fixed = TRUE)
+        expect_match(html, header$locationstr, fixed = TRUE)
+        session$setInputs(analysis_title = "Updated title")
+        expect_match(output$comm_report_html$html, "Updated title", fixed = TRUE)
+      })
+    }
+  }
+})
