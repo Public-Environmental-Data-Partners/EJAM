@@ -31,11 +31,15 @@ and if atleast_not_exact = FALSE, answer is like}
 \item{whatn}{if TRUE, returns count of sites not fraction}
 }
 \value{
-vector of fractions 0-1 of all sites, or text about that
+vector of fractions 0-1 of all sites (or whole-site counts if whatn is TRUE), or text
 }
 \description{
 what percent of sites is enough to account for (at least) P percent of residents?
 minimum share of sites that can account for at least P\% of population
+}
+\details{
+Missing populations are treated as zero with a warning. Empty or all-zero
+populations return NA. A zero target needs zero sites when total population is positive.
 }
 \examples{
  x <- testoutput_ejamit_10pts_1miles$results_bysite[4:9, ]
