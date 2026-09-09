@@ -171,14 +171,9 @@ build_community_report <- function(
     filename = NULL
 ) {
 
-  if (is.null(report_title)) {
-    # Report TITLE if 1-site vs multisite - try to guess if it was multisite or not, if report_title not already specified, but it should always already be here via server or ejam2report()
-    if (is.na(output_df$ejam_uniq_id)) {
-      report_title <- global_or_param("report_title_multisite")
-    } else {
-      report_title <- global_or_param("report_title")
-      }
-  }
+  # Callers with ejamit output resolve the report type via report_header_from_ejamit().
+  # A standalone one-row table cannot reliably identify a multisite analysis.
+  if (is.null(report_title)) report_title <- global_or_param("report_title")
   if (is.null(analysis_title)) {
     analysis_title <- global_or_param("default_standard_analysis_title")
   }
