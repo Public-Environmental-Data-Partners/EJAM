@@ -409,3 +409,41 @@ testthat::test_that("use_local=FALSE still uses the download path", {
   expect_true({any(grepl("CENSUS_API_KEY", warns))})
 })
 ################ ################# ################# ################# ################# #
+
+
+test_that("offline local state and county requests need no connectivity probe", {
+  local_mocked_bindings(
+    offline_cat = function(...) stop("unexpected connectivity probe"),
+    .package = "EJAM"
+  )
+  for (fips in list("10001", "10", c("10003", "10", "10001", "10003"))) {
+    shp <- shapes_from_fips(fips)
+    expect_s3_class(shp, "sf")
+    expect_identical(shp$FIPS, fips)
+    expect_false(any(sf::st_is_empty(shp)))
+  }
+})
+
+test_that("offline downloads still fail clearly before contacting a service", {
+  local_mocked_bindings(offline_cat = function(...) TRUE, .package = "EJAM")
+  for (fips in list("100010401001", "10001040100", name2fips("Rehoboth Beach, DE"),
+                   c("10", "100010401001"))) {
+    expect_error(shapes_from_fips(fips), "Cannot download boundaries.*No internet")
+  }
+  expect_error(shapes_from_fips("10001", myservice_county = "tiger"),
+               "Cannot download boundaries.*No internet")
+  local_mocked_bindings(
+    shapes_counties_from_countyfips_local = function(...) NULL,
+    .package = "EJAM"
+  )
+  expect_error(shapes_from_fips("10001"), "Cannot download boundaries.*No internet")
+})
+
+test_that("offline invalid FIPS keep the input-validation result", {
+  local_mocked_bindings(
+    offline_cat = function(...) stop("unexpected connectivity probe"),
+    .package = "EJAM"
+  )
+  expect_warning(shp <- shapes_from_fips("99"), "no valid fips")
+  expect_true(all(sf::st_is_empty(shp)))
+})

@@ -80,10 +80,6 @@ shapes_from_fips <- function(fips,
   fips <- fips_lead_zero(fips) # or else merge with this will fail later
   original_order <- data.frame(n = seq_along(fips), fips = fips)
 
-  if (offline_cat()) {
-    stop("Cannot download boundaries - No internet connection seems to be available.")
-    # return(NULL)
-  }
   ########################## #
   # validation of input fips types ####
 
@@ -134,6 +130,20 @@ shapes_from_fips <- function(fips,
     allow_multiple_fips_types <- FALSE
   }
   ########################## #
+
+  # State bounds and the default county bounds can be served without a network.
+  # Check only after validating the FIPS, and before the try() download handlers,
+  # so an offline download request retains its clear error rather than empty shapes.
+  needs_download <- any(ftype %in% c("blockgroup", "tract", "city"))
+  county_fips <- fips[ftype %in% "county"]
+  if (length(county_fips) > 0) {
+    needs_download <- needs_download ||
+      !isTRUE(myservice_county[1] %in% "cartographic") ||
+      is.null(shapes_counties_from_countyfips_local(county_fips))
+  }
+  if (needs_download && offline_cat()) {
+    stop("Cannot download boundaries - No internet connection seems to be available.")
+  }
 
   options(tigris_use_cache = TRUE) # done in .onAttach() now
   # options(tigris_year = 2022) # uses default of the tigris package version installed
