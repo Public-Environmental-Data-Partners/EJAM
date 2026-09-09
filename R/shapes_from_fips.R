@@ -131,6 +131,15 @@ shapes_from_fips <- function(fips,
   }
   ########################## #
 
+  if (!allow_multiple_fips_types && length(intersect(ftype, oktypes)) > 1) {
+    if (shiny::isRunning()) {
+      shiny::validate("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")
+      shp_combined <- NULL
+    } else {
+      stop("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")
+    }
+  }
+
   # State bounds and the default county bounds can be served without a network.
   # Check only after validating the FIPS, and before the try() download handlers,
   # so an offline download request retains its clear error rather than empty shapes.
@@ -227,8 +236,8 @@ shapes_from_fips <- function(fips,
                                             ignore.attr = TRUE) # combines with any other types found so far, even if colnames and class (MULTIPOLYGON vs POLYGON) differ
     }
   } else {
-    if (all(ftype %in% 'county')) {
-      shp_combined <- try(shapes_counties_from_countyfips(fips, myservice = myservice_county), silent = TRUE)
+    if (all(ftype[!is.na(ftype)] %in% 'county')) {
+      shp_combined <- try(shapes_counties_from_countyfips(fips[ftype %in% "county"], myservice = myservice_county), silent = TRUE)
     }
   }
   ##                                                  state ####
@@ -251,14 +260,6 @@ shapes_from_fips <- function(fips,
 
   ####################### #
   if (!allow_multiple_fips_types) {
-    if (length(intersect(ftype, oktypes)) > 1) {
-      if (shiny::isRunning()) {
-        shiny::validate("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")
-        shp_combined <- NULL
-      } else {
-        stop("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")
-      }
-    }
     if (length(intersect(ftype, oktypes)) == 0) {
       if (shiny::isRunning()) {
         shiny::validate(paste0("This dataset contains no FIPS codes that are an allowed type. Analysis can only be run on datasets with these types of FIPS codes:",

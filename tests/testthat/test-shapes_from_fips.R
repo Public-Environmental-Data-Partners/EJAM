@@ -44,6 +44,7 @@ testthat::test_that("shapes_from_fips for countyfips", {
 })
 
 testthat::test_that("shapes_from_fips for cityfips", {
+  skip_if(offline(), "requires a live boundary service")
 
   expect_no_error({
     shp <- shapes_from_fips(fipslist$cityfips)
@@ -53,6 +54,7 @@ testthat::test_that("shapes_from_fips for cityfips", {
 })
 
 testthat::test_that("shapes_from_fips for tractfips", {
+  skip_if(offline(), "requires a live boundary service")
   junk = capture.output({
 
     expect_no_error({
@@ -66,6 +68,7 @@ testthat::test_that("shapes_from_fips for tractfips", {
 })
 
 testthat::test_that("shapes_from_fips for bgfips", {
+  skip_if(offline(), "requires a live boundary service")
   junk = capture.output({
 
     expect_no_error({
@@ -82,6 +85,12 @@ testthat::test_that("shapes_from_fips for bgfips", {
 ## inputs to try ####
 ## use these for several separate tests
 
+# Keep network setup inside the online branch so it cannot abort offline tests.
+if (offline()) {
+  test_that("mixed FIPS integration cases require a live boundary service", {
+    skip("requires a live boundary service")
+  })
+} else {
 inputfips <- c(NA,        # fips is NA
                "10",      # State
                "4273072", # fips valid but no polygons downloaded, so shape_from_fips() returns NA row for that one, empty polygon
@@ -274,6 +283,8 @@ testthat::test_that("bad fips - returns ALL (VALID) input fips, SORTED", {
 ################ ################# ################# ################# ################# #
 ################ ################# ################# ################# ################# #
 
+}
+
 testthat::test_that("shapes_from_fips misc cases", {
 
   suppressMessages({
@@ -296,10 +307,6 @@ testthat::test_that("shapes_from_fips misc cases", {
       NROW(shp) == 2 & all.equal(shp$FIPS , c("10001", NA)) # "99999") ) # right now, invalid FIPS get turned to NA
       })  # some ok some not - county
 
-      shp <- shapes_from_fips(c('2513205','1239999'))
-    expect_true({
-      NROW(shp) == 2 & sf::st_is_empty(shp$geometry[2])
-    })  # some ok some not - city
   })
 })
 ################ ################# ################# ################# ################# #
@@ -387,6 +394,7 @@ testthat::test_that("county bounds work with no CENSUS_API_KEY (as on the API se
 })
 
 testthat::test_that("use_local=FALSE still uses the download path", {
+  skip_if(offline(), "requires a live boundary service")
 
   # Proof that the built-in bounds are really bypassed: with no CENSUS_API_KEY,
   # the download path warns about the missing key before it tries the network.
@@ -464,5 +472,29 @@ test_that("offline mixed local and unusable FIPS still need no connectivity prob
     usable <- !is.na(shp$FIPS)
     expect_false(any(sf::st_is_empty(shp)[usable]))
     expect_true(all(sf::st_is_empty(shp)[!usable]))
+  }
+})
+
+
+test_that("mixed city FIPS retain missing boundary rows", {
+  skip_if(offline(), "requires a live boundary service")
+  shp <- shapes_from_fips(c("2513205", "1239999"))
+  expect_equal(NROW(shp), 2)
+  expect_true(sf::st_is_empty(shp$geometry[2]))
+})
+
+test_that("offline type validation precedes connectivity and accepts unusable rows", {
+  local_mocked_bindings(
+    offline_cat = function(...) stop("unexpected connectivity probe"),
+    .package = "EJAM"
+  )
+  expect_error(shapes_from_fips(c("10001", "10001040100"),
+                                allow_multiple_fips_types = FALSE),
+               "more than one type of FIPS")
+  for (fips in list(c("10001", NA), c("10001", "99"))) {
+    shp <- shapes_from_fips(fips, allow_multiple_fips_types = FALSE)
+    expect_identical(shp$FIPS[1], "10001")
+    expect_false(sf::st_is_empty(shp)[1])
+    expect_true(sf::st_is_empty(shp)[2])
   }
 })
