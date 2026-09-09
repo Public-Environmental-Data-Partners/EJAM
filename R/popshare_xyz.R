@@ -11,7 +11,7 @@ popshare_curve <- function(pop) {
     stop("pop must contain finite, nonnegative populations")
   }
   pop <- sort(pop, decreasing = TRUE)
-  cumulative <- cumsum(pop)
+  cumulative <- cumsum(as.double(pop))
   total <- if (length(pop) > 0) tail(cumulative, 1) else 0
   if (!is.finite(total)) stop("total population must be finite")
   list(n = length(pop), fraction = if (total > 0) c(0, cumulative / total) else NULL)
@@ -21,6 +21,17 @@ popshare_check_fraction <- function(x) {
   if (!is.numeric(x) || any(!is.finite(x) | x < 0 | x > 1)) {
     stop("shares must be finite numbers between 0 and 1")
   }
+}
+
+# Do not round a positive fraction to "0%", or a fraction below one to "100%".
+popshare_percent_text <- function(share, dig) {
+  rounded <- round(100 * share, dig)
+  text <- paste0(rounded, "%")
+  small <- !is.na(share) & share > 0 & rounded == 0
+  large <- !is.na(share) & share < 1 & rounded == 100
+  text[small] <- paste0("<", format(10^(-dig), scientific = FALSE, trim = TRUE), "%")
+  text[large] <- paste0(">", format(100 - 10^(-dig), scientific = FALSE, trim = TRUE), "%")
+  text
 }
 
 ##################################################################### #
@@ -53,8 +64,8 @@ popshare_at_top_x_pct = function(pop, x = 0.20, astext = FALSE, dig = 0) {
     stats::approx(x = (0:curve$n) / curve$n, y = curve$fraction, xout = x)$y
   }
 
-  sharetext <- paste0( paste0(round(100 * share, dig), "%"), collapse = ", ")
-  xtext <- paste0( paste0(round(100 * x, dig), "%"), collapse = ", ")
+  sharetext <- paste0( popshare_percent_text(share, dig), collapse = ", ")
+  xtext <- paste0( popshare_percent_text(x, dig), collapse = ", ")
   msg <- paste0(xtext, " of places account for ", sharetext, " of the total population")
 
   if (astext) {
@@ -100,7 +111,7 @@ popshare_at_top_n = function(pop, n=10, astext=FALSE, dig=0) {
   n <- pmin(n, curve$n)
   share <- if (is.null(curve$fraction)) rep(NA_real_, length(n)) else curve$fraction[n + 1]
 
-  sharetext <- paste0( paste0(round(100 * share, dig), "%"), collapse = ", ")
+  sharetext <- paste0( popshare_percent_text(share, dig), collapse = ", ")
   ntext <- paste0( n,  collapse = ", ")
   msg <- paste0(ntext, " places account for ", sharetext, " of the total population")
 
@@ -192,14 +203,14 @@ popshare_p_lives_at_what_pct <- function(pop, p, astext = FALSE, dig = 0, atleas
   }
   siteshare <- if (curve$n > 0) sitecountcan / curve$n else rep(NA_real_, length(p))
 
-  sharetext       <- paste0( paste0(round(100 * p, dig), "%"), collapse = ", ")
+  sharetext       <- paste0( popshare_percent_text(p, dig), collapse = ", ")
 
   if (whatn) {
     sitesharetext <- paste0(sitecountcan, collapse = ", ")
   } else {
-    sitesharetext <- paste0(round(100 * siteshare, dig), "%",  collapse = ", ")
+    sitesharetext <- paste0(popshare_percent_text(siteshare, dig), collapse = ", ")
   }
-  pct_of_pop_for_siteshare_text <- paste0(round(100 * pct_of_pop_for_siteshare, dig), "%",  collapse = ", ")
+  pct_of_pop_for_siteshare_text <- paste0(popshare_percent_text(pct_of_pop_for_siteshare, dig), collapse = ", ")
 
   msg        <- paste0("The most-populated ", sitesharetext, " of the ", length(pop)," places can account for at least ",
                        sharetext,

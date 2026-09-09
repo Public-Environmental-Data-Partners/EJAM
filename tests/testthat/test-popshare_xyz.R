@@ -36,3 +36,32 @@ test_that("population shares handle missing and zero populations explicitly", {
   expect_error(popshare_p_lives_at_what_pct(c(1, 2), NA_real_), "between 0 and 1")
   expect_error(popshare_at_top_n(c(1, 2), .5), "whole numbers")
 })
+
+
+test_that("large integer populations use double cumulative totals", {
+  pop <- rep(1000000000L, 3)
+  expect_no_warning(expect_equal(popshare_at_top_x_pct(pop, .5), .5))
+  expect_equal(popshare_at_top_n(pop, 2), 2 / 3)
+  expect_equal(popshare_p_lives_at_what_n(pop, .5), 2)
+})
+
+test_that("text never turns a positive share into zero percent", {
+  pop <- c(100, rep(0, 999))
+  expect_match(popshare_p_lives_at_what_pct(pop, .5, astext = TRUE),
+               "most-populated <1%", fixed = TRUE)
+  expect_match(popshare_at_top_x_pct(pop, .001, astext = TRUE),
+               "<1% of places account for 100%", fixed = TRUE)
+  expect_match(popshare_p_lives_at_what_pct(pop, .5, astext = TRUE, dig = 1),
+               "most-populated 0.1%", fixed = TRUE)
+  expect_match(popshare_at_top_x_pct(c(9999, 1), .5, astext = TRUE),
+               "50% of places account for >99%", fixed = TRUE)
+  expect_match(popshare_at_top_x_pct(pop, 0, astext = TRUE),
+               "0% of places account for 0%", fixed = TRUE)
+})
+
+test_that("NA NaN and infinite share queries produce the intended validation error", {
+  for (x in list(NA_real_, NaN, Inf, -Inf, c(.5, NA_real_))) {
+    expect_error(popshare_at_top_x_pct(c(80, 20), x), "shares must be finite numbers")
+    expect_error(popshare_p_lives_at_what_pct(c(80, 20), x), "shares must be finite numbers")
+  }
+})
