@@ -447,3 +447,22 @@ test_that("offline invalid FIPS keep the input-validation result", {
   expect_warning(shp <- shapes_from_fips("99"), "no valid fips")
   expect_true(all(sf::st_is_empty(shp)))
 })
+
+test_that("offline mixed local and unusable FIPS still need no connectivity probe", {
+  # ftype is NA for anything fips_valid() rejects, so a mixed request must not let
+  # those NAs turn the local-only shortcut into a download check. %in% reports NA as
+  # FALSE, which keeps needs_download a plain TRUE/FALSE and keeps NA out of the
+  # county subset; == or match() here would reintroduce the offline error.
+  local_mocked_bindings(
+    offline_cat = function(...) stop("unexpected connectivity probe"),
+    .package = "EJAM"
+  )
+  for (fips in list(c("10001", NA), c("10001", "99"), c("10", NA, "10003"))) {
+    shp <- shapes_from_fips(fips)
+    expect_s3_class(shp, "sf")
+    expect_length(shp$FIPS, length(fips))
+    usable <- !is.na(shp$FIPS)
+    expect_false(any(sf::st_is_empty(shp)[usable]))
+    expect_true(all(sf::st_is_empty(shp)[!usable]))
+  }
+})
