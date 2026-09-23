@@ -112,6 +112,15 @@ render_excel <- function(result, analysis_title = "EJAM analysis") { wb <- EJAM:
 send_binary <- function(res, value, type, filename, disposition = "attachment") { res$setHeader("Content-Type", type); res$setHeader("Content-Disposition", paste0(disposition, '; filename="', filename, '"')); res$body <- value; res }
 send_report <- function(res, value, fileextension) { if (identical(tolower(as.character(api_one(fileextension))), "pdf")) send_binary(res, value, "application/pdf", "EJAM_results.pdf", "inline") else send_binary(res, value, "text/html", "EJAM_results.html", "inline") }
 
+# Prefer the zip package (in EJAM's Suggests), which needs no external program;
+# utils::zip() shells out to a `zip` executable that minimal images may lack.
+zip_files <- function(archive, dir, files) {
+  if (requireNamespace("zip", quietly = TRUE)) return(invisible(zip::zip(archive, files = files, root = dir)))
+  if (!nzchar(Sys.getenv("R_ZIPCMD", Sys.which("zip")))) stop("multiple outputs need a ZIP file, but neither the zip package nor a zip program is installed; request one output at a time")
+  oldwd <- setwd(dir); on.exit(setwd(oldwd), add = TRUE)
+  utils::zip(archive, files = files)
+}
+
 # Return one requested artifact or a manifest-bearing ZIP. `run_analysis()` is
 # deliberately called once here; all wrappers share this implementation.
 render_outputs <- function(request, outputs, res, sitenumber = NULL, analysis_title = "EJAM analysis") {
@@ -125,7 +134,7 @@ render_outputs <- function(request, outputs, res, sitenumber = NULL, analysis_ti
   dir <- tempfile("ejam-api-"); dir.create(dir); on.exit(unlink(dir, recursive = TRUE), add = TRUE); files <- file.path(dir, names(artifacts)); for (i in seq_along(files)) writeBin(artifacts[[i]], files[[i]])
   manifest <- list(schema_version = bundle$schema_version, producer = bundle$producer, parameters = bundle$parameters, files = lapply(files, function(x) list(filename = basename(x), bytes = file.size(x), md5 = unname(tools::md5sum(x)))))
   manifest_file <- file.path(dir, "manifest.json"); writeLines(jsonlite::toJSON(manifest, auto_unbox = TRUE, pretty = TRUE), manifest_file)
-  archive <- tempfile(fileext = ".zip"); on.exit(unlink(archive), add = TRUE); oldwd <- setwd(dir); on.exit(setwd(oldwd), add = TRUE); utils::zip(archive, files = basename(c(files, manifest_file)))
+  archive <- tempfile(fileext = ".zip"); on.exit(unlink(archive), add = TRUE); zip_files(archive, dir, basename(c(files, manifest_file)))
   send_binary(res, readBin(archive, "raw", n = file.info(archive)$size), "application/zip", "EJAM_artifacts.zip")
 }
 
