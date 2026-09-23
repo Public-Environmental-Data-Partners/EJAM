@@ -88,7 +88,7 @@ like out$results_bysite$pop where out is the output of ejamit()</p></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
-<dd><p>the number of places to consider</p></dd>
+<dd><p>nonnegative whole number of places to consider, capped at the number of sites</p></dd>
 
 
 <dt id="arg-astext">astext<a class="anchor" aria-label="anchor" href="#arg-astext"></a></dt>
@@ -102,6 +102,11 @@ like out$results_bysite$pop where out is the output of ejamit()</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A fraction of 1</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Missing populations are treated as zero with a warning. Empty or all-zero
+populations return NA shares because the population fraction is undefined.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

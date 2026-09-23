@@ -121,7 +121,12 @@ and if atleast_not_exact = FALSE, answer is like</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>vector of fractions 0-1 of all sites, or text about that</p>
+    <p>vector of fractions 0-1 of all sites (or whole-site counts if whatn is TRUE), or text</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Missing populations are treated as zero with a warning. Empty or all-zero
+populations return NA. A zero target needs zero sites when total population is positive.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
