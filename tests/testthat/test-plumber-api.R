@@ -38,15 +38,18 @@ test_that("EJAM-API mirror file plumbs and defines the deployed endpoints", {
 })
 
 test_that("draft endpoints file plumbs and defines the draft-only endpoints", {
-  fname <- system.file("plumber/draft/plumber.R", package = "EJAM")
+  # Prefer the source tree: draft development must not accidentally exercise an
+  # older installed EJAM copy.
+  fname <- file.path("inst", "plumber", "draft", "plumber.R")
+  if (!file.exists(fname)) fname <- system.file("plumber/draft/plumber.R", package = "EJAM")
   expect_true(nzchar(fname) && file.exists(fname))
   pr <- plumber::plumb(fname)
   paths <- route_paths(pr)
   expect_true(all(c(
-    "/echo", "/ejamit", "/ejamit_csv", "/getblocksnearby",
-    "/report2", "/reportpost", "/ejam2report", "/ejam2excel",
-    "/get_blockpoints_in_shape", "/doaggregate"
+    "/echo", "/ejamit", "/ejam2report", "/ejam2excel", "/reportnew",
+    "/excel", "/all", "/getblocksnearby", "/get_blockpoints_in_shape"
   ) %in% paths))
+  expect_length(intersect(paths, c("/report2", "/reportpost", "/ejamit_csv", "/doaggregate")), 0)
   # drafts must NOT define any deployed-API path: they are mounted under /draft,
   # and a same-named route would shadow or confuse the mirror after any re-sync
   expect_length(intersect(paths, c("/", "/data", "/query", "/report", "/handoff")), 0)
@@ -54,7 +57,9 @@ test_that("draft endpoints file plumbs and defines the draft-only endpoints", {
 
 test_that("mirror + drafts compose: drafts mount at /draft with no route collisions", {
   api <- plumb_mirror()
-  draft <- plumber::plumb(system.file("plumber/draft/plumber.R", package = "EJAM"))
+  draft_file <- file.path("inst", "plumber", "draft", "plumber.R")
+  if (!file.exists(draft_file)) draft_file <- system.file("plumber/draft/plumber.R", package = "EJAM")
+  draft <- plumber::plumb(draft_file)
   api$mount("/draft", draft)
   expect_true("/draft/" %in% names(api$mounts))
   expect_length(intersect(route_paths(api), route_paths(draft)), 0)

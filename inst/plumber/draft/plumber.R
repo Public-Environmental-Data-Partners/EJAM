@@ -1,648 +1,174 @@
 ####################################################### #
-#
-# DRAFT / EXPERIMENTAL API endpoints that exist only in the EJAM package
-# (not in the deployed EJAM-API). ejamapi_local() mounts this router at
-# /draft, underneath the verbatim mirror of the deployed API that lives in
-# ../ejam-api/rest_controller.r -- so locally, production paths like /report
-# behave exactly as deployed, and these extras live at /draft/report2 etc.
-#
-# The endpoints here are drafts: exercised lightly (see
-# tests/testthat/test-ejamapi_local.R) but NOT production-hardened.
-# Anything proven useful should be promoted by proposing it as a change to
-# the EJAM-API repo (see ../ejam-api/SYNC.md), not by editing the mirror.
-#
-# for help on plumber APIs, see  https://www.rplumber.io/index.html
-############################# #
-
-library(EJAM) # uses installed version unless devtools::load_all() was done
-library(rlang)
+# Local experimental endpoints only.  ejamapi_local() mounts this router at
+# /draft; do not move these routes into the EJAM-API production mirror.
+####################################################### #
+library(EJAM)
 library(jsonlite)
 library(sf)
 library(geojsonsf)
 
-############################# #
 #* @apiTitle EJAM draft API endpoints
-#*
-#* @apiDescription Draft/experimental endpoints defined only in the EJAM package,
-#* served locally at /draft/... by EJAM's ejamapi_local().
-#* See the EJAM package for technical documentation on the functions powering these,
-#* at <https://ejanalysis.org/ejamdocs>
-############################# #
+#* @apiDescription Experimental local endpoints mounted below /draft. They are not hosted at api.ejanalysis.com.
 
-# helper functions ####
-# to convert API input format to R function parameter formats
-# note these do not handle a vector parameter, only convert a single "" or "true" or "false" value
-NULL_if_empty <- function(x) {
-  if ("" %in% x) {
-    return(NULL)
-  } else {
-    return(x)
-  }
+api_error <- function(res, message, status = 400L) {
+  res$status <- status
+  list(error = list(code = paste0("http_", status), message = message))
 }
-TRUEFALSE_if_truefalse <- function(x) {
-  if (length(x) == 1 && ("true"  %in% x || "TRUE"  %in% x)) {
-    return(TRUE)
-  }
-  if (length(x) == 1 && ("false" %in% x || "FALSE" %in% x)) {
-    return(FALSE)
-  }
-  return(x)
+api_one <- function(x) if (length(x)) x[[1]] else NULL
+api_empty <- function(x) is.null(x) || !length(x) || identical(api_one(x), "")
+api_bool <- function(x, name) {
+  if (is.logical(x) && length(x) == 1 && !is.na(x)) return(x)
+  y <- tolower(as.character(api_one(x)))
+  if (y %in% c("true", "false")) return(identical(y, "true"))
+  stop(name, " must be true or false")
 }
-api2rnulltf <- function(x) {
-  NULL_if_empty(TRUEFALSE_if_truefalse(x))
+api_num <- function(x, name, positive = FALSE) {
+  y <- suppressWarnings(as.numeric(api_one(x)))
+  if (length(y) != 1 || is.na(y) || !is.finite(y) || (positive && y <= 0)) stop(name, if (positive) " must be a finite positive number" else " must be a finite number")
+  y
 }
-# TRUE for TRUE/"true"/"TRUE" and FALSE otherwise, so endpoints can test a
-# truthiness param safely. (isTRUE(x) || ... covers the value after
-# api2rnulltf() converted "true" to logical TRUE; comparing TRUE == "true"
-# is FALSE in R, which silently broke the original attachment checks.)
-api_true <- function(x) {
-  isTRUE(x) || (length(x) == 1 && tolower(as.character(x)) %in% "true")
+api_values <- function(x, name, numeric = FALSE) {
+  if (api_empty(x)) return(NULL)
+  if (is.list(x) && !is.data.frame(x)) x <- unlist(x, use.names = FALSE)
+  y <- trimws(unlist(strsplit(paste(as.character(x), collapse = ","), ",", fixed = TRUE), use.names = FALSE))
+  if (!length(y) || any(!nzchar(y))) stop(name, " must not contain empty values")
+  if (!numeric) return(y)
+  z <- suppressWarnings(as.numeric(y)); if (anyNA(z) || any(!is.finite(z))) stop(name, " must contain only finite numbers")
+  z
 }
-# Error payload helper (drafts return JSON; the mirrored production router has
-# its own richer version with HTML escaping -- kept separate on purpose so the
-# mirror stays verbatim).
-handle_error <- function(message) {
-  list(error = message)
-}
-# Convert draft inputs to what ejamit() needs: a shapefile that arrives over
-# HTTP is a GeoJSON string; fips/sitepoints pass through.
-shape_from_geojson_param <- function(shape) {
-  if (is.null(shape)) return(NULL)
-  sf_area <- tryCatch(geojson_sf(shape), error = function(e) NULL)
-  if (is.null(sf_area)) stop("shapefile parameter must be a valid GeoJSON string")
-  sf_area
+api_shape <- function(x) {
+  if (api_empty(x)) return(NULL)
+  if (is.list(x) && !is.character(x)) x <- jsonlite::toJSON(x, auto_unbox = TRUE)
+  y <- tryCatch(geojsonsf::geojson_sf(api_one(x)), error = function(e) e)
+  if (inherits(y, "error")) stop("shape must be valid GeoJSON")
+  y
 }
 
-############################# #
-# filters ####
+# Flat request adapter. Exactly one location mode is accepted.
+normalize_request <- function(sites = NULL, lat = NULL, lon = NULL, fips = NULL,
+                              shape = NULL, radius = 3, buffer = NULL,
+                              radius_donut_lower_edge = 0, subgroups_type = "nh",
+                              include_ejindexes = TRUE, calculate_ratios = TRUE,
+                              extra_demog = TRUE, need_proximityscore = FALSE,
+                              showdrinkingwater = TRUE, showpctowned = TRUE) {
+  if (!api_empty(buffer) && !api_empty(radius) && !identical(as.character(api_one(buffer)), as.character(api_one(radius)))) stop("radius and buffer conflict; use radius")
+  if (api_empty(radius) && !api_empty(buffer)) radius <- buffer
+  modes <- c(!api_empty(sites) || !api_empty(lat) || !api_empty(lon), !api_empty(fips), !api_empty(shape))
+  if (sum(modes) != 1) stop("supply exactly one of sites/lat-lon, fips, or shape")
+  args <- list(radius = api_num(radius, "radius", TRUE), radius_donut_lower_edge = api_num(radius_donut_lower_edge, "radius_donut_lower_edge"), subgroups_type = as.character(api_one(subgroups_type)), include_ejindexes = api_bool(include_ejindexes, "include_ejindexes"), calculate_ratios = api_bool(calculate_ratios, "calculate_ratios"), extra_demog = api_bool(extra_demog, "extra_demog"), need_proximityscore = api_bool(need_proximityscore, "need_proximityscore"), showdrinkingwater = api_bool(showdrinkingwater, "showdrinkingwater"), showpctowned = api_bool(showpctowned, "showpctowned"))
+  if (modes[[1]]) {
+    if (!api_empty(sites)) { sites <- as.data.frame(sites); if (!all(c("lat", "lon") %in% names(sites))) stop("sites must contain lat and lon"); latv <- suppressWarnings(as.numeric(sites$lat)); lonv <- suppressWarnings(as.numeric(sites$lon))
+    } else { if (api_empty(lat) || api_empty(lon)) stop("lat and lon must be supplied together"); latv <- api_values(lat, "lat", TRUE); lonv <- api_values(lon, "lon", TRUE) }
+    if (!length(latv) || length(latv) != length(lonv) || anyNA(latv) || anyNA(lonv) || any(abs(latv) > 90) || any(abs(lonv) > 180)) stop("lat and lon must be equal-length valid coordinates")
+    args$sitepoints <- data.frame(lat = latv, lon = lonv); method <- "latlon"
+  } else if (modes[[2]]) { args$fips <- api_values(fips, "fips"); method <- "fips"
+  } else { args$shapefile <- api_shape(shape); method <- "shape" }
+  list(args = args, location_method = method)
+}
 
-## logger ####
+to_json_safe <- function(x) { if (inherits(x, "data.frame")) return(as.data.frame(x, stringsAsFactors = FALSE)); if (is.list(x)) return(lapply(x, to_json_safe)); x }
+analysis_keys <- c("radius", "radius_donut_lower_edge", "subgroups_type", "include_ejindexes", "calculate_ratios", "extra_demog", "need_proximityscore", "showdrinkingwater", "showpctowned")
+bundle_from_result <- function(result, request) {
+  list(schema_version = "ejam-analysis-v1", producer = list(ejam_version = as.character(utils::packageVersion("EJAM")), data_vintage = NA_character_), input = list(location_method = request$location_method, site_count = if (!is.null(request$args$sitepoints)) nrow(request$args$sitepoints) else length(request$args$fips)), parameters = request$args[intersect(names(request$args), analysis_keys)], results = to_json_safe(result), metadata = list())
+}
+bundle_to_result <- function(bundle) {
+  if (!is.list(bundle) || !identical(bundle$schema_version, "ejam-analysis-v1") || !is.list(bundle$results)) stop("analysis_bundle must be a supported ejam-analysis-v1 document")
+  out <- bundle$results
+  for (nm in intersect(names(out), c("results_overall", "results_bysite", "results_bybg_people", "formatted", "longnames"))) if (is.list(out[[nm]])) out[[nm]] <- data.table::as.data.table(out[[nm]])
+  out
+}
+run_analysis <- function(request) do.call(EJAM::ejamit, request$args)
 
-#* Log some information about the incoming request
+render_report <- function(result, fileextension = "html", sitenumber = NULL, report_title = NULL, analysis_title = NULL, show_ratios_in_report = TRUE, extratable_show_ratios_in_report = TRUE, extratable_title = "") {
+  ext <- tolower(as.character(api_one(fileextension))); if (!ext %in% c("html", "pdf")) stop("fileextension must be html or pdf")
+  site <- if (api_empty(sitenumber) || identical(as.character(api_one(sitenumber)), "overall")) NULL else api_num(sitenumber, "sitenumber")
+  args <- list(ejamitout = result, sitenumber = site, fileextension = ext, report_title = report_title, analysis_title = analysis_title, show_ratios_in_report = api_bool(show_ratios_in_report, "show_ratios_in_report"), extratable_show_ratios_in_report = api_bool(extratable_show_ratios_in_report, "extratable_show_ratios_in_report"), extratable_title = extratable_title, launch_browser = FALSE)
+  if (identical(ext, "html")) return(do.call(EJAM::ejam2report, c(args, list(return_html = TRUE))))
+  path <- do.call(EJAM::ejam2report, args); if (!is.character(path) || !file.exists(path)) stop("EJAM did not create a readable PDF")
+  readBin(path, "raw", n = file.info(path)$size)
+}
+render_excel <- function(result, analysis_title = "EJAM analysis") { wb <- EJAM::ejam2excel(result, save_now = FALSE, launchexcel = FALSE, interactive_console = FALSE, analysis_title = analysis_title); path <- tempfile(fileext = ".xlsx"); on.exit(unlink(path), add = TRUE); openxlsx::saveWorkbook(wb, path, overwrite = TRUE); readBin(path, "raw", n = file.info(path)$size) }
+send_binary <- function(res, value, type, filename) { res$setHeader("Content-Type", type); res$setHeader("Content-Disposition", paste0('attachment; filename="', filename, '"')); value }
+
+# Return one requested artifact or a manifest-bearing ZIP. `run_analysis()` is
+# deliberately called once here; all wrappers share this implementation.
+render_outputs <- function(request, outputs, res, sitenumber = NULL, analysis_title = "EJAM analysis") {
+  outputs <- unique(tolower(api_values(outputs, "outputs"))); if (!length(outputs) || any(!outputs %in% c("html", "pdf", "xlsx", "json"))) stop("outputs must contain html, pdf, xlsx, and/or json")
+  result <- run_analysis(request); bundle <- bundle_from_result(result, request); artifacts <- list()
+  if ("json" %in% outputs) artifacts[["EJAM_analysis.json"]] <- charToRaw(jsonlite::toJSON(bundle, auto_unbox = TRUE, null = "null", dataframe = "rows"))
+  if ("html" %in% outputs) artifacts[["EJAM_results.html"]] <- charToRaw(render_report(result, "html", sitenumber, analysis_title = analysis_title))
+  if ("pdf" %in% outputs) artifacts[["EJAM_results.pdf"]] <- render_report(result, "pdf", sitenumber, analysis_title = analysis_title)
+  if ("xlsx" %in% outputs) artifacts[["EJAM_results.xlsx"]] <- render_excel(result, analysis_title)
+  if (length(artifacts) == 1) { name <- names(artifacts)[[1]]; type <- if (grepl("json$", name)) "application/json" else if (grepl("html$", name)) "text/html" else if (grepl("pdf$", name)) "application/pdf" else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; return(send_binary(res, artifacts[[1]], type, name)) }
+  dir <- tempfile("ejam-api-"); dir.create(dir); on.exit(unlink(dir, recursive = TRUE), add = TRUE); files <- file.path(dir, names(artifacts)); for (i in seq_along(files)) writeBin(artifacts[[i]], files[[i]])
+  manifest <- list(schema_version = bundle$schema_version, producer = bundle$producer, parameters = bundle$parameters, files = lapply(files, function(x) list(filename = basename(x), bytes = file.size(x), md5 = unname(tools::md5sum(x)))))
+  manifest_file <- file.path(dir, "manifest.json"); writeLines(jsonlite::toJSON(manifest, auto_unbox = TRUE, pretty = TRUE), manifest_file)
+  archive <- tempfile(fileext = ".zip"); oldwd <- setwd(dir); on.exit(setwd(oldwd), add = TRUE); utils::zip(archive, files = basename(c(files, manifest_file)))
+  send_binary(res, readBin(archive, "raw", n = file.info(archive)$size), "application/zip", "EJAM_artifacts.zip")
+}
+
 #* @filter logger
-function(req, res) {
-  if (!interactive()) { # do not save log if interactive() to avoid saving file when running a unit test?
-    cat(as.character(Sys.time()), "-",
-        req$REQUEST_METHOD, req$PATH_INFO, "-",
-        req$HTTP_USER_AGENT, "@", req$REMOTE_ADDR, "\n", append = TRUE,
-        file = file.path(tempdir(), "log_api_usage.txt"))
-  }
-  plumber::forward()
-}
+function(req, res) plumber::forward()
 
-####################################################### #
-#  . --------------------------------- ####
-#  DEFINE DRAFT API ENDPOINTS ####
-####################################################### #
-# . ####
-
-# /report2 ####
-
-##  This endpoint is essentially doing  ejam2report(ejamit(  ))
-##  exposing most ejamit() parameters,
-##  so inputs are point(s) or polygon(s) or fip(s), and output is html summary report.
-
-#* Get EJAM analysis results report as HTML (on one site or the aggregate of multiple sites overall)
-#* See <https://ejanalysis.org/ejamdocs> for more information about the ejamit() and ejam2report() functions
-#*
-#* @param lat if provided, a vector of latitudes in decimal degrees (comma-separated values)
-#* @param lon if provided, a vector of longitudes in decimal degrees (comma-separated values)
-#* @param sitepoints optional way to provide lat,lon: a data.table with columns lat, lon giving point locations of sites or facilities around which are circular buffers
-#* @param fips optional FIPS code vector (comma-separated values) to provide if using FIPS instead of sitepoints to specify places to analyze
-#* @param shapefile optional. A GeoJSON string of polygon(s) to analyze.
-#* @param sitenumber if provided, reports on specified row in results table of sites,
-#*   instead of on overall aggregate of all sites analyzed (default)
-#* @param radius in miles, defining circular buffer around a site point, or buffer to add to polygon
-#* @param radius_donut_lower_edge radius of lower edge of donut ring if analyzing a ring not circle
-#* @param subgroups_type Optional (uses default). "nh" for non-hispanic race subgroups, "alone" for
-#*   race subgroups like White Alone, or "both"
-#* @param include_ejindexes whether to try to include EJ Indexes (assuming dataset is available)
-#* @param calculate_ratios whether to calculate and return ratio of each indicator to US and State overall averages
-#* @param extra_demog if should include more indicators on language etc.
-#* @param need_proximityscore whether to calculate proximity scores
-#* @param quiet set to TRUE to avoid some console messages
-#* @param showdrinkingwater whether to include drinking water indicator values or display as NA
-#* @param showpctowned whether to include percent owner-occupied units indicator values or display as NA
-#* @param attachment "true" means return html file as attachment
-#*
-#* @tag "Draft API Endpoints"
-#* @post /report2
-#* @serializer html
-function(
-    sitepoints = "",  lat = "",  lon = "",
-    radius = 3,
-    fips = "",
-    shapefile = "",
-
-    sitenumber = "",
-
-    radius_donut_lower_edge = 0,
-    subgroups_type = "nh",
-    include_ejindexes = "true",
-    calculate_ratios = "true",
-    extra_demog = "true",
-    need_proximityscore = "false",
-    quiet = "true",
-    showdrinkingwater = "true",
-    showpctowned = "true",
-
-    attachment = "true",
-    res
-) {
-
-  fname <- "EJAM_results.html"
-
-  shp <- NULL
-  shapefile <- api2rnulltf(shapefile)
-  if (!is.null(shapefile)) {
-    shp <- tryCatch(shape_from_geojson_param(shapefile), error = function(e) e)
-    if (inherits(shp, "error")) {
-      res$status <- 400
-      return(paste0("<html><body><h3>Error</h3><p>", conditionMessage(shp), "</p></body></html>"))
-    }
-  }
-
-  ejamitout <- tryCatch(
-    ejamit(
-      sitepoints = api2rnulltf(sitepoints),
-      lat = as.numeric(api2rnulltf(lat)), lon = as.numeric(api2rnulltf(lon)),
-      radius = as.numeric(api2rnulltf(radius)),
-      fips = api2rnulltf(fips),
-      shapefile = shp,
-
-      radius_donut_lower_edge = as.numeric(api2rnulltf(radius_donut_lower_edge)),
-      subgroups_type = api2rnulltf(subgroups_type),
-      include_ejindexes = api2rnulltf(include_ejindexes),
-      calculate_ratios = api2rnulltf(calculate_ratios),
-      extra_demog = api2rnulltf(extra_demog),
-      need_proximityscore = api2rnulltf(need_proximityscore),
-      quiet = api2rnulltf(quiet),
-      showdrinkingwater = api2rnulltf(showdrinkingwater),
-      showpctowned = api2rnulltf(showpctowned)
-    ),
-    error = function(e) e
-  )
-  if (inherits(ejamitout, "error")) {
-    res$status <- 400
-    return(paste0("<html><body><h3>Error</h3><p>", conditionMessage(ejamitout), "</p></body></html>"))
-  }
-
-  sitenumber <- api2rnulltf(sitenumber)
-  if (!is.null(sitenumber)) sitenumber <- as.numeric(sitenumber)
-
-  out <- ejam2report(ejamitout = ejamitout,
-                     sitenumber = sitenumber,
-                     shp = shp,
-                     return_html = TRUE,
-                     launch_browser = FALSE)
-
-  if (api_true(attachment)) {
-    plumber::as_attachment(
-      value = out,
-      filename = fname
-    )
-  } else {
-    out
-  }
-}
-####################################################################################################### #
-
-# /reportpost ####
-
-##  Leaner variant of /report2: essentially ejam2report(ejamit( )) with just the core inputs. Inputs are like those to ejamit(), returns html EJAM summary report
-#*
-#* @param lat Latitude decimal degrees (single point or vector of comma-separated values like lat=34,35,32)
-#* @param lon Longitude decimal degrees
-#* @param sitenumber to get a report on just 1 of the submitted sites
-#*   but note it is more efficient to pass just the 1 site in the API call
-#* @param radius Radius in miles
-#* @param fips Census fips code for Census unit(s) of
-#*   type(s) blockgroup, tract, city (7-digit), county (5-digit), or state (2-digit)
-#* @param shapefile A GeoJSON string of polygon(s) to analyze
-#* @param attachment optional, "true" for download of attachment
-#*
-#* @serializer html
-#* @tag "Draft API Endpoints"
-#* @post /reportpost
-#*
-function(lat = "", lon = "", radius = "", shapefile = "", fips = "",
-         sitenumber = "",
-         attachment = "true", res) {
-
-  filename <- "EJAM_results.html"
-
-  lat <- as.numeric(api2rnulltf(lat))
-  lon <- as.numeric(api2rnulltf(lon))
-  radius <- as.numeric(api2rnulltf(radius))
-  fips <- api2rnulltf(fips)
-  sitenumber <- api2rnulltf(sitenumber)
-  if (!is.null(sitenumber)) sitenumber <- as.numeric(sitenumber)
-
-  shp <- NULL
-  shapefile <- api2rnulltf(shapefile)
-  if (!is.null(shapefile)) {
-    shp <- tryCatch(shape_from_geojson_param(shapefile), error = function(e) e)
-    if (inherits(shp, "error")) {
-      res$status <- 400
-      return(paste0("<html><body><h3>Error</h3><p>", conditionMessage(shp), "</p></body></html>"))
-    }
-  }
-
-  ejamitout <- tryCatch(
-    ejamit(
-      lat = lat, lon = lon, radius = radius, shapefile = shp, fips = fips
-    ),
-    error = function(e) e
-  )
-  if (inherits(ejamitout, "error")) {
-    res$status <- 400
-    return(paste0("<html><body><h3>Error</h3><p>", conditionMessage(ejamitout), "</p></body></html>"))
-  }
-
-  reportout <- ejam2report(ejamitout = ejamitout,
-                           sitenumber = sitenumber,
-                           shp = shp,
-                           return_html = TRUE,
-                           launch_browser = FALSE)
-
-  if (api_true(attachment)) {
-    plumber::as_attachment(
-      value = reportout,
-      filename = filename
-    )
-  } else {
-    reportout
-  }
-}
-####################################################################################################### #
-# ~ ####
-
-# /ejam2report ####
-
-#* like `ejam2report()`, returns html EJAM summary report given the list that is the output of `ejamit()`
-#*
-#* @param ejamitout the output of `ejamit()` (as JSON), and if omitted, a sample report is returned
-#* @param sitenumber if provided, reports on specified row in results table of sites
-#* @param attachment optional, "true" for download of attachment
-#*
-#* Like `EJAM::ejam2report()`
-#*
-#* @serializer html
-#* @tag "Draft API Endpoints"
-#* @post /ejam2report
-#*
-function(ejamitout = NULL, sitenumber = "", attachment = "true", res) {
-
-  filename <- "EJAM_results.html"
-
-  if (is.null(ejamitout) || identical(ejamitout, "")) {
-    ejamitout <- testoutput_ejamit_10pts_1miles
-  } else {
-    # Arrived as parsed JSON (lists of lists); rebuild the tables ejam2report() reads.
-    # This round trip is lossy for some attributes -- draft quality only.
-    for (nm in c("results_overall", "results_bysite", "results_bybg_people")) {
-      if (!is.null(ejamitout[[nm]])) {
-        ejamitout[[nm]] <- data.table::as.data.table(ejamitout[[nm]])
-      }
-    }
-  }
-
-  sitenumber <- api2rnulltf(sitenumber)
-  if (!is.null(sitenumber)) sitenumber <- as.numeric(sitenumber)
-
-  # NOTE: this used to wrap ejam2report() in future::future(), which meant the
-  # endpoint returned a Future object instead of the report. Synchronous now.
-  out <- ejam2report(
-    ejamitout = ejamitout,
-    sitenumber = sitenumber,
-    launch_browser = FALSE,
-    fileextension = "html",
-    return_html = TRUE
-  )
-
-  if (api_true(attachment)) {
-    plumber::as_attachment(
-      value = out,
-      filename = filename
-    )
-  } else {
-    out
-  }
-}
-####################################################################################################### #
-
-# /ejam2excel ####
-
-#* like ejam2excel(), returns xlsx file of EJAM analysis results
-#*
-#* @param lat Latitude decimal degrees (comma-separated for multiple sites)
-#* @param lon Longitude decimal degrees
-#* @param radius Radius in miles
-#* @param fips Census FIPS code(s) such as Counties or blockgroups
-#* @param shapefile A GeoJSON string of polygon(s) to analyze
-#* @param test "true" returns a spreadsheet of a pre-calculated sample result (ignoring other params)
-#*
-#* See `?EJAM::ejam2excel()`
-#*
-#* @serializer contentType list(type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-#* @tag "Draft API Endpoints"
-#* @post /ejam2excel
-#*
-function(lat = "", lon = "", radius = 3, fips = "", shapefile = "", test = "false", res) {
-
-  if (api_true(test)) {
-    ejamitout <- testoutput_ejamit_10pts_1miles
-  } else {
-    shp <- NULL
-    shapefile <- api2rnulltf(shapefile)
-    if (!is.null(shapefile)) {
-      shp <- shape_from_geojson_param(shapefile)
-    }
-    ejamitout <- tryCatch(
-      ejamit(
-        lat = as.numeric(api2rnulltf(lat)), lon = as.numeric(api2rnulltf(lon)),
-        radius = as.numeric(api2rnulltf(radius)),
-        fips = api2rnulltf(fips), shapefile = shp
-      ),
-      error = function(e) e
-    )
-    if (inherits(ejamitout, "error")) {
-      res$status <- 400
-      res$setHeader("Content-Type", "application/json")
-      return(jsonlite::toJSON(handle_error(conditionMessage(ejamitout)), auto_unbox = TRUE))
-    }
-  }
-
-  # ejam2excel(save_now = FALSE) returns an openxlsx workbook; write it to a
-  # temp .xlsx and stream the bytes (there is no built-in plumber xlsx serializer).
-  wb <- ejam2excel(ejamitout, save_now = FALSE, launchexcel = FALSE, interactive_console = FALSE)
-  tmp <- tempfile(fileext = ".xlsx")
-  openxlsx::saveWorkbook(wb, tmp, overwrite = TRUE)
-  on.exit(unlink(tmp), add = TRUE)
-  res$setHeader("Content-Disposition", 'attachment; filename="EJAM_results.xlsx"')
-  readBin(tmp, "raw", n = file.info(tmp)$size)
-}
-####################################################################################################### #
-
-# /ejamit_csv ####
-
-#* csv table of EJAM analysis summary results for all residents within X miles of point(s), in FIPS area(s), or in polygon(s). Like EJAM::ejamit()$results_overall (but with friendlier column names for indicators).
-#*
-#* @param lat Latitude decimal degrees (comma-separated for multiple sites)
-#* @param lon Longitude decimal degrees
-#* @param radius Radius in miles
-#*
-#* @param fips Census FIPS code(s) such as Counties or blockgroups
-#* @param shapefile A GeoJSON string of polygon(s) to analyze (ignores lat,lon if provided)
-#*
-#* @param names "long" returns plain-English name of each indicator. Any other setting returns short variable names like "pctlowinc"
-#* @param test "true" or "false" If true, returns a pre-calculated result (ignoring lat, lon, radius)
-#*
-#* @serializer csv
-#* @tag "Draft API Endpoints"
-#* @get /ejamit_csv
-#*
-function(lat = 40.81417, lon = -96.69963, radius = 1, shapefile = "", fips = "",
-         names = "long", test = "false", res) {
-
-  if (api_true(test)) {
-    out <- as.data.frame(EJAM::testoutput_ejamit_10pts_1miles$results_overall)
-  } else {
-    shp <- NULL
-    shapefile <- api2rnulltf(shapefile)
-    if (!is.null(shapefile)) {
-      shp <- shape_from_geojson_param(shapefile)
-    }
-    fips <- api2rnulltf(fips)
-    if (!is.null(shp)) {
-      out <- ejamit(shapefile = shp, radius = as.numeric(radius))$results_overall
-    } else if (!is.null(fips)) {
-      out <- ejamit(fips = fips, radius = as.numeric(radius))$results_overall
-    } else {
-      out <- ejamit(
-        sitepoints = data.frame(lat = as.numeric(lat), lon = as.numeric(lon)),
-        radius = as.numeric(radius)
-      )$results_overall
-    }
-    out <- as.data.frame(out)
-  }
-
-  if (identical(names, "long")) {
-    names(out) <- fixcolnames(names(out), "r", "long")
-  }
-  out
-}
-####################################################### #
-
-# /ejamit ####
-
-#* json table of EJAM analysis summary results for all residents within X miles of point(s), in FIPS area(s), or in polygon(s). Like EJAM::ejamit()$results_overall (but with friendlier column names for indicators).
-#*
-#* @param lat Latitude decimal degrees (comma-separated for multiple sites)
-#* @param lon Longitude decimal degrees
-#* @param radius Radius in miles
-#*
-#* @param fips Census FIPS code(s) such as Counties or blockgroups
-#* @param shapefile A GeoJSON string of polygon(s) to analyze (ignores lat,lon if provided)
-#*
-#* @param names "long" returns plain-English name of each indicator. Any other setting returns short variable names like "pctlowinc"
-#* @param test "true" or "false" If true, returns a pre-calculated result (ignoring lat, lon, radius)
-#*
-#* Calling from R for example:
-#* url2 <- "http://127.0.0.1:3035/draft/ejamit?lon=-101&lat=36&radius=1&test=true";
-#* results_overall <- httr2::request(url2) |> httr2::req_perform() |>
-#* httr2::resp_body_json() |> jsonlite::toJSON() |> jsonlite::fromJSON()
-#*
-#* @tag "Draft API Endpoints"
 #* @get /ejamit
-#*
-function(lat = 40.81417, lon = -96.69963, radius = 1, shapefile = "", fips = "", names = "long", test = "false", res) {
+#* @serializer json
+#* @tag Draft API Endpoints
+function(lat = NULL, lon = NULL, fips = NULL, radius = 3, buffer = NULL, res) tryCatch({ x <- normalize_request(lat = lat, lon = lon, fips = fips, radius = radius, buffer = buffer); bundle_from_result(run_analysis(x), x) }, error = function(e) api_error(res, conditionMessage(e)))
 
-  if (api_true(test)) {
-    out <- as.data.frame(EJAM::testoutput_ejamit_10pts_1miles$results_overall)
-  } else {
-    shp <- NULL
-    shapefile <- api2rnulltf(shapefile)
-    if (!is.null(shapefile)) {
-      shp <- tryCatch(shape_from_geojson_param(shapefile), error = function(e) e)
-      if (inherits(shp, "error")) {
-        res$status <- 400
-        return(handle_error(conditionMessage(shp)))
-      }
-    }
-    fips <- api2rnulltf(fips)
-    out <- tryCatch({
-      if (!is.null(shp)) {
-        ejamit(shapefile = shp, radius = as.numeric(radius))$results_overall
-      } else if (!is.null(fips)) {
-        ejamit(fips = fips, radius = as.numeric(radius))$results_overall
-      } else {
-        ejamit(
-          sitepoints = data.frame(lat = as.numeric(lat), lon = as.numeric(lon)),
-          radius = as.numeric(radius)
-        )$results_overall
-      }
-    },
-    error = function(e) e)
-    if (inherits(out, "error")) {
-      res$status <- 400
-      return(handle_error(conditionMessage(out)))
-    }
-    out <- as.data.frame(out)
-  }
+#* @post /ejamit
+#* @serializer json
+#* @tag Draft API Endpoints
+function(sites = NULL, fips = NULL, shape = NULL, radius = 3, buffer = NULL, radius_donut_lower_edge = 0, subgroups_type = "nh", include_ejindexes = TRUE, calculate_ratios = TRUE, extra_demog = TRUE, need_proximityscore = FALSE, showdrinkingwater = TRUE, showpctowned = TRUE, res) tryCatch({ x <- normalize_request(sites, NULL, NULL, fips, shape, radius, buffer, radius_donut_lower_edge, subgroups_type, include_ejindexes, calculate_ratios, extra_demog, need_proximityscore, showdrinkingwater, showpctowned); bundle_from_result(run_analysis(x), x) }, error = function(e) api_error(res, conditionMessage(e)))
 
-  if (identical(names, "long")) {
-    names(out) <- fixcolnames(names(out), "r", "long")
-  }
-  out
-}
-####################################################################################################### #
+#* @post /ejam2report
+#* @serializer html
+#* @tag Draft API Endpoints
+function(analysis_bundle, sitenumber = NULL, fileextension = "html", report_title = NULL, analysis_title = NULL, show_ratios_in_report = TRUE, extratable_show_ratios_in_report = TRUE, extratable_title = "", res) tryCatch(render_report(bundle_to_result(analysis_bundle), fileextension, sitenumber, report_title, analysis_title, show_ratios_in_report, extratable_show_ratios_in_report, extratable_title), error = function(e) { res$status <- 422; paste0("<html><body><h3>Error</h3><p>", htmltools::htmlEscape(conditionMessage(e)), "</p></body></html>") })
 
-# /getblocksnearby ####
+#* @post /ejam2excel
+#* @serializer contentType list(type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+#* @tag Draft API Endpoints
+function(analysis_bundle, analysis_title = "EJAM analysis", res) tryCatch(send_binary(res, render_excel(bundle_to_result(analysis_bundle), analysis_title), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EJAM_results.xlsx"), error = function(e) api_error(res, conditionMessage(e), 422L))
 
-#* json table of distances to all Census blocks near given point(s).
-#*
-#* @param lat decimal degrees (comma-separated for multiple points)
-#* @param lon decimal degrees (comma-separated for multiple points)
-#* @param radius Radius of circular area in miles.
-#*
-#* @param attachment optional, set "true" for download of attachment,
-#*   "false" to get json results back
-#*
-#* Finds all Census blocks whose internal point is within radius of each site point.
-#*
-#* @tag "Draft API Endpoints"
+#* @get /reportnew
+#* @serializer html
+#* @tag Draft API Endpoints
+function(lat = NULL, lon = NULL, fips = NULL, radius = 3, fileextension = "html", sitenumber = NULL, res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius), fileextension, res, sitenumber), error = function(e) { res$status <- 400; paste0("<html><body><h3>Error</h3><p>", htmltools::htmlEscape(conditionMessage(e)), "</p></body></html>") })
+
+#* @post /reportnew
+#* @serializer html
+#* @tag Draft API Endpoints
+function(sites = NULL, fips = NULL, shape = NULL, radius = 3, fileextension = "html", sitenumber = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius), fileextension, res, sitenumber, analysis_title), error = function(e) { res$status <- 400; paste0("<html><body><h3>Error</h3><p>", htmltools::htmlEscape(conditionMessage(e)), "</p></body></html>") })
+
+#* @get /excel
+#* @serializer contentType list(type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+#* @tag Draft API Endpoints
+function(lat = NULL, lon = NULL, fips = NULL, radius = 3, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius), "xlsx", res, analysis_title = analysis_title), error = function(e) api_error(res, conditionMessage(e)))
+
+#* @post /excel
+#* @serializer contentType list(type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+#* @tag Draft API Endpoints
+function(sites = NULL, fips = NULL, shape = NULL, radius = 3, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius), "xlsx", res, analysis_title = analysis_title), error = function(e) api_error(res, conditionMessage(e)))
+
+#* @get /all
+#* @tag Draft API Endpoints
+function(lat = NULL, lon = NULL, fips = NULL, radius = 3, outputs, sitenumber = NULL, res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius), outputs, res, sitenumber), error = function(e) api_error(res, conditionMessage(e)))
+
+#* @post /all
+#* @tag Draft API Endpoints
+function(sites = NULL, fips = NULL, shape = NULL, radius = 3, outputs, sitenumber = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius), outputs, res, sitenumber, analysis_title), error = function(e) api_error(res, conditionMessage(e)))
+
 #* @get /getblocksnearby
-#*
-function(lat, lon, radius, attachment = "false", res) {
+#* @serializer json
+#* @tag Draft API Endpoints
+function(lat, lon, radius, attachment = FALSE, res) tryCatch({ latv <- api_values(lat, "lat", TRUE); lonv <- api_values(lon, "lon", TRUE); if (length(latv) != length(lonv) || any(abs(latv) > 90) || any(abs(lonv) > 180)) stop("lat and lon must be equal-length valid coordinates"); out <- EJAM::getblocksnearby(data.frame(lat = latv, lon = lonv), radius = api_num(radius, "radius", TRUE)); if (api_bool(attachment, "attachment")) plumber::as_attachment(out, "getblocksnearby.json") else out }, error = function(e) api_error(res, conditionMessage(e)))
 
-  fname <- "getblocksnearby.json"
-
-  latv <- suppressWarnings(as.numeric(trimws(strsplit(paste(lat, collapse = ","), ",")[[1]])))
-  lonv <- suppressWarnings(as.numeric(trimws(strsplit(paste(lon, collapse = ","), ",")[[1]])))
-  radius <- suppressWarnings(as.numeric(radius[1]))
-  if (anyNA(latv) || anyNA(lonv) || length(latv) != length(lonv) || length(latv) < 1) {
-    res$status <- 400
-    return(handle_error("lat and lon must be numeric comma-separated values of equal length."))
-  }
-  if (length(radius) != 1 || is.na(radius) || radius <= 0) {
-    res$status <- 400
-    return(handle_error("radius must be a positive number of miles."))
-  }
-
-  out <- EJAM::getblocksnearby(
-    data.frame(lat = latv, lon = lonv),
-    radius = radius
-  )
-
-  if (api_true(attachment)) {
-    plumber::as_attachment(
-      value = out,
-      filename = fname
-    )
-  } else {
-    out
-  }
-}
-####################################################### #
-
-# /get_blockpoints_in_shape ####
-
-#* json table of Census blocks in each polygon
-#*
-#* @param polys Polygon(s) as a GeoJSON string
-#* @param addedbuffermiles width of optional buffering to add to the points (or edges), in miles
-#* @param dissolved If TRUE, use sf::st_union(polys) to find unique blocks inside any one or more of polys
-#* @param safety_margin_ratio multiplied by addedbuffermiles, how far to search for blocks nearby using EJAM::getblocksnearby(), before using those found to do the intersection
-#* @param attachment optional, set "true" for download of attachment,
-#*   "false" to get json results back
-#*
-#* @tag "Draft API Endpoints"
 #* @post /get_blockpoints_in_shape
-#*
-function(polys,
-         addedbuffermiles = 0,
-         dissolved = FALSE,
-         safety_margin_ratio = 1.10,
-         attachment = "false",
-         res
-) {
+#* @serializer json
+#* @tag Draft API Endpoints
+function(polys, addedbuffermiles = 0, dissolved = FALSE, safety_margin_ratio = 1.1, res) tryCatch(EJAM::get_blockpoints_in_shape(polys = api_shape(polys), addedbuffermiles = api_num(addedbuffermiles, "addedbuffermiles"), dissolved = api_bool(dissolved, "dissolved"), safety_margin_ratio = api_num(safety_margin_ratio, "safety_margin_ratio", TRUE)), error = function(e) api_error(res, conditionMessage(e)))
 
-  fname <- "blockpoints_in_shape.json"
-
-  shp <- tryCatch(shape_from_geojson_param(polys), error = function(e) e)
-  if (inherits(shp, "error")) {
-    res$status <- 400
-    return(handle_error(conditionMessage(shp)))
-  }
-
-  out <- tryCatch(
-    EJAM::get_blockpoints_in_shape(
-      polys = shp,
-      addedbuffermiles = as.numeric(addedbuffermiles),
-      dissolved = api_true(dissolved),
-      safety_margin_ratio = as.numeric(safety_margin_ratio)
-    ),
-    error = function(e) e
-  )
-  if (inherits(out, "error")) {
-    res$status <- 400
-    return(handle_error(conditionMessage(out)))
-  }
-
-  if (api_true(attachment)) {
-    plumber::as_attachment(
-      value = out,
-      filename = fname
-    )
-  } else {
-    out
-  }
-}
-####################################################### #
-
-# /doaggregate ####
-
-#* List of tables and other info summarizing demog and envt based on sites2blocks table
-#*
-#* @param sites2blocks table like the output of getblocksnearby(): one row per block per site,
-#*   with columns ejam_uniq_id, blockid, distance (posted as JSON). see [doaggregate()]
-#* @param sites2states_or_latlon see [doaggregate()]
-#*
-#* @tag "Draft API Endpoints"
-#* @post /doaggregate
-#*
-function(sites2blocks, sites2states_or_latlon = "latlon", res) {
-  # sites2blocks arrives as parsed JSON; rebuild the data.table doaggregate() expects
-  s2b <- tryCatch(data.table::as.data.table(sites2blocks), error = function(e) e)
-  if (inherits(s2b, "error") || !all(c("ejam_uniq_id", "blockid", "distance") %in% names(s2b))) {
-    res$status <- 400
-    return(handle_error("sites2blocks must be a table with columns ejam_uniq_id, blockid, distance, like output of getblocksnearby()."))
-  }
-  out <- tryCatch(
-    EJAM::doaggregate(
-      sites2blocks = s2b,
-      sites2states_or_latlon = sites2states_or_latlon
-    ),
-    error = function(e) e
-  )
-  if (inherits(out, "error")) {
-    res$status <- 400
-    return(handle_error(conditionMessage(out)))
-  }
-  out
-}
-# ####################################################### #
-
-# echo ####
-#
-#* Echo the parameter that was sent in
-#* @param msg The message to echo back.
-#* @tag "Draft API Endpoints"
 #* @get /echo
-#*
-function(msg = "") {
-  list(msg = paste0("The message is: '", msg, "'"))
-}
-####################################################### #
-####################################################### #
+#* @serializer json
+#* @tag Draft API Endpoints
+function(msg = "") list(msg = paste0("The message is: '", msg, "'"))

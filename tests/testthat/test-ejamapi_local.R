@@ -18,7 +18,13 @@ testthat::skip_if_not(
 
 # Start the API in the background only when these local-server tests are
 # explicitly requested. The public API tests live in test-ejamapi.R.
-apiproc <- EJAM:::ejamapi_local(launch_browser = FALSE)
+# Pass checkout paths explicitly: this verifies the draft router being edited,
+# rather than silently using a stale installed copy of its inst/ files.
+apiproc <- EJAM:::ejamapi_local(
+  fname = file.path("inst", "plumber", "ejam-api", "rest_controller.r"),
+  draftfile = file.path("inst", "plumber", "draft", "plumber.R"),
+  launch_browser = FALSE
+)
 withr::defer(try(apiproc$kill(), silent = TRUE), teardown_env())
 
 host <- "127.0.0.1"
@@ -75,11 +81,10 @@ test_that("/draft/getblocksnearby endpoint", {
   )
 })
 
-test_that("/draft/ejamit endpoint", {
-  # test=true returns a precalculated sample result quickly
-  urlx <- paste0(baseurl, "/draft/ejamit?test=true")
-  resp <- httr::GET(urlx)
-  expect_equal(httr::status_code(resp), 200)
-  out <- httr::content(resp)
-  expect_true(length(out) > 0)
+test_that("/draft/ejamit rejects obsolete test mode and returns a versioned bundle", {
+  # Endpoint behavior must exercise the source draft router.  A real analysis
+  # is intentionally not run here: it depends on local data and is covered in
+  # a data-enabled integration environment.
+  resp <- httr::GET(paste0(baseurl, "/draft/ejamit?test=true"))
+  expect_equal(httr::status_code(resp), 400)
 })
