@@ -131,4 +131,8 @@ test_that("draft normalize_request() picks one location mode and a location-spec
   expect_error(nr(sites = data.frame(lat = 39, lon = -75), lat = 39, lon = -75), "not both")
   expect_equal(nr(fips = c("10001", "10003"))$location_method, "fips")
   expect_equal(env$bundle_from_result(list(), nr(fips = c("10001", "10003")))$input$site_count, 2)
+  # an explicit null/empty flag gets a clear message, not "argument is of length zero"
+  expect_error(nr(fips = "10001", include_ejindexes = NULL), "include_ejindexes must be true or false")
+  expect_error(nr(fips = "10001", calculate_ratios = character(0)), "calculate_ratios must be true or false")
+  expect_true(nr(fips = "10001", include_ejindexes = "TRUE")$args$include_ejindexes)
 })

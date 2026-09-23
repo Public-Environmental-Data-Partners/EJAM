@@ -30,7 +30,7 @@ api_empty <- function(x) is.null(x) || !length(x) || identical(api_one(x), "")
 api_bool <- function(x, name) {
   if (is.logical(x) && length(x) == 1 && !is.na(x)) return(x)
   y <- tolower(as.character(api_one(x)))
-  if (y %in% c("true", "false")) return(identical(y, "true"))
+  if (length(y) == 1 && !is.na(y) && y %in% c("true", "false")) return(identical(y, "true"))
   stop(name, " must be true or false")
 }
 api_num <- function(x, name, positive = FALSE) {
@@ -125,9 +125,11 @@ zip_files <- function(archive, dir, files) {
 # deliberately called once here; all wrappers share this implementation.
 render_outputs <- function(request, outputs, res, sitenumber = NULL, analysis_title = "EJAM analysis") {
   outputs <- unique(tolower(api_values(outputs, "outputs"))); if (!length(outputs) || any(!outputs %in% c("html", "pdf", "xlsx", "json"))) stop("outputs must contain html, pdf, xlsx, and/or json")
+  # Text outputs are encoded as UTF-8 so their bytes (and the manifest md5s)
+  # do not depend on the server's locale.
   result <- run_analysis(request); bundle <- bundle_from_result(result, request); artifacts <- list()
-  if ("json" %in% outputs) artifacts[["EJAM_analysis.json"]] <- charToRaw(jsonlite::toJSON(bundle, auto_unbox = TRUE, null = "null", dataframe = "rows"))
-  if ("html" %in% outputs) artifacts[["EJAM_results.html"]] <- charToRaw(render_report(result, "html", sitenumber, analysis_title = analysis_title))
+  if ("json" %in% outputs) artifacts[["EJAM_analysis.json"]] <- charToRaw(enc2utf8(jsonlite::toJSON(bundle, auto_unbox = TRUE, null = "null", dataframe = "rows")))
+  if ("html" %in% outputs) artifacts[["EJAM_results.html"]] <- charToRaw(enc2utf8(render_report(result, "html", sitenumber, analysis_title = analysis_title)))
   if ("pdf" %in% outputs) artifacts[["EJAM_results.pdf"]] <- render_report(result, "pdf", sitenumber, analysis_title = analysis_title)
   if ("xlsx" %in% outputs) artifacts[["EJAM_results.xlsx"]] <- render_excel(result, analysis_title)
   if (length(artifacts) == 1) { name <- names(artifacts)[[1]]; type <- if (grepl("json$", name)) "application/json" else if (grepl("html$", name)) "text/html" else if (grepl("pdf$", name)) "application/pdf" else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; return(send_binary(res, artifacts[[1]], type, name, if (type %in% c("text/html", "application/pdf")) "inline" else "attachment")) }
