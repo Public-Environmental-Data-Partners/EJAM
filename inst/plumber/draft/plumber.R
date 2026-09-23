@@ -103,6 +103,7 @@ render_report <- function(result, fileextension = "html", sitenumber = NULL, rep
   args <- list(ejamitout = result, sitenumber = site, fileextension = ext, report_title = report_title, analysis_title = analysis_title, show_ratios_in_report = api_bool(show_ratios_in_report, "show_ratios_in_report"), extratable_show_ratios_in_report = api_bool(extratable_show_ratios_in_report, "extratable_show_ratios_in_report"), extratable_title = extratable_title, launch_browser = FALSE)
   if (identical(ext, "html")) return(do.call(EJAM::ejam2report, c(args, list(return_html = TRUE))))
   path <- do.call(EJAM::ejam2report, args); if (!is.character(path) || !file.exists(path)) stop("EJAM did not create a readable PDF")
+  on.exit(unlink(path), add = TRUE) # the bytes are returned, so the temp PDF is not needed (as in production /report)
   readBin(path, "raw", n = file.info(path)$size)
 }
 report_ext <- function(fileextension) { ext <- tolower(as.character(api_one(fileextension))); if (length(ext) != 1 || !ext %in% c("html", "pdf")) stop("fileextension must be html or pdf"); ext }
