@@ -113,6 +113,15 @@ render_excel <- function(result, analysis_title = "EJAM analysis") { wb <- EJAM:
 send_binary <- function(res, value, type, filename, disposition = "attachment") { res$setHeader("Content-Type", type); res$setHeader("Content-Disposition", paste0(disposition, '; filename="', filename, '"')); res$body <- value; res }
 send_report <- function(res, value, fileextension) { if (identical(tolower(as.character(api_one(fileextension))), "pdf")) send_binary(res, value, "application/pdf", "EJAM_results.pdf", "inline") else send_binary(res, value, "text/html", "EJAM_results.html", "inline") }
 
+# The overall summary as CSV, like the retired /draft/ejamit_csv: one row,
+# results_overall, with plain-English column names unless csvnames = "r".
+render_csv <- function(result, csvnames = "long") {
+  csvnames <- tolower(as.character(api_one(csvnames))); if (length(csvnames) != 1 || !csvnames %in% c("long", "r")) stop("names must be long or r")
+  out <- as.data.frame(result$results_overall)
+  if (identical(csvnames, "long")) names(out) <- EJAM::fixcolnames(names(out), "r", "long")
+  charToRaw(enc2utf8(paste0(paste(utils::capture.output(utils::write.csv(out, row.names = FALSE)), collapse = "\n"), "\n")))
+}
+
 # Prefer the zip package (in EJAM's Suggests), which needs no external program;
 # utils::zip() shells out to a `zip` executable that minimal images may lack.
 zip_files <- function(archive, dir, files) {
@@ -124,8 +133,8 @@ zip_files <- function(archive, dir, files) {
 
 # Return one requested artifact or a manifest-bearing ZIP. `run_analysis()` is
 # deliberately called once here; all wrappers share this implementation.
-render_outputs <- function(request, outputs, res, sitenumber = NULL, analysis_title = "EJAM analysis") {
-  outputs <- unique(tolower(api_values(outputs, "outputs"))); if (!length(outputs) || any(!outputs %in% c("html", "pdf", "xlsx", "json"))) stop("outputs must contain html, pdf, xlsx, and/or json")
+render_outputs <- function(request, outputs, res, sitenumber = NULL, analysis_title = "EJAM analysis", csvnames = "long") {
+  outputs <- unique(tolower(api_values(outputs, "outputs"))); if (!length(outputs) || any(!outputs %in% c("html", "pdf", "xlsx", "json", "csv"))) stop("outputs must contain html, pdf, xlsx, json, and/or csv")
   # Text outputs are encoded as UTF-8 so their bytes (and the manifest md5s)
   # do not depend on the server's locale.
   result <- run_analysis(request); bundle <- bundle_from_result(result, request); artifacts <- list()
@@ -133,7 +142,8 @@ render_outputs <- function(request, outputs, res, sitenumber = NULL, analysis_ti
   if ("html" %in% outputs) artifacts[["EJAM_results.html"]] <- charToRaw(enc2utf8(render_report(result, "html", sitenumber, analysis_title = analysis_title)))
   if ("pdf" %in% outputs) artifacts[["EJAM_results.pdf"]] <- render_report(result, "pdf", sitenumber, analysis_title = analysis_title)
   if ("xlsx" %in% outputs) artifacts[["EJAM_results.xlsx"]] <- render_excel(result, analysis_title)
-  if (length(artifacts) == 1) { name <- names(artifacts)[[1]]; type <- if (grepl("json$", name)) "application/json" else if (grepl("html$", name)) "text/html" else if (grepl("pdf$", name)) "application/pdf" else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; return(send_binary(res, artifacts[[1]], type, name, if (type %in% c("text/html", "application/pdf")) "inline" else "attachment")) }
+  if ("csv" %in% outputs) artifacts[["EJAM_results_overall.csv"]] <- render_csv(result, csvnames)
+  if (length(artifacts) == 1) { name <- names(artifacts)[[1]]; type <- if (grepl("json$", name)) "application/json" else if (grepl("csv$", name)) "text/csv" else if (grepl("html$", name)) "text/html" else if (grepl("pdf$", name)) "application/pdf" else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; return(send_binary(res, artifacts[[1]], type, name, if (type %in% c("text/html", "application/pdf")) "inline" else "attachment")) }
   dir <- tempfile("ejam-api-"); dir.create(dir); on.exit(unlink(dir, recursive = TRUE), add = TRUE); files <- file.path(dir, names(artifacts)); for (i in seq_along(files)) writeBin(artifacts[[i]], files[[i]])
   manifest <- list(schema_version = bundle$schema_version, producer = bundle$producer, parameters = bundle$parameters, files = lapply(files, function(x) list(filename = basename(x), bytes = file.size(x), md5 = unname(tools::md5sum(x)))))
   manifest_file <- file.path(dir, "manifest.json"); writeLines(jsonlite::toJSON(manifest, auto_unbox = TRUE, pretty = TRUE), manifest_file)
@@ -187,12 +197,12 @@ function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, buffer = NULL, 
 #* @get /all
 #* @serializer contentType list(type = "application/octet-stream")
 #* @tag Draft API Endpoints
-function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, buffer = NULL, outputs, sitenumber = NULL, res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius, buffer = buffer), outputs, res, sitenumber), error = function(e) api_error(res, conditionMessage(e)))
+function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, buffer = NULL, outputs, sitenumber = NULL, names = "long", res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius, buffer = buffer), outputs, res, sitenumber, csvnames = names), error = function(e) api_error(res, conditionMessage(e)))
 
 #* @post /all
 #* @serializer contentType list(type = "application/octet-stream")
 #* @tag Draft API Endpoints
-function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, buffer = NULL, outputs, sitenumber = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius, buffer = buffer), outputs, res, sitenumber, analysis_title), error = function(e) api_error(res, conditionMessage(e)))
+function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, buffer = NULL, outputs, sitenumber = NULL, analysis_title = "EJAM analysis", names = "long", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius, buffer = buffer), outputs, res, sitenumber, analysis_title, csvnames = names), error = function(e) api_error(res, conditionMessage(e)))
 
 #* @get /getblocksnearby
 #* @serializer json
