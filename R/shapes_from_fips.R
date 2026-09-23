@@ -1108,6 +1108,10 @@ shapes_empty_table <- function(fips) {
 shapefile_fix_sf_column <- function(shp) {
 
   if (!inherits(shp, "sf")) {return(shp)}
+  # Load sf so its `[` method is registered before the callers subset shp.
+  # Without it, an installed EJAM falls back to `[.data.frame`, which drops
+  # sf_column and turns the geometry into a plain list (see #610).
+  requireNamespace("sf", quietly = TRUE)
   sfcol <- attr(shp, "sf_column")
   if (length(sfcol) == 1 && !is.na(sfcol) && sfcol %in% colnames(shp) &&
       inherits(.subset2(shp, sfcol), "sfc")) {
