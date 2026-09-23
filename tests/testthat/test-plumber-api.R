@@ -104,3 +104,31 @@ test_that("mirror of the EJAM-API code has not drifted from the EJAM-API repo's 
     )
   }
 })
+
+test_that("draft normalize_request() picks one location mode and a location-specific radius", {
+  fname <- testthat::test_path("..", "..", "inst", "plumber", "draft", "plumber.R")
+  if (!file.exists(fname)) fname <- system.file("plumber/draft/plumber.R", package = "EJAM")
+  # Load only the helper definitions (the `x <- ...` assignments), not the
+  # library() calls or the routes, so no server or data is needed.
+  env <- new.env()
+  for (x in parse(fname, keep.source = FALSE)) {
+    if (is.call(x) && identical(x[[1]], as.name("<-"))) eval(x, env)
+  }
+  nr <- env$normalize_request
+  # like ejamit(): points default to 3 miles, FIPS and shapes to 0
+  expect_equal(nr(lat = 39, lon = -75)$args$radius, 3)
+  expect_equal(nr(fips = "10001")$args$radius, 0)
+  expect_equal(nr(fips = "10001", radius = 0)$args$radius, 0)
+  # buffer is an alias for radius, compared numerically
+  expect_equal(nr(fips = "10001", buffer = 1)$args$radius, 1)
+  expect_equal(nr(lat = 39, lon = -75, radius = "1", buffer = "1.0")$args$radius, 1)
+  expect_error(nr(lat = 39, lon = -75, radius = 1, buffer = 2), "conflict")
+  expect_error(nr(lat = 39, lon = -75, radius = 0), "positive")
+  expect_error(nr(fips = "10001", radius = -1), "negative")
+  # exactly one location mode
+  expect_error(nr(), "exactly one")
+  expect_error(nr(lat = 39, lon = -75, fips = "10001"), "exactly one")
+  expect_error(nr(sites = data.frame(lat = 39, lon = -75), lat = 39, lon = -75), "not both")
+  expect_equal(nr(fips = c("10001", "10003"))$location_method, "fips")
+  expect_equal(env$bundle_from_result(list(), nr(fips = c("10001", "10003")))$input$site_count, 2)
+})

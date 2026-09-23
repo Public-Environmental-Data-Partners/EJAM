@@ -65,6 +65,7 @@ normalize_request <- function(sites = NULL, lat = NULL, lon = NULL, fips = NULL,
   # buffer is an alias for radius. Compare numerically, so 1 and 1.0 agree.
   if (!api_empty(buffer) && !api_empty(radius) && api_num(buffer, "buffer") != api_num(radius, "radius")) stop("radius and buffer conflict; use radius")
   if (api_empty(radius)) radius <- buffer
+  if (!api_empty(sites) && (!api_empty(lat) || !api_empty(lon))) stop("supply sites or lat/lon, not both")
   modes <- c(!api_empty(sites) || !api_empty(lat) || !api_empty(lon), !api_empty(fips), !api_empty(shape))
   if (sum(modes) != 1) stop("supply exactly one of sites/lat-lon, fips, or shape")
   # Like ejamit(): points default to 3 miles and need a positive radius; FIPS
