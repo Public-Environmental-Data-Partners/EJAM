@@ -104,6 +104,7 @@ render_report <- function(result, fileextension = "html", sitenumber = NULL, rep
   path <- do.call(EJAM::ejam2report, args); if (!is.character(path) || !file.exists(path)) stop("EJAM did not create a readable PDF")
   readBin(path, "raw", n = file.info(path)$size)
 }
+report_ext <- function(fileextension) { ext <- tolower(as.character(api_one(fileextension))); if (length(ext) != 1 || !ext %in% c("html", "pdf")) stop("fileextension must be html or pdf"); ext }
 render_excel <- function(result, analysis_title = "EJAM analysis") { wb <- EJAM::ejam2excel(result, save_now = FALSE, launchexcel = FALSE, interactive_console = FALSE, analysis_title = analysis_title); path <- tempfile(fileext = ".xlsx"); on.exit(unlink(path), add = TRUE); openxlsx::saveWorkbook(wb, path, overwrite = TRUE); readBin(path, "raw", n = file.info(path)$size) }
 # Set the body on the response object and return it, so plumber sends the bytes
 # as-is instead of passing them through the route's @serializer.
@@ -119,7 +120,7 @@ render_outputs <- function(request, outputs, res, sitenumber = NULL, analysis_ti
   if ("html" %in% outputs) artifacts[["EJAM_results.html"]] <- charToRaw(render_report(result, "html", sitenumber, analysis_title = analysis_title))
   if ("pdf" %in% outputs) artifacts[["EJAM_results.pdf"]] <- render_report(result, "pdf", sitenumber, analysis_title = analysis_title)
   if ("xlsx" %in% outputs) artifacts[["EJAM_results.xlsx"]] <- render_excel(result, analysis_title)
-  if (length(artifacts) == 1) { name <- names(artifacts)[[1]]; type <- if (grepl("json$", name)) "application/json" else if (grepl("html$", name)) "text/html" else if (grepl("pdf$", name)) "application/pdf" else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; return(send_binary(res, artifacts[[1]], type, name, if (identical(type, "text/html")) "inline" else "attachment")) }
+  if (length(artifacts) == 1) { name <- names(artifacts)[[1]]; type <- if (grepl("json$", name)) "application/json" else if (grepl("html$", name)) "text/html" else if (grepl("pdf$", name)) "application/pdf" else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; return(send_binary(res, artifacts[[1]], type, name, if (type %in% c("text/html", "application/pdf")) "inline" else "attachment")) }
   dir <- tempfile("ejam-api-"); dir.create(dir); on.exit(unlink(dir, recursive = TRUE), add = TRUE); files <- file.path(dir, names(artifacts)); for (i in seq_along(files)) writeBin(artifacts[[i]], files[[i]])
   manifest <- list(schema_version = bundle$schema_version, producer = bundle$producer, parameters = bundle$parameters, files = lapply(files, function(x) list(filename = basename(x), bytes = file.size(x), md5 = unname(tools::md5sum(x)))))
   manifest_file <- file.path(dir, "manifest.json"); writeLines(jsonlite::toJSON(manifest, auto_unbox = TRUE, pretty = TRUE), manifest_file)
@@ -138,7 +139,7 @@ function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, buffer = NULL, test
 #* @post /ejamit
 #* @serializer json
 #* @tag Draft API Endpoints
-function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, buffer = NULL, radius_donut_lower_edge = 0, subgroups_type = "nh", include_ejindexes = TRUE, calculate_ratios = TRUE, extra_demog = TRUE, need_proximityscore = FALSE, showdrinkingwater = TRUE, showpctowned = TRUE, res) tryCatch({ x <- normalize_request(sites, NULL, NULL, fips, shape, radius, buffer, radius_donut_lower_edge, subgroups_type, include_ejindexes, calculate_ratios, extra_demog, need_proximityscore, showdrinkingwater, showpctowned); bundle_from_result(run_analysis(x), x) }, error = function(e) api_error(res, conditionMessage(e)))
+function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, buffer = NULL, radius_donut_lower_edge = 0, subgroups_type = "nh", include_ejindexes = TRUE, calculate_ratios = TRUE, extra_demog = TRUE, need_proximityscore = FALSE, showdrinkingwater = TRUE, showpctowned = TRUE, res) tryCatch({ x <- normalize_request(sites = sites, fips = fips, shape = shape, radius = radius, buffer = buffer, radius_donut_lower_edge = radius_donut_lower_edge, subgroups_type = subgroups_type, include_ejindexes = include_ejindexes, calculate_ratios = calculate_ratios, extra_demog = extra_demog, need_proximityscore = need_proximityscore, showdrinkingwater = showdrinkingwater, showpctowned = showpctowned); bundle_from_result(run_analysis(x), x) }, error = function(e) api_error(res, conditionMessage(e)))
 
 #* @post /ejam2report
 #* @serializer contentType list(type = "application/octet-stream")
@@ -153,32 +154,32 @@ function(analysis_bundle, analysis_title = "EJAM analysis", res) tryCatch(send_b
 #* @get /reportnew
 #* @serializer contentType list(type = "application/octet-stream")
 #* @tag Draft API Endpoints
-function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, fileextension = "html", sitenumber = NULL, res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius), fileextension, res, sitenumber), error = function(e) html_error(res, conditionMessage(e)))
+function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, buffer = NULL, fileextension = "html", sitenumber = NULL, res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius, buffer = buffer), report_ext(fileextension), res, sitenumber), error = function(e) html_error(res, conditionMessage(e)))
 
 #* @post /reportnew
 #* @serializer contentType list(type = "application/octet-stream")
 #* @tag Draft API Endpoints
-function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, fileextension = "html", sitenumber = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius), fileextension, res, sitenumber, analysis_title), error = function(e) html_error(res, conditionMessage(e)))
+function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, buffer = NULL, fileextension = "html", sitenumber = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius, buffer = buffer), report_ext(fileextension), res, sitenumber, analysis_title), error = function(e) html_error(res, conditionMessage(e)))
 
 #* @get /excel
 #* @serializer contentType list(type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 #* @tag Draft API Endpoints
-function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius), "xlsx", res, analysis_title = analysis_title), error = function(e) api_error(res, conditionMessage(e)))
+function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, buffer = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius, buffer = buffer), "xlsx", res, analysis_title = analysis_title), error = function(e) api_error(res, conditionMessage(e)))
 
 #* @post /excel
 #* @serializer contentType list(type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 #* @tag Draft API Endpoints
-function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius), "xlsx", res, analysis_title = analysis_title), error = function(e) api_error(res, conditionMessage(e)))
+function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, buffer = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius, buffer = buffer), "xlsx", res, analysis_title = analysis_title), error = function(e) api_error(res, conditionMessage(e)))
 
 #* @get /all
 #* @serializer contentType list(type = "application/octet-stream")
 #* @tag Draft API Endpoints
-function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, outputs, sitenumber = NULL, res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius), outputs, res, sitenumber), error = function(e) api_error(res, conditionMessage(e)))
+function(lat = NULL, lon = NULL, fips = NULL, radius = NULL, buffer = NULL, outputs, sitenumber = NULL, res) tryCatch(render_outputs(normalize_request(lat = lat, lon = lon, fips = fips, radius = radius, buffer = buffer), outputs, res, sitenumber), error = function(e) api_error(res, conditionMessage(e)))
 
 #* @post /all
 #* @serializer contentType list(type = "application/octet-stream")
 #* @tag Draft API Endpoints
-function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, outputs, sitenumber = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius), outputs, res, sitenumber, analysis_title), error = function(e) api_error(res, conditionMessage(e)))
+function(sites = NULL, fips = NULL, shape = NULL, radius = NULL, buffer = NULL, outputs, sitenumber = NULL, analysis_title = "EJAM analysis", res) tryCatch(render_outputs(normalize_request(sites = sites, fips = fips, shape = shape, radius = radius, buffer = buffer), outputs, res, sitenumber, analysis_title), error = function(e) api_error(res, conditionMessage(e)))
 
 #* @get /getblocksnearby
 #* @serializer json

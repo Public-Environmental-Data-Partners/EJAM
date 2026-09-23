@@ -96,3 +96,56 @@ test_that("/draft/ejamit rejects obsolete test mode and returns a versioned bund
   # 400 for the right reason: the retired test mode, not a missing location
   expect_match(httr::content(resp, as = "parsed")$error$message, "test mode is no longer supported")
 })
+
+# Every request below has a timeout, so a stuck server fails the test instead
+# of hanging the run.
+test_that("/draft/reportnew rejects a non-report fileextension", {
+  resp <- httr::GET(paste0(baseurl, "/draft/reportnew?fips=10001&fileextension=xlsx"), httr::timeout(60))
+  expect_equal(httr::status_code(resp), 400)
+  expect_match(httr::headers(resp)[["content-type"]], "text/html")
+  expect_match(httr::content(resp, as = "text", encoding = "UTF-8"), "fileextension must be html or pdf")
+})
+
+test_that("/draft/excel errors come back as JSON, not through the xlsx serializer", {
+  resp <- httr::GET(paste0(baseurl, "/draft/excel?lat=999&lon=-75.52"), httr::timeout(60))
+  expect_equal(httr::status_code(resp), 400)
+  expect_match(httr::headers(resp)[["content-type"]], "application/json")
+  expect_match(httr::content(resp, as = "parsed")$error$message, "valid coordinates")
+})
+
+# These run a real analysis (a populated 1-mile circle in Dover, DE), so they
+# need the arrow data. They use the json and html outputs only: xlsx and pdf
+# rendering launch headless Chrome (webshot2 / chrome_print), which can hang
+# inside a background server process on some machines.
+test_that("/draft/all returns a ZIP of the requested outputs plus a manifest", {
+  resp <- httr::GET(paste0(baseurl, "/draft/all?lat=39.16&lon=-75.52&radius=1&outputs=json,html"), httr::timeout(300))
+  expect_equal(httr::status_code(resp), 200)
+  expect_match(httr::headers(resp)[["content-type"]], "application/zip")
+  expect_match(httr::headers(resp)[["content-disposition"]], "^attachment")
+  zf <- tempfile(fileext = ".zip")
+  exdir <- tempfile("zip-")
+  withr::defer(unlink(c(zf, exdir), recursive = TRUE))
+  writeBin(httr::content(resp, as = "raw"), zf)
+  expect_setequal(utils::unzip(zf, list = TRUE)$Name, c("EJAM_analysis.json", "EJAM_results.html", "manifest.json"))
+  manifest <- jsonlite::fromJSON(utils::unzip(zf, "manifest.json", exdir = exdir))
+  expect_equal(manifest$schema_version, "ejam-analysis-v1")
+  expect_setequal(manifest$files$filename, c("EJAM_analysis.json", "EJAM_results.html"))
+  expect_equal(manifest$parameters$radius, 1)
+})
+
+test_that("/draft/all with one output returns that file, not a ZIP", {
+  resp <- httr::GET(paste0(baseurl, "/draft/all?lat=39.16&lon=-75.52&buffer=1&outputs=json"), httr::timeout(300))
+  expect_equal(httr::status_code(resp), 200)
+  expect_match(httr::headers(resp)[["content-type"]], "application/json")
+  expect_match(httr::headers(resp)[["content-disposition"]], "^attachment")
+  bundle <- jsonlite::fromJSON(httr::content(resp, as = "text", encoding = "UTF-8"))
+  expect_equal(bundle$schema_version, "ejam-analysis-v1")
+  expect_equal(bundle$parameters$radius, 1) # from the buffer alias
+})
+
+test_that("/draft/reportnew serves an HTML report inline", {
+  resp <- httr::GET(paste0(baseurl, "/draft/reportnew?lat=39.16&lon=-75.52&radius=1&fileextension=html"), httr::timeout(300))
+  expect_equal(httr::status_code(resp), 200)
+  expect_match(httr::headers(resp)[["content-type"]], "text/html")
+  expect_match(httr::headers(resp)[["content-disposition"]], "^inline")
+})
