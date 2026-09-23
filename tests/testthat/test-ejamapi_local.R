@@ -18,11 +18,17 @@ testthat::skip_if_not(
 
 # Start the API in the background only when these local-server tests are
 # explicitly requested. The public API tests live in test-ejamapi.R.
-# Pass checkout paths explicitly: this verifies the draft router being edited,
-# rather than silently using a stale installed copy of its inst/ files.
+# Prefer the source checkout's files, so this exercises the draft router being
+# edited rather than a stale installed copy. testthat runs from tests/testthat,
+# so the checkout's inst/ is two levels up; fall back to the installed copy
+# (e.g., under R CMD check, where there is no source tree).
+src_or_installed <- function(...) {
+  src <- testthat::test_path("..", "..", "inst", ...)
+  if (file.exists(src)) src else system.file(..., package = "EJAM")
+}
 apiproc <- EJAM:::ejamapi_local(
-  fname = file.path("inst", "plumber", "ejam-api", "rest_controller.r"),
-  draftfile = file.path("inst", "plumber", "draft", "plumber.R"),
+  fname = src_or_installed("plumber", "ejam-api", "rest_controller.r"),
+  draftfile = src_or_installed("plumber", "draft", "plumber.R"),
   launch_browser = FALSE
 )
 withr::defer(try(apiproc$kill(), silent = TRUE), teardown_env())
@@ -87,4 +93,6 @@ test_that("/draft/ejamit rejects obsolete test mode and returns a versioned bund
   # a data-enabled integration environment.
   resp <- httr::GET(paste0(baseurl, "/draft/ejamit?test=true"))
   expect_equal(httr::status_code(resp), 400)
+  # 400 for the right reason: the retired test mode, not a missing location
+  expect_match(httr::content(resp, as = "parsed")$error$message, "test mode is no longer supported")
 })

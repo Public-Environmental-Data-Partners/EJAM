@@ -40,7 +40,7 @@ test_that("EJAM-API mirror file plumbs and defines the deployed endpoints", {
 test_that("draft endpoints file plumbs and defines the draft-only endpoints", {
   # Prefer the source tree: draft development must not accidentally exercise an
   # older installed EJAM copy.
-  fname <- file.path("inst", "plumber", "draft", "plumber.R")
+  fname <- testthat::test_path("..", "..", "inst", "plumber", "draft", "plumber.R")
   if (!file.exists(fname)) fname <- system.file("plumber/draft/plumber.R", package = "EJAM")
   expect_true(nzchar(fname) && file.exists(fname))
   pr <- plumber::plumb(fname)
@@ -57,7 +57,7 @@ test_that("draft endpoints file plumbs and defines the draft-only endpoints", {
 
 test_that("mirror + drafts compose: drafts mount at /draft with no route collisions", {
   api <- plumb_mirror()
-  draft_file <- file.path("inst", "plumber", "draft", "plumber.R")
+  draft_file <- testthat::test_path("..", "..", "inst", "plumber", "draft", "plumber.R")
   if (!file.exists(draft_file)) draft_file <- system.file("plumber/draft/plumber.R", package = "EJAM")
   draft <- plumber::plumb(draft_file)
   api$mount("/draft", draft)
