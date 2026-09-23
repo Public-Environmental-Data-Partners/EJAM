@@ -26,7 +26,7 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 ## Bug Fixes
 
 - County boundaries from `shapes_from_fips()` no longer fail with "missing value
-  where TRUE/FALSE needed" on newer versions of the sf package.
+  where TRUE/FALSE needed" when the sf package was not yet loaded.
 
 - The notes tab of the Excel workbook now says how the sites were selected. 
   A SIC analysis now says "Locations defined by latitude, longitude and radius, 

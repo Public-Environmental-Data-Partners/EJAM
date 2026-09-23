@@ -338,6 +338,8 @@ shapes_state_from_statefips <- function(fips) {
   ## ensure original rows ####
   # original sort order, and ensure NROW(shp) output is same as length(fips) input
   # retain only 1 row per input fips (even if invalid FIPS or valid FIPS lacking downloaded boundaries)
+  # sf must be loaded before subsetting, or `[` falls back to the data.frame method -- see below
+  requireNamespace("sf", quietly = TRUE)
   shp <- states_shapefile[match(fips, states_shapefile$GEOID), ]
   shp$FIPS <- shp$GEOID
 
@@ -378,6 +380,13 @@ drop_comma_statename <- function(countyname_state) {gsub(", .*$", "", countyname
 #'
 shapes_counties_from_countyfips_local <- function(fips) {
 
+  # sf is in Imports but NAMESPACE imports nothing from it, so an installed EJAM
+  # does not load sf until the first sf:: call. Until then sf's `[` methods are
+  # not registered, and subsetting this sf dataset falls back to the data.frame
+  # method, which turns the geometry column into a plain list and drops
+  # sf_column -- the pkgdown failure in the counties vignette. load_all() hides
+  # this because it loads every Imports package.
+  if (!requireNamespace("sf", quietly = TRUE)) {return(NULL)}
   cshp <- tryCatch(counties_shapefile, error = function(e) NULL)
   if (is.null(cshp) || !all(c("GEOID", "geometry") %in% names(cshp))) {
     return(NULL)
@@ -1091,19 +1100,18 @@ shapes_empty_table <- function(fips) {
 
 # utility to repair the "sf_column" attribute of a spatial data.frame
 #
-# Subsetting an sf object's columns can leave attr(shp, "sf_column") as NA.
-# Whether it does is sf-version dependent, which is why the counties vignette
-# rendered locally but not on the pkgdown runner. Once that attribute is NA,
-# sf::st_drop_geometry() and everything else that reads it fail with
-# "missing value where TRUE/FALSE needed", because sf tests i == NA.
-# Point it back at whichever column actually holds the geometry.
+# Defensive: if attr(shp, "sf_column") is NA, missing, or names a column that
+# does not hold the geometry, sf::st_drop_geometry() and sf's `$<-`/`[[<-`
+# fail with "missing value where TRUE/FALSE needed" (sf tests i == NA).
+# Point it back at whichever column actually holds the sfc geometry.
 
 shapefile_fix_sf_column <- function(shp) {
 
   if (!inherits(shp, "sf")) {return(shp)}
   sfcol <- attr(shp, "sf_column")
-  if (length(sfcol) == 1 && !is.na(sfcol) && sfcol %in% colnames(shp)) {
-    return(shp) # already valid
+  if (length(sfcol) == 1 && !is.na(sfcol) && sfcol %in% colnames(shp) &&
+      inherits(.subset2(shp, sfcol), "sfc")) {
+    return(shp) # already valid -- names a column that really holds geometry
   }
   isgeom <- vapply(shp, function(z) inherits(z, "sfc"), logical(1))
   if (!any(isgeom)) {return(shp)} # nothing to point at

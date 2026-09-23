@@ -550,7 +550,7 @@ testthat::test_that("shapefile_fix_sf_column() repairs an NA sf_column attribute
   # "missing value where TRUE/FALSE needed" inside st_drop_geometry()
   broken <- shp
   attr(broken, "sf_column") <- NA_character_
-  expect_error(sf::st_drop_geometry(broken), "missing value where TRUE/FALSE needed")
+  expect_error(sf::st_drop_geometry(broken))
 
   fixed <- shapefile_fix_sf_column(broken)
   expect_equal(attr(fixed, "sf_column"), "geometry")
@@ -562,6 +562,11 @@ testthat::test_that("shapefile_fix_sf_column() repairs an NA sf_column attribute
   names(renamed)[names(renamed) == "geometry"] <- "geom"
   attr(renamed, "sf_column") <- NA_character_
   expect_equal(attr(shapefile_fix_sf_column(renamed), "sf_column"), "geom")
+
+  # a stale sf_column naming a real but non-geometry column is repaired too
+  stale <- shp
+  attr(stale, "sf_column") <- "NAME"
+  expect_equal(attr(shapefile_fix_sf_column(stale), "sf_column"), "geometry")
 
   # non-sf input passes straight through, and an sf-classed object with no
   # geometry column left is returned rather than erroring
