@@ -48,7 +48,6 @@ articles:
   navbar: Overview for EJAM Users
   contents:
   - '`whatis`'
-  - '`island-areas`'
   - '`webapp`'
 - title: The EJAM R Package
   desc: For analysts using R
@@ -62,6 +61,7 @@ articles:
   - '`naics`'
   - '`counties`'
   - '`zipcodes`'
+  - island-areas
 - title: Developing & Hosting
   desc: For package/app developers
   navbar: For package/app developers
