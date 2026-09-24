@@ -76,17 +76,12 @@ The `r as.vector(desc::desc_get("Title"))` lets you easily and quickly see resid
 
 EJAM lets you specify the places to analyze in several ways -- uploading a table of point locations (latitude/longitude), picking facilities by industry category or ID, uploading shapefiles or lists of Census FIPS codes, or clicking on a map to specify one or more points -- and it returns a summary report comparing residents and environmental conditions at those places to the rest of the country.
 
-## What's New in v3.2022.3 (September 2026)
+## About v3.2022.3 (October 2026)
 
-This is the final release that uses the ACS 2018-2022 data, and it is frozen from here on. Development continues with the ACS 2020-2024 data in v4.2024.0.
+**This is the final release that uses the ACS 2018-2022 data, and it is frozen from here on.
+Development continues with the ACS 2020-2024 data in v4.2024.0.**
 
-Corrected data: counts of people by language spoken at home (`lan_universe`, `lan_spanish`, and the other `lan_*` counts) were about three times too high in every result, because each Census tract's total had been repeated on every one of its block groups. The packaged data now divides those counts among block groups, so they add up to the Census totals (#596).
-
-New: zip code analysis. `ejamit(zipcode = 10605)` analyzes the Census ZCTA areas for the zip codes, and reports name and map them as zip codes (#482).
-
-Fixes: percentiles are now the same on every operating system (#555); a custom report title is kept in the downloaded report, not just in the app (#458); built-in state and county boundaries work offline (#527); population-share summaries are correct for small numbers of sites (#137); SIC and MACT analyses are described again in reports and the Excel notes; and a GitHub outage no longer looks like missing data.
-
-See [NEWS.md](NEWS.md) for the full list.
+See [NEWS.md](NEWS.md) for the full list of recent enhancements and fixes.
 
 ## Status of EJAM package in 2026
 

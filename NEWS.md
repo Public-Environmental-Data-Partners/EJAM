@@ -1,13 +1,12 @@
-# EJAM 3.2022.3 (unreleased)
+# EJAM 3.2022.3
 
-Features from the v4 milestone, shipping on the ACS 2018-2022 vintage.
-
-This is the final ACS 2018-2022 release; it is frozen from here on. The 2020-2024
-vintage ships separately as `4.2024.0`, which is where development continues.
+This is the final ACS 2018-2022 release; it is frozen from here on.
+The ACS 2020-2024 vintage version will be released as `4.2024.0`, 
+which is where development continues.
 
 ## New Features
 
-- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
+- Zip code analysis: `ejamit(zipcode = 10605)`, for example, works. Zip codes are converted
   to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
   any other shapefile, and `ejam2report()` describes the places as zip codes and
   maps their boundaries without needing the `shp` parameter. This automates the
@@ -20,27 +19,9 @@ vintage ships separately as `4.2024.0`, which is where development continues.
   by population share instead of repeating each tract's total on every block
   group, so sums across block groups (in `ejamit()` results and the pipeline's
   `acs_by_tract`, `acs_by_county`, and `acs_by_state` layers) no longer come out
-  about three times too high. Takes effect when `bg_acsdata` is rebuilt (#596).
+  about three times too high. (#596).
 
-- The notes tab of the Excel workbook now says how the sites were selected. It
-  had never done so: `buffer_desc_from_sitetype()` only appended that detail when
-  the description so far was empty, which none of its branches can produce, and
-  the test inside was inverted as well. A SIC analysis of latitude/longitude
-  sites now reads "Locations defined by latitude, longitude and radius, based on
-  EPA-regulated facilities by SIC code (industry type)" instead of stopping at
-  the radius. The detail is left off when it would only restate the site type,
-  so plain shapefile analyses do not read "Polygons defined by shapefile, based
-  on shapefile".
-
-- SIC and MACT analyses get their descriptions back. `site_method2text()`
-  lowercases its input, but its SIC and MACT branches compared against the
-  uppercase spellings, so neither could ever match and both fell through to an
-  empty string.
-
-- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
-  "fips" rather than "FIPS". The two gates that rebuild those polygons were
-  case-sensitive, so a lowercase spelling silently produced an unmapped report.
-  Matches how the zip code gates added for #482 already behave.
+- Population-share summaries are now correct for small numbers of sites (#137); 
 
 - Percentiles no longer depend on which operating system the analysis runs on.
   A raw score is normally a population-weighted average, so it carries a few
@@ -59,6 +40,29 @@ vintage ships separately as `4.2024.0`, which is where development continues.
   block. Only percentile columns changed. It also means `lookup_pctile()` handles
   the ACS22 `pctdisability` boundary case without needing the `signif_digits`
   argument.
+
+- A custom report title is now kept in the downloaded report, not just in the app (#458);
+
+- The notes tab of the Excel workbook now says how the sites were selected. It
+  had never done so: `buffer_desc_from_sitetype()` only appended that detail when
+  the description so far was empty, which none of its branches can produce, and
+  the test inside was inverted as well. A SIC analysis of latitude/longitude
+  sites now reads "Locations defined by latitude, longitude and radius, based on
+  EPA-regulated facilities by SIC code (industry type)" instead of stopping at
+  the radius. The detail is left off when it would only restate the site type,
+  so plain shapefile analyses do not read "Polygons defined by shapefile, based
+  on shapefile".
+
+- SIC and MACT analyses are now described again in reports and the Excel notes.
+  `site_method2text()` lowercases its input, but its SIC and MACT branches 
+  compared against the uppercase spellings.
+
+- Built-in state and county boundaries now work offline (#527);
+
+- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
+  "fips" rather than "FIPS". The two gates that rebuild those polygons were
+  case-sensitive, so a lowercase spelling silently produced an unmapped report.
+  Matches how the zip code gates added for #482 already behave.
 
 - A GitHub outage no longer looks like missing data. When the API cannot list a
   release's assets, `download_latest_arrow_data()` now says so and retries,
