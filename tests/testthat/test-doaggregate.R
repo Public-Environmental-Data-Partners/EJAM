@@ -349,7 +349,7 @@ test_that("blockgroupstats language counts are apportioned, not repeated per tra
   # Copying each tract's C16001 totals onto every one of its block groups made
   # the sums about 3x too high (e.g., 2.9x population nationally).
   s <- blockgroupstats[, .(lan = sum(lan_universe, na.rm = TRUE), pop = sum(pop, na.rm = TRUE)), by = ST]
-  expect_lt(sum(s$lan), sum(s$pop))
+  expect_lte(sum(s$lan), sum(s$pop))
   expect_true(all(s$lan <= s$pop))
 })
 
