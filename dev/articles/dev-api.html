@@ -205,7 +205,8 @@ after a proposed EJAM-API code change, before anyone deploys it:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">apiproc</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/ejamapi_local.html">ejamapi_local</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># background server; browse http://127.0.0.1:3035/__docs__/</span></span>
 <span><span class="co"># production paths served locally: /report, /data, /query, /handoff, /assets</span></span>
-<span><span class="co"># draft-only endpoints mounted at:  /draft/echo, /draft/ejamit, /draft/report2, ...</span></span>
+<span><span class="co"># draft-only endpoints mounted at: /draft/echo, /draft/ejamit, /draft/reportnew,</span></span>
+<span><span class="co"># /draft/excel, and /draft/all (all experimental and local only)</span></span>
 <span><span class="va">apiproc</span><span class="op">$</span><span class="fu">kill</span><span class="op">(</span><span class="op">)</span>                     <span class="co"># stop it when done</span></span></code></pre></div>
 <p>To propose an EJAM-API change: edit the mirror copy, test it via
 <code><a href="../reference/ejamapi_local.html">ejamapi_local()</a></code>, then submit the identical diff as a PR to
