@@ -21,7 +21,7 @@ vintage ships separately as `4.2024.0`, which is where development continues.
   by population share instead of repeating each tract's total on every block
   group, so sums across block groups (in `ejamit()` results and the pipeline's
   `acs_by_tract`, `acs_by_county`, and `acs_by_state` layers) no longer come out
-  about three times too high. Takes effect when `bg_acsdata` is rebuilt (#596).
+  about three times too high. The packaged `blockgroupstats` data and saved example outputs now carry the corrected counts (#596).
 
 ## Bug Fixes
 
