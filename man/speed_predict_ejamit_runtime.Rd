@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_speedtest.R
 \name{speed_predict_ejamit_runtime}
 \alias{speed_predict_ejamit_runtime}
-\title{Utility used in app_server to predict ejamit or doaggregate runtime}
+\title{Utility used in app_server to predict ejamit() runtime or web-app report time}
 \usage{
 speed_predict_ejamit_runtime(
   rows,
@@ -31,6 +31,6 @@ the web app displays its multisite report.}
 \item{profile}{web-app calibration profile. Ignored for \code{target = "ejamit"}.}
 }
 \description{
-Utility used in app_server to predict ejamit or doaggregate runtime
+Utility used in app_server to predict ejamit() runtime or web-app report time
 }
 \keyword{internal}
