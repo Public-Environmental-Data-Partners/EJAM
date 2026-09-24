@@ -51,7 +51,8 @@ EJAM-API code edit (edit the mirror copy, rerun this, test, then
 submit the identical diff to the EJAM-API repo).
 \item Mounted at \verb{/draft}, the draft/experimental endpoints that exist only
 in this package (\code{inst/plumber/draft/plumber.R}), e.g. \verb{/draft/echo},
-\verb{/draft/ejamit}, \verb{/draft/report2}, \verb{/draft/getblocksnearby}.
+\verb{/draft/ejamit}, \verb{/draft/reportnew}, \verb{/draft/all}, and
+\verb{/draft/getblocksnearby}. Draft routes are local and experimental.
 }
 
 Note local PDF report rendering requires pandoc (e.g., the RSTUDIO_PANDOC

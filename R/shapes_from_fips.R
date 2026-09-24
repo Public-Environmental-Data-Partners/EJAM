@@ -80,10 +80,6 @@ shapes_from_fips <- function(fips,
   fips <- fips_lead_zero(fips) # or else merge with this will fail later
   original_order <- data.frame(n = seq_along(fips), fips = fips)
 
-  if (offline_cat()) {
-    stop("Cannot download boundaries - No internet connection seems to be available.")
-    # return(NULL)
-  }
   ########################## #
   # validation of input fips types ####
 
@@ -134,6 +130,29 @@ shapes_from_fips <- function(fips,
     allow_multiple_fips_types <- FALSE
   }
   ########################## #
+
+  if (!allow_multiple_fips_types && length(intersect(ftype, oktypes)) > 1) {
+    if (shiny::isRunning()) {
+      shiny::validate("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")
+      shp_combined <- NULL
+    } else {
+      stop("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")
+    }
+  }
+
+  # State bounds and the default county bounds can be served without a network.
+  # Check only after validating the FIPS, and before the try() download handlers,
+  # so an offline download request retains its clear error rather than empty shapes.
+  needs_download <- any(ftype %in% c("blockgroup", "tract", "city"))
+  county_fips <- fips[ftype %in% "county"]
+  if (length(county_fips) > 0) {
+    needs_download <- needs_download ||
+      !isTRUE(myservice_county[1] %in% "cartographic") ||
+      is.null(shapes_counties_from_countyfips_local(county_fips))
+  }
+  if (needs_download && offline_cat()) {
+    stop("Cannot download boundaries - No internet connection seems to be available.")
+  }
 
   options(tigris_use_cache = TRUE) # done in .onAttach() now
   # options(tigris_year = 2022) # uses default of the tigris package version installed
@@ -217,8 +236,8 @@ shapes_from_fips <- function(fips,
                                             ignore.attr = TRUE) # combines with any other types found so far, even if colnames and class (MULTIPOLYGON vs POLYGON) differ
     }
   } else {
-    if (all(ftype %in% 'county')) {
-      shp_combined <- try(shapes_counties_from_countyfips(fips, myservice = myservice_county), silent = TRUE)
+    if (all(ftype[!is.na(ftype)] %in% 'county')) {
+      shp_combined <- try(shapes_counties_from_countyfips(fips[ftype %in% "county"], myservice = myservice_county), silent = TRUE)
     }
   }
   ##                                                  state ####
@@ -241,14 +260,6 @@ shapes_from_fips <- function(fips,
 
   ####################### #
   if (!allow_multiple_fips_types) {
-    if (length(intersect(ftype, oktypes)) > 1) {
-      if (shiny::isRunning()) {
-        shiny::validate("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")
-        shp_combined <- NULL
-      } else {
-        stop("This dataset contains more than one type of FIPS code. Analysis can only be run on datasets with one type of FIPS codes.")
-      }
-    }
     if (length(intersect(ftype, oktypes)) == 0) {
       if (shiny::isRunning()) {
         shiny::validate(paste0("This dataset contains no FIPS codes that are an allowed type. Analysis can only be run on datasets with these types of FIPS codes:",
@@ -327,6 +338,8 @@ shapes_state_from_statefips <- function(fips) {
   ## ensure original rows ####
   # original sort order, and ensure NROW(shp) output is same as length(fips) input
   # retain only 1 row per input fips (even if invalid FIPS or valid FIPS lacking downloaded boundaries)
+  # sf must be loaded before subsetting, or `[` falls back to the data.frame method -- see below
+  requireNamespace("sf", quietly = TRUE)
   shp <- states_shapefile[match(fips, states_shapefile$GEOID), ]
   shp$FIPS <- shp$GEOID
 
@@ -367,6 +380,13 @@ drop_comma_statename <- function(countyname_state) {gsub(", .*$", "", countyname
 #'
 shapes_counties_from_countyfips_local <- function(fips) {
 
+  # sf is in Imports but NAMESPACE imports nothing from it, so an installed EJAM
+  # does not load sf until the first sf:: call. Until then sf's `[` methods are
+  # not registered, and subsetting this sf dataset falls back to the data.frame
+  # method, which turns the geometry column into a plain list and drops
+  # sf_column -- the pkgdown failure in the counties vignette. load_all() hides
+  # this because it loads every Imports package.
+  if (!requireNamespace("sf", quietly = TRUE)) {return(NULL)}
   cshp <- tryCatch(counties_shapefile, error = function(e) NULL)
   if (is.null(cshp) || !all(c("GEOID", "geometry") %in% names(cshp))) {
     return(NULL)
@@ -380,11 +400,11 @@ shapes_counties_from_countyfips_local <- function(fips) {
     return(NULL)
   }
 
-  shp <- cshp[idx, ]
+  shp <- shapefile_fix_sf_column(cshp[idx, ]) # the `$<-` below reads sf_column too
   shp$FIPS <- fips # keep the original input fips, as the download path does
   # build NAME exactly as the download path does, so output does not depend on source
   shp$NAME <- drop_comma_statename(fips2countyname(shp$FIPS))
-  shp <- shp[ , c('NAME', 'FIPS', 'geometry')]
+  shp <- shapefile_fix_sf_column(shp[ , c('NAME', 'FIPS', 'geometry')])
 
   shp <- shapefile_dropcols(shp)
   shp <- shapefile_addcols(shp)
@@ -547,7 +567,8 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
     # cat("Population estimate", popvarname, "is from B01001_001 in American Community Survey 5yr survey ending", acs_endyear_carto_tiger, " \n")
     # names(shp) <- gsub("moe", "pop_moe", names(shp))
 
-    shp <- shp[ , c('NAME', 'FIPS', 'geometry')]
+    shp <- shapefile_fix_sf_column(shp)
+    shp <- shapefile_fix_sf_column(shp[ , c('NAME', 'FIPS', 'geometry')])
 
     # fips was input, shp$FIPS is output column but need to make the sort order like input order
     if (any(sort(shp$FIPS) != sort(fips))) {warning("fips codes found in shapefile of boundaries are not all the same as fips requested")}
@@ -1077,14 +1098,43 @@ shapes_empty_table <- function(fips) {
 # shp <- shapefile_addcols(shp)
 # shp <- shapefile_sortcols(shp)
 
+# utility to repair the "sf_column" attribute of a spatial data.frame
+#
+# Defensive: if attr(shp, "sf_column") is NA, missing, or names a column that
+# does not hold the geometry, sf::st_drop_geometry() and sf's `$<-`/`[[<-`
+# fail with "missing value where TRUE/FALSE needed" (sf tests i == NA).
+# Point it back at whichever column actually holds the sfc geometry.
+
+shapefile_fix_sf_column <- function(shp) {
+
+  if (!inherits(shp, "sf")) {return(shp)}
+  # Load sf so its `[` method is registered before the callers subset shp.
+  # Without it, an installed EJAM falls back to `[.data.frame`, which drops
+  # sf_column and turns the geometry into a plain list (see #610).
+  requireNamespace("sf", quietly = TRUE)
+  sfcol <- attr(shp, "sf_column")
+  if (length(sfcol) == 1 && !is.na(sfcol) && sfcol %in% colnames(shp) &&
+      inherits(.subset2(shp, sfcol), "sfc")) {
+    return(shp) # already valid -- names a column that really holds geometry
+  }
+  isgeom <- vapply(shp, function(z) inherits(z, "sfc"), logical(1))
+  if (!any(isgeom)) {return(shp)} # nothing to point at
+  attr(shp, "sf_column") <- colnames(shp)[which(isgeom)[1]]
+  return(shp)
+}
+################## # ################## # ################## #
+
 shapefile_dropcols <- function(shp,
                                dropthese = c('STATEFP', 'PLACEFP', 'PLACENS', 'GEOID', 'GEOIDFQ',
                                              'REGION' ,'DIVISION' , 'STATENS', 'STUSPS' ,
                                              'LSAD', 'CLASSFP', 'PCICBSA', 'MTFCC', 'FUNCSTAT',
                                              'ALAND', 'AWATER', 'INTPTLAT', 'INTPTLON')
 ) {
-  # drop less useful columns
-  shp[, setdiff(colnames(shp), dropthese)]
+  # drop less useful columns.
+  # repair before subsetting as well as after: sf's `[` validates sf_column
+  # on the way in, and can leave it NA on the way out
+  shp <- shapefile_fix_sf_column(shp)
+  shapefile_fix_sf_column(shp[, setdiff(colnames(shp), dropthese)])
 }
 ################## # ################## # ################## #
 
@@ -1097,6 +1147,11 @@ shapefile_dropcols <- function(shp,
 
 shapefile_addcols <- function(shp, addthese = c('fipstype', 'pop', 'NAME', 'STATE_ABBR', 'STATE_NAME', 'SQMI', 'POP_SQMI'),
                               fipscolname = "FIPS", popcolname = "pop", overwrite = FALSE) {
+
+  # every column added below goes through sf's `$<-`, which reads
+  # attr(shp, "sf_column") -- so make sure that attribute is usable first
+  shp <- shapefile_fix_sf_column(shp)
+
   if (!overwrite) {
     # could warn that user asked to add one that is already there but overwrite is FALSE so it will not get recalculated
     if (length(intersect(addthese, colnames(shp))) > 0) {
@@ -1108,14 +1163,14 @@ shapefile_addcols <- function(shp, addthese = c('fipstype', 'pop', 'NAME', 'STAT
 
   # figure out the FIPS column, get it as a vector
   if (fipscolname %in% colnames(shp)) {
-    fipsvector <- as.vector(sf::st_drop_geometry(shp)[, fipscolname]) # fipscolname was found
+    fipsvector <- as.vector(shp[[fipscolname]]) # fipscolname was found
   } else {
     if ("fips" %in% fipscolname) {
-      fipsvector <- as.vector(sf::st_drop_geometry(shp)[, 'fips']) # use "fips" lowercase since cant find fipscolname
+      fipsvector <- as.vector(shp[['fips']]) # use "fips" lowercase since cant find fipscolname
     } else {
       if ("fips" %in% fixnames_aliases(colnames(shp))) {  # use 1st column that is an alias for fips
         warning(fipscolname, "is not a column name in shp, so using a column that seems to be an alias for FIPS")
-        fipsvector <- as.vector(sf::st_drop_geometry(shp)[, which(fixnames_aliases(colnames(shp)) == "fips")[1]])
+        fipsvector <- as.vector(shp[[which(fixnames_aliases(colnames(shp)) == "fips")[1]]])
       } else {
         warning("cannnot find a column that can be identified as the FIPS, so using NA for columns like STATE_ABBR or STATE_NAME")
         fipsvector <- rep(NA, nrow(shp)) # NA for all rows
@@ -1163,7 +1218,7 @@ shapefile_addcols <- function(shp, addthese = c('fipstype', 'pop', 'NAME', 'STAT
       sqmi = area_sqmi_from_shp(shp)
     }
     if (popcolname %in% colnames(shp)) {
-      pop = as.vector(sf::st_drop_geometry(shp)[, popcolname])
+      pop = as.vector(shp[[popcolname]])
       shp$POP_SQMI <- ifelse(sqmi == 0, NA, pop / sqmi)
       shp$POP_SQMI <- round(shp$POP_SQMI, 2)
     } else {
@@ -1186,9 +1241,10 @@ shapefile_sortcols <- function(x,
                                putfirst = c("FIPS", "fipstype", "NAME", "ST", "STATE_ABBR", "STATE_NAME", "pop", "pop_est", "pop_moe", "SQMI", "POP_SQMI"),
                                putlast = c("geometry")) {
 
+  x <- shapefile_fix_sf_column(x)
   x <- relocate(x, intersect(putfirst, names(x)), .before = 1)
   x <- relocate(x, intersect(putlast, names(x)), .after = last_col())
-  return(x)
+  return(shapefile_fix_sf_column(x))
 }
 ################## # ################## # ################## #
 
@@ -1196,5 +1252,7 @@ shapefile_sortcols2 = function(x,
                                putfirst = c("FIPS", "fipstype", "NAME", "ST", "STATE_ABBR", "STATE_NAME", "pop", "pop_est", "pop_moe", "SQMI", "POP_SQMI"),
                                putlast = c("geometry")) {
 
-  x[, c(intersect(putfirst, names(x)), setdiff(names(x), c(putfirst, putlast)), intersect(putlast, names(x)))]
+  x <- shapefile_fix_sf_column(x)
+  shapefile_fix_sf_column(
+    x[, c(intersect(putfirst, names(x)), setdiff(names(x), c(putfirst, putlast)), intersect(putlast, names(x)))])
 }

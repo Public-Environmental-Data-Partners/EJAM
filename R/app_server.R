@@ -2622,63 +2622,29 @@ app_server <- function(input, output, session) {
   output$comm_report_html <- renderUI({
     req(data_processed())
 
-    ## *** consider replacing this with ejam2report(),
-    ## but note doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
-    isolate({
-      ## 1-site analyses must read like ejam2report() and the API, not like a
-      ## multisite summary. ejam2report() does this by flipping sitenumber from 0
-      ## to the single valid row when only one site is valid; this in-app renderer
-      ## never did, so a 1-site analysis was titled "EJSCREEN Multisite Summary"
-      ## and its header showed no site or FIPS identifier.
-      report_valid_rows  <- which(data_processed()$results_bysite$valid %in% TRUE)
-      report_sitenumber  <- if (length(report_valid_rows) == 1) report_valid_rows[1] else NULL
-      report_is_one_site <- !is.null(report_sitenumber)
-
-      residents_within_xyz <- report_residents_within_xyz_from_ejamit(
-        ejamitout = data_processed(), ## this function uses the whole list not just ejamout1 to create the header
-        sitenumber = report_sitenumber, # NULL keeps the multisite header; a row number adds "(Site N, FIPS ...)"
-        site_method = submitted_upload_method()
-        # isolate() done, so change in site_method (e.g., polygon to lat lon) will not trigger re-render if Start not clicked,
-        # BUT, changing title does trigger re-render with old data and new title,
-        # and if upload method got changed too, without Start Analysis button hit again,
-        # it will re-render with new but incorrect method in header (?) ***
-      )
-      popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
-
-      pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
-    })
-
-    ## Report TITLE: "EJSCREEN Community Report" for 1 site, "...Multisite Summary" otherwise
-    report_title_now <- if (report_is_one_site) {
-      global_or_param("report_title")
+    header <- report_header_from_ejamit(
+      data_processed(), analysis_title = sanitized_analysis_title(),
+      site_method = submitted_upload_method()
+    )
+    validate(need(header$reportable, "Report not available: no reportable results for the selected sites."))
+    report_output <- if (header$sitenumber > 0L) {
+      data_processed()$results_bysite[header$sitenumber, ]
     } else {
-      global_or_param("report_title_multisite")
+      data_processed()$results_overall
     }
+    popstr <- prettyNum(round(report_output$pop, table_rounding_info("pop")), big.mark = ',')
+    pkg_relative_path <- function(fpath) {gsub(system.file("", package = "EJAM"), "", fpath)}
 
-    ## Analysis TITLE: for a 1-site FIPS analysis show the place name, as
-    ## ejam2report() does via fips2name(). Only replaces the untouched default, so
-    ## a title the user typed in the box is never silently overridden.
-    analysis_title_now <- sanitized_analysis_title()
-    if (report_is_one_site && isTRUE(data_processed()$sitetype %in% "fips") &&
-        identical(analysis_title_now, global_or_param("default_standard_analysis_title"))) {
-      fipsname <- tryCatch(
-        fips2name(data_processed()$results_bysite$ejam_uniq_id[report_sitenumber]),
-        error = function(e) NA_character_
-      )
-      if (length(fipsname) == 1 && !is.na(fipsname) && nzchar(fipsname)) {
-        analysis_title_now <- fipsname
-      }
-    }
     full_page <- build_community_report(
 
       logo_path      = pkg_relative_path(global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
       logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
-      report_title   = report_title_now,   # Community Report if 1 site, Multisite Summary otherwise
-      analysis_title = analysis_title_now, # changing it will trigger re-render here
-      locationstr    = residents_within_xyz,
+      report_title   = header$report_title,
+      analysis_title = header$analysis_title,
+      locationstr    = header$locationstr,
       totalpop       = popstr,
 
-      output_df      = data_processed()$results_overall,
+      output_df      = report_output,
       include_ejindexes                = isTRUE(as.logical(input$include_ejindexes)),
       show_ratios_in_report            = isTRUE(as.logical(input$show_ratios_in_report)),
       extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
@@ -3213,7 +3179,7 @@ app_server <- function(input, output, session) {
   ### ejam2report() in 1-site downloadHandler() ####
   # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
 
-  # Default is to use API here to get single-site reports, not render them here  ***
+  # Per-site download buttons render locally through ejam2report().
 
   output$download_report_single_site <- downloadHandler(
 
@@ -3251,9 +3217,7 @@ app_server <- function(input, output, session) {
   ### observe 1-site-report buttons ####
   # (1 button per site in the table of sites, to see report or barplot for that site)
   #
-  # NOTE: This code was written but is not used if the app obtains these reports via API.
-  # Rendering here is probably faster and supports more parameters / features than API, & would be especially useful for large multipolygon shapefiles,
-  # while using the API for 1-site reports in the app is simpler.
+  # These handlers render per-site downloads locally; API links are a separate path.
 
   cur_button <- reactiveVal(NULL)
   temp_file_path <- reactiveVal(NULL)

@@ -1126,6 +1126,22 @@ AIR,	IL000031012ACJ<br>
 <div class="cejst-btn-wrap" align="right">
   <a
     class="cejst-style-btn"
+    href="https://www.publicenvirodata.org/donate"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Donate
+    <img
+      class="cejst-launch-icon"
+      src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\'%3E%3Cpath d=\'M0 0h24v24H0z\' fill=\'none\'/%3E%3Cpath d=\'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\' fill=\'%230050d8\'/%3E%3C/svg%3E"
+      alt=""
+      aria-hidden="true"
+    />
+  </a>
+  
+
+  <a
+    class="cejst-style-btn"
     href="https://docs.google.com/forms/d/1fY-KLXKt1eeIuGd0GJUYLr3XXwp85_WTLoSUAq5IpEg/viewform"
     target="_blank"
     rel="noopener noreferrer"

@@ -1359,12 +1359,12 @@ app_ui <- function(request) {
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),
 
                  shiny::radioButtons(inputId = "show_ratios_in_report",
-                                     label = "Show ratio to state and ratio to US average in main table of multisite report",
+                                     label = "Show ratio to state and ratio to US average in main table of report",
                                      choices = list(Yes = TRUE, No = FALSE ),
                                      selected = global_or_param("default_show_ratios_in_report")),
 
                  shiny::radioButtons(inputId = "extratable_show_ratios_in_report",
-                                     label = "Show ratio to state and ratio to US average in extra indicators (additional information) table of multisite report",
+                                     label = "Show ratio to state and ratio to US average in extra indicators (additional information) table of report",
                                      choiceNames = list("Yes","No" ),
                                      choiceValues = list(TRUE, FALSE ),
                                      selected = global_or_param("default_extratable_show_ratios_in_report")),
