@@ -31,6 +31,10 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 - `shapes_from_fips()` now works offline for state and county boundaries built
   into EJAM, instead of erroring before it reaches them (#527).
 
+- The web app no longer requests about a dozen files it does not serve (a web
+  manifest, extra favicons, and Esri map-widget images and fonts from the report
+  stylesheet), which had shown as 404 errors in the browser console (#588).
+
 - A custom report title for a single-site analysis is now kept in the downloaded
   report too, not only in the app, because both use one shared header rule (#458).
 
