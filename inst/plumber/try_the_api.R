@@ -81,6 +81,8 @@ if (FALSE) {
   browseURL(paste0(test_url, "/draft/ejamit?lon=-101&lat=36&radius=1"))
   browseURL(paste0(test_url, "/draft/reportnew?lon=-101&lat=36&radius=1&fileextension=html"))
   browseURL(paste0(test_url, "/draft/all?lon=-101&lat=36&radius=1&outputs=json,xlsx"))
+  # overall summary as CSV (plain-English column names; add &names=r for short names)
+  browseURL(paste0(test_url, "/draft/all?lon=-101&lat=36&radius=1&outputs=csv"))
 
   ############## #
   # stop the background server when done
