@@ -5,7 +5,7 @@
 \title{Run timing tests for the main EJAM analysis input types}
 \usage{
 speedtest_runtime_scenarios(
-  detailed_csv = file.path("data-raw", "Analysis_timing_results_runtime_scenarios.csv"),
+  detailed_csv = NULL,
   point_counts = c(1L, 10L, 100L, 1000L, 3000L, 10000L),
   point_radii = c(1, 3.106856, 5),
   fips = NULL,
@@ -19,6 +19,7 @@ speedtest_runtime_scenarios(
   run_fips_counties = TRUE,
   run_fips_cities = TRUE,
   run_shapefile = TRUE,
+  test_ejamit = TRUE,
   ...
 )
 }
@@ -48,6 +49,9 @@ example shapefile in \code{inst/testdata} is used.}
 
 \item{run_points, run_fips, run_fips_counties, run_fips_cities, run_shapefile}{logical flags indicating which analysis types to run.
 run_fips is for the optional custom fips.}
+
+\item{test_ejamit}{whether point scenarios should time full \code{\link[=ejamit]{ejamit()}} runs
+instead of only its component functions.}
 
 \item{...}{passed to \code{\link[=speedtest]{speedtest()}}.}
 }

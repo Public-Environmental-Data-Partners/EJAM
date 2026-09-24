@@ -28,6 +28,16 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 - County boundaries from `shapes_from_fips()` no longer fail with "missing value
   where TRUE/FALSE needed" when the sf package was not yet loaded.
 
+- `shapes_from_fips()` now works offline for state and county boundaries built
+  into EJAM, instead of erroring before it reaches them (#527).
+
+- A custom report title for a single-site analysis is now kept in the downloaded
+  report too, not only in the app, because both use one shared header rule (#458).
+
+- The population-share helpers such as `popshare_at_top_x_pct()` now give correct
+  results for small numbers of sites (e.g., the top 0% of sites is 0% of people),
+  and never show a positive share as 0% (#137).
+
 - The notes tab of the Excel workbook now says how the sites were selected. 
   A SIC analysis now says "Locations defined by latitude, longitude and radius, 
   based on EPA-regulated facilities by SIC code (industry type)".
