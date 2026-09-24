@@ -78,13 +78,15 @@ EJAM lets you specify the places to analyze in several ways -- uploading a table
 
 ## What's New in v3.2022.3 (September 2026)
 
-The web app is quicker: the Details tab's Site-by-Site table appears in under a second for a 1,000-site analysis instead of six, PDF reports finish seven seconds sooner, and County reports no longer pause to download boundaries.
+This is the final release that uses the ACS 2018-2022 data, and it is frozen from here on. Development continues with the ACS 2020-2024 data in v4.2024.0.
 
-The community report gained rows showing the share of residents whose block group holds a school, hospital, or place of worship, or overlaps a Tribal area, impaired waters, or a disadvantaged community, each compared to the US and State average. Those ratio columns now show by default in the public app, and `?advanced=TRUE` opens the Advanced Settings tab.
+Corrected data: counts of people by language spoken at home (`lan_universe`, `lan_spanish`, and the other `lan_*` counts) were about three times too high in every result, because each Census tract's total had been repeated on every one of its block groups. The packaged data now divides those counts among block groups, so they add up to the Census totals (#596).
 
-Fixes: the EJScreen "Send to EJAM" handoff no longer crashes, saved reports are no longer empty when given a `filename`, zero-population sites work, per-site API links carry the right site number.
+New: zip code analysis. `ejamit(zipcode = 10605)` analyzes the Census ZCTA areas for the zip codes, and reports name and map them as zip codes (#482).
 
-A code-and-docs patch; packaged data unchanged. See [NEWS.md](NEWS.md).
+Fixes: percentiles are now the same on every operating system (#555); a custom report title is kept in the downloaded report, not just in the app (#458); built-in state and county boundaries work offline (#527); population-share summaries are correct for small numbers of sites (#137); SIC and MACT analyses are described again in reports and the Excel notes; and a GitHub outage no longer looks like missing data.
+
+See [NEWS.md](NEWS.md) for the full list.
 
 ## Status of EJAM package in 2026
 
