@@ -114,7 +114,8 @@ send_binary <- function(res, value, type, filename, disposition = "attachment") 
 send_report <- function(res, value, fileextension) { if (identical(tolower(as.character(api_one(fileextension))), "pdf")) send_binary(res, value, "application/pdf", "EJAM_results.pdf", "inline") else send_binary(res, value, "text/html", "EJAM_results.html", "inline") }
 
 # The overall summary as CSV, like the retired /draft/ejamit_csv: one row,
-# results_overall, with plain-English column names unless csvnames = "r".
+# results_overall, with plain-English column names unless the request sets
+# names=r (the /draft/all `names` parameter, passed in here as csvnames).
 render_csv <- function(result, csvnames = "long") {
   csvnames <- tolower(as.character(api_one(csvnames))); if (length(csvnames) != 1 || !csvnames %in% c("long", "r")) stop("names must be long or r")
   out <- as.data.frame(result$results_overall)

@@ -160,6 +160,8 @@ test_that("/draft/all outputs=csv returns the overall summary as CSV", {
   expect_true("Total Population" %in% names(out)) # plain-English names by default
   # names=r keeps the short variable names
   resp_r <- httr::GET(paste0(baseurl, "/draft/all?lat=39.16&lon=-75.52&radius=1&outputs=csv&names=r"), httr::timeout(300))
+  expect_equal(httr::status_code(resp_r), 200)
+  expect_match(httr::headers(resp_r)[["content-type"]], "text/csv")
   out_r <- utils::read.csv(text = httr::content(resp_r, as = "text", encoding = "UTF-8"), check.names = FALSE)
   expect_true("pop" %in% names(out_r))
   expect_equal(out_r$pop, out[["Total Population"]])
