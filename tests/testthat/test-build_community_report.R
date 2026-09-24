@@ -86,3 +86,20 @@ test_that("build_barplot_report(filename=) writes the HTML to the file and still
   expect_match(saved, "MARKER BARPLOT TITLE", fixed = TRUE)
   expect_identical(trimws(saved), trimws(as.character(returned)))
 })
+
+test_that("report CSS and app <head> reference no assets the app does not serve (#588)", {
+  # The community report CSS was copied from EPA's Esri/ArcGIS stylesheet, which
+  # points at Esri theme images and fonts (../themes/base/..., dgrid icons) that
+  # EJAM never ships, so each one was a 404 in the web app.
+  for (f in c("main.css", "main_withbreaks.css")) {
+    css <- paste(readLines(app_sys("report", "community_report", f), warn = FALSE), collapse = "\n")
+    expect_false(grepl("../themes/base/", css, fixed = TRUE), info = f)
+    expect_false(grepl("../../dgrid/css/images/", css, fixed = TRUE), info = f)
+  }
+  # The app <head> must not link favicon/manifest files at the site root, where
+  # the app does not serve them (golem serves inst/app/www under www/).
+  head_html <- paste(as.character(golem_add_external_resources()), collapse = "\n")
+  for (x in c("site.webmanifest", "safari-pinned-tab.svg", "browserconfig.xml", "href=\"favicon-32x32.png\"", "href=\"apple-touch-icon.png\"")) {
+    expect_false(grepl(x, head_html, fixed = TRUE), info = x)
+  }
+})

@@ -64,6 +64,10 @@ which is where development continues.
 - County boundaries from `shapes_from_fips()` no longer fail with "missing value
   where TRUE/FALSE needed" when the sf package was not yet loaded.
 
+- The web app no longer requests about a dozen files it does not serve (a web
+  manifest, extra favicons, and Esri map-widget images and fonts from the report
+  stylesheet), which had shown as 404 errors in the browser console (#588).
+
 - `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
   "fips" rather than "FIPS". The two gates that rebuild those polygons were
   case-sensitive, so a lowercase spelling silently produced an unmapped report.
