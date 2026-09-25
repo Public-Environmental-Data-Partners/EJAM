@@ -17,31 +17,7 @@ RUN apt-get update && apt-get install -y \
     texlive-latex-extra \
     texlive-fonts-extra \
     fontconfig \
-    fonts-liberation \
-    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
-
-# Pin the generic font families R asks for. Plots that set no font family (the
-# community report barplot, for one) ask fontconfig for "sans". With
-# texlive-fonts-extra's hundreds of fonts installed, what "sans" resolves to can
-# drift with the floating base image: the 2026-09-25 rocker/rstudio:latest
-# resolved it to a decorative font, so chart text came out as boxes (#621).
-# local.conf is read before 60-latin.conf, so these preferences come first.
-# The fc-match lines log the before/after resolution in the build output.
-RUN echo "fc-match sans BEFORE pin: $(fc-match sans)" && \
-    printf '%s\n' \
-    '<?xml version="1.0"?>' \
-    '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' \
-    '<fontconfig>' \
-    '  <alias binding="strong"><family>sans-serif</family><prefer><family>Liberation Sans</family><family>DejaVu Sans</family></prefer></alias>' \
-    '  <alias binding="strong"><family>sans</family><prefer><family>Liberation Sans</family><family>DejaVu Sans</family></prefer></alias>' \
-    '  <alias binding="strong"><family>serif</family><prefer><family>Liberation Serif</family><family>DejaVu Serif</family></prefer></alias>' \
-    '  <alias binding="strong"><family>monospace</family><prefer><family>Liberation Mono</family><family>DejaVu Sans Mono</family></prefer></alias>' \
-    '</fontconfig>' > /etc/fonts/local.conf && \
-    fc-cache -f && \
-    echo "fc-match sans AFTER pin: $(fc-match sans)" && \
-    echo "fc-match sans-serif AFTER pin: $(fc-match sans-serif)" && \
-    fc-match sans | grep -q 'Liberation Sans'
 
 # Install Google Chrome stable (chromium-browser on Ubuntu 22.04+ is a snap stub — won't work in Docker)
 RUN curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/chrome.deb && \
@@ -217,7 +193,13 @@ WORKDIR /root
 # options= list is passed to shinyApp() for host/port.
 # TEMPORARY (#621): runtime font diagnostics published under www/diag621/
 COPY diag621_runtime.R /diag621_runtime.R
-CMD ["R", "-e", "library(EJAM); source('/diag621_runtime.R'); httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = FALSE, options = list(host = '0.0.0.0', port = 2000))"]
+# Rebuild the fontconfig cache when the container starts (#621). The cache baked
+# into the image at build time did not match the font files once the image ran on
+# ECS Fargate: "sans" resolved to EBGaramond-Initials.woff (a decorative
+# capitals-only font from texlive-fonts-extra), so chart text drawn by R came out
+# as boxes. The same image was fine under plain docker. A fresh cache takes a few
+# seconds and always matches the files actually present.
+CMD ["R", "-e", "system('fc-cache -r'); library(EJAM); source('/diag621_runtime.R'); httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = FALSE, options = list(host = '0.0.0.0', port = 2000))"]
 
 # NOTE on isPublic: the DEV/staging server runs the FULL (private) app
 # (isPublic = FALSE) so RC testing exercises all features. PRODUCTION
