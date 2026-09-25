@@ -215,7 +215,9 @@ WORKDIR /root
 # (calling it here made every ECS task exit 1 with "'run_app' is not an exported
 # object from 'namespace:EJAM'"). ejamapp(isPublic=...) is supported and its
 # options= list is passed to shinyApp() for host/port.
-CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = FALSE, options = list(host = '0.0.0.0', port = 2000))"]
+# TEMPORARY (#621): runtime font diagnostics published under www/diag621/
+COPY diag621_runtime.R /diag621_runtime.R
+CMD ["R", "-e", "library(EJAM); source('/diag621_runtime.R'); httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = FALSE, options = list(host = '0.0.0.0', port = 2000))"]
 
 # NOTE on isPublic: the DEV/staging server runs the FULL (private) app
 # (isPublic = FALSE) so RC testing exercises all features. PRODUCTION
