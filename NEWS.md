@@ -1,13 +1,12 @@
-# EJAM 3.2022.3 (unreleased)
+# EJAM 3.2022.3 (October 2026)
 
-Features from the v4 milestone, shipping on the ACS 2018-2022 vintage.
-
-This is the final ACS 2018-2022 release; it is frozen from here on. The 2020-2024
-vintage ships separately as `4.2024.0`, which is where development continues.
+This is the final ACS 2018-2022 release; it is frozen from here on.
+The ACS 2020-2024 vintage version will be released as `4.2024.0`,
+which is where development continues.
 
 ## New Features
 
-- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
+- Zip code analysis: `ejamit(zipcode = 10605)`, for example, works. Zip codes are converted
   to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
   any other shapefile, and `ejam2report()` describes the places as zip codes and
   maps their boundaries without needing the `shp` parameter. This automates the
@@ -15,47 +14,18 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 
 ## Dataset Fix
 
-- Language-spoken counts (number of people speaking given language) were shown 
+- Language-spoken counts (number of people speaking given language) were shown
   incorrectly and are now fixed. The counts from the tract-only ACS table C16001 (`lan_universe`,
   `lan_spanish`, and the other `lan_*` counts) are now correctly apportioned to block groups
   by population share instead of repeating each tract's total on every block
   group, so sums across block groups (in `ejamit()` results and the pipeline's
   `acs_by_tract`, `acs_by_county`, and `acs_by_state` layers) no longer come out
-  about three times too high. The packaged `blockgroupstats` data and saved example outputs now carry the corrected counts (#596).
+  about three times too high. The packaged `blockgroupstats` data and saved
+  example outputs now carry the corrected counts (#596).
 
 ## Bug Fixes
 
-- County boundaries from `shapes_from_fips()` no longer fail with "missing value
-  where TRUE/FALSE needed" when the sf package was not yet loaded.
-
-- `shapes_from_fips()` now works offline for state and county boundaries built
-  into EJAM, instead of erroring before it reaches them (#527).
-
-- The web app no longer requests about a dozen files it does not serve (a web
-  manifest, extra favicons, and Esri map-widget images and fonts from the report
-  stylesheet), which had shown as 404 errors in the browser console (#588).
-
-- A custom report title for a single-site analysis is now kept in the downloaded
-  report too, not only in the app, because both use one shared header rule (#458).
-
-- The population-share helpers such as `popshare_at_top_x_pct()` now give correct
-  results for small numbers of sites (e.g., the top 0% of sites is 0% of people),
-  and never show a positive share as 0% (#137).
-
-- The notes tab of the Excel workbook now says how the sites were selected. 
-  A SIC analysis now says "Locations defined by latitude, longitude and radius, 
-  based on EPA-regulated facilities by SIC code (industry type)".
-  The detail is left off when it would only restate the site type.
-
-- SIC and MACT analyses get their descriptions back. `site_method2text()`
-  lowercases its input, but its SIC and MACT branches compared against the
-  uppercase spellings, so neither could ever match and both fell through to an
-  empty string.
-
-- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
-  "fips" rather than "FIPS". The two gates that rebuild those polygons were
-  case-sensitive, so a lowercase spelling silently produced an unmapped report.
-  Matches how the zip code gates added for #482 already behave.
+- Population-share summaries are now correct for small numbers of sites (#137).
 
 - Percentiles no longer depend on which operating system the analysis runs on.
   A raw score is normally a population-weighted average, so it carries a few
@@ -75,13 +45,44 @@ vintage ships separately as `4.2024.0`, which is where development continues.
   the ACS22 `pctdisability` boundary case without needing the `signif_digits`
   argument.
 
-- A GitHub outage no longer looks like missing data. When GitHub API cannot list
-  a release's assets, `download_latest_arrow_data()` now says so and retries,
-  instead of just reporting missing `quaddata.arrow` much later.
+- A custom report title is now kept in the downloaded report, not just in the app (#458).
+
+- The notes tab of the Excel workbook now says how the sites were selected. It
+  had never done so: `buffer_desc_from_sitetype()` only appended that detail when
+  the description so far was empty, which none of its branches can produce, and
+  the test inside was inverted as well. A SIC analysis of latitude/longitude
+  sites now reads "Locations defined by latitude, longitude and radius, based on
+  EPA-regulated facilities by SIC code (industry type)" instead of stopping at
+  the radius. The detail is left off when it would only restate the site type,
+  so plain shapefile analyses do not read "Polygons defined by shapefile, based
+  on shapefile".
+
+- SIC and MACT analyses are now described again in reports and the Excel notes.
+  `site_method2text()` lowercases its input, but its SIC and MACT branches
+  compared against the uppercase spellings.
+
+- Built-in state and county boundaries now work offline (#527).
+
+- County boundaries from `shapes_from_fips()` no longer fail with "missing value
+  where TRUE/FALSE needed" when the sf package was not yet loaded.
+
+- The web app no longer requests about a dozen files it does not serve (a web
+  manifest, extra favicons, and Esri map-widget images and fonts from the report
+  stylesheet), which had shown as 404 errors in the browser console (#588).
+
+- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
+  "fips" rather than "FIPS". The two gates that rebuild those polygons were
+  case-sensitive, so a lowercase spelling silently produced an unmapped report.
+  Matches how the zip code gates added for #482 already behave.
+
+- A GitHub outage no longer looks like missing data. When the API cannot list a
+  release's assets, `download_latest_arrow_data()` now says so and retries,
+  instead of treating the empty answer as an empty release and reporting a
+  missing `quaddata.arrow` much later.
 
 - Docker build and deployed app now verifies PDF report download works (#510).
 
-- Trying to upload a shapefile that is point-based now tells user to use 
+- Trying to upload a shapefile that is point-based now tells user to use
   lat/lon point upload option, and geometry rule is centralized & tested (#550).
 
 - Web-app article text showing URLs now shows them as clickable links (#599).
@@ -89,7 +90,7 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 - Uploaded polygon data stay in `sf` form through the web-app map path, avoiding
   an `st_geometry()` console error (#136).
 
-- Count of sites with N "high" scores was confusing. 
+- Count of sites with N "high" scores was confusing.
   `count_sites_with_n_high_scores()` now starts at 1.05 ratio cutoff (#546).
 
 - R CMD check problems exposed by full CI are now resolved across examples,
@@ -105,7 +106,7 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 
 - The [Basics - Quick Start Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.html) article now links to a Community Report example (#600).
 
-- In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html) 
+- In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html)
   and other articles, fixed about 20 broken or incomplete links and text (#602).
 
 
