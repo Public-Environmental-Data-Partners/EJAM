@@ -102,4 +102,8 @@ test_that("report CSS and app <head> reference no assets the app does not serve 
   for (x in c("site.webmanifest", "safari-pinned-tab.svg", "browserconfig.xml", "href=\"favicon-32x32.png\"", "href=\"apple-touch-icon.png\"")) {
     expect_false(grepl(x, head_html, fixed = TRUE), info = x)
   }
+  # The in-app report must not link communityreport.css (the app includes it
+  # already and does not serve it at the root); a standalone report still must.
+  expect_false(grepl("communityreport.css", generate_html_header(in_shiny = TRUE), fixed = TRUE))
+  expect_true(grepl("communityreport.css", generate_html_header(in_shiny = FALSE), fixed = TRUE))
 })
