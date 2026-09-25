@@ -12,14 +12,16 @@ which is where development continues.
   maps their boundaries without needing the `shp` parameter. This automates the
   workflow that the Zipcodes article documented as manual steps (#482).
 
-## Bug Fixes
+## Dataset Fix
 
-- Language counts from the tract-only ACS table C16001 (`lan_universe`,
-  `lan_spanish`, and the other `lan_*` counts) are now apportioned to block groups
+- Language-spoken counts (number of people speaking given language) were shown 
+  incorrectly and are now fixed. The counts from the tract-only ACS table C16001 (`lan_universe`,
+  `lan_spanish`, and the other `lan_*` counts) are now correctly apportioned to block groups
   by population share instead of repeating each tract's total on every block
   group, so sums across block groups (in `ejamit()` results and the pipeline's
   `acs_by_tract`, `acs_by_county`, and `acs_by_state` layers) no longer come out
-  about three times too high. (#596).
+  about three times too high. The packaged `blockgroupstats` data and saved
+  example outputs now carry the corrected counts (#596).
 
 - Population-share summaries are now correct for small numbers of sites (#137); 
 
@@ -59,6 +61,13 @@ which is where development continues.
 
 - Built-in state and county boundaries now work offline (#527);
 
+- County boundaries from `shapes_from_fips()` no longer fail with "missing value
+  where TRUE/FALSE needed" when the sf package was not yet loaded.
+
+- The web app no longer requests about a dozen files it does not serve (a web
+  manifest, extra favicons, and Esri map-widget images and fonts from the report
+  stylesheet), which had shown as 404 errors in the browser console (#588).
+
 - `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
   "fips" rather than "FIPS". The two gates that rebuild those polygons were
   case-sensitive, so a lowercase spelling silently produced an unmapped report.
@@ -68,6 +77,35 @@ which is where development continues.
   release's assets, `download_latest_arrow_data()` now says so and retries,
   instead of treating the empty answer as an empty release and reporting a
   missing `quaddata.arrow` much later.
+
+- Docker build and deployed app now verifies PDF report download works (#510).
+
+- Trying to upload a shapefile that is point-based now tells user to use 
+  lat/lon point upload option, and geometry rule is centralized & tested (#550).
+
+- Web-app article text showing URLs now shows them as clickable links (#599).
+
+- Uploaded polygon data stay in `sf` form through the web-app map path, avoiding
+  an `st_geometry()` console error (#136).
+
+- Count of sites with N "high" scores was confusing. 
+  `count_sites_with_n_high_scores()` now starts at 1.05 ratio cutoff (#546).
+
+- R CMD check problems exposed by full CI are now resolved across examples,
+  dependencies, line endings, and portable fixtures (#548).
+
+- NAICS function unit tests of `naics_from_any(21112, website_scrape = TRUE)`
+  now skip when naics.com blocks the CI runner (#560).
+
+- Installed-package vignettes now use working documentation URLs (#565).
+
+- Quick-install setup steps now time out promptly instead of hanging for an
+  hour (#585).
+
+- The [Basics - Quick Start Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.html) article now links to a Community Report example (#600).
+
+- In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html) 
+  and other articles, fixed about 20 broken or incomplete links and text (#602).
 
 
 # EJAM 3.2022.2 (August 2026)
@@ -287,8 +325,8 @@ web app with the sites already loaded and ready to analyze. The supporting piece
   place-type loads per launch (points, then FIPS, then polygons); the parsed
   places are held in per-session reactives (`url_sitepoints`, `url_fips`,
   `url_shapefile`) that the upload reactives prefer over `ejamapp()`/global
-  defaults. The vocabulary matches `url_ejamapi()`. See
-  `vignettes/dev-app-settings.Rmd`.
+  defaults. The vocabulary matches `url_ejamapi()`. See [Defaults and Custom Settings for the Web App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html)
+  from `vignettes/dev-app-settings.Rmd`.
 
 - `url_ejamapp()` now builds a deep link that launches the live app pre-loaded
   with a set of places: `url_ejamapp(lat=, lon=, fips=, shapefile=, radius=)` or

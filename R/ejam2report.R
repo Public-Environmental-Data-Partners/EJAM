@@ -1,3 +1,48 @@
+# Shared report selection and header for the app, downloads, and API callers.
+report_header_from_ejamit <- function(ejamitout, sitenumber = NULL,
+                                    report_title = NULL, analysis_title = NULL,
+                                    site_method = NULL, sitenumber_label = NULL) {
+  sites <- ejamitout$results_bysite
+  sitenumber <- suppressWarnings(as.numeric(sitenumber))
+  if (length(sitenumber) != 1 || is.na(sitenumber) ||
+      !(sitenumber %in% seq_len(NROW(sites)))) {
+    sitenumber <- 0L
+  }
+  valid_rows <- if ("valid" %in% names(sites)) which(sites$valid %in% TRUE) else seq_len(NROW(sites))
+  reportable_rows <- which(vapply(seq_len(NROW(sites)), function(i) {
+    ejam2report_site_is_reportable(sites[i, , drop = FALSE])
+  }, logical(1)))
+  # Preserve the existing sole-valid-site rule. Also handle a single usable site
+  # with no population, without treating malformed locations as valid results.
+  if (sitenumber == 0L && length(valid_rows) == 1L) {
+    sitenumber <- valid_rows[1]
+  } else if (sitenumber == 0L && length(valid_rows) == 0L && length(reportable_rows) == 1L) {
+    sitenumber <- reportable_rows[1]
+  }
+  reportable <- if (sitenumber > 0L) sitenumber %in% reportable_rows else length(reportable_rows) > 0L
+  if (is.null(report_title)) {
+    report_title <- global_or_param(if (sitenumber > 0L) "report_title" else "report_title_multisite")
+  }
+  default_title <- global_or_param("default_standard_analysis_title")
+  if (is.null(analysis_title)) analysis_title <- default_title
+  if (sitenumber > 0L && isTRUE(tolower(ejamitout$sitetype) %in% "fips") &&
+      identical(analysis_title, default_title)) {
+    name <- tryCatch(fips2name(sites$ejam_uniq_id[sitenumber]), error = function(e) NA_character_)
+    if (length(name) == 1 && !is.na(name) && nzchar(name)) analysis_title <- name
+  }
+  list(
+    sitenumber = sitenumber,
+    reportable = reportable,
+    report_title = report_title,
+    analysis_title = analysis_title,
+    locationstr = if (reportable) report_residents_within_xyz_from_ejamit(
+      ejamitout, sitenumber = sitenumber, site_method = site_method,
+      sitenumber_label = sitenumber_label,
+      nsites = if (sitenumber > 0L) 1L else if (length(valid_rows)) length(valid_rows) else length(reportable_rows)
+    ) else NULL
+  )
+}
+
 ################################################## #
 # helper
 
@@ -446,39 +491,21 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
   ################################################## #  ################################################## #
   # REPORT TYPE (MULTISITE or 1-SITE REPORT) ? ####
 
-  # Assume multisite report, unless only 1 site was analyzed (e.g., if called from the EJAM API) or a valid sitenumber >1 was provided
-
-  ## > sitenumber & nsites ####
-  sitenumber <- as.numeric(sitenumber)
-  if (all(is.na(sitenumber)) || is.null(sitenumber) ||
-      # length(sitenumber) == 0 ||
-      length(sitenumber) != 1 ||
-      all(sitenumber %in% "") || all(sitenumber %in% 0) || all(sitenumber < 0) ||
-      !(all(sitenumber %in% 1:NROW(ejamitout$results_bysite))) # ensures integer could provide error msg for this case
-  ) {
-    sitenumber <- 0  # in case sitenumber was invalid
+  header <- report_header_from_ejamit(
+    ejamitout, sitenumber = sitenumber, report_title = report_title,
+    analysis_title = analysis_title, site_method = site_method,
+    sitenumber_label = sitenumber_label
+  )
+  if (!header$reportable) {
+    message("Report not available: no reportable results for the selected sites.")
+    return(NA)
   }
-  # How many sites were actually analyzed, in the (valid) results provided?
-  valid_site_rows <- which(ejamitout$results_bysite$valid %in% TRUE)
-  nsites <- length(valid_site_rows) # might differ from ejamout1$sitecount_unique
-  # Treat it like a 1-site report if only 1 valid site was analyzed.
-  #   And then if sitenumber omitted, or sitenumber=1, or sitenumber provided was invalid, just use that 1 site.
-  if (sitenumber %in% 0 && nsites == 1) {
-    sitenumber <- valid_site_rows[1]
-  }
+  sitenumber <- header$sitenumber
+  report_title <- header$report_title
+  analysis_title <- header$analysis_title
 
-  # Multi-site  (results_overall) ###################################################
-
-  ## > report_title if multisite ####
-  if (sitenumber %in% 0) {
-
-    if (is.null(report_title)) {
-      report_title <- global_or_param("report_title_multisite")
-    }
-    ## > analysis_title if multisite ####
-    if (is.null(analysis_title)) {
-      analysis_title <- global_or_param("default_standard_analysis_title")
-    }
+  # Multi-site (results_overall)
+  if (sitenumber == 0L) {
 
     ejamout1 <- ejamitout$results_overall # one row
     ejamout1$valid <- TRUE
@@ -531,18 +558,6 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
     # Single-site  (results_bysite, or _overall but just 1 site) ###################################################
 
-    ## > report_title if 1-site ####
-    if (is.null(report_title)) {
-      report_title <- global_or_param("report_title")
-    }
-    ## > analysis_title if 1-site ####
-    if (is.null(analysis_title)) {
-      if (sitetype %in% 'fips') {
-        analysis_title <- fips2name(ejamitout$results_bysite$ejam_uniq_id[sitenumber])
-      } else {
-        analysis_title <- global_or_param("default_standard_analysis_title")
-      }
-    }
     ejamout1 <- ejamitout$results_bysite[sitenumber, ]
     rad <- ejamout1$radius.miles
 
@@ -611,21 +626,12 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## > population count formatted ####
     popstr <- prettyNum(round(ejamout1$pop, table_rounding_info("pop")), big.mark = ',')
 
-    ## > fips2name() ####
-    if (sitetype %in% "fips" && !is.null(sitenumber) && sitenumber > 0) {
-      analysis_title <- fips2name(ejamitout$results_bysite[sitenumber, ejam_uniq_id])
-    }
     if (sitetype %in% "shp" && is.null(shp)) {
       # this should not happen unless ejam2report() got called for shp analysis results but user did not provide the bounds
       warning("Cannot map polygons based on just output of ejamit() -- The sf class shapefile / spatial data.frame that was used should be provided as the shp parameter to ejam2report()")
     }
     ## > report_residents_within_xyz_from_ejamit()
-    residents_within_xyz <- report_residents_within_xyz_from_ejamit(
-      ejamitout = ejamitout,
-      sitenumber = sitenumber,
-      site_method = site_method,
-      sitenumber_label = sitenumber_label
-    )
+    residents_within_xyz <- header$locationstr
     ####################################################### #
 
     # FILES ####

@@ -327,6 +327,7 @@ instead of tests/testthat/_logs
         "test-doaggregate.R",
         "test-area_sqmi.R",
         "test-batch.summarize.R",
+        "test-popshare_xyz.R",
         "test-utils_flagged_FUNCTIONS.R",
 
         "test-pctile_from_raw_lookup.R",
@@ -616,7 +617,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               "test-url_package.R", "test-ejam2boxplot_ratios.R", "test-shiny-1-14-compat.R",
               "test-build_community_report.R", "test-shapes_from_zip.R",
               "test-table_round.R", "test-utils_release_assets.R",
-              "test-count_sites_with_n_high_scores.R"),
+              "test-count_sites_with_n_high_scores.R", "test-popshare_xyz.R"),
           seconds_byfile =
             c(0, 0, 0, 0, 0, 0, 0,
               0, 0, 2, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 6, 0, 0, 0,
@@ -625,9 +626,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               23, 0, 7, 0, 12, 0, 4, 5, 1, 0, 3, 0, 3, 0, 0, 0, 0, 1, 0, 4,
               2, 0, 0, 0, 0, 1, 0, 0, 16, 8, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
               0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 12, 0, 4, 0, 0, 0, 0, 1,
-              0, 1, 0, 0)),
+              0, 1, 0, 0, 0)),
           row.names = c(NA,
-                        -131L), class = "data.frame")
+                        -132L), class = "data.frame")
       )
 
 

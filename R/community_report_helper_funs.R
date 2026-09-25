@@ -1002,11 +1002,7 @@ generate_html_header <- function(analysis_title = NULL, # defaults of NULL here 
   }
   ########## #  ########## #  ########## #  ########## #
   if (is.null(report_title)) {
-    if (shiny::isRunning() || isTRUE(in_shiny)) {
-      report_title <- global_or_param("report_title")
-    } else {
-      report_title <- global_or_param("report_title")
-    }
+    report_title <- global_or_param("report_title")
   }
   ########## #  ########## #  ########## #  ########## #
   if (is.null(report_title) || all(is.na(report_title)) || length(report_title) == 0) {

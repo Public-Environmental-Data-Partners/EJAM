@@ -1359,12 +1359,12 @@ app_ui <- function(request) {
                  textInput(inputId = "Custom_title_for_bar_plot_of_indicators", label = "Enter title for barplot of indicators", value = gsub("[^a-zA-Z0-9 ]", "", "") ),
 
                  shiny::radioButtons(inputId = "show_ratios_in_report",
-                                     label = "Show ratio to state and ratio to US average in main table of multisite report",
+                                     label = "Show ratio to state and ratio to US average in main table of report",
                                      choices = list(Yes = TRUE, No = FALSE ),
                                      selected = global_or_param("default_show_ratios_in_report")),
 
                  shiny::radioButtons(inputId = "extratable_show_ratios_in_report",
-                                     label = "Show ratio to state and ratio to US average in extra indicators (additional information) table of multisite report",
+                                     label = "Show ratio to state and ratio to US average in extra indicators (additional information) table of report",
                                      choiceNames = list("Yes","No" ),
                                      choiceValues = list(TRUE, FALSE ),
                                      selected = global_or_param("default_extratable_show_ratios_in_report")),
@@ -1584,14 +1584,13 @@ golem_add_external_resources <- function() {
 
     golem::favicon(ext = 'png'),
 
-    tags$head(tags$link(rel = "apple-touch-icon",                   sizes = "180x180", href = "apple-touch-icon.png")),
-    tags$head(tags$link(rel = "icon",           type = "image/png", sizes = "32x32" ,  href = "favicon-32x32.png"   )),
-    tags$head(tags$link(rel = "icon",           type = "image/png", sizes = "16x16" ,  href = "favicon-16x16.png"   )),
-    tags$head(tags$link(rel = "manifest",                                              href = "site.webmanifest"    )),
-    tags$head(tags$link(rel = "mask-icon" ,                                            href = "safari-pinned-tab.svg",  color = "#5bbad5")),
+    # Only golem::favicon() above is needed; it serves www/favicon.png. The extra
+    # apple-touch-icon, 16/32px icon, site.webmanifest, safari-pinned-tab.svg and
+    # browserconfig.xml references pointed at the site root (golem serves
+    # inst/app/www under www/), or at files that do not exist, so each one was a
+    # 404 on every page load (#588).
 
     tags$meta(name = "msapplication-TileColor",  content = "#2d89ef"),
-    tags$meta(name = "msapplication-config",     content = "browserconfig.xml"),
     tags$meta(name = "theme-color",              content = "#ffffff")
 
     # Add here other external resources

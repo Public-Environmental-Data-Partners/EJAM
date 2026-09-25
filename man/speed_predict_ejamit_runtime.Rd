@@ -2,13 +2,15 @@
 % Please edit documentation in R/utils_speedtest.R
 \name{speed_predict_ejamit_runtime}
 \alias{speed_predict_ejamit_runtime}
-\title{Utility used in app_server to predict ejamit or doaggregate runtime}
+\title{Utility used in app_server to predict ejamit() runtime or web-app report time}
 \usage{
 speed_predict_ejamit_runtime(
   rows,
   radius = 0,
   analysis_type = c("points", "latlon", "fips", "shapefile", "shp"),
-  analysis_subtype = NULL
+  analysis_subtype = NULL,
+  target = c("ejamit", "webapp_report"),
+  profile = "live_v3.2022.2"
 )
 }
 \arguments{
@@ -22,8 +24,13 @@ point-buffer analyses, \code{"fips"} for Census unit analyses, or
 
 \item{analysis_subtype}{optional subtype. For FIPS analysis, this is usually
 from \code{\link[=fipstype]{fipstype()}}, such as \code{"city"} or \code{"county"}.}
+
+\item{target}{whether to estimate the \code{\link[=ejamit]{ejamit()}} runtime or the time until
+the web app displays its multisite report.}
+
+\item{profile}{web-app calibration profile. Ignored for \code{target = "ejamit"}.}
 }
 \description{
-Utility used in app_server to predict ejamit or doaggregate runtime
+Utility used in app_server to predict ejamit() runtime or web-app report time
 }
 \keyword{internal}
