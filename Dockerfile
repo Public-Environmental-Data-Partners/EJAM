@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     texlive \
     texlive-latex-extra \
     texlive-fonts-extra \
+    fontconfig \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome stable (chromium-browser on Ubuntu 22.04+ is a snap stub — won't work in Docker)
@@ -190,4 +191,10 @@ WORKDIR /root
 # (calling it here made every ECS task exit 1 with "'run_app' is not an exported
 # object from 'namespace:EJAM'"). ejamapp(isPublic=...) is supported and its
 # options= list is passed to shinyApp() for host/port.
-CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
+# Rebuild the fontconfig cache when the container starts (#621). The cache baked
+# into the image at build time did not match the font files once the image ran on
+# ECS Fargate: "sans" resolved to EBGaramond-Initials.woff (a decorative
+# capitals-only font from texlive-fonts-extra), so chart text drawn by R came out
+# as boxes. The same image was fine under plain docker. A fresh cache takes a few
+# seconds and always matches the files actually present.
+CMD ["R", "-e", "system('fc-cache -r'); httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
