@@ -16,7 +16,32 @@ RUN apt-get update && apt-get install -y \
     texlive \
     texlive-latex-extra \
     texlive-fonts-extra \
+    fontconfig \
+    fonts-liberation \
+    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
+
+# Pin the generic font families R asks for. Plots that set no font family (the
+# community report barplot, for one) ask fontconfig for "sans". With
+# texlive-fonts-extra's hundreds of fonts installed, what "sans" resolves to can
+# drift with the floating base image: the 2026-09-25 rocker/rstudio:latest
+# resolved it to a decorative font, so chart text came out as boxes (#621).
+# local.conf is read before 60-latin.conf, so these preferences come first.
+# The fc-match lines log the before/after resolution in the build output.
+RUN echo "fc-match sans BEFORE pin: $(fc-match sans)" && \
+    printf '%s\n' \
+    '<?xml version="1.0"?>' \
+    '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' \
+    '<fontconfig>' \
+    '  <alias binding="strong"><family>sans-serif</family><prefer><family>Liberation Sans</family><family>DejaVu Sans</family></prefer></alias>' \
+    '  <alias binding="strong"><family>sans</family><prefer><family>Liberation Sans</family><family>DejaVu Sans</family></prefer></alias>' \
+    '  <alias binding="strong"><family>serif</family><prefer><family>Liberation Serif</family><family>DejaVu Serif</family></prefer></alias>' \
+    '  <alias binding="strong"><family>monospace</family><prefer><family>Liberation Mono</family><family>DejaVu Sans Mono</family></prefer></alias>' \
+    '</fontconfig>' > /etc/fonts/local.conf && \
+    fc-cache -f && \
+    echo "fc-match sans AFTER pin: $(fc-match sans)" && \
+    echo "fc-match sans-serif AFTER pin: $(fc-match sans-serif)" && \
+    fc-match sans | grep -q 'Liberation Sans'
 
 # Install Google Chrome stable (chromium-browser on Ubuntu 22.04+ is a snap stub — won't work in Docker)
 RUN curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/chrome.deb && \
