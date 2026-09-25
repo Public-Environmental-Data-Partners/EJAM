@@ -23,6 +23,8 @@ which is where development continues.
   about three times too high. The packaged `blockgroupstats` data and saved
   example outputs now carry the corrected counts (#596).
 
+## Bug Fixes
+
 - Population-share summaries are now correct for small numbers of sites (#137); 
 
 - Percentiles no longer depend on which operating system the analysis runs on.
