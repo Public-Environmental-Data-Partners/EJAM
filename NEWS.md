@@ -14,7 +14,7 @@ which is where development continues.
 
 ## Dataset Fix
 
-- Language-spoken counts (number of people speaking given language) were shown 
+- Language-spoken counts (number of people speaking given language) were shown
   incorrectly and are now fixed. The counts from the tract-only ACS table C16001 (`lan_universe`,
   `lan_spanish`, and the other `lan_*` counts) are now correctly apportioned to block groups
   by population share instead of repeating each tract's total on every block
@@ -25,7 +25,7 @@ which is where development continues.
 
 ## Bug Fixes
 
-- Population-share summaries are now correct for small numbers of sites (#137); 
+- Population-share summaries are now correct for small numbers of sites (#137).
 
 - Percentiles no longer depend on which operating system the analysis runs on.
   A raw score is normally a population-weighted average, so it carries a few
@@ -45,7 +45,7 @@ which is where development continues.
   the ACS22 `pctdisability` boundary case without needing the `signif_digits`
   argument.
 
-- A custom report title is now kept in the downloaded report, not just in the app (#458);
+- A custom report title is now kept in the downloaded report, not just in the app (#458).
 
 - The notes tab of the Excel workbook now says how the sites were selected. It
   had never done so: `buffer_desc_from_sitetype()` only appended that detail when
@@ -58,10 +58,10 @@ which is where development continues.
   on shapefile".
 
 - SIC and MACT analyses are now described again in reports and the Excel notes.
-  `site_method2text()` lowercases its input, but its SIC and MACT branches 
+  `site_method2text()` lowercases its input, but its SIC and MACT branches
   compared against the uppercase spellings.
 
-- Built-in state and county boundaries now work offline (#527);
+- Built-in state and county boundaries now work offline (#527).
 
 - County boundaries from `shapes_from_fips()` no longer fail with "missing value
   where TRUE/FALSE needed" when the sf package was not yet loaded.
@@ -82,7 +82,7 @@ which is where development continues.
 
 - Docker build and deployed app now verifies PDF report download works (#510).
 
-- Trying to upload a shapefile that is point-based now tells user to use 
+- Trying to upload a shapefile that is point-based now tells user to use
   lat/lon point upload option, and geometry rule is centralized & tested (#550).
 
 - Web-app article text showing URLs now shows them as clickable links (#599).
@@ -90,7 +90,7 @@ which is where development continues.
 - Uploaded polygon data stay in `sf` form through the web-app map path, avoiding
   an `st_geometry()` console error (#136).
 
-- Count of sites with N "high" scores was confusing. 
+- Count of sites with N "high" scores was confusing.
   `count_sites_with_n_high_scores()` now starts at 1.05 ratio cutoff (#546).
 
 - R CMD check problems exposed by full CI are now resolved across examples,
@@ -106,7 +106,7 @@ which is where development continues.
 
 - The [Basics - Quick Start Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.html) article now links to a Community Report example (#600).
 
-- In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html) 
+- In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html)
   and other articles, fixed about 20 broken or incomplete links and text (#602).
 
 
