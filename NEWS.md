@@ -1,7 +1,7 @@
-# EJAM 3.2022.3
+# EJAM 3.2022.3 (October 2026)
 
 This is the final ACS 2018-2022 release; it is frozen from here on.
-The ACS 2020-2024 vintage version will be released as `4.2024.0`, 
+The ACS 2020-2024 vintage version will be released as `4.2024.0`,
 which is where development continues.
 
 ## New Features
