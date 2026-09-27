@@ -1,11 +1,11 @@
 ---
-title: "Overview of Environmental Indicators in EJScreen"
-description: "Overview of Environmental Indicators in EJScreen"
+title: "Overview of nvironmental Indicators in EJScreen/EJAM"
+description: "Overview of nvironmental Indicators in EJScreen/EJAM"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Overview of Environmental Indicators in EJScreen}
+  %\VignetteIndexEntry{Overview of Environmental Indicators in EJScreen/EJAM}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,16 +13,16 @@ editor_options:
     wrap: 80
 ---
 
-# Overview of Environmental Indicators in EJScreen
+# Overview of nvironmental Indicators in EJScreen/EJAM
 
-EJScreen provides 13 environmental indicators. Click on each environmental indicator to learn why they are important, details on how they are calculated, and to get more information about these issues.
+EJScreen/EJAM provide 13 environmental indicators. Click on each environmental indicator to learn why they are important, details on how they are calculated, and to get more information about these issues.
 
 **Summary Table of Environmental Indicators and Data Sources**
 
 | Key Medium | Indicator | Details | Source | Data Year |
 | --- | --- | --- | --- | --- |
-| Air | [Particulate matter 2.5 (PM 2.5)](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.html) | Annual average PM2.5 levels in air | EPA's Office of Air and Radiation, fusion of modeled and monitored data | 2020 |
-| Air | [Ozone](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.html) | Average of the annual top ten daily maximum 8-hour ozone concentrations in air | EPA's Office of Air and Radiation, fusion of modeled and monitored data | 2020 |
+| Air | [Particulate matter 2.5 (PM 2.5)](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.html) | Annual average PM2.5 levels in air | EPA's Office of Air and Radiation, fusion of modeled and monitored data | 2022 |
+| Air | [Ozone](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.html) | Average of the annual top ten daily maximum 8-hour ozone concentrations in air | EPA's Office of Air and Radiation, fusion of modeled and monitored data | 2022 |
 | Air | [Nitrogen Dioxide (NO2)](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-nitrogen-dioxide-no2) | Average annual nitrogen dioxide (NO2) levels expressed as part per billion (by volume). | NASA's Health and Air Quality Applied Sciences Team (HAQAST) | 2020 |
 | Air | [Diesel particulate matter](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-diesel-particulate-matter.html) | Diesel particulate matter level in air | [EPA Hazardous Air Pollutants](https://www.epa.gov/AirToxScreen) | 2020 |
 | Air | [Toxic Releases to Air](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-toxic-releases-air) | RSEI modeled toxicity-weighted concentrations in air of TRI listed chemicals. | Calculated from 2021 Risk-Screening Environmental Indicators (RSEI) Geographic Microdata results for the air pathway, retrieved 5/16/2023 | 2021 |
