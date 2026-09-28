@@ -12,9 +12,13 @@ which is where development continues.
   maps their boundaries without needing the `shp` parameter. This automates the
   workflow that the Zipcodes article documented as manual steps (#482).
 
-## Dataset Fix
+- Facility data updated: This release includes updated FRS datasets, which hold 
+  data on EPA-regulated facilities, including
+  their locations, IDs, industry type, and relevant regulatory programs,
+  based on a late September 2026 EPA snapshot. The code to update FRS
+  datasets was also improved, as was relevant documentation. 
 
-- **Affects Web App:** Updated FRS facilities, lookups, and example IDs from the September 2026 EPA snapshot.
+## Dataset Fix
 
 - Language-spoken counts (number of people speaking given language) were shown
   incorrectly and are now fixed. The counts from the tract-only ACS table C16001 (`lan_universe`,
