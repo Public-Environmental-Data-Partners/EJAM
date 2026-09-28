@@ -379,6 +379,8 @@ row counts, distinct `REGISTRY_ID` and `pgm_sys_id` counts, missing/duplicate
 IDs and coordinates, and added/removed identifiers. Verify that saved sample
 CSV/XLSX files, package `testinput_*` objects, active R examples, vignettes,
 and FRS-dependent unit tests still refer to IDs found in the new tables.
+Check that `title` and `dropdown_label` in both `frs_by_mact` and `mact_table`
+have no leading, trailing, or repeated whitespace (EJAM issue #231).
 Replace obsolete sample IDs with verified ones and regenerate expected outputs
 only when behavior genuinely changed. Run focused FRS tests and vignette builds
 from a local setup using the new Arrow files, then perform the package release

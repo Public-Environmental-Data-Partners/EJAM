@@ -120,6 +120,14 @@ for (field in names(description_fields)) {
 
 # mact_table is package data, not a dynamic ejamdata release asset.
 load(file.path(folder_save_as_arrow, "mact_table.rda"))
+for (table_name in c("frs_by_mact", "mact_table")) {
+  for (field in c("title", "dropdown_label")) {
+    values <- get(table_name)[[field]]
+    if (any(values != stringr::str_squish(values), na.rm = TRUE)) {
+      stop(table_name, "$", field, " has leading, trailing, or repeated whitespace")
+    }
+  }
+}
 usethis::use_data(mact_table, overwrite = TRUE)
 ################################################################################ #
 ## Move .arrow files to new release on ejamdata repo or elsewhere ####
