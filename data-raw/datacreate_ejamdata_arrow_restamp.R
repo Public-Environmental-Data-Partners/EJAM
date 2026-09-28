@@ -28,9 +28,9 @@
 # date_saved_in_package, i.e. what metadata_add() would set. Source dates such
 # as download_date and released are preserved from the input file.
 ############################################################################# #
-
-library(arrow)
-library(desc)
+### if these are not installed and attached, do that:
+# library(arrow)
+# library(desc)
 
 indir  <- Sys.getenv("EJAM_ARROW_RESTAMP_INPUT", "data")
 outdir <- Sys.getenv(
