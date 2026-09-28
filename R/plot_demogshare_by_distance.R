@@ -1,5 +1,5 @@
 #' plot_demogshare_by_distance - work in progress
-#' @details Could also consider plotting something like boxplot(demogvar ~ round(distance, 1))
+#' @details Could also consider plotting something like graphics::boxplot(demogvar ~ round(distance, 1))
 #'
 #'   See notes on plots at [plot_barplot_ratios()]
 #'
@@ -13,7 +13,7 @@
 #' @param show.lm  whether to show straight line fitted via [stats::lm()]
 #' @param show.line whether to show straight line fitted via stats::coef(line(x,y))
 #'   using [stats::coef()] and [stats::line()]
-#' @param ... passed to [plot()]
+#' @param ... passed to [graphics::plot()]
 #' @return just used to create plot as side effect
 
 #' @export
@@ -31,7 +31,7 @@ plot_demogshare_by_distance <- function(results_bybg_people, demogvarname=names_
   xvals <- x$distance_min_avgperson
   yvals <- unlist(x[ , ..demogvarname])
 
-  plot(
+  graphics::plot(
     x = xvals,
     y = yvals,
     main = "Residential population group share at each distance, by blockgroup",
