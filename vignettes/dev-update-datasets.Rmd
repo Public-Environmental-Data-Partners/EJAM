@@ -395,7 +395,24 @@ afterward; do not commit a marker for an unpublished release.
 For a new `ejamdata` tag, upload all 11 required Arrow files. Carry forward
 `bgej.arrow` and the five geography files from the compatible prior data tag
 only after confirming their content and ACS/geography vintage are unchanged.
-Preserve their original metadata when the underlying data have not changed.
+Run `data-raw/datacreate_ejamdata_arrow_restamp.R` to update their seven
+package/release metadata fields from the current `DESCRIPTION`, while keeping
+the table values and source attributes such as `download_date` and `released`
+unchanged. The script verifies that a write/read cycle preserves every column
+value, class, and non-stamp attribute. For a reproducible staged release, set
+the input and output folders and the save date explicitly:
+
+```{bash, eval=FALSE}
+EJAM_ARROW_RESTAMP_INPUT=path/to/prior_arrow_files \
+EJAM_ARROW_RESTAMP_OUTPUT=path/to/restamped_six \
+EJAM_ARROW_RESTAMP_DATE=YYYY-MM-DD \
+Rscript --vanilla data-raw/datacreate_ejamdata_arrow_restamp.R
+```
+
+If `--vanilla` cannot find `arrow` or `desc`, set `R_LIBS_USER` to the library
+where those packages are installed, or source the script in a fresh RStudio
+session without attaching EJAM.
+Stage those six restamped files beside the five freshly built FRS files.
 Review the complete asset names, sizes, and SHA-256 digests before adding them
 to the draft release. Uploading assets does not publish the draft release.
 
@@ -483,7 +500,8 @@ parameter.
 Make sure the intended new data objects are available as `.arrow` files. For an
 annual EJSCREEN data release, `bgej.arrow` is the critical package-coupled asset
 and must match the package version/release tag. Facility and geography Arrow
-files may be carried forward unchanged if they are still compatible. If block or
+tables may keep their values if they are still compatible; restamp the six
+non-FRS files as described above before a new data tag. If block or
 blockgroup helper Arrow files such as `blockwts.arrow`, `blockpoints.arrow`,
 `blockid2fips.arrow`, `bgid2fips.arrow`, or `quaddata.arrow` are intentionally
 regenerated in a future geography update, publish those files with the same

@@ -214,8 +214,12 @@ name as potentially modified via `global_defaults_package.R` or parameters to
     examples or tests that cite obsolete IDs, and verify that all nine FRS
     metadata fields survive an Arrow write/read cycle. The `ejamdata` release
     must contain all 11 required Arrow assets, including the six compatible
-    non-FRS files carried forward for an FRS-only change. Confirm the new
-    published release assets before changing `data/ejamdata_version.txt` to
+    non-FRS files whose data values can be carried forward for an FRS-only
+    change. Restamp those six files with
+    `data-raw/datacreate_ejamdata_arrow_restamp.R` so their package/release
+    attributes match the new tag while their source dates and data remain
+    intact. Confirm the published release assets before changing
+    `data/ejamdata_version.txt` to
     the new `ejamdata_required_tag`. An asset-filled draft alone is not a
     public download source for EJAM installations.
 
