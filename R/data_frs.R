@@ -18,15 +18,10 @@
 #'   see https://www.epa.gov/sites/default/files/2021-05/frs_program_abbreviations_and_names.xlsx
 #'   and [epa_programs_defined]
 #'
-#'  - Count of    all REGISTRY_ID rows:   Approx 7 million
-#'  - Count of unique REGISTRY_ID values: Approx 4-5 million
-#'  - Clearly inactive unique IDs:        Approx 1-2 million
-#'  - Assumed   active unique IDs:        Approx 3 million
-#'
-#'  - frs rows total:            Approx 2-3 million (2.6m as of 02/2025)
-#'  - frs_by_programid rows:     Approx 3-4 million (3.5m as of 02/2025)
-#'  - frs_by_naics rows:         Approx 640k (541k unique regid as of 02/2025, 1858 unique NAICS)
-#'  - frs_by_sic rows:           Approx 764k (664k unique regid as of 02/2025, 2048 unique SIC)
+#'  Counts change with each EPA FRS snapshot. After calling [dataload_dynamic()],
+#'  use `nrow(frs)` and `data.table::uniqueN(frs$REGISTRY_ID)` for the
+#'  currently installed release; use the corresponding lookup tables to count
+#'  sites with program, NAICS, or SIC information.
 #'
 #'   Classes `data.table` and `data.frame`
 #'

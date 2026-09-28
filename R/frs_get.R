@@ -116,9 +116,10 @@
 #' @param zfile filename, just use default unless EPA changes it
 #' @param zipbaseurl url, just use default unless EPA changes it
 #' @param csvname name of csv file. just use default unless EPA changes it
-#' @param date default is Sys.Date() which is today, but this is used as
-#'   an attribute assigned to the results,
-#'   representing the vintage, such as the date the frs was downloaded, obtained.
+#' @param date Retrieval/snapshot date, `Sys.Date()` by default. This is
+#'   assigned to both the `download_date` and `released` attributes of the
+#'   returned table. `released` here means the EJAM FRS snapshot date; it is
+#'   not EPA's ZIP modification date or the GitHub publication date.
 #' @seealso  [frs_update_datasets()] [frs_read()] [frs_clean()] frs_by_naics [frs_active_ids()]
 #'   [frs_drop_inactive()] [frs_make_programid_lookup()] [frs_make_naics_lookup()]
 #'

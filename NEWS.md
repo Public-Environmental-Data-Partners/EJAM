@@ -14,6 +14,8 @@ which is where development continues.
 
 ## Dataset Fix
 
+- **Affects Web App:** Updated FRS facilities, lookups, and example IDs from the September 2026 EPA snapshot.
+
 - Language-spoken counts (number of people speaking given language) were shown
   incorrectly and are now fixed. The counts from the tract-only ACS table C16001 (`lan_universe`,
   `lan_spanish`, and the other `lan_*` counts) are now correctly apportioned to block groups

@@ -17,20 +17,15 @@ not \code{.rda} files installed in \verb{EJAM/data/}.
 The definitions of active/inactive here are not quite the
 same as used in ECHO. See attributes(frs) to see date created, etc.
 
-Also, \href{https://ejanalysis.com/ejscreenapp}{EJSCREEN} has maps of EPA-regulated \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities}{facilities} of a few program types
+Also, \href{https://ejanalysis.com/ejscreenapp}{EJSCREEN} has maps of EPA-regulated \link{facilities}(\verb{r paste0(EJAM::url_package("docs"), "/articles/ejscreen-map-descriptions.html#epa-regulated-facilities")}) of a few program types
 and for a table of acronym definitions
 see https://www.epa.gov/sites/default/files/2021-05/frs_program_abbreviations_and_names.xlsx
 and \link{epa_programs_defined}
-\itemize{
-\item Count of    all REGISTRY_ID rows:   Approx 7 million
-\item Count of unique REGISTRY_ID values: Approx 4-5 million
-\item Clearly inactive unique IDs:        Approx 1-2 million
-\item Assumed   active unique IDs:        Approx 3 million
-\item frs rows total:            Approx 2-3 million (2.6m as of 02/2025)
-\item frs_by_programid rows:     Approx 3-4 million (3.5m as of 02/2025)
-\item frs_by_naics rows:         Approx 640k (541k unique regid as of 02/2025, 1858 unique NAICS)
-\item frs_by_sic rows:           Approx 764k (664k unique regid as of 02/2025, 2048 unique SIC)
-}
+
+Counts change with each EPA FRS snapshot. After calling \code{\link[=dataload_dynamic]{dataload_dynamic()}},
+use \code{nrow(frs)} and \code{data.table::uniqueN(frs$REGISTRY_ID)} for the
+currently installed release; use the corresponding lookup tables to count
+sites with program, NAICS, or SIC information.
 
 Classes \code{data.table} and \code{data.frame}
 

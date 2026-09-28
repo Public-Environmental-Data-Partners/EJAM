@@ -164,7 +164,7 @@ identification number.
 ```{r frs_from_regid1, eval = FALSE}
 # note frs_from_regid() and latlon_from_regid() require the frs dataset, which they try to load on demand.
 
-frs_from_regid(c(110071293460, 110000333826))
+frs_from_regid(testinput_registry_id[1:2])
 frs_from_regid(testinput_regid)
 
 ## upload file with table of REGISTRY_ID values
@@ -191,7 +191,10 @@ dataload_dynamic("frs_by_programid") # redundant given the setup steps
 # latlon_from_programid() requires access to the frs_by_programid dataset, which it tries to load on demand if necessary.
 
 if (exists("frs_by_programid")) {
-  latlon_from_programid(c("XJW000012435", "00768SRTRSROAD1"))
+  latlon_from_programid(
+    testinput_program_sys_id$program[1:2],
+    testinput_program_sys_id$pgm_sys_id[1:2]
+  )
 }
 ```
 
