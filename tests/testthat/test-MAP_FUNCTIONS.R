@@ -47,8 +47,9 @@ test_that("popup_from_ejscreen() handles zero-row results after invalid shapes a
   popups <- NULL
 
   expect_no_error({
+    suppressWarnings({
     popups <- popup_from_ejscreen(zero_rows)
-  })
+    })  })
   expect_identical(popups, character(0))
 })
 ############################################## #
