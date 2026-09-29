@@ -205,28 +205,33 @@ test_that("a short or failed paged assets answer never shrinks what the release 
 })
 
 test_that("ejamdata_release_assets treats NULL and NA tokens the same as no token", {
-  env_token <- paste0("ghp_", strrep("A", 36)) # shaped like a real PAT, so gh does not object
-  withr::local_envvar(c(GITHUB_PAT = env_token, GITHUB_TOKEN = NA))
   seen <- new.env(parent = emptyenv())
+  seen$default_calls <- 0L
+  default_token <- "mock-default-token"
 
   local_mocked_bindings(
     gh = function(endpoint, ..., .token = NULL) {
       seen$token <- .token
       list(id = 7L, draft = FALSE, assets = list(list(name = "quaddata.arrow")))
     },
+    gh_token = function(...) {
+      seen$default_calls <- seen$default_calls + 1L
+      default_token
+    },
     .package = "gh"
   )
 
-  for (bad_token in list(NULL, NA, NA_character_, "", character(0))) {
+  no_tokens <- list(NULL, NA, NA_character_, "", character(0))
+  for (bad_token in no_tokens) {
     listing <- EJAM:::ejamdata_release_assets(
       repository = "Public-Environmental-Data-Partners/ejamdata",
       tag = "v3.2022.0",
       .token = bad_token
     )
     expect_true(listing$ok)
-    # gh_token() returns a classed string, so compare the value it carries
-    expect_identical(as.character(seen$token), env_token)
+    expect_identical(seen$token, default_token)
   }
+  expect_identical(seen$default_calls, length(no_tokens))
 
   # and an actual token is still passed through unchanged
   EJAM:::ejamdata_release_assets(
@@ -235,6 +240,7 @@ test_that("ejamdata_release_assets treats NULL and NA tokens the same as no toke
     .token = "explicit-token"
   )
   expect_identical(seen$token, "explicit-token")
+  expect_identical(seen$default_calls, length(no_tokens))
 })
 
 test_that("ejamdata_release_assets rejects a repository that is not owner/name", {

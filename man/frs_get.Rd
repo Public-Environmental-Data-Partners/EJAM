@@ -28,9 +28,10 @@ instead of trying to download/unzip. Looks in working directory if folder not sp
 
 \item{csvname}{name of csv file. just use default unless EPA changes it}
 
-\item{date}{default is Sys.Date() which is today, but this is used as
-an attribute assigned to the results,
-representing the vintage, such as the date the frs was downloaded, obtained.}
+\item{date}{Retrieval/snapshot date, \code{Sys.Date()} by default. This is
+assigned to both the \code{download_date} and \code{released} attributes of the
+returned table. \code{released} here means the EJAM FRS snapshot date; it is
+not EPA's ZIP modification date or the GitHub publication date.}
 }
 \description{
 Download, unzip, read, clean the Facility Registry Service dataset

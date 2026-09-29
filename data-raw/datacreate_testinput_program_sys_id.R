@@ -38,12 +38,17 @@ print(x[grepl("id", x$Item), ])
 #   "7-0540-00003", "354362", "1513529", "485659", "LAG750956",
 #   "CAC002995519", "3601252181", "3601439158"
 # )
-testinput_program_sys_id <- data.frame(
-  program = c(
-    "FIS" ,"NJ-NJEMS", "SIMS", "NJ-NJEMS" , "NPDES", "RCRAINFO", "ICIS", "ICIS" ),
-  pgm_sys_id = c( "7-0540-00003", "354362", "1513529", "485659", "LAG750956",
-                  "CAC002995519", "3601252181", "3601439158")
-)
+example_programs <- c("NPDES", "RCRAINFO", "TRIS", "AIR", "SFDW", "SEMS", "E-GGRT", "BR")
+program_candidates <- unique(frs_by_programid[
+  program %in% example_programs & !is.na(lat) & !is.na(lon) &
+    !is.na(pgm_sys_id) & nzchar(pgm_sys_id),
+  .(program, pgm_sys_id)
+])
+data.table::setorder(program_candidates, program, pgm_sys_id)
+testinput_program_sys_id <- as.data.frame(program_candidates[
+  , .SD[1L], by = program
+][match(example_programs, program), .(program, pgm_sys_id)])
+if (anyNA(testinput_program_sys_id)) stop("A selected FRS example program has no current ID")
 
 if (anyNA( frs_from_programid(testinput_program_sys_id$program,testinput_program_sys_id$pgm_sys_id)$lat )) {stop("some of the testinput_program_sys_id are not in the FRS database or lack lat,lon")}
 ## or
@@ -71,8 +76,7 @@ filecontents <- paste0(
 #' @title test data, EPA program system ID numbers to try using
 #' @details
 #'  Just for convenience, installed with the package
-'testinput_program_sys_id'
-"
+'testinput_program_sys_id'"
 )
 fname = paste0("./R/data_", "testinput_program_sys_id", ".R")
 writeLines(filecontents, con = fname, useBytes = TRUE)

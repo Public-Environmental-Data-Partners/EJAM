@@ -12,6 +12,9 @@ which is where development continues.
   maps their boundaries without needing the `shp` parameter. This automates the
   workflow that the Zipcodes article documented as manual steps (#482).
 
+- Updated FRS facility data to the September 2026 EPA snapshot, with refreshed
+  examples and update instructions.
+
 ## Dataset Fix
 
 - Language-spoken counts (number of people speaking given language) were shown

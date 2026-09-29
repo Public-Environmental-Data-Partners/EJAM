@@ -14,28 +14,28 @@
 # works with standard REGISTRY_ID column
 test_that('REGISTRY_ID column is recognized',{
   expect_true(suppressWarnings(
-    frs_is_valid(data.frame("REGISTRY_ID" = 110000307695,
+    frs_is_valid(data.frame("REGISTRY_ID" = testinput_registry_id[1],
                             "PRIMARY_NAME" = "testname"))))
 })
 
 # works with regid column --------------?
 test_that('regid column is recognized',{
   expect_true(suppressWarnings(
-    frs_is_valid(data.frame("regid" = 110000307695,
+    frs_is_valid(data.frame("regid" = testinput_registry_id[1],
                             "PRIMARY_NAME" = "testname"))))
 })
 
 # works with RegistryID column
 test_that('RegistryID column is recognized',{
   expect_true(suppressWarnings(
-    frs_is_valid(data.frame("RegistryID" = 110000307695,
+    frs_is_valid(data.frame("RegistryID" = testinput_registry_id[1],
                             "PRIMARY_NAME" = "testname"))))
 })
 
 # works with siteid column
 test_that('siteid column is recognized',{
   expect_true(suppressWarnings(
-    frs_is_valid(data.frame("siteid" = 110000307695,
+    frs_is_valid(data.frame("siteid" = testinput_registry_id[1],
                             "PRIMARY_NAME" = "testname"))))
 })
 
@@ -65,7 +65,7 @@ test_that("colname REGISTRY_ID ok, so no check done for invalid numbers, so retu
 
 test_that("providing a data.table not just data.frame is handled/ fixed", {
   testthat::expect_no_error(suppressWarnings({
-    x = frs_is_valid(data.table(regid = 110000307695, "PRIMARY_NAME" = "testname"))
+    x = frs_is_valid(data.table(regid = testinput_registry_id[1], "PRIMARY_NAME" = "testname"))
     })
   )
   expect_true(x)

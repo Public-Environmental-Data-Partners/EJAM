@@ -9,33 +9,42 @@
 #'  (or an analyst who wants to get the latest information).
 #'
 #'  These datasets are obtained from EPA servers, reformatted for this package,
-#'  and then stored as `.arrow` files in a separate repository - see
-#'  [updating data for package](`r paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html")`).
+#'  and written as local Arrow IPC files for validation before they are uploaded
+#'  to an `ejamdata` release - see
+#'  [updating data for package](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html).
 #'  The `save_as_data_*` parameters are obsolete and kept only to make old
 #'  maintainer scripts fail clearly. FRS tables are no longer saved as
 #'  lazy-loaded `.rda` package data in `EJAM/data/`.
 #'
-#'  The files later get downloaded for local use during the process
-#'  of installing the EJAM package.
+#'  The five FRS Arrow files are `frs`, `frs_by_programid`, `frs_by_naics`,
+#'  `frs_by_sic`, and `frs_by_mact`. The function also writes `mact_table.arrow`
+#'  and `mact_table.rda` to the output folder; `mact_table` is package data,
+#'  not one of the 11 dynamic Arrow release assets. The Arrow files later get
+#'  downloaded for local use by EJAM.
 #'
 #' @param folder optional folder for where to download to; uses temp folder by default
 #' @param folder_save_as_arrow optional folder where to save any .arrow files
 #' @param downloaded_and_unzipped_already optional, set to TRUE if already downloaded latest
 #'   and folder will be specified or can be assumed to be current working directory
 #' @param csvname optional, passed to frs_get()
+#' @param date Retrieval/snapshot date passed to [frs_get()]. Set it to the
+#'   original retrieval date when reusing a previously downloaded source CSV.
 #'
-#' @param save_as_arrow_frs Whether to save as .arrow in getwd()
-#' @param save_as_arrow_frs_by_programid Whether to save as .arrow in getwd()
-#' @param save_as_arrow_frs_by_naics Whether to save as .arrow in getwd()
-#' @param save_as_arrow_frs_by_sic Whether to save as .arrow in getwd()
-#' @param save_as_arrow_frs_by_mact Whether to save as .arrow in getwd()
+#' @param save_as_arrow_frs Whether to save `frs.arrow` in `folder_save_as_arrow`.
+#' @param save_as_arrow_frs_by_programid Whether to save `frs_by_programid.arrow` there.
+#' @param save_as_arrow_frs_by_naics Whether to save `frs_by_naics.arrow` there.
+#' @param save_as_arrow_frs_by_sic Whether to save `frs_by_sic.arrow` there.
+#' @param save_as_arrow_frs_by_mact Whether to save `frs_by_mact.arrow` there.
 #'
 #' @param save_as_data_frs,save_as_data_frs_by_programid,save_as_data_frs_by_naics,save_as_data_frs_by_sic,save_as_data_frs_by_mact
 #'   Obsolete. FRS tables are no longer saved as `.rda` files in `./data/`.
 #'   Leave these as `FALSE` and publish the `.arrow` files instead.
 #'
-#' @return Creates saved copies of datasets for the R package, overwriting old ones, using
-#'   [frs_get()] and [frs_inactive_ids()] and other functions, and invisibly returns [frs].
+#' @return Writes the requested Arrow IPC files locally, using [frs_get()]
+#'   and [frs_inactive_ids()] and other functions, and invisibly returns the
+#'   newly built `frs` table. The caller must validate and publish the files.
+#'   `download_date` and `released` describe this FRS retrieval/snapshot;
+#'   the version and release-date attributes come from EJAM's DESCRIPTION.
 #'
 #' @seealso [frs_get()] [frs_inactive_ids()] [frs_drop_inactive()]
 #'    [frs_make_programid_lookup()] [frs_make_naics_lookup()] [frs_make_sic_lookup()] [frs_make_mact_lookup()]
@@ -55,7 +64,8 @@ frs_update_datasets <- function(folder = NULL,
                                 save_as_data_frs_by_programid  = FALSE,
                                 save_as_data_frs_by_naics      = FALSE,
                                 save_as_data_frs_by_sic        = FALSE,
-                                save_as_data_frs_by_mact       = FALSE) {
+                                save_as_data_frs_by_mact       = FALSE,
+                                date = Sys.Date()) {
 
 
   commas <- function(x) {
@@ -84,12 +94,28 @@ frs_update_datasets <- function(folder = NULL,
   ###################################################### #
   cat("\nTrying to get frs datasets\n")
   cat("This takes a *LONG* time to download, unzip, and read the large files! Please wait!\n")
-  frs <- frs_get(folder = folder, csvname = csvname, downloaded_and_unzipped_already = downloaded_and_unzipped_already)
+  frs <- frs_get(folder = folder, csvname = csvname,
+                 downloaded_and_unzipped_already = downloaded_and_unzipped_already,
+                 date = date)
+  # Capture source dates before table filtering or lookup builders can discard
+  # custom attributes.
+  frs_download_date <- attr(frs, "download_date")
+  frs_released <- attr(frs, "released")
   closedidlist <- frs_inactive_ids()
   cat("frs rows total: ", commas(NROW(frs)), '\n')
   cat("frs clearly inactive IDs: ", commas(length(closedidlist)), "\n")
   frs <- frs_drop_inactive(frs = frs, closedid = closedidlist)
   cat("frs rows actives: ", commas(NROW(frs)), "\n")
+
+  # Lookup builders may drop table attributes. Stamp every derived table from
+  # the same FRS snapshot and the package's current metadata mapping.
+  frs_metadata <- c(
+    get_metadata_mapping("default"),
+    list(
+      download_date = frs_download_date,
+      released = frs_released
+    )
+  )
 
   # validate lat lon values
   cat('checking latlon values are valid \n')
@@ -101,7 +127,7 @@ frs_update_datasets <- function(folder = NULL,
   bad <- sum(is.na(frs$REGISTRY_ID))
   if (bad > 0) {warning(bad, "REGISTRY_ID values appear to be NA")}
 
-  frs <- metadata_add(frs)
+  frs <- metadata_add(frs, metadata = frs_metadata)
   cat("Saving .arrow file \n")
   if (save_as_arrow_frs) {
     arrow::write_ipc_file(frs, sink = file.path(folder_save_as_arrow,
@@ -111,7 +137,7 @@ frs_update_datasets <- function(folder = NULL,
   cat("\nTrying to create frs_by_programid\n")
   frs_by_programid <- frs_make_programid_lookup(x = frs)
   # dropped invalid ones, in that function.
-  frs_by_programid <- metadata_add(frs_by_programid)
+  frs_by_programid <- metadata_add(frs_by_programid, metadata = frs_metadata)
   if (save_as_arrow_frs_by_programid) {
     cat("Saving .arrow file \n")
     arrow::write_ipc_file(frs_by_programid, sink = file.path(folder_save_as_arrow,
@@ -123,7 +149,7 @@ frs_update_datasets <- function(folder = NULL,
   cat("frs_by_programid rows: ", commas(NROW(frs_by_programid)),
       "\n")
   cat("frs_by_naics rows: ", commas(NROW(frs_by_naics)), "\n")
-  frs_by_naics <- metadata_add(frs_by_naics)
+  frs_by_naics <- metadata_add(frs_by_naics, metadata = frs_metadata)
   if (save_as_arrow_frs_by_naics) {
     cat("Saving .arrow file \n")
     arrow::write_ipc_file(frs_by_naics, sink = file.path(folder_save_as_arrow,
@@ -134,7 +160,7 @@ frs_update_datasets <- function(folder = NULL,
   cat("\nTrying to create frs_by_sic\n")
   frs_by_sic <- frs_clean_sic(frs)
   frs_by_sic <- frs_make_sic_lookup(frs_by_sic)
-  frs_by_sic <- metadata_add(frs_by_sic)
+  frs_by_sic <- metadata_add(frs_by_sic, metadata = frs_metadata)
   if (save_as_arrow_frs_by_sic) {
     arrow::write_ipc_file(frs_by_sic, sink = file.path(folder_save_as_arrow,
                                                        "frs_by_sic.arrow"))
@@ -143,7 +169,7 @@ frs_update_datasets <- function(folder = NULL,
   cat("Trying to create frs_by_mact\n")
   x <- frs_make_mact_lookup(frs_by_programid, folder = folder)
   frs_by_mact <- x$frs_by_mact
-  frs_by_mact <- metadata_add(frs_by_mact)
+  frs_by_mact <- metadata_add(frs_by_mact, metadata = frs_metadata)
   if (save_as_arrow_frs_by_mact) {
     arrow::write_ipc_file(frs_by_mact, sink = file.path(folder_save_as_arrow,
                                                         "frs_by_mact.arrow"))
@@ -152,20 +178,12 @@ frs_update_datasets <- function(folder = NULL,
   cat("Trying to create mact_table\n")
   mact_table <- x$mact_table
   rm(x)
-  mact_table <- metadata_add(mact_table)
-  cat("\n\n**** HANDLE mact_table DIFFERENTLY ? \n\n")
+  mact_table <- metadata_add(mact_table, metadata = frs_metadata)
   arrow::write_ipc_file(mact_table, sink = file.path(folder_save_as_arrow,
                                                      "mact_table.arrow"))
   save(mact_table, file = file.path(folder_save_as_arrow,
                                     "mact_table.rda"))
-  if (interactive()) {
-    oldone <- getwd()
-    x = rstudioapi::selectDirectory("What folder is root of source package in which to store mact_table as data?",
-                                    label = "Save")
-    setwd(x)
-    usethis::use_data(mact_table, overwrite = TRUE)
-    setwd(oldone)
-  }
+  cat("mact_table.rda was written to the output folder; the maintainer script saves it as package data.\n")
   ###################################################### #
 
   cat("FRS .arrow files were written. Publish those files through the data repository release process; do not save FRS tables as package .rda data.\n")

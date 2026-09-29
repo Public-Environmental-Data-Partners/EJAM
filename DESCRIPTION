@@ -2,24 +2,22 @@ Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
 Version: 3.2022.3
 VersionEJSCREEN: 3.2022.3
-ejamdata_required_tag: v3.2022.0
+ejamdata_required_tag: v3.2022.3
 VersionACS: 2018-2022
 ReleaseDateACS: 2023-12-07
 VersionDate: October 2026
 ReleaseDateEJAM: 2026-10-01
 ReleaseDateEJSCREEN: 2026-10-01
 VersionCensus: 2020
-Description: Actively maintained non-EPA version of EJAM, the web app
-    and set of tools that supports the EJScreen Community Report 
-    and multisite capability.
-    EJAM lets you easily summarize demographic and environmental indicators
+Description: Web app and set of tools providing EJScreen Community Reports
+    and multisite analysis. Summarizes demographic and environmental indicators
     for residents in or near a large number of areas or specific sites.
-    Sites can be specified in a variety of ways - lat/lon coordinates, 
+    Sites can be specified in various ways - lat/lon coordinates,
     EPA-regulated facility IDs, type of facility (industry), 
     polygons (shapefile), or Census units FIPS (eg., cities, counties).
     Very fast identification of nearby blocks and distances, aggregation of
     indicators by site and overall (all sites as a whole), in maps/plots/reports.
-    This version grew from a fork of the last version EPA released before it was archived.
+    This actively maintained non-EPA version grew from a fork of the last EPA version.
 License: MIT + file LICENSE
 URL: https://public-environmental-data-partners.github.io/EJAM, https://github.com/Public-Environmental-Data-Partners/EJAM, https://ejanalysis.org
 Config/EJAM/url_api: https://api.ejanalysis.com
@@ -168,4 +166,4 @@ LazyDataCompression: gzip
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

@@ -6,8 +6,15 @@
 
 # does it work with a proper reg id
 test_that('lookup works correctly',{
-  expect_no_warning({val <- frs_from_regid("110000307695")})
+  expect_no_warning({val <- frs_from_regid(testinput_registry_id[1])})
   expect_true("lat" %in% names(val) & "lon" %in% names(val) &   "data.table" %in% class(val))
+  expect_true(any(!is.na(val$lat) & !is.na(val$lon)))
+})
+
+test_that('plausibility does not reject IDs newer than an old FRS maximum', {
+  expect_true(EJAM:::regids_seem_ok(110073000001))
+  expect_false(EJAM:::regids_seem_ok("fakeid"))
+  expect_false(EJAM::regids_valid("fakeid"))
 })
 
 

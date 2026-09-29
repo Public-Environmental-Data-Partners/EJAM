@@ -271,7 +271,8 @@ instead of tests/testthat/_logs
         "test-frs_from_programid.R",
         "test-frs_from_regid.R",
         "test-frs_from_sic.R",
-        "test-frs_is_valid.R"
+        "test-frs_is_valid.R",
+        "test-mact_labels.R"
       ),
       test_latlon = c(
         "test-latlon_infer.R",
@@ -629,6 +630,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
               0, 1, 0, 0, 0)),
           row.names = c(NA,
                         -132L), class = "data.frame")
+      )
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = "test-mact_labels.R", seconds_byfile = 1)
       )
 
 
