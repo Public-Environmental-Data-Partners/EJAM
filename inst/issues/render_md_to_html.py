@@ -87,12 +87,22 @@ def style_issue_tables(html_path: Path) -> None:
     )
     if styled_table_count and "</head>" in document:
         document = document.replace("</head>", f"{ISSUE_TABLE_STYLE}</head>", 1)
-    document = re.sub(
-        r"<html(?![^>]*\blang=)([^>]*)>",
-        r'<html lang="en" xml:lang="en"\1>',
-        document,
-        count=1,
-    )
+    def normalize_html_language(match: re.Match) -> str:
+        attrs = match.group(1)
+
+        def existing_language(name: str) -> str:
+            found = re.search(
+                rf"\s{name}\s*=\s*(['\"])(.*?)\1", attrs, flags=re.IGNORECASE
+            )
+            return found.group(2).strip() if found else ""
+
+        language = existing_language("lang") or existing_language("xml:lang") or "en"
+        attrs = re.sub(
+            r"\s+(?:xml:)?lang\s*=\s*(['\"]).*?\1", "", attrs, flags=re.IGNORECASE
+        )
+        return f'<html lang="{language}" xml:lang="{language}"{attrs}>'
+
+    document = re.sub(r"<html\b([^>]*)>", normalize_html_language, document, count=1)
     html_path.write_text(document, encoding="utf-8")
 
 
@@ -114,11 +124,11 @@ def render_with_pandoc(md_path: Path, html_path: Path) -> bool:
 def render_pre_fallback(md_path: Path, html_path: Path) -> None:
     md = md_path.read_text(encoding="utf-8")
     out = (
-        "<!doctype html><html lang=\"en\" xml:lang=\"en\"><meta charset=\"utf-8\">"
-        "<title>EJAM issues scored</title>"
+        "<!doctype html><html lang=\"en\" xml:lang=\"en\"><head><meta charset=\"utf-8\">"
+        "<title>EJAM issues scored</title></head><body>"
         "<pre style=\"white-space:pre-wrap;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace\">"
         + html.escape(md)
-        + "</pre></html>"
+        + "</pre></body></html>"
     )
     html_path.write_text(out, encoding="utf-8")
 

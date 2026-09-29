@@ -330,6 +330,34 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertEqual(styled.count("lang="), 2)
         self.assertIn('<html lang="fr" xml:lang="fr">', styled)
 
+    def test_renderer_replaces_empty_html_language(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html_path = Path(tmp) / "report.html"
+            html_path.write_text(
+                '<html lang="" xml:lang=""><head></head><body></body></html>',
+                encoding="utf-8",
+            )
+
+            renderer.style_issue_tables(html_path)
+
+            styled = html_path.read_text(encoding="utf-8")
+
+        self.assertIn('<html lang="en" xml:lang="en">', styled)
+
+    def test_renderer_fallback_writes_valid_html_structure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            md_path = Path(tmp) / "report.md"
+            html_path = Path(tmp) / "report.html"
+            md_path.write_text("# Report", encoding="utf-8")
+
+            renderer.render_pre_fallback(md_path, html_path)
+
+            styled = html_path.read_text(encoding="utf-8")
+
+        self.assertIn("<head><meta charset", styled)
+        self.assertIn("</head><body>", styled)
+        self.assertIn("</body></html>", styled)
+
 
 if __name__ == "__main__":
     unittest.main()
