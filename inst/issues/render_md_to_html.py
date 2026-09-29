@@ -102,7 +102,12 @@ def style_issue_tables(html_path: Path) -> None:
         )
         return f'<html lang="{language}" xml:lang="{language}"{attrs}>'
 
-    document = re.sub(r"<html\b([^>]*)>", normalize_html_language, document, count=1)
+    document = re.sub(
+        r"<html\b([^>]*)>",
+        normalize_html_language,
+        document,
+        count=1,
+    )
     html_path.write_text(document, encoding="utf-8")
 
 

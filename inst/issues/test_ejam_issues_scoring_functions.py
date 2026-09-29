@@ -152,6 +152,64 @@ class IssueScorePayloadTest(unittest.TestCase):
         plain = "check/ fix Distance and Site Count summary stats"
         self.assertEqual(scoring.md_escape(plain), plain)
 
+    def test_style_issue_tables_keeps_single_lang_pair(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            html_path = Path(tmpdir) / "report.html"
+            html_path.write_text(
+                """
+                <html lang="en" xml:lang="en"><head></head><body>
+                <table><tr><th>Issue</th><th>Current GitHub labels (key)</th></tr>
+                <tr><td>1</td><td>foo</td></tr></table>
+                </body></html>
+                """.strip(),
+                encoding="utf-8",
+            )
+
+            renderer.style_issue_tables(html_path)
+            rendered = html_path.read_text(encoding="utf-8")
+
+            self.assertEqual(rendered.count(' lang="en"'), 1)
+            self.assertEqual(rendered.count(' xml:lang="en"'), 1)
+
+    def test_generate_markdown_keeps_rank_labels_visible_when_list_is_truncated(self):
+        scored = [
+            {
+                "num": 595,
+                "title": "Improve API documentation vignette",
+                "labels": [
+                    "Affects R users only - NOT web app users",
+                    "documentation",
+                    "Affects API",
+                    "something else",
+                    "another label",
+                    "yet another label",
+                    "rank:C-low-value-low-cost",
+                ],
+                "milestone": "NA",
+                "cost": 0,
+                "benefit": 7,
+                "quad": "A",
+            }
+        ]
+
+        markdown = scoring.generate_markdown(
+            scored,
+            cost_med=4,
+            benefit_med=6,
+            generated_date="2026-06-20",
+        )
+
+        self.assertIn("rank:C-low-value-low-cost", markdown)
+        self.assertIn(
+            "| [595](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595) | "
+            "Improve API documentation vignette | 0 (🟢 Very Low) | 7 (🟦 Medium) | "
+            "NA | — | `rank:A-high-value-low-cost` | "
+            "rank:C-low-value-low-cost, Affects R users only - NOT web app users, "
+            "documentation, Affects API |",
+            markdown,
+        )
+        self.assertNotIn("another label", markdown)
+
     def test_generate_markdown_puts_methodology_at_end(self):
         scored = [
             {
