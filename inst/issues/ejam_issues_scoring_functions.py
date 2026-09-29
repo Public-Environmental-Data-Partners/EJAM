@@ -536,7 +536,12 @@ def md_escape(text: str) -> str:
     Applied only where a title is written into Markdown; the JSON payload keeps
     the raw title, since it is data rather than markup.
     """
-    return text.replace("$", r"\$").replace("|", r"\|")
+    return (
+        text.replace("*", r"\*")
+        .replace("_", r"\_")
+        .replace("$", r"\$")
+        .replace("|", r"\|")
+    )
 
 
 def _write_quad(lines: list[str], letter: str, heading: str, desc: str,

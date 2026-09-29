@@ -299,7 +299,7 @@
 - [#387](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/387) — Refactor so 1 release can use any vintage of datasets specified (at load time or per analysis etc)
 - [#386](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/386) — ACS table/variable numbering in tables_ejscreen_acs / formulas_ejscreen_acs is not validated against the build year (vintage-correctness risk)
 - [#399](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/399) — Pipeline: emit EJSCREEN-formatted 'extensive ACS' table (~951 demographic breakdowns) from S3-supplied indicators
-- [#615](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615) — pct*_li language shares use a different denominator than EPA's identically named PCT_HLI_*_LI fields
+- [#615](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615) — pct\*\_li language shares use a different denominator than EPA's identically named PCT\_HLI\_\*\_LI fields
 - [#25](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/25) — Enable areal apportionment as option, via existing OW and/or OP code
 
 | # | Issue | Cost | Benefit | Milestone | Priority | Labels (key) |
@@ -472,7 +472,7 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 | D | [387](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/387) | 8 | 1 | NA | PRIORITY LOW | Refactor so 1 release can use any vintage of datasets specified (at load… |
 | D | [386](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/386) | 8 | 0 | NA | — | ACS table/variable numbering in tables_ejscreen_acs / formulas_ejscreen_… |
 | D | [399](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/399) | 11 | 4 | NA | PRIORITY LOW | Pipeline: emit EJSCREEN-formatted 'extensive ACS' table (~951 demographi… |
-| D | [615](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615) | 11 | 0 | NA | — | pct*_li language shares use a different denominator than EPA's identical… |
+| D | [615](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615) | 11 | 0 | NA | — | pct\*\_li language shares use a different denominator than EPA's identical… |
 | D | [25](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/25) | 12 | 1 | NA | PRIORITY LOW | Enable areal apportionment as option, via existing OW and/or OP code |
 
 ---
