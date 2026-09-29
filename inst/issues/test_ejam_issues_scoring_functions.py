@@ -141,12 +141,12 @@ class IssueScorePayloadTest(unittest.TestCase):
 
         # no bare "$" or in-title "|" survives into the Markdown
         self.assertNotIn("doaggregate()$results", markdown)
-        self.assertIn(r"doaggregate()\$results_bybg_people", markdown)
+        self.assertIn(r"doaggregate()\$results\_bybg\_people", markdown)
         self.assertIn(r"a title with a \| pipe", markdown)
 
         # and the escaping is applied everywhere a title is written:
         # the bullet list, the quadrant table, and the full table
-        self.assertEqual(markdown.count(r"doaggregate()\$results_bybg_people"), 3)
+        self.assertEqual(markdown.count(r"doaggregate()\$results\_bybg\_people"), 3)
 
     def test_md_escape_leaves_ordinary_titles_untouched(self):
         plain = "check/ fix Distance and Site Count summary stats"
@@ -235,6 +235,11 @@ class IssueScorePayloadTest(unittest.TestCase):
         )
         self.assertIn("| v3.2022.2 | 1 |", markdown)
         self.assertIn("| NA | 1 |", markdown)
+        self.assertIn(
+            "| # | Issue | Cost | Benefit | Milestone | Priority | Proposed rank | "
+            "Current GitHub labels (key) |",
+            markdown,
+        )
 
     def test_score_issues_extracts_milestone_title_and_na(self):
         issues = [
@@ -285,7 +290,8 @@ class IssueScorePayloadTest(unittest.TestCase):
 <table>
 <colgroup><col style="width: 14%" /><col style="width: 14%" /></colgroup>
 <thead><tr><th>#</th><th>Issue</th><th>Cost</th><th>Benefit</th>
-<th>Milestone</th><th>Priority</th><th>Labels (key)</th></tr></thead>
+<th>Milestone</th><th>Priority</th><th>Proposed rank</th>
+<th>Current GitHub labels (key)</th></tr></thead>
 </table>
 </body></html>"""
         with tempfile.TemporaryDirectory() as tmp:
@@ -299,12 +305,14 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertEqual(styled.count('class="issue-details"'), 1)
         self.assertIn('<col style="width: 5%" />', styled)
         self.assertIn('<col style="width: 18%" />', styled)
-        self.assertIn('<col style="width: 9%" />', styled)
-        self.assertIn('<col style="width: 16%" />', styled)
-        self.assertIn('<col style="width: 20%" />', styled)
+        self.assertIn('<col style="width: 11%" />', styled)
+        self.assertIn('<col style="width: 8%" />', styled)
+        self.assertIn('<col style="width: 12%" />', styled)
+        self.assertIn('<col style="width: 17%" />', styled)
         self.assertIn("min-width: 64em", styled)
         self.assertIn("td:first-child", styled)
         self.assertIn("white-space: nowrap", styled)
+        self.assertIn('<html lang="en" xml:lang="en">', styled)
         self.assertIn("<th>Metric</th>", styled)
 
 
