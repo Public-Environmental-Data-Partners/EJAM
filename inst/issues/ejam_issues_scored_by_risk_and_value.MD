@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Previous run | 2026-09-28 |
-| Issues opened since previous run | 0 |
-| Issues closed since previous run | 0 |
-| Issues whose quadrant changed | 0 |
+| Previous run | 2026-09-07 |
+| Issues opened since previous run | 3 |
+| Issues closed since previous run | 20 |
+| Issues whose quadrant changed | 6 |
 
 ---
 
