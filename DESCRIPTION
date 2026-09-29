@@ -9,10 +9,10 @@ VersionDate: October 2026
 ReleaseDateEJAM: 2026-10-01
 ReleaseDateEJSCREEN: 2026-10-01
 VersionCensus: 2020
-Description: Web app and set of tools providing EJScreen Community Reports 
+Description: Web app and set of tools providing EJScreen Community Reports
     and multisite analysis. Summarizes demographic and environmental indicators
     for residents in or near a large number of areas or specific sites.
-    Sites can be specified in various ways - lat/lon coordinates, 
+    Sites can be specified in various ways - lat/lon coordinates,
     EPA-regulated facility IDs, type of facility (industry), 
     polygons (shapefile), or Census units FIPS (eg., cities, counties).
     Very fast identification of nearby blocks and distances, aggregation of
