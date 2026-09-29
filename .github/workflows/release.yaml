@@ -41,7 +41,7 @@ on:
   workflow_dispatch:
     inputs:
       expected_version:
-        description: 'Version you expect to release, e.g. 3.2022.2. Must match DESCRIPTION or the run fails.'
+        description: 'Version you expect to release, e.g. 3.2022.3 or 4.2024.0. Must match DESCRIPTION or the run fails.'
         required: false
         default: ''
       dry_run:
@@ -231,7 +231,8 @@ jobs:
           fi
 
           # Derive the ACS vintage for the release title, matching the naming used
-          # by the existing releases (e.g. "EJAM v3.2022.2 (ACS 2018-2022)").
+          # by the existing releases (e.g. "EJAM v3.2022.3 (ACS 2018-2022)" or 
+          # "EJAM v4.2024.0 (ACS 2020-2024)").
           #
           # Read it from DESCRIPTION's VersionACS, the single source of truth for the
           # vintage. The previous approach parsed field 2 out of a `3.YYYY.x` version
