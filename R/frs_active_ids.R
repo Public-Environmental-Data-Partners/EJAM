@@ -23,7 +23,9 @@ frs_active_ids <- function(active=TRUE, closecodes = c(
   mypath = frs_download(zfile = zfile, zipbaseurl = zipbaseurl)
 
   td = tempdir()
-  utils::unzip(mypath, exdir = td)
+  # The combined archive contains many large CSVs; only this table is needed
+  # to determine whether a registry ID is clearly inactive.
+  utils::unzip(mypath, files = "NATIONAL_ENVIRONMENTAL_INTEREST_FILE.CSV", exdir = td)
   cat('Reading unzipped file...\n')
   y <- data.table::fread(file.path(td, 'NATIONAL_ENVIRONMENTAL_INTEREST_FILE.CSV'))
   commas <- function(x) {prettyNum(x,big.mark = ",")}

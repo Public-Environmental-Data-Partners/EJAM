@@ -37,10 +37,10 @@ that provides the sort order}
 \item{topn}{optional, show only the top n groups (site types) -- Does not show all
 by default -- only shows top n groups.}
 
-\item{...}{passed to barplot()}
+\item{...}{passed to graphics::barplot()}
 }
 \value{
-same as \code{\link[=barplot]{barplot()}}
+same as \code{\link[graphics:barplot]{graphics::barplot()}}
 }
 \description{
 barplot comparing groups of sites on 1 indicator, based on table of grouped site data
