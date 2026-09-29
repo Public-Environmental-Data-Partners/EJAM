@@ -48,12 +48,12 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws
 
 ARG GITHUB_PAT
 
-# EJAM package version to install: a released git tag. Pinned by default to the
-# current release; override with --build-arg EJAM_VERSION=vX.Y.Z. Mirrors the
-# EJAM-API image's EJAM_VERSION build-arg so both deploys pin EJAM the same way,
-# and makes the deployed version EXPLICIT (rather than implicitly tied to whatever
-# source happens to be checked out on this deploy branch).
-ARG EJAM_VERSION=v3.2022.2
+# EJAM git ref to install: PR #627's squash commit on development for
+# pre-release validation of EJAM 3.2022.3. Replace it with the v3.2022.3 tag
+# after that tag is published. A workflow dispatch can also override
+# EJAM_VERSION with a branch, tag, or commit SHA; the deployed ref is explicit
+# and independent of this deploy branch's source checkout.
+ARG EJAM_VERSION=ca95ce57721a4c8bc91338d388ddd6e7dd2e51a6
 ENV EJAM_VERSION=${EJAM_VERSION}
 
 WORKDIR /root
@@ -163,12 +163,12 @@ RUN R -e "remotes::install_github(paste0('Public-Environmental-Data-Partners/EJA
 
 # Download ejamdata arrow files from GitHub release
 # Must run AFTER the EJAM package install so the data/ folder is not overwritten by the installer
-# EJAMDATA_VERSION: pinned by default to v3.2022.0 -- the ejamdata release that
-#   EJAM v3.2022.2 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
+# EJAMDATA_VERSION: pinned by default to v3.2022.3 -- the ejamdata release that
+#   EJAM v3.2022.3 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
 #   sync with EJAM_VERSION when bumping releases; override with
 #   --build-arg EJAMDATA_VERSION=vX.Y.Z. (An explicit empty string falls back to the
 #   latest ejamdata release via the GitHub API below.)
-ARG EJAMDATA_VERSION=v3.2022.0
+ARG EJAMDATA_VERSION=v3.2022.3
 RUN RESOLVED_VERSION="${EJAMDATA_VERSION:-$(curl -fsSL \
       -H "Authorization: token ${GITHUB_PAT}" \
       "https://api.github.com/repos/Public-Environmental-Data-Partners/ejamdata/releases/latest" \
