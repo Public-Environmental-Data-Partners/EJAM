@@ -4,6 +4,20 @@
 # then run those scenarios and save the results as Analysis_timing_results_*.csv files in data-raw/,
 # then run this script to create the models and save them as internal data objects.
 
+load_existing_runtime_model <- function(name) {
+  model_path <- file.path("data", paste0(name, ".rda"))
+  stopifnot(file.exists(model_path))
+  model_environment <- new.env(parent = emptyenv())
+  load(model_path, envir = model_environment)
+  model_environment[[name]]
+}
+
+existing_modelEjamit <- load_existing_runtime_model("modelEjamit")
+existing_modelEjamitByAnalysisType <- load_existing_runtime_model(
+  "modelEjamitByAnalysisType"
+)
+existing_modelDoaggregate <- load_existing_runtime_model("modelDoaggregate")
+
 runtime_files <- list.files(
   path = "data-raw",
   pattern = "^Analysis_timing_results.*\\.csv$",
@@ -68,6 +82,34 @@ small_n_weights <- function(n) {
   )
 }
 
+runtime_model_is_monotone <- function(model, x) {
+  input_range <- range(x$input_number, na.rm = TRUE)
+  supported_max_input <- max(100000, input_range[[2]])
+  input_grid <- sort(unique(c(
+    seq_len(min(1000, supported_max_input)),
+    x$input_number,
+    exp(seq(log(1), log(supported_max_input), length.out = 500))
+  )))
+  radius_grid <- sort(unique(c(0, 1, 3.106856, 5, 10, x$radius)))
+
+  all(vapply(
+    radius_grid,
+    function(radius_value) {
+      predictions <- suppressWarnings(stats::predict(
+        model,
+        newdata = data.frame(
+          input_number = input_grid,
+          radius = radius_value
+        )
+      ))
+      all(is.finite(predictions)) &&
+        all(predictions >= 0) &&
+        all(diff(predictions) >= -sqrt(.Machine$double.eps))
+    },
+    logical(1)
+  ))
+}
+
 fit_ejamit_model <- function(x, analysis_type) {
   x <- subset(x, time_ejamit > 0 & !is.na(input_number))
   if (nrow(x) == 0) {
@@ -79,11 +121,24 @@ fit_ejamit_model <- function(x, analysis_type) {
   x$radius[is.na(x$radius)] <- 0
   x$weight_small_n <- small_n_weights(x$input_number)
 
+  minimum_rows <- if (analysis_type == "points") 20 else 6
+  minimum_input_counts <- if (analysis_type == "points") 5 else 3
+  supported_input_range <- if (analysis_type == "points") {
+    min(x$input_number) <= 10 && max(x$input_number) >= 1000
+  } else {
+    TRUE
+  }
+  if (nrow(x) < minimum_rows ||
+      length(unique(x$input_number)) < minimum_input_counts ||
+      !supported_input_range) {
+    return(NULL)
+  }
+
   enough_input_range <- length(unique(x$input_number)) >= 3 && nrow(x) >= 5
   enough_radius_range <- length(unique(x$radius)) >= 2 && nrow(x) >= 8
 
   if (analysis_type == "points" && enough_input_range && enough_radius_range) {
-    model_formula <- time_ejamit ~ log1p(input_number) + input_number + I(radius^2) + I(radius^2 * input_number)
+    model_formula <- time_ejamit ~ input_number + I(radius^2 * input_number)
   } else if (enough_input_range) {
     model_formula <- time_ejamit ~ log1p(input_number) + input_number
   } else if (length(unique(x$input_number)) >= 2) {
@@ -92,15 +147,33 @@ fit_ejamit_model <- function(x, analysis_type) {
     model_formula <- time_ejamit ~ 1
   }
 
-  lm(model_formula, data = x, weights = weight_small_n)
+  fitted_model <- lm(model_formula, data = x, weights = weight_small_n)
+  if (!runtime_model_is_monotone(fitted_model, x)) {
+    fitted_model <- lm(
+      time_ejamit ~ input_number,
+      data = x,
+      weights = weight_small_n
+    )
+  }
+  if (!runtime_model_is_monotone(fitted_model, x)) {
+    fitted_model <- lm(
+      time_ejamit ~ 1,
+      data = x,
+      weights = weight_small_n
+    )
+  }
+  fitted_model
 }
 
 filtered_points <- subset(results, analysis_type == "points")
 modelEjamit <- fit_ejamit_model(filtered_points, "points")
+if (is.null(modelEjamit)) {
+  modelEjamit <- existing_modelEjamit
+}
 stopifnot(!is.null(modelEjamit))
 usethis::use_data(modelEjamit, internal = FALSE, overwrite = TRUE)
 
-modelEjamitByAnalysisType <- list(
+candidate_models <- list(
   points = modelEjamit,
   fips = fit_ejamit_model(subset(results, analysis_type == "fips"), "fips"),
   fips_city = fit_ejamit_model(subset(results, runtime_model_key == "fips_city"), "fips"),
@@ -108,14 +181,25 @@ modelEjamitByAnalysisType <- list(
   fips_mixed = fit_ejamit_model(subset(results, runtime_model_key == "fips_mixed"), "fips"),
   shapefile = fit_ejamit_model(subset(results, analysis_type == "shapefile"), "shapefile")
 )
+modelEjamitByAnalysisType <- candidate_models
+for (model_key in names(modelEjamitByAnalysisType)) {
+  if (is.null(modelEjamitByAnalysisType[[model_key]]) &&
+      model_key %in% names(existing_modelEjamitByAnalysisType)) {
+    modelEjamitByAnalysisType[model_key] <-
+      existing_modelEjamitByAnalysisType[model_key]
+  }
+}
 scenario_keys <- sort(unique(results$runtime_model_key))
 scenario_keys <- scenario_keys[!scenario_keys %in% names(modelEjamitByAnalysisType)]
 for (scenario_key in scenario_keys) {
   scenario_rows <- subset(results, runtime_model_key == scenario_key)
-  modelEjamitByAnalysisType[[scenario_key]] <- fit_ejamit_model(
+  candidate_model <- fit_ejamit_model(
     scenario_rows,
     unique(scenario_rows$analysis_type)[1]
   )
+  if (!is.null(candidate_model)) {
+    modelEjamitByAnalysisType[[scenario_key]] <- candidate_model
+  }
 }
 usethis::use_data(modelEjamitByAnalysisType, internal = FALSE, overwrite = TRUE)
 
@@ -126,31 +210,35 @@ filtered$weight_small_n <- if ("input_number" %in% names(filtered)) {
   rep(1, nrow(filtered))
 }
 
-modelDoaggregate <- lm(
-  time_doaggregate ~ log1p(nrows_blocks) + nrows_blocks,
-  data = filtered,
-  weights = weight_small_n
-)
+modelDoaggregate <- if (nrow(filtered) >= 5) {
+  lm(
+    time_doaggregate ~ log1p(nrows_blocks) + nrows_blocks,
+    data = filtered,
+    weights = weight_small_n
+  )
+} else {
+  existing_modelDoaggregate
+}
 usethis::use_data(modelDoaggregate, internal = FALSE, overwrite = TRUE)
 
 doc_calls <- list(
   list(
     name = "modelDoaggregate",
-    title = "Regression model to predict runtime for doaggregate",
-    description = "Weighted runtime model for doaggregate, fit from Analysis_timing_results*.csv files with extra emphasis on small point-count runs.",
-    details = "The model is trained from all Analysis_timing_results*.csv files in data-raw/. Small runs such as 1, 2, and 10 points are up-weighted so predictions are more accurate for small analyses. doaggregate runtime is modeled from nrows_blocks using weighted least squares."
+    title = "Legacy regression model for doaggregate runtime",
+    description = "Regression model retained for compatibility and refit only when the current timing files contain enough doaggregate rows.",
+    details = "When at least five usable doaggregate timing rows are available in Analysis_timing_results*.csv files, the data-creation script models runtime from nrows_blocks with weighted least squares and up-weights small input counts when input_number is available. Otherwise it preserves the existing packaged model rather than replacing it with an unsupported sparse fit."
   ),
   list(
     name = "modelEjamit",
-    title = "Regression model to predict runtime for point-buffer ejamit analyses",
-    description = "Weighted runtime model for point-buffer ejamit analyses, fit from Analysis_timing_results*.csv files with extra emphasis on small point-count runs.",
-    details = "The model is trained from point-buffer rows in all Analysis_timing_results*.csv files in data-raw/. Small runs such as 1, 2, and 10 points are up-weighted so predictions are more accurate for small analyses. ejamit runtime is modeled from input_number and radius using weighted least squares."
+    title = "Legacy regression model for point-buffer ejamit analyses",
+    description = "Weighted regression retained for compatibility and fallback runtime profiles.",
+    details = "The packaged model was trained from historical point-buffer timing rows and is preserved until the current benchmark files have enough count and radius coverage to replace it safely. Current v3.2022.2 point estimates use measured monotone runtime profiles in utils_speedtest.R because this legacy model has no training rows below 243 sites."
   ),
   list(
     name = "modelEjamitByAnalysisType",
     title = "Regression models to predict runtime for ejamit by input type",
     description = "Weighted runtime models for point-buffer, FIPS, and shapefile ejamit analyses, fit from Analysis_timing_results*.csv files when scenario rows are available.",
-    details = "This list stores separate models for points, FIPS, shapefile, and available FIPS subtypes such as fips_city and fips_county. The points model uses input_number and radius when enough rows are available. FIPS and shapefile models use input_number because there is no point-buffer radius in those workflows. Missing scenario models are stored as NULL until timing rows for that scenario have been collected."
+    details = "This list stores legacy fallback models for points, FIPS, shapefile, and available FIPS subtypes such as fips_city and fips_county. Current live web estimates use measured profiles in utils_speedtest.R instead. The fallback FIPS and shapefile models use input_number only and do not model an optional buffer radius."
   )
 )
 

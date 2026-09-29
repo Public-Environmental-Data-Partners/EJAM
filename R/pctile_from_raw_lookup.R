@@ -72,6 +72,14 @@
 #'   assigning percentiles. This is mainly for reference-replication workflows
 #'   such as the ACS22 `P_DISABILITYPCT` boundary issue, where tiny binary
 #'   floating-point differences otherwise put values just below a lookup cutoff.
+#' @param snap_tol relative tolerance for treating a raw value as sitting exactly
+#'   on a lookup cutoff rather than just near it. Raw scores are usually
+#'   population-weighted averages carrying a few units in the last place of
+#'   rounding error, and that error differs by platform, so without this the
+#'   percentile reported for a value on a cutoff could depend on the operating
+#'   system. Set to 0 to compare raw values to cutoffs exactly, which suits
+#'   callers looking up stored values that were never aggregated, such as
+#'   reference replication in [calc_ejscreen_export()].
 #' @aliases lookup_pctile
 #' @return By default, returns numeric vector length of myvector.
 #' @seealso [calc_pctile_columns()] for handling a table not just a vector
@@ -104,7 +112,8 @@ pctile_from_raw_lookup <- function(myvector,
                                    lookup = usastats,
                                    zone = "USA",
                                    quiet = TRUE,
-                                   signif_digits = NULL) {
+                                   signif_digits = NULL,
+                                   snap_tol = pctile_snap_tolerance) {
 
   # CHECK FOR FATAL PROBLEMS  ####
 
@@ -156,7 +165,8 @@ pctile_from_raw_lookup <- function(myvector,
             lookup = lookup,
             zone = zone,
             quiet = quiet,
-            signif_digits = signif_digits
+            signif_digits = signif_digits,
+            snap_tol = snap_tol
           )
         )
       )
@@ -265,6 +275,17 @@ pctile_from_raw_lookup <- function(myvector,
       next  # go to next zone (for this one indicator)
     }
 
+    # snap raw values that sit within float noise of a cutoff ####
+    # A raw score here is usually a population-weighted average, so it carries a
+    # few ULP of rounding error that differs by platform (compiler, libm, and
+    # summation order all vary). Percentile lookup is a step function, so a value
+    # sitting on a cutoff can fall either side of it depending on that noise, and
+    # where the lookup table has percentiles tied at one cutoff the answer can
+    # move by the whole width of the tie block. Snapping to the cutoff first
+    # makes the result identical on every platform. See snap_to_lookup_cutoffs().
+    myvector_selection <- snap_to_lookup_cutoffs(myvector_selection, myvector_lookup,
+                                                 tol = snap_tol)
+
     # ** findInterval ** ####
 
     # 1.) Uses findInterval to bin each percentile vector value into unique percentile vectors; Results are a list of bin values rather than actual percentiles
@@ -365,6 +386,84 @@ pctile_from_raw_lookup <- function(myvector,
 ########################################################################### #
 
 
+######################################################################### #
+
+# Relative tolerance used when deciding a raw score is really sitting on a
+# lookup cutoff rather than just near it.
+#
+# Chosen by measuring every adjacent pair of distinct cutoffs in usastats and
+# statestats (378,890 pairs). Only 7 of those pairs are closer together than
+# 1e-8 relative, and each of those 7 is itself a floating-point artifact - two
+# cutoffs that differ by about one ULP and so are the same number in practice.
+# The smallest genuine gap is around 1e-7, and 99.99% of gaps exceed 3.5e-5.
+# So anything in 1e-12 to 1e-9 sits in a wide empty band: large enough to
+# absorb the rounding error accumulated by a weighted average (about n * eps,
+# i.e. ~2e-10 even for a million blocks), small enough to leave every real
+# interval boundary untouched.
+pctile_snap_tolerance <- 1e-9
+
+#' Snap raw scores onto percentile-lookup cutoffs they are within float noise of
+#'
+#' @description Internal helper for [pctile_from_raw_lookup()]. Values that
+#'   differ from a lookup cutoff by no more than a relative `tol` are replaced by
+#'   that cutoff, so that percentile assignment does not depend on
+#'   platform-specific floating-point rounding.
+#'
+#' @details A value within tolerance of two adjacent cutoffs is snapped to the
+#'   lower one, matching the convention elsewhere in [pctile_from_raw_lookup()]
+#'   that percentiles tied at one cutoff report the lowest tied percentile.
+#'
+#'   Non-finite values and values with no cutoff nearby are returned unchanged.
+#'
+#' @param x Numeric vector of raw scores.
+#' @param cutoffs Numeric vector of lookup-table cutoffs for one indicator in one
+#'   zone. Need not be sorted or unique.
+#' @param tol Relative tolerance; see `pctile_snap_tolerance`.
+#'
+#' @return Numeric vector the same length as `x`.
+#'
+#' @noRd
+snap_to_lookup_cutoffs <- function(x, cutoffs, tol = pctile_snap_tolerance) {
+
+  if (!length(x) || !is.numeric(x)) {return(x)}
+  # tol of 0 (or NA/negative) means compare to cutoffs exactly, no snapping
+  if (length(tol) != 1 || is.na(tol) || tol <= 0) {return(x)}
+  cutoffs <- suppressWarnings(as.numeric(cutoffs))
+  u <- sort(unique(cutoffs[is.finite(cutoffs)]))
+  n <- length(u)
+  if (n == 0) {return(x)}
+
+  movable <- which(is.finite(x))
+  if (!length(movable)) {return(x)}
+  xi <- x[movable]
+
+  # u[i] <= xi < u[i + 1], with i == 0 meaning xi is below every cutoff
+  i <- findInterval(xi, u)
+
+  nearest_below <- rep(NA_real_, length(xi))
+  has_below <- i >= 1L
+  nearest_below[has_below] <- u[i[has_below]]
+
+  nearest_above <- rep(NA_real_, length(xi))
+  has_above <- i < n
+  nearest_above[has_above] <- u[i[has_above] + 1L]
+
+  within_tol <- function(cut) {
+    !is.na(cut) & abs(xi - cut) <= tol * pmax(abs(xi), abs(cut))
+  }
+  snap_up   <- within_tol(nearest_above)
+  snap_down <- within_tol(nearest_below)
+
+  # snap up first so that a value close enough to both neighbours ends up on the
+  # lower cutoff once snap_down is applied
+  xi[snap_up]   <- nearest_above[snap_up]
+  xi[snap_down] <- nearest_below[snap_down]
+
+  x[movable] <- xi
+  x
+}
+######################################################################### #
+
 #' Find approx percentiles in lookup table for just 1 indicator or 1 zone (State or US)
 #'
 #' @rdname pctile_from_raw_lookup
@@ -375,14 +474,16 @@ lookup_pctile <- function(myvector,
                           varname.in.lookup.table,
                           lookup = usastats,
                           zone = "USA",
-                          signif_digits = NULL) {
+                          signif_digits = NULL,
+                          snap_tol = pctile_snap_tolerance) {
   # this is an exported alias for the internal pctile_from_raw_lookup(), which had a more consistent naming scheme but may be harder to remember.
   pctile_from_raw_lookup(
     myvector = myvector,
     varname.in.lookup.table = varname.in.lookup.table,
     lookup = lookup,
     zone = zone,
-    signif_digits = signif_digits
+    signif_digits = signif_digits,
+    snap_tol = snap_tol
   )
 } #  function(...) {pctile_from_raw_lookup(...)}
 ######################################################################### #

@@ -74,10 +74,10 @@ x$Item[!grepl("names_|^test", x$Item)]
 EJAM relies on datasets mostly stored in the package itself or in a separate,
 data-related repository:
 
--   Datasets stored within the EJAM package (`.rda` files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and
+-   Datasets stored within the EJAM package (`.rda` files): [Documentation](`r paste0(docs_reponame_url, "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and
 [access to package data files](`r paste0(code_reponame_url, "/tree/main/data")`)
 
--   Datasets used by EJAM but stored separately (large `.arrow` files): [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-) and
+-   Datasets used by EJAM but stored separately (large `.arrow` files): [Documentation](`r paste0(docs_reponame_url, "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`) and
 [access to the large data files as GitHub release assets](`r paste0(data_reponame_url, "/releases")`)
 
 ### Why the large datasets are put into the data repository using piggyback instead of committed using Git
@@ -93,7 +93,7 @@ changed ANNUALLY or more often:
 
 -   ***Blockgroup Datasets (Demographic and Environmental Data)***: These
 include datasets included with the package `?blockgroupstats`,
-[usastats](../reference/usastats.html), `?statestats`, and `?bgej`. The
+[usastats](`r paste0(docs_reponame_url, "/reference/usastats.html")`), `?statestats`, and `?bgej`. The
 annual staged workflow for updating these ACS/EJScreen-style blockgroup
 datasets is now documented separately in [Updating EJScreen Datasets Annually
 (via the Pipeline)](dev-update-ejscreen-datasets-yearly.html). That pipeline
@@ -167,8 +167,10 @@ in tables EJAM uses, such as these: `?frs`, `?frs_by_programid`,
 `?frs_by_naics`, `?frs_by_sic`, `?frs_by_mact`, `?NAICS`, `?SIC`,
 `?naics_counts`, `?naicstable`, `?SIC`, `?sictable`, `?mact_table`, and
 `?epa_programs`, `?frsprogramcodes`, etc. These FRS, MACT, and Program info
-tables of EPA-relevant data have been updated in the EJAM package from scripts
-within *`/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R`*. The `?NAICS`,
+tables of EPA-relevant data are updated with `data-raw/datacreate_frs_.R`,
+which calls `frs_update_datasets()` and related focused `datacreate_*` scripts.
+`datacreate_0_UPDATE_ALL_DATASETS.R` is an older index, not the FRS runbook.
+The `?NAICS`,
 `?naicstable`, and `?sictable` objects (viewable using `naics_categories()`
 and `sic_categories()` utilities) have no EPA-specific data so they do not
 need frequent updates. The NAICS data object stores just the name of each
@@ -330,6 +332,92 @@ codes for sites, indicating the [subpart(s) that categorize relevant
 EPA-regulated
 sites](https://www.epa.gov/stationary-sources-air-pollution/national-emission-standards-hazardous-air-pollutants-neshap-8)
 
+### Refreshing FRS for a data release
+
+Run this from a clean, isolated EJAM source checkout on the intended release
+branch. Confirm `DESCRIPTION` has the intended `Version`, `VersionEJSCREEN`,
+`ReleaseDateEJSCREEN`, `VersionACS`, `ReleaseDateACS`, `VersionCensus`, and
+`ejamdata_required_tag` values before building. The version fields supply
+metadata stamped on each FRS table. The source script downloads EPA's national
+single and combined ZIPs and ECHO's ICIS-Air and AFS ZIPs for `frs_by_mact` and
+`mact_table`. This can take a long time and needs ample disk space.
+
+`frs_get()` sets `download_date` and `released` to the retrieval/snapshot date.
+These are not the GitHub release publication date or EPA ZIP `Last-Modified`
+date. `metadata_add()` supplies `ejam_package_version`,
+`ejscreen_version`, `ejscreen_releasedate`, `acs_releasedate`, `acs_version`,
+`census_version`, and `date_saved_in_package`. The FRS builder stamps the same
+nine fields on all five Arrow tables; `date_saved_in_package` is the local file
+creation date even though the Arrow tables are distributed as release assets.
+Inspect the values after reading each IPC file back.
+
+The normal `devtools::load_all()` attach path tries to download assets from
+`ejamdata_required_tag`. If that tag names an empty draft release, use a fresh
+R session and load the source namespace without running `.onAttach()`:
+
+```{r, eval=FALSE}
+pkgload::load_all(".", attach = FALSE, quiet = TRUE)
+attach(getNamespace("EJAM"), name = "package:EJAM")
+invisible(lapply(list.files("data", pattern = "[.]rda$", full.names = TRUE),
+                 load, envir = .GlobalEnv))
+Sys.setenv(EJAM_FRS_ARROW_OUTPUT =
+  "data-raw/pipeline_outputs/frs/v3.2022.3-YYYY-MM-DD")
+source("data-raw/datacreate_frs_.R")
+```
+
+The script writes `frs.arrow`, `frs_by_programid.arrow`,
+`frs_by_naics.arrow`, `frs_by_sic.arrow`, and `frs_by_mact.arrow` as Arrow IPC
+files in that output folder. It also saves `mact_table.rda` into `data/` and
+runs the FRS-dependent package-data and test-input scripts. If an earlier
+downloaded FRS snapshot is intentionally being reused, set
+`EJAM_REFRESH_FRS_ARROWS=FALSE`; the script will still validate the existing
+five files and rebuild related package data. Do not use that setting for a new
+FRS snapshot.
+
+Before uploading, compare the five new tables against the previous release:
+row counts, distinct `REGISTRY_ID` and `pgm_sys_id` counts, missing/duplicate
+IDs and coordinates, and added/removed identifiers. Verify that saved sample
+CSV/XLSX files, package `testinput_*` objects, active R examples, vignettes,
+and FRS-dependent unit tests still refer to IDs found in the new tables.
+Check that `title` and `dropdown_label` in both `frs_by_mact` and `mact_table`
+have no leading, trailing, or repeated whitespace (EJAM issue #231).
+Replace obsolete sample IDs with verified ones and regenerate expected outputs
+only when behavior genuinely changed. Run focused FRS tests and vignette builds
+from a local setup using the new Arrow files, then perform the package release
+checks described in [Updating the Package as a New Release](dev-update-package.html).
+The archived `inst/testdata/registryid/ECHO_Test_Data/` downloads are historical
+ECHO source examples and can contain IDs absent from the current FRS snapshot;
+use the regenerated `frs_testpoints_*` files for current-ID input checks.
+While the data release is a draft, place temporary copies or links to all 11
+staged Arrow files in the source package's ignored `data/*.arrow` paths and
+temporarily set `data/ejamdata_version.txt` to the draft tag for a local
+package-load test. Restore the tracked marker and remove those temporary files
+afterward; do not commit a marker for an unpublished release.
+
+For a new `ejamdata` tag, upload all 11 required Arrow files. Carry forward
+`bgej.arrow` and the five geography files from the compatible prior data tag
+only after confirming their content and ACS/geography vintage are unchanged.
+Run `data-raw/datacreate_ejamdata_arrow_restamp.R` to update their seven
+package/release metadata fields from the current `DESCRIPTION`, while keeping
+the table values and source attributes such as `download_date` and `released`
+unchanged. The script verifies that a write/read cycle preserves every column
+value, class, and non-stamp attribute. For a reproducible staged release, set
+the input and output folders and the save date explicitly:
+
+```{bash, eval=FALSE}
+EJAM_ARROW_RESTAMP_INPUT=path/to/prior_arrow_files \
+EJAM_ARROW_RESTAMP_OUTPUT=path/to/restamped_six \
+EJAM_ARROW_RESTAMP_DATE=YYYY-MM-DD \
+Rscript --vanilla data-raw/datacreate_ejamdata_arrow_restamp.R
+```
+
+If `--vanilla` cannot find `arrow` or `desc`, set `R_LIBS_USER` to the library
+where those packages are installed, or source the script in a fresh RStudio
+session without attaching EJAM.
+Stage those six restamped files beside the five freshly built FRS files.
+Review the complete asset names, sizes, and SHA-256 digests before adding them
+to the draft release. Uploading assets does not publish the draft release.
+
 ## Development/Setup
 
 1.  The Arrow files are stored as release assets in a separate public GitHub
@@ -400,11 +488,11 @@ EJAM or starts the app.
 First, create the key Arrow files locally or from the relevant pipeline output,
 as explained above.
 
-For future updates, the package may be modified to publish these files
-via the update pipeline or related script such as `run_arrow_publish_v2.5.0.R`
-but the information below is to describe the functions if an update is done manually.
+The old `data-raw/run_arrow_publish_v2.5.0.R` script hardcodes the historical
+`v2.5.0` tag; do not source it for a new release. Use the reviewed file set
+and release tag below.
 
-As mentioned above, we use [the piggyback package](https://docs.ropensci.org/piggyback/index.html) to place large datasets in the assets of a new release on the `r data_reponame_url` repository, rather than committing them with Git. The current maintainer path is to call `datasets_arrow_publish()` with explicit local `.arrow` file paths.
+As mentioned above, we use [the piggyback package](https://docs.ropensci.org/piggyback/index.html) to place large datasets in the assets of a new release on the `r data_reponame_url` repository, rather than committing them with Git. `datasets_arrow_publish()` can validate explicit local `.arrow` paths in a dry run. With `dry_run = FALSE`, it rewrites the release title and body, or creates a published release if none exists. For an existing saved draft, use `gh release upload` after the dry run so the draft title, notes, and status remain intact.
 
 The helper is intentionally conservative. It defaults to `dry_run = TRUE`,
 `overwrite = FALSE`, and `mark_latest = FALSE`. The default release note is
@@ -414,7 +502,8 @@ parameter.
 Make sure the intended new data objects are available as `.arrow` files. For an
 annual EJSCREEN data release, `bgej.arrow` is the critical package-coupled asset
 and must match the package version/release tag. Facility and geography Arrow
-files may be carried forward unchanged if they are still compatible. If block or
+tables may keep their values if they are still compatible; restamp the six
+non-FRS files as described above before a new data tag. If block or
 blockgroup helper Arrow files such as `blockwts.arrow`, `blockpoints.arrow`,
 `blockid2fips.arrow`, `bgid2fips.arrow`, or `quaddata.arrow` are intentionally
 regenerated in a future geography update, publish those files with the same
@@ -422,13 +511,15 @@ helper after a dry-run review. For v3, Island Areas are handled only at the
 blockgroup dataset/export/map-data level; Island Area blocks are not added to
 the block-helper universe for this release path.
 
-Example dry-run for a manual publish:
- (also see run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step)
+Example dry-run for a complete 11-asset release:
 
 ```{r, eval=FALSE}
 release_number <- EJAM:::ejamdata_required_tag()
-new_datasets_folder <- "path/to/folder/of/new/arrow/files"
-filepaths_arrow <- file.path(new_datasets_folder, "bgej.arrow")
+new_datasets_folder <- "path/to/validated/release_staging"
+filepaths_arrow <- file.path(
+  new_datasets_folder, paste0(EJAM:::.arrow_ds_names, ".arrow")
+)
+stopifnot(all(file.exists(filepaths_arrow)))
 
 EJAM:::datasets_arrow_publish(
   files = filepaths_arrow,
@@ -440,19 +531,30 @@ EJAM:::datasets_arrow_publish(
 )
 ```
 
-After reviewing the dry-run output and the intended release tag, rerun with
-`dry_run = FALSE` only when ready to create/update the release assets. Use
-`overwrite = TRUE` only after confirming existing assets with the same names
-should be replaced. Use `mark_latest = TRUE` only when this release should be
-shown by GitHub as the latest release.
+For a saved draft such as `v3.2022.3`, place the complete set of 11 validated
+Arrow files in a staging folder, then upload them to that draft:
+
+```{bash, eval=FALSE}
+gh release upload v3.2022.3 release_staging/*.arrow \
+  --repo Public-Environmental-Data-Partners/ejamdata
+```
+
+Do not use `--clobber` unless replacing an asset is intentional. Recheck the
+draft's title, body, status, asset names, sizes, and digests afterward. For a
+new release without a saved draft, `datasets_arrow_publish()` can create and
+upload assets with `dry_run = FALSE`; review its default title and notes first,
+because it creates a published release. Use `overwrite = TRUE` only after
+confirming existing assets with the same names should be replaced.
 
 Open a browser to confirm they are there.
 ```{r, eval=FALSE}
 browseURL(paste0(EJAM:::url_package("data", get_full_url = T), "/releases"))
 ```
 
-Reload EJAM so it can get the updates. It should detect that new versions are
-available and cache them for the installed package.
+After publishing the draft, update `data/ejamdata_version.txt`, install EJAM,
+and reload it so it can get the updates. An unpublished draft cannot be used as
+the public download source for installed packages. EJAM should detect that new
+versions are available and cache them for the installed package.
 
 ```{r, eval=FALSE}
 rm(list=ls())
@@ -470,7 +572,7 @@ dataload_dynamic("all", return_data_table = TRUE)
 A release's assets are self-contained: `dataload_dynamic()` (via
 `piggyback::pb_download()`) pulls each Arrow file from the single release tagged in
 `ejamdata_required_tag`, so a missing asset breaks loading. Upload **all 11** files
-to **every** `v3.YYYY.0` release, even when most are unchanged:
+to every new data tag, even when most are unchanged:
 
 - vintage-specific: `bgej.arrow`;
 - geography (Census 2020, unchanged between ACS vintages): `blockwts.arrow`,
@@ -478,9 +580,10 @@ to **every** `v3.YYYY.0` release, even when most are unchanged:
 - facilities (FRS): `frs.arrow`, `frs_by_programid.arrow`, `frs_by_naics.arrow`,
   `frs_by_sic.arrow`, `frs_by_mact.arrow`.
 
-FRS is intentionally **not refreshed** for an ACS-vintage release; its files carry
-over unchanged (only their `ejam_package_version` metadata is bumped) and are
-re-published under the new tag. Confirm the file names match
+FRS can be refreshed independently of the ACS vintage. For an ACS-only
+release, carry the FRS files forward if they remain suitable. For an FRS
+release such as `v3.2022.3`, publish the newly built five FRS files alongside
+the six compatible carried-forward files. Confirm the file names match
 `paste0(EJAM:::.arrow_ds_names, ".arrow")` before publishing.
 
 Three of these carry the `bgid` join key — `bgej`, `blockwts`, and `bgid2fips` —
@@ -488,22 +591,39 @@ which must be stored as `double` (see
 [Annual EJScreen/ACS dataset updates](dev-update-ejscreen-datasets-yearly.html),
 "the `bgid` type must be `double`"); the other eight have no `bgid`.
 
-### Keep the four identifiers in sync
+### Keep the data tag and local marker in sync
 
-After publishing, set the local version marker and confirm all four identifiers
-match (all `v3.YYYY.0`):
+After publishing, set the local version marker and confirm it matches the
+`DESCRIPTION` data tag:
 
 ```{r, eval=FALSE}
-writeLines("v3.YYYY.0", "data/ejamdata_version.txt")   # tracked marker
+writeLines(EJAM:::ejamdata_required_tag(), "data/ejamdata_version.txt")
 EJAM:::ejamdata_required_tag()                          # from DESCRIPTION; must equal the marker
 ```
 
-git release tag = `ejamdata` release tag = DESCRIPTION `ejamdata_required_tag` =
-`data/ejamdata_version.txt`. A code-only **patch** release (for example
-`v3.2022.1` or `v3.2022.2`) keeps `ejamdata_required_tag` and the marker at
-the existing `v3.2022.0`, because the data did not change and the patch reuses the
-already-published `ejamdata` release. (There is no `v3.2022.1` or `v3.2022.2`
-release of `ejamdata`, and none is needed for a code-only patch.)
+The `ejamdata` release tag, DESCRIPTION `ejamdata_required_tag`, and
+`data/ejamdata_version.txt` must agree. The EJAM package Git tag may differ
+when code changes without changing data.
+
+**The rule applies only when the bundled data changes.** Any release that ships
+code changes on top of already-published data keeps `ejamdata_required_tag` and the
+marker pointing at the `ejamdata` release the data actually came from. That covers
+two cases:
+
+- a code-only **patch** (for example `v3.2022.1` or `v3.2022.2`), which stays on
+  the existing `v3.2022.0` data; and
+- a release that changes only the **version scheme or major version** while
+  keeping the same Arrow data.
+
+In those code-only cases there is no new `ejamdata` release. A new data tag is
+also needed when FRS files change, even if the ACS vintage stays the same.
+The `v3.2022.3` branch pins `ejamdata` `v3.2022.3` for its new FRS snapshot.
+An ACS vintage bump such as `v4.2024.0` may instead pin `v3.2024.0`.
+
+> EJAM versions read `MAJOR.ACSENDYEAR.PATCH`, so the middle field names the ACS
+> vintage while `ejamdata_required_tag` names the data release. They move
+> independently: `v3.2022.2` can use `v3.2022.0` data while `v3.2022.3`
+> names a new data tag for updated FRS files.
 
 This previously had been handled with a GitHub Actions workflow that tried to
 use Git LFS. That automatic workflow is no longer used and will not be restored.

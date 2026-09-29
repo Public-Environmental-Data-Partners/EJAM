@@ -179,6 +179,7 @@ export(shapefile_from_any)
 export(shapefile_from_folder)
 export(shapefile_from_sitepoints)
 export(shapes_from_fips)
+export(shapes_from_zip)
 export(sic_categories)
 export(sic_from_any)
 export(sic_from_code)
@@ -231,57 +232,67 @@ import(dplyr, except = c(first, last, between))
 import(shiny, except = c(dataTableOutput, renderDataTable))
 import(shinycssloaders)
 importFrom(data.table,":=")
-importFrom(grDevices,colorRampPalette)
-importFrom(grDevices,colors)
-importFrom(grDevices,dev.off)
-importFrom(grDevices,heat.colors)
-importFrom(grDevices,palette.colors)
-importFrom(grDevices,png)
-importFrom(graphics,abline)
-importFrom(graphics,barplot)
-importFrom(graphics,boxplot)
-importFrom(graphics,legend)
-importFrom(graphics,points)
-importFrom(graphics,text)
+importFrom(grDevices,
+  colorRampPalette,
+  colors,
+  dev.off,
+  heat.colors,
+  palette.colors,
+  png
+)
+importFrom(graphics,
+  abline,
+  barplot,
+  boxplot,
+  legend,
+  points,
+  text
+)
 importFrom(magrittr,'%>%')
-importFrom(methods,Summary)
-importFrom(methods,as)
-importFrom(methods,formalArgs)
-importFrom(methods,functionBody)
-importFrom(methods,is)
-importFrom(stats,addmargins)
-importFrom(stats,aggregate)
-importFrom(stats,density)
-importFrom(stats,ecdf)
-importFrom(stats,line)
-importFrom(stats,lm)
-importFrom(stats,median)
-importFrom(stats,na.exclude)
-importFrom(stats,na.omit)
-importFrom(stats,predict)
-importFrom(stats,quantile)
-importFrom(stats,reorder)
-importFrom(stats,runif)
-importFrom(stats,setNames)
-importFrom(stats,weighted.mean)
-importFrom(utils,URLencode)
-importFrom(utils,askYesNo)
-importFrom(utils,browseURL)
-importFrom(utils,capture.output)
-importFrom(utils,combn)
-importFrom(utils,data)
-importFrom(utils,download.file)
-importFrom(utils,edit)
-importFrom(utils,getFromNamespace)
-importFrom(utils,getSrcFilename)
-importFrom(utils,glob2rx)
-importFrom(utils,head)
-importFrom(utils,installed.packages)
-importFrom(utils,object.size)
-importFrom(utils,read.csv)
-importFrom(utils,stack)
-importFrom(utils,str)
-importFrom(utils,tail)
-importFrom(utils,unzip)
-importFrom(utils,write.csv)
-importFrom(utils,zip)
+importFrom(methods,
+  Summary,
+  as,
+  formalArgs,
+  functionBody,
+  is
+)
+importFrom(stats,
+  addmargins,
+  aggregate,
+  density,
+  ecdf,
+  line,
+  lm,
+  median,
+  na.exclude,
+  na.omit,
+  predict,
+  quantile,
+  reorder,
+  runif,
+  setNames,
+  weighted.mean
+)
+importFrom(utils,
+  URLencode,
+  askYesNo,
+  browseURL,
+  capture.output,
+  combn,
+  data,
+  download.file,
+  edit,
+  getFromNamespace,
+  getSrcFilename,
+  glob2rx,
+  head,
+  installed.packages,
+  object.size,
+  read.csv,
+  stack,
+  str,
+  tail,
+  unzip,
+  write.csv,
+  zip
+)

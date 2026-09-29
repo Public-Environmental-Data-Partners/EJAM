@@ -20,15 +20,12 @@ This file is not stored in the package, but is obtained via \code{\link[=dataloa
 
 See also \code{\link[=frs_update_datasets]{frs_update_datasets()}}
 
-There are about 115k rows here but only about 86k unique program IDs in this table,
-which is from the \href{https://echo.epa.gov/files/echodownloads/}{ECHO data download of ICIS Air and AFS}.
+This table is built from the \href{https://echo.epa.gov/files/echodownloads/}{ECHO data download of ICIS Air and AFS}.
 
 The programid column here should be found in the pgm_sys_id column in frs_by_programid,
-but as of mid 2025 only 55k of them were found there.
+but not every ECHO program ID has a matching FRS row in a given snapshot.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{ table(frs_by_mact$programid \%in\% frs_by_programid$pgm_sys_id)
-FALSE  TRUE
-59944  55429
 }\if{html}{\out{</div>}}
 
 Also note we have found some typos and nonstandard abbreviations

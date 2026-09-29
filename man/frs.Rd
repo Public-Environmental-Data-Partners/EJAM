@@ -9,28 +9,40 @@ a snapshot version of the EPA FRS.
 You can look up sites by REGISTRY_ID in \link{frs}, and get their location, etc.
 }
 \details{
-This dataset can be updated by a package maintainer by using
-frs_update_datasets() (which is not an exported function).
-FRS tables are dynamic \code{.arrow} files loaded by \code{\link[=dataload_dynamic]{dataload_dynamic()}},
-not \code{.rda} files installed in \verb{EJAM/data/}.
+FRS-related datasets are large dynamic \code{.arrow} files loaded by \code{\link[=dataload_dynamic]{dataload_dynamic()}},
+not \code{.rda} files installed in \verb{EJAM/data/}, so they are not lazy-loaded by R.
+
+FRS-related datasets are loaded by the package functions that need them,
+or a developer can load them via
+\code{dataload_dynamic(c('frs','frs_by_programid','frs_by_naics','frs_by_sic'))}
+
+This dataset can be updated by a package maintainer as explained in the
+\href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{article on data updates}.
 
 The definitions of active/inactive here are not quite the
 same as used in ECHO. See attributes(frs) to see date created, etc.
 
-Also, \href{https://ejanalysis.com/ejscreenapp}{EJSCREEN} has maps of EPA-regulated \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities}{facilities} of a few program types
+Also, \href{https://ejanalysis.com/ejscreenapp}{EJSCREEN} has maps of EPA-regulated
+\href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities}{facilities}
+of a few program types
 and for a table of acronym definitions
 see https://www.epa.gov/sites/default/files/2021-05/frs_program_abbreviations_and_names.xlsx
 and \link{epa_programs_defined}
 \itemize{
-\item Count of    all REGISTRY_ID rows:   Approx 7 million
-\item Count of unique REGISTRY_ID values: Approx 4-5 million
-\item Clearly inactive unique IDs:        Approx 1-2 million
-\item Assumed   active unique IDs:        Approx 3 million
-\item frs rows total:            Approx 2-3 million (2.6m as of 02/2025)
-\item frs_by_programid rows:     Approx 3-4 million (3.5m as of 02/2025)
-\item frs_by_naics rows:         Approx 640k (541k unique regid as of 02/2025, 1858 unique NAICS)
-\item frs_by_sic rows:           Approx 764k (664k unique regid as of 02/2025, 2048 unique SIC)
+\item Count of    all REGISTRY_ID rows:   Approx 7 million in 2025 data
+\item Count of unique REGISTRY_ID values: Approx 4-5 million in 2025 data
+\item Clearly inactive unique IDs:        Approx 1-2 million in 2025 data
+\item Assumed   active unique IDs:        Approx 3 million in 2025 data
+\item frs rows total:            Approx 3 million rows (approx 3 million unique ids) in late 2026 data.
+\item frs_by_programid rows:     Approx 4 million rows (approx 3 million unique ids) in late 2026 data.
+\item frs_by_naics rows:         Over 800k (approx 700k unique regid, approx 2k unique NAICS) in late 2026.
+\item frs_by_sic rows:           Over 800k (approx 700k unique regid, approx 2k unique SIC) in late 2026.
 }
+
+Counts change with each EPA FRS snapshot. After calling \code{\link[=dataload_dynamic]{dataload_dynamic()}},
+use \code{nrow(frs)} and \code{data.table::uniqueN(frs$REGISTRY_ID)} for the
+currently installed release; use the corresponding lookup tables to count
+sites with program, NAICS, or SIC information.
 
 Classes \code{data.table} and \code{data.frame}
 

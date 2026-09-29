@@ -64,17 +64,17 @@ Each is explained below:
     following: `DESCRIPTION`, `README.Rmd` (for the README, **edit
     `README.Rmd`, not the generated `README.md` file**),
     `R/EJAM-package.R` (for `?EJAM-package`),
-    `NEWS.md` used to make [NEWS](../news/index.html), 
-    `CONTRIBUTING.md` used to make [CONTRIBUTING](../CONTRIBUTING.html),
-    [LICENSE](../LICENSE.html) based on `inst/LICENSE.md`,
-    [CITATION](../authors.html#citation) based on `inst/CITATION`, 
+    `NEWS.md` used to make [NEWS](`r paste0(docs_reponame_url, "/news/index.html")`), 
+    `CONTRIBUTING.md` used to make [CONTRIBUTING](`r paste0(docs_reponame_url, "/CONTRIBUTING.html")`),
+    [LICENSE](`r paste0(docs_reponame_url, "/LICENSE.html")`) based on `inst/LICENSE.md`,
+    [CITATION](`r paste0(docs_reponame_url, "/authors.html#citation")`) based on `inst/CITATION`, 
     CITATION.cff, and others.
 
 -   Some of these are used by and shown by the GitHub repository, notably
     the `README.md` that is generated from the `README.Rmd` file and appears on
     the GitHub repository as
     [README](`r paste0(code_reponame_url, "?tab=readme-ov-file#readme")`)
-    and in the pkgdown site as [README](../index.html), and the `DESCRIPTION`
+    and in the pkgdown site as [README](`r paste0(docs_reponame_url, "/index.html")`), and the `DESCRIPTION`
     file that stores the package version number, repository URLs, and related
     package metadata.
 
@@ -313,3 +313,16 @@ https://public-environmental-data-partners.github.io/EJAM/v3/
     pages had been on GitHub Pages at URLs related to the `USEPA/EJAM` and
     `USEPA/EJAM-open` repositories, but those pages may now be archived,
     unpublished, or otherwise obsolete.
+
+-   When a vignette links to a part of the site that is not itself a vignette
+    -- the reference manual, NEWS, LICENSE, the home page -- write the link
+    with `EJAM::url_package("docs")` rather than a relative path like
+    `../reference/index.html`. Relative paths work on the pkgdown site but
+    break in the vignette as installed with the package, where there is no
+    `reference/` folder next to the vignettes, and `R CMD check` reports them
+    under `checking relative paths in package URLs`. Inside a pkgdown CI build
+    `url_package("docs")` honors `EJAM_DOCS_BASE_URL`, so the links still point
+    within the version being built, such as the `/dev/` copy of the site.
+    Links from one vignette to another, like `[Basics](basics.html)`, should
+    stay relative -- vignettes sit in one folder in both places, so those
+    already resolve correctly.

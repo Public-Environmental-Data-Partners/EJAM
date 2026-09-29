@@ -1,11 +1,11 @@
 {
   "metadata": {
-    "generated": "2026-07-03",
+    "generated": "2026-09-28",
     "source": "Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)",
     "repository": "Public-Environmental-Data-Partners/EJAM",
-    "open_issue_count": 127,
+    "open_issue_count": 131,
     "cost_median": 4,
-    "benefit_median": 6,
+    "benefit_median": 5,
     "rank_labels": {
       "A": "rank:A-high-value-low-cost",
       "B": "rank:B-high-value-high-cost",
@@ -14,35 +14,568 @@
     },
     "report_path": "inst/issues/ejam_issues_scored_by_risk_and_value.MD",
     "run_changes": {
-      "previous_run": "2026-07-01",
-      "opened_count": 1,
-      "closed_count": 3,
-      "quadrant_changed_count": 4,
+      "previous_run": "2026-09-07",
+      "opened_count": 3,
+      "closed_count": 20,
+      "quadrant_changed_count": 6,
       "opened_issue_numbers": [
-        446
+        612,
+        615,
+        621
       ],
       "closed_issue_numbers": [
-        48,
-        396,
-        417
+        136,
+        137,
+        231,
+        458,
+        482,
+        510,
+        511,
+        513,
+        527,
+        546,
+        548,
+        550,
+        555,
+        560,
+        565,
+        585,
+        596,
+        599,
+        600,
+        602
       ],
       "quadrant_changed_issue_numbers": [
-        54,
-        66,
-        194,
-        284
+        162,
+        163,
+        342,
+        361,
+        490,
+        595
       ]
     }
   },
   "issues": [
+    {
+      "number": 621,
+      "title": "Community report barplot text is garbled (boxes/decorative glyphs) on the dev server's new image",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/621",
+      "existing_labels": [
+        "BUG"
+      ],
+      "milestone": "NA",
+      "cost": 3,
+      "benefit": 4,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 615,
+      "title": "pct*_li language shares use a different denominator than EPA's identically named PCT_HLI_*_LI fields",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615",
+      "existing_labels": [
+        "question",
+        "calculate/validate to EJScreen",
+        "datasets-related"
+      ],
+      "milestone": "NA",
+      "cost": 11,
+      "benefit": 0,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 11\nBenefit score: 0\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 612,
+      "title": "Consistently use \"EJSCREEN\" or \"EJScreen\" ???",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/612",
+      "existing_labels": [
+        "documentation",
+        "PRIORITY LOW",
+        "Affects Web App"
+      ],
+      "milestone": "NA",
+      "cost": 3,
+      "benefit": 2,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 597,
+      "title": "Add Donate button to EJAM home page",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/597",
+      "existing_labels": [
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 2,
+      "benefit": 0,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 595,
+      "title": "improve API documentation vignette",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595",
+      "existing_labels": [
+        "documentation",
+        "enhancement",
+        "PRIORITY MEDIUM",
+        "Affects R users only - NOT web app users",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "NA",
+      "cost": 0,
+      "benefit": 7,
+      "quadrant": "A",
+      "rank_label": "rank:A-high-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 592,
+      "title": "test_ejam(): 19 test files are missing timing estimates in timebyfile",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/592",
+      "existing_labels": [
+        "enhancement",
+        "rank:D-defer"
+      ],
+      "milestone": "NA",
+      "cost": 4,
+      "benefit": 0,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 0\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 588,
+      "title": "Web app: production serves several static assets as 404",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588",
+      "existing_labels": [
+        "BUG",
+        "PRIORITY LOW",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "NA",
+      "cost": 2,
+      "benefit": 7,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 7\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 584,
+      "title": "Speed/ETA calibration: work deliberately scoped out of #515",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/584",
+      "existing_labels": [
+        "rank:D-defer"
+      ],
+      "milestone": "v4",
+      "cost": 4,
+      "benefit": 0,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 0\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 581,
+      "title": "Analysis of 2 or more tract FIPS codes never completes in the web app (1 tract works)",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/581",
+      "existing_labels": [
+        "rank:D-defer"
+      ],
+      "milestone": "NA",
+      "cost": 4,
+      "benefit": 2,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 2\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 580,
+      "title": "API version number displayed should reflect EJAM version it uses",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/580",
+      "existing_labels": [
+        "BUG",
+        "documentation",
+        "Affects R users only - NOT web app users",
+        "API",
+        "rank:A-high-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 0,
+      "benefit": 11,
+      "quadrant": "A",
+      "rank_label": "rank:A-high-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 11\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 553,
+      "title": "plot_lorenz_*() draft plots are broken: undefined bysite, filter on a literal, constant aes mapping",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/553",
+      "existing_labels": [
+        "BUG",
+        "PRIORITY LOW",
+        "rank:B-high-value-high-cost"
+      ],
+      "milestone": "NA",
+      "cost": 6,
+      "benefit": 9,
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 9\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 547,
+      "title": "Define color-coding cutoffs once, as adjustable parameters (design half of #288)",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/547",
+      "existing_labels": [
+        "PRIORITY MEDIUM",
+        "refactor",
+        "Community Report",
+        "rank:D-defer"
+      ],
+      "milestone": "v4",
+      "cost": 6,
+      "benefit": 4,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 536,
+      "title": "redo list of URLs in url_package() documentation",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/536",
+      "existing_labels": [
+        "documentation",
+        "PRIORITY LOW",
+        "refactor",
+        "Affects R users only - NOT web app users",
+        "rank:D-defer"
+      ],
+      "milestone": "v4",
+      "cost": 4,
+      "benefit": 2,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 2\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 535,
+      "title": "Consolidate app-settings vignette: EJScreen deep links + cross-vignette overlap",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/535",
+      "existing_labels": [
+        "documentation",
+        "enhancement",
+        "PRIORITY LOW",
+        "Affects R users only - NOT web app users",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 1,
+      "benefit": 2,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 508,
+      "title": "ECR lifecycle policy: prune accumulating dev images (without touching prod)",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/508",
+      "existing_labels": [
+        "enhancement",
+        "PRIORITY MEDIUM",
+        "rank:D-defer"
+      ],
+      "milestone": "NA",
+      "cost": 4,
+      "benefit": 4,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 507,
+      "title": "deploy-dev: encode the deployed EJAM version in the dev ECR image tag",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/507",
+      "existing_labels": [
+        "enhancement",
+        "PRIORITY MEDIUM",
+        "rank:D-defer"
+      ],
+      "milestone": "NA",
+      "cost": 4,
+      "benefit": 4,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 504,
+      "title": "Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate task during blockgroup join",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504",
+      "existing_labels": [
+        "BUG",
+        "PRIORITY HIGH",
+        "Affects Web App",
+        "rank:A-high-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 3,
+      "benefit": 23,
+      "quadrant": "A",
+      "rank_label": "rank:A-high-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 23\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 497,
+      "title": "refactor / clean up rounding of numbers",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/497",
+      "existing_labels": [
+        "enhancement",
+        "PRIORITY LOW",
+        "refactor",
+        "Affects R users only - NOT web app users",
+        "rank:D-defer"
+      ],
+      "milestone": "NA",
+      "cost": 6,
+      "benefit": 4,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 490,
+      "title": "swap us and state ratio columns",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490",
+      "existing_labels": [
+        "enhancement",
+        "PRIORITY MEDIUM",
+        "Affects Web App",
+        "Community Report",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 1,
+      "benefit": 7,
+      "quadrant": "A",
+      "rank_label": "rank:A-high-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 486,
+      "title": "allow zip code analysis in EJAM shiny web app",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486",
+      "existing_labels": [
+        "enhancement",
+        "PRIORITY LOW",
+        "Affects Web App",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 1,
+      "benefit": 6,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 6\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 484,
+      "title": "in overall table, change EJAM Report link for 1-site analysis",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/484",
+      "existing_labels": [
+        "enhancement",
+        "PRIORITY MEDIUM",
+        "Affects Web App",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 3,
+      "benefit": 7,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 7\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 464,
+      "title": "Investigate and solve high cost on AWS Fargate",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464",
+      "existing_labels": [
+        "Affects Web App",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "NA",
+      "cost": 2,
+      "benefit": 3,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 3\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 455,
+      "title": "fix radius slider behavior after deep link passes a radius and then user changes it",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/455",
+      "existing_labels": [
+        "BUG",
+        "PRIORITY LOW",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 1,
+      "benefit": 5,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
+    {
+      "number": 454,
+      "title": "fix when should radius slider reset to 0 vs 1 mile (a method-specific default) if radio button used to switch between points and polygon/fips type sites",
+      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/454",
+      "existing_labels": [
+        "BUG",
+        "PRIORITY LOW",
+        "rank:C-low-value-low-cost"
+      ],
+      "milestone": "v4",
+      "cost": 3,
+      "benefit": 5,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:D-defer"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+    },
     {
       "number": 446,
       "title": "Cache/precompute FIPS-based reports and boundaries (layered design: bounds, ejamit results, rendered reports)",
       "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/446",
       "existing_labels": [
         "speed / performance (see #226)",
-        "API"
+        "API",
+        "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 7,
       "benefit": 2,
       "quadrant": "D",
@@ -52,29 +585,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 7\nBenefit score: 2\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 410,
-      "title": "\"FEATURES AND LOCATION INFORMATION\" on report need explanation and less rounding",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/410",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY MEDIUM",
-        "Affects Web App",
-        "Community Report",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 1,
-      "benefit": 11,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 11\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 7\nBenefit score: 2\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 403,
@@ -87,6 +598,7 @@
         "Affects Web App",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 1,
       "benefit": 5,
       "quadrant": "C",
@@ -96,7 +608,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 400,
@@ -108,6 +620,7 @@
         "Affects Web App",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "v4",
       "cost": 3,
       "benefit": 13,
       "quadrant": "A",
@@ -117,7 +630,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 13\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 13\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 399,
@@ -131,6 +644,7 @@
         "Affects Web App",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 11,
       "benefit": 4,
       "quadrant": "D",
@@ -140,29 +654,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 11\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 391,
-      "title": "Census API key now required (tidycensus >= 1.8 breaking change) — code + docs",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/391",
-      "existing_labels": [
-        "BUG",
-        "documentation",
-        "PRIORITY MEDIUM",
-        "dependencies-related",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 3,
-      "benefit": 10,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 10\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 11\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 387,
@@ -174,6 +666,7 @@
         "refactor",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 1,
       "quadrant": "D",
@@ -183,7 +676,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 386,
@@ -192,6 +685,7 @@
       "existing_labels": [
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 0,
       "quadrant": "D",
@@ -201,29 +695,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 0\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 385,
-      "title": "ejam2report() fails to save a file when the filename parameter is used",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/385",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY MEDIUM",
-        "Affects R users only - NOT web app users",
-        "Community Report",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 1,
-      "benefit": 15,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 0\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 361,
@@ -233,8 +705,9 @@
         "enhancement",
         "PRIORITY MEDIUM",
         "Affects Web App",
-        "rank:A-high-value-low-cost"
+        "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 1,
       "benefit": 7,
       "quadrant": "A",
@@ -244,7 +717,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 354,
@@ -257,6 +730,7 @@
         "Community Report",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 9,
       "quadrant": "A",
@@ -266,30 +740,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 9\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 351,
-      "title": "Avoid irrelevant missing-radius warnings for FIPS report header text",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/351",
-      "existing_labels": [
-        "BUG",
-        "good first issue",
-        "PRIORITY LOW",
-        "Affects Web App",
-        "Community Report",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 2,
-      "benefit": 8,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 9\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 350,
@@ -302,6 +753,7 @@
         "Community Report",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 5,
       "quadrant": "C",
@@ -311,7 +763,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 349,
@@ -327,6 +779,7 @@
         "Community Report",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "v4",
       "cost": 4,
       "benefit": 15,
       "quadrant": "B",
@@ -336,54 +789,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 15\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 348,
-      "title": "API report links from multisite results label every per-site report as site 1",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/348",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY MEDIUM",
-        "URL-related",
-        "Affects Web App",
-        "API",
-        "Community Report",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 2,
-      "benefit": 15,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 344,
-      "title": "Show an example of a community report - e.g., in or linked from \"basics\" vignette",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/344",
-      "existing_labels": [
-        "documentation",
-        "enhancement",
-        "help wanted",
-        "good first issue",
-        "PRIORITY HIGH-ish but not a bug",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 2,
-      "benefit": 12,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 12\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 15\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 343,
@@ -392,6 +798,7 @@
       "existing_labels": [
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 1,
       "benefit": 0,
       "quadrant": "C",
@@ -401,7 +808,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 342,
@@ -410,20 +817,21 @@
       "existing_labels": [
         "enhancement",
         "help wanted",
-        "PRIORITY HIGH-ish but not a bug",
+        "PRIORITY MEDIUM",
         "Affects Web App",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
-      "benefit": 15,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
+      "benefit": 7,
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
       "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
         "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 7\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 341,
@@ -436,6 +844,7 @@
         "Community Report",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 15,
       "quadrant": "A",
@@ -445,7 +854,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 293,
@@ -459,6 +868,7 @@
         "API",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "v4",
       "cost": 5,
       "benefit": 19,
       "quadrant": "B",
@@ -468,29 +878,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 5\nBenefit score: 19\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 288,
-      "title": "ratio of 1.0 should not be yellow on community report",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/288",
-      "existing_labels": [
-        "enhancement",
-        "PRIORITY MEDIUM",
-        "Affects Web App",
-        "Community Report",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 2,
-      "benefit": 7,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 5\nBenefit score: 19\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 284,
@@ -502,16 +890,17 @@
         "Affects Web App",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 6,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
+      "quadrant": "C",
+      "rank_label": "rank:C-low-value-low-cost",
       "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
         "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 6\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 6\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 279,
@@ -524,6 +913,7 @@
         "Affects R users only - NOT web app users",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 5,
       "benefit": 10,
       "quadrant": "B",
@@ -533,7 +923,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 5\nBenefit score: 10\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 5\nBenefit score: 10\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 274,
@@ -546,6 +936,7 @@
         "Community Report",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 15,
       "quadrant": "A",
@@ -555,7 +946,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 256,
@@ -569,6 +960,7 @@
         "Affects Web App",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 9,
       "benefit": 7,
       "quadrant": "B",
@@ -578,70 +970,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 9\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 249,
-      "title": "ejam2report() fails if filename is specified without path, or with \"./xyz.html\"",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/249",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY LOW",
-        "Affects R users only - NOT web app users",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 2,
-      "benefit": 12,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 12\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 242,
-      "title": "Report should show ratios to avg for special indicators like % of residents who are in CEJST disadvantaged or air nonattainment areas ",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/242",
-      "existing_labels": [
-        "enhancement",
-        "PRIORITY MEDIUM",
-        "Community Report",
-        "rank:C-low-value-low-cost"
-      ],
-      "cost": 3,
-      "benefit": 4,
-      "quadrant": "C",
-      "rank_label": "rank:C-low-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 231,
-      "title": "fix frs_by_mact.arrow and /data/mact_table to remove leading and extra spaces",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/231",
-      "existing_labels": [
-        "enhancement",
-        "PRIORITY LOW",
-        "datasets-related",
-        "rank:D-defer"
-      ],
-      "cost": 6,
-      "benefit": 1,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
-      "rank_labels_to_remove": [
-        "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 9\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 226,
@@ -655,6 +984,7 @@
         "Affects Web App",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 7,
       "benefit": 16,
       "quadrant": "B",
@@ -664,7 +994,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 7\nBenefit score: 16\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 7\nBenefit score: 16\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 224,
@@ -675,6 +1005,7 @@
         "PRIORITY LOW",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 5,
       "quadrant": "C",
@@ -684,7 +1015,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 223,
@@ -693,9 +1024,10 @@
       "existing_labels": [
         "BUG",
         "PRIORITY LOW",
-        "Affects Web App",
+        "Affects R users only - NOT web app users",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 8,
       "quadrant": "A",
@@ -705,7 +1037,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 208,
@@ -717,6 +1049,7 @@
         "Affects Web App",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 8,
       "quadrant": "A",
@@ -726,30 +1059,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 205,
-      "title": "adjust summary report fonts and row heights/line spacing to make text more legible",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/205",
-      "existing_labels": [
-        "enhancement",
-        "help wanted",
-        "PRIORITY HIGH-ish but not a bug",
-        "Affects Web App",
-        "Community Report",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 2,
-      "benefit": 15,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 194,
@@ -760,8 +1070,9 @@
         "PRIORITY MEDIUM",
         "plots-graphs-related",
         "future plan list",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 5,
       "benefit": 6,
       "quadrant": "B",
@@ -771,7 +1082,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 5\nBenefit score: 6\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 5\nBenefit score: 6\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 193,
@@ -785,6 +1096,7 @@
         "future plan list",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 5,
       "benefit": 15,
       "quadrant": "B",
@@ -794,7 +1106,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 5\nBenefit score: 15\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 5\nBenefit score: 15\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 192,
@@ -807,6 +1119,7 @@
         "future plan list",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 5,
       "benefit": 7,
       "quadrant": "B",
@@ -816,7 +1129,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 5\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 5\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 184,
@@ -830,6 +1143,7 @@
         "Affects R users only - NOT web app users",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 2,
       "quadrant": "C",
@@ -839,7 +1153,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 183,
@@ -853,6 +1167,7 @@
         "Affects R users only - NOT web app users",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
       "benefit": 0,
       "quadrant": "C",
@@ -862,7 +1177,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 182,
@@ -875,6 +1190,7 @@
         "Affects R users only - NOT web app users",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 4,
       "quadrant": "D",
@@ -884,7 +1200,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 181,
@@ -898,6 +1214,7 @@
         "Affects R users only - NOT web app users",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 1,
       "benefit": 2,
       "quadrant": "C",
@@ -907,7 +1224,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 180,
@@ -920,6 +1237,7 @@
         "Affects R users only - NOT web app users",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 7,
       "benefit": 4,
       "quadrant": "D",
@@ -929,7 +1247,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 7\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 7\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 179,
@@ -942,6 +1260,7 @@
         "Affects R users only - NOT web app users",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
       "benefit": 3,
       "quadrant": "C",
@@ -951,7 +1270,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 3\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 3\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 177,
@@ -963,6 +1282,7 @@
         "Affects Web App",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
       "benefit": 4,
       "quadrant": "C",
@@ -972,7 +1292,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 176,
@@ -985,6 +1305,7 @@
         "Community Report",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
       "benefit": 4,
       "quadrant": "C",
@@ -994,7 +1315,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 175,
@@ -1006,6 +1327,7 @@
         "Affects Web App",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
       "benefit": 4,
       "quadrant": "C",
@@ -1015,7 +1337,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 174,
@@ -1028,6 +1350,7 @@
         "Community Report",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
       "benefit": 3,
       "quadrant": "C",
@@ -1037,7 +1360,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 3\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 3\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 172,
@@ -1050,6 +1373,7 @@
         "Affects R users only - NOT web app users",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 7,
       "quadrant": "B",
@@ -1059,7 +1383,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 170,
@@ -1072,6 +1396,7 @@
         "Affects R users only - NOT web app users",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 7,
       "benefit": 7,
       "quadrant": "B",
@@ -1081,7 +1406,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 7\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 7\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 169,
@@ -1094,6 +1419,7 @@
         "Affects R users only - NOT web app users",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 9,
       "benefit": 7,
       "quadrant": "B",
@@ -1103,7 +1429,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 9\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 9\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 168,
@@ -1117,6 +1443,7 @@
         "Community Report",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 7,
       "quadrant": "B",
@@ -1126,7 +1453,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 167,
@@ -1140,6 +1467,7 @@
         "Affects R users only - NOT web app users",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 5,
       "benefit": 7,
       "quadrant": "B",
@@ -1149,7 +1477,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 5\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 5\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 166,
@@ -1162,6 +1490,7 @@
         "API",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 9,
       "quadrant": "A",
@@ -1171,7 +1500,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 9\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 9\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 163,
@@ -1181,8 +1510,9 @@
         "enhancement",
         "PRIORITY MEDIUM",
         "Affects Web App",
-        "rank:A-high-value-low-cost"
+        "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 1,
       "benefit": 7,
       "quadrant": "A",
@@ -1192,7 +1522,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 162,
@@ -1202,8 +1532,9 @@
         "enhancement",
         "PRIORITY MEDIUM",
         "Affects Web App",
-        "rank:A-high-value-low-cost"
+        "rank:C-low-value-low-cost"
       ],
+      "milestone": "v4",
       "cost": 1,
       "benefit": 7,
       "quadrant": "A",
@@ -1213,7 +1544,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 161,
@@ -1225,6 +1556,7 @@
         "Affects Web App",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
       "benefit": 7,
       "quadrant": "A",
@@ -1234,7 +1566,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 159,
@@ -1248,6 +1580,7 @@
         "Community Report",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 4,
       "quadrant": "C",
@@ -1257,29 +1590,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 156,
-      "title": "in app - add view of   ejam2areafeatures(out)  (info on % of pop with certain things nearby)",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/156",
-      "existing_labels": [
-        "enhancement",
-        "test",
-        "PRIORITY HIGH-ish but not a bug",
-        "Affects Web App",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 0,
-      "benefit": 17,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 17\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 153,
@@ -1292,6 +1603,7 @@
         "Affects Web App",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 15,
       "quadrant": "B",
@@ -1301,7 +1613,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 15\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 15\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 152,
@@ -1309,76 +1621,14 @@
       "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/152",
       "existing_labels": [
         "enhancement",
+        "PRIORITY MEDIUM",
         "test",
-        "PRIORITY HIGH-ish but not a bug",
         "Affects Web App",
         "Community Report",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
-      "benefit": 15,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 15\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 144,
-      "title": "use or remove or explain the sitenumber parameter in ejam2map() for fips case",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/144",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY MEDIUM",
-        "Affects Web App",
-        "API",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 0,
-      "benefit": 13,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 13\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 137,
-      "title": "fix bug in popshare_at_top_x_pct() - results sometimes not quite right. seems to interpolate badly.",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/137",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY MEDIUM",
-        "Affects Web App",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 1,
-      "benefit": 11,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 11\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 136,
-      "title": "in web app, fix console  error msg when uploading a shapefile",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/136",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY LOW",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 1,
       "benefit": 7,
       "quadrant": "A",
       "rank_label": "rank:A-high-value-low-cost",
@@ -1387,7 +1637,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 135,
@@ -1395,12 +1645,13 @@
       "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135",
       "existing_labels": [
         "BUG",
-        "PRIORITY MEDIUM",
+        "PRIORITY LOW",
         "Affects R users only - NOT web app users",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
-      "benefit": 11,
+      "benefit": 8,
       "quadrant": "B",
       "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
@@ -1408,28 +1659,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 11\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 127,
-      "title": "web app details tab with table of all sites is too sluggish as it appears after clicking to view that tab",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/127",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY MEDIUM",
-        "Affects Web App",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 0,
-      "benefit": 13,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 13\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 8\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 126,
@@ -1442,6 +1672,7 @@
         "API",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 11,
       "quadrant": "B",
@@ -1451,7 +1682,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 11\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 11\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 119,
@@ -1463,6 +1694,7 @@
         "Affects R users only - NOT web app users",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 8,
       "quadrant": "A",
@@ -1472,51 +1704,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 109,
-      "title": "Update & correct the article \"Defaults and Custom Settings for the Web App\"",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/109",
-      "existing_labels": [
-        "BUG",
-        "documentation",
-        "PRIORITY LOW",
-        "Affects R users only - NOT web app users",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 1,
-      "benefit": 10,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 10\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 103,
-      "title": "results_summarized$rows percentiles info needs debugging, or stop using it",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/103",
-      "existing_labels": [
-        "BUG",
-        "PRIORITY MEDIUM",
-        "from archive",
-        "still relevant?",
-        "rank:B-high-value-high-cost"
-      ],
-      "cost": 4,
-      "benefit": 8,
-      "quadrant": "B",
-      "rank_label": "rank:B-high-value-high-cost",
-      "rank_labels_to_remove": [
-        "rank:A-high-value-low-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 8\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 102,
@@ -1530,6 +1718,7 @@
         "Affects R users only - NOT web app users",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 0,
       "benefit": 5,
       "quadrant": "C",
@@ -1539,7 +1728,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 0\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 0\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 96,
@@ -1553,6 +1742,7 @@
         "Affects Web App",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 5,
       "quadrant": "C",
@@ -1562,7 +1752,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 95,
@@ -1578,6 +1768,7 @@
         "Affects R users only - NOT web app users",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 4,
       "quadrant": "D",
@@ -1587,7 +1778,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 93,
@@ -1601,6 +1792,7 @@
         "Community Report",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 2,
       "quadrant": "C",
@@ -1610,7 +1802,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 92,
@@ -1624,6 +1816,7 @@
         "Affects Web App",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 5,
       "quadrant": "C",
@@ -1633,7 +1826,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 91,
@@ -1647,6 +1840,7 @@
         "Affects Web App",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 8,
       "quadrant": "A",
@@ -1656,7 +1850,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 89,
@@ -1670,6 +1864,7 @@
         "Affects Web App",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 4,
       "quadrant": "D",
@@ -1679,7 +1874,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 87,
@@ -1694,6 +1889,7 @@
         "Affects Web App",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 6,
       "benefit": 10,
       "quadrant": "B",
@@ -1703,31 +1899,31 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 10\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 10\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 86,
       "title": "Fix (or remove?) references to ejampackages data object",
       "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/86",
       "existing_labels": [
-        "BUG",
         "from archive",
         "PRIORITY LOW",
         "still relevant?",
         "refactor",
         "Affects R users only - NOT web app users",
-        "rank:B-high-value-high-cost"
-      ],
-      "cost": 6,
-      "benefit": 8,
-      "quadrant": "B",
-      "rank_label": "rank:B-high-value-high-cost",
-      "rank_labels_to_remove": [
-        "rank:A-high-value-low-cost",
-        "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 8\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "milestone": "NA",
+      "cost": 6,
+      "benefit": 4,
+      "quadrant": "D",
+      "rank_label": "rank:D-defer",
+      "rank_labels_to_remove": [
+        "rank:A-high-value-low-cost",
+        "rank:B-high-value-high-cost",
+        "rank:C-low-value-low-cost"
+      ],
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 4\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 85,
@@ -1742,18 +1938,19 @@
         "maps-related",
         "Affects Web App",
         "future plan list",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 12,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 12\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 12\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 84,
@@ -1766,18 +1963,19 @@
         "PRIORITY LOW",
         "shapefile-related",
         "Affects Web App",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 83,
@@ -1790,18 +1988,19 @@
         "PRIORITY LOW",
         "shapefile-related",
         "Affects Web App",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 82,
@@ -1815,6 +2014,7 @@
         "Affects Web App",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 7,
       "quadrant": "B",
@@ -1824,11 +2024,11 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 81,
-      "title": "confusion in UI: if user tries a second analysis by uploading new stuff, they sometimes click on See Results instead of reclicking \"Start Analysis\" ",
+      "title": "confusion in UI: if user tries a second analysis by uploading new stuff, they sometimes click on See Results instead of reclicking \"Start Analysis\"",
       "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/81",
       "existing_labels": [
         "enhancement",
@@ -1838,6 +2038,7 @@
         "Affects Web App",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 7,
       "quadrant": "B",
@@ -1847,7 +2048,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 80,
@@ -1860,18 +2061,19 @@
         "PRIORITY LOW",
         "refactor",
         "Affects R users only - NOT web app users",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 6,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 77,
@@ -1884,18 +2086,19 @@
         "from archive",
         "refactor",
         "server",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 6,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 75,
@@ -1909,18 +2112,19 @@
         "shapefile-related",
         "refactor",
         "distance-related",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 6,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 74,
@@ -1931,18 +2135,19 @@
         "PRIORITY MEDIUM",
         "retain-0325",
         "from archive",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 73,
@@ -1956,6 +2161,7 @@
         "Affects Web App",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 10,
       "quadrant": "A",
@@ -1965,7 +2171,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 10\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 10\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 72,
@@ -1978,18 +2184,19 @@
         "from archive",
         "shapefile-related",
         "maps-related",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 70,
@@ -2000,32 +2207,11 @@
         "PRIORITY MEDIUM",
         "retain-0325",
         "from archive",
-        "rank:A-high-value-low-cost"
-      ],
-      "cost": 2,
-      "benefit": 7,
-      "quadrant": "A",
-      "rank_label": "rank:A-high-value-low-cost",
-      "rank_labels_to_remove": [
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost",
-        "rank:D-defer"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 7\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 69,
-      "title": "enable other units like kilometers for entry of radius",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/69",
-      "existing_labels": [
-        "enhancement",
-        "PRIORITY MEDIUM",
-        "retain-0325",
-        "from archive",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
-      "benefit": 5,
+      "benefit": 7,
       "quadrant": "C",
       "rank_label": "rank:C-low-value-low-cost",
       "rank_labels_to_remove": [
@@ -2033,7 +2219,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 7\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 68,
@@ -2046,6 +2232,7 @@
         "PRIORITY HIGH-ish but not a bug",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 13,
       "quadrant": "B",
@@ -2055,7 +2242,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 13\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 13\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 66,
@@ -2068,8 +2255,9 @@
         "PRIORITY LOW",
         "calculate/validate to EJScreen",
         "Community Report",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "v4",
       "cost": 10,
       "benefit": 6,
       "quadrant": "B",
@@ -2079,7 +2267,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 10\nBenefit score: 6\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 10\nBenefit score: 6\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 63,
@@ -2093,6 +2281,7 @@
         "refactor",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 6,
       "benefit": 1,
       "quadrant": "D",
@@ -2102,7 +2291,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 62,
@@ -2116,6 +2305,7 @@
         "plots-graphs-related",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 1,
       "quadrant": "D",
@@ -2125,7 +2315,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 61,
@@ -2138,6 +2328,7 @@
         "still relevant?",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 1,
       "quadrant": "D",
@@ -2147,7 +2338,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 60,
@@ -2164,6 +2355,7 @@
         "Community Report",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 0,
       "quadrant": "C",
@@ -2173,7 +2365,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 59,
@@ -2186,6 +2378,7 @@
         "PRIORITY LOW",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 2,
       "quadrant": "C",
@@ -2195,7 +2388,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 58,
@@ -2208,6 +2401,7 @@
         "from archive",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 2,
       "benefit": 5,
       "quadrant": "C",
@@ -2217,7 +2411,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 57,
@@ -2230,18 +2424,19 @@
         "from archive",
         "tasklist",
         "speed / performance (see #226)",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 56,
@@ -2258,6 +2453,7 @@
         "distance-related",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 6,
       "benefit": 9,
       "quadrant": "B",
@@ -2267,7 +2463,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 9\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 9\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 55,
@@ -2280,6 +2476,7 @@
         "still relevant?",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 1,
       "quadrant": "D",
@@ -2289,7 +2486,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 54,
@@ -2302,8 +2499,9 @@
         "PRIORITY LOW",
         "calculate/validate to EJScreen",
         "distance-related",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 9,
       "benefit": 6,
       "quadrant": "B",
@@ -2313,7 +2511,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 9\nBenefit score: 6\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 9\nBenefit score: 6\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 53,
@@ -2328,6 +2526,7 @@
         "distance-related",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 6,
       "benefit": 2,
       "quadrant": "D",
@@ -2337,7 +2536,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 2\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 2\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 52,
@@ -2352,6 +2551,7 @@
         "future plan list",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 17,
       "quadrant": "B",
@@ -2361,32 +2561,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 17\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
-    },
-    {
-      "number": 51,
-      "title": "Confirm/fix what formula to use for state percentiles in overall summary",
-      "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/51",
-      "existing_labels": [
-        "BUG",
-        "from archive",
-        "PRIORITY LOW",
-        "still relevant?",
-        "refactor",
-        "calculate/validate to EJScreen",
-        "test",
-        "rank:D-defer"
-      ],
-      "cost": 12,
-      "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
-      "rank_labels_to_remove": [
-        "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
-      ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 12\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 17\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 50,
@@ -2401,18 +2576,19 @@
         "server",
         "speed / performance (see #226)",
         "plots-graphs-related",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 46,
@@ -2427,6 +2603,7 @@
         "future plan list",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 13,
       "quadrant": "B",
@@ -2436,7 +2613,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 13\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 13\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 44,
@@ -2452,6 +2629,7 @@
         "API",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 18,
       "benefit": 17,
       "quadrant": "B",
@@ -2461,7 +2639,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 18\nBenefit score: 17\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 18\nBenefit score: 17\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 43,
@@ -2475,6 +2653,7 @@
         "maps-related",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 2,
       "quadrant": "C",
@@ -2484,7 +2663,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 42,
@@ -2498,6 +2677,7 @@
         "Community Report",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 1,
       "benefit": 0,
       "quadrant": "C",
@@ -2507,7 +2687,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 1\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 1\nBenefit score: 0\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 41,
@@ -2521,6 +2701,7 @@
         "Community Report",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 2,
       "quadrant": "C",
@@ -2530,7 +2711,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 40,
@@ -2543,6 +2724,7 @@
         "from archive",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 5,
       "quadrant": "C",
@@ -2552,7 +2734,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 5\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 39,
@@ -2566,6 +2748,7 @@
         "test",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 2,
       "quadrant": "C",
@@ -2575,7 +2758,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 2\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 37,
@@ -2590,6 +2773,7 @@
         "server",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 7,
       "benefit": 7,
       "quadrant": "B",
@@ -2599,7 +2783,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 7\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 7\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 35,
@@ -2614,6 +2798,7 @@
         "URL-related",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 2,
       "quadrant": "D",
@@ -2623,7 +2808,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 2\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 2\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 34,
@@ -2638,6 +2823,7 @@
         "server",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 6,
       "benefit": 7,
       "quadrant": "B",
@@ -2647,7 +2833,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 7\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 33,
@@ -2660,18 +2846,19 @@
         "from archive",
         "refactor",
         "server",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 5,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 5\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 5\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 32,
@@ -2685,18 +2872,19 @@
         "refactor",
         "tasklist",
         "server",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 11,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 11\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 11\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 31,
@@ -2710,6 +2898,7 @@
         "distance-related",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 9,
       "quadrant": "B",
@@ -2719,7 +2908,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 9\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 9\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 29,
@@ -2733,6 +2922,7 @@
         "refactor",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 8,
       "benefit": 3,
       "quadrant": "D",
@@ -2742,7 +2932,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 8\nBenefit score: 3\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 8\nBenefit score: 3\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 27,
@@ -2759,6 +2949,7 @@
         "Community Report",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 7,
       "benefit": 3,
       "quadrant": "D",
@@ -2768,7 +2959,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 7\nBenefit score: 3\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 7\nBenefit score: 3\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 26,
@@ -2780,18 +2971,19 @@
         "retain-0325",
         "from archive",
         "LongReport_output",
-        "rank:D-defer"
+        "rank:B-high-value-high-cost"
       ],
+      "milestone": "NA",
       "cost": 4,
       "benefit": 5,
-      "quadrant": "D",
-      "rank_label": "rank:D-defer",
+      "quadrant": "B",
+      "rank_label": "rank:B-high-value-high-cost",
       "rank_labels_to_remove": [
         "rank:A-high-value-low-cost",
-        "rank:B-high-value-high-cost",
-        "rank:C-low-value-low-cost"
+        "rank:C-low-value-low-cost",
+        "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 4\nBenefit score: 5\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 4\nBenefit score: 5\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 25,
@@ -2805,6 +2997,7 @@
         "still relevant?",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 12,
       "benefit": 1,
       "quadrant": "D",
@@ -2814,7 +3007,7 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 12\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 12\nBenefit score: 1\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 24,
@@ -2828,6 +3021,7 @@
         "PRIORITY LOW",
         "rank:C-low-value-low-cost"
       ],
+      "milestone": "NA",
       "cost": 3,
       "benefit": 4,
       "quadrant": "C",
@@ -2837,7 +3031,7 @@
         "rank:B-high-value-high-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 3\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 3\nBenefit score: 4\nQuadrant: C\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 19,
@@ -2851,6 +3045,7 @@
         "datasets-related",
         "rank:B-high-value-high-cost"
       ],
+      "milestone": "v4",
       "cost": 6,
       "benefit": 8,
       "quadrant": "B",
@@ -2860,7 +3055,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 6\nBenefit score: 8\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 6\nBenefit score: 8\nQuadrant: B\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 18,
@@ -2871,6 +3066,7 @@
         "datasets-related",
         "rank:D-defer"
       ],
+      "milestone": "NA",
       "cost": 7,
       "benefit": 0,
       "quadrant": "D",
@@ -2880,22 +3076,24 @@
         "rank:B-high-value-high-cost",
         "rank:C-low-value-low-cost"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 7\nBenefit score: 0\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 7\nBenefit score: 0\nQuadrant: D\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     },
     {
       "number": 16,
-      "title": "need new/updated \"User Guide\" (\"Help\" in header at right) since UI has changed a lot, etc.",
+      "title": "need new/updated \"EJAM User Guide\" (\"Help\" in header at right) since UI has changed a lot, etc.",
       "url": "https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16",
       "existing_labels": [
         "BUG",
         "documentation",
         "help wanted",
         "good first issue",
-        "PRIORITY MEDIUM",
+        "PRIORITY HIGH",
+        "Affects Web App",
         "rank:A-high-value-low-cost"
       ],
+      "milestone": "v4",
       "cost": 2,
-      "benefit": 8,
+      "benefit": 17,
       "quadrant": "A",
       "rank_label": "rank:A-high-value-low-cost",
       "rank_labels_to_remove": [
@@ -2903,7 +3101,7 @@
         "rank:C-low-value-low-cost",
         "rank:D-defer"
       ],
-      "rank_comment": "Last ranked: 2026-07-03\nCost score: 2\nBenefit score: 8\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
+      "rank_comment": "Last ranked: 2026-09-28\nCost score: 2\nBenefit score: 17\nQuadrant: A\nRun report: inst/issues/ejam_issues_scored_by_risk_and_value.MD"
     }
   ]
 }

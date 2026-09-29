@@ -207,6 +207,22 @@ name as potentially modified via `global_defaults_package.R` or parameters to
 -   Consider updating minimum package version requirements specified in the
     DESCRIPTION file Imports and Suggests.
 
+-   If FRS data are changing, follow [Refreshing FRS for a data release](dev-update-datasets.html#refreshing-frs-for-a-data-release)
+    before cutting the package release. Rebuild the five FRS Arrow tables,
+    `mact_table`, FRS-derived counts and program tables, and FRS-based sample
+    inputs. Compare IDs and coordinates with the previous snapshot, update
+    examples or tests that cite obsolete IDs, and verify that all nine FRS
+    metadata fields survive an Arrow write/read cycle. The `ejamdata` release
+    must contain all 11 required Arrow assets, including the six compatible
+    non-FRS files whose data values can be carried forward for an FRS-only
+    change. Restamp those six files with
+    `data-raw/datacreate_ejamdata_arrow_restamp.R` so their package/release
+    attributes match the new tag while their source dates and data remain
+    intact. Confirm the published release assets before changing
+    `data/ejamdata_version.txt` to
+    the new `ejamdata_required_tag`. An asset-filled draft alone is not a
+    public download source for EJAM installations.
+
 -   If this is an annual EJScreen-style data release, first complete the staged
     data update workflow in [Updating EJScreen Datasets Annually (via the
     Pipeline)](dev-update-ejscreen-datasets-yearly.html). Confirm that accepted
@@ -239,7 +255,9 @@ name as potentially modified via `global_defaults_package.R` or parameters to
 
 -   Run release checks, including `devtools::check(vignettes = FALSE)` if
     traditional vignette builds are not needed, targeted pipeline validation,
-    and the relevant `test_ejam()` groups.
+    and the relevant `test_ejam()` groups. When FRS examples or datasets have
+    changed, also render the FRS-dependent vignettes and run their examples;
+    a check that skips vignettes does not cover those references.
 
 -   Merge the release/development branch into the target branch according to the
     current repository workflow.

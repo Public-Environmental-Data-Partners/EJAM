@@ -59,6 +59,7 @@ Dev
 Dischargers
 Dockerfile
 ECDF
+ECHO's
 ECR
 ECS
 EGRID
@@ -201,6 +202,8 @@ USGS
 UST
 USTs
 USVI
+Unbuffered
+Unsetting
 VPC
 WFM
 WKID
@@ -215,6 +218,7 @@ YHowT
 YTYPE
 YYYY
 ZCTAs
+ZIPs
 ZZZZZZ
 Zipcodes
 aboutpage
@@ -226,6 +230,7 @@ addedbuffermiles
 addin
 aoimap
 api
+apidev
 apidocs
 apinames
 apirepo
@@ -246,6 +251,7 @@ attr
 autoload
 avoidorphans
 aws
+backoff
 balancer
 basemap
 bg
@@ -462,6 +468,8 @@ grepv
 gridded
 handoff
 hardcoded
+hardcodes
+hardcoding
 headernames
 hhlds
 hisp
@@ -512,6 +520,7 @@ locationstr
 lon
 longname
 longnames
+lowercases
 macos
 mact
 mactsubpart
@@ -636,6 +645,7 @@ pvalue
 px
 quaddata
 quadtree
+quantises
 queryd
 querye
 radiobox
@@ -654,6 +664,8 @@ reponame
 reportadd
 reportsort
 rerunnable
+restamp
+restamped
 resumable
 retitle
 returnmap
@@ -672,6 +684,7 @@ roxygen
 rsconnect
 rstudio
 runall
+runbook
 runsome
 saveWorkbook
 scalable
@@ -723,6 +736,7 @@ stateraw
 statestats
 stfips
 storers
+stylesheet
 subcodes
 subcomponents
 subfolder
@@ -775,10 +789,12 @@ typeofsite
 ubuntu
 ui
 unadj
+unbuffered
 unclassifiable
 uniq
 uniques
 unitless
+unmapped
 unrounded
 unshared
 untrusted
@@ -820,6 +836,7 @@ weblink
 weblinks
 webshot
 webshot's
+whatn
 wherestr
 wheretext
 whichlist

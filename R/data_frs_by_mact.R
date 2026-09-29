@@ -17,15 +17,12 @@
 #'
 #'  See also [frs_update_datasets()]
 #'
-#'  There are about 115k rows here but only about 86k unique program IDs in this table,
-#'  which is from the [ECHO data download of ICIS Air and AFS](https://echo.epa.gov/files/echodownloads/).
+#'  This table is built from the [ECHO data download of ICIS Air and AFS](https://echo.epa.gov/files/echodownloads/).
 #'
 #'  The programid column here should be found in the pgm_sys_id column in frs_by_programid,
-#'  but as of mid 2025 only 55k of them were found there.
+#'  but not every ECHO program ID has a matching FRS row in a given snapshot.
 #'  ```
 #'   table(frs_by_mact$programid %in% frs_by_programid$pgm_sys_id)
-#' FALSE  TRUE
-#' 59944  55429
 #'   ```
 #'   Also note we have found some typos and nonstandard abbreviations
 #'   in subpart titles in downloaded data from ECHO/FRS, such as

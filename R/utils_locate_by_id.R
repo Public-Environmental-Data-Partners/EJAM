@@ -37,7 +37,7 @@
 #' @return vector of URLs as strings, same length as id parameter
 #' @examples
 #' EJAM:::url_by_id(testinput_regid)
-#' \donttest{
+#' \dontrun{
 #' browseURL(EJAM:::url_by_id(testinput_regid)[1])
 #'
 #' urlx = EJAM:::url_by_id(testinput_regid[1])

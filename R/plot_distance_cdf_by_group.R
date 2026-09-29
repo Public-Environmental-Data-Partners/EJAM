@@ -24,7 +24,7 @@
 #'   cumulative count of demog groups at that blockgroup's distance.
 #'   If returnwhat is "plotfilename" then it returns the full path including filename of a .png in a tempdir
 #'   If returnwhat is "plot" then it returns the plot object as needed for [ejam2excel()] or related functions
-#' @param ... other parameters passed through to [points()]
+#' @param ... other parameters passed through to [graphics::points()]
 #' @seealso [distance_by_group()] [ejamit()] for examples
 #' @aliases plot_distance_cdf_by_group
 #' @return see returnwhat parameter
@@ -179,7 +179,7 @@ distance_by_group_plot <- function(
 
   # if (returnwhat == "plot") { # if plot is done using ggplot2, it can be returned and then saved etc via   ggsave()
 
-  plot(cumdata$dist, 100 * cumdata[ , overall],
+  graphics::plot(cumdata$dist, 100 * cumdata[ , overall],
        col = coloroverall,
        pch = NA_integer_, type = 'l', lty = "dotted",
        main = "Share of each Population Group Residing at Various Distances from Sites",
@@ -192,7 +192,7 @@ if (length(demogvarname) > 1) {
     # distance_cdf_by_group_plot  is not written in a way that makes it easy to vectorize, so this could be rewritten
 
     data.table::setDF(cumdata)
-    points(cumdata$dist, 100 *  cumdata[ , demogvarname[i]],
+    graphics::points(cumdata$dist, 100 *  cumdata[ , demogvarname[i]],
            col = colorlist[i - 1],
            pch = c(0:6,15:25, 7:14)[i], # various base R shapes for the points
            ...)
@@ -205,7 +205,7 @@ if (length(demogvarname) > 1) {
     fname = "distance_cdf.png"
     mytempdir = tempdir()
     png(file.path(mytempdir, fname), width = 2000, height = 1000)
-    plot(cumdata$dist, 100 * cumdata[ , overall],
+    graphics::plot(cumdata$dist, 100 * cumdata[ , overall],
          col = coloroverall,
          pch = NA_integer_, type = 'l', lty = "dotted",
          main = "Share of each Population Group Residing at Various Distances from Sites",
@@ -218,7 +218,7 @@ if (length(demogvarname) > 1) {
       # distance_cdf_by_group_plot  is not written in a way that makes it easy to vectorize, so this could be rewritten
 
       data.table::setDF(cumdata)
-      points(cumdata$dist, 100 *  cumdata[ , demogvarname[i]],
+      graphics::points(cumdata$dist, 100 *  cumdata[ , demogvarname[i]],
              col = colorlist[i - 1],
              pch = c(0:6,15:25, 7:14)[i], # various base R shapes for the points
              ...)
@@ -305,14 +305,14 @@ distance_cdf_by_group_plot <- function(
     cumall_nond = collapse::fcumsum(pop * (1 -   .SD), fill = TRUE) / sum(pop * (1 -   .SD), na.rm = TRUE)),
     .SDcols = demogvarname]
   # actual names will be dist, cumall_d.pctlowinc, cumall_nond.pctlowinc  for example, but using partial colname below still works:
-  plot(cumdata$dist, 100 * cumdata$cumall_d,
+  graphics::plot(cumdata$dist, 100 * cumdata$cumall_d,
        col = color1,
        main = "Share of each Population Group Residing at Various Distances from Facilities",
        xlab = "Living within X miles of facilities",
        ylab = paste0("% of all residents within ", radius_miles," miles"),
        ylim = c(0,100)
   )
-  points(cumdata$dist, 100 * cumdata$cumall_nond, col = color2)
+  graphics::points(cumdata$dist, 100 * cumdata$cumall_nond, col = color2)
   legend("topleft", legend = c(demoglabel, paste0("All other residents")), fill = c(color1, color2))
   cat('This takes a very long time to plot for 1,000 sites, e.g.... please wait... \n\n')
   print(  distance_by_group(x, demogvarname = demogvarname, demoglabel = demoglabel) )

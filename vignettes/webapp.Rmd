@@ -31,7 +31,7 @@ knitr::opts_chunk$set(eval = FALSE)
 
 EJAM's toolkit can be used to host a web application. The web app provides public access to batches of reports, with rapid multisite analysis, by leveraging the EJAM toolkit. 
 
-See ejanalysis.org/ejam on where to find a public, non-EPA version of the EJAM web app.
+See <https://ejanalysis.org/ejam> for where to find a public, non-EPA version of the EJAM web app.
 
 The version designed for use by the general public was specifically configured for non-expert users, so it does not include some less-frequently-used, complex features. More features are available in the web app version that was invoked using "isPublic=FALSE." Those needing even more tools -- the full set of complex analytic features -- can find them in the open source R package described below.
 
@@ -49,9 +49,9 @@ without re-entering them.
 You can also build such a deep link yourself. A few examples (the query
 vocabulary is the same for points, FIPS codes, and a radius):
 
-- `https://ejamapp.ejanalysis.com/?lat=33,34&lon=-112,-114&radius=3` -- two
+- <https://ejamapp.ejanalysis.com/?lat=33,34&lon=-112,-114&radius=3> -- two
   points, each a site, with a 3-mile analysis radius
-- `https://ejamapp.ejanalysis.com/?fips=10001,10003` -- two counties, each a
+- <https://ejamapp.ejanalysis.com/?fips=10001,10003> -- two counties, each a
   site
 
 Points and drawn polygons are file-upload inputs that cannot travel in a saved
@@ -75,7 +75,7 @@ The EJAM software and data are available as open source resources, so that anyon
 
 Analysts or developers using R/RStudio have the option of running a local copy of the EJAM web app on their own computer. This may be even faster than relying on a hosted web app, does not time out after inactivity, and could be customized by a developer. You can also launch it with customized options or use bookmarked settings (and/or use EJAM functions and data directly without the web app, for more complex work).
 
-You can install the EJAM R package and datasets as explained in [Installing the EJAM R package](installing.html). There is also a [Basics - Quick Start Guide](basics.html) and extensive [documentation of EJAM functions/tools/data](../reference/index.html).
+You can install the EJAM R package and datasets as explained in [Installing the EJAM R package](installing.html). There is also a [Basics - Quick Start Guide](basics.html) and extensive [documentation of EJAM functions/tools/data](`r paste0(EJAM::url_package("docs"), "/reference/index.html")`).
 
 Once EJAM is installed, you can launch the local web app from RStudio as follows:
 

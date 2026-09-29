@@ -82,7 +82,7 @@ The \code{site_method} parameter provides more detailed info about how sites wer
 beyond what \code{sitetype} provides (e.g., from \code{ejamit()$sitetype} or \code{ejamitout$sitetype}):
 \itemize{
 \item sitetype can be "latlon", "fips", or "shp"
-\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
+\item site_method can be one of these: "latlon", "SHP", "FIPS", "FIPS_PLACE", "ZIP" (or "ZCTA", a synonym for "ZIP"), "FRS", "NAICS", "SIC", "EPA_PROGRAM", "MACT"
 }
 
 The shiny app server provides \code{site_method} from the reactive called submitted_upload_method()

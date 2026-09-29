@@ -17,11 +17,27 @@
 #'
 #'  Takes some time to download data for every State!
 #'
-#'  First get tract counts, then apportion tract counts into blockgroup counts
-#'  where that is how legacy EJSCREEN handled the indicator. Detailed language
-#'  counts from C16001 are tract-level values repeated on each blockgroup in the
-#'  tract, so language percentages are also tract-level percentages repeated on
-#'  each blockgroup.
+#'  First get tract counts, then apportion every tract count into blockgroup
+#'  counts (the tract count times the blockgroup's share of the tract
+#'  population, `bgwt`), then carry each tract's percentages onto its
+#'  blockgroups.
+#'
+#'  Apportioning applies to the language counts from C16001 (`lan_universe`,
+#'  `lan_spanish`, etc.) exactly as it does to disability and health insurance.
+#'  `map_headernames` marks all of these as `"sum of counts"`, so
+#'  [doaggregate()] and [calc_acs_by_geography()] add them up across
+#'  blockgroups. A tract total repeated on every blockgroup would be counted
+#'  once per blockgroup, about three times over, in every buffer, county, and
+#'  state total (issue EJAM#596). Apportioned counts add back up to the tract
+#'  total, to rounding, which is also how EPA's EJScreen block group layer
+#'  reports language counts.
+#'
+#'  Percentages such as `pctlan_spanish` are calculated at tract level and
+#'  repeated on each blockgroup in the tract. That equals the ratio of the
+#'  apportioned counts wherever `bgwt > 0`, and it keeps the tract rate on
+#'  zero-population blockgroups instead of reporting 0 there, the same
+#'  convention `pctdisability` uses. Apportioned counts are rounded to whole
+#'  persons after the percentages are set.
 #'
 #'  For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region
 #'  county equivalents while 2020 Decennial blockgroup FIPS use the older county
@@ -121,6 +137,15 @@ calc_blockgroupstats_from_tract_data <- function(yr,
   tracts <- calc_ejam(tracts, formulas = formulas,
                       keep.old = "fips", keep.new = 'all')
 
+  # Language percentages (pctlan_*, pct_chinese, pct_korean) are tract-level rates:
+  # calculate them here from the tract counts and keep them, so every blockgroup in a
+  # tract carries the tract's rate even where its apportioned counts round to 0.
+  pct_language_formulas <- formulas[grepl("^pctlan_|^pct_chinese|^pct_korean", trimws(formulas))]
+  pct_language_vars <- intersect(unique(calc_varname_from_formula(pct_language_formulas)), names(tracts))
+  if (length(pct_language_vars) > 0) {
+    data.table::setnames(tracts, old = pct_language_vars, new = paste0("tract_", pct_language_vars))
+  }
+
   if ("pctdisability" %in% names(tracts)) {
     data.table::setnames(tracts, old = "pctdisability", new = "tract_pctdisability_rate")
   }
@@ -168,7 +193,8 @@ calc_blockgroupstats_from_tract_data <- function(yr,
                  'tract_disability', 'tract_disab_universe',
                  intersect("tract_pctdisability_rate", names(tracts)),
                  intersect(c("tract_healthinsurance_universe", "tract_nohealthinsurance"), names(tracts)),
-                 lanvars_found
+                 lanvars_found,
+                 intersect(paste0("tract_", pct_language_vars), names(tracts))
   )
 
   bg_from_tracts <- tracts[bgwts, ..neededvars, on = "tractfips"]
@@ -185,10 +211,13 @@ calc_blockgroupstats_from_tract_data <- function(yr,
     bg_from_tracts[, nohealthinsurance := tract_nohealthinsurance * bgwt]
   }
 
+  # Apportion each tract's language counts to its blockgroups by population share, just
+  # as disability is handled above. These are "sum of counts" indicators, so they must
+  # add up across blockgroups (see the details section and issue EJAM#596).
   tract_lan_cols <- grep("^tract_lan_", names(bg_from_tracts), value = TRUE)
   for (this_lan_col in tract_lan_cols) {
     this_bg_col <- sub("^tract_", "", this_lan_col)
-    bg_from_tracts[, (this_bg_col) := get(this_lan_col)]
+    bg_from_tracts[, (this_bg_col) := get(this_lan_col) * bgwt]
   }
   bg_from_tracts[, c(
     "tract_disability",
@@ -229,18 +258,24 @@ calc_blockgroupstats_from_tract_data <- function(yr,
 
 
 
-  ### *** creates duplicate names...
-
-
-  pct_language_formulas <- formulas[grepl("^pctlan_|^pct_chinese|^pct_korean", trimws(formulas))]
-  bg_from_tracts <- calc_ejam(bg_from_tracts,
-                              formulas = pct_language_formulas,
-                              keep.old = c("bgfips",
-                                           "disability",  "disab_universe",   "pctdisability",
-                                           intersect(c("healthinsurance_universe", "nohealthinsurance", "pctnohealthinsurance"), names(bg_from_tracts)),
-                                           grep("^lan_", names(bg_from_tracts) , value = TRUE)
-                              )
-  )
+  # Language percentages were calculated at tract level above and carried onto each
+  # blockgroup. Calculate here only any that could not be, from the apportioned counts.
+  pct_language_missing <- pct_language_formulas[
+    !calc_varname_from_formula(pct_language_formulas) %in% names(bg_from_tracts)
+  ]
+  if (length(pct_language_missing) > 0) {
+    bg_from_tracts <- calc_ejam(bg_from_tracts,
+                                formulas = pct_language_missing,
+                                keep.old = "all")
+  }
+  keepcols <- unique(c(
+    "bgfips",
+    "disability", "disab_universe", "pctdisability",
+    intersect(c("healthinsurance_universe", "nohealthinsurance", "pctnohealthinsurance"), names(bg_from_tracts)),
+    grep("^lan_", names(bg_from_tracts), value = TRUE),
+    intersect(unique(calc_varname_from_formula(pct_language_formulas)), names(bg_from_tracts))
+  ))
+  bg_from_tracts <- bg_from_tracts[, ..keepcols]
 
 
   ############################################################### #
@@ -277,7 +312,11 @@ calc_blockgroupstats_from_tract_data <- function(yr,
     bg_from_tracts[, nohealthinsurance := round(nohealthinsurance, 0)]
   }
 
-  ## round the language or other counts here too...   ***
+  # Round the apportioned language counts to whole persons too (percentages were set above).
+  lan_count_cols <- grep("^lan_", names(bg_from_tracts), value = TRUE)
+  for (this_lan_col in lan_count_cols) {
+    bg_from_tracts[, (this_lan_col) := round(get(this_lan_col), 0)]
+  }
 
 
 

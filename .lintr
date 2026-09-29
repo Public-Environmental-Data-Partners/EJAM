@@ -1,0 +1,45 @@
+# Configuration for lintr, used by the "lintr checks code style and syntax errors"
+# GitHub Actions workflow (.github/workflows/lintr.yaml) and by lintr::lint_dir()
+# or lintr::lint_package() when run locally.
+#
+# We deliberately do NOT use lintr's default linter set. The defaults are mostly
+# style rules (indentation, spacing, line length, quote style, ...) that flag
+# tens of thousands of lines here without pointing at anything broken, which
+# buries the handful of findings that do matter and is far more than a GitHub
+# code scanning upload will accept.
+#
+# Instead we run the linters that catch likely mistakes rather than formatting:
+#   - everything tagged "common_mistakes" (all_equal_linter, equals_na_linter,
+#     missing_argument_linter, sprintf_linter, vector_logic_linter, ...)
+#   - package_hooks_linter - problems in .onLoad / .onAttach / .onDetach
+# Parse (syntax) errors are always reported, whatever the linter set.
+#
+# object_usage_linter is intentionally left out: it has to load the package to
+# work, which is slow and noisy in this repo.
+#
+# namespace_linter is left out too. On this code it produced 658 findings, every
+# one of them "Don't use `::` to access <fun>, which is already imported from
+# data.table" - and zero real ones (no calls to functions a package does not
+# export). Writing data.table::setDT() explicitly is a deliberate convention
+# here, so that linter is all noise and would bury the other ~90 findings.
+#
+# missing_package_linter is switched off out of the common_mistakes set for a
+# similar reason: it answers "is this package installed *here*", not "is this
+# package name a typo". The lintr workflow installs EJAM's dependencies but not
+# EJAM itself, so every library(EJAM) in data-raw/, vignettes/ and tests/ came
+# back as "Package 'EJAM' is not installed" - 29 findings, plus 2 more for
+# census2020download, which is only on GitHub. That was 31 of 110 alerts in the
+# first successful run, all of them about the runner rather than the code.
+#
+# NOTE: indentation_linter must stay out of this set for a second reason - it
+# reports column 0 for a line that should be indented but is not, and column 0
+# is invalid in SARIF (startColumn must be >= 1), which made every upload of the
+# results to GitHub code scanning fail. The workflow also clamps the value
+# defensively, but not enabling the linter is the real fix.
+
+linters: c(
+    lintr::linters_with_tags("common_mistakes", missing_package_linter = NULL),
+    list(package_hooks_linter = lintr::package_hooks_linter())
+  )
+exclusions: list("docs", "man", "planning", "data-raw/pipeline_outputs")
+encoding: "UTF-8"

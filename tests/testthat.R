@@ -74,6 +74,25 @@ test_check("EJAM")
 #   or run all tests in the package with testthat::test_package("EJAM").
 #   testthat::test_check("EJAM") would run all tests plus do other checks.
 #
+# !! But do not run plain  library(EJAM); testthat::test_dir("tests/testthat")  !!
+#
+#   Without a package, test_dir() builds a test environment whose parent is the
+#   global environment, so the tests can see only what library() EXPORTED. Two
+#   whole categories of call then fail for reasons that have nothing to do with
+#   the code being tested:
+#     - unexported EJAM functions:  "could not find function \"offline\""
+#     - dplyr verbs EJAM imports:   "could not find function \"arrange\""
+#   That is a spurious error, not a broken test: the same tests pass under
+#   R CMD check, which parents the test environment to the package NAMESPACE.
+#   Chasing it by rewriting tests to say EJAM:::offline() and dplyr::arrange()
+#   would be fixing the source to suit the way it was run.
+#
+#   Any of these run the tests the way R CMD check does, with no code changes:
+#     testthat::test_dir("tests/testthat", package = "EJAM")  # parents to the namespace
+#     testthat::test_local()                                  # pkgload::load_all()
+#     devtools::test()                                        # pkgload::load_all()
+#     EJAM:::test_ejam()                                      # load_all(); see its useloadall arg
+#
 # But note that these testthat package functions do not automatically
 # build and install the package before running the tests,
 # so they will only test the last-installed version of the package, not the latest source version.

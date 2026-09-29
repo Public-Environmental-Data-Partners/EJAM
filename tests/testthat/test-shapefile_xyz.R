@@ -494,3 +494,114 @@ test_that("shapefile_from_any() reads bare Feature/Polygon/MultiPolygon GeoJSON,
     expect_s3_class(shapefile_from_any(gj, cleanit = FALSE, silentinteractive = TRUE), "sf")
   }
 })
+
+test_that("shapefile_from_any() runs shapefix() on a supplied sf object too", {
+  # A supplied sf object took a fast-return path that skipped shapefix(), so a
+  # caller could not tell points from polygons: ejamapp(shapefile = <sf points>)
+  # arrived with no findings attached and app_server.R re-enabled Start. Both
+  # ejamit() and app_server.R assume this function always runs shapefix(). see issue #550
+  pts <- sf::st_as_sf(data.frame(lat = c(40.1, 40.2), lon = c(-74.1, -74.2)),
+                      coords = c("lon", "lat"), crs = 4269)
+  ring <- list(rbind(c(-74.1, 40.1), c(-74.0, 40.1), c(-74.0, 40.2), c(-74.1, 40.1)))
+  poly <- sf::st_as_sf(data.frame(id = 1L, geometry = sf::st_sfc(sf::st_polygon(ring), crs = 4269)))
+
+  pts_out <- shapefile_from_any(pts, cleanit = FALSE, silentinteractive = TRUE)
+  expect_true(grepl("shapefile of points", attr(pts_out, "validate_errmsg")))
+  expect_true(attr(pts_out, "disable_buttons_SHP"))
+
+  # polygons still pass, and get the columns ejamit() expects from shapefix()
+  poly_out <- shapefile_from_any(poly, cleanit = FALSE, silentinteractive = TRUE)
+  expect_null(attr(poly_out, "validate_errmsg"))
+  expect_false(attr(poly_out, "disable_buttons_SHP"))
+  expect_true(all(c("ejam_uniq_id", "valid", "invalid_msg") %in% names(poly_out)))
+  expect_s3_class(poly_out, "sf")
+
+  # same on the cleanit = TRUE branch, which reaches shapefix() via shapefile_clean()
+  expect_true(grepl("shapefile of points",
+                    attr(shapefile_from_any(pts, cleanit = TRUE, silentinteractive = TRUE), "validate_errmsg")))
+
+  # and shapefix() must not undo the requested crs: it st_transform()s to its own
+  # default of 4269, so calling it bare made any non-default crs silently come back
+  # as 4269 -- on the file path as well, where that was already true before this PR.
+  expect_equal(sf::st_crs(shapefile_from_any(poly, cleanit = FALSE, crs = 3857, silentinteractive = TRUE))$epsg, 3857L)
+  json_file <- system.file("testdata/shapes/portland.json", package = "EJAM")
+  junk <- capture.output(from_file <- suppressWarnings(
+    shapefile_from_any(json_file, cleanit = FALSE, crs = 3857, silentinteractive = TRUE)))
+  expect_equal(sf::st_crs(from_file)$epsg, 3857L)
+  # default is still 4269 on both paths
+  expect_equal(sf::st_crs(shapefile_from_any(poly, cleanit = FALSE, silentinteractive = TRUE))$epsg, 4269L)
+})
+
+################################################################ #
+# . ####
+
+# shapefile_fix_sf_column() ####
+
+testthat::test_that("shapefile_fix_sf_column() repairs an NA sf_column attribute", {
+
+  nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+  shp <- nc[1:3, c("NAME", "geometry")]
+
+  # a healthy object is returned untouched
+  expect_identical(shapefile_fix_sf_column(shp), shp)
+
+  # an NA sf_column is what broke the counties vignette on the pkgdown runner:
+  # sf tests i == attr(x, "sf_column"), so NA there raises
+  # "missing value where TRUE/FALSE needed" inside st_drop_geometry()
+  broken <- shp
+  attr(broken, "sf_column") <- NA_character_
+  expect_error(sf::st_drop_geometry(broken))
+
+  fixed <- shapefile_fix_sf_column(broken)
+  expect_equal(attr(fixed, "sf_column"), "geometry")
+  expect_no_error(sf::st_drop_geometry(fixed))
+  expect_s3_class(fixed, "sf")
+
+  # a geometry column under a non-default name is found too
+  renamed <- shp
+  names(renamed)[names(renamed) == "geometry"] <- "geom"
+  attr(renamed, "sf_column") <- NA_character_
+  expect_equal(attr(shapefile_fix_sf_column(renamed), "sf_column"), "geom")
+
+  # a stale sf_column naming a real but non-geometry column is repaired too
+  stale <- shp
+  attr(stale, "sf_column") <- "NAME"
+  expect_equal(attr(shapefile_fix_sf_column(stale), "sf_column"), "geometry")
+
+  # non-sf input passes straight through, and an sf-classed object with no
+  # geometry column left is returned rather than erroring
+  expect_identical(shapefile_fix_sf_column(data.frame(a = 1)), data.frame(a = 1))
+  nogeom <- structure(data.frame(a = 1), class = c("sf", "data.frame"),
+                      sf_column = NA_character_)
+  expect_no_error(shapefile_fix_sf_column(nogeom))
+})
+
+testthat::test_that("shapefile_addcols() does not depend on st_drop_geometry()", {
+
+  # reading the FIPS/pop columns via [[ means addcols() keeps working even if
+  # something upstream leaves sf_column NA -- it never consults that attribute
+  nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+  shp <- nc[1:3, c("NAME", "geometry")]
+  shp$FIPS <- c("10001", "10003", "10005") # real DE county fips
+  attr(shp, "sf_column") <- NA_character_
+
+  expect_no_error(out <- shapefile_addcols(shp))
+  expect_true(all(c("fipstype", "STATE_ABBR", "STATE_NAME") %in% names(out)))
+  expect_equal(unique(out$STATE_ABBR), "DE")
+})
+
+testthat::test_that("shapefile_dropcols() and shapefile_sortcols() keep sf_column valid", {
+
+  nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+  shp <- nc[1:3, c("NAME", "AREA", "geometry")]
+  shp$FIPS <- c("10001", "10003", "10005")
+
+  dropped <- shapefile_dropcols(shp)
+  expect_equal(attr(dropped, "sf_column"), "geometry")
+  expect_no_error(sf::st_drop_geometry(dropped))
+
+  sorted <- shapefile_sortcols(dropped)
+  expect_equal(attr(sorted, "sf_column"), "geometry")
+  expect_no_error(sf::st_drop_geometry(sorted))
+  expect_equal(tail(names(sorted), 1), "geometry")
+})

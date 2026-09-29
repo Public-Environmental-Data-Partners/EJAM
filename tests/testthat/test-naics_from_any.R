@@ -9,11 +9,21 @@
 # after renaming this to naics_url_of_code in the naics_from_any function (& sourcing it)
 # it worked successfully (naics_url_of_code is in script naics_url_of_code.R)
 
-test_that('naics_from_any() -- URL and scrape lookup works', {
+test_that('naics_from_any() -- URL lookup works', {
 
   expect_equal(naics_from_any("crude petroleum")$code, c(21112, 211120))
   expect_equal(naics_from_any(21112, website_url = TRUE), "https://www.naics.com/six-digit-naics/?v=2017&code=21112")
-  expect_equal(naics_from_any(21112, website_scrape = TRUE),
+
+  })
+
+# The scrape needs naics.com to actually answer, so it is its own test and gets
+# skipped, not failed, when the site does not. See skip_if_naics_web_unavailable() in setup.R
+test_that('naics_from_any() -- scrape lookup works', {
+
+  skip_if(offline())
+  scraped <- naics_from_any(21112, website_scrape = TRUE)
+  skip_if_naics_web_unavailable(scraped)
+  expect_equal(scraped,
                data.frame("code" = "211120", "name" = "Crude Petroleum Extraction"))
 
   })

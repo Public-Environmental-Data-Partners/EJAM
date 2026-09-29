@@ -385,6 +385,7 @@ test_that("ejamit() still returns results_overall identical to what it used to r
           (saved as testoutput_ejamit_10pts_1miles$results_overall)", {
             testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
 
+
             checkthese <- intersect(names(testoutput_ejamit_10pts_1miles$results_overall), names_all_r)
             # # omits from testing no change in:
             # > setdiff(names(testoutput_ejamit_10pts_1miles$results_overall), names_all_r)
@@ -408,6 +409,7 @@ test_that("ejamit() still returns results_overall identical to what it used to r
 ########################################################## #
 
 test_that("ejamit() still returns results_bysite identical to numbers it used to return (except 1st column)", {
+
   testthat::skip_if(!exists("ejamitoutnow"), message = "ejamitoutnow is missing but should have been created by EJAM/tests/testthat/setup.R")
 
   # checkthese <- intersect(names(testoutput_ejamit_10pts_1miles$results_bysite), names_all_r)

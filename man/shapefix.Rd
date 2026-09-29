@@ -15,10 +15,32 @@ shapefix(shp, crs = 4269)
 returns all rows of shp, but adds columns "valid" and "invalid_msg"
 and adds attributes shiny can use to update some reactives,
 and standardizes "geometry" as the sfc column name.
+Attributes set: \code{validate_errmsg}, \code{disable_buttons_SHP},
+\code{num_valid_pts_uploaded_SHP}, \code{invalid_alert_SHP}, \code{an_map_text_shp}.
 }
 \description{
 a way for app_server, and ejamit() via shapefile_from_any(),
 to both use this one function to do the same thing
 whether or not in a reactive context
+}
+\details{
+This function only \emph{reports} problems - it never decides what to do about them.
+Findings come back as attributes on the returned object, and each caller reacts as suits it:
+\itemize{
+\item the \strong{web app} (app_server.R) reads the attributes, shows \code{validate_errmsg} via
+\code{\link[shiny:validate]{shiny::validate()}}, and disables the Start button.
+\item \strong{\code{\link[=ejamit]{ejamit()}}}, via \code{\link[=shapefile_from_any]{shapefile_from_any()}}, ignores the attributes entirely.
+}
+
+That asymmetry is deliberate. Uploading points to the app's "Shapefile of polygons"
+option is blocked, because that option's radius slider starts at \code{minradius_shapefile = 0}
+and points buffered by 0 miles would find no blocks - the app has a separate
+"Latitude/Longitude file upload" option for points-with-buffers. But an R user calling
+\verb{ejamit(shapefile = <points>, radius = 3)} supplies a real radius, so that works and is
+not blocked here. See issue #550.
+
+Because the decision belongs to the caller, this function deliberately does NOT test
+\code{\link[shiny:isRunning]{shiny::isRunning()}}. An earlier version did, which meant the point-geometry check
+silently did nothing in a locally launched app (where \code{interactive()} is TRUE).
 }
 \keyword{internal}

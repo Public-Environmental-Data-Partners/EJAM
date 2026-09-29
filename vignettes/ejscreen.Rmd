@@ -81,11 +81,11 @@ EJAM-related repositories.
     -   Raw Data Downloads -- EJSCREEN datasets as used by EJAM
 
         -   Datasets stored in the EJAM repository (.rda files):
-            [Documentation](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-){target="_blank"}
+            [Documentation](`r paste0(EJAM::url_package("docs"), "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`){target="_blank"}
             and [Data
             files](`r paste0(EJAM::url_package(get_full_url = TRUE),"/tree/main/data")`){target="_blank"}
         -   Datasets used by EJAM but stored separately (large .arrow files):
-            [Documentation](../articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files){target="_blank"}
+            [Documentation](`r paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files")`){target="_blank"}
             and [release assets with data
             files](`r paste0(EJAM::url_package(type = "data", get_full_url = TRUE), "/releases")`){target="_blank"}
 

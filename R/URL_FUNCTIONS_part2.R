@@ -79,7 +79,7 @@
 #' @seealso  [url_ejamapi()]  [url_ejscreenmap()]
 #'   [url_echo_facility()] [url_frs_facility()]  [url_enviromapper()]
 #' @return URL(s)
-#' @examples  \donttest{
+#' @examples  \dontrun{
 #'  browseURL(url_echo_facility(110070874073))
 #'  }
 #'
@@ -151,7 +151,7 @@ url_echo_facility <- function(regid = NULL,
 #' @return URL(s)
 #' @examples
 #' x = url_frs_facility(testinput_regid)
-#' \donttest{
+#' \dontrun{
 #' browseURL(x[1])
 #' }
 #' url_frs_facility(testinput_registry_id)

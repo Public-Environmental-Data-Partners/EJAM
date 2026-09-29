@@ -31,7 +31,7 @@ using \code{\link[stats:lowess]{stats::lowess()}}}
 \item{show.line}{whether to show straight line fitted via stats::coef(line(x,y))
 using \code{\link[stats:coef]{stats::coef()}} and \code{\link[stats:line]{stats::line()}}}
 
-\item{...}{passed to \code{\link[=plot]{plot()}}}
+\item{...}{passed to \code{\link[graphics:plot]{graphics::plot()}}}
 }
 \value{
 just used to create plot as side effect
@@ -40,7 +40,7 @@ just used to create plot as side effect
 plot_demogshare_by_distance - work in progress
 }
 \details{
-Could also consider plotting something like boxplot(demogvar ~ round(distance, 1))
+Could also consider plotting something like graphics::boxplot(demogvar ~ round(distance, 1))
 
 See notes on plots at \code{\link[=plot_barplot_ratios]{plot_barplot_ratios()}}
 }

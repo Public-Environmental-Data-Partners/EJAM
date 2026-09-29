@@ -8,7 +8,9 @@ speed_ejamit_runtime_estimate(
   rows,
   radius = 0,
   analysis_type = c("points", "latlon", "fips", "shapefile", "shp"),
-  analysis_subtype = NULL
+  analysis_subtype = NULL,
+  target = c("ejamit", "webapp_report"),
+  profile = "live_v3.2022.2"
 )
 }
 \arguments{
@@ -19,6 +21,11 @@ speed_ejamit_runtime_estimate(
 \item{analysis_type}{input mode.}
 
 \item{analysis_subtype}{optional subtype.}
+
+\item{target}{whether to estimate the \code{\link[=ejamit]{ejamit()}} runtime or the time until
+the web app displays its multisite report.}
+
+\item{profile}{web-app calibration profile. Ignored for \code{target = "ejamit"}.}
 }
 \value{
 List with prediction table and message.

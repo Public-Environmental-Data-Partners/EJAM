@@ -9,7 +9,7 @@ library(sf)
 source("query_pagination.R", local = TRUE)
 
 ############################# #
-#* @apiTitle API for EJAM / EJSCREEN Data, Analysis, and Reports
+#* @apiTitle API for EJAM / EJSCREEN Reports, Data, and Analysis
 #*
 #* @apiDescription EJSCREEN provides environmental justice screening and mapping.
 #* EJSCREEN's Multisite Tool is called EJAM (Environmental Justice Analysis Multisite).
@@ -70,14 +70,14 @@ fipper <- function(area, scale = "blockgroup") {
       return(area)
     }
   )
-  
+
   # Determine the type of the provided FIPS code.
   fips_type <- fipstype(fips_area)[1]
-  
+
   if (fips_type == scale) {
     return(fips_area)
   }
-  
+
   # Convert the FIPS code to the desired scale.
   switch(scale,
          "county" = fips_counties_from_statefips(fips_area),
@@ -93,7 +93,7 @@ ejamit_interface <- function(area, method, buffer = 0, scale = "blockgroup", end
   if (!is.numeric(buffer) || buffer > 15) {
     stop("Please select a buffer of 15 miles or less.")
   }
-  
+
   # Process the request based on the specified method.
   switch(method,
          "latlon" = {
@@ -145,91 +145,8 @@ function(req, res) {
 }
 
 # ________________________________ ####
-# Docs ####
-
-#* Redirect the API root to the interactive documentation page, so visiting the
-#* base URL (no endpoint or parameters) shows the Swagger UI.
-#* @tag Docs
-#* @get /
-function(res) {
-  res$status <- 302L
-  res$setHeader("Location", "/__docs__/")
-  list()
-}
-
-# /data ####
-
-#* Return EJAM analysis data as JSON based on geography
-#* @tag Data
-#* @param sites A data frame of site coordinates (lat/lon)
-#* @param shape A GeoJSON string representing the area of interest
-#* @param fips A FIPS code for a specific US Census geography
-#* @param buffer The buffer radius in miles
-#* @param radius Synonym for buffer.
-#* @param geometries A boolean to indicate whether to include geometries in the output
-#* @param scale The Census geography at which to return results (blockgroup or county)
-#* @post /data
-function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, geometries = FALSE, scale = NULL, res) {
-  if (!is.null(radius)) {buffer <- radius}  # radius is a synonym (alias) for buffer
-  # Determine the input method.
-  method <- if (!is.null(sites)) "latlon" else if (!is.null(shape)) "SHP" else if (!is.null(fips)) "FIPS" else NULL
-  area <- sites %||% shape %||% fips
-  
-  if (is.null(method) || is.null(area)) {
-    res$status <- 400
-    return(handle_error("You must provide valid points, a shape, or a FIPS code."))
-  }
-  
-  # Perform the EJAM analysis.
-  result <- tryCatch(
-    ejamit_interface(area = area, method = method, buffer = as.numeric(buffer), scale = scale, endpoint = "data"),
-    error = function(e) {
-      res$status <- 400
-      handle_error(e$message)
-    }
-  )
-  
-  # If an error was returned from the interface, return it.
-  if ("error" %in% names(result)) {
-    return(result)
-  }
-  
-  # Prepare the final JSON output.
-  if (geometries) {
-    output_shape <- switch(method,
-                           "latlon" = sf::st_as_sf(sites, coords = c("lon", "lat"), crs = 4326),
-                           "SHP" = geojson_sf(shape),
-                           "FIPS" = shapes_from_fips(fips)
-    )
-    # Combine the analysis results with the geographic shapes.
-    return(cbind(data.table::setDF(result$results_bysite), output_shape))
-  } else {
-    return(result$results_bysite)
-  }
-}
-
-# /query ####
-
-#* Return EJAM analysis data as JSON based on attribute query
-#* Query responses are paginated. Use page and limit to request subsequent pages.
-#* @tag Data
-#* @param attribute An EJSCREEN attribute, in EJAM syntax (e.g. pctunemployed)
-#* @param value A decimal, 0-1, representing a cutoff/threshold; returns blockgroups whose percentile rank for the attribute is larger (e.g. pctunemployed > .9)
-#* @param page Positive whole-number page to return. Defaults to 1.
-#* @param limit Positive whole-number rows per page. Defaults to 100 and cannot exceed 500.
-#* @post /query
-function(attribute = "pctunemployed", value = .9, page = 1, limit = QUERY_DEFAULT_LIMIT, res) {
-  query_endpoint_response(
-    attribute = attribute,
-    value = value,
-    page = page,
-    limit = limit,
-    res = res,
-    error_handler = handle_error
-  )
-}
-
-# /report ####
+# ~ ####
+# Report helpers ####
 
 # Normalize the sitenumber value shared by GET /report and POST /report.
 # Returns 0 for 0/"overall" (aggregate multisite report), a positive whole
@@ -337,6 +254,8 @@ report_response <- function(result, method, to_map, sitenum, ext, res, cache_hea
   res
 }
 
+# /report GET ####
+
 #* Generate an EJAM report
 #* @tag Reports
 #* @param lat Latitude of the site
@@ -421,7 +340,7 @@ function(lat = NULL, lon = NULL, shape = NULL, fips = NULL, buffer = NULL, radiu
   if (inherits(result, "error")) {
     return(html_error(res, 400, conditionMessage(result)))
   }
-  
+
   # Get submitted polygon shape(s) to appear in report map.
   to_map<-NULL # Clear any previous maps
   if (method == "SHP"){
@@ -437,8 +356,9 @@ function(lat = NULL, lon = NULL, shape = NULL, fips = NULL, buffer = NULL, radiu
                   cache_header = "public, max-age=86400")
 }
 
-#* Generate an EJAM report from a POST body (supports many/large polygons and mixed/large site sets).
-#* Same report engine as GET /report, but inputs travel in the request body so there is no URL-length limit.
+# /report POST ####
+
+#* Generate an EJAM report from a POST body (supports many/large polygons and mixed/large site sets). Same report engine as GET /report, but inputs travel in the request body so there is no URL-length limit.
 #* @tag Reports
 #* @param sites An array of {lat, lon} site objects
 #* @param shape A GeoJSON FeatureCollection string (one or more polygons)
@@ -491,6 +411,88 @@ function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, sit
 
   report_response(result, method, to_map, sitenum, tolower(fileextension), res)
 }
+# ~ ####
+
+# /data POST ####
+
+#* Return EJAM analysis data as JSON based on geography
+#* @tag Data
+#* @param sites A data frame of site coordinates (lat/lon)
+#* @param shape A GeoJSON string representing the area of interest
+#* @param fips A FIPS code for a specific US Census geography
+#* @param buffer The buffer radius in miles
+#* @param radius Synonym for buffer.
+#* @param geometries A boolean to indicate whether to include geometries in the output
+#* @param scale The Census geography at which to return results (blockgroup or county)
+#* @post /data
+function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, geometries = FALSE, scale = NULL, res) {
+  if (!is.null(radius)) {buffer <- radius}  # radius is a synonym (alias) for buffer
+  # Determine the input method.
+  method <- if (!is.null(sites)) "latlon" else if (!is.null(shape)) "SHP" else if (!is.null(fips)) "FIPS" else NULL
+  area <- sites %||% shape %||% fips
+
+  if (is.null(method) || is.null(area)) {
+    res$status <- 400
+    return(handle_error("You must provide valid points, a shape, or a FIPS code."))
+  }
+
+  # Perform the EJAM analysis.
+  result <- tryCatch(
+    ejamit_interface(area = area, method = method, buffer = as.numeric(buffer), scale = scale, endpoint = "data"),
+    error = function(e) {
+      res$status <- 400
+      handle_error(e$message)
+    }
+  )
+
+  # If an error was returned from the interface, return it.
+  if ("error" %in% names(result)) {
+    return(result)
+  }
+
+  # Prepare the final JSON output.
+  if (geometries) {
+    output_shape <- switch(method,
+                           "latlon" = sf::st_as_sf(sites, coords = c("lon", "lat"), crs = 4326),
+                           "SHP" = geojson_sf(shape),
+                           "FIPS" = shapes_from_fips(fips)
+    )
+    # Combine the analysis results with the geographic shapes.
+    return(cbind(data.table::setDF(result$results_bysite), output_shape))
+  } else {
+    return(result$results_bysite)
+  }
+}
+
+# /query POST ####
+
+#* Return EJAM analysis data as JSON based on attribute query - Query responses are paginated. Use page and limit to request subsequent pages.
+#* @tag Data
+#* @param attribute An EJSCREEN attribute, in EJAM syntax (e.g. pctunemployed)
+#* @param value A decimal, 0-1, representing a cutoff/threshold; returns blockgroups whose percentile rank for the attribute is larger (e.g. pctunemployed > .9)
+#* @param page Positive whole-number page to return. Defaults to 1.
+#* @param limit Positive whole-number rows per page. Defaults to 100 and cannot exceed 500.
+#* @post /query
+function(attribute = "pctunemployed", value = .9, page = 1, limit = QUERY_DEFAULT_LIMIT, res) {
+  query_endpoint_response(
+    attribute = attribute,
+    value = value,
+    page = page,
+    limit = limit,
+    res = res,
+    error_handler = handle_error
+  )
+}
+
+# /assets ####
+
+#* Serve static assets from the ./assets directory at /assets.
+#* @tag Data Files (assets)
+#* NOTE: do NOT mount at root "/", which shadows plumber's OpenAPI/Swagger
+#* docs UI at /__docs__/ and makes the documentation page return 404.
+#* @assets ./assets /assets
+list()
+# ~ ####
 
 # ---- Site handoff (token-based) for launching the EJAM app pre-loaded ----
 # An external app (e.g. EJScreen) POSTs a set of selected places and gets back a
@@ -532,8 +534,10 @@ function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, sit
   }
 }
 
+# /handoff POST ####
+
 #* Store a set of selected sites for handoff to the EJAM app; returns a token.
-#* @tag Handoff
+#* @tag Handoff to EJAM app
 #* @param method One of "latlon", "FIPS", or "SHP" (optional; inferred if omitted)
 #* @param sites Array of {lat, lon} site objects
 #* @param fips Array of FIPS codes (each one a separate site)
@@ -598,8 +602,10 @@ function(method = NULL, sites = NULL, fips = NULL, shape = NULL, radius = NULL, 
   list(token = token, expires = expires)
 }
 
+# /handoff GET ####
+
 #* Retrieve a previously stored handoff payload by token.
-#* @tag Handoff
+#* @tag Handoff to EJAM app
 #* @param token The handoff token returned by POST /handoff
 #* @get /handoff/<token>
 function(token, res) {
@@ -612,11 +618,15 @@ function(token, res) {
   res$setHeader("Cache-Control", "no-store")  # bearer-credential payload, not cacheable
   unserialize(entry$payload_raw)
 }
+# ~ ####
+# / Docs GET ####
 
-# /assets ####
-
-#* Serve static assets from the ./assets directory at /assets.
-#* NOTE: do NOT mount at root "/", which shadows plumber's OpenAPI/Swagger
-#* docs UI at /__docs__/ and makes the documentation page return 404.
-#* @assets ./assets /assets
-list()
+#* Redirect the API root to the interactive documentation page, so visiting the base URL (no endpoint or parameters) shows the Swagger UI.
+#* @tag Docs
+#* @get /
+function(res) {
+  res$status <- 302L
+  res$setHeader("Location", "/__docs__/")
+  list()
+}
+# ________________________________ ####
