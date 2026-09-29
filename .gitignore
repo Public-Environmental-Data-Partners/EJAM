@@ -67,6 +67,10 @@ vignettes/*.pdf
 *_cache/
 /cache/
 
+# Python bytecode cache and compiled modules
+__pycache__/
+*.py[cod]
+
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
@@ -104,3 +108,4 @@ inst/report/community_report/junk.html
 # Claude Code / agent local files (untracked tooling state)
 .claude/
 .claude-code-memory-import/
+

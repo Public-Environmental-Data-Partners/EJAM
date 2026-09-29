@@ -141,16 +141,74 @@ class IssueScorePayloadTest(unittest.TestCase):
 
         # no bare "$" or in-title "|" survives into the Markdown
         self.assertNotIn("doaggregate()$results", markdown)
-        self.assertIn(r"doaggregate()\$results_bybg_people", markdown)
+        self.assertIn(r"doaggregate()\$results\_bybg\_people", markdown)
         self.assertIn(r"a title with a \| pipe", markdown)
 
         # and the escaping is applied everywhere a title is written:
         # the bullet list, the quadrant table, and the full table
-        self.assertEqual(markdown.count(r"doaggregate()\$results_bybg_people"), 3)
+        self.assertEqual(markdown.count(r"doaggregate()\$results\_bybg\_people"), 3)
 
     def test_md_escape_leaves_ordinary_titles_untouched(self):
         plain = "check/ fix Distance and Site Count summary stats"
         self.assertEqual(scoring.md_escape(plain), plain)
+
+    def test_style_issue_tables_keeps_single_lang_pair(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            html_path = Path(tmpdir) / "report.html"
+            html_path.write_text(
+                """
+                <html lang="en" xml:lang="en"><head></head><body>
+                <table><tr><th>Issue</th><th>Current GitHub labels (key)</th></tr>
+                <tr><td>1</td><td>foo</td></tr></table>
+                </body></html>
+                """.strip(),
+                encoding="utf-8",
+            )
+
+            renderer.style_issue_tables(html_path)
+            rendered = html_path.read_text(encoding="utf-8")
+
+            self.assertEqual(rendered.count(' lang="en"'), 1)
+            self.assertEqual(rendered.count(' xml:lang="en"'), 1)
+
+    def test_generate_markdown_keeps_rank_labels_visible_when_list_is_truncated(self):
+        scored = [
+            {
+                "num": 595,
+                "title": "Improve API documentation vignette",
+                "labels": [
+                    "Affects R users only - NOT web app users",
+                    "documentation",
+                    "Affects API",
+                    "something else",
+                    "another label",
+                    "yet another label",
+                    "rank:C-low-value-low-cost",
+                ],
+                "milestone": "NA",
+                "cost": 0,
+                "benefit": 7,
+                "quad": "A",
+            }
+        ]
+
+        markdown = scoring.generate_markdown(
+            scored,
+            cost_med=4,
+            benefit_med=6,
+            generated_date="2026-06-20",
+        )
+
+        self.assertIn("rank:C-low-value-low-cost", markdown)
+        self.assertIn(
+            "| [595](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595) | "
+            "Improve API documentation vignette | 0 (🟢 Very Low) | 7 (🟦 Medium) | "
+            "NA | — | `rank:A-high-value-low-cost` | "
+            "rank:C-low-value-low-cost, Affects R users only - NOT web app users, "
+            "documentation, Affects API |",
+            markdown,
+        )
+        self.assertNotIn("another label", markdown)
 
     def test_generate_markdown_puts_methodology_at_end(self):
         scored = [
@@ -235,6 +293,11 @@ class IssueScorePayloadTest(unittest.TestCase):
         )
         self.assertIn("| v3.2022.2 | 1 |", markdown)
         self.assertIn("| NA | 1 |", markdown)
+        self.assertIn(
+            "| # | Issue | Cost | Benefit | Milestone | Priority | Proposed rank | "
+            "Current GitHub labels (key) |",
+            markdown,
+        )
 
     def test_score_issues_extracts_milestone_title_and_na(self):
         issues = [
@@ -285,7 +348,8 @@ class IssueScorePayloadTest(unittest.TestCase):
 <table>
 <colgroup><col style="width: 14%" /><col style="width: 14%" /></colgroup>
 <thead><tr><th>#</th><th>Issue</th><th>Cost</th><th>Benefit</th>
-<th>Milestone</th><th>Priority</th><th>Labels (key)</th></tr></thead>
+<th>Milestone</th><th>Priority</th><th>Proposed rank</th>
+<th>Current GitHub labels (key)</th></tr></thead>
 </table>
 </body></html>"""
         with tempfile.TemporaryDirectory() as tmp:
@@ -299,13 +363,58 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertEqual(styled.count('class="issue-details"'), 1)
         self.assertIn('<col style="width: 5%" />', styled)
         self.assertIn('<col style="width: 18%" />', styled)
-        self.assertIn('<col style="width: 9%" />', styled)
-        self.assertIn('<col style="width: 16%" />', styled)
-        self.assertIn('<col style="width: 20%" />', styled)
+        self.assertIn('<col style="width: 11%" />', styled)
+        self.assertIn('<col style="width: 8%" />', styled)
+        self.assertIn('<col style="width: 12%" />', styled)
+        self.assertIn('<col style="width: 17%" />', styled)
         self.assertIn("min-width: 64em", styled)
         self.assertIn("td:first-child", styled)
         self.assertIn("white-space: nowrap", styled)
+        self.assertIn('<html lang="en" xml:lang="en">', styled)
         self.assertIn("<th>Metric</th>", styled)
+
+    def test_renderer_preserves_existing_html_language(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html_path = Path(tmp) / "report.html"
+            html_path.write_text(
+                '<html lang="fr" xml:lang="fr"><head></head><body></body></html>',
+                encoding="utf-8",
+            )
+
+            renderer.style_issue_tables(html_path)
+
+            styled = html_path.read_text(encoding="utf-8")
+
+        self.assertEqual(styled.count("lang="), 2)
+        self.assertIn('<html lang="fr" xml:lang="fr">', styled)
+
+    def test_renderer_replaces_empty_html_language(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html_path = Path(tmp) / "report.html"
+            html_path.write_text(
+                '<html lang="" xml:lang=""><head></head><body></body></html>',
+                encoding="utf-8",
+            )
+
+            renderer.style_issue_tables(html_path)
+
+            styled = html_path.read_text(encoding="utf-8")
+
+        self.assertIn('<html lang="en" xml:lang="en">', styled)
+
+    def test_renderer_fallback_writes_valid_html_structure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            md_path = Path(tmp) / "report.md"
+            html_path = Path(tmp) / "report.html"
+            md_path.write_text("# Report", encoding="utf-8")
+
+            renderer.render_pre_fallback(md_path, html_path)
+
+            styled = html_path.read_text(encoding="utf-8")
+
+        self.assertIn("<head><meta charset", styled)
+        self.assertIn("</head><body>", styled)
+        self.assertIn("</body></html>", styled)
 
 
 if __name__ == "__main__":
