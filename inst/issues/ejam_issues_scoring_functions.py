@@ -531,6 +531,7 @@ def md_escape(text: str) -> str:
       ``doaggregate()$results_bybg_people`` and ``... vs input$ ?`` left an
       unclosed span that swallowed every following table row into one cell --
       three issues disappeared from each of two tables in the rendered HTML.
+    * ``*`` and ``_`` would trigger Markdown emphasis and corrupt the title.
     * ``|`` would end a table cell early and shift the rest of the row.
 
     Applied only where a title is written into Markdown; the JSON payload keeps
