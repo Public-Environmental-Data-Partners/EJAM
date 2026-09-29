@@ -1252,7 +1252,8 @@ have already bumped that tag to the new release but have not published
 the matching <code>ejamdata</code> release yet, attaching the package —
 including <code>devtools::load_all()</code> — will try to fetch a tag
 that does not exist and fail or hang.</p>
-<p>Keep <code>ejamdata_required_tag</code> at the <strong>previously
+<p>For an annual pipeline release, keep
+<code>ejamdata_required_tag</code> at the <strong>previously
 installed</strong> tag during the data work (so it matches
 <code>data/ejamdata_version.txt</code> and the present local
 <code>.arrow</code> files, and <code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code>
@@ -1263,7 +1264,10 @@ the Datasets Used by EJAM</a>). Always use
 <code><a href="https://public-environmental-data-partners.github.io/EJAM">library(EJAM)</a></code> here, so
 <code>ejam_package_version_current()</code> reads the
 <strong>source</strong> <code>DESCRIPTION</code> (the new
-<code>3.YYYY.0</code>), not a stale installed version.</p>
+<code>3.YYYY.0</code>), not a stale installed version. For a separately
+staged FRS release whose DESCRIPTION already pins an empty draft tag,
+use the namespace-loading recipe in <a href="dev-update-datasets.html#refreshing-frs-for-a-data-release">Refreshing
+FRS for a data release</a> until the complete asset set is uploaded.</p>
 <p>A release update should explicitly replace at least:</p>
 <ul>
 <li>

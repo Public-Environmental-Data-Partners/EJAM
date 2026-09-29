@@ -6,44 +6,18 @@ so multiple rows for one site if it is in multiple NAICS.
 This file is not stored in the package, but is obtained via dataload_dynamic().
 The EPA also provides a FRS Facility Industrial Classification Search tool
 where you can find facilities based on NAICS or SIC.
-MOST SITES LACK NAICS INFO IN FRS! NAICS is missing for about 80 percent of these facilities.
-frs here had about 2.5 million unique REGISTRY_ID values, but
-frs_by_naics had only about 700k rows
-about 581,000 unique REGISTRY_ID values with
-about 1,858 unique NAICS codes.
-length(unique(frs_by_naics$REGISTRY_ID))
-length(unique(frs_by_naics[,REGISTRY_ID]))
-length(frs_by_naics[, unique(REGISTRY_ID)])
-frs_by_naics[,uniqueN(REGISTRY_ID)]
-   e.g., 581,416 in 02/2025
-
-    lat       lon  REGISTRY_ID  NAICS
-
-1: 34.04722 -81.15136 110000854246 325211
-2: 34.04722 -81.15136 110000854246 325220
-3: 34.04722 -81.15136 110000854246 325222"><meta property="og:description" content="Table in data.table format.
+Many FRS facilities lack NAICS information. Use nrow(frs_by_naics),
+data.table::uniqueN(frs_by_naics$REGISTRY_ID), and
+data.table::uniqueN(frs_by_naics$NAICS) for the installed snapshot."><meta property="og:description" content="Table in data.table format.
 This is the format with one row per site-NAICS pair,
 so multiple rows for one site if it is in multiple NAICS.
 @details
 This file is not stored in the package, but is obtained via dataload_dynamic().
 The EPA also provides a FRS Facility Industrial Classification Search tool
 where you can find facilities based on NAICS or SIC.
-MOST SITES LACK NAICS INFO IN FRS! NAICS is missing for about 80 percent of these facilities.
-frs here had about 2.5 million unique REGISTRY_ID values, but
-frs_by_naics had only about 700k rows
-about 581,000 unique REGISTRY_ID values with
-about 1,858 unique NAICS codes.
-length(unique(frs_by_naics$REGISTRY_ID))
-length(unique(frs_by_naics[,REGISTRY_ID]))
-length(frs_by_naics[, unique(REGISTRY_ID)])
-frs_by_naics[,uniqueN(REGISTRY_ID)]
-   e.g., 581,416 in 02/2025
-
-    lat       lon  REGISTRY_ID  NAICS
-
-1: 34.04722 -81.15136 110000854246 325211
-2: 34.04722 -81.15136 110000854246 325220
-3: 34.04722 -81.15136 110000854246 325222"><meta property="og:image" content="https://public-environmental-data-partners.github.io/EJAM/logo.svg"><meta name="robots" content="noindex"></head><body>
+Many FRS facilities lack NAICS information. Use nrow(frs_by_naics),
+data.table::uniqueN(frs_by_naics$REGISTRY_ID), and
+data.table::uniqueN(frs_by_naics$NAICS) for the installed snapshot."><meta property="og:image" content="https://public-environmental-data-partners.github.io/EJAM/logo.svg"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -121,21 +95,9 @@ so multiple rows for one site if it is in multiple NAICS.
 This file is not stored in the package, but is obtained via <code><a href="dataload_dynamic.html">dataload_dynamic()</a></code>.</p>
 <p>The EPA also provides a <a href="https://www.epa.gov/frs/frs-query#industrial" class="external-link">FRS Facility Industrial Classification Search tool</a>
 where you can find facilities based on NAICS or SIC.</p>
-<p>MOST SITES LACK NAICS INFO IN FRS! NAICS is missing for about 80 percent of these facilities.</p>
-<p>frs here had about 2.5 million unique REGISTRY_ID values, but</p>
-<p>frs_by_naics had only about 700k rows</p>
-<p>about 581,000 unique REGISTRY_ID values with</p>
-<p>about 1,858 unique NAICS codes.</p>
-<p>length(unique(frs_by_naics$REGISTRY_ID))</p>
-<p><code>length(unique(frs_by_naics[,REGISTRY_ID]))</code></p>
-<p><code>length(frs_by_naics[, unique(REGISTRY_ID)])</code></p>
-<p><code>frs_by_naics[,uniqueN(REGISTRY_ID)]</code></p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>   e.g., <span class="dv">581</span>,<span class="dv">416</span> <span class="cf">in</span> <span class="dv">02</span><span class="sc">/</span><span class="dv">2025</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    lat       lon  REGISTRY_ID  NAICS</span></code></pre><p></p></div>
-<p>1: 34.04722 -81.15136 110000854246 325211</p>
-<p>2: 34.04722 -81.15136 110000854246 325220</p>
-<p>3: 34.04722 -81.15136 110000854246 325222</p>
+<p>Many FRS facilities lack NAICS information. Use <code>nrow(frs_by_naics)</code>,
+<code>data.table::uniqueN(frs_by_naics$REGISTRY_ID)</code>, and
+<code>data.table::uniqueN(frs_by_naics$NAICS)</code> for the installed snapshot.</p>
     </div>
 
 
@@ -149,22 +111,17 @@ where you can find facilities based on NAICS or SIC.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="fu"><a href="dataload_dynamic.html">dataload_dynamic</a></span><span class="op">(</span><span class="st">"frs"</span><span class="op">)</span></span>
 <span> <span class="fu"><a href="dataload_dynamic.html">dataload_dynamic</a></span><span class="op">(</span><span class="st">"frs_by_naics"</span><span class="op">)</span></span>
 <span> <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span> <span class="co"># NAICS is missing for almost 80 percent of facilities</span></span>
+<span> <span class="co"># Compare coverage for the installed snapshot.</span></span>
 <span> <span class="va">frs</span><span class="op">[</span> <span class="va">NAICS</span> <span class="op">==</span> <span class="st">""</span>, <span class="va">.N</span><span class="op">]</span> <span class="op">/</span> <span class="va">frs</span><span class="op">[</span>,<span class="va">.N</span><span class="op">]</span></span>
-<span> <span class="co"># only about 647k facilities had some NAICS info as of 02/2025</span></span>
 <span> <span class="va">frs</span><span class="op">[</span> <span class="va">NAICS</span> <span class="op">!=</span> <span class="st">""</span>, <span class="va">.N</span><span class="op">]</span></span>
-<span> <span class="va">frs_by_naics</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/duplicated.html" class="external-link">uniqueN</a></span><span class="op">(</span><span class="va">REGISTRY_ID</span><span class="op">)</span><span class="op">]</span>  <span class="co"># about 581k as of 02/2025</span></span>
+<span> <span class="va">frs_by_naics</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/duplicated.html" class="external-link">uniqueN</a></span><span class="op">(</span><span class="va">REGISTRY_ID</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">frs_by_naics</span><span class="op">)</span></span>
-<span> <span class="co"># about 680k rows here, or pairs of 1 NAICS - 1 registry ID pair,</span></span>
-<span> <span class="co">#  since some IDs have 2 or more NAICS so appear as 2 or more rows here.</span></span>
+<span> <span class="co"># Some registry IDs appear more than once because they have multiple NAICS codes.</span></span>
 <span></span>
-<span> <span class="co"># About 1858 different NAICS codes appear here:</span></span>
 <span> <span class="va">frs_by_naics</span><span class="op">[</span>,  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/duplicated.html" class="external-link">uniqueN</a></span><span class="op">(</span><span class="va">NAICS</span><span class="op">)</span><span class="op">]</span></span>
 <span> <span class="va">frs_by_naics</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">.N</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, by<span class="op">=</span><span class="va">NAICS</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">V1</span><span class="op">)</span><span class="op">]</span></span>
-<span>   <span class="co">#  1,699 NAICS codes are used to describe more than one Registry ID</span></span>
 <span>  <span class="va">frs_by_naics</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">.N</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, by<span class="op">=</span><span class="va">NAICS</span><span class="op">]</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">V1</span><span class="op">)</span><span class="op">]</span></span>
-<span>   <span class="co">#  almost 200 NAICS codes appear only once, i.e., apply to only a single facility</span></span>
 <span></span>
 <span> <span class="co"># Which 2-digit NAICS are found here most often?</span></span>
 <span> <span class="va">frs_by_naics</span><span class="op">[</span> , <span class="va">.N</span>, keyby<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">NAICS</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span></span>

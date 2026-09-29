@@ -300,6 +300,22 @@ number is not read from <code>DESCRIPTION</code>, such as
 <code>CITATION</code>, and <code>CITATION.cff</code>.</p></li>
 <li><p>Consider updating minimum package version requirements specified
 in the DESCRIPTION file Imports and Suggests.</p></li>
+<li><p>If FRS data are changing, follow <a href="dev-update-datasets.html#refreshing-frs-for-a-data-release">Refreshing
+FRS for a data release</a> before cutting the package release. Rebuild
+the five FRS Arrow tables, <code>mact_table</code>, FRS-derived counts
+and program tables, and FRS-based sample inputs. Compare IDs and
+coordinates with the previous snapshot, update examples or tests that
+cite obsolete IDs, and verify that all nine FRS metadata fields survive
+an Arrow write/read cycle. The <code>ejamdata</code> release must
+contain all 11 required Arrow assets, including the six compatible
+non-FRS files whose data values can be carried forward for an FRS-only
+change. Restamp those six files with
+<code>data-raw/datacreate_ejamdata_arrow_restamp.R</code> so their
+package/release attributes match the new tag while their source dates
+and data remain intact. Confirm the published release assets before
+changing <code>data/ejamdata_version.txt</code> to the new
+<code>ejamdata_required_tag</code>. An asset-filled draft alone is not a
+public download source for EJAM installations.</p></li>
 <li><p>If this is an annual EJScreen-style data release, first complete
 the staged data update workflow in <a href="dev-update-ejscreen-datasets-yearly.html">Updating EJScreen
 Datasets Annually (via the Pipeline)</a>. Confirm that accepted pipeline
@@ -334,7 +350,9 @@ listing changes made. Use the same version number that was put in
 <li><p>Run release checks, including
 <code>devtools::check(vignettes = FALSE)</code> if traditional vignette
 builds are not needed, targeted pipeline validation, and the relevant
-<code><a href="../reference/test_ejam.html">test_ejam()</a></code> groups.</p></li>
+<code><a href="../reference/test_ejam.html">test_ejam()</a></code> groups. When FRS examples or datasets have
+changed, also render the FRS-dependent vignettes and run their examples;
+a check that skips vignettes does not cover those references.</p></li>
 <li><p>Merge the release/development branch into the target branch
 according to the current repository workflow.</p></li>
 <li><p>Create a new EJAM release on GitHub, using <code>NEWS.md</code>

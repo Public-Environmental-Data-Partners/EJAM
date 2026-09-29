@@ -116,9 +116,10 @@ instead of trying to download/unzip. Looks in working directory if folder not sp
 
 
 <dt id="arg-date">date<a class="anchor" aria-label="anchor" href="#arg-date"></a></dt>
-<dd><p>default is Sys.Date() which is today, but this is used as
-an attribute assigned to the results,
-representing the vintage, such as the date the frs was downloaded, obtained.</p></dd>
+<dd><p>Retrieval/snapshot date, <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date()</a></code> by default. This is
+assigned to both the <code>download_date</code> and <code>released</code> attributes of the
+returned table. <code>released</code> here means the EJAM FRS snapshot date; it is
+not EPA's ZIP modification date or the GitHub publication date.</p></dd>
 
 </dl></div>
     <div class="section level2">

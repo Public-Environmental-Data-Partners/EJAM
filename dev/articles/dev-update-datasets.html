@@ -290,10 +290,12 @@ such as these: <code><a href="../reference/frs.html">?frs</a></code>, <code><a h
 <code><a href="../reference/naics_counts.html">?naics_counts</a></code>, <code><a href="../reference/naicstable.html">?naicstable</a></code>, <code><a href="../reference/SIC.html">?SIC</a></code>,
 <code><a href="../reference/sictable.html">?sictable</a></code>, <code><a href="../reference/mact_table.html">?mact_table</a></code>, and
 <code><a href="../reference/epa_programs.html">?epa_programs</a></code>, <code><a href="../reference/frsprogramcodes.html">?frsprogramcodes</a></code>, etc. These
-FRS, MACT, and Program info tables of EPA-relevant data have been
-updated in the EJAM package from scripts within
-<em><code>/data-raw/datacreate_0_UPDATE_ALL_DATASETS.R</code></em>. The
-<code><a href="../reference/NAICS.html">?NAICS</a></code>, <code><a href="../reference/naicstable.html">?naicstable</a></code>, and
+FRS, MACT, and Program info tables of EPA-relevant data are updated with
+<code>data-raw/datacreate_frs_.R</code>, which calls
+<code><a href="../reference/frs_update_datasets.html">frs_update_datasets()</a></code> and related focused
+<code>datacreate_*</code> scripts.
+<code>datacreate_0_UPDATE_ALL_DATASETS.R</code> is an older index, not
+the FRS runbook. The <code><a href="../reference/NAICS.html">?NAICS</a></code>, <code><a href="../reference/naicstable.html">?naicstable</a></code>, and
 <code><a href="../reference/sictable.html">?sictable</a></code> objects (viewable using
 <code><a href="../reference/naics_categories.html">naics_categories()</a></code> and <code><a href="../reference/sic_categories.html">sic_categories()</a></code>
 utilities) have no EPA-specific data so they do not need frequent
@@ -487,6 +489,100 @@ that categorize relevant EPA-regulated sites</a>
 </li>
 </ul>
 </div>
+<div class="section level3">
+<h3 id="refreshing-frs-for-a-data-release">Refreshing FRS for a data release<a class="anchor" aria-label="anchor" href="#refreshing-frs-for-a-data-release"></a>
+</h3>
+<p>Run this from a clean, isolated EJAM source checkout on the intended
+release branch. Confirm <code>DESCRIPTION</code> has the intended
+<code>Version</code>, <code>VersionEJSCREEN</code>,
+<code>ReleaseDateEJSCREEN</code>, <code>VersionACS</code>,
+<code>ReleaseDateACS</code>, <code>VersionCensus</code>, and
+<code>ejamdata_required_tag</code> values before building. The version
+fields supply metadata stamped on each FRS table. The source script
+downloads EPA’s national single and combined ZIPs and ECHO’s ICIS-Air
+and AFS ZIPs for <code>frs_by_mact</code> and <code>mact_table</code>.
+This can take a long time and needs ample disk space.</p>
+<p><code><a href="../reference/frs_get.html">frs_get()</a></code> sets <code>download_date</code> and
+<code>released</code> to the retrieval/snapshot date. These are not the
+GitHub release publication date or EPA ZIP <code>Last-Modified</code>
+date. <code><a href="../reference/metadata_add.html">metadata_add()</a></code> supplies
+<code>ejam_package_version</code>, <code>ejscreen_version</code>,
+<code>ejscreen_releasedate</code>, <code>acs_releasedate</code>,
+<code>acs_version</code>, <code>census_version</code>, and
+<code>date_saved_in_package</code>. The FRS builder stamps the same nine
+fields on all five Arrow tables; <code>date_saved_in_package</code> is
+the local file creation date even though the Arrow tables are
+distributed as release assets. Inspect the values after reading each IPC
+file back.</p>
+<p>The normal <code>devtools::load_all()</code> attach path tries to
+download assets from <code>ejamdata_required_tag</code>. If that tag
+names an empty draft release, use a fresh R session and load the source
+namespace without running <code>.onAttach()</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pkgload</span><span class="fu">::</span><span class="fu"><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="st">"."</span>, attach <span class="op">=</span> <span class="cn">FALSE</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/attach.html" class="external-link">attach</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-reflect.html" class="external-link">getNamespace</a></span><span class="op">(</span><span class="st">"EJAM"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"package:EJAM"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="st">"data"</span>, pattern <span class="op">=</span> <span class="st">"[.]rda$"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                 <span class="va">load</span>, envir <span class="op">=</span> <span class="va">.GlobalEnv</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>EJAM_FRS_ARROW_OUTPUT <span class="op">=</span></span>
+<span>  <span class="st">"data-raw/pipeline_outputs/frs/v3.2022.3-YYYY-MM-DD"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"data-raw/datacreate_frs_.R"</span><span class="op">)</span></span></code></pre></div>
+<p>The script writes <code>frs.arrow</code>,
+<code>frs_by_programid.arrow</code>, <code>frs_by_naics.arrow</code>,
+<code>frs_by_sic.arrow</code>, and <code>frs_by_mact.arrow</code> as
+Arrow IPC files in that output folder. It also saves
+<code>mact_table.rda</code> into <code>data/</code> and runs the
+FRS-dependent package-data and test-input scripts. If an earlier
+downloaded FRS snapshot is intentionally being reused, set
+<code>EJAM_REFRESH_FRS_ARROWS=FALSE</code>; the script will still
+validate the existing five files and rebuild related package data. Do
+not use that setting for a new FRS snapshot.</p>
+<p>Before uploading, compare the five new tables against the previous
+release: row counts, distinct <code>REGISTRY_ID</code> and
+<code>pgm_sys_id</code> counts, missing/duplicate IDs and coordinates,
+and added/removed identifiers. Verify that saved sample CSV/XLSX files,
+package <code>testinput_*</code> objects, active R examples, vignettes,
+and FRS-dependent unit tests still refer to IDs found in the new tables.
+Check that <code>title</code> and <code>dropdown_label</code> in both
+<code>frs_by_mact</code> and <code>mact_table</code> have no leading,
+trailing, or repeated whitespace (EJAM issue #231). Replace obsolete
+sample IDs with verified ones and regenerate expected outputs only when
+behavior genuinely changed. Run focused FRS tests and vignette builds
+from a local setup using the new Arrow files, then perform the package
+release checks described in <a href="dev-update-package.html">Updating
+the Package as a New Release</a>. The archived
+<code>inst/testdata/registryid/ECHO_Test_Data/</code> downloads are
+historical ECHO source examples and can contain IDs absent from the
+current FRS snapshot; use the regenerated <code>frs_testpoints_*</code>
+files for current-ID input checks. While the data release is a draft,
+place temporary copies or links to all 11 staged Arrow files in the
+source package’s ignored <code>data/*.arrow</code> paths and temporarily
+set <code>data/ejamdata_version.txt</code> to the draft tag for a local
+package-load test. Restore the tracked marker and remove those temporary
+files afterward; do not commit a marker for an unpublished release.</p>
+<p>For a new <code>ejamdata</code> tag, upload all 11 required Arrow
+files. Carry forward <code>bgej.arrow</code> and the five geography
+files from the compatible prior data tag only after confirming their
+content and ACS/geography vintage are unchanged. Run
+<code>data-raw/datacreate_ejamdata_arrow_restamp.R</code> to update
+their seven package/release metadata fields from the current
+<code>DESCRIPTION</code>, while keeping the table values and source
+attributes such as <code>download_date</code> and <code>released</code>
+unchanged. The script verifies that a write/read cycle preserves every
+column value, class, and non-stamp attribute. For a reproducible staged
+release, set the input and output folders and the save date
+explicitly:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="va">EJAM_ARROW_RESTAMP_INPUT</span><span class="op">=</span>path/to/prior_arrow_files <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="va">EJAM_ARROW_RESTAMP_OUTPUT</span><span class="op">=</span>path/to/restamped_six <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="va">EJAM_ARROW_RESTAMP_DATE</span><span class="op">=</span>YYYY-MM-DD <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">--vanilla</span> data-raw/datacreate_ejamdata_arrow_restamp.R</span></code></pre></div>
+<p>If <code>--vanilla</code> cannot find <code>arrow</code> or
+<code>desc</code>, set <code>R_LIBS_USER</code> to the library where
+those packages are installed, or source the script in a fresh RStudio
+session without attaching EJAM. Stage those six restamped files beside
+the five freshly built FRS files. Review the complete asset names,
+sizes, and SHA-256 digests before adding them to the draft release.
+Uploading assets does not publish the draft release.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="developmentsetup">Development/Setup<a class="anchor" aria-label="anchor" href="#developmentsetup"></a>
@@ -527,7 +623,7 @@ package’s <code>blockgroupstats</code>; if it does not, EJAM tries to
 replace it from the package-compatible <code>ejamdata</code> release
 tag. See how this function works for details:</li>
 </ol>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>EJAM calls this logic from the attach/startup path through
@@ -568,16 +664,19 @@ they are downloaded.</li>
 </h2>
 <p>First, create the key Arrow files locally or from the relevant
 pipeline output, as explained above.</p>
-<p>For future updates, the package may be modified to publish these
-files via the update pipeline or related script such as
-<code>run_arrow_publish_v2.5.0.R</code> but the information below is to
-describe the functions if an update is done manually.</p>
+<p>The old <code>data-raw/run_arrow_publish_v2.5.0.R</code> script
+hardcodes the historical <code>v2.5.0</code> tag; do not source it for a
+new release. Use the reviewed file set and release tag below.</p>
 <p>As mentioned above, we use <a href="https://docs.ropensci.org/piggyback/index.html" class="external-link">the piggyback
 package</a> to place large datasets in the assets of a new release on
 the <a href="https://github.com/Public-Environmental-Data-Partners/ejamdata" class="external-link uri">https://github.com/Public-Environmental-Data-Partners/ejamdata</a>
-repository, rather than committing them with Git. The current maintainer
-path is to call <code><a href="../reference/datasets_arrow_publish.html">datasets_arrow_publish()</a></code> with explicit
-local <code>.arrow</code> file paths.</p>
+repository, rather than committing them with Git.
+<code><a href="../reference/datasets_arrow_publish.html">datasets_arrow_publish()</a></code> can validate explicit local
+<code>.arrow</code> paths in a dry run. With
+<code>dry_run = FALSE</code>, it rewrites the release title and body, or
+creates a published release if none exists. For an existing saved draft,
+use <code>gh release upload</code> after the dry run so the draft title,
+notes, and status remain intact.</p>
 <p>The helper is intentionally conservative. It defaults to
 <code>dry_run = TRUE</code>, <code>overwrite = FALSE</code>, and
 <code>mark_latest = FALSE</code>. The default release note is
@@ -587,21 +686,24 @@ the <code>release_date</code> parameter.</p>
 <code>.arrow</code> files. For an annual EJSCREEN data release,
 <code>bgej.arrow</code> is the critical package-coupled asset and must
 match the package version/release tag. Facility and geography Arrow
-files may be carried forward unchanged if they are still compatible. If
-block or blockgroup helper Arrow files such as
-<code>blockwts.arrow</code>, <code>blockpoints.arrow</code>,
-<code>blockid2fips.arrow</code>, <code>bgid2fips.arrow</code>, or
-<code>quaddata.arrow</code> are intentionally regenerated in a future
-geography update, publish those files with the same helper after a
-dry-run review. For v3, Island Areas are handled only at the blockgroup
-dataset/export/map-data level; Island Area blocks are not added to the
-block-helper universe for this release path.</p>
-<p>Example dry-run for a manual publish: (also see
-run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step)</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+tables may keep their values if they are still compatible; restamp the
+six non-FRS files as described above before a new data tag. If block or
+blockgroup helper Arrow files such as <code>blockwts.arrow</code>,
+<code>blockpoints.arrow</code>, <code>blockid2fips.arrow</code>,
+<code>bgid2fips.arrow</code>, or <code>quaddata.arrow</code> are
+intentionally regenerated in a future geography update, publish those
+files with the same helper after a dry-run review. For v3, Island Areas
+are handled only at the blockgroup dataset/export/map-data level; Island
+Area blocks are not added to the block-helper universe for this release
+path.</p>
+<p>Example dry-run for a complete 11-asset release:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">release_number</span> <span class="op">&lt;-</span> <span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">new_datasets_folder</span> <span class="op">&lt;-</span> <span class="st">"path/to/folder/of/new/arrow/files"</span></span>
-<span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">new_datasets_folder</span>, <span class="st">"bgej.arrow"</span><span class="op">)</span></span>
+<span><span class="va">new_datasets_folder</span> <span class="op">&lt;-</span> <span class="st">"path/to/validated/release_staging"</span></span>
+<span><span class="va">filepaths_arrow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span>
+<span>  <span class="va">new_datasets_folder</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="va">.arrow_ds_names</span>, <span class="st">".arrow"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">filepaths_arrow</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/datasets_arrow_publish.html">datasets_arrow_publish</a></span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="va">filepaths_arrow</span>,</span>
@@ -611,18 +713,28 @@ run_arrow_publish_v2.5.0.R to publish all .arrow files in 1 step)</p>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  mark_latest <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>After reviewing the dry-run output and the intended release tag,
-rerun with <code>dry_run = FALSE</code> only when ready to create/update
-the release assets. Use <code>overwrite = TRUE</code> only after
-confirming existing assets with the same names should be replaced. Use
-<code>mark_latest = TRUE</code> only when this release should be shown
-by GitHub as the latest release.</p>
+<p>For a saved draft such as <code>v3.2022.3</code>, place the complete
+set of 11 validated Arrow files in a staging folder, then upload them to
+that draft:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="ex">gh</span> release upload v3.2022.3 release_staging/<span class="pp">*</span>.arrow <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">--repo</span> Public-Environmental-Data-Partners/ejamdata</span></code></pre></div>
+<p>Do not use <code>--clobber</code> unless replacing an asset is
+intentional. Recheck the draft’s title, body, status, asset names,
+sizes, and digests afterward. For a new release without a saved draft,
+<code><a href="../reference/datasets_arrow_publish.html">datasets_arrow_publish()</a></code> can create and upload assets with
+<code>dry_run = FALSE</code>; review its default title and notes first,
+because it creates a published release. Use
+<code>overwrite = TRUE</code> only after confirming existing assets with
+the same names should be replaced.</p>
 <p>Open a browser to confirm they are there.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="../reference/url_package.html">url_package</a></span><span class="op">(</span><span class="st">"data"</span>, get_full_url <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, <span class="st">"/releases"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Reload EJAM so it can get the updates. It should detect that new
-versions are available and cache them for the installed package.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>After publishing the draft, update
+<code>data/ejamdata_version.txt</code>, install EJAM, and reload it so
+it can get the updates. An unpublished draft cannot be used as the
+public download source for installed packages. EJAM should detect that
+new versions are available and cache them for the installed package.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span>list<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span></span>
@@ -639,8 +751,7 @@ versions are available and cache them for the installed package.</p>
 <code><a href="https://docs.ropensci.org/piggyback/reference/pb_download.html" class="external-link">piggyback::pb_download()</a></code>) pulls each Arrow file from the
 single release tagged in <code>ejamdata_required_tag</code>, so a
 missing asset breaks loading. Upload <strong>all 11</strong> files to
-<strong>every</strong> <code>v3.YYYY.0</code> release, even when most
-are unchanged:</p>
+every new data tag, even when most are unchanged:</p>
 <ul>
 <li>vintage-specific: <code>bgej.arrow</code>;</li>
 <li>geography (Census 2020, unchanged between ACS vintages):
@@ -651,10 +762,11 @@ are unchanged:</p>
 <code>frs_by_programid.arrow</code>, <code>frs_by_naics.arrow</code>,
 <code>frs_by_sic.arrow</code>, <code>frs_by_mact.arrow</code>.</li>
 </ul>
-<p>FRS is intentionally <strong>not refreshed</strong> for an
-ACS-vintage release; its files carry over unchanged (only their
-<code>ejam_package_version</code> metadata is bumped) and are
-re-published under the new tag. Confirm the file names match
+<p>FRS can be refreshed independently of the ACS vintage. For an
+ACS-only release, carry the FRS files forward if they remain suitable.
+For an FRS release such as <code>v3.2022.3</code>, publish the newly
+built five FRS files alongside the six compatible carried-forward files.
+Confirm the file names match
 <code>paste0(EJAM:::.arrow_ds_names, ".arrow")</code> before
 publishing.</p>
 <p>Three of these carry the <code>bgid</code> join key —
@@ -664,16 +776,17 @@ dataset updates</a>, “the <code>bgid</code> type must be
 <code>double</code>”); the other eight have no <code>bgid</code>.</p>
 </div>
 <div class="section level3">
-<h3 id="keep-the-four-identifiers-in-sync">Keep the four identifiers in sync<a class="anchor" aria-label="anchor" href="#keep-the-four-identifiers-in-sync"></a>
+<h3 id="keep-the-data-tag-and-local-marker-in-sync">Keep the data tag and local marker in sync<a class="anchor" aria-label="anchor" href="#keep-the-data-tag-and-local-marker-in-sync"></a>
 </h3>
-<p>After publishing, set the local version marker and confirm all four
-identifiers match (all <code>v3.YYYY.0</code>):</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="st">"v3.YYYY.0"</span>, <span class="st">"data/ejamdata_version.txt"</span><span class="op">)</span>   <span class="co"># tracked marker</span></span>
+<p>After publishing, set the local version marker and confirm it matches
+the <code>DESCRIPTION</code> data tag:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span>, <span class="st">"data/ejamdata_version.txt"</span><span class="op">)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span>                          <span class="co"># from DESCRIPTION; must equal the marker</span></span></code></pre></div>
-<p>git release tag = <code>ejamdata</code> release tag = DESCRIPTION
-<code>ejamdata_required_tag</code> =
-<code>data/ejamdata_version.txt</code>.</p>
+<p>The <code>ejamdata</code> release tag, DESCRIPTION
+<code>ejamdata_required_tag</code>, and
+<code>data/ejamdata_version.txt</code> must agree. The EJAM package Git
+tag may differ when code changes without changing data.</p>
 <p><strong>The rule applies only when the bundled data changes.</strong>
 Any release that ships code changes on top of already-published data
 keeps <code>ejamdata_required_tag</code> and the marker pointing at the
@@ -684,20 +797,20 @@ two cases:</p>
 <code>v3.2022.1</code> or <code>v3.2022.2</code>), which stays on the
 existing <code>v3.2022.0</code> data; and</li>
 <li>a release that changes only the <strong>version scheme or major
-version</strong> while keeping the same vintage — for example
-<code>v3.2022.3</code>, which also stays on <code>v3.2022.0</code>
-data.</li>
+version</strong> while keeping the same Arrow data.</li>
 </ul>
-<p>In both cases there is no matching <code>ejamdata</code> release and
-none is needed. A new <code>ejamdata</code> release is required only
-when the bundled ACS data itself changes, which is what a vintage bump
-such as <code>v4.2024.0</code> does (that one pins
-<code>v3.2024.0</code>).</p>
+<p>In those code-only cases there is no new <code>ejamdata</code>
+release. A new data tag is also needed when FRS files change, even if
+the ACS vintage stays the same. The <code>v3.2022.3</code> branch pins
+<code>ejamdata</code> <code>v3.2022.3</code> for its new FRS snapshot.
+An ACS vintage bump such as <code>v4.2024.0</code> may instead pin
+<code>v3.2024.0</code>.</p>
 <blockquote>
 <p>EJAM versions read <code>MAJOR.ACSENDYEAR.PATCH</code>, so the middle
 field names the ACS vintage while <code>ejamdata_required_tag</code>
-names the data release. They move independently: <code>v3.2022.3</code>
-and <code>v3.2022.2</code> share <code>v3.2022.0</code> data.</p>
+names the data release. They move independently: <code>v3.2022.2</code>
+can use <code>v3.2022.0</code> data while <code>v3.2022.3</code> names a
+new data tag for updated FRS files.</p>
 </blockquote>
 <p>This previously had been handled with a GitHub Actions workflow that
 tried to use Git LFS. That automatic workflow is no longer used and will

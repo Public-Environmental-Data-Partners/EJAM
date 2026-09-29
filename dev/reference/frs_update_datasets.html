@@ -89,7 +89,8 @@
 <span>  save_as_data_frs_by_programid <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_as_data_frs_by_naics <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_as_data_frs_by_sic <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  save_as_data_frs_by_mact <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  save_as_data_frs_by_mact <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -115,34 +116,42 @@ and folder will be specified or can be assumed to be current working directory</
 
 
 <dt id="arg-save-as-arrow-frs">save_as_arrow_frs<a class="anchor" aria-label="anchor" href="#arg-save-as-arrow-frs"></a></dt>
-<dd><p>Whether to save as .arrow in getwd()</p></dd>
+<dd><p>Whether to save <code>frs.arrow</code> in <code>folder_save_as_arrow</code>.</p></dd>
 
 
 <dt id="arg-save-as-arrow-frs-by-programid">save_as_arrow_frs_by_programid<a class="anchor" aria-label="anchor" href="#arg-save-as-arrow-frs-by-programid"></a></dt>
-<dd><p>Whether to save as .arrow in getwd()</p></dd>
+<dd><p>Whether to save <code>frs_by_programid.arrow</code> there.</p></dd>
 
 
 <dt id="arg-save-as-arrow-frs-by-naics">save_as_arrow_frs_by_naics<a class="anchor" aria-label="anchor" href="#arg-save-as-arrow-frs-by-naics"></a></dt>
-<dd><p>Whether to save as .arrow in getwd()</p></dd>
+<dd><p>Whether to save <code>frs_by_naics.arrow</code> there.</p></dd>
 
 
 <dt id="arg-save-as-arrow-frs-by-sic">save_as_arrow_frs_by_sic<a class="anchor" aria-label="anchor" href="#arg-save-as-arrow-frs-by-sic"></a></dt>
-<dd><p>Whether to save as .arrow in getwd()</p></dd>
+<dd><p>Whether to save <code>frs_by_sic.arrow</code> there.</p></dd>
 
 
 <dt id="arg-save-as-arrow-frs-by-mact">save_as_arrow_frs_by_mact<a class="anchor" aria-label="anchor" href="#arg-save-as-arrow-frs-by-mact"></a></dt>
-<dd><p>Whether to save as .arrow in getwd()</p></dd>
+<dd><p>Whether to save <code>frs_by_mact.arrow</code> there.</p></dd>
 
 
 <dt id="arg-save-as-data-frs-save-as-data-frs-by-programid-save-as-data-frs-by-naics-save-as-data-frs-by-sic-save-as-data-frs-by-mact">save_as_data_frs, save_as_data_frs_by_programid, save_as_data_frs_by_naics, save_as_data_frs_by_sic, save_as_data_frs_by_mact<a class="anchor" aria-label="anchor" href="#arg-save-as-data-frs-save-as-data-frs-by-programid-save-as-data-frs-by-naics-save-as-data-frs-by-sic-save-as-data-frs-by-mact"></a></dt>
 <dd><p>Obsolete. FRS tables are no longer saved as <code>.rda</code> files in <code>./data/</code>.
 Leave these as <code>FALSE</code> and publish the <code>.arrow</code> files instead.</p></dd>
 
+
+<dt id="arg-date">date<a class="anchor" aria-label="anchor" href="#arg-date"></a></dt>
+<dd><p>Retrieval/snapshot date passed to <code><a href="frs_get.html">frs_get()</a></code>. Set it to the
+original retrieval date when reusing a previously downloaded source CSV.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Creates saved copies of datasets for the R package, overwriting old ones, using
-<code><a href="frs_get.html">frs_get()</a></code> and <code><a href="frs_inactive_ids.html">frs_inactive_ids()</a></code> and other functions, and invisibly returns <a href="frs.html">frs</a>.</p>
+    <p>Writes the requested Arrow IPC files locally, using <code><a href="frs_get.html">frs_get()</a></code>
+and <code><a href="frs_inactive_ids.html">frs_inactive_ids()</a></code> and other functions, and invisibly returns the
+newly built <code>frs</code> table. The caller must validate and publish the files.
+<code>download_date</code> and <code>released</code> describe this FRS retrieval/snapshot;
+the version and release-date attributes come from EJAM's DESCRIPTION.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -152,13 +161,17 @@ the locations, IDs, etc. for hundreds of thousands of EPA-regulated sites.</p>
 <p>This function is only for a package maintainer/updater
 (or an analyst who wants to get the latest information).</p>
 <p>These datasets are obtained from EPA servers, reformatted for this package,
-and then stored as <code>.arrow</code> files in a separate repository - see
+and written as local Arrow IPC files for validation before they are uploaded
+to an <code>ejamdata</code> release - see
 <a href="https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html">updating data for package</a>.
 The <code>save_as_data_*</code> parameters are obsolete and kept only to make old
 maintainer scripts fail clearly. FRS tables are no longer saved as
 lazy-loaded <code>.rda</code> package data in <code>EJAM/data/</code>.</p>
-<p>The files later get downloaded for local use during the process
-of installing the EJAM package.</p>
+<p>The five FRS Arrow files are <code>frs</code>, <code>frs_by_programid</code>, <code>frs_by_naics</code>,
+<code>frs_by_sic</code>, and <code>frs_by_mact</code>. The function also writes <code>mact_table.arrow</code>
+and <code>mact_table.rda</code> to the output folder; <code>mact_table</code> is package data,
+not one of the 11 dynamic Arrow release assets. The Arrow files later get
+downloaded for local use by EJAM.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

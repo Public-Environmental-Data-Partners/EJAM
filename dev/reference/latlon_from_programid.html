@@ -113,9 +113,8 @@ sort(unique(frs_by_programid$program))</p>
 <p>There are roughly 3.5 million records in <a href="frs_by_programid.html">frs_by_programid</a> but only
 about 2.7 million unique pgm_sys_id values because the same number
 may be used under different program types, like RCRAINFO AND EGRID.</p>
-<p>These are two distinct facilities both using the number 1:</p>
-<p>latlon_from_programid('EGRID', 1)
-latlon_from_programid('ICIS', 1)</p>
+<p>The program name is needed because an ID can occur in more than one
+program. Use the current <code>testinput_program_sys_id</code> fixture for examples.</p>
 <p>Also note the FRS API:
 <a href="https://www.epa.gov/frs/facility-registry-service-frs-api" class="external-link">https://www.epa.gov/frs/facility-registry-service-frs-api</a>
 <a href="https://www.epa.gov/frs/frs-rest-services" class="external-link">https://www.epa.gov/frs/frs-rest-services</a></p>
@@ -123,15 +122,10 @@ latlon_from_programid('ICIS', 1)</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">ids</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"00603DSCFPRD459"</span>, <span class="st">"00603MCRNTRD11K"</span>, <span class="st">"00605VNMRBMONTA"</span> <span class="op">)</span></span>
-<span> <span class="fu">latlon_from_programid</span><span class="op">(</span><span class="st">"TRIS"</span>, <span class="va">ids</span><span class="op">)</span></span>
-<span></span>
-<span> <span class="fu">latlon_from_programid</span><span class="op">(</span><span class="st">'EGRID'</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span> <span class="fu">latlon_from_programid</span><span class="op">(</span><span class="st">'ICIS'</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span></span>
-<span> <span class="co"># ambiguous to only use the number! 354362 is used by two programs here:</span></span>
-<span> <span class="va">frs_by_programid</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">testinput_program_sys_id</span>, <span class="va">frs_by_programid</span><span class="op">$</span><span class="va">pgm_sys_id</span><span class="op">)</span>, <span class="op">]</span></span>
-<span> <span class="va">frs_by_programid</span><span class="op">[</span><span class="va">frs_by_programid</span><span class="op">$</span><span class="va">pgm_sys_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">testinput_program_sys_id</span>, <span class="op">]</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="fu">latlon_from_programid</span><span class="op">(</span></span>
+<span>   <span class="va">testinput_program_sys_id</span><span class="op">$</span><span class="va">program</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>   <span class="va">testinput_program_sys_id</span><span class="op">$</span><span class="va">pgm_sys_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span> <span class="op">)</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

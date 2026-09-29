@@ -102,9 +102,10 @@ if the full record was  RCRAINFO:XJW000000174</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>programname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'STATE'</span>,<span class="st">'FIS'</span>,<span class="st">'FIS'</span><span class="op">)</span>,</span>
-<span>                    programid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'#5005'</span>,<span class="st">'0-0000-01097'</span>,<span class="st">'0-0000-01103'</span><span class="op">)</span><span class="op">)</span></span>
-<span> <span class="va">x</span> <span class="op">=</span> <span class="fu">frs_from_programid</span><span class="op">(</span><span class="va">test</span><span class="op">$</span><span class="va">programname</span>, <span class="va">test</span><span class="op">$</span><span class="va">programid</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span> <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">frs_from_programid</span><span class="op">(</span></span>
+<span>   <span class="va">testinput_program_sys_id</span><span class="op">$</span><span class="va">program</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>   <span class="va">testinput_program_sys_id</span><span class="op">$</span><span class="va">pgm_sys_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span> <span class="op">)</span></span>
 <span> <span class="va">x</span></span>
 <span> <span class="fu"><a href="mapfast.html">mapfast</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span></code></pre></div>
