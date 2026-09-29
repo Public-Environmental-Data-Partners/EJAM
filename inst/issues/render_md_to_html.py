@@ -88,7 +88,7 @@ def style_issue_tables(html_path: Path) -> None:
     if styled_table_count and "</head>" in document:
         document = document.replace("</head>", f"{ISSUE_TABLE_STYLE}</head>", 1)
     document = re.sub(
-        r"<html(?![^>]*\\blang=)([^>]*)>",
+        r"<html(?![^>]*\blang=)([^>]*)>",
         r'<html lang="en" xml:lang="en"\1>',
         document,
         count=1,

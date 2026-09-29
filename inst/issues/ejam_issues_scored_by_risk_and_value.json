@@ -14,14 +14,12 @@
     },
     "report_path": "inst/issues/ejam_issues_scored_by_risk_and_value.MD",
     "run_changes": {
-      "previous_run": "2026-09-27",
+      "previous_run": "2026-09-28",
       "opened_count": 0,
-      "closed_count": 1,
+      "closed_count": 0,
       "quadrant_changed_count": 0,
       "opened_issue_numbers": [],
-      "closed_issue_numbers": [
-        231
-      ],
+      "closed_issue_numbers": [],
       "quadrant_changed_issue_numbers": []
     }
   },

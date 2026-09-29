@@ -573,6 +573,8 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
         ## Show the score separately from the live metadata. A rank label can be
         ## stale until a later, explicit GitHub-label update task applies it.
         rank_lbl = RANK_LABELS.get(r["quad"])
+        current_rank_labs = [l for l in key_labs if l.startswith("rank:")]
+        key_labs = current_rank_labs + [l for l in key_labs if l not in current_rank_labs]
         lab_str  = ", ".join(key_labs[:4])
         ## truncate first, then escape - escaping first would let backslashes
         ## count toward the limit and could cut a "\$" in half

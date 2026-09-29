@@ -315,6 +315,21 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertIn('<html lang="en" xml:lang="en">', styled)
         self.assertIn("<th>Metric</th>", styled)
 
+    def test_renderer_preserves_existing_html_language(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html_path = Path(tmp) / "report.html"
+            html_path.write_text(
+                '<html lang="fr" xml:lang="fr"><head></head><body></body></html>',
+                encoding="utf-8",
+            )
+
+            renderer.style_issue_tables(html_path)
+
+            styled = html_path.read_text(encoding="utf-8")
+
+        self.assertEqual(styled.count("lang="), 2)
+        self.assertIn('<html lang="fr" xml:lang="fr">', styled)
+
 
 if __name__ == "__main__":
     unittest.main()
