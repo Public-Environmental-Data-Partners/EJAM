@@ -118,6 +118,10 @@ which is where development continues.
 - In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html)
   and other articles, fixed about 20 broken or incomplete links and text (#602).
 
+- Rewrote the developer articles [Releasing a New Version of EJAM](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-package.html)
+  and [Deploying the Web App to AWS](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deployment.html)
+  to match the current release and deploy process (#631, #632).
+
 
 # EJAM 3.2022.2 (August 2026)
 
