@@ -305,11 +305,17 @@ aws ecr get-login-password --region us-east-1 \
 # needs a UNIQUE tag -- re-pushing an existing tag (e.g. :latest) will fail.
 # Match the workflows' commit-SHA convention:
 TAG="manual-$(git rev-parse --short HEAD)"
-# Pass a GitHub token as the workflows do (used to download the ejamdata files):
-docker build --build-arg GITHUB_PAT="$(gh auth token)" -t ejam:$TAG .
+docker build -t ejam:$TAG .
 docker tag  ejam:$TAG <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:$TAG
 docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:$TAG
 ```
+
+**Don't pass your own GitHub token** as `--build-arg GITHUB_PAT=...`. Docker saves
+build-arg values in the image's history, so anyone who can pull the image from ECR
+can read them with `docker history`. No token is needed: EJAM and `ejamdata` are
+public, and with `EJAMDATA_VERSION` set the data files download without one. (The
+workflows pass the run's own `github.token`, which expires when the job ends, so
+the copy left in the image history no longer works.)
 
 The `.dockerignore` (on the deploy branch) excludes `.RData`, `.Rhistory`,
 `.Rproj.user`, `.git`, `.github`, `ejam-infra/`, and several docs and test folders
