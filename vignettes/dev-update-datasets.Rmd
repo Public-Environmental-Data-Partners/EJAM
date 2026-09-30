@@ -384,7 +384,7 @@ have no leading, trailing, or repeated whitespace (EJAM issue #231).
 Replace obsolete sample IDs with verified ones and regenerate expected outputs
 only when behavior genuinely changed. Run focused FRS tests and vignette builds
 from a local setup using the new Arrow files, then perform the package release
-checks described in [Updating the Package as a New Release](dev-update-package.html).
+checks described in [Releasing a New Version of EJAM](dev-update-package.html).
 The archived `inst/testdata/registryid/ECHO_Test_Data/` downloads are historical
 ECHO source examples and can contain IDs absent from the current FRS snapshot;
 use the regenerated `frs_testpoints_*` files for current-ID input checks.
