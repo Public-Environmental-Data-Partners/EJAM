@@ -22,7 +22,7 @@ but this looks at naics.com website which lists various aliases for a sector.
  # browseURL(naics_from_any("copper smelting", website_url=TRUE) )
 
   url_naics.com("copper smelting")
-  \donttest{
+  \dontrun{
   naics_findwebscrape("copper smelting")
   browseURL(url_naics.com("copper smelting"))
   browseURL(naics_url_of_code(326))

@@ -3,9 +3,112 @@ from __future__ import annotations
 
 import argparse
 import html
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+
+ISSUE_TABLE_COLGROUP = """<colgroup>
+<col style="width: 5%" />
+<col style="width: 18%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 8%" />
+<col style="width: 12%" />
+<col style="width: 18%" />
+<col style="width: 17%" />
+</colgroup>"""
+
+ISSUE_TABLE_STYLE = """
+  <style>
+    body {
+      max-width: 80em;
+    }
+    table.issue-details {
+      display: table;
+      table-layout: fixed;
+      min-width: 64em;
+      width: 100%;
+    }
+    table.issue-details th:first-child,
+    table.issue-details td:first-child {
+      white-space: nowrap;
+    }
+    table.issue-details th:nth-child(5) {
+      white-space: nowrap;
+    }
+    table.issue-details th:nth-child(2),
+    table.issue-details td:nth-child(2) {
+      hyphens: auto;
+      overflow-wrap: break-word;
+      white-space: normal;
+    }
+    table.issue-details th:nth-child(3),
+    table.issue-details td:nth-child(3),
+    table.issue-details th:nth-child(4),
+    table.issue-details td:nth-child(4) {
+      hyphens: none;
+      overflow-wrap: normal;
+      white-space: nowrap;
+    }
+  </style>
+"""
+
+
+def style_issue_tables(html_path: Path) -> None:
+    """Apply report-specific widths and language metadata to issue tables."""
+    document = html_path.read_text(encoding="utf-8")
+    styled_table_count = 0
+
+    def add_issue_table_layout(match: re.Match) -> str:
+        nonlocal styled_table_count
+        table = match.group(0)
+        if (
+            "<th>Issue</th>" not in table
+            or "<th>Current GitHub labels (key)</th>" not in table
+        ):
+            return table
+        styled_table_count += 1
+        table = table.replace("<table>", '<table class="issue-details">', 1)
+        return re.sub(
+            r"<colgroup>.*?</colgroup>",
+            ISSUE_TABLE_COLGROUP,
+            table,
+            count=1,
+            flags=re.DOTALL,
+        )
+
+    document = re.sub(
+        r"<table>.*?</table>",
+        add_issue_table_layout,
+        document,
+        flags=re.DOTALL,
+    )
+    if styled_table_count and "</head>" in document:
+        document = document.replace("</head>", f"{ISSUE_TABLE_STYLE}</head>", 1)
+    def normalize_html_language(match: re.Match) -> str:
+        attrs = match.group(1)
+
+        def existing_language(name: str) -> str:
+            found = re.search(
+                rf"\s{name}\s*=\s*(['\"])(.*?)\1", attrs, flags=re.IGNORECASE
+            )
+            return found.group(2).strip() if found else ""
+
+        language = existing_language("lang") or existing_language("xml:lang") or "en"
+        attrs = re.sub(
+            r"\s+(?:xml:)?lang\s*=\s*(['\"]).*?\1", "", attrs, flags=re.IGNORECASE
+        )
+        return f'<html lang="{language}" xml:lang="{language}"{attrs}>'
+
+    document = re.sub(
+        r"<html\b([^>]*)>",
+        normalize_html_language,
+        document,
+        count=1,
+    )
+    html_path.write_text(document, encoding="utf-8")
 
 
 def render_with_pandoc(md_path: Path, html_path: Path) -> bool:
@@ -17,6 +120,7 @@ def render_with_pandoc(md_path: Path, html_path: Path) -> bool:
             [str(pandoc_wrapper), "-s", str(md_path), "-o", str(html_path)],
             check=True,
         )
+        style_issue_tables(html_path)
         return True
     except Exception:
         return False
@@ -25,11 +129,11 @@ def render_with_pandoc(md_path: Path, html_path: Path) -> bool:
 def render_pre_fallback(md_path: Path, html_path: Path) -> None:
     md = md_path.read_text(encoding="utf-8")
     out = (
-        "<!doctype html><meta charset=\"utf-8\">"
-        "<title>EJAM issues scored</title>"
+        "<!doctype html><html lang=\"en\" xml:lang=\"en\"><head><meta charset=\"utf-8\">"
+        "<title>EJAM issues scored</title></head><body>"
         "<pre style=\"white-space:pre-wrap;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace\">"
         + html.escape(md)
-        + "</pre>"
+        + "</pre></body></html>"
     )
     html_path.write_text(out, encoding="utf-8")
 
@@ -57,4 +161,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

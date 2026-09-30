@@ -163,7 +163,8 @@ radius_donut_lower_edge).
  x_links = url_ejamapi(pts2, as_html = TRUE, linktext = "Report")
 
  \dontrun{
- browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))  # API base from DESCRIPTION
+ # API base comes from DESCRIPTION
+ browseURL(paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4"))
 
  browseURL(x[1])
  browseURL(y[1])

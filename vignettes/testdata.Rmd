@@ -110,7 +110,7 @@ functions, or you may just want to see what the outputs and inputs look like,
 or you could use them for testing purposes.
 
 For documentation on each input or output item (R object), see 
-[reference documentation on each object](../reference/index.html#test-data)
+[reference documentation on each object](`r paste0(EJAM::url_package("docs"), "/reference/index.html#test-data")`)
 
 This code snippet provides a useful list of test/ sample data
 objects in EJAM and related packages:
@@ -168,4 +168,4 @@ Note that the largest files used by the package are mostly the block-related dat
 
 Some datasets get downloaded by the package at installation or launch or as needed. See the article on [Updating EJAM Datasets](dev-update-datasets.html) for more information on these. 
 
-Also see [reference documentation for each dataset](../reference/index.html#datasets-with-indicators-raw-data-means-percentiles-).
+Also see [reference documentation for each dataset](`r paste0(EJAM::url_package("docs"), "/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-")`).

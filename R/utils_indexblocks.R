@@ -30,7 +30,11 @@ ejam_cached_data_get <- function(name) {
     return(get(name, envir = globalenv(), inherits = FALSE))
   }
 
-  stop("Unable to load required EJAM dataset: ", name, call. = FALSE)
+  # If the download step already diagnosed why (e.g., the GitHub API could not be
+  # asked what assets the release has), say so here. Otherwise this error blames
+  # the data release for what was really a failed API call.
+  stop("Unable to load required EJAM dataset: ", name,
+       ejamdata_download_problem_note(), call. = FALSE)
 }
 
 localtree_exists <- function() {

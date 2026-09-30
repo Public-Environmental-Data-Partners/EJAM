@@ -1,8 +1,12 @@
 #' Publish Arrow files as ejamdata release assets
 #'
 #' Maintainer helper for publishing dynamic EJAM `.arrow` files to the data
-#' repository release assets. Defaults are intentionally conservative: dry-run
-#' only, do not overwrite existing assets, and do not mark the release as latest.
+#' repository release assets. Defaults are dry-run only, do not overwrite
+#' existing assets, and do not mark the release as latest. With
+#' `dry_run = FALSE`, this helper rewrites an existing release's title and body
+#' using `release_name` and `release_notes`; if the tag has no release, it
+#' creates a published release. For a saved draft whose title, notes, and draft
+#' state must be preserved, use `gh release upload` after a dry run instead.
 #'
 #' @param files Character vector of local `.arrow` file paths.
 #' @param tag GitHub release tag to create/use. Defaults to the required
@@ -22,8 +26,8 @@
 #' @param validate_arrow Logical. If `TRUE`, confirm files can be opened as
 #'   Arrow IPC files before publishing.
 #' @examples
-#'  fpaths <- file.path("data", paste0(EJAM:::.arrow_ds_names, ".arrow"))
 #'  \dontrun{
+#'  fpaths <- file.path("data", paste0(EJAM:::.arrow_ds_names, ".arrow"))
 #'
 #'  stopifnot(all(file.exists(fpaths)))
 #'  EJAM:::datasets_arrow_publish(

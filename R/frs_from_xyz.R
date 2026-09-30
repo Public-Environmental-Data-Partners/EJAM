@@ -2,12 +2,12 @@
 # very basic reality check for regids
 # basic check if plausible regid
 
-regids_seem_ok = function(regid, minok = 110000300000, maxok = 110072000000) {
+regids_seem_ok = function(regid, minok = 110000300000, maxok = Inf) {
 
   if (!is.atomic(regid)) {return(FALSE)}
-  asnums = as.numeric(regid)
+  asnums = suppressWarnings(as.numeric(regid))
   # range(as.numeric(frs$REGISTRY_ID))
-  # [1] 110000307695 110071892733
+  # Do not cap at an old snapshot's maximum ID: EPA issues new IDs.
   ok = !is.na(asnums) & asnums < maxok & asnums > minok
   return(ok)
 }
@@ -25,7 +25,7 @@ regids_seem_ok = function(regid, minok = 110000300000, maxok = 110072000000) {
 regids_valid = function(regid) {
 
   seemok = regids_seem_ok(regid) # basic check if plausible regid
-  if (all(!seemok)) {return(!seemok)}
+  if (all(!seemok)) {return(seemok)}
 
   if (!exists("frs")) {
     dataload_dynamic("frs")
@@ -58,9 +58,10 @@ frs_from_regid <- function(regid = NULL) {
 #' @return relevant rows of the table in [data.table](https://r-datatable.com) format called [frs], which has column names that are
 #'    "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 #' @examples
-#'  test <- data.frame(programname = c('STATE','FIS','FIS'),
-#'                     programid = c('#5005','0-0000-01097','0-0000-01103'))
-#'  x = frs_from_programid(test$programname, test$programid)
+#'  x <- frs_from_programid(
+#'    testinput_program_sys_id$program[1],
+#'    testinput_program_sys_id$pgm_sys_id[1]
+#'  )
 #'  x
 #'  mapfast(x)
 #'

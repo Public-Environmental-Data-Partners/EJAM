@@ -11,7 +11,8 @@ pctile_from_raw_lookup(
   lookup = usastats,
   zone = "USA",
   quiet = TRUE,
-  signif_digits = NULL
+  signif_digits = NULL,
+  snap_tol = pctile_snap_tolerance
 )
 
 lookup_pctile(
@@ -19,7 +20,8 @@ lookup_pctile(
   varname.in.lookup.table,
   lookup = usastats,
   zone = "USA",
-  signif_digits = NULL
+  signif_digits = NULL,
+  snap_tol = pctile_snap_tolerance
 )
 }
 \arguments{
@@ -50,6 +52,15 @@ and the matching lookup-table column to this many significant digits before
 assigning percentiles. This is mainly for reference-replication workflows
 such as the ACS22 \code{P_DISABILITYPCT} boundary issue, where tiny binary
 floating-point differences otherwise put values just below a lookup cutoff.}
+
+\item{snap_tol}{relative tolerance for treating a raw value as sitting exactly
+on a lookup cutoff rather than just near it. Raw scores are usually
+population-weighted averages carrying a few units in the last place of
+rounding error, and that error differs by platform, so without this the
+percentile reported for a value on a cutoff could depend on the operating
+system. Set to 0 to compare raw values to cutoffs exactly, which suits
+callers looking up stored values that were never aggregated, such as
+reference replication in \code{\link[=calc_ejscreen_export]{calc_ejscreen_export()}}.}
 }
 \value{
 By default, returns numeric vector length of myvector.

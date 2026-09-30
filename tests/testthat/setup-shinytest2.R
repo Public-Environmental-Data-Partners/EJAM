@@ -197,6 +197,21 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
 
     testthat::skip_if_not_installed("shinytest2") # setup-shinytest2.R is sourced automatically by testthat, but shinytest2 itself is only needed for these web app tests
 
+    # These launch the whole app in a real browser and are slow and very
+    # environment-sensitive - waits like app$wait_for_idle(timeout = 5 * 1000)
+    # are tuned for the dedicated test-webapp-functionality.yaml runner, and a
+    # cold R CMD check machine cannot meet them. Left ungated they were the one
+    # ERROR failing R CMD check on every platform, with "An error occurred while
+    # waiting for Shiny to be stable".
+    #
+    # SHINYTEST2_APP_DRIVER_TEST_ON_CRAN is shinytest2's own opt-in variable and
+    # test-webapp-functionality.yaml already sets it to 1, so that workflow runs
+    # the full suite exactly as before. Nothing else sets it, so R CMD check now
+    # skips these instead of failing. Set it locally to run them by hand.
+    if (!ejam_shinytest2_truthy_env("SHINYTEST2_APP_DRIVER_TEST_ON_CRAN")) {
+      testthat::skip("shinytest2 app tests run only when SHINYTEST2_APP_DRIVER_TEST_ON_CRAN is set - see .github/workflows/test-webapp-functionality.yaml")
+    }
+
     test_log_dir <- file.path(tempdir(), "ejam-shinytest2-logs")
     dir.create(test_log_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -687,11 +702,18 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       )
     }
     ################## #
-    custom_html_report_download <- function(outputId) {
-      if (!rmarkdown::pandoc_available()) {
-        shinytestLogMessage("Skipping community report download assertion because pandoc is not available")
-        return(invisible(NA_character_))
+    require_report_download_tools <- function() {
+      if (!isTRUE(EJAM:::ensure_pandoc_available_for_ejam())) {
+        stop(
+          "Pandoc is required for the community report download test; this test must fail rather than silently skip.",
+          call. = FALSE
+        )
       }
+      invisible(TRUE)
+    }
+    ################## #
+    custom_html_report_download <- function(outputId) {
+      require_report_download_tools()
 
       download_filepath <- tryCatch(
         app$get_download(outputId),
@@ -727,6 +749,32 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
           grepl(txt, html_text, fixed = TRUE)
         )
       }
+
+      invisible(download_filepath)
+    }
+    ################## #
+    custom_pdf_report_download <- function(outputId) {
+      require_report_download_tools()
+
+      download_filepath <- tryCatch(
+        app$get_download(outputId),
+        error = function(cond) {
+          save_log("EJAM_app_test_pdf_report_download_log.txt")
+          shinytestLogMessage(conditionMessage(cond))
+          stop(cond)
+        }
+      )
+
+      testthat::expect_true(file.exists(download_filepath))
+      testthat::expect_identical(
+        tolower(tools::file_ext(download_filepath)),
+        "pdf"
+      )
+      testthat::expect_gt(file.info(download_filepath)$size, 100)
+      testthat::expect_identical(
+        readBin(download_filepath, what = "raw", n = 4L),
+        charToRaw("%PDF")
+      )
 
       invisible(download_filepath)
     }
@@ -1382,10 +1430,10 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
     # 3) SEE RESULTS ####
     # ~  ####
 
-    ## SUMMARY REPORT (html DOWNLOAD) ####
+    ## SUMMARY REPORT (PDF and HTML DOWNLOADS) ####
 
     if (run_full_basic_checks()) {
-      shinytestLogMessage("about to download community report")
+      shinytestLogMessage("about to download PDF and HTML community reports")
       wait_for_results_ready(result = "multisite_report_download_ready")
 
       ## This step was originally getting the underlying dataframe
@@ -1399,6 +1447,12 @@ shinytest2_webapp_functionality <- function(test_category = "all") {
       # app$get_download("download_report_multisite")
       # customExpectValues(name="comm", inputs=FALSE, outputs=FALSE, exports=c("download_report_multisite")) # this should grab just the underlying df behind the export
 
+      app$set_inputs(fileextension = "pdf", wait_ = FALSE)
+      wait_for_input_value("fileextension", expected = "pdf")
+      custom_pdf_report_download("download_report_multisite")
+
+      app$set_inputs(fileextension = "html", wait_ = FALSE)
+      wait_for_input_value("fileextension", expected = "html")
       custom_html_report_download("download_report_multisite")
     }
     ########################################################################### #

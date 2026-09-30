@@ -264,7 +264,10 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
         varname.in.lookup.table = raw_vars[[i]],
         lookup = lookup,
         zone = zones,
-        quiet = TRUE
+        quiet = TRUE,
+        # exporting blockgroup values as stored, not aggregates, so compare to
+        # cutoffs exactly - see the note on snap_tol in add_mapped_pctiles_from_lookup()
+        snap_tol = 0
       )
     }
     invisible(NULL)
@@ -328,7 +331,15 @@ calc_ejscreen_export <- function(blockgroupstats = NULL,
         lookup = lookup,
         zone = zones,
         quiet = TRUE,
-        signif_digits = signif_digits
+        signif_digits = signif_digits,
+        # These are blockgroup values looked up as stored, never aggregated, so
+        # they carry none of the platform-dependent rounding error that the
+        # default snapping in pctile_from_raw_lookup() exists to absorb. This
+        # export replicates EPA's published EJScreen numbers, and which
+        # indicators need a boundary nudge is decided deliberately, per
+        # indicator, by ejscreen_reference_pctile_signif_digits. So compare to
+        # cutoffs exactly here and let that setting be the only such knob.
+        snap_tol = 0
       )
     }
     invisible(NULL)

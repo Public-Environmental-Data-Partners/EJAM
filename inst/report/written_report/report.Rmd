@@ -952,30 +952,30 @@ suggesting useful background literature.
 # 
 ## Notes on formatting for a manuscript
 
-This manuscript will follow the guidelines in the Guide for Authors of
-the relevant journal. For detailed instructions on the elsevier
-article class, see
-<https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions>
+# This manuscript will follow the guidelines in the Guide for Authors of
+# the relevant journal. For detailed instructions on the elsevier
+# article class, see
+# <https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions>
 
 ## Bibliography styles
 
-Here are two sample references: [@Feynman1963118; @Dirac1953888]. 
+# Here are two sample references: [@Feynman1963118; @Dirac1953888]. 
 
-By default, natbib will be used with the `authoryear` style, set in the 
-`classoption` variable in a YAML. 
-You can set  extra options with 
-`natbiboptions` variable in a YAML header:
+# By default, natbib will be used with the `authoryear` style, set in the 
+# `classoption` variable in a YAML. 
+# You can set  extra options with 
+# `natbiboptions` variable in a YAML header:
 #``` yaml
 #natbiboptions: longnamesfirst,angle,semicolon
 #```
 
-There are various more specific bibliography styles available at
-<https://support.stmdocs.in/wiki/index.php?title=Model-wise_bibliographic_style_files>.
-To use one of these, add it in the header using, for example,
-`biblio-style: model1-num-names`.
+# There are various more specific bibliography styles available at
+# <https://support.stmdocs.in/wiki/index.php?title=Model-wise_bibliographic_style_files>.
+# To use one of these, add it in the header using, for example,
+# `biblio-style: model1-num-names`.
 
-If `citation_package` is set to `default` in `elsevier_article()`, then
-pandoc is used for citations instead of `natbib`.
+# If `citation_package` is set to `default` in `elsevier_article()`, then
+# pandoc is used for citations instead of `natbib`.
 
 
 

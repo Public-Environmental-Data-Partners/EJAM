@@ -62,7 +62,7 @@ cumulative count of demog groups at that blockgroup's distance.
 If returnwhat is "plotfilename" then it returns the full path including filename of a .png in a tempdir
 If returnwhat is "plot" then it returns the plot object as needed for \code{\link[=ejam2excel]{ejam2excel()}} or related functions}
 
-\item{...}{other parameters passed through to \code{\link[=points]{points()}}}
+\item{...}{other parameters passed through to \code{\link[graphics:points]{graphics::points()}}}
 
 \item{color1}{color like "red" for residential population group of interest}
 

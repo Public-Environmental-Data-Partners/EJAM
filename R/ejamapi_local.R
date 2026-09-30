@@ -21,7 +21,8 @@
 #'
 #'  2. Mounted at `/draft`, the draft/experimental endpoints that exist only
 #'     in this package (`inst/plumber/draft/plumber.R`), e.g. `/draft/echo`,
-#'     `/draft/ejamit`, `/draft/report2`, `/draft/getblocksnearby`.
+#'     `/draft/ejamit`, `/draft/reportnew`, `/draft/all`, and
+#'     `/draft/getblocksnearby`. Draft routes are local and experimental.
 #'
 #' Note local PDF report rendering requires pandoc (e.g., the RSTUDIO_PANDOC
 #' environment variable set when running outside RStudio).
@@ -91,6 +92,8 @@ ejamapi_local <- function(
     # so it cannot do this itself; on the deployed API the Docker image bakes
     # the data in instead.
     if (!exists("blockwts", envir = globalenv())) dataload_dynamic("blockwts")
+    # This background callr process attaches EJAM, so non-exported helpers
+    # must be resolved through the package namespace.
     if (!EJAM:::localtree_exists()) indexblocks()
 
     if (requireNamespace("beepr", quietly = TRUE)) {

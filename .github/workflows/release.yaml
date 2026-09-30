@@ -3,19 +3,21 @@ name: 'Release: tag and publish'
 # Tags the version currently in DESCRIPTION on `main` and publishes a GitHub
 # Release whose notes are the matching section of NEWS.md.
 #
-# Two ways to run it:
+# ONE way to run it: manually (workflow_dispatch). Use dry_run first to see exactly
+# what would be tagged and what the notes would say.
 #
-#   1. Manually (workflow_dispatch) - the normal path. Use dry_run first to see
-#      exactly what would be tagged and what the notes would say.
-#   2. On a schedule - 21:00 UTC on August 1, to ship v3.2022.2 without anyone
-#      having to be at a keyboard.
+# THERE IS NO SCHEDULED RELEASE. An annual cron used to ship the August release
+# unattended; it was removed for the v4 line - see the comment where the `schedule:`
+# trigger used to be, just above `permissions:`. Do not re-add one without the
+# maintainer's explicit approval for that specific release.
 #
 # What it does depends on what is already on the releases page:
 #
 #   * an unpublished DRAFT exists -> that draft is published as-is, keeping the
 #     title and notes someone reviewed. Publishing is what creates the tag.
-#     This is the normal path: prepare a draft, review it, let the schedule
-#     ship it.
+#     This is the normal path: prepare a draft, review it, then dispatch this
+#     workflow to ship it. The run refuses to publish (and the dry run fails) if
+#     the draft's target does not resolve to the checked-out head of `main`.
 #   * nothing exists -> a tag is created and a release is built from the
 #     matching NEWS.md section.
 #   * already published -> nothing happens; a shipped release is never touched.
@@ -25,20 +27,22 @@ name: 'Release: tag and publish'
 # events raised by the default GITHUB_TOKEN, so the `release: published` event
 # this workflow generates triggers nothing on its own.
 #
-# The scheduled path is deliberately one-shot: it refuses to do anything unless
-# DESCRIPTION on `main` still reads exactly SCHEDULED_EXPECTED_VERSION. So when
-# this cron fires again in later years it will find a different version and exit
-# quietly instead of releasing something nobody asked for. Re-running it is
-# always safe: if the tag already exists, the job skips.
+# SCHEDULED_EXPECTED_VERSION below is retained but inert: it refuses to do anything
+# unless DESCRIPTION on `main` reads exactly that version. It is the safety net if a
+# schedule is ever deliberately restored. Re-running by hand is always safe: if the
+# tag already exists, the job skips.
 #
-# NOTE: scheduled workflows only fire from the default branch (`main`), so this
-# file has to be merged to `main` before the August 1 run can happen.
+# VERSION NUMBERING: EJAM versions are MAJOR.ACSENDYEAR.PATCH - the second field is
+# the ACS vintage end year, not a minor number (3.2022.2, 3.2022.3, 4.2024.0). Two
+# vintages are supported at once, so the highest version is the live line and the
+# lower one is the frozen snapshot. The release title and the drift guard both read
+# DESCRIPTION's VersionACS rather than parsing the version string.
 
 on:
   workflow_dispatch:
     inputs:
       expected_version:
-        description: 'Version you expect to release, e.g. 3.2022.2. Must match DESCRIPTION or the run fails.'
+        description: 'Version you expect to release, e.g. 3.2022.3 or 4.2024.0. Must match DESCRIPTION or the run fails.'
         required: false
         default: ''
       dry_run:
@@ -51,9 +55,20 @@ on:
         required: true
         type: boolean
         default: true
-  schedule:
-    # 21:00 UTC = 17:00 EDT on August 1.
-    - cron: '0 21 1 8 *'
+  # NO `schedule:` TRIGGER. Releasing is a deliberate, human-initiated act: run this
+  # workflow by hand from the Actions tab (workflow_dispatch above).
+  #
+  # There used to be an annual August 1 cron, which shipped 3.2022.2 on 2026-08-01.
+  # It is deliberately NOT carried forward to the v4 line. The SCHEDULED_EXPECTED_VERSION
+  # guard below only protects against firing on the WRONG version; it cannot tell a
+  # release that is ready from one that is merely dated. So if the code freeze landed on
+  # time but the release were being held back - for more testing, or a deploy window, or
+  # any reason at all - a cron would publish it anyway. That is the failure this removal
+  # prevents.
+  #
+  # Do not re-add a cron here without the maintainer's explicit approval for that
+  # specific release. The env var below is kept only so the guard still works if a
+  # schedule is ever deliberately restored.
 
 permissions:
   contents: write
@@ -62,8 +77,10 @@ permissions:
   actions: write
 
 env:
-  # Guard for the scheduled run only - see the header comment.
-  SCHEDULED_EXPECTED_VERSION: '3.2022.2'
+  # Guard for the scheduled run only, and therefore INERT while there is no `schedule:`
+  # trigger - the code reading it runs only when github.event_name == 'schedule'. Kept so
+  # the safety net still works if a schedule is ever deliberately restored. See the header.
+  SCHEDULED_EXPECTED_VERSION: '3.2022.3'
 
 jobs:
   release:
@@ -101,11 +118,16 @@ jobs:
           set -euo pipefail
           VERSION='${{ steps.ver.outputs.version }}'
           SKIP=false
+          # Tracked separately from SKIP because a scheduled version mismatch must
+          # suppress the downstream dispatches too, and SKIP alone cannot express
+          # that - see the RELEASED comment below.
+          SCHEDULE_VERSION_MISMATCH=false
 
           if [ '${{ github.event_name }}' = 'schedule' ]; then
             if [ "$VERSION" != "$SCHEDULED_EXPECTED_VERSION" ]; then
               echo "::notice::Scheduled run is a no-op. DESCRIPTION on main is $VERSION but this schedule only ships $SCHEDULED_EXPECTED_VERSION."
               SKIP=true
+              SCHEDULE_VERSION_MISMATCH=true
             fi
           else
             EXPECTED='${{ inputs.expected_version }}'
@@ -146,6 +168,46 @@ jobs:
             fi
           fi
 
+          # Publishing a draft puts the tag at the draft's OWN target, not at the
+          # main commit checked out above. That target is fixed when the draft is
+          # made and can be a stale branch or commit - a draft made before the
+          # release PR merged would tag the wrong code. So work out where the tag
+          # would really land and compare it with the checked-out main commit.
+          #
+          #   tag already exists -> publishing reuses it; it lands where the tag is.
+          #   otherwise          -> the draft's targetCommitish, resolved to a SHA.
+          #                         A branch name counts as a match only if it
+          #                         resolves to exactly this commit right now.
+          #
+          # This step only records the answer. The dry-run summary reports it and
+          # the publish step refuses to run on a mismatch; see both below.
+          DRAFT_TARGET=''
+          LANDING_SHA=''
+          TARGET_MATCH=true
+          if [ "$MODE" = 'publish_draft' ]; then
+            SHA='${{ steps.ver.outputs.sha }}'
+            if [ "$TAG_EXISTS" = 'true' ]; then
+              DRAFT_TARGET="existing tag v$VERSION"
+              LANDING_SHA="$(git rev-list -n 1 "refs/tags/v$VERSION")"
+            else
+              DRAFT_TARGET="$(gh release view "v$VERSION" --json targetCommitish --jq .targetCommitish)"
+              if [ -n "$DRAFT_TARGET" ]; then
+                LANDING_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DRAFT_TARGET" --jq .sha 2>/dev/null || echo '')"
+                # On an unknown ref gh prints the API's error JSON to stdout; keep
+                # only a real SHA so that never reaches the outputs or summary.
+                if ! printf '%s' "$LANDING_SHA" | grep -qE '^[0-9a-f]{40}$'; then
+                  LANDING_SHA=''
+                fi
+              fi
+            fi
+            if [ "$LANDING_SHA" != "$SHA" ]; then
+              TARGET_MATCH=false
+              echo "::warning::The draft v$VERSION would be tagged at '${DRAFT_TARGET:-<empty>}' (${LANDING_SHA:-unresolvable}), not at the checked-out main commit $SHA."
+            else
+              echo "Draft v$VERSION target '$DRAFT_TARGET' resolves to $LANDING_SHA, the checked-out main commit."
+            fi
+          fi
+
           # Whether a published release for this version exists once this job is
           # done - either because a step below publishes it, or because it was
           # already published. This is what gates the downstream dispatches, and
@@ -160,10 +222,16 @@ jobs:
           # already-published tag is harmless: pkgdown rebuilds identical docs
           # and the install check just runs again.
           #
-          # A scheduled run that bails on a version mismatch keeps mode=create
-          # with SKIP=true, so it correctly dispatches nothing.
+          # A scheduled run that bails on a version mismatch must dispatch
+          # nothing, and needs its own flag to say so. MODE is decided after the
+          # mismatch check and from the release page alone, so on a future annual
+          # firing - DESCRIPTION long past the pinned version, that version's
+          # release already published - it would land on already_published and
+          # dispatch pkgdown and the install check for a run that just announced
+          # itself a no-op.
           RELEASED=false
-          if [ "$MODE" = 'already_published' ] || [ "$SKIP" = 'false' ]; then
+          if [ "$SCHEDULE_VERSION_MISMATCH" = 'false' ] &&
+             { [ "$MODE" = 'already_published' ] || [ "$SKIP" = 'false' ]; }; then
             RELEASED=true
           fi
 
@@ -171,6 +239,9 @@ jobs:
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "released=$RELEASED" >> "$GITHUB_OUTPUT"
           echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
+          echo "draft_target=$DRAFT_TARGET" >> "$GITHUB_OUTPUT"
+          echo "landing_sha=$LANDING_SHA" >> "$GITHUB_OUTPUT"
+          echo "target_match=$TARGET_MATCH" >> "$GITHUB_OUTPUT"
 
       - name: Extract the NEWS.md section for this version
         if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'create'
@@ -186,9 +257,14 @@ jobs:
           #
           # The version is escaped before being used as a regex, since an unescaped
           # "." would match any character and could latch onto the wrong heading.
+          #
+          # The "v" is optional: release TAGS carry it (v3.2022.3) while DESCRIPTION's
+          # Version does not (3.2022.3), and NEWS.md has used both conventions over
+          # time ("# EJAM 3.2022.2" but "# EJAM v2.32.5"). Accepting either means a
+          # heading written to match the tag no longer fails the release.
           awk -v v="$VERSION" '
             BEGIN { esc = v; gsub(/\./, "\\.", esc) }
-            !inside && $0 ~ "^# EJAM " esc "([^0-9.]|$)" { inside = 1; next }
+            !inside && $0 ~ "^# EJAM v?" esc "([^0-9.]|$)" { inside = 1; next }
             inside && /^# EJAM / { exit }
             inside { if (started || NF) { started = 1; print } }
           ' NEWS.md > release-notes.md
@@ -198,14 +274,33 @@ jobs:
             exit 1
           fi
 
-          # Derive the ACS vintage from a 3.YYYY.x version, to match the naming
-          # used by the existing releases (e.g. "EJAM v3.2022.2 (ACS 2018-2022)").
+          # Derive the ACS vintage for the release title, matching the naming used
+          # by the existing releases (e.g. "EJAM v3.2022.3 (ACS 2018-2022)" or
+          # "EJAM v4.2024.0 (ACS 2020-2024)").
+          #
+          # Read it from DESCRIPTION's VersionACS, the single source of truth for the
+          # vintage. The previous approach parsed field 2 out of a `3.YYYY.x` version
+          # with `grep -qE '^3\.[0-9]{4}\.'`, which silently stopped matching once the
+          # major went to 4 - a 4.2024.0 release would have been titled with no vintage
+          # at all.
           TITLE="EJAM v$VERSION"
-          if printf '%s' "$VERSION" | grep -qE '^3\.[0-9]{4}\.'; then
-            END_YEAR="$(printf '%s' "$VERSION" | cut -d. -f2)"
-            TITLE="EJAM v$VERSION (ACS $((END_YEAR - 4))-$END_YEAR)"
+          ACS_VINTAGE="$(sed -n 's/^VersionACS:[[:space:]]*//p' DESCRIPTION | head -n1 | tr -d '[:space:]')"
+          if [ -n "$ACS_VINTAGE" ]; then
+            TITLE="EJAM v$VERSION (ACS $ACS_VINTAGE)"
           fi
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+
+          # Guard against the version number and the vintage drifting apart. EJAM
+          # versions are MAJOR.ACSENDYEAR.PATCH (3.2022.2, 3.2022.3, 4.2024.0), so
+          # field 2 must equal the end year of VersionACS. Nothing else enforces this,
+          # and a mismatch would mislabel the release and ship data that disagrees
+          # with its own version number.
+          VERSION_YEAR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+          ACS_END_YEAR="${ACS_VINTAGE##*-}"
+          if [ -n "$ACS_VINTAGE" ] && [ "$VERSION_YEAR" != "$ACS_END_YEAR" ]; then
+            echo "::error::Version $VERSION declares ACS end year $VERSION_YEAR but DESCRIPTION VersionACS is $ACS_VINTAGE. Fix one of them before releasing."
+            exit 1
+          fi
 
           {
             echo ""
@@ -222,16 +317,33 @@ jobs:
         if: steps.guard.outputs.skip == 'false' && github.event_name == 'workflow_dispatch' && inputs.dry_run
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_TARGET: ${{ steps.guard.outputs.draft_target }}
+          LANDING_SHA: ${{ steps.guard.outputs.landing_sha }}
         run: |
           set -euo pipefail
           {
             echo "### Dry run - nothing was tagged or published"
             echo ""
             echo "- Tag that *would* be created: \`${{ steps.ver.outputs.tag }}\`"
-            echo "- Target commit: \`${{ steps.ver.outputs.sha }}\` (head of \`main\`)"
           } >> "$GITHUB_STEP_SUMMARY"
 
           if [ '${{ steps.guard.outputs.mode }}' = 'publish_draft' ]; then
+            # Show where publishing the draft would really put the tag - the
+            # draft's own target, which is NOT necessarily the head of main.
+            {
+              echo "- Head of \`main\` (the commit that should be tagged): \`${{ steps.ver.outputs.sha }}\`"
+              echo "- Draft target (where the tag would actually land): \`$DRAFT_TARGET\` = \`${LANDING_SHA:-unresolvable}\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+            if [ '${{ steps.guard.outputs.target_match }}' != 'true' ]; then
+              {
+                echo ""
+                echo "> [!CAUTION]"
+                echo "> **The draft's target is not the head of \`main\`.** A real run would stop here"
+                echo "> without publishing. Point the draft at the full SHA of \`main\`'s merge commit"
+                echo "> (\`gh release edit ${{ steps.ver.outputs.tag }} --target <SHA>\`) and dry-run again."
+                echo ""
+              } >> "$GITHUB_STEP_SUMMARY"
+            fi
             {
               echo "- Mode: **publish the existing draft** (its reviewed title and notes are kept; NEWS.md is not used)"
               echo "- Draft title: $(gh release view '${{ steps.ver.outputs.tag }}' --json name --jq .name)"
@@ -244,6 +356,7 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           else
             {
+              echo "- Target commit: \`${{ steps.ver.outputs.sha }}\` (head of \`main\`)"
               echo "- Mode: **create a new release** from the NEWS.md section"
               echo "- Release title: ${{ steps.notes.outputs.title }}"
               echo ""
@@ -255,21 +368,59 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
+          # Fail the dry run on a target mismatch, after the summary is written,
+          # so a green dry run always means the real run would tag main's head.
+          if [ '${{ steps.guard.outputs.mode }}' = 'publish_draft' ] &&
+             [ '${{ steps.guard.outputs.target_match }}' != 'true' ]; then
+            echo "::error::The draft ${{ steps.ver.outputs.tag }} targets '$DRAFT_TARGET' (${LANDING_SHA:-unresolvable}), not the head of main (${{ steps.ver.outputs.sha }}). A real run would refuse to publish it. See the summary."
+            exit 1
+          fi
+
       - name: Publish the existing draft
         if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'publish_draft' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_TARGET: ${{ steps.guard.outputs.draft_target }}
+          LANDING_SHA: ${{ steps.guard.outputs.landing_sha }}
         run: |
           set -euo pipefail
           TAG='${{ steps.ver.outputs.tag }}'
+          SHA='${{ steps.ver.outputs.sha }}'
 
           # Publishing the draft is what creates the tag, at the draft's target
           # commitish. Its reviewed title and notes are kept as-is.
+          #
+          # Refuse if that target is not the checked-out head of main (see the
+          # guard step). Retargeting silently would tag code the draft was not
+          # reviewed against, so a person has to make that call.
+          if [ '${{ steps.guard.outputs.target_match }}' != 'true' ]; then
+            {
+              echo "### Did NOT publish $TAG"
+              echo ""
+              echo "The draft targets \`$DRAFT_TARGET\` (\`${LANDING_SHA:-unresolvable}\`),"
+              echo "but the head of \`main\` is \`$SHA\`. Publishing would have tagged the wrong commit."
+              echo ""
+              echo "If the draft's notes are right for \`main\`, point it there and rerun:"
+              echo ""
+              echo "    gh release edit $TAG --repo ${{ github.repository }} --target $SHA"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Refusing to publish $TAG: the draft targets '$DRAFT_TARGET' (${LANDING_SHA:-unresolvable}), not the head of main ($SHA). Nothing was tagged or published. See the summary."
+            exit 1
+          fi
+
           LATEST_FLAG='--latest=false'
           if [ '${{ github.event_name }}' = 'schedule' ] || [ '${{ inputs.mark_latest }}' = 'true' ]; then
             LATEST_FLAG='--latest'
           fi
-          gh release edit "$TAG" --draft=false $LATEST_FLAG
+
+          # The target matched. If it is a branch name, pin it to the verified SHA
+          # anyway, so a merge into main during this run cannot move the tag. An
+          # existing tag is reused as-is, and GitHub ignores the target then.
+          TARGET_FLAG=''
+          if [ '${{ steps.guard.outputs.tag_exists }}' != 'true' ]; then
+            TARGET_FLAG="--target=$SHA"
+          fi
+          gh release edit "$TAG" $TARGET_FLAG --draft=false $LATEST_FLAG
 
           {
             echo "### Published the reviewed draft $TAG"

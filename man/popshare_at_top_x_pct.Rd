@@ -21,6 +21,12 @@ A fraction of 1 (or a vector of results) or text
 }
 \description{
 What fraction of total population is accounted for by the top X percent of places?
+Linear interpolation between whole-site cumulative totals includes the origin:
+zero percent of sites accounts for zero percent of population.
+}
+\details{
+Missing populations are treated as zero with a warning. Empty or all-zero
+populations return NA shares because the population fraction is undefined.
 }
 \examples{
  x <- testoutput_ejamit_100pts_1miles$results_bysite

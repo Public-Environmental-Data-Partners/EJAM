@@ -2,8 +2,13 @@
 name: 'lintr checks code style and syntax errors'
 
 on:
+  # Cheap (single ubuntu job), so run it broadly - this is the fast feedback
+  # that development PRs currently get none of.
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "development" ]
+  push:
+    branches: [ "main", "development" ]
+  workflow_dispatch:
 
 # lintr provides static code analysis for R.
 # It checks for adherence to a given style,
@@ -55,9 +60,34 @@ jobs:
           extra-packages: lintr
 
       - name: Run lintr
+        # Which linters run is set by the .lintr file at the root of the repo,
+        # which lint_dir() picks up. See the comments in that file.
         run: lintr::sarif_output(lintr::lint_dir("."), "lintr-results.sarif")
         shell: Rscript {0}
         continue-on-error: true
+
+      # lintr can report a lint at column 0 (indentation_linter does this for a
+      # line that should be indented but is not), and SARIF requires
+      # startColumn >= 1. One out-of-range value makes GitHub reject the whole
+      # file, so every result is lost - that is what used to fail this job. The
+      # .lintr file does not enable any linter that does this today; this step
+      # just keeps one stray lint from taking the whole upload down again.
+      - name: Fix out-of-range columns in the SARIF file
+        run: |
+          # "Run lintr" is continue-on-error, so it can go green having written
+          # nothing. Say so plainly rather than letting jq (and then the upload)
+          # fail with something that reads like a problem with this step.
+          if [ ! -f lintr-results.sarif ]; then
+            echo "::error::lintr produced no lintr-results.sarif - check the 'Run lintr' step above for the R error."
+            exit 1
+          fi
+          # The type check sits on the right of |= so the left stays a plain
+          # path expression. A non-numeric column, should one ever appear, is
+          # passed through untouched rather than compared against 1.
+          jq '(.. | objects | select(has("startColumn")) | .startColumn) |= (if type == "number" and . < 1 then 1 else . end)
+              | (.. | objects | select(has("endColumn"))   | .endColumn)   |= (if type == "number" and . < 1 then 1 else . end)' \
+            lintr-results.sarif > lintr-results.fixed.sarif
+          mv lintr-results.fixed.sarif lintr-results.sarif
 
       - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@v4

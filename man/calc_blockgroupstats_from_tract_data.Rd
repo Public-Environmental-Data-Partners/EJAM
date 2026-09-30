@@ -51,11 +51,27 @@ Needs Census API key for \code{\link[tidycensus:get_decennial]{tidycensus::get_d
 
 Takes some time to download data for every State!
 
-First get tract counts, then apportion tract counts into blockgroup counts
-where that is how legacy EJSCREEN handled the indicator. Detailed language
-counts from C16001 are tract-level values repeated on each blockgroup in the
-tract, so language percentages are also tract-level percentages repeated on
-each blockgroup.
+First get tract counts, then apportion every tract count into blockgroup
+counts (the tract count times the blockgroup's share of the tract
+population, \code{bgwt}), then carry each tract's percentages onto its
+blockgroups.
+
+Apportioning applies to the language counts from C16001 (\code{lan_universe},
+\code{lan_spanish}, etc.) exactly as it does to disability and health insurance.
+\code{map_headernames} marks all of these as \code{"sum of counts"}, so
+\code{\link[=doaggregate]{doaggregate()}} and \code{\link[=calc_acs_by_geography]{calc_acs_by_geography()}} add them up across
+blockgroups. A tract total repeated on every blockgroup would be counted
+once per blockgroup, about three times over, in every buffer, county, and
+state total (issue EJAM#596). Apportioned counts add back up to the tract
+total, to rounding, which is also how EPA's EJScreen block group layer
+reports language counts.
+
+Percentages such as \code{pctlan_spanish} are calculated at tract level and
+repeated on each blockgroup in the tract. That equals the ratio of the
+apportioned counts wherever \code{bgwt > 0}, and it keeps the tract rate on
+zero-population blockgroups instead of reporting 0 there, the same
+convention \code{pctdisability} uses. Apportioned counts are rounded to whole
+persons after the percentages are set.
 
 For ACS 2022 and later, Connecticut ACS tract FIPS use planning-region
 county equivalents while 2020 Decennial blockgroup FIPS use the older county

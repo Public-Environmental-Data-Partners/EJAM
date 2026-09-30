@@ -105,6 +105,38 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       add_warning(paste0("percentage/fraction columns have values outside 0-1: ", paste(bad, collapse = ", ")))
     }
   }
+  check_tract_counts_apportioned <- function() {
+    # Tract-only ACS counts (language, from C16001) must be apportioned to blockgroups so
+    # they add up across blockgroups. If a tract's total was repeated on each of its
+    # blockgroups, that tract's summed lan_universe (population age 5+ for whom language
+    # is known) exceeds its summed pop by a factor of about its number of blockgroups
+    # (issue EJAM#596). Checked per tract, with a 5% tolerance for cross-table and
+    # rounding differences, so even a few repeated tracts are caught.
+    if (all(c("bgfips", "pop", "lan_universe") %in% names(x)) &&
+        is.numeric(x[["pop"]]) && is.numeric(x[["lan_universe"]])) {
+      bgfips <- as.character(x[["bgfips"]])
+      standard <- !is.na(bgfips) & nchar(bgfips) == 12L
+      if (any(standard)) {
+        tract <- substr(bgfips[standard], 1L, 11L)
+        pop_by_tract <- rowsum(x[["pop"]][standard], group = tract, na.rm = TRUE)
+        lan_by_tract <- rowsum(x[["lan_universe"]][standard], group = tract, na.rm = TRUE)
+        repeated <- pop_by_tract > 0 & lan_by_tract > 1.05 * pop_by_tract
+        n_repeated <- sum(repeated)
+        if (n_repeated > 0) {
+          first <- which(repeated)[1]
+          add_warning(paste0(
+            "lan_universe exceeds pop in ", format(n_repeated, big.mark = ","), " of ",
+            format(length(repeated), big.mark = ","), " tracts (e.g., tract ",
+            rownames(pop_by_tract)[first], ": lan_universe ",
+            format(lan_by_tract[first], big.mark = ","), " vs pop ",
+            format(pop_by_tract[first], big.mark = ","),
+            "): tract-level language counts appear to be repeated on each blockgroup ",
+            "instead of apportioned, so sums across blockgroups will be inflated (EJAM#596)"
+          ))
+        }
+      }
+    }
+  }
   check_all_na_numeric <- function(cols) {
     cols <- intersect(cols, names(x))
     bad <- cols[vapply(cols, function(col) {
@@ -414,6 +446,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       check_bgfips()
       check_nonnegative(c("pop"))
       check_fraction_percent_cols()
+      check_tract_counts_apportioned()
       check_islandareas_contract(check_demographics = TRUE)
       ###################################################### #
       # bg_envirodata ####
@@ -469,6 +502,7 @@ ejscreen_pipeline_validate <- function(x, stage, strict = TRUE) {
       expected_env <- if (exists("names_e")) names_e else character()
       warn_missing_cols(expected_env)
       check_fraction_percent_cols()
+      check_tract_counts_apportioned()
       check_islandareas_contract(check_demographics = TRUE)
       ###################################################### #
       # bgej ####

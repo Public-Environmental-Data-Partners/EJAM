@@ -711,22 +711,21 @@ app_server <- function(input, output, session) {
     #   ###################################### #
     # do the rest whether it was uploaded or came via ejamapp()
 
-    if (!is.null(shp)) {
-      # if shp contains point features, present message in app
-      ## this case is not caught by shapefile_from_any currently - but could use shapefix somehow? ***
-      if (any(sf::st_geometry_type(shp) == "POINT")) {
-        shp <- NULL
-        disable_buttons[['SHP']] <- TRUE
-        msg <- "Shape file must be of polygon geometry."
-        cat(msg, "\n")
-        shiny::validate(msg)
-      }
-    }
-    # note that shapefile_from_any() returns some info in attributes of the returned object, like error messages and counts of valid points
-    if (!is.null(attr(shp, "validate_errmsg")))            {shiny::validate( attr(shp, "validate_errmsg") )}
-    if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
+    ## shapefile_from_any() runs shapefix(), which inspects the geometry and reports what it
+    ## found via attributes on the returned object - including a point-geometry upload, which
+    ## this option does not accept (points-with-buffers is the latlon upload option instead).
+    ## The rule itself lives in shapefix() only; see ?shapefix and issue #550.
+    ##
+    ## Order matters here: shiny::validate() halts this reactive, so anything that must take
+    ## effect on a rejected upload has to be set BEFORE the validate() call, not after it.
     if (!is.null(attr(shp, "num_valid_pts_uploaded_SHP"))) {num_valid_pts_uploaded[['SHP']] <- attr(shp, "num_valid_pts_uploaded_SHP")}
     if (!is.null(attr(shp, "invalid_alert_SHP")))          {invalid_alert[['SHP']]          <- attr(shp, "invalid_alert_SHP")}
+    if (!is.null(attr(shp, "validate_errmsg"))) {
+      disable_buttons[['SHP']] <- TRUE # Start button disabled, and must stay disabled
+      cat(attr(shp, "validate_errmsg"), "\n") # for console / server log
+      shiny::validate( attr(shp, "validate_errmsg") )
+    }
+    if (!is.null(attr(shp, "disable_buttons_SHP")))        {disable_buttons[['SHP']]        <- attr(shp, "disable_buttons_SHP")}
     if ("sf" %in% class(shp)) {
       disable_buttons[['SHP']] <- FALSE # Start button enabled
     }
@@ -2269,7 +2268,9 @@ app_server <- function(input, output, session) {
           rows = rows,
           radius = radius,
           analysis_type = analysis_type,
-          analysis_subtype = analysis_subtype
+          analysis_subtype = analysis_subtype,
+          target = "webapp_report",
+          profile = "live_v3.2022.2"
         ),
         silent = TRUE
       )
@@ -2277,7 +2278,7 @@ app_server <- function(input, output, session) {
         return(invisible(NULL))
       }
       progress_all$set(value = 0, message = 'Step 1 of 3', detail = runtime_estimate$message)
-      if (runtime_estimate$seconds_upper > 30) {
+      if (runtime_estimate$seconds_fit > 30) {
         ejamitRunTimeNotification <<- showNotification(
           runtime_estimate$message,
           type = 'message',
@@ -2299,7 +2300,7 @@ app_server <- function(input, output, session) {
       fips_for_prediction <- fips_for_prediction[fips_valid(fips_for_prediction)]
       show_ejamit_runtime_estimate(
         rows = length(fips_for_prediction),
-        radius = 0,
+        radius = submitted_radius_val(),
         analysis_type = "fips",
         analysis_subtype = speed_fips_analysis_subtype(fips_for_prediction)
       )
@@ -2621,63 +2622,29 @@ app_server <- function(input, output, session) {
   output$comm_report_html <- renderUI({
     req(data_processed())
 
-    ## *** consider replacing this with ejam2report(),
-    ## but note doing map, plot, tables, footer separately in app_UI() allows for spinners, for example in UI
-    isolate({
-      ## 1-site analyses must read like ejam2report() and the API, not like a
-      ## multisite summary. ejam2report() does this by flipping sitenumber from 0
-      ## to the single valid row when only one site is valid; this in-app renderer
-      ## never did, so a 1-site analysis was titled "EJSCREEN Multisite Summary"
-      ## and its header showed no site or FIPS identifier.
-      report_valid_rows  <- which(data_processed()$results_bysite$valid %in% TRUE)
-      report_sitenumber  <- if (length(report_valid_rows) == 1) report_valid_rows[1] else NULL
-      report_is_one_site <- !is.null(report_sitenumber)
-
-      residents_within_xyz <- report_residents_within_xyz_from_ejamit(
-        ejamitout = data_processed(), ## this function uses the whole list not just ejamout1 to create the header
-        sitenumber = report_sitenumber, # NULL keeps the multisite header; a row number adds "(Site N, FIPS ...)"
-        site_method = submitted_upload_method()
-        # isolate() done, so change in site_method (e.g., polygon to lat lon) will not trigger re-render if Start not clicked,
-        # BUT, changing title does trigger re-render with old data and new title,
-        # and if upload method got changed too, without Start Analysis button hit again,
-        # it will re-render with new but incorrect method in header (?) ***
-      )
-      popstr <- prettyNum(total_pop(), big.mark = ',') # rounded already
-
-      pkg_relative_path = function(fpath) {gsub((system.file( "", package = "EJAM")), "", fpath)}
-    })
-
-    ## Report TITLE: "EJSCREEN Community Report" for 1 site, "...Multisite Summary" otherwise
-    report_title_now <- if (report_is_one_site) {
-      global_or_param("report_title")
+    header <- report_header_from_ejamit(
+      data_processed(), analysis_title = sanitized_analysis_title(),
+      site_method = submitted_upload_method()
+    )
+    validate(need(header$reportable, "Report not available: no reportable results for the selected sites."))
+    report_output <- if (header$sitenumber > 0L) {
+      data_processed()$results_bysite[header$sitenumber, ]
     } else {
-      global_or_param("report_title_multisite")
+      data_processed()$results_overall
     }
+    popstr <- prettyNum(round(report_output$pop, table_rounding_info("pop")), big.mark = ',')
+    pkg_relative_path <- function(fpath) {gsub(system.file("", package = "EJAM"), "", fpath)}
 
-    ## Analysis TITLE: for a 1-site FIPS analysis show the place name, as
-    ## ejam2report() does via fips2name(). Only replaces the untouched default, so
-    ## a title the user typed in the box is never silently overridden.
-    analysis_title_now <- sanitized_analysis_title()
-    if (report_is_one_site && isTRUE(data_processed()$sitetype %in% "fips") &&
-        identical(analysis_title_now, global_or_param("default_standard_analysis_title"))) {
-      fipsname <- tryCatch(
-        fips2name(data_processed()$results_bysite$ejam_uniq_id[report_sitenumber]),
-        error = function(e) NA_character_
-      )
-      if (length(fipsname) == 1 && !is.na(fipsname) && nzchar(fipsname)) {
-        analysis_title_now <- fipsname
-      }
-    }
     full_page <- build_community_report(
 
       logo_path      = pkg_relative_path(global_or_param("report_logo")), # use relative path, not full path #  # NULL means default, "" means no logo
       logo_html      = NULL, # this is the report logo, NOT app_logo_html... and gets defined downstream based on logo_path
-      report_title   = report_title_now,   # Community Report if 1 site, Multisite Summary otherwise
-      analysis_title = analysis_title_now, # changing it will trigger re-render here
-      locationstr    = residents_within_xyz,
+      report_title   = header$report_title,
+      analysis_title = header$analysis_title,
+      locationstr    = header$locationstr,
       totalpop       = popstr,
 
-      output_df      = data_processed()$results_overall,
+      output_df      = report_output,
       include_ejindexes                = isTRUE(as.logical(input$include_ejindexes)),
       show_ratios_in_report            = isTRUE(as.logical(input$show_ratios_in_report)),
       extratable_show_ratios_in_report = isTRUE(as.logical(input$extratable_show_ratios_in_report)),
@@ -2844,9 +2811,16 @@ app_server <- function(input, output, session) {
       }
       d_uploads <- data_uploaded() %>%
         dplyr::select(-any_of(c('valid', 'invalid_msg'))) %>%
-        sf::st_zm() %>% sf::as_Spatial() # st_zm() was already done? ***
+        ## st_zm() drops any Z/M dimensions so leaflet gets plain 2-D polygons.
+        ## Usually redundant since shapefix() already did it, but shapefile_from_any()
+        ## fast-returns an sf object passed to ejamapp(shapefile = ) without calling
+        ## shapefix(), so keep this here.
+        sf::st_zm()
 
-      # d_uploads is an object of class "SpatialPolygonsDataFrame" not "sf" and "data.frame" like data_uploaded() here is
+      # d_uploads has to stay "sf" here (issue #136): map_shapes_leaflet_proxy() calls
+      # sf::st_is_empty(), which has no method for the "SpatialPolygonsDataFrame" that
+      # sf::as_Spatial() used to make, so it printed a UseMethod("st_geometry") error to the
+      # console (inside a try(), so the map still drew). leaflet maps an sf object directly.
       leaflet::leafletProxy(mapId = 'an_leaf_map', session) %>%
         map_shapes_leaflet_proxy(shapes = d_uploads, popup = popup_from_df(d_uploads %>% sf::st_drop_geometry()))
 
@@ -3205,7 +3179,7 @@ app_server <- function(input, output, session) {
   ### ejam2report() in 1-site downloadHandler() ####
   # downloadHandler for the modal download button - Almost identical to code above. But content uses temp_file_path
 
-  # Default is to use API here to get single-site reports, not render them here  ***
+  # Per-site download buttons render locally through ejam2report().
 
   output$download_report_single_site <- downloadHandler(
 
@@ -3243,9 +3217,7 @@ app_server <- function(input, output, session) {
   ### observe 1-site-report buttons ####
   # (1 button per site in the table of sites, to see report or barplot for that site)
   #
-  # NOTE: This code was written but is not used if the app obtains these reports via API.
-  # Rendering here is probably faster and supports more parameters / features than API, & would be especially useful for large multipolygon shapefiles,
-  # while using the API for 1-site reports in the app is simpler.
+  # These handlers render per-site downloads locally; API links are a separate path.
 
   cur_button <- reactiveVal(NULL)
   temp_file_path <- reactiveVal(NULL)

@@ -3,7 +3,7 @@
 \docType{data}
 \name{modelEjamit}
 \alias{modelEjamit}
-\title{Regression model to predict runtime for point-buffer ejamit analyses}
+\title{Legacy regression model for point-buffer ejamit analyses}
 \format{
 An object of class \code{lm} of length 13.
 }
@@ -11,11 +11,11 @@ An object of class \code{lm} of length 13.
 modelEjamit
 }
 \description{
-Weighted runtime model for point-buffer ejamit analyses, fit from Analysis_timing_results*.csv files with extra emphasis on small point-count runs.
+Weighted regression retained for compatibility and fallback runtime profiles.
 }
 \details{
-Regression model to predict runtime for point-buffer ejamit analyses
+Legacy regression model for point-buffer ejamit analyses
 
-The model is trained from point-buffer rows in all Analysis_timing_results*.csv files in data-raw/. Small runs such as 1, 2, and 10 points are up-weighted so predictions are more accurate for small analyses. ejamit runtime is modeled from input_number and radius using weighted least squares.
+The packaged model was trained from historical point-buffer timing rows and is preserved until the current benchmark files have enough count and radius coverage to replace it safely. Current v3.2022.2 point estimates use measured monotone runtime profiles in utils_speedtest.R because this legacy model has no training rows below 243 sites.
 }
 \keyword{datasets}

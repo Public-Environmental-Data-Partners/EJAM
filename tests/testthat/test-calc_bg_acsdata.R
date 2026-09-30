@@ -812,7 +812,7 @@ test_that("tract-derived pctdisability preserves tract rate for zero-weight bloc
   expect_equal(out$pctdisability, c(0.1, 0.1))
 })
 
-test_that("tract language values are repeated at blockgroup scale", {
+test_that("tract language counts are apportioned to blockgroups and sum back to the tract (EJAM#596)", {
   b18101 <- data.table::data.table(
     GEO_ID = "1400000US10001000100",
     fips = "10001000100",
@@ -839,10 +839,11 @@ test_that("tract language values are repeated at blockgroup scale", {
     C16001_002 = 80,
     C16001_003 = 20
   )
+  # three blockgroups in one tract, one of them with no population (bgwt = 0)
   bgwts <- data.table::data.table(
-    bgfips = c("100010001001", "100010001002"),
+    bgfips = c("100010001001", "100010001002", "100010001003"),
     tractfips = "10001000100",
-    bgwt = c(0.25, 0.75)
+    bgwt = c(0.25, 0.75, 0)
   )
 
   testthat::local_mocked_bindings(
@@ -860,14 +861,31 @@ test_that("tract language values are repeated at blockgroup scale", {
       "lan_universe = C16001_001",
       "lan_english = C16001_002",
       "lan_spanish = C16001_003",
+      "lan_nonenglish = lan_universe - lan_english",
       "pctlan_spanish <- ifelse(lan_universe == 0, 0, as.numeric(lan_spanish) / lan_universe)"
     ),
     acs_raw = list(tract = list(B18101 = b18101, C16001 = c16001))
   )
 
-  expect_equal(out$lan_universe, c(100, 100))
-  expect_equal(out$lan_spanish, c(20, 20))
-  expect_equal(out$pctlan_spanish, c(0.2, 0.2))
+  # counts are each blockgroup's population share of the tract count, not the tract total
+  expect_equal(out$lan_universe, c(25, 75, 0))
+  expect_equal(out$lan_spanish, c(5, 15, 0))
+  expect_equal(out$lan_nonenglish, c(5, 15, 0))
+  expect_equal(sum(out$lan_universe), c16001$C16001_001)
+  expect_equal(sum(out$lan_spanish), c16001$C16001_003)
+  # the tract's percentage is carried onto every blockgroup, including the zero-population one
+  expect_equal(out$pctlan_spanish, c(0.2, 0.2, 0.2))
+  # no helper columns leak into the blockgroup stage
+  expect_false(any(c("bgwt", "tractfips", "pctdisability_rate") %in% names(out)))
+  expect_false(any(grepl("^tract_", names(out))))
+
+  # Rolling the blockgroups back up (the web-app layers and doaggregate() both sum these
+  # "sum of counts" columns) reproduces the tract total instead of tripling it.
+  tr <- suppressMessages(EJAM:::calc_acs_by_geography(out, levels = "tract", exclude_islandareas = FALSE))$tract
+  expect_equal(nrow(tr), 1L)
+  expect_equal(tr$lan_universe, 100)
+  expect_equal(tr$lan_spanish, 20)
+  expect_equal(tr$pctlan_spanish, 0.2, tolerance = 1e-9)
 })
 
 test_that("bg_cenpop2020 keeps FIPS when legacy bgid lookup is missing", {

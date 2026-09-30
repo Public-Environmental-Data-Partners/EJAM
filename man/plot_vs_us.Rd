@@ -76,7 +76,7 @@ analyzed sites.}
 
 \item{box.pch.here}{Point symbol for analyzed-site rows when \code{type = "box"}.}
 
-\item{...}{Additional arguments passed to \code{\link[=boxplot]{boxplot()}} when \code{type = "box"}.}
+\item{...}{Additional arguments passed to \code{\link[graphics:boxplot]{graphics::boxplot()}} when \code{type = "box"}.}
 }
 \value{
 For \code{type = "ggplot"}, a \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object. For \code{type = "plotly"},

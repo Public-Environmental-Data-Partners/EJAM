@@ -27,7 +27,7 @@ Consider the other parameters like logo-related and app title parameters, define
 
 ## Update EJAM Application
 
-Update the app. See [Updating the Package as a New Release](dev-update-package.html) vignette.
+Update the app. See [Releasing a New Version of EJAM](dev-update-package.html) vignette.
 
 ## Decide which branch to deploy from
 

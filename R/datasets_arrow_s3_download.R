@@ -3,8 +3,8 @@
 
 datasets_arrow_s3_download <- function(
 
-  yr = EJAM:::acs_endyear(guess_census_has_published = TRUE), # e.g., "2024"
-  files = paste0(EJAM:::.arrow_ds_names, ".arrow"),  # e.g.,  bgej.arrow
+  yr = acs_endyear(guess_census_has_published = TRUE), # e.g., "2024"
+  files = paste0(.arrow_ds_names, ".arrow"),  # e.g.,  bgej.arrow
   s3_root = "s3://pedp-data-preserved/ejscreen-data-processing/pipeline",
   local_root = file.path(getwd(), "data-raw", "pipeline_outputs"),
   aws_profile = Sys.getenv("AWS_PROFILE", unset = "")

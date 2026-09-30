@@ -42,6 +42,14 @@ release tag for locally installed Arrow files.
 
 Relies on \code{\link[piggyback:pb_download]{piggyback::pb_download()}} to download data files that have been
 stored as assets of a specific release on the data repository.
+
+Before downloading, it asks GitHub what assets that one release actually
+has, and says so distinctly when the answer is a failed listing (the release
+may be unreachable rather than empty), a release that does not exist, a
+release with no assets at all, or a release missing the requested files.
+Transient failures are retried with backoff. Without that check, a degraded
+GitHub API that answers with an empty list looks exactly like a release with
+nothing in it, and nothing gets downloaded without any error being raised.
 For details, see \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{technical details of how datasets are updated}
 }
 \keyword{internal}

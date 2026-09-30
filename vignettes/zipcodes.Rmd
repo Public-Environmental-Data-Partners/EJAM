@@ -49,6 +49,29 @@ Note a zip can be the same as a county fips in many cases, as with 10001!
 
 ![many county fips are also a zipcode](images/many_county_fips_are_also_a_zipcode.png){width="75%"}
 
+## The short way: `ejamit(zipcode = )`
+
+The simplest way to analyze zip codes is to pass them directly to `ejamit()`,
+which converts them to ZCTA polygons via `shapes_from_zip()` and analyzes them
+like any other shapefile (the first use downloads a large national boundaries
+file, which is slow, but it is cached locally so later uses are fast):
+
+```{r ejamit_zipcode, eval=FALSE, include=TRUE}
+out <- ejamit(zipcode = c("10012", "10506"))
+
+# summary report, with the places described as zip codes and their bounds mapped
+ejam2report(out)
+
+# or just get the ZCTA polygons, to map or inspect them
+z <- shapes_from_zip(c("10012", "10506"))
+mapfast(z)
+```
+
+The rest of this article shows the manual, step-by-step version of that
+workflow, which offers more control (e.g., other sources of zip code polygons).
+
+## Manual step-by-step approach
+
 The original (pre-2025) EJSCREEN API did not handle zip codes. It can show where the center of the zip code is but will not map its bounds or provide a report easily via the API.
 
 ```{r, eval=FALSE, include=TRUE}

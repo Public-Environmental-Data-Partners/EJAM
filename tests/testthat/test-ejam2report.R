@@ -33,6 +33,26 @@ test_that("assert_pdf_report_available() stops with a descriptive message when P
   )
 })
 
+test_that("assert_valid_pdf_file() checks actual PDF bytes", {
+  valid_pdf <- tempfile(fileext = ".pdf")
+  html_error <- tempfile(fileext = ".pdf")
+  on.exit(unlink(c(valid_pdf, html_error)), add = TRUE)
+
+  writeBin(c(charToRaw("%PDF"), as.raw(rep(0, 100))), valid_pdf)
+  writeLines("<html><body>500 error</body></html>", html_error)
+
+  expect_no_error(EJAM:::assert_valid_pdf_file(valid_pdf))
+  expect_error(
+    EJAM:::assert_valid_pdf_file(html_error),
+    regexp = "%PDF",
+    fixed = TRUE
+  )
+  expect_error(
+    EJAM:::assert_valid_pdf_file(file.path(tempdir(), "missing.pdf")),
+    regexp = "none was created"
+  )
+})
+
 test_that("PDF footer CSS handles missing, vector, and escaped footer text", {
   expect_no_error(
     footer <- as.character(EJAM:::generate_report_footer(
@@ -168,6 +188,8 @@ local_ejam2report_fips_mocks <- function(buffer_state, .env = parent.frame()) {
     create_filename = function(...) "report.html",
     build_community_report = function(...) {
       args <- list(...)
+      buffer_state$header <- args[c("report_title", "analysis_title", "locationstr")]
+      buffer_state$report_output <- args$output_df
       buffer_state$reported_fips <- c(
         buffer_state$reported_fips,
         as.character(args$output_df$ejam_uniq_id)
@@ -334,6 +356,18 @@ test_that("ejam2report normalizes default_format1pager fallback without a leadin
     .package = "EJAM"
   )
 
+  # This unit test checks extension routing; the renderer is already mocked.
+  # Keep Chrome mocked too, and assert that the PDF branch actually calls it.
+  printed <- FALSE
+  local_mocked_bindings(
+    chrome_print = function(input, output, ...) {
+      printed <<- TRUE
+      writeBin(c(charToRaw("%PDF"), raw(100)), output)
+      output
+    },
+    .package = "pagedown"
+  )
+
   expect_warning(
     result <- ejam2report(
       fips_report_test_output(radius = 1),
@@ -347,6 +381,7 @@ test_that("ejam2report normalizes default_format1pager fallback without a leadin
     fixed = TRUE
   )
   expect_match(basename(result), "\\.pdf$")
+  expect_true(printed)
 })
 ############################################################################## #
 
@@ -720,3 +755,266 @@ testthat::test_that("pdf_wait_seconds() rejects an unknown setting name", {
   expect_error({EJAM:::pdf_wait_seconds("something_else")})
 })
 ################ ################# ################# ################# ################# #
+
+testthat::test_that("a NULL or length-0 sitetype does not crash the site_method defaulting", {
+  ## An ejamitout carrying an explicit NULL sitetype still has "sitetype" in names(),
+  ## so the inference is skipped and NULL reaches the `sitetype %in% ...` chain, where
+  ## NULL %in% "shp" is logical(0) and if() cannot use it. NA is fine there already --
+  ## %in% returns FALSE for NA, never NA -- which is why NA is left as NA.
+  chain <- function(sitetype) {
+    site_method <- NULL
+    if (is.null(sitetype) || length(sitetype) == 0) sitetype <- NA_character_  # the normalization
+    if (is.null(site_method) || site_method %in% "") {
+      if (sitetype %in% "shp") site_method <- "SHP"
+      else if (sitetype %in% "fips") site_method <- "FIPS"
+      else if (sitetype %in% "latlon") site_method <- "latlon"
+      else site_method <- ""
+    }
+    site_method
+  }
+  expect_equal(chain(NULL), "")
+  expect_equal(chain(character(0)), "")
+  expect_equal(chain(NA), "")
+  expect_equal(chain(NA_character_), "")
+  expect_equal(chain("zzz"), "")
+  # unchanged for the recognized types
+  expect_equal(chain("shp"), "SHP")
+  expect_equal(chain("fips"), "FIPS")
+  expect_equal(chain("latlon"), "latlon")
+
+  ## %in% never yields NA, so NA needs no isTRUE() wrapper in that chain
+  expect_false(NA %in% "shp")
+  expect_false(is.na(NA %in% "shp"))
+  expect_false(NA_character_ %in% "shp")
+  ## whereas length-0 does need the normalization
+  expect_length(NULL %in% "shp", 0L)
+
+  ## the opening condition of the same block had the identical length-0 problem:
+  ## a supplied character(0) site_method is neither missing nor NULL, so it reached
+  ## `site_method %in% ""` -> logical(0) -> if() error.
+  opens_defaulting <- function(site_method) {
+    is.null(site_method) || length(site_method) == 0 || isTRUE(site_method[1] %in% "")
+  }
+  expect_true(opens_defaulting(NULL))
+  expect_true(opens_defaulting(character(0)))
+  expect_true(opens_defaulting(""))
+  expect_false(opens_defaulting("SHP"))
+  expect_false(opens_defaulting(c("SHP", "FIPS")))   # length > 1 is well defined, not an error
+})
+################ ################# ################# ################# ################# #
+testthat::test_that("the polygon-rebuild gates survive a NULL site_method", {
+  ## site_method can still be NULL at the gates: the defaulting block only sets it
+  ## from ejamitout$site_method or from sitetype shp/fips/latlon, so any other
+  ## sitetype leaves it unset. %in% on NULL is logical(0), and if(logical(0))
+  ## errors with "argument is of length zero" -- so an unguarded gate crashed
+  ## report generation outright rather than simply not rebuilding polygons.
+  for (v in list(NULL, character(0))) {
+    expect_error(if (v %in% "FIPS") TRUE else FALSE)                 # the hazard is real
+    expect_false(isTRUE(toupper(v) %in% "FIPS"))                     # the guard neutralizes it
+    expect_false(isTRUE(toupper(v) %in% c("ZIP", "ZCTA")))
+  }
+  # and the guard does not change the cases that already worked
+  expect_true(isTRUE(toupper("fips") %in% "FIPS"))
+  expect_true(isTRUE(toupper("zcta") %in% c("ZIP", "ZCTA")))
+  expect_false(isTRUE(toupper(NA_character_) %in% "FIPS"))
+
+  ## There are four of these gates, and driving ejam2report() far enough to reach
+  ## each one takes minutes per call, so this asserts the invariant directly: no
+  ## UNGUARDED gate exists. Deliberately phrased as the absence of the bad pattern
+  ## rather than a count of the good one, so adding or removing a gate legitimately
+  ## does not break it -- only reintroducing a bare if(toupper(...) %in% ...) does.
+  ## skip in the installed-package / R CMD check context, where R/ is not shipped -
+  ## same gate as the source-inspection test in test-MAP_FUNCTIONS.R. Without it this
+  ## errors during check() rather than skipping.
+  src_path <- testthat::test_path("../../R/ejam2report.R")
+  skip_if_not(file.exists(src_path),
+              "R source not available (installed-package check); source-inspection test runs only from the source tree")
+  ## whitespace-insensitive, so reformatting the condition cannot hide a bare gate
+  src <- paste(readLines(src_path, warn = FALSE), collapse = "\n")
+  expect_no_match(src, "if\\s*\\(\\s*toupper\\s*\\(\\s*site_method\\s*\\)\\s*%in%")
+})
+################ ################# ################# ################# ################# #
+testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings", {
+  ## ejamit() always sets site_method = "FIPS", but site_method2text() and
+  ## sitetype2text() both accept either case, so a caller passing "fips" should
+  ## still get polygons rather than an unmapped report. Mirrors the zip gate test
+  ## in test-shapes_from_zip.R.
+  fips_report_output <- function() list(
+    sitetype = "fips",
+    site_method = "FIPS",
+    results_bysite = data.table::data.table(
+      ejam_uniq_id = c("10001", "10003"), valid = TRUE, invalid_msg = "", pop = c(10, 20),
+      radius.miles = 0, statename = "Delaware"),
+    results_overall = data.table::data.table(
+      ejam_uniq_id = "overall", valid = TRUE, invalid_msg = "", pop = 30,
+      radius.miles = 0, statename = "Delaware")
+  )
+  for (spelling in c("FIPS", "fips", "Fips", "NAICS")) {
+    called <- new.env(parent = emptyenv()); called$n <- 0L
+    local_mocked_bindings(
+      shapes_from_fips = function(fips, ...) {
+        called$n <- called$n + 1L
+        sf::st_as_sf(data.frame(fips = fips, geometry = sf::st_sfc(
+          lapply(seq_along(fips), function(i) sf::st_polygon(list(rbind(
+            c(-75, 39 + i), c(-74.9, 39 + i), c(-74.9, 39.1 + i), c(-75, 39 + i))))), crs = 4269)))
+      },
+      report_residents_within_xyz_from_ejamit = function(...) "residents",
+      report_setup_temp_files = function(...) "template.Rmd",
+      create_filename = function(...) "report.html",
+      build_community_report = function(...) "<section>report</section>",
+      plot_barplot_ratios_ez = function(...) ggplot2::ggplot(),
+      ejam2map = function(...) "map",
+      ensure_pandoc_available_for_ejam = function(...) invisible(TRUE),
+      .package = "EJAM"
+    )
+    local_mocked_bindings(
+      pandoc_available = function(...) TRUE,
+      render = function(input, output_format, output_file, params, envir, quiet, ...) {
+        writeLines("<html>report</html>", output_file); output_file
+      }, .package = "rmarkdown"
+    )
+    out <- fips_report_output()
+    out$site_method <- spelling
+    res <- suppressWarnings(try(ejam2report(out, site_method = spelling, return_html = TRUE,
+                                            launch_browser = FALSE), silent = TRUE))
+    if (spelling == "NAICS") {
+      expect_identical(called$n, 0L)                     # non-fips method must not rebuild fips
+      ## called$n == 0 on its own would ALSO be satisfied by ejam2report() dying
+      ## before it ever reached the gate, so this case has to show execution got
+      ## past it. It cannot simply complete: with a non-FIPS method against this
+      ## FIPS-shaped fixture, shp stays NULL and the unmapped branch needs
+      ## ratio.to.state.avg.* columns the minimal fixture omits. So pin that
+      ## specific downstream failure - which is only reachable past the gate.
+      expect_true(inherits(res, "try-error"))
+      expect_match(conditionMessage(attr(res, "condition")), "ratio\\.to\\.state\\.avg")
+    } else {
+      expect_gt(called$n, 0L)                            # both FIPS spellings do
+      ## and the report itself must still complete - otherwise "shapes_from_fips()
+      ## was called" would pass even if everything after it blew up.
+      expect_false(inherits(res, "try-error"))
+      expect_type(res, "character")
+    }
+  }
+})
+################ ################# ################# ################# ################# #
+
+
+test_that("report headers preserve custom FIPS titles in rendered downloads", {
+  state <- new.env(parent = emptyenv())
+  local_ejam2report_fips_mocks(state)
+  for (title in list(NULL, global_or_param("default_standard_analysis_title"), "My county analysis")) {
+    out <- fips_report_test_output(radius = 0, valid = TRUE, pop = 10)
+    header <- report_header_from_ejamit(out, analysis_title = title, site_method = "FIPS")
+    ejam2report(out, analysis_title = title, return_html = TRUE, launch_browser = FALSE)
+    expect_identical(state$header, header[c("report_title", "analysis_title", "locationstr")])
+    expect_identical(state$header$analysis_title,
+                     if (identical(title, "My county analysis")) title else "FIPS 10001")
+    expect_identical(state$header$report_title, global_or_param("report_title"))
+  }
+})
+
+test_that("shared headers select the actual valid site and reject malformed results", {
+  out <- fips_report_test_output(radius = 0, valid = c(FALSE, TRUE), pop = c(0, 20))
+  header <- report_header_from_ejamit(out)
+  expect_identical(header$sitenumber, 2L)
+  expect_match(header$locationstr, "Site 2", fixed = TRUE)
+  expect_match(header$locationstr, "10003", fixed = TRUE)
+  expect_identical(header$analysis_title, fips2name("10003"))
+  expect_false(report_header_from_ejamit(out, sitenumber = 1)$reportable)
+
+  out$results_bysite$valid <- FALSE
+  expect_false(report_header_from_ejamit(out)$reportable)
+  expect_message(expect_identical(ejam2report(out, launch_browser = FALSE), NA), "no reportable results")
+
+  out$results_bysite$invalid_msg[2] <- unname(ejamit_reportable_invalid_messages())[1]
+  out$results_bysite$pop <- 0
+  header <- report_header_from_ejamit(out)
+  expect_true(header$reportable)
+  expect_identical(header$sitenumber, 2L)
+  expect_identical(header$report_title, global_or_param("report_title"))
+  out$results_bysite$invalid_msg <- unname(ejamit_reportable_invalid_messages())[1]
+  header <- report_header_from_ejamit(out)
+  expect_true(header$reportable)
+  expect_match(header$locationstr, "2", fixed = TRUE)
+  expect_false(grepl("0 places", header$locationstr, fixed = TRUE))
+})
+
+test_that("shared report headers cover points polygons and multisite selection", {
+  for (sitetype in c("latlon", "shp", "fips")) {
+    out <- data.table::copy(testoutput_ejamit_10pts_1miles)
+    out$sitetype <- sitetype
+    if (sitetype == "fips") out$results_bysite$ejam_uniq_id <- rep("10001", NROW(out$results_bysite))
+    multi <- report_header_from_ejamit(out, analysis_title = "Custom")
+    expect_identical(multi$sitenumber, 0L)
+    expect_identical(multi$report_title, global_or_param("report_title_multisite"))
+    expect_identical(multi$analysis_title, "Custom")
+    one <- report_header_from_ejamit(out, sitenumber = 2, analysis_title = "Custom",
+                                   sitenumber_label = 7)
+    expect_identical(one$report_title, global_or_param("report_title"))
+    expect_identical(one$analysis_title, "Custom")
+    expect_match(one$locationstr, "Site 7", fixed = TRUE)
+    expect_identical(report_header_from_ejamit(out, sitenumber = "bad")$sitenumber, 0L)
+    custom <- report_header_from_ejamit(out, report_title = "Custom report")
+    expect_identical(custom$report_title, "Custom report")
+  }
+})
+
+
+test_that("the actual in-app renderer uses the shared report header", {
+  # Exercise the production renderUI expression with a small server, without
+  # starting uploads, maps, or other unrelated app observers.
+  renderer <- Filter(function(expr) {
+    is.call(expr) && identical(expr[[1]], quote(`<-`)) &&
+      identical(expr[[2]], quote(output$comm_report_html))
+  }, as.list(body(app_server)))
+  expect_length(renderer, 1)
+  local_mocked_bindings(
+    build_community_report = function(report_title, analysis_title, locationstr, ...) {
+      htmltools::HTML(paste(report_title, analysis_title, locationstr))
+    },
+    .package = "EJAM"
+  )
+  for (sitetype in c("fips", "latlon", "shp")) {
+    for (n in c(1, 2)) {
+      out <- data.table::copy(testoutput_ejamit_10pts_1miles)
+      out$results_bysite <- out$results_bysite[seq_len(n), ]
+      out$sitetype <- sitetype
+      if (sitetype == "fips") out$results_bysite$ejam_uniq_id <- c("10001", "10003")[seq_len(n)]
+      shiny::testServer(function(input, output, session) {
+        data_processed <- function() out
+        sanitized_analysis_title <- shiny::reactive(input$analysis_title)
+        submitted_upload_method <- function() sitetype
+        download_ready_for_report_header_and_tables <- function(...) NULL
+        eval(renderer[[1]])
+      }, {
+        session$setInputs(analysis_title = "My analysis")
+        header <- report_header_from_ejamit(out, analysis_title = "My analysis", site_method = sitetype)
+        html <- output$comm_report_html$html
+        expect_match(html, header$report_title, fixed = TRUE)
+        expect_match(html, header$analysis_title, fixed = TRUE)
+        expect_match(html, header$locationstr, fixed = TRUE)
+        session$setInputs(analysis_title = "Updated title")
+        expect_match(output$comm_report_html$html, "Updated title", fixed = TRUE)
+      })
+    }
+  }
+})
+
+
+test_that("report selection rejects empty results and preserves explicit zero-population sites", {
+  out <- fips_report_test_output(radius = 0, valid = c(TRUE, FALSE), pop = c(10, 0),
+                                  invalid_msg = c("", unname(ejamit_reportable_invalid_messages())[1]))
+  default <- report_header_from_ejamit(out)
+  explicit <- report_header_from_ejamit(out, sitenumber = 2, analysis_title = "No population")
+  expect_equal(default$sitenumber, 1)
+  expect_equal(explicit$sitenumber, 2)
+  expect_true(explicit$reportable)
+  expect_identical(explicit$analysis_title, "No population")
+  expect_match(explicit$locationstr, "Site 2", fixed = TRUE)
+  out$results_bysite <- out$results_bysite[0, ]
+  empty <- report_header_from_ejamit(out)
+  expect_false(empty$reportable)
+  expect_null(empty$locationstr)
+  expect_message(expect_identical(ejam2report(out, launch_browser = FALSE), NA),
+                  "no reportable results")
+})

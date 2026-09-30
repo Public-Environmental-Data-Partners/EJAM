@@ -5,12 +5,14 @@
 
 # not much to test here
 
-# does it work with a propoer program id
+# Use a fixture regenerated and checked against the current FRS snapshot.
 test_that('lookup works correctly',{
+  site <- testinput_program_sys_id[1, ]
   expect_no_warning({
-    val <- frs_from_programid("State", "XJW000012435")
+    val <- frs_from_programid(site$program, site$pgm_sys_id)
     })
   expect_true("lat" %in% names(val) & "lon" %in% names(val) &   "data.table" %in% class(val))
+  expect_true(any(!is.na(val$lat) & !is.na(val$lon)))
 })
 
 
