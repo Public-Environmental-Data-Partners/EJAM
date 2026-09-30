@@ -1,73 +1,21 @@
-Environmental Justice Analysis Multisite tool
-================
+# EJAM web app deploy branch
 
-# <img src="man/figures/logo659.png" align="right" width="220px"/>
+This branch holds only the files that build and deploy the EJAM Shiny web app
+to AWS ECS Fargate. It does not hold the EJAM package source. The `Dockerfile`
+installs EJAM from GitHub at the ref in `ARG EJAM_VERSION`, and downloads the
+`ejamdata` release named in `ARG EJAMDATA_VERSION`.
 
-<!-- README.md is generated from README.Rmd. Please edit Rmd not md  -->
+| File | Purpose |
+|---|---|
+| `Dockerfile` | Builds the app image; pins `EJAM_VERSION` and `EJAMDATA_VERSION` |
+| `.github/workflows/deploy-dev.yaml` | Builds and deploys to **dev** (on push to `dev-deploy`, or run manually with an optional `ejam_version`) |
+| `.github/workflows/deploy.yaml` | Builds and deploys to **prod** (on push to `prod-deploy`, or run manually) |
+| `.github/workflows/diag-ecs-dev.yaml` | Read-only diagnostics for the dev ECS service (run manually) |
+| `ejam-infra/` | Terraform for the AWS infrastructure |
 
-<!-- badges: start -->
+**Merging a pull request into `dev-deploy` or `prod-deploy` deploys immediately.**
 
-<!-- or we could comment out the badge 
-&#10;[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
- -->
-
-<!-- badges: end -->
-
-The Environmental Justice Analysis Multisite tool lets you easily and
-quickly see residential population and environmental information
-aggregated within and across hundreds or thousands of places, all at the
-same time.
-
-## What Can You Do with EJAM?
-
-[What is
-EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html)
-
-EJAM lets you specify the places to analyze in several ways – uploading a table
-of point locations (latitude/longitude), picking facilities by industry category
-or ID, uploading shapefiles or lists of Census FIPS codes, or clicking on a map
-to specify one or more points – and it returns a summary report comparing
-residents and environmental conditions at those places to the rest of the
-country.
-
-## Status of EJAM package in 2026
-
-See [ejanalysis.org/status](https://ejanalysis.org/status) for more
-information.
-
-*In 2025, content related to what had been the USEPA-hosted open source
-R package EJAM was archived.*
-
-*Ongoing development since then is not associated with EPA*, and that
-development including any open source contributions, has taken place in
-a separate repository, called
-[Public-Environmental-Data-Partners/EJAM](https://github.com/Public-Environmental-Data-Partners/EJAM),
-a non-EPA, detached fork.
-
-### code repositories and open source contributions
-
-See [ejanalysis.org/ejamrepo](https://ejanalysis.org/ejamrepo)
-
-### documentation
-
-See [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs) for
-current documentation.
-
-### datasets
-
-See [ejanalysis.com/ejam-code](https://ejanalysis.com/ejam-code)
-
-Until mid-2025, datasets had been in a repository *archived and/or
-unpublished in mid-2025*
-([USEPA/ejamdata](https://github.com/USEPA/ejamdata)) with no plans for
-it to be further updated by EPA.
-
-### web app hosting
-
-A (non-EPA) version of the EJAM web app may be found from within the
-[EJSCREEN app](http://ejanalysis.org/ejscreenapp) (at the bottom of the
-list under the “Tools” tab in EJSCREEN), or directly via this link:
-[ejanalysis.org/ejamapp](https://ejanalysis.org/ejamapp)
-
-For information about how to host the web app, see [Deploying the Web
-App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deploy-app.html)
+The full procedure (changing the pins, running the dev deploy for another EJAM
+ref, rollback, logs) is in the article
+[Deploying the Web App to AWS](https://public-environmental-data-partners.github.io/EJAM/dev/articles/dev-deployment.html),
+whose source is `vignettes/dev-deployment.Rmd` on the `development` branch.
