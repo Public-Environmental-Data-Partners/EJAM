@@ -231,7 +231,7 @@ jobs:
           fi
 
           # Derive the ACS vintage for the release title, matching the naming used
-          # by the existing releases (e.g. "EJAM v3.2022.3 (ACS 2018-2022)" or 
+          # by the existing releases (e.g. "EJAM v3.2022.3 (ACS 2018-2022)" or
           # "EJAM v4.2024.0 (ACS 2020-2024)").
           #
           # Read it from DESCRIPTION's VersionACS, the single source of truth for the
