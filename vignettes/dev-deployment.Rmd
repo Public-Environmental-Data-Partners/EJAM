@@ -46,11 +46,15 @@ guide to those files; edit the files themselves on the deploy branches.
 | `.dockerignore` | Files excluded from the Docker build context |
 | `.github/workflows/deploy.yaml` | GitHub Actions — build + deploy to **prod** (on push to `prod-deploy`, or run manually) |
 | `.github/workflows/deploy-dev.yaml` | GitHub Actions — build + deploy to **dev** (on push to `dev-deploy`, or run manually with an optional `ejam_version` input) |
+| `.github/workflows/diag-ecs-dev.yaml` | GitHub Actions — read-only diagnostics for the dev ECS service (run manually) |
 
-The deploy branches also carry an older copy of the package source (including an
-`app.R`, which is for Posit Connect), but the image does not use it: the
-`Dockerfile` has no `COPY` step and installs EJAM from GitHub at the ref named by
-`ARG EJAM_VERSION`. Only the files in the table above matter for a deploy.
+Apart from these, the deploy branches hold only a short `README.md`, the licenses,
+and git config files. They do not hold the EJAM package source: the `Dockerfile`
+has no `COPY` step and installs EJAM from GitHub at the ref named by
+`ARG EJAM_VERSION`. (Until September 2026 each branch also carried an old, unused
+copy of the package source; it was removed in
+[#633](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/633) and
+[#634](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/634).)
 
 ## Architecture at a glance
 
@@ -114,9 +118,9 @@ prod-deploy/Dockerfile   ARG EJAM_VERSION=<release tag>           ARG EJAMDATA_V
 ```
 
 - **To change what is deployed, change those `ARG` lines** with a small pull
-  request into the deploy branch. There is no need to merge `main` or
-  `development` into a deploy branch; the package source on the branch is not
-  installed.
+  request into the deploy branch. Don't merge `main` or `development` into a
+  deploy branch: that would bring the package source back onto the branch, and the
+  image doesn't use it.
 - `ARG EJAM_VERSION` can be a release tag (e.g. `v3.2022.3`), a branch
   (e.g. `development`), or a commit SHA. **Production should always use a release
   tag.** Dev can use any ref, which lets you test a release candidate before it is
@@ -431,8 +435,7 @@ protection: off) before `terraform destroy` will succeed on prod.
 ## Future direction
 
 The long-lived `dev-deploy` / `prod-deploy` branches are a workable pattern, but
-their two `Dockerfile`s must be kept in step by hand, and the stale copy of the
-package source on each branch is easy to mistake for what is deployed. The modern,
+their two `Dockerfile`s and deploy workflows must be kept in step by hand. The modern,
 trunk-based alternative is to keep the infra + `Dockerfile` in subdirectories on
 `main` (marked in `.Rbuildignore` so they don't affect the R package build) and
 deploy via `workflow_dispatch`/tag triggers targeting **GitHub Environments**
@@ -443,7 +446,10 @@ maintainer's call; it is noted here as the recommended target state.
 ## About this document
 
 This article consolidates two documents that previously lived only on the deploy
-branches: `DEPLOY-GUIDE.md` (root) and `ejam-infra/README.md`. Where they
+branches: `DEPLOY-GUIDE.md` (root; removed from those branches in
+[#633](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/633) and
+[#634](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/634)) and
+`ejam-infra/README.md`. Where they
 disagreed, it follows the **actual deploy-branch files** (`main.tf`, `Dockerfile`,
 the deploy workflows): **GitHub Actions deploys are live** (the older
 `DEPLOY-GUIDE.md` said "coming soon"), and the container serves on **ports
