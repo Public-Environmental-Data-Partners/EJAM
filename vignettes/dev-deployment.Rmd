@@ -42,11 +42,15 @@ guide to those files; edit the files themselves on the deploy branches.
 |---|---|
 | [`ejam-infra/main.tf`](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/dev-deploy/ejam-infra/main.tf) | Terraform — the full AWS infrastructure definition (VPC, ALB, ECR, ECS, IAM, logs) |
 | [`ejam-infra/prod.tfvars`](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/dev-deploy/ejam-infra/prod.tfvars), [`ejam-infra/dev.tfvars`](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/dev-deploy/ejam-infra/dev.tfvars) | Per-environment Terraform variables (task size, retention, etc.) |
-| `Dockerfile` | Container image build for the Shiny app |
-| `app.R` | The Shiny app entry point run inside the container (also sets `isPublic`) |
+| `Dockerfile` | Container image build for the Shiny app. Chooses the EJAM version (`ARG EJAM_VERSION`) and the `ejamdata` release (`ARG EJAMDATA_VERSION`), and its `CMD` starts the app with `EJAM::ejamapp(isPublic = ...)` |
 | `.dockerignore` | Files excluded from the Docker build context |
-| `.github/workflows/deploy.yaml` | GitHub Actions — build + deploy to **prod** (on push to `prod-deploy`) |
-| `.github/workflows/deploy-dev.yaml` | GitHub Actions — build + deploy to **dev** (on push to `dev-deploy`) |
+| `.github/workflows/deploy.yaml` | GitHub Actions — build + deploy to **prod** (on push to `prod-deploy`, or run manually) |
+| `.github/workflows/deploy-dev.yaml` | GitHub Actions — build + deploy to **dev** (on push to `dev-deploy`, or run manually with an optional `ejam_version` input) |
+
+The deploy branches also carry an older copy of the package source (including an
+`app.R`, which is for Posit Connect), but the image does not use it: the
+`Dockerfile` has no `COPY` step and installs EJAM from GitHub at the ref named by
+`ARG EJAM_VERSION`. Only the files in the table above matter for a deploy.
 
 ## Architecture at a glance
 
@@ -73,8 +77,8 @@ guide to those files; edit the files themselves on the deploy branches.
                                                dev = dev-<sha>, prod = <sha>               ▼
                                                                           Squarespace CNAME ──► ejam.publicenvirodata.org
 
-  How code gets onto dev-deploy / prod-deploy -- the main -> dev-deploy -> prod-deploy
-  promotion -- is described under "Branching and deploy model" below.
+  Each image installs EJAM from GitHub at the ref pinned by ARG EJAM_VERSION in
+  that branch's Dockerfile -- see "Branching and deploy model" below.
 ```
 
 **URLs**
@@ -93,49 +97,88 @@ guide to those files; edit the files themselves on the deploy branches.
 
 The container serves the app on **port 2000** and a health-check endpoint on
 **port 2001** (`app_port` / `health_check_port` in `ejam-infra/main.tf`, which
-default to 2000/2001; the `Dockerfile` `EXPOSE`s `2000 2001` and runs
-`run_app(port = 2000)` with a small health server on 2001).
+default to 2000/2001; the `Dockerfile` `EXPOSE`s `2000 2001`, and its `CMD` starts
+a small health server on 2001 and then `EJAM::ejamapp(options = list(port = 2000))`).
+The `CMD` also sets the app mode: dev runs `isPublic = FALSE` (the full app, so
+testing exercises every feature) and prod runs `isPublic = TRUE` (the public app).
 
 ## Branching and deploy model
 
-The two environments are promoted **in sequence** — code is validated on **dev**,
-then the *same commit* is promoted to **prod**:
+The deploy branches hold the **build files**, not the code that gets deployed.
+Each branch's `Dockerfile` names the EJAM version to install, and the image
+installs that version from GitHub:
 
 ```
-feature / fix  ──PR──►  main  ──PR──►  dev-deploy  ──PR──►  prod-deploy
-                                       (deploys dev;        (deploys prod)
-                                        validate here)
+dev-deploy/Dockerfile    ARG EJAM_VERSION=<tag, branch, or SHA>   ARG EJAMDATA_VERSION=vX.YYYY.Z
+prod-deploy/Dockerfile   ARG EJAM_VERSION=<release tag>           ARG EJAMDATA_VERSION=vX.YYYY.Z
 ```
 
-- Merging a PR into `dev-deploy` triggers a **dev** deploy; merging into
-  `prod-deploy` triggers a **prod** deploy. The environment is chosen by *which
-  branch you push to* — each branch's workflow uses its own `*.tfvars` and its own
-  AWS resources — so the same tree can deploy to either environment.
-- `dev` is the **validation step**: merge `main` → `dev-deploy`, confirm it works,
-  then promote by merging **`dev-deploy` → `prod-deploy`**. Promoting the validated
-  branch (rather than re-merging `main`) guarantees prod deploys the *exact* commit
-  that was tested on dev, with no chance of `main` having moved on in between.
-- **Hotfix exception:** for an urgent prod-only fix you can open a PR straight from
-  `main` (or a fix branch) → `prod-deploy`, skipping dev. Use sparingly — it bypasses
-  dev validation.
+- **To change what is deployed, change those `ARG` lines** with a small pull
+  request into the deploy branch. There is no need to merge `main` or
+  `development` into a deploy branch; the package source on the branch is not
+  installed.
+- `ARG EJAM_VERSION` can be a release tag (e.g. `v3.2022.3`), a branch
+  (e.g. `development`), or a commit SHA. **Production should always use a release
+  tag.** Dev can use any ref, which lets you test a release candidate before it is
+  tagged.
+- `ARG EJAMDATA_VERSION` names the `ejamdata` release; see
+  [Which EJAM version deploys](#which-ejam-version-deploys) below.
+- **Merging a pull request into `dev-deploy` deploys dev; merging into
+  `prod-deploy` deploys prod**, immediately (about 15–20 minutes). Each branch's
+  workflow targets its own ECS cluster and service.
+- The two `Dockerfile`s are meant to differ only in the pins and in `isPublic`
+  (dev `FALSE`, prod `TRUE`). Make any other change (for example the font-cache
+  line described [below](#which-ejam-version-deploys)) on **both** branches.
+- Validating on dev and then setting the **same tag** on prod deploys the same EJAM
+  code. The prod image is still a fresh build, though: it uses the current
+  `rocker/rstudio:latest` base image and current CRAN packages, which may differ
+  slightly from the dev image built earlier.
 - Both `dev-deploy` and `prod-deploy` are **protected**: a PR is required (direct
   pushes are blocked for everyone, including admins); no approvals are required
   (a maintainer may merge their own PR).
 
+**Running the dev deploy for another EJAM ref.** The dev workflow can also be
+started by hand (GitHub → Actions → "Build & Deploy to ECS Fargate (dev)" → Run
+workflow, or from the command line) with an `ejam_version` input, which overrides
+`ARG EJAM_VERSION` for that one build without editing the branch:
+
+```bash
+gh workflow run "Build & Deploy to ECS Fargate (dev)" \
+  --repo Public-Environmental-Data-Partners/EJAM --ref dev-deploy \
+  -f ejam_version=development
+```
+
+Leave `ejam_version` blank to build the version pinned in the `Dockerfile`. The
+dispatch **cannot override `EJAMDATA_VERSION`**: to test with a different data
+release, change that pin in `dev-deploy` by pull request. The prod workflow can
+also be run by hand, but it has no input; it rebuilds the pinned version.
+
+> **Deploys don't queue.** Neither deploy workflow limits concurrent runs, so a
+> deploy started by a merge and one started by hand (or two started by hand) run
+> at the same time, each updating the same ECS service. Either one can end up
+> live, and it may not be the one you meant. Start one deploy, wait for it to
+> finish, and then confirm the version shown in the app footer. In particular,
+> don't dispatch a dev deploy right after merging into `dev-deploy`, since the
+> merge already started one.
+
 ## Routine deploy (GitHub Actions) — the normal path
 
-1. **Develop**, and merge your changes to `main` via PR (or keep them on a feature
-   branch ready to deploy).
-2. **Deploy to dev:** open a PR from `main` (or your feature branch) → `dev-deploy`.
-   On merge, GitHub Actions builds the image, pushes it to ECR, and updates the dev
-   ECS service (~15 min).
-3. **Validate on dev** at the dev URL. A human must green-light before promoting.
-4. **Promote to prod:** open a PR to merge **`dev-deploy` → `prod-deploy`**. On
-   merge, Actions deploys the *same validated commit* to production. (For an urgent
-   prod-only hotfix you can instead PR `main` → `prod-deploy` directly, skipping dev.)
+1. **Release (or pick a candidate).** Deploy a release tag. To test a release
+   candidate on dev before tagging, use a branch or commit SHA instead.
+2. **Deploy to dev:** open a PR into `dev-deploy` that sets `ARG EJAM_VERSION`
+   (and `ARG EJAMDATA_VERSION`, if the data release changed). On merge, GitHub
+   Actions builds the image, pushes it to ECR, and updates the dev ECS service.
+   For a quick test of an unreleased ref, you can dispatch the dev workflow with
+   `ejam_version` instead (see above).
+3. **Validate on dev** at the dev URL: the footer version, one report (including
+   the PDF), and readable chart labels. A human must green-light before promoting.
+4. **Deploy to prod:** open a PR into `prod-deploy` that sets the same
+   `ARG EJAM_VERSION` tag (and `ARG EJAMDATA_VERSION`, if it changed). On merge,
+   Actions deploys production. Then check the same things on the production app.
 
-The workflows can also be run manually from **GitHub → Actions → (deploy workflow)
-→ Run workflow**.
+For the release steps around a deploy (tagging, the `ejamdata` release, EJAM-API
+and EJSCREEN updates), see
+[Releasing a New Version of EJAM](dev-update-package.html).
 
 ### PDF checks
 
@@ -164,23 +207,42 @@ on `dev-deploy` and `prod-deploy`.
 | Secret | Purpose |
 |---|---|
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | deploy credentials for ECR/ECS |
-| `EJAMDATA_PAT` | a GitHub PAT, passed to the build as the `GITHUB_PAT` build-arg, used to download the `ejamdata` arrow files from the ejamdata GitHub release |
 
-> **Which EJAM version deploys:** the `Dockerfile` installs EJAM from a **pinned
-> GitHub release tag** via the `EJAM_VERSION` build-arg (e.g., `v3.2022.2`;
-> override with `--build-arg EJAM_VERSION=vX.Y.Z`), so the deployed version is
-> explicit and reproducible rather than tied to whatever source happens to be
-> checked out on the deploy branch. The `ejamdata` arrow files are fetched
-> separately from the ejamdata GitHub release via the `EJAMDATA_VERSION` build-arg
-> (e.g., `v3.2022.0` — the release that the given EJAM version requires,
-> i.e. its `ejamdata_required_tag`; note a code-only patch such as `v3.2022.1`
-> or `v3.2022.2` still uses the existing `v3.2022.0` data release);
-> keep the two in sync when bumping to a new release.
->
-> *(These pinned build-args are set in the deploy-branch `Dockerfile`. A deploy
-> branch whose `Dockerfile` predates that update instead installs EJAM from the
-> build context via `remotes::install_local` and defaults `EJAMDATA_VERSION` to the
-> latest ejamdata release — so confirm the `Dockerfile` on the branch you deploy.)*
+No GitHub token secret is needed. Both workflows pass the workflow run's own
+short-lived token to the build (`--build-arg GITHUB_PAT=${{ github.token }}`),
+which is enough to read the public EJAM and `ejamdata` repositories. (A stored
+personal access token, `EJAMDATA_PAT`, was used until July 2026, when it expired
+and broke the builds; it is no longer used.)
+
+### Which EJAM version deploys
+
+- **EJAM:** the `Dockerfile` installs EJAM with `remotes::install_github()` at
+  `ARG EJAM_VERSION` (a tag, branch, or commit SHA; see
+  [Branching and deploy model](#branching-and-deploy-model)).
+- **`ejamdata`:** the 11 large `.arrow` files are downloaded separately, from the
+  `ejamdata` GitHub release named by `ARG EJAMDATA_VERSION`. **It must equal the
+  installed EJAM's `ejamdata_required_tag`** (in EJAM's `DESCRIPTION`; for
+  EJAM v3.2022.3 that is `v3.2022.3`). If they differ, EJAM finds that the data in
+  the image is not the release it requires and downloads the whole set (about 1 GB)
+  again every time a container starts. (An explicit empty `EJAMDATA_VERSION` falls
+  back to the "Latest" `ejamdata` release, which is not necessarily the one EJAM
+  requires, so always set it.)
+- A new `ejamdata` release, and so a new `EJAMDATA_VERSION`, is needed whenever
+  `bgej`, the FRS files, or the block geography files change. A code-only EJAM
+  release keeps the existing data tag. See
+  [Releasing a New Version of EJAM](dev-update-package.html) for the full list of
+  places that must name the same data tag.
+- **Font cache:** the `Dockerfile` `CMD` must start with `system('fc-cache -r')`,
+  before the app starts
+  ([#621](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/621)).
+  On ECS Fargate the font cache built into the image did not match the fonts
+  actually present, so R resolved "sans" to a decorative font from
+  `texlive-fonts-extra` and chart text in reports came out as boxes (the same image
+  looked fine under plain Docker). Rebuilding the cache at startup takes a few
+  seconds. Keep this line on both deploy branches. (It was added to `dev-deploy` in
+  [#623](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/623); the
+  matching `prod-deploy` change is
+  [#624](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/624).)
 
 ## First-time setup (manual / infrastructure)
 
@@ -243,13 +305,16 @@ aws ecr get-login-password --region us-east-1 \
 # needs a UNIQUE tag -- re-pushing an existing tag (e.g. :latest) will fail.
 # Match the workflows' commit-SHA convention:
 TAG="manual-$(git rev-parse --short HEAD)"
-docker build -t ejam:$TAG .
+# Pass a GitHub token as the workflows do (used to download the ejamdata files):
+docker build --build-arg GITHUB_PAT="$(gh auth token)" -t ejam:$TAG .
 docker tag  ejam:$TAG <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:$TAG
 docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/ejam:$TAG
 ```
 
 The `.dockerignore` (on the deploy branch) excludes `.RData`, `.Rhistory`,
-`.Rproj.user`, `.git`, `.github`, and `ejam-infra/` from the build context.
+`.Rproj.user`, `.git`, `.github`, `ejam-infra/`, and several docs and test folders
+from the build context. (The build does not copy anything from the context anyway;
+see [Where the operational files live](#where-the-operational-files-live).)
 
 ## Infrastructure changes (Terraform)
 
@@ -301,6 +366,9 @@ aws logs filter-log-events --log-group-name /ecs/ejam-prod \
 | Docker build fails | confirm Docker Desktop is running and `.dockerignore` is present |
 | ECS tasks failing health checks | confirm the container serves HTTP 200 on the health-check port (2001) and the app port (2000) matches the task definition |
 | Slow local Docker push | use GitHub Actions instead |
+| Chart text in reports shows as boxes | the `Dockerfile` `CMD` is missing `system('fc-cache -r')` (see [Which EJAM version deploys](#which-ejam-version-deploys)) |
+| Container logs show the `ejamdata` files downloading at every start | `ARG EJAMDATA_VERSION` does not equal the installed EJAM's `ejamdata_required_tag` |
+| The app footer shows a different version than the one just deployed | two deploys ran at once (a merge and a manual run); run one again and let it finish alone |
 
 ## Testing against a local or draft API
 
@@ -357,7 +425,8 @@ protection: off) before `terraform destroy` will succeed on prod.
 ## Future direction
 
 The long-lived `dev-deploy` / `prod-deploy` branches are a workable pattern, but
-they drift from `main` and must be re-synced before each release. The modern,
+their two `Dockerfile`s must be kept in step by hand, and the stale copy of the
+package source on each branch is easy to mistake for what is deployed. The modern,
 trunk-based alternative is to keep the infra + `Dockerfile` in subdirectories on
 `main` (marked in `.Rbuildignore` so they don't affect the R package build) and
 deploy via `workflow_dispatch`/tag triggers targeting **GitHub Environments**
@@ -373,10 +442,10 @@ disagreed, it follows the **actual deploy-branch files** (`main.tf`, `Dockerfile
 the deploy workflows): **GitHub Actions deploys are live** (the older
 `DEPLOY-GUIDE.md` said "coming soon"), and the container serves on **ports
 2000/2001** (as in `DEPLOY-GUIDE.md` and the current `main.tf`/`Dockerfile` — the
-`ejam-infra/README.md` wireframe's "3838" was inaccurate). For the branch model it
-follows the **sequential** `main → dev-deploy → prod-deploy` promotion (as in
-`DEPLOY-GUIDE.md`), which guarantees prod deploys the exact commit validated on
-dev; the deploy workflows are branch-triggered, so either model works mechanically.
+`ejam-infra/README.md` wireframe's "3838" was inaccurate). `DEPLOY-GUIDE.md` also
+describes promoting code by merging `main` → `dev-deploy` → `prod-deploy`; that
+no longer applies, because each image installs EJAM from GitHub at the ref in its
+`Dockerfile` (see [Branching and deploy model](#branching-and-deploy-model)).
 Concrete AWS account IDs and individual contact names have been replaced with
 `<ACCOUNT_ID>` and role descriptions; substitute the real values from the deploy
 branch files. If you own the deployment, treat this as the single source of truth
