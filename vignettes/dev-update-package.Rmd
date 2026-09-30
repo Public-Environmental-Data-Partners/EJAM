@@ -1,11 +1,11 @@
 ---
-title: "Updating the Package as a New Release"
-description: "Steps for preparing package and GitHub releases"
+title: "Releasing a New Version of EJAM"
+description: "How to prepare, test, and cut an EJAM package release, and the matching ejamdata, web app, EJAM-API, and EJSCREEN updates"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Updating the Package as a New Release}
+  %\VignetteIndexEntry{Releasing a New Version of EJAM}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -28,19 +28,544 @@ data_owner    <- gsub("/.*", "", data_reponame_with_owner)   #        "OWNER"
 docs_reponame_url        <- EJAM::url_package(type = "docs", get_full_url = TRUE)  # "https://OWNER.github.io/REPONAME"
 # only the full URL is useful in this case
 
+this_version <- as.vector(desc::desc_get("Version"))
+this_acs     <- as.vector(desc::desc_get("VersionACS"))
+this_datatag <- as.vector(desc::desc_get("ejamdata_required_tag"))
 ```
 
-This document outlines the general development process for preparing a new
-EJAM package release, relocating it to a different repository, or changing the
-full name of the web app/tool. Also see the separate vignettes on
-[updating datasets](dev-update-datasets.html), [updating EJScreen annual
-datasets via the pipeline](dev-update-ejscreen-datasets-yearly.html), and
-[updating documentation](dev-update-documentation.html). This document covers
-the code repository, the data repository, the documentation website, the app
-title, and the release checklist.
+This article is the checklist for preparing, testing, and cutting a new release
+of the EJAM R package, and for the updates that have to go out with it in the
+related repositories and hosted services. It covers what has to happen, in what
+order, and why. For the detailed mechanics of deployment and of building
+datasets, it points to the articles that already document them.
 
+The current development version is **`r this_version`** (ACS `r this_acs` data,
+ejamdata release `r this_datatag`). The examples below use the v3.2022.3
+release of October 2026.
 
-## CODE REPOSITORY: If relevant, carefully change the owner or name of the GitHub code repository
+Related articles:
+
+- [Updating datasets](dev-update-datasets.html), including the `ejamdata` Arrow
+  release assets and [refreshing FRS
+  data](dev-update-datasets.html#refreshing-frs-for-a-data-release)
+- [Updating EJSCREEN datasets annually (via the
+  pipeline)](dev-update-ejscreen-datasets-yearly.html)
+- [Updating documentation](dev-update-documentation.html)
+- [GitHub Actions install tests](dev-github-actions-install-tests.html)
+- [Deploying the web app to AWS](dev-deployment.html) (infrastructure,
+  routine deploys, rollback, logs) and [Deploying the web
+  app](dev-deploy-app.html) (options and parameters)
+- [Using the EJAM API](dev-api.html)
+
+## What a release involves
+
+An EJAM release is a tagged version of the R package, but the package is only
+one of several things that carry the version number and have to move together:
+
+| Component | Where | What changes at a release | Documented in |
+|---|---|---|---|
+| EJAM R package | `r code_reponame_with_owner`, branches `development` → `main`, tag `vX.YYYY.Z` | Version fields, NEWS, README, docs; the GitHub Release | This article |
+| Large datasets | `r data_reponame_with_owner` GitHub Release assets (11 `.arrow` files) | A new data release only if `bgej`, FRS, or block geography data change | [Updating datasets](dev-update-datasets.html) |
+| EJAM web app (dev and production) | `dev-deploy` and `prod-deploy` branches of the EJAM repo (AWS ECS Fargate) | Dockerfile pins `EJAM_VERSION` and `EJAMDATA_VERSION` | [Deploying to AWS](dev-deployment.html) |
+| EJAM-API | Public-Environmental-Data-Partners/EJAM-API (Google Cloud Run) | Dockerfile default `EJAM_VERSION`, then a manual image build and deploy | EJAM-API `README.md` |
+| EJSCREEN web app | Public-Environmental-Data-Partners/EJScreen (Azure) | The displayed version number, then a manual deploy | EJScreen `README.md` |
+| Documentation site | GitHub Pages, built by pkgdown | Rebuilt automatically from `main` when the Release is published | [Updating documentation](dev-update-documentation.html) |
+
+The web app, EJAM-API, and EJSCREEN each install or display a *specific* EJAM
+version. Nothing updates them automatically when the package is released; each
+one needs its own small change and deploy.
+
+## Version numbers
+
+EJAM versions are **`MAJOR.ACSENDYEAR.PATCH`**. The middle field is the end year
+of the American Community Survey (ACS) 5-year data the release uses, not a minor
+version number:
+
+- `3.2022.3`: major version 3, ACS 2018-2022 data, third patch.
+- `4.2024.0`: major version 4, ACS 2020-2024 data, first release on that data.
+
+Two data vintages can be supported at once. The highest version is the live
+line where development continues, and the older line can be frozen (for
+example, v3.2022.3 is the final ACS 2018-2022 release).
+
+Conventions and the guard that enforces them:
+
+- **Git tags carry a `v`** (`v3.2022.3`). The `DESCRIPTION` `Version` field does
+  not (`3.2022.3`). The same applies to `ejamdata` release tags, which do carry
+  the `v`.
+- **The version and the data vintage must agree.** The release workflow reads
+  `VersionACS` from `DESCRIPTION` and refuses to release if the version's middle
+  field is not the end year of `VersionACS` (for example, `4.2024.0` with
+  `VersionACS: 2018-2022` is blocked). So a new ACS vintage's version number has
+  to land in the **same commit** as its data.
+- **A patch release** (`3.2022.2` → `3.2022.3`) keeps the vintage and may
+  change code, documentation, or data corrections. **A vintage release**
+  (`3.2022.x` → `4.2024.0`) swaps the ACS data and follows the annual pipeline
+  article first.
+
+### Where the version appears
+
+Update these in the version-bump commit:
+
+| File | Field | How it's updated |
+|---|---|---|
+| `DESCRIPTION` | `Version`, `VersionEJSCREEN`, `VersionDate` (e.g. `October 2026`), `ReleaseDateEJAM`, `ReleaseDateEJSCREEN` | By hand. These drive the report footer, citation, docs footer, and metadata stamps. |
+| `DESCRIPTION` | `VersionACS`, `ReleaseDateACS`, `VersionCensus` | By hand, only when the data vintage changes. |
+| `DESCRIPTION` | `ejamdata_required_tag` (e.g. `v3.2022.3`) | By hand, only when a new `ejamdata` release is needed (see [Data](#data-changes-and-the-ejamdata-release)). |
+| `CITATION.cff` | `version`, `date-released` | By hand. |
+| `inst/golem-config.yml` | `golem_version` | By hand; nothing regenerates it. |
+| `README.Rmd` | the `About vX.YYYY.Z (Month YYYY)` section | By hand, then knit to `README.md`. |
+| `NEWS.md` | the `# EJAM X.YYYY.Z (Month YYYY)` heading | By hand (see [NEWS](#news-and-the-release-notes)). |
+| `_pkgdown.yml` | `versionmsg`, `datefooter` | Filled from `DESCRIPTION` by `EJAM:::pkgdown_update()`. |
+| `inst/CITATION` | title and year | Read from `DESCRIPTION` at run time; no edit needed. |
+
+Afterwards, search the whole repository for the previous version string (for
+example `git grep -n "3\.2022\.2"`), because older files, examples, and
+comments sometimes contain it as fixed text.
+
+If the release date slips, update `VersionDate`, both `ReleaseDate*` fields,
+`CITATION.cff`, the NEWS heading, and the README heading together. The report
+footer date comes from `DESCRIPTION`.
+
+## Branches and the release flow
+
+All work is merged into **`development`**. **`main`** changes only when a
+release is cut, through one pull request that brings `development` into `main`.
+`main` is what the release is tagged from and what the documentation root is
+built from.
+
+```
+feature branches ──PR──► development ──(release PR, merge commit)──► main ──► tag vX.YYYY.Z
+                              ▲                                        │
+                              └──────── back-merge after the release ──┘
+```
+
+The release sequence:
+
+1. **Plan and prepare** on `development`: data, version bump, NEWS, README,
+   documentation (the next two sections).
+2. **Freeze** `development`. From here until the tag exists, merge only fixes
+   needed for the release. For a small team this is an agreement, not a branch
+   rule.
+3. **Test the release candidate** locally, in CI, and on the dev web app.
+4. **Merge the release pull request** into `main`, then **tag and publish** with
+   the release workflow.
+5. **Deploy and update the related repositories**: web app (dev, then
+   production), ejamdata "Latest" flag if needed, EJAM-API, EJSCREEN.
+6. **Back-merge** `main` into `development` and clean up.
+
+Two rules make this work:
+
+- **Closing keywords only take effect in pull requests merged into `main`**
+  (the default branch). `Fixes #123` in a pull request merged into
+  `development` links the issue but does not close it. Repeat `Closes #N` in the
+  release pull request for every still-open issue fixed on `development` (see
+  [Cut the release](#cut-the-release)).
+- **Merge the release pull request with a merge commit, never a squash.** A
+  squash leaves `main` without `development`'s history, and every conflict
+  resolved in this release comes back at the next one.
+
+The ACS vintage branches (`ACS2022`, `ACS2023`, `ACS2024`) hold earlier
+vintage-specific work. Keep them until the next vintage release has shipped and
+been verified.
+
+## Data changes and the ejamdata release
+
+Skip this section for a code-only release. If any data change, do it first,
+before the version bump, because the tests and example outputs depend on it.
+
+**Packaged datasets** (`data/*.rda`, installed with the package):
+
+- For an annual ACS/EJSCREEN update, follow [Updating EJSCREEN datasets
+  annually](dev-update-ejscreen-datasets-yearly.html) and copy the accepted
+  pipeline outputs into the package (`blockgroupstats`, `usastats`,
+  `statestats`, and `avg.in.us`, which is derived from `usastats` by
+  `data-raw/datacreate_avg.in.us.R`).
+- For a fix to published data (as in v3.2022.3, which corrected the language
+  counts in `blockgroupstats`), replace only the affected objects and add a
+  test that would have caught the error.
+- Restamp the metadata attributes with `data-raw/datacreate_1_metadata_update.R`
+  (via `metadata_add()`; the defaults come from `DESCRIPTION` through
+  `R/metadata_mapping.R`), then run `EJAM:::metadata_check()` and
+  `EJAM:::metadata_check_print()`. The stamps (`ejam_package_version`,
+  `acs_version`, `ejscreen_version`, and so on) should match the new
+  `DESCRIPTION`.
+
+**The `ejamdata` release** (the 11 large `.arrow` files, downloaded by EJAM on
+first use):
+
+- A new `ejamdata` release is needed when **`bgej`** (the EJ indexes, which must
+  come from the same build as the new `usastats`/`statestats`), the **FRS**
+  facility files, or the **block geography** files change. A code-only EJAM
+  release can keep using the existing data tag.
+- **Every data release must contain all 11 files**, including unchanged ones,
+  because EJAM downloads everything from the single tag named in
+  `ejamdata_required_tag`. See [Every release must contain all 11 Arrow
+  files](dev-update-datasets.html#every-release-must-contain-all-11-arrow-files).
+- The `.arrow` files store the same version attributes as the packaged data
+  (`attributes()` on a loaded table shows them). When unchanged files are
+  carried into a new data release, **restamp** them with
+  `data-raw/datacreate_ejamdata_arrow_restamp.R`. It reads the stamps from
+  `DESCRIPTION`, keeps source dates such as `download_date`, and stops if any
+  data value would change. Run it with `Rscript --vanilla` *after* updating
+  `DESCRIPTION`. It does not attach EJAM, because attaching tries to download
+  the data release that `DESCRIPTION` names, which may not be published yet.
+- Publish the release (see the "How New Versions of Arrow Datasets Are
+  Republished / Released" section of [Updating datasets](dev-update-datasets.html)),
+  then check its asset names and sizes. Never edit or delete an older data
+  release: earlier EJAM versions are pinned to it.
+- **Every pin must name the same data tag**, or EJAM re-downloads about 1 GB of
+  data at startup:
+  - `DESCRIPTION` `ejamdata_required_tag`
+  - `data/ejamdata_version.txt` (the local marker; see [Keep the data tag and
+    local marker in sync](dev-update-datasets.html#keep-the-data-tag-and-local-marker-in-sync))
+  - `ARG EJAMDATA_VERSION` in the `Dockerfile` on both the `dev-deploy` and
+    `prod-deploy` branches
+  - EJAM-API needs no separate pin: its image installs EJAM, which downloads the
+    data release named in the installed `DESCRIPTION`.
+- Decide which data release should be marked **Latest** in the `ejamdata`
+  repository. EJAM itself uses `ejamdata_required_tag`, not "Latest", but people
+  browsing the repository see the Latest one first.
+
+**Test fixtures and example outputs.** Many tests compare current output
+exactly against saved objects, so after any data change (and any change to
+calculations), regenerate them and then run the full test suite:
+
+- `data-raw/datacreate_testpoints_testoutputs.R` (the
+  `testoutput_getblocksnearby_*`, `testoutput_doaggregate_*`, and
+  `testoutput_ejamit_*` objects)
+- `data-raw/datacreate_testoutput_ejamit_fips_.R`
+- `data-raw/datacreate_testoutput_ejamit_shapes_2.R`
+- the example reports and spreadsheets in `inst/testdata/examples_of_output/`
+  (via `ejam2excel(..., save_now = TRUE, overwrite = TRUE, launchexcel = FALSE,
+  interactive_console = FALSE)` and `ejam2report(..., fileextension = "html")`
+  or `"pdf"`)
+
+Regenerate them from the new data rather than copying fixtures from another
+branch, which may be stale.
+
+## Prepare the release on `development`
+
+Work on a short-lived branch (for example `v3.2022.3-version-bump`) and merge it
+into `development` through a pull request, so CI and review run on it.
+
+- **Version fields**: everything in [Where the version
+  appears](#where-the-version-appears).
+- **Documentation**: run `devtools::document()` so every help file matches the
+  code. A stale `.Rd` file shows up as a `WARNING` in `R CMD check`. Then run
+  `EJAM:::pkgdown_update()` (see [Updating
+  documentation](dev-update-documentation.html)), which also refreshes the
+  version in `_pkgdown.yml`.
+- **README**: update the "About" section in `README.Rmd` and knit `README.md` in
+  the same pull request.
+- **Dependencies**: consider raising minimum versions in `Imports` and
+  `Suggests` if the release relies on newer package behavior.
+- **NEWS**: see the next section.
+
+### NEWS and the release notes
+
+The release workflow publishes the **section of `NEWS.md` whose heading matches
+the version** as the GitHub Release notes. So the NEWS file is both the
+changelog and the release announcement:
+
+- Use one top-level heading per release: `# EJAM 3.2022.3 (October 2026)`. The
+  workflow finds it by the version number, with or without a `v`, so the month
+  in parentheses is fine.
+- Keep entries short: one or two sentences each, with the issue or pull request
+  number. Put causes and mechanisms in the pull request, not the changelog.
+- Put each entry in the section of the release that actually ships the change.
+  An entry left under an earlier release's heading drops out of the new
+  release notes. (In v3.2022.3, a web-app ETA entry sitting under 3.2022.2 had
+  to be moved.)
+- Mention data changes plainly, since users compare numbers across releases.
+
+## Test the release candidate
+
+Test the exact code that will be tagged, in three places.
+
+**Locally**, with the new data installed:
+
+- the full test suite (`devtools::test()` or `EJAM:::test_ejam()`); adding or
+  renaming a test file requires updating the groups in `R/test_ejam.R`
+- `devtools::check()`, which also runs every help-page example
+- the examples in the articles, especially any that use changed datasets (for
+  example, render the FRS-dependent articles after an FRS refresh; a check with
+  `vignettes = FALSE` does not cover them)
+
+**In CI.** Opening a pull request into `main` automatically runs `R CMD check`
+on macOS, Windows, and Ubuntu (the `release`, `oldrel-1`, and `devel` versions of R), the
+web-app `shinytest2` suite, the quick install check, and lintr:
+
+- A test that needs the internet (for example scraping naics.com or downloading
+  Census boundaries) can fail on a GitHub runner for network reasons. If the
+  failure message says so, re-run just the failed job with `gh run rerun <run-id>
+  --failed`, or from the Actions page.
+- An R-devel-only failure usually signals a deprecation that will reach the
+  released R later. It is usually a small fix and worth making (v3.2022.3 fixed a
+  deprecated `structure(.Names = ...)` call).
+- The full install matrix (`install-release-user-check.yaml`) runs when the tag
+  is published. See [GitHub Actions install tests](dev-github-actions-install-tests.html).
+
+**On the dev web app.** Deploy the candidate to the development server before
+tagging. The dev deploy workflow accepts any branch, tag, or commit through its
+`ejam_version` input:
+
+```{bash, eval=FALSE}
+gh workflow run "Build & Deploy to ECS Fargate (dev)" \
+  --repo Public-Environmental-Data-Partners/EJAM --ref dev-deploy \
+  -f ejam_version=development
+```
+
+The `ejamdata` tag used by the image is the `EJAMDATA_VERSION` default in the
+`dev-deploy` Dockerfile, which the dispatch cannot override. If the data release
+changed, first merge a pull request into `dev-deploy` that updates that pin.
+Merging it deploys immediately, so don't also dispatch; see the warning in
+[Deploy the web app](#deploy-the-web-app-dev-then-production).
+
+Then check, in a fresh browser tab:
+
+- [ ] the footer shows the new version, date, and ACS vintage
+- [ ] a point, a FIPS or county, and a shapefile analysis each complete
+- [ ] the community report's chart text is readable, in the app and in a
+      downloaded PDF
+- [ ] the Excel download opens and its notes tab describes the analysis
+- [ ] anything this release changed (for example, the corrected language counts
+      or the new FRS facilities in a NAICS or program-ID search)
+- [ ] the browser console (F12) shows no errors or missing files
+
+## Cut the release
+
+### The release pull request
+
+Open a pull request from `development` into `main`. If `main` has commits that
+`development` lacks (for example, a hotfix or release-workflow change made
+directly on `main`), GitHub reports conflicts. Resolve them once, either by
+merging `main` into `development` or, as for v3.2022.3, on an integration branch
+cut from `main` that merges `development`, then use that branch for the pull
+request. In both cases, take `development`'s version of each file unless `main`
+holds something `development` lacks.
+
+In the pull request description:
+
+- summarize the release, or point to the NEWS section
+- add **`Closes #N`** for every still-open issue fixed on `development`. To find
+  them, list the pull requests merged into `development` since the last release
+  and scan their titles and descriptions for issue numbers (including bare
+  `#N` mentions, not only "Fixes #N"), then keep those issues that are still
+  open.
+
+When the dev app is accepted, merge **with a merge commit**. `--admin` does not
+check anything for you, so first confirm, **for the pull request's current head
+commit**, that:
+
+- [ ] every check has passed (`gh pr checks <PR>`, and the head SHA shown on
+      the pull request page matches the one printed below)
+- [ ] the Copilot review of that head commit has been read, including its
+      collapsed "Suppressed comments", and every review thread is resolved
+- [ ] nothing in the pull request is still marked as waiting for a decision
+
+Then merge, guarding against last-minute pushes:
+
+```{bash, eval=FALSE}
+gh pr view <PR> --repo Public-Environmental-Data-Partners/EJAM --json headRefOid --jq .headRefOid
+gh pr merge <PR> --repo Public-Environmental-Data-Partners/EJAM --merge --admin \
+  --match-head-commit <full SHA printed above>
+```
+
+**Why `--admin`:** the branch rules on `main` include one that lets only the
+repository's admin and maintain roles update the branch. That makes every
+merge into `main`, even a fully ready one, show as blocked and need `--admin`.
+They do not require any status checks, so `--admin` bypasses no check
+that GitHub would otherwise enforce. It also means GitHub enforces none of them,
+which is why the list above must be checked by hand. `--match-head-commit` makes
+the merge fail if anyone pushed after you checked. If a check has failed or a
+thread is unresolved, do not merge: fix it, or record in the pull request why it
+is being accepted and who approved that.
+
+### Tag and publish: the release workflow
+
+The **"Release: tag and publish"** workflow (`.github/workflows/release.yaml`)
+creates the tag and the GitHub Release. It only runs when started by hand;
+there is deliberately no scheduled release. Always do a dry run first:
+
+```{bash, eval=FALSE}
+# Dry run: creates nothing. Read the job summary: tag, title, and release notes.
+gh workflow run release.yaml --repo Public-Environmental-Data-Partners/EJAM --ref main \
+  -f expected_version=3.2022.3 -f dry_run=true -f mark_latest=true
+
+# Publish
+gh workflow run release.yaml --repo Public-Environmental-Data-Partners/EJAM --ref main \
+  -f expected_version=3.2022.3 -f dry_run=false -f mark_latest=true
+```
+
+What it does:
+
+- reads `Version` and `VersionACS` from `DESCRIPTION` on `main`, and stops if
+  `expected_version` does not match, or if the version and vintage disagree
+- if a **draft** Release for that version already exists, publishes the draft
+  as it is (its reviewed title and notes are kept); otherwise creates tag
+  `vX.YYYY.Z` and a Release titled like "EJAM v3.2022.3 (ACS 2018-2022)", with
+  the matching NEWS section as the notes
+- never changes a Release that is already published, so re-running is safe
+- marks the Release **Latest** if `mark_latest=true` (use `false` when releasing
+  a patch to an older, frozen line while a newer line is live)
+- starts the documentation build (pkgdown) and the release install checks
+
+**If a draft Release exists, check its target before the real (non-dry-run)
+run.** Publishing a draft creates the tag at the **draft's** target, which is
+set when the draft is made and does not follow `main`, so a draft made before
+the release pull request merged would tag the wrong code. The workflow guards
+against this: the dry-run summary shows the draft's target next to the head of
+`main` and fails if they differ, and the real run refuses to publish. To check
+by hand, or to fix a mismatch, point the draft at `main`'s merge commit:
+
+```{bash, eval=FALSE}
+# the release pull request's merge commit on main
+git fetch origin main && git rev-parse origin/main
+
+# the draft's target (a branch name or a commit SHA)
+gh release view vX.YYYY.Z --repo Public-Environmental-Data-Partners/EJAM \
+  --json isDraft,targetCommitish --jq '.isDraft, .targetCommitish'
+
+# if the target is not that exact SHA, set it (only while the draft is unpublished)
+gh release edit vX.YYYY.Z --repo Public-Environmental-Data-Partners/EJAM \
+  --target <full SHA of main's merge commit>
+```
+
+Setting the target to the full SHA, rather than to `main`, keeps the tag from
+landing on a later commit if someone merges into `main` before you publish.
+
+Then verify:
+
+- [ ] the tag points at `main`'s merge commit, and the Release title and notes
+      are right
+- [ ] the "Release and user install checks" and pkgdown runs succeed, and the
+      documentation site shows the new version
+- [ ] the issues listed with `Closes` are closed
+
+## Deploy and update the related repositories
+
+### Deploy the web app (dev, then production)
+
+The web app runs on AWS ECS Fargate. Its build and deploy files live on the
+`dev-deploy` and `prod-deploy` branches, and **merging a pull request into either
+branch deploys immediately** (about 15–20 minutes). See [Deploying the web app
+to AWS](dev-deployment.html) for the infrastructure, the workflows, rollback, and
+logs.
+
+For a release:
+
+1. **Dev:** point the dev server at the tag, either with a pull request into
+   `dev-deploy` that sets `ARG EJAM_VERSION=vX.YYYY.Z` (recommended, since it
+   leaves the branch pinned to the tag) or with a dispatch using
+   `ejam_version=vX.YYYY.Z`. Check the footer and one report.
+2. **Production:** a pull request into `prod-deploy` that sets
+   `ARG EJAM_VERSION=vX.YYYY.Z` and, if the data release changed,
+   `ARG EJAMDATA_VERSION`. Merging it deploys production. Then check the same
+   list as for dev.
+
+Warnings:
+
+- **Deploys don't queue.** If a merge into `dev-deploy` starts a deploy and you
+  also dispatch one, both run at once and either can win. Wait for one to
+  finish, then confirm the footer version.
+- The container must rebuild its font cache when it starts: the `Dockerfile`
+  `CMD` begins with `system('fc-cache -r')`. Without it, the image's font cache
+  can mismatch the fonts on AWS, and every chart label renders as boxes
+  ([#621](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/621)).
+  Keep that line when editing either deploy branch.
+
+### ejamdata
+
+If this release comes with a new data release, it must be **published** before
+the web app or EJAM-API is rebuilt, since both download it by tag. Decide which
+data release is marked Latest (see [Data changes and the ejamdata
+release](#data-changes-and-the-ejamdata-release)).
+
+### EJAM-API
+
+EJAM-API (Public-Environmental-Data-Partners/EJAM-API, deployed on Google Cloud
+Run behind api.ejanalysis.com) serves the community reports used by EJSCREEN and
+by links from the web app. After the tag exists:
+
+1. Update the default `EJAM_VERSION` in the EJAM-API `Dockerfile` to the new tag,
+   by pull request. Merging does not deploy.
+2. Build, push, and redeploy the image as described in the EJAM-API
+   `README.md` ("Set-up" and "Choosing the EJAM version"). The build installs the
+   tagged EJAM, which downloads its data release.
+3. Clear the Cloudflare cache for api.ejanalysis.com, which caches reports,
+   so people don't keep getting the previous version's reports.
+4. Check that a report (for example `/report?fips=10001`) shows the new version
+   in its footer.
+
+The EJAM package keeps a byte-for-byte copy of the production API code in
+`inst/plumber/ejam-api/` so that `ejamapi_local()` can serve the same API
+locally. If EJAM-API's code changed since the last release, re-sync the copy
+following `inst/plumber/ejam-api/SYNC.md`.
+
+### EJSCREEN
+
+The EJSCREEN web app (Public-Environmental-Data-Partners/EJScreen, deployed on
+Azure behind ejscreen.ejanalysis.com) gets its reports from EJAM-API, so those
+update with the API. Its own displayed version number is set by hand. See
+"Updating the version number" in the EJScreen `README.md`: it is the
+`versionNumber` value near the top of `javascript/config.js`, from which the
+title, report footers, and print footer are built. Update it by pull request,
+then deploy to Azure.
+
+### Two data vintages at once
+
+When a new ACS vintage becomes the live line while the previous one stays
+available (frozen), the web app, EJAM-API, and EJSCREEN each need a second
+deployment for the frozen version, with its own address. That is
+infrastructure work (for example, another ECS service and Terraform environment
+for the web app, another Cloud Run service for the API, another Azure app for
+EJSCREEN), plus Cloudflare configuration for the addresses. Plan it before the
+new vintage replaces what the current addresses serve. The new vintage's
+*package* release does not depend on it.
+
+## After the release
+
+- **Back-merge `main` into `development`** (pull request, merge commit), so any
+  commits made only on the release branch reach `development` and the next
+  release starts without conflicts.
+- Delete the release-prep branches once merged, and remove any temporary
+  worktrees.
+- Reinstall EJAM from the tag locally so your own session uses the released
+  version and data.
+- If a frozen line ever needs a fix, branch from its last tag (for example
+  `git switch -c v3.2022.x v3.2022.3`), fix it there, and release it as the
+  next patch (`3.2022.4`) with `mark_latest=false`. Don't put fixes for the
+  frozen line on `development` after the vintage swap.
+
+## Quick reference: rules that prevent release problems
+
+- No scheduled or automatic release: every release is started by hand.
+- `main` changes only through the release pull request, merged with a merge
+  commit.
+- `Closes #N` works only in pull requests merged into `main`.
+- The version's middle field must match `VersionACS`, so a new vintage's
+  version and data land in the same commit.
+- Every `ejamdata` pin must name the same data tag, and every data release has
+  all 11 files.
+- Merging into `dev-deploy` or `prod-deploy` deploys immediately, and deploys
+  don't queue.
+- The web app, EJAM-API, and EJSCREEN don't follow a release automatically.
+- `--match-head-commit` needs the pull request's current full commit SHA.
+
+## Appendix: the install-test workflows
+
+The install checks, and when to update their R-version and operating-system
+matrix, are described in [GitHub Actions install
+tests](dev-github-actions-install-tests.html). Users installing from GitHub may
+need a personal access token; see the [installing article](installing.html).
+
+## Appendix: changing repository names, the documentation URL, or the app title
+
+These changes are rare and not part of a normal release, but several files have
+to agree when they happen.
+
+### Code repository owner or name
 
 If the package is renamed or relocated, several files need to be updated for
 the package, documentation, tests, and data-download helpers to work correctly.
@@ -67,7 +592,7 @@ information within documentation, including articles and function/data
 reference pages.
 
 
-### CODE REPO OWNER: owner of the GitHub code repository
+#### Owner of the code repository
 
 - The owner name portion is currently "`r code_owner`" and can be found as
 part of the URL for the code repository, or via
@@ -91,7 +616,7 @@ data, code, or documentation. The alias domain does not need to match the owner
 of any GitHub repository.
 
 
-### CODE REPO NAME: name of the GitHub code repository and/or the R package
+#### Name of the code repository and/or the R package
 
 - The repository name portion is currently "`r code_reponame`" and can be
 found as part of the URL for the code repository, or via
@@ -111,7 +636,7 @@ references to old names, URLs, and assumptions that the repository and package
 names are identical.
 
 
-## DATASETS REPOSITORY: If relevant, carefully change the owner or name of the GitHub repository storing large datasets
+### Data repository owner or name
 
 - The owner/name of the repository where external large datasets are stored
   must be recorded as the `ejam_data_repo` parameter in the `DESCRIPTION` file
@@ -139,7 +664,7 @@ located. There may still be documentation or comments where the term
 "ejamdata" is used directly rather than read from the `DESCRIPTION` file.
 
 
-## DOCUMENTATION URL: If relevant, carefully change where the R package documentation is published
+### Where the documentation is published
 
 - The URL where package documentation is published must be recorded in the
   standard `URL` field of the `DESCRIPTION` file in the source package root.
@@ -185,7 +710,7 @@ return the full URL where documentation is published (currently
   article index, and individual articles.
 
 
-## APP TITLE: If relevant, carefully change the title of the web app
+### Web app title
 
 - The full name/title of the web app/tool is used in several places, and those
 places should read the title from one authoritative source. The web app title
@@ -193,101 +718,3 @@ is stored in the `DESCRIPTION` file and is available to vignettes and functions
 via `as.vector(desc::desc_get("Title"))`. After the package is attached, the
 name as potentially modified via `global_defaults_package.R` or parameters to
 `ejamapp()` is available as `EJAM:::global_or_param("app_title")`.
-
-
-## PACKAGE RELEASES: Update the package release
-
--   Update the EJAM version number in the `Version` field of the
-    `DESCRIPTION` file in the release/development branch (currently
-    `r as.vector(desc::desc_get("Version"))`). Tie it to EJScreen version
-    numbers if relevant. Search globally too, because there may still be files
-    where the version number is not read from `DESCRIPTION`, such as
-    `_pkgdown.yml`, `golem-config.yml`, `CITATION`, and `CITATION.cff`.
-
--   Consider updating minimum package version requirements specified in the
-    DESCRIPTION file Imports and Suggests.
-
--   If FRS data are changing, follow [Refreshing FRS for a data release](dev-update-datasets.html#refreshing-frs-for-a-data-release)
-    before cutting the package release. Rebuild the five FRS Arrow tables,
-    `mact_table`, FRS-derived counts and program tables, and FRS-based sample
-    inputs. Compare IDs and coordinates with the previous snapshot, update
-    examples or tests that cite obsolete IDs, and verify that all nine FRS
-    metadata fields survive an Arrow write/read cycle. The `ejamdata` release
-    must contain all 11 required Arrow assets, including the six compatible
-    non-FRS files whose data values can be carried forward for an FRS-only
-    change. Restamp those six files with
-    `data-raw/datacreate_ejamdata_arrow_restamp.R` so their package/release
-    attributes match the new tag while their source dates and data remain
-    intact. Confirm the published release assets before changing
-    `data/ejamdata_version.txt` to
-    the new `ejamdata_required_tag`. An asset-filled draft alone is not a
-    public download source for EJAM installations.
-
--   If this is an annual EJScreen-style data release, first complete the staged
-    data update workflow in [Updating EJScreen Datasets Annually (via the
-    Pipeline)](dev-update-ejscreen-datasets-yearly.html). Confirm that accepted
-    pipeline outputs have been copied into package data where appropriate
-    (`blockgroupstats`, `usastats`, `statestats`, and related lookup/metadata
-    objects), that `bgej.arrow` has been published as an asset in the
-    `ejamdata` release tag recorded in DESCRIPTION as `ejamdata_required_tag`,
-    and that the local/source package can load a `bgej` whose blockgroup
-    universe matches `blockgroupstats`.
-
--   If the ejamdata repository is still being used to publish large Arrow
-    files as GitHub release assets, then make sure a release tag on that repo
-    matches the `ejamdata_required_tag` field in DESCRIPTION. See the
-    [article about updating datasets]("dev-update-datasets.html").
-
--   Regenerate example/test output datasets after code or annual data changes.
-    In particular, rerun the scripts in `data-raw/` that create
-    `testoutput_getblocksnearby_*`, `testoutput_doaggregate_*`, and
-    `testoutput_ejamit_*` objects, then reinstall and rerun tests that compare
-    current output against those saved objects.
-
--   Run `EJAM:::metadata_check()` and `EJAM:::metadata_check_print()` after
-    replacing data objects. For release-critical annual datasets, metadata
-    attributes should match the DESCRIPTION version fields, such as
-    `Version`, `VersionACS`, `VersionEJSCREEN`, and `VersionCensus`.
-
--   Update `NEWS.md` in the release/development branch listing changes made.
-    Use the same version number that was put in `DESCRIPTION`, such as
-    `v3`.
-
--   Run release checks, including `devtools::check(vignettes = FALSE)` if
-    traditional vignette builds are not needed, targeted pipeline validation,
-    and the relevant `test_ejam()` groups. When FRS examples or datasets have
-    changed, also render the FRS-dependent vignettes and run their examples;
-    a check that skips vignettes does not cover those references.
-
--   Merge the release/development branch into the target branch according to the
-    current repository workflow.
-
--   Create a new EJAM release on GitHub, using `NEWS.md` as the changelog and a
-    tag matching the `DESCRIPTION` version, such as `v3`.
-
-### Update and run the test installation script
-
-You may want to update the test script that checks if the package can be installed.
-
--   Remove older versions of R from the testing matrix if they are no longer
-    supported, and add more recent ones.
--   Add new system libraries required by newly added packages (for example,
-    system libraries needed for installation on Ubuntu).
-
-To ensure that the package can still be installed by users with various
-operating systems and versions of R, a workflow file,
-`.github/workflows/test-ability-to-install.yml`, is triggered by pushes to the
-main branch. This file can attempt installation with a matrix like the
-following, but the matrix should be updated over time as dependencies,
-supported R versions, and operating system images change:
-
-1.  **OS**: Latest Ubuntu, Windows, macOS
-
-2.  **R version**: latest release and some prior versions
-
-3.  **Using install_url() or install_github()**: `remotes::install_url()` and `remotes::install_github()` 
-    or maybe the newer `pak::pkg_install()`
-
-Also note that users may need to set up a personal access token (PAT) if they
-want to install from GitHub; see the [installing article](installing.html) for
-information on setting up a PAT.

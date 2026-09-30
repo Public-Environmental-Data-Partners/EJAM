@@ -81,6 +81,9 @@ which is where development continues.
   case-sensitive, so a lowercase spelling silently produced an unmapped report.
   Matches how the zip code gates added for #482 already behave.
 
+- The release workflow now refuses to publish a draft Release whose target is not
+  the head of `main`, and its dry run shows that target and fails on a mismatch.
+
 - A GitHub outage no longer looks like missing data. When the API cannot list a
   release's assets, `download_latest_arrow_data()` now says so and retries,
   instead of treating the empty answer as an empty release and reporting a
