@@ -417,6 +417,7 @@ instead of tests/testthat/_logs
         "test-create_filename.R",
         "test-grepn.R",
         "test-utils_PACKAGE_DEV.R",
+        "test-utils_offline.R",
         "test-pctile_x_is_hit_by_score.R",
         "test-plot_vs_us.R",
         "test-count_sites_with_n_high_scores.R",
