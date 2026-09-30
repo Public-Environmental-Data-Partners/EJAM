@@ -16,7 +16,8 @@ name: 'Release: tag and publish'
 #   * an unpublished DRAFT exists -> that draft is published as-is, keeping the
 #     title and notes someone reviewed. Publishing is what creates the tag.
 #     This is the normal path: prepare a draft, review it, then dispatch this
-#     workflow to ship it.
+#     workflow to ship it. The run refuses to publish (and the dry run fails) if
+#     the draft's target does not resolve to the checked-out head of `main`.
 #   * nothing exists -> a tag is created and a release is built from the
 #     matching NEWS.md section.
 #   * already published -> nothing happens; a shipped release is never touched.
@@ -167,6 +168,46 @@ jobs:
             fi
           fi
 
+          # Publishing a draft puts the tag at the draft's OWN target, not at the
+          # main commit checked out above. That target is fixed when the draft is
+          # made and can be a stale branch or commit - a draft made before the
+          # release PR merged would tag the wrong code. So work out where the tag
+          # would really land and compare it with the checked-out main commit.
+          #
+          #   tag already exists -> publishing reuses it; it lands where the tag is.
+          #   otherwise          -> the draft's targetCommitish, resolved to a SHA.
+          #                         A branch name counts as a match only if it
+          #                         resolves to exactly this commit right now.
+          #
+          # This step only records the answer. The dry-run summary reports it and
+          # the publish step refuses to run on a mismatch; see both below.
+          DRAFT_TARGET=''
+          LANDING_SHA=''
+          TARGET_MATCH=true
+          if [ "$MODE" = 'publish_draft' ]; then
+            SHA='${{ steps.ver.outputs.sha }}'
+            if [ "$TAG_EXISTS" = 'true' ]; then
+              DRAFT_TARGET="existing tag v$VERSION"
+              LANDING_SHA="$(git rev-list -n 1 "refs/tags/v$VERSION")"
+            else
+              DRAFT_TARGET="$(gh release view "v$VERSION" --json targetCommitish --jq .targetCommitish)"
+              if [ -n "$DRAFT_TARGET" ]; then
+                LANDING_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$DRAFT_TARGET" --jq .sha 2>/dev/null || echo '')"
+                # On an unknown ref gh prints the API's error JSON to stdout; keep
+                # only a real SHA so that never reaches the outputs or summary.
+                if ! printf '%s' "$LANDING_SHA" | grep -qE '^[0-9a-f]{40}$'; then
+                  LANDING_SHA=''
+                fi
+              fi
+            fi
+            if [ "$LANDING_SHA" != "$SHA" ]; then
+              TARGET_MATCH=false
+              echo "::warning::The draft v$VERSION would be tagged at '${DRAFT_TARGET:-<empty>}' (${LANDING_SHA:-unresolvable}), not at the checked-out main commit $SHA."
+            else
+              echo "Draft v$VERSION target '$DRAFT_TARGET' resolves to $LANDING_SHA, the checked-out main commit."
+            fi
+          fi
+
           # Whether a published release for this version exists once this job is
           # done - either because a step below publishes it, or because it was
           # already published. This is what gates the downstream dispatches, and
@@ -198,6 +239,9 @@ jobs:
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "released=$RELEASED" >> "$GITHUB_OUTPUT"
           echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
+          echo "draft_target=$DRAFT_TARGET" >> "$GITHUB_OUTPUT"
+          echo "landing_sha=$LANDING_SHA" >> "$GITHUB_OUTPUT"
+          echo "target_match=$TARGET_MATCH" >> "$GITHUB_OUTPUT"
 
       - name: Extract the NEWS.md section for this version
         if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'create'
@@ -272,16 +316,33 @@ jobs:
         if: steps.guard.outputs.skip == 'false' && github.event_name == 'workflow_dispatch' && inputs.dry_run
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_TARGET: ${{ steps.guard.outputs.draft_target }}
+          LANDING_SHA: ${{ steps.guard.outputs.landing_sha }}
         run: |
           set -euo pipefail
           {
             echo "### Dry run - nothing was tagged or published"
             echo ""
             echo "- Tag that *would* be created: \`${{ steps.ver.outputs.tag }}\`"
-            echo "- Target commit: \`${{ steps.ver.outputs.sha }}\` (head of \`main\`)"
           } >> "$GITHUB_STEP_SUMMARY"
 
           if [ '${{ steps.guard.outputs.mode }}' = 'publish_draft' ]; then
+            # Show where publishing the draft would really put the tag - the
+            # draft's own target, which is NOT necessarily the head of main.
+            {
+              echo "- Head of \`main\` (the commit that should be tagged): \`${{ steps.ver.outputs.sha }}\`"
+              echo "- Draft target (where the tag would actually land): \`$DRAFT_TARGET\` = \`${LANDING_SHA:-unresolvable}\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+            if [ '${{ steps.guard.outputs.target_match }}' != 'true' ]; then
+              {
+                echo ""
+                echo "> [!CAUTION]"
+                echo "> **The draft's target is not the head of \`main\`.** A real run would stop here"
+                echo "> without publishing. Point the draft at the full SHA of \`main\`'s merge commit"
+                echo "> (\`gh release edit ${{ steps.ver.outputs.tag }} --target <SHA>\`) and dry-run again."
+                echo ""
+              } >> "$GITHUB_STEP_SUMMARY"
+            fi
             {
               echo "- Mode: **publish the existing draft** (its reviewed title and notes are kept; NEWS.md is not used)"
               echo "- Draft title: $(gh release view '${{ steps.ver.outputs.tag }}' --json name --jq .name)"
@@ -294,6 +355,7 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           else
             {
+              echo "- Target commit: \`${{ steps.ver.outputs.sha }}\` (head of \`main\`)"
               echo "- Mode: **create a new release** from the NEWS.md section"
               echo "- Release title: ${{ steps.notes.outputs.title }}"
               echo ""
@@ -305,21 +367,59 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
+          # Fail the dry run on a target mismatch, after the summary is written,
+          # so a green dry run always means the real run would tag main's head.
+          if [ '${{ steps.guard.outputs.mode }}' = 'publish_draft' ] &&
+             [ '${{ steps.guard.outputs.target_match }}' != 'true' ]; then
+            echo "::error::The draft ${{ steps.ver.outputs.tag }} targets '$DRAFT_TARGET' (${LANDING_SHA:-unresolvable}), not the head of main (${{ steps.ver.outputs.sha }}). A real run would refuse to publish it. See the summary."
+            exit 1
+          fi
+
       - name: Publish the existing draft
         if: steps.guard.outputs.skip == 'false' && steps.guard.outputs.mode == 'publish_draft' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_TARGET: ${{ steps.guard.outputs.draft_target }}
+          LANDING_SHA: ${{ steps.guard.outputs.landing_sha }}
         run: |
           set -euo pipefail
           TAG='${{ steps.ver.outputs.tag }}'
+          SHA='${{ steps.ver.outputs.sha }}'
 
           # Publishing the draft is what creates the tag, at the draft's target
           # commitish. Its reviewed title and notes are kept as-is.
+          #
+          # Refuse if that target is not the checked-out head of main (see the
+          # guard step). Retargeting silently would tag code the draft was not
+          # reviewed against, so a person has to make that call.
+          if [ '${{ steps.guard.outputs.target_match }}' != 'true' ]; then
+            {
+              echo "### Did NOT publish $TAG"
+              echo ""
+              echo "The draft targets \`$DRAFT_TARGET\` (\`${LANDING_SHA:-unresolvable}\`),"
+              echo "but the head of \`main\` is \`$SHA\`. Publishing would have tagged the wrong commit."
+              echo ""
+              echo "If the draft's notes are right for \`main\`, point it there and rerun:"
+              echo ""
+              echo "    gh release edit $TAG --repo ${{ github.repository }} --target $SHA"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Refusing to publish $TAG: the draft targets '$DRAFT_TARGET' (${LANDING_SHA:-unresolvable}), not the head of main ($SHA). Nothing was tagged or published. See the summary."
+            exit 1
+          fi
+
           LATEST_FLAG='--latest=false'
           if [ '${{ github.event_name }}' = 'schedule' ] || [ '${{ inputs.mark_latest }}' = 'true' ]; then
             LATEST_FLAG='--latest'
           fi
-          gh release edit "$TAG" --draft=false $LATEST_FLAG
+
+          # The target matched. If it is a branch name, pin it to the verified SHA
+          # anyway, so a merge into main during this run cannot move the tag. An
+          # existing tag is reused as-is, and GitHub ignores the target then.
+          TARGET_FLAG=''
+          if [ '${{ steps.guard.outputs.tag_exists }}' != 'true' ]; then
+            TARGET_FLAG="--target=$SHA"
+          fi
+          gh release edit "$TAG" $TARGET_FLAG --draft=false $LATEST_FLAG
 
           {
             echo "### Published the reviewed draft $TAG"

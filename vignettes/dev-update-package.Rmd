@@ -413,11 +413,11 @@ What it does:
 
 **If a draft Release exists, check its target before the real (non-dry-run)
 run.** Publishing a draft creates the tag at the **draft's** target, which is
-set when the draft is made and does not follow `main`. The dry-run summary does
-not show that target: its "Target commit" line is the head of `main`, which is
-used only when no draft exists. So a draft made before the release pull
-request merged would tag the wrong code. Compare the two, and point the draft at
-`main`'s merge commit if they differ:
+set when the draft is made and does not follow `main`, so a draft made before
+the release pull request merged would tag the wrong code. The workflow guards
+against this: the dry-run summary shows the draft's target next to the head of
+`main` and fails if they differ, and the real run refuses to publish. To check
+by hand, or to fix a mismatch, point the draft at `main`'s merge commit:
 
 ```{bash, eval=FALSE}
 # the release pull request's merge commit on main
