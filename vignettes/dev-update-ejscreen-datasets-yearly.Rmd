@@ -1188,5 +1188,5 @@ Before releasing a new annual dataset build:
     data repository release process.
 
 The general release and large-data publication steps are covered in [Updating
-and Managing the Datasets Used by EJAM](dev-update-datasets.html) and [Updating
-the Package as a New Release](dev-update-package.html).
+and Managing the Datasets Used by EJAM](dev-update-datasets.html) and [Releasing a
+New Version of EJAM](dev-update-package.html).
