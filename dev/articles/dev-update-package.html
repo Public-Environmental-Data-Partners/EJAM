@@ -710,12 +710,12 @@ checks</li>
 <p><strong>If a draft Release exists, check its target before the real
 (non-dry-run) run.</strong> Publishing a draft creates the tag at the
 <strong>draft’s</strong> target, which is set when the draft is made and
-does not follow <code>main</code>. The dry-run summary does not show
-that target: its “Target commit” line is the head of <code>main</code>,
-which is used only when no draft exists. So a draft made before the
-release pull request merged would tag the wrong code. Compare the two,
-and point the draft at <code>main</code>’s merge commit if they
-differ:</p>
+does not follow <code>main</code>, so a draft made before the release
+pull request merged would tag the wrong code. The workflow guards
+against this: the dry-run summary shows the draft’s target next to the
+head of <code>main</code> and fails if they differ, and the real run
+refuses to publish. To check by hand, or to fix a mismatch, point the
+draft at <code>main</code>’s merge commit:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># the release pull request's merge commit on main</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">git</span> fetch origin main <span class="kw">&amp;&amp;</span> <span class="fu">git</span> rev-parse origin/main</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
