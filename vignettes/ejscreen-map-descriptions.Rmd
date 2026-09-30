@@ -14,27 +14,26 @@ editor_options:
 ---
 
 The below provides basic descriptions for the data included in the mapping
-layers available through EJScreen. EJScreen data are updated periodically. To
+layers available through EJAM/EJScreen. These data are updated periodically. To
 see which years of data are in the current version, see the 13 indicators in the
-archived [Overview of Environmental Indicators in EJScreen](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="overview-environmental-indicators-ejscreen.html", launch_browser = FALSE)`) 
-or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)
-or check the metadata.
+[Overview of Environmental Indicators in EJAM/EJScreen](overview-environmental-indicators-ejscreen.html)
+or check the metadata. ** <= is this right? where's the metadata live? **
 
--   [Environmental Burden Indicators]
--   [Socioeconomic Indicators]
--   [Environmental Justice (EJ) Indexes]
--   [Supplemental Indexes]
--   [Climate Change]
--   [Health Disparities]
--   [Critical Service Gaps]
--   [Places Layers]
--   [Additional Demographics]
--   [Boundaries]
--   [Threshold Maps]
+-   [Environmental Burden Indicators](#poll)
+-   [Socioeconomic Indicators](#soci)
+-   [Environmental Justice (EJ) Indexes](#ejin)
+-   [Supplemental Indexes](#supp)
+-   [Climate Change](#clim)
+-   [Health Disparities](#heal)
+-   [Critical Service Gaps](#crit)
+-   [Places Layers](#plac)
+-   [Additional Demographics](#addi)
+-   [Boundaries](#boun)
+-   [Threshold Maps](#thre)
 
-## Environmental Burden Indicators
+## Environmental Burden Indicators {#poll}
 
-#### Particulate Matter 2.5 (PM2.5)
+#### Particulate Matter 2.5 (PM2.5) {#particulate}
 
 The environmental burden indicator for PM2.5 measures the potential exposure to
 inhalable particles 2.5 microns or smaller (about 30 times smaller than the
@@ -49,7 +48,7 @@ you can do moving forward, please visit the
 [EJScreen Indicator Overview for PM2.5](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="ejscreen-indicators-overview-particulate-matter-25-pm25.html", launch_browser = FALSE)`) 
 or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-particulate-matter-25-pm25).
 
-#### Ozone
+#### Ozone {#ozone}
 
 The environmental burden indicator for ozone measures how much ground-level
 ozone people might be exposed to by looking at the highest levels of ozone
@@ -65,7 +64,7 @@ you can do moving forward, please visit the
 [EJScreen Indicator Overview for Ozone](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="ejscreen-indicators-overview-ozone.html", launch_browser = FALSE)`) 
 or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-ozone).
 
-#### Nitrogen Dioxide (NO2)
+#### Nitrogen Dioxide (NO2) {#nitrogen}
 
 The environmental burden indicator for NO2 measures how much surface level NO2
 people might be exposed to in terms of annual average concentration in parts per
@@ -79,7 +78,7 @@ For more details on the NO2 indicator, including why it is important and what
 you can do moving forward, please visit the 
 [EJScreen Indicator Overview for NO2](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-nitrogen-dioxide-no2).
 
-#### Diesel Particulate Matter
+#### Diesel Particulate Matter {#diesel}
 
 The environmental burden indicator for diesel PM measures how much diesel PM (a
 mixture of particles from diesel exhaust) people might be exposed to in terms of
@@ -92,7 +91,7 @@ what you can do moving forward, please visit the
 [EJScreen Indicator Overview for Diesel PM](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="ejscreen-indicators-overview-diesel-particulate-matter.html", launch_browser = FALSE)`) 
 or [as archived](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-diesel-particulate-matter).
 
-#### Toxic Releases to Air
+#### Toxic Releases to Air {#toxic}
 
 The environmental burden indicator for toxic releases to air measures the
 average annual chemical concentrations in air weighted by the toxicity of each
@@ -106,7 +105,7 @@ For more details on the toxic releases to air indicator, including why it is
 important and what you can do moving forward, please visit the 
 [EJScreen Indicator Overview for Toxic Releases to Air](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-toxic-releases-air).
 
-#### Traffic Proximity and Volume
+#### Traffic Proximity and Volume {#traffic}
 
 The environmental burden indicator for traffic proximity measures the count of
 vehicles per day (average annual daily traffic- AADT) divided by distance.
@@ -118,7 +117,7 @@ For more details on the traffic proximity indicator, including why it is
 important and what you can do moving forward, please visit the 
 [EJScreen Indicator Overview for Traffic Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-traffic-proximity-and-volume).
 
-#### Lead Paint
+#### Lead Paint {#lead}
 
 The environmental burden indicator for lead paint is based on the percentage of
 housing units built before 1960, a proxy for how much lead paint people might be
@@ -130,7 +129,7 @@ For more details on the lead paint indicator, including why it is important and
 what you can do moving forward, please visit the 
 [EJScreen Indicator Overview for Lead Paint](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-lead-paint).
 
-#### Superfund Proximity
+#### Superfund Proximity {#superfund}
 
 The environmental burden indicator for Superfund proximity measures how close
 people might live to sites listed on the National Priorities List (NPL). This
@@ -144,7 +143,7 @@ For more details on the Superfund proximity indicator, including why it is
 important and what you can do moving forward, please visit the 
 [EJScreen Indicator Overview for Superfund Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-superfund-proximity).
 
-#### Risk Management Program (RMP) Facility Proximity
+#### Risk Management Program (RMP) Facility Proximity {#risk}
 
 The environmental burden indicator for RMP facility proximity measures how close
 people might live to an active facility with a required Risk Management Plan
@@ -159,7 +158,7 @@ For more details on the RMP facility proximity indicator, including why it is
 important and what you can do moving forward, please visit the 
 [EJScreen Indicator Overview for RMP Facility Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-risk-management-program-rmp-facility-proximity).
 
-#### Hazardous Waste Proximity
+#### Hazardous Waste Proximity {#hazardous}
 
 The environmental burden indicator for hazardous waste proximity measures how
 close people might live to a facility that handles hazardous waste. This
@@ -173,7 +172,7 @@ For more details on the hazardous waste indicator, including why it is important
 and what you can do moving forward, please visit the 
 [EJScreen Indicator Overview for Hazardous Waste Proximity](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-hazardous-waste-proximity).
 
-#### Underground Storage Tanks (UST)
+#### Underground Storage Tanks (UST) {#underground}
 
 The environmental burden indicator for UST measures how many underground storage
 tanks and UST release sites are near where people live. This indicator is based
@@ -186,7 +185,7 @@ For more details on the UST indicator, including why it is important and what
 you can do moving forward, please visit the 
 [EJScreen Indicator Overview for UST](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-underground-storage-tanks-ust).
 
-#### Wastewater Discharge (Stream Proximity and Toxic Concentration)
+#### Wastewater Discharge (Stream Proximity and Toxic Concentration) {#wastewater}
 
 The environmental burden indicator for wastewater discharge measures how much
 relative risk there is of being exposed to pollutants from wastewater that flows
@@ -200,7 +199,7 @@ For more details on the wastewater discharge indicator, including why it is
 important and what you can do moving forward, please visit the 
 [EJScreen Indicator Overview for Wastewater Discharge](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-wastewater-discharge).
 
-#### Drinking Water Non-Compliance
+#### Drinking Water Non-Compliance {#drinking}
 
 The environmental burden indicator for drinking water non-compliance highlights
 populations served by community water systems that have challenges complying
@@ -216,12 +215,12 @@ For more details on the drinking water non-compliance indicator, including why
 it is important and what you can do moving forward, please visit the 
 [EJScreen Indicator Overview for Drinking Water Non-Compliance](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-drinking-water-non-compliance).
 
-## Socioeconomic Indicators
+## Socioeconomic Indicators {#soci}
 
 The source of all the socioeconomic indicators is the [Census Bureau's American
 Community Survey 5-year summary estimates]().
 
-#### Percent people of color.
+#### Percent people of color. {#poc}
 
 The percent of individuals in a block group who list their racial status as a
 race other than white alone and/or list their ethnicity as Hispanic or Latino.
@@ -229,36 +228,36 @@ That is, all people other than non-Hispanic white-alone individuals. The word
 "alone" in this case indicates that the person is of a single race, not
 multiracial.
 
-#### Percent low-income.
+#### Percent low-income. {#lowincome}
 
 Percent of individuals whose ratio of household income to poverty level in the
 past 12 months was less than 2 (as a fraction of individuals for whom ratio was
 determined).
 
-#### Unemployment.
+#### Unemployment. {#unemployment}
 
 All those who did not have a job at all during the reporting period, made at
 least one specific active effort to find a job during the prior 4 weeks, and
 were available for work (unless temporarily ill).
 
-#### Percent in limited English speaking.
+#### Percent in limited English speaking. {#les}
 
 Percent of households in which no one age 14 and over speaks English "very well"
 or speaks English only (as a fraction of households).
 
-#### Percent less than high school education.
+#### Percent less than high school education. {#hs}
 
 Percent of individuals age 25 and over with less than high school degree.
 
-#### Percent under age 5.
+#### Percent under age 5. {#under5}
 
 Percent of individuals under age 5 as a fraction of population.
 
-#### Percent over age 64.
+#### Percent over age 64. {#over64}
 
 Percent of individuals over age 64 as a fraction of the population.
 
-#### Demographic Index.
+#### Demographic Index. {#demographic}
 
 The demographic index in EJScreen is a combination of percent low-income and
 percent minority, the two socioeconomic factors that were explicitly named in
@@ -267,7 +266,7 @@ these two numbers are simply averaged together. The formula is as follows:
 
 **demographic index = (% people of color + % low-income) / 2.**
 
-#### Supplemental Demographic Index.
+#### Supplemental Demographic Index. {#sdi}
 
 The supplemental demographic index in EJScreen is a combination of five
 socioeconomic factors averaged together for each Census block group. The
@@ -281,9 +280,9 @@ situations. The formula is as follows:
 
 **For block groups where low life expectancy data is missing, the formula will average the other four factors.**
 
-## Environmental Justice (EJ) Indexes
+## Environmental Justice (EJ) Indexes {#ejin}
 
-#### EJ Index
+#### EJ Index {#eji}
 
 There are thirteen EJ indexes in EJScreen reflecting the 13 environmental
 indicators, combined with socioeconomic information. The EJ index highlights
@@ -298,9 +297,9 @@ formula for the index:
 
 View descriptions of the [13 EJ Indexes here](https://web.archive.org/web/20250124011630/https://www.epa.gov/ejscreen/ej-index-descriptions).
 
-## Supplemental Indexes
+## Supplemental Indexes {#supp}
 
-#### Supplemental Index
+#### Supplemental Index {#supi}
 
 There are thirteen supplemental indexes in EJScreen reflecting the 13
 environmental indicators, combined with socioeconomic information. The
@@ -318,9 +317,9 @@ the supplemental demographic index). This is the formula for the index:
 
 [View descriptions of the 13 Supplemental Indexes here](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ej-index-descriptions).
 
-## Climate Change
+## Climate Change {#clim}
 
-#### Flood Risk
+#### Flood Risk {#flood}
 
 The First Street Foundation Flood Model is a nationwide probabilistic flood
 model that shows the risk of flooding at any location in all 50 states and
@@ -334,7 +333,7 @@ and even areas that do not have recorded hydrologic data. As a result, there is
 increased visibility into new regions of the entire country. 
 Source: [First Street Foundation](https://firststreet.org/).
 
-#### Wildfire Risk
+#### Wildfire Risk {#wildfire}
 
 The First Street Foundation-Wildfire Model (FSF-WFM) is a 30 meter resolution
 model representing the wildfire exposure for any specific location in the
@@ -350,7 +349,7 @@ land management sources to facilitate a both high resolution and future-facing
 (estimates both for today and for 30 years ahead) product. 
 Source: [First Street Foundation](https://firststreet.org/).
 
-#### 100 Year Floodplain
+#### 100 Year Floodplain {#100-year-floodplain}
 
 This 100 Year Floodplain map displays areas estimated to be inundated by a
 100-year flood, also known as the 1% annual chance flood. These data are based
@@ -362,7 +361,7 @@ This dataset was developed for EPA's EnviroAtlas tool.
 Source: [EnviroAtlas](https://enviroatlas.epa.gov/enviroatlas/DataFactSheets/pdf/Supplemental/EstimatedFloodplains.pdf).
 Spatial Metadata: [EnviroAtlas](https://enviroatlas.epa.gov/arcgis/rest/services/Supplemental/Estimated_floodplain_CONUS_WM/ImageServer).
 
-#### Sea Level Rise (NOAA)
+#### Sea Level Rise (NOAA) {#slr}
 
 This dataset depicts land at risk of permanent flooding when sea level rises.
 There are six map layers showing the area inundated at one, two, three, four,
@@ -373,7 +372,7 @@ level rise estimates (i.e., 1 to 6 feet) in relation to locations of social and 
 Source: [National Oceanic and Atmospheric Administration](https://www.arcgis.com/home/webmap/viewer.html?featurecollection=https%3A%2F%2Fwww.coast.noaa.gov%3A443%2Farcgis%2Frest%2Fservices%2Fdc_slr%2Fslr_1ft%2FMapServer%3Ff%3Djson%26option%3Dfootprints&supportsProjection=true&supportsJSONP=true) or [as archived](https://web.archive.org/web/20250123161322/https://www.arcgis.com/home/webmap/viewer.html?featurecollection=https%3A%2F%2Fwww.coast.noaa.gov%3A443%2Farcgis%2Frest%2Fservices%2Fdc_slr%2Fslr_1ft%2FMapServer%3Ff%3Djson%26option%3Dfootprints&supportsProjection=true&supportsJSONP=true)
 [Spatial Metadata: NOAA Office for Coastal Management](https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_1ft/MapServer). [as archived](https://web.archive.org/web/20250123103341/https://coast.noaa.gov/arcgis/rest/services/dc_slr/slr_1ft/MapServer)
 
-#### Extreme Heat
+#### Extreme Heat {#exheat}
 
 This dataset provides a screening level assessment of extreme heat potential by
 census block group. This dataset describes the average number of days over 90º F
@@ -383,9 +382,9 @@ factor in humidity.
 Source data: [PRISM Climate Group](https://prism.oregonstate.edu/data/) 
 Source: [US EPA](https://epa.maps.arcgis.com/apps/instant/charts/index.html?appid=0bcf57eea030474682cb839ee2928d66).
 
-## Health Disparities
+## Health Disparities {#heal}
 
-#### Low Life Expectancy
+#### Low Life Expectancy {#lle}
 
 Average life expectancy data developed as a collaboration between NCHS, the
 National Association for Public Health Statistics and Information Systems, and
@@ -393,27 +392,27 @@ the Robert Wood Johnson Foundation. This data is available at the tract level;
 the same tract value is then assigned to all sub block groups. 
 Source: [U.S. Small-area Life Expectancy Estimates Project (USALEEP)](https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html).
 
-#### Heart Disease
+#### Heart Disease {#heart}
 
 Heart disease prevalence among adults aged 18 years or older. The term "heart
 disease" refers to several types of heart conditions. This data is available at
 the tract level; the same tract value is then assigned to all sub block groups.
 Source: [CDC Places Data](https://www.cdc.gov/places/index.html).
 
-#### Asthma
+#### Asthma {#asthma}
 
 Asthma prevalence among adults aged 18 or older. This data is available at the
 tract level; the same tract value is then assigned to all sub block groups.
 Source: [CDC Places Data](https://www.cdc.gov/places/index.html).
 
-#### Cancer
+#### Cancer {#cancer}
 
 Cancer (excluding skin cancer) prevalence among adults aged 18 or older. This
 data is available at the Census tract level; the same tract value is then
 assigned to all sub block groups. 
 Source: [CDC Places Data](https://www.cdc.gov/places/index.html).
 
-#### Persons with Disabilities
+#### Persons with Disabilities {#disa}
 
 Percent of all persons with disabilities. Considers six disability types:
 hearing difficulty, vision difficulty, cognitive difficulty, ambulatory
@@ -428,19 +427,19 @@ The weights are derived from the same Census source used by the EJScreen buffer
 reports and analysis. 
 Source: [Download ACS Data](https://www.census.gov/programs-surveys/acs/data/summary-file.html) (The old weblink was relevant to the 2021 dataset but is obsolete since FTP-based sequence file downloads ended with 2021 dataset).
 
-## Critical Service Gaps
+## Critical Service Gaps {#crit}
 
-#### Broadband Gaps
+#### Broadband Gaps {#broadband-gaps}
 
 Areas with the lowest rate of households with a broadband internet subscription.
 Source: The Census Bureau's [American Community Survey 5-year summary estimates](https://www.census.gov/programs-surveys/acs/data/summary-file.html).
 
-#### Lack of Health Insurance
+#### Lack of Health Insurance {#lack-of-health-insurance}
 
 Percent of all persons without Health Insurance Coverage. 
 Source: The Census Bureau's [American Community Survey 5-year summary estimates](https://www.census.gov/programs-surveys/acs/data/summary-file.html).
 
-#### Housing Burden
+#### Housing Burden {#housingb}
 
 This dataset contains census tract level percentiles for housing cost, which is
 the share of households that are both earning less than 80% of Housing and Urban
@@ -449,7 +448,7 @@ income on housing costs. The housing cost percentiles were adopted as Housing
 Burden for EJScreen. 
 Source: [U.S. Department of Housing and Urban Development](https://web.archive.org/web/20250123161322/https://www.huduser.gov/portal/datasets/cp.html).
 
-#### Transportation Access
+#### Transportation Access {#tranaccess}
 
 The Average of Transportation Indicator uses an average of four
 transportation-related indicator percentiles, including Transportation Cost
@@ -458,20 +457,20 @@ Available, and Mean Commute Time to Work. It was renamed to Transportation
 Access for EJScreen. 
 Source: [The Department of Transportation's Transportation Disadvantaged Census Tracts](https://web.archive.org/web/20250123161322/https://www.transportation.gov/priorities/equity/justice40/transportation-insecurity-analysis-tool).
 
-#### Food Desert
+#### Food Desert {#fooddesert}
 
 Low income and low access tract measured at 1 mile for urban areas and 10 miles
 for rural areas. This data is available at the tract level. 
 Source: [USDA](https://web.archive.org/web/20250123161322/https://www.ers.usda.gov/data-products/food-access-research-atlas/download-the-data/).
 
-## Places Layers
+## Places Layers {#plac}
 
-### EPA Regulated Facilities
+### EPA Regulated Facilities {#sites-reporting-to-epa}
 
 The below includes information EPA collects through various databases about
 facilities or sites subject to environmental regulation.
 
-#### Superfund
+#### Superfund {#superfundlayer}
 
 The Superfund Enterprise Management System (SEMS) provides information regarding
 sites under the [Comprehensive Environmental Response, Compensation, and
@@ -484,7 +483,7 @@ known releases or threatened releases of hazardous substances, pollutants, or
 contaminants throughout the United States and its territories. 
 Source: [EPA's Envirofacts (PCS-ICIS)](https://www.epa.gov/enviro/pcs-icis-overview).
 
-#### Hazardous Waste (TSDF and LQGs)
+#### Hazardous Waste (TSDF and LQGs) {#hazwaste}
 
 Hazardous waste information contained in the Resource Conservation and Recovery
 Act Information (RCRAInfo) includes an inventory on all generators,
@@ -492,7 +491,7 @@ transporters, treaters, storers, and disposers of hazardous waste that are
 required to provide information about their activities. 
 Source: [EPA's Envirofacts (RCRA Info)](https://www.epa.gov/enviro/rcrainfo-overview).
 
-#### Water Dischargers (NPDES)
+#### Water Dischargers (NPDES) {#npdes}
 
 As authorized by the Clean Water Act, the [National Pollutant Discharge
 Elimination System (NPDES)](https://www.epa.gov/npdes) permit program controls water pollution by regulating
@@ -505,7 +504,7 @@ to discharge, and the actual monitoring data showing what the company has
 discharged. 
 Source: [EPA's Envirofacts (PCS-ICIS)](https://www.epa.gov/enviro/pcs-icis-overview).
 
-#### Air Pollution (ICIS-AIR)
+#### Air Pollution (ICIS-AIR) {#icisair}
 
 The air pollution data ([ICIS-AIR](https://www.epa.gov/enviro/pcs-icis-overview)) contains compliance and permit data for
 stationary sources of air pollution (such as electric power plants, steel mills,
@@ -515,7 +514,7 @@ Implementation Plans (SIPs) and to track the compliance status of point sources
 with various regulatory programs under Clean Air Act. 
 Source: [EPA's Envirofacts (ICIS-AIR)](https://www.epa.gov/enviro/icis-air-overview).
 
-#### Brownfields (ACRES)
+#### Brownfields (ACRES) {#brown}
 
 The [Assessment, Cleanup and Redevelopment Exchange System (ACRES)](https://web.archive.org/web/20250123161322/https://www.epa.gov/brownfields/grant-recipient-reporting) captures
 grantee reported data on environmental activities and accomplishments
@@ -524,7 +523,7 @@ cooperative partners and leveraging efforts for the [Brownfields Program](https:
 information in ACRES is provided at the property and grant level. 
 Source: [EPA's Envirofacts (brownfields/ACRES)](https://web.archive.org/web/20250123161322/https://www.epa.gov/brownfields).
 
-#### Toxics Release Inventory
+#### Toxics Release Inventory {#tri}
 
 As authorized under the [Emergency Planning and Community Right-to-Know Act](https://www.epa.gov/toxics-release-inventory-tri-program/tri-laws-and-regulatory-activities)
 (EPCRA) and the [Pollution Prevention Act (PPA)](https://www.epa.gov/laws-regulations/summary-pollution-prevention-act), 
@@ -539,7 +538,7 @@ Source: [EPA's Envirofacts (TRI)](https://www.epa.gov/enviro/tri-overview)
 and [Facility Registry Service (FRS)](https://www.epa.gov/frs) 
 Spatial metadata: [TRI](https://epa.maps.arcgis.com/home/webmap/viewer.html?layers=76e9a521bc4245388c0d734be62bfb51&useExisting=1).
 
-#### Chemical Data Reporting (TSCA)
+#### Chemical Data Reporting (TSCA) {#tsca}
 
 The [Toxic Substances Control Act](https://www.epa.gov/laws-regulations/summary-toxic-substances-control-act) (TSCA) grants EPA broad authority to issue
 regulations designed to gather health/safety and exposure information on,
@@ -551,9 +550,9 @@ for sites that submitted CDR reports to EPA during the most recent reporting
 cycle (2020). Source: [Access CDR](https://www.epa.gov/chemical-data-reporting/access-cdr-data)
 Spatial Metadata: [CDR](https://epa.maps.arcgis.com/home/webmap/viewer.html?layers=4d1f03813be8438abe0b5222437fcdcc&useExisting=1).
 
-### Other Environmental Data
+### Other Environmental Data {#other-environmental-data}
 
-#### Facilities Compliance Status
+#### Facilities Compliance Status {#echo}
 
 The map layer uses the Enforcement and Compliance History Online (ECHO) standard
 facility symbology to illustrate the programs each facility is regulated under,
@@ -566,7 +565,7 @@ and the [ECHO Exporter](https://echo.epa.gov/tools/data-downloads#exporter).
 
 Air Toxics
 
-#### Air Toxics Cancer Risk
+#### Air Toxics Cancer Risk {#airtox}
 
 The air toxics cancer risk data is the estimated lifetime inhalation cancer risk
 from the analyzed carcinogens in ambient outdoor air, as provided by EPA’s
@@ -574,7 +573,7 @@ AirToxScreen. The value of the indicator is persons per million over a 70-year
 lifetime. The data is reported at the Census block level. 
 Source: [EPA’s Air Toxics Screening Assessment](https://www.epa.gov/AirToxScreen).
 
-#### Nonattainment Areas
+#### Nonattainment Areas {#nonattainment-areas}
 
 If the air quality in a geographic area meets or is cleaner than the National
 Ambient Air Quality Standard (NAAQS), it is called an attainment area; areas
@@ -633,7 +632,7 @@ Description: Ozone 8-hr (1997 standard)
 
 Source and Spatial Metadata: [Ozone 8-hr (1997 standard)](https://gispub.epa.gov/arcgis/rest/services/OAR_OAQPS/NonattainmentAreas/MapServer/0).
 
-#### RSEI Score
+#### RSEI Score {#rsei}
 
 A RSEI Score is a unitless value that accounts for the size of the chemical
 release, the fate and transport of the chemical through the environment, the
@@ -643,9 +642,9 @@ multiplied by the estimated dose. *RSEI Scores are only meaningful in comparison
 to other RSEI Scores*. 
 Source: EPA's RSEI
 
-### Water Features
+### Water Features {#water-features}
 
-#### Impaired Water Points
+#### Impaired Water Points {#iwp}
 
 The Impaired Water Points layer includes points that are too polluted or
 otherwise degraded to meet the water quality standards set by states,
@@ -656,7 +655,7 @@ Implementation System (ATTAINS).
 Source: [EPA Office of Water ATTAINS Geospatial Data](https://www.epa.gov/waterdata/get-data-access-public-attains-data#AttainsGeo)
 Spatial Metadata: [ATTAINS Assessment Areas](https://gispub.epa.gov/arcgis/rest/services/OW/ATTAINS_Assessment/MapServer/0).
 
-#### Impaired Streams
+#### Impaired Streams {#istreams}
 
 The Impaired Streams layer includes streams that are too polluted or otherwise
 degraded to meet the water quality standards set by states, territories, or
@@ -667,7 +666,7 @@ the Assessment, Total Maximum Daily Load Tracking and Implementation System
 Source: [EPA Office of Water ATTAINS Geospatial Data](https://www.epa.gov/waterdata/get-data-access-public-attains-data#AttainsGeo)
 Spatial Metadata: [ATTAINS Assessment Lines](https://gispub.epa.gov/arcgis/rest/services/OW/ATTAINS_Assessment/MapServer/1).
 
-#### Impaired Water Bodies
+#### Impaired Water Bodies {#iwb}
 
 The Impaired Water Bodies layer includes bodies of water that are too polluted
 or otherwise degraded to meet the water quality standards set by states,
@@ -679,7 +678,7 @@ Source: [EPA Office of Water ATTAINS Geospatial Data](https://www.epa.gov/waterd
 Spatial Metadata: [ATTAINS Assessment Areas](https://gispub.epa.gov/arcgis/rest/services/OW/ATTAINS_Assessment/MapServer/2).
 
 
-#### Impaired Catchment
+#### Impaired Catchment {#icatchment}
 
 The Impaired Catchment layer includes catchment assessment units that are too
 polluted or otherwise degraded to meet the water quality standards set by
@@ -690,21 +689,21 @@ Tracking and Implementation System (ATTAINS).
 Source: [EPA Office of Water ATTAINS Geospatial Data](https://www.epa.gov/waterdata/get-data-access-public-attains-data#AttainsGeo)
 Spatial Metadata: [ATTAINS Assessment Areas](https://gispub.epa.gov/arcgis/rest/services/OW/ATTAINS_Assessment/MapServer/3).
 
-#### Streams
+#### Streams {#streams}
 
 The Streams layer includes linear surface water features throughout the United
 States. The streams layer is based on the National Hydrography Dataset (NHD).
 Source: [EPA Office of Water](https://www.epa.gov/waterdata/nhdplus-national-hydrography-dataset-plus) 
 Spatial Metadata: [Streams](https://data.usgs.gov/datacatalog/metadata/USGS.ecd2ad5e-faa2-4291-bcdb-441b7113ea41.xml).
 
-#### Water Bodies
+#### Water Bodies {#waterbodies}
 
 The Water Bodies layer includes area surface features such as ponds, lakes and
 wide rivers. The water bodies layer is from U.S. Census Bureau TIGER/Line data.
 Source: [U.S. Census Bureau Areal Hydrography](https://web.archive.org/web/20250123161322/https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-geodatabase-file.2019.html)
 Spatial Metadata: [Water Bodies](https://nepassisttool.epa.gov/nepassist/metadata_soe.aspx?lyrIndex=3&service=NEPAssist/Water).
 
-#### Sole Source Aquifers
+#### Sole Source Aquifers {#ssa}
 
 The Sole Source Aquifer layer includes information on the sole source aquifers
 (SSA) designated by EPA under section 1424(e) of the Safe Drinking Water Act of
@@ -715,7 +714,7 @@ depend on the aquifer for drinking water.
 Source: [SSA Locations](https://web.archive.org/web/20250123161322/https://epa.maps.arcgis.com/apps/webappviewer/index.html?id=9ebb047ba3ec41ada1877155fe31356b) 
 Spatial Metadata: [Sole Source Aquifers](https://web.archive.org/web/20250123161322/https://nepassisttool.epa.gov/nepassist/metadata_soe.aspx?lyrIndex=3&service=NEPAssist/Water).
 
-#### Private Water Wells
+#### Private Water Wells {#pww}
 
 Approximately 20% of people in the US get their water from a private domestic
 well. These water sources are exempt from federal regulations and often go
@@ -727,7 +726,7 @@ Further details: [2020 Private Domestic Well Technical Documentation](https://ep
 
 Source: [US EPA (GitHub Repository)](https://github.com/USEPA/ORD_Water_Source_2020).
 
-#### Drinking Water Service Areas
+#### Drinking Water Service Areas {#drinking-water-service-areas}
 
 Community water system (CWS) service areas describe the geographic area that a
 water system serves. This map layer describes the geographic extent of over
@@ -740,7 +739,7 @@ Further detail: [Water System Service Area Technical Documentation](https://epa.
 
 Source: [US EPA](https://gispub.epa.gov/serviceareas).
 
-#### EJ Grants
+#### EJ Grants {#ejgrants}
 
 This layer maps environmental justice grants and resources provided through the
 EPA’s Office of Environmental Justice and External Civil Rights. These include
@@ -753,9 +752,9 @@ Assistance Centers Program Environmental Justice Thriving Communities
 Grantmaking Program Inflation Reduction Act Community Change Grants Program
 Source: [EPA's Next Generation Grants System](https://web.archive.org/web/20250123161322/https://www.epa.gov/enviro/nggs-overview).
 
-### Community Landmarks
+### Community Landmarks {#comland}
 
-#### Schools
+#### Schools {#schools}
 
 The National Center for Education Statistics’ (NCES) Education Demographic and
 Geographic Estimate (EDGE) program develops annually updated point locations
@@ -768,21 +767,21 @@ data layer were developed from the 2021-2022 CCD collection. For more
 information about NCES school point data, 
 see: [National Center for Education Statistics (NCES)](https://nces.ed.gov/programs/edge/Geographic/SchoolLocations).
 
-#### Hospitals
+#### Hospitals {#hospitals}
 
 Point locations for buildings where the sick or injured may receive medical or
 surgical attention (e.g., infirmary, clinic). 
 Source: [U.S. Geological Survey Geographic Names Information System (GNIS)](https://www.usgs.gov/core-science-systems/ngp/board-on-geographic-names)
 Spatial Metadata: [Hospitals](https://nepassisttool.epa.gov/nepassist/metadata_soe.aspx?lyrIndex=3&service=NEPAssist/Places).
 
-#### Places of Worship
+#### Places of Worship {#places-of-worship}
 
 Point locations for buildings used for religious worship (e.g., chapel, mosque,
 synagogue, tabernacle, or temple). 
 Source: [U.S. Geological Survey Geographic Names Information System (GNIS)](https://web.archive.org/web/20250123161322/https://www.usgs.gov/core-science-systems/ngp/board-on-geographic-names) 
 Spatial Metadata: [Worship Places](https://web.archive.org/web/20250123161322/https://nepassisttool.epa.gov/nepassist/metadata_soe.aspx?lyrIndex=2&service=NEPAssist/Places).
 
-#### Parks
+#### Parks {#parks}
 
 An ArcGIS WebService representing fine level manager or administrative agency
 name standardized for the Nation (USFS, BLM, State Fish and Wildlife, State
@@ -793,7 +792,7 @@ detailed federal managers and generic state/local/other managers. For more
 information about PAD-US: [Protected Areas Database of the United States (PAD-US) 3.0](https://web.archive.org/web/20250123161322/https://doi.org/10.5066/P9Q9LQ4B)
 Source: [PAD-US Data Download](https://web.archive.org/web/20250123161322/https://www.usgs.gov/programs/gap-analysis-project/science/pad-us-data-download).
 
-#### Prisons
+#### Prisons {#prisons}
 
 The prison boundary feature class contains secure detention facilities. These
 facilities range in jurisdiction from federal (excluding military) to local
@@ -801,7 +800,7 @@ governments. Polygon geometry is used to describe the extent of where the
 incarcerated population is located (fence lines or building footprints). 
 Source: [Department of Homeland Security](https://web.archive.org/web/20250123161322/https://hifld-geoplatform.opendata.arcgis.com/datasets/geoplatform::prison-boundaries/about).
 
-#### Public Housing
+#### Public Housing {#public-housing}
 
 This dataset provides the location, and resident characteristics of HUD
 administer public housing development buildings. Location data for HUD-related
@@ -809,7 +808,7 @@ properties and facilities are derived from HUD's enterprise geocoding service.
 To learn more about Public Housing visit: 
 [U.S. Department of Housing and Urban Development](https://web.archive.org/web/20250123161322/https://www.hud.gov/program_offices/public_indian_housing/programs/ph/).
 
-#### Subsidized Public Housing
+#### Subsidized Public Housing {#subsidized-public-housing}
 
 This layer represents the approximate locations of HUD’s Multifamily Housing.
 The locations of individual buildings associated with each property are not
@@ -822,7 +821,7 @@ Based Assistance, Section 202 Supportive Housing for the Elderly, and Section
 811 Supportive Housing for Persons with Disabilities. To learn more about
 Multifamily Housing visit: [U.S. Department of Housing and Urban Development](https://web.archive.org/web/20250123161322/https://www.hud.gov/program_offices/housing/mfh).
 
-### Tribal Lands and Indigenous Areas
+### Tribal Lands and Indigenous Areas {#tribal-lands-and-indigenous-areas}
 
 EPA makes no claims regarding the accuracy or precision of data concerning
 Indian country locations or boundaries. EPA has simply attempted to collect
@@ -840,7 +839,7 @@ rights, substantive or procedural, enforceable by any party in litigation with
 the United States or third parties. EPA reserves the right to change this
 dataset at any time without public notice.
 
-#### Tribal Lands
+#### Tribal Lands {#tribal}
 
 This layer represents locations of American Indian Tribal lands in the lower 48
 states and Alaska. The areas include all lands associated with Federally
@@ -851,21 +850,21 @@ or boundaries. EPA has simply attempted to collect certain readily available
 information relating to Indian country locations. Source: EPA ArcGIS for
 EMEF/tribal.
 
-#### Alaska Native Allotments
+#### Alaska Native Allotments {#alaskaallot}
 
 Bureau of Land Management-defined locations based on land survey records
 associated with the Public Land Survey System (PLSS) and associated legislation
 in Alaska. 
 Source: EPA ArcGIS for Alaska Native Allotments.
 
-#### Alaska Native Villages
+#### Alaska Native Villages {#alaska}
 
 Boundary-centroid locations based on records provided by the Bureau of Land
 Management and administered under the Alaska Native Claims Settlement Act
 (ANSCA). 
 Source: EPA ArcGIS for Alaska Native Villages.
 
-#### American Indian Reservations
+#### American Indian Reservations {#reservations}
 
 Census Bureau-defined areas set aside by the federal government for use by
 tribes in accordance with tribal treaties, agreements, executive orders, federal
@@ -873,7 +872,7 @@ statutes, secretarial orders, and judicial determinations relevant to a given
 entity. 
 Source: EPA ArcGIS for American Indian Reservations.
 
-#### American Indian Off-reservation Trust Lands
+#### American Indian Off-reservation Trust Lands {#trust}
 
 Census Bureau-defined areas for which the United States holds title in trust for
 the benefit of a tribe or for an individual American Indian. Trust lands may be
@@ -882,14 +881,14 @@ tabulates data for Off-reservation trust lands with a specific federally
 recognized reservation and/or tribal government. 
 Source: EPA ArcGIS for American Indian Off-reservation Trust Lands.
 
-#### Oklahoma Tribal Statistical Areas (OTSA) Joint-Use Areas
+#### Oklahoma Tribal Statistical Areas (OTSA) Joint-Use Areas {#oklahoma}
 
 As applied to OTSAs by the Census Bureau, include areas administered jointly
 and/or claimed by two or more American Indian tribes that have a delineated
 OTSA. 
 Source: EPA ArcGIS for Oklahoma Statistical Areas.
 
-#### Virginia Federally Recognized Tribes
+#### Virginia Federally Recognized Tribes {#virginia}
 
 Contains point data for federally recognized tribes geographically located in
 the state of Virginia, corresponding with the administrative boundaries of EPA
@@ -899,14 +898,14 @@ each tribe provided by the EPA Region 3 Tribal Program Coordinator to the US EPA
 Office of Mission Support on May 5, 2021. Source: EPA ArcGIS for Other Federally
 Recognized Tribes.
 
-#### Tribal Cession Boundaries
+#### Tribal Cession Boundaries {#tribal-cession-boundaries}
 
 U.S. Forest Service-defined boundaries depicting lands ceded to the federal
 government for which they may still retain rights and may not be present-day
 tribal boundaries. Source: USDA ArcGIS for Indian Land Cessions in the United
 States.
 
-#### Alaska Native Regional Corporations
+#### Alaska Native Regional Corporations {#alasacorp}
 
 Census Bureau-defined, corporate entities organized to conduct both for-profit
 and non-profit affairs of Alaska Natives pursuant to the Alaska Native Claims
@@ -915,29 +914,29 @@ Alaska into twelve regions (except for the area within the Annette Island
 Reserve). 
 Source: Census ArcGIS for Alaska Native Regional Corporations.
 
-#### State-recognized American Indian Reservations
+#### State-recognized American Indian Reservations {#staterec}
 
 Census Bureau-curated boundaries that depict reservations established by certain
 state governments for tribes recognized by the state. Source: Census ArcGIS for
 State American Indian Reservations.
 
-#### Hawaiian Native Home Lands
+#### Hawaiian Native Home Lands {#hawaiian}
 
 Census Bureau-defined areas depicting the 75 Hawaiian homelands in the U.S.
 state of Hawaii in pursuant with the Hawaiian Homes Commission Act of 1920
 (HHCA), as amended. 
 Source: Census ArcGIS for Hawaiian Home Lands.
 
-#### State-designated Tribal Statistical Areas
+#### State-designated Tribal Statistical Areas {#statisticalareas}
 
 Statistical geographic areas identified and delineated for state recognized
 tribes by the Census Bureau that are not federally recognized and do not have an
 American Indian reservation or off-reservation trust land. 
 Source: Census ArcGIS for State Designated Tribal Statistical Areas.
 
-### Colonias
+### Colonias {#colonias}
 
-#### Colonias Communities (HUD)
+#### Colonias Communities (HUD) {#coloniashud}
 
 This service denotes the locations of colonias communities as defined in Section
 916 of the Cranston-Gonzalez National Affordable Housing Act of 1990. Per
@@ -955,7 +954,7 @@ the date of the enactment of the Cranston-Gonzalez National Affordable Housing
 Act. 
 Source: U.S. Department of Housing and Urban Development’s (HUD) colonias geospatial data.
 
-#### TX State Colonias
+#### TX State Colonias {#txcolonias}
 
 Colonias are substandard housing developments, often found along the
 Texas-Mexico border, where residents lack basic services such as drinking water,
@@ -964,7 +963,7 @@ basic infrastructure like a drinking water supply, sewage treatment, paved
 roads, adequate drainage, etc. "Colonia" is a Spanish word for neighborhood.
 Source: Texas Attorney General’s (TX-AG) colonias geospatial database
 
-#### NM State Colonias
+#### NM State Colonias {#nmcolonias}
 
 University of Mexico’s Bureau of Business & Economic Research (BBER) has
 developed an innovative technique for approximating colonia geographies and
@@ -975,9 +974,9 @@ various New Mexico colonias under a contract with the New Mexico Mortgage
 Finance Authority (MFA). Source: University of New Mexico’s Bureau of Business
 and Economic Research’s (BBER) colonias geospatial database.
 
-### Designated Disadvantaged Communities
+### Designated Disadvantaged Communities {#ddc}
 
-#### Justice 40
+#### Justice 40 {#justice40}
 
 This layer built by Esri assesses and identifies communities that are
 disadvantaged according to [Justice40 Initiative criteria](https://web.archive.org/web/20250123161322/https://screeningtool.geoplatform.gov/en/methodology). 
@@ -986,7 +985,7 @@ and its territories American Samoa, Guam, the Northern Mariana Islands, Puerto
 Rico, and the U.S. Virgin Islands. This map uses 2010 census tracts from Version
 0.1 of the [source data](https://web.archive.org/web/20250123161322/https://screeningtool.geoplatform.gov/en/methodology) downloaded November 22, 2022.
 
-#### EPA IRA Disadvantaged Communities
+#### EPA IRA Disadvantaged Communities {#epaira}
 
 The EPA [Inflation Reduction Act (IRA)](https://web.archive.org/web/20250123161322/https://www.epa.gov/inflation-reduction-act) 
 Disadvantaged Communities map combines
@@ -1016,44 +1015,44 @@ map Any area of American Samoa, Guam, the Commonwealth of the Northern Mariana
 Islands, or the U.S. Virgin Islands 
 Source: EPA's [IRA Disadvantaged Communities Map](https://web.archive.org/web/20250123161322/https://www.epa.gov/environmentaljustice/inflation-reduction-act-disadvantaged-communities-map).
 
-## Additional Demographics
+## Additional Demographics {#addi}
 
 Demographic information is available to add to the EJScreen map under the
 "Additional Demographics" button. You may click on the associated button to see
 metadata for that data layer. Please see the Census Bureau website for more
 explanations regarding the annual American Community Survey (ACS) estimates.
 
-## Boundaries
+## Boundaries {#boun}
 
-#### Zip Codes
+#### Zip Codes {#zip}
 
 The Zip Codes layer provides information and identifies each postal delivery
 area in the United States. 
 Source: [Data and Maps for ArcGIS](https://web.archive.org/web/20250123161322/https://www.arcgis.com/home/group.html?content=all&id=24838c2d95e14dd18c25e9bad55a7f82#overview) 
 Spatial Metadata: [Zip Codes](https://web.archive.org/web/20250123161322/https://nepassisttool.epa.gov/nepassist/metadata_soe.aspx?lyrIndex=0&service=NEPAssist/Boundaries).
 
-#### Congressional Districts
+#### Congressional Districts {#cong}
 
 The Congressional Districts layer includes information on the 118th
 Congressional Districts of the United States, and U.S. Territories. 
 Source: ArcGIS Map Service 
 Spatial Metadata: Congressional Districts.
 
-#### City Boundaries
+#### City Boundaries {#cityb}
 
 The City Boundaries layer includes incorporated cities and Census Designated
 Places from the U.S. Census Bureau TIGER/Line data. 
 Source: [U.S. Census Bureau](https://web.archive.org/web/20250123161322/https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-geodatabase-file.2019.html)
 Spatial Metadata: [City Boundaries](https://web.archive.org/web/20250123161322/https://nepassisttool.epa.gov/nepassist/metadata_soe.aspx?lyrIndex=2&service=NEPAssist/Boundaries).
 
-#### Urbanized Areas
+#### Urbanized Areas {#urbanized}
 
 Urbanized Areas are derived from the 2019 U.S. Census Bureau TIGER/Line Urban
 Areas. Urbanized Areas are contiguous areas of populations greater than 50,000.
 Source: [U.S. Census Bureau ](https://web.archive.org/web/20250123161322/https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html)
 Spatial Metadata: [Urbanized Areas](https://web.archive.org/web/20250123161322/https://nepassisttool.epa.gov/nepassist/metadata_soe.aspx?lyrIndex=3&service=NEPAssist/Boundaries).
 
-#### Federal Lands
+#### Federal Lands {#fedlands}
 
 The Federal Lands layer includes information on lands owned or administered by
 the Federal government. This layer is downloaded from the U.S. Geological Survey
@@ -1061,7 +1060,7 @@ the Federal government. This layer is downloaded from the U.S. Geological Survey
 Source: [USGS National Geospatial Program Small-Scale Data](https://web.archive.org/web/20250123161322/https://www.usgs.gov/core-science-systems/national-geospatial-program/small-scale-data) 
 Spatial Metadata: [Federal Lands](https://web.archive.org/web/20250123161322/https://nepassisttool.epa.gov/nepassist/metadata_soe.aspx?lyrIndex=4&service=NEPAssist/Boundaries).
 
-#### Townships Boundary
+#### Townships Boundary {#township}
 
 The Townships Boundary layer portrays the Public Land Survey System (PLSS)
 boundaries of the United States to the township level. This layer is downloaded
@@ -1069,27 +1068,27 @@ from the Bureau of Land Management (BLM) PLSS Map Service.
 Source: Bureau of Land Management PLSS Townships 
 Spatial Metadata: Townships Boundary.
 
-#### Counties
+#### Counties {#counties}
 
 The Counties layer portrays the county boundaries of the United States. 
 Source:
 U.S. Census Bureau 
 Spatial Metadata: Counties.
 
-#### States
+#### States {#states2}
 
 The State layer provides state boundaries of the United States. 
 Source: U.S. Census Bureau 
 Spatial Metadata: States.
 
-#### EPA Regions
+#### EPA Regions {#eparegions}
 
 The EPA Regions layer includes EPA Administrative Region boundaries derived from
 State boundaries.
 Source: EPA Office of Environmental Information (OEI) 
 Spatial Metadata: EPA Regions.
 
-## Threshold Maps
+## Threshold Maps {#thre}
 
 The threshold maps are a compilation of the various EJ indexes or the various
 supplemental indexes on a single map. The threshold map widget allows EJScreen
