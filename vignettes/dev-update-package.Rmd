@@ -354,8 +354,17 @@ In the pull request description:
   `#N` mentions, not only "Fixes #N"), then keep those issues that are still
   open.
 
-When the checks pass and the dev app is accepted, merge **with a merge commit**,
-guarding against last-minute pushes:
+When the dev app is accepted, merge **with a merge commit**. `--admin` does not
+check anything for you, so first confirm, **for the pull request's current head
+commit**, that:
+
+- [ ] every check has passed (`gh pr checks <PR>`, and the head SHA shown on
+      the pull request page matches the one printed below)
+- [ ] the Copilot review of that head commit has been read, including its
+      collapsed "Suppressed comments", and every review thread is resolved
+- [ ] nothing in the pull request is still marked as waiting for a decision
+
+Then merge, guarding against last-minute pushes:
 
 ```{bash, eval=FALSE}
 gh pr view <PR> --repo Public-Environmental-Data-Partners/EJAM --json headRefOid --jq .headRefOid
@@ -363,9 +372,15 @@ gh pr merge <PR> --repo Public-Environmental-Data-Partners/EJAM --merge --admin 
   --match-head-commit <full SHA printed above>
 ```
 
-`--admin` is needed because the branch rules on `main` and `development` can
-show a pull request as blocked even when it is ready. `--match-head-commit`
-makes the merge fail if anyone pushed after you last reviewed it.
+**Why `--admin`:** the branch rules on `main` include one that lets only the
+repository's admin and maintain roles update the branch. That makes every
+merge into `main`, even a fully ready one, show as blocked and need `--admin`.
+They do not require any status checks, so `--admin` bypasses no check
+that GitHub would otherwise enforce. It also means GitHub enforces none of them,
+which is why the list above must be checked by hand. `--match-head-commit` makes
+the merge fail if anyone pushed after you checked. If a check has failed or a
+thread is unresolved, do not merge: fix it, or record in the pull request why it
+is being accepted and who approved that.
 
 ### Tag and publish: the release workflow
 
@@ -395,6 +410,30 @@ What it does:
 - marks the Release **Latest** if `mark_latest=true` (use `false` when releasing
   a patch to an older, frozen line while a newer line is live)
 - starts the documentation build (pkgdown) and the release install checks
+
+**If a draft Release exists, check its target before the real (non-dry-run)
+run.** Publishing a draft creates the tag at the **draft's** target, which is
+set when the draft is made and does not follow `main`. The dry-run summary does
+not show that target: its "Target commit" line is the head of `main`, which is
+used only when no draft exists. So a draft made before the release pull
+request merged would tag the wrong code. Compare the two, and point the draft at
+`main`'s merge commit if they differ:
+
+```{bash, eval=FALSE}
+# the release pull request's merge commit on main
+git fetch origin main && git rev-parse origin/main
+
+# the draft's target (a branch name or a commit SHA)
+gh release view vX.YYYY.Z --repo Public-Environmental-Data-Partners/EJAM \
+  --json isDraft,targetCommitish --jq '.isDraft, .targetCommitish'
+
+# if the target is not that exact SHA, set it (only while the draft is unpublished)
+gh release edit vX.YYYY.Z --repo Public-Environmental-Data-Partners/EJAM \
+  --target <full SHA of main's merge commit>
+```
+
+Setting the target to the full SHA, rather than to `main`, keeps the tag from
+landing on a later commit if someone merges into `main` before you publish.
 
 Then verify:
 
