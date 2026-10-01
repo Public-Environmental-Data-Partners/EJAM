@@ -485,9 +485,9 @@ Highlights:
 - Web App Improvements: Added PDF-format report downloads. Improved Community
   Report barplot legibility, and added more barplot options in the Details tab.
 
-- Data Updates: Updated EJScreen-style ACS demographic data to ACS 2020-2024.
-  Refreshed the related package datasets and metadata, so that EJScreen community
-  reports and EJAM summary reports will be based on the newer data.
+- Data Updates: Rebuilt the EJScreen-style ACS 2018-2022 demographic data with
+  the new data pipeline, and refreshed the related package datasets and metadata
+  used by EJScreen community reports and EJAM summary reports.
 
 - Data Pipeline: Added a staged annual data pipeline for demographics,
   environmental indicators, extra indicators, geography info, EJ indexes,
@@ -528,7 +528,7 @@ Highlights:
 ## Data Updates
 
 - Updated the key nationwide datasets of demographic blockgroup-resolution data and related
-  metadata for the ACS 2020-2024 EJScreen-style data release.
+  metadata for the ACS 2018-2022 EJScreen-style data release.
 - Updated the FRS-related datasets (covering all EPA-regulated facilities) and
   related tables used for specifying facilities to analyze by industry.
 - Added year-aware metadata handling for R-native pipeline outputs, so pipeline
