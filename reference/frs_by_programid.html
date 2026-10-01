@@ -9,7 +9,7 @@ the Facility Registry Service"><meta property="og:image" content="https://public
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +27,6 @@ the Facility Registry Service"><meta property="og:image" content="https://public
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
-    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -39,6 +38,7 @@ the Facility Registry Service"><meta property="og:image" content="https://public
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
     <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
@@ -52,7 +52,7 @@ the Facility Registry Service"><meta property="og:image" content="https://public
     <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Releasing a New Version of EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -84,25 +84,9 @@ This file is not stored in the package, but is obtained via <code><a href="datal
 <p>Created by frs_make_programid_lookup()</p>
 <p>This is the format with one row per site-programid pair,
 so multiple rows for one site if it is in multiple programs.</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">dim</span>(frs_by_programid)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">3479560</span>       <span class="dv">6</span>   as of <span class="dv">02</span><span class="sc">/</span><span class="dv">2025</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>nn<span class="ot">=</span><span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(frs_by_programid), <span class="dv">1</span>); frs_by_programid[REGISTRY_ID <span class="sc">==</span> frs_by_programid<span class="sc">$</span>REGISTRY_ID[nn],]</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>Key<span class="sc">:</span> <span class="er">&lt;</span>pgm_sys_id, program, REGISTRY_ID<span class="sc">&gt;</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>         lat       lon  REGISTRY_ID  PGM_SYS_ACRNMS program pgm_sys_id</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>       <span class="sc">&lt;</span>num<span class="sc">&gt;</span>     <span class="er">&lt;</span>num<span class="sc">&gt;</span>       <span class="er">&lt;</span>char<span class="sc">&gt;</span>          <span class="er">&lt;</span>char<span class="sc">&gt;</span>  <span class="er">&lt;</span>char<span class="sc">&gt;</span>     <span class="er">&lt;</span>char<span class="sc">&gt;</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a> <span class="dv">1</span><span class="sc">:</span> <span class="fl">42.01282</span> <span class="sc">-</span><span class="fl">78.54799</span> <span class="dv">110010618705</span> ICIS<span class="sc">:</span><span class="dv">1400013175</span>    ICIS <span class="dv">1400013175</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a> <span class="dv">2</span><span class="sc">:</span> <span class="fl">42.01282</span> <span class="sc">-</span><span class="fl">78.54799</span> <span class="dv">110010618705</span> ICIS<span class="sc">:</span><span class="dv">1400013176</span>    ICIS <span class="dv">1400013176</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>nn<span class="ot">=</span><span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(frs_by_programid), <span class="dv">1</span>); frs_by_programid[REGISTRY_ID <span class="sc">==</span> frs_by_programid<span class="sc">$</span>REGISTRY_ID[nn],]</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>Key<span class="sc">:</span> <span class="er">&lt;</span>pgm_sys_id, program, REGISTRY_ID<span class="sc">&gt;</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>       lat       lon  REGISTRY_ID           PGM_SYS_ACRNMS program          pgm_sys_id</span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>     <span class="sc">&lt;</span>num<span class="sc">&gt;</span>     <span class="er">&lt;</span>num<span class="sc">&gt;</span>       <span class="er">&lt;</span>char<span class="sc">&gt;</span>                   <span class="er">&lt;</span>char<span class="sc">&gt;</span>  <span class="er">&lt;</span>char<span class="sc">&gt;</span>              <span class="er">&lt;</span>char<span class="sc">&gt;</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span> <span class="fl">34.95563</span> <span class="sc">-</span><span class="fl">81.91435</span> <span class="dv">110011516840</span>  NCDB<span class="sc">:</span>C04<span class="co">#TSCAIV-98-LD11    NCDB  C04#TSCAIV-98-LD11</span></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="dv">2</span><span class="sc">:</span> <span class="fl">34.95563</span> <span class="sc">-</span><span class="fl">81.91435</span> <span class="dv">110011516840</span> NCDB<span class="sc">:</span>C04<span class="co">#TSCAIV-98-LD11A    NCDB C04#TSCAIV-98-LD11A</span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="dv">3</span><span class="sc">:</span> <span class="fl">34.95563</span> <span class="sc">-</span><span class="fl">81.91435</span> <span class="dv">110011516840</span> NCDB<span class="sc">:</span>I04<span class="co">#19980603N4005 2    NCDB I04#19980603N4005 2</span></span></code></pre><p></p></div>
+<p>Counts and example IDs change with each FRS snapshot. After loading the
+current Arrow table, inspect <code>dim(frs_by_programid)</code> and a site's rows with
+<code>frs_by_programid[REGISTRY_ID == testinput_registry_id[1]]</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -114,11 +98,11 @@ so multiple rows for one site if it is in multiple programs.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2026</p>
+  <p>October 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.2</p>
+  <p>EJAM Version 3.2022.3</p>
 </div>
 
     </footer></div>

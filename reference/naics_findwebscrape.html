@@ -9,7 +9,7 @@ but this looks at naics.com website which lists various aliases for a sector."><
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +27,6 @@ but this looks at naics.com website which lists various aliases for a sector."><
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
-    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -39,6 +38,7 @@ but this looks at naics.com website which lists various aliases for a sector."><
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
     <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
@@ -52,7 +52,7 @@ but this looks at naics.com website which lists various aliases for a sector."><
     <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Releasing a New Version of EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -105,11 +105,11 @@ but this looks at naics.com website which lists various aliases for a sector.</p
 <span> <span class="co"># browseURL(naics_from_any("copper smelting", website_url=TRUE) )</span></span>
 <span></span>
 <span>  <span class="fu"><a href="url_naics.com.html">url_naics.com</a></span><span class="op">(</span><span class="st">"copper smelting"</span><span class="op">)</span></span>
-<span>  <span class="co"># \donttest{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
 <span>  <span class="fu">naics_findwebscrape</span><span class="op">(</span><span class="st">"copper smelting"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="url_naics.com.html">url_naics.com</a></span><span class="op">(</span><span class="st">"copper smelting"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="naics_url_of_code.html">naics_url_of_code</a></span><span class="op">(</span><span class="fl">326</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="co"># }</span></span>
+<span>  <span class="op">}</span> <span class="co"># }</span></span>
 <span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -117,11 +117,11 @@ but this looks at naics.com website which lists various aliases for a sector.</p
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2026</p>
+  <p>October 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.2</p>
+  <p>EJAM Version 3.2022.3</p>
 </div>
 
     </footer></div>

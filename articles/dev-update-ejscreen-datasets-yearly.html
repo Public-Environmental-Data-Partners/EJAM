@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,6 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
-    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -60,6 +59,7 @@
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
     <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
@@ -73,7 +73,7 @@
     <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Releasing a New Version of EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
   </ul>
 </li>
@@ -638,6 +638,25 @@ back to <code><a href="https://walker-data.com/tidycensus/reference/get_decennia
 downloaded weights locally.</p>
 </div>
 <div class="section level2">
+<h2 id="tract-only-acs-tables">Tract-only ACS tables<a class="anchor" aria-label="anchor" href="#tract-only-acs-tables"></a>
+</h2>
+<p>Disability (B18101), detailed language (C16001), and health insurance
+(B27010) are published only at tract resolution.
+<code><a href="../reference/calc_blockgroupstats_from_tract_data.html">calc_blockgroupstats_from_tract_data()</a></code> apportions each
+tract count to its blockgroups by population share (<code>bgwt</code>)
+and repeats each tract’s percentage on every blockgroup in the tract.
+Counts must be apportioned, not repeated, because
+<code>map_headernames</code> marks them <code>"sum of counts"</code>:
+<code><a href="../reference/doaggregate.html">doaggregate()</a></code> and <code><a href="../reference/calc_acs_by_geography.html">calc_acs_by_geography()</a></code> add
+them up across blockgroups, so a tract total repeated on each blockgroup
+is counted once per blockgroup. The ACS 2022 and 2024 draft builds saved
+before this was fixed (EJAM#596) carried repeated language counts, which
+is why their <code>acs_by_state</code> files reported about three times
+the true <code>lan_universe</code>. Rebuilding <code>bg_acsdata</code>
+from the saved raw ACS stage (<code>force_bg_acsdata = TRUE</code>, with
+<code>force_acs = FALSE</code>) corrects every downstream stage.</p>
+</div>
+<div class="section level2">
 <h2 id="new-or-renamed-indicators">New or renamed indicators<a class="anchor" aria-label="anchor" href="#new-or-renamed-indicators"></a>
 </h2>
 <div class="section level3">
@@ -679,7 +698,7 @@ warns) without one. Get a free key at <a href="https://api.census.gov/data/key_s
 once with
 <code>tidycensus::census_api_key("YOUR KEY", install = TRUE)</code>,
 then restart R. (The bulk ACS download via
-<code>ACSdownload::get_acs_new()</code> reads Census summary files, but
+<code><a href="https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html" class="external-link">ACSdownload::get_acs_new()</a></code> reads Census summary files, but
 the metadata step still needs the key.)</p>
 </blockquote>
 <p>Start from a clean branch. For ACS 2020-2024 using local
@@ -1108,9 +1127,15 @@ archived CSVs in the S3 pipeline folders — so the replication fetches
 the reference live and uses [EJAM:::ejscreen_compare_geography_to_epa()]
 (which repairs FIPS leading zeros with [fips_lead_zero()], maps EPA
 names with <code>fixcolnames(., "acs", "r")</code>, joins on the full
-GEOID, and reports correlation + median difference per indicator). This
-verified an <strong>exact</strong> match for the ACS indicators EJAM
-carries.</p>
+GEOID, and reports correlation + median difference per indicator). For
+the 2022 replication this verified an <strong>exact</strong> match for
+the eleven indicators the comparison covered (population, low income,
+people of color, limited-English households, under age 5, over age 64,
+and their percentages). The tract-derived language counts were not part
+of that comparison, which is how the repeated tract totals (EJAM#596)
+went unnoticed; include <code>LAN_UNIVERSE</code> and the other
+<code>LAN_*</code> fields in <code>outFields</code> when repeating
+it.</p>
 <p>The feature server returns at most ~2000 features per query
 (<code>maxRecordCount</code>), so a single call validates only the first
 page. For a full national check, <strong>paginate</strong> with
@@ -1224,20 +1249,24 @@ groups.</p>
 <code>ejamdata_required_tag</code> in <code>DESCRIPTION</code>. If you
 have already bumped that tag to the new release but have not published
 the matching <code>ejamdata</code> release yet, attaching the package —
-including <code>devtools::load_all()</code> — will try to fetch a tag
+including <code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code> — will try to fetch a tag
 that does not exist and fail or hang.</p>
-<p>Keep <code>ejamdata_required_tag</code> at the <strong>previously
+<p>For an annual pipeline release, keep
+<code>ejamdata_required_tag</code> at the <strong>previously
 installed</strong> tag during the data work (so it matches
 <code>data/ejamdata_version.txt</code> and the present local
 <code>.arrow</code> files, and <code><a href="../reference/download_latest_arrow_data.html">download_latest_arrow_data()</a></code>
 short-circuits with no network), and flip it to the new tag only after
 publishing (see <a href="dev-update-datasets.html">Updating and Managing
 the Datasets Used by EJAM</a>). Always use
-<code>devtools::load_all()</code> rather than an installed
+<code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code> rather than an installed
 <code><a href="https://public-environmental-data-partners.github.io/EJAM">library(EJAM)</a></code> here, so
 <code>ejam_package_version_current()</code> reads the
 <strong>source</strong> <code>DESCRIPTION</code> (the new
-<code>3.YYYY.0</code>), not a stale installed version.</p>
+<code>3.YYYY.0</code>), not a stale installed version. For a separately
+staged FRS release whose DESCRIPTION already pins an empty draft tag,
+use the namespace-loading recipe in <a href="dev-update-datasets.html#refreshing-frs-for-a-data-release">Refreshing
+FRS for a data release</a> until the complete asset set is uploaded.</p>
 <p>A release update should explicitly replace at least:</p>
 <ul>
 <li>
@@ -1434,7 +1463,7 @@ and Arrow cache and there is no cross-vintage collision:</p>
 <span><span class="co"># git worktree add ../EJAM-2023 ACS2023</span></span>
 <span></span>
 <span><span class="co"># then, in a SEPARATE R session per folder:</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>             <span class="co"># first load downloads this vintage's bgej (~90 MB)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>             <span class="co"># first load downloads this vintage's bgej (~90 MB)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span>      <span class="co"># confirm: "v3.2024.0" (or v3.2023.0, ...)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">blockgroupstats</span>, <span class="st">"acs_version"</span><span class="op">)</span><span class="co"># confirm: "2020-2024" (or "2019-2023", ...)</span></span>
 <span><span class="va">out_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span><span class="va">testpoints_10</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>   <span class="co"># run the SAME input in each session</span></span>
@@ -1449,7 +1478,7 @@ vintage:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># after: git switch ACS2023</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"data/bgej.arrow"</span><span class="op">)</span>   <span class="co"># force re-download of the v3.2023.0 bgej</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
 <p>As a safeguard, <code>dataload_dynamic_validate_bgej()</code>
 compares the loaded <code>bgej</code> to the package’s
 <code>blockgroupstats</code> and drops it if they do not match, so a
@@ -1482,8 +1511,8 @@ or the data repository release process.</li>
 </ol>
 <p>The general release and large-data publication steps are covered in
 <a href="dev-update-datasets.html">Updating and Managing the Datasets
-Used by EJAM</a> and <a href="dev-update-package.html">Updating the
-Package as a New Release</a>.</p>
+Used by EJAM</a> and <a href="dev-update-package.html">Releasing a New
+Version of EJAM</a>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -1492,11 +1521,11 @@ Package as a New Release</a>.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2026</p>
+  <p>October 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.2</p>
+  <p>EJAM Version 3.2022.3</p>
 </div>
 
     </footer>

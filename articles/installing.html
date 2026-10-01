@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.2</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">3.2022.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,6 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
-    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><a class="dropdown-item" href="../articles/webapp.html">Accessing the Web App</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For analysts using R</h6></li>
@@ -60,6 +59,7 @@
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
     <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
@@ -73,7 +73,7 @@
     <li><a class="dropdown-item" href="../articles/dev-update-datasets.html">Updating and Managing the Datasets Used by EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-ejscreen-datasets-yearly.html">Updating EJScreen Datasets Annually (via the Pipeline)</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
-    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Updating the Package as a New Release</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-update-package.html">Releasing a New Version of EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
   </ul>
 </li>
@@ -311,15 +311,15 @@ git credentials and the credential store</a>. Note Windows takes care of
 most of this now, in conjunction with GitHub.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##  To check for existing PATs:</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">gh_token_help</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">gh_token_help</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">git_sitrep</span><span class="op">(</span><span class="op">)</span>  <span class="co"># git situation report</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/git_sitrep.html" class="external-link">git_sitrep</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># git situation report</span></span>
 <span></span>
 <span><span class="co">#  To make a new PAT:</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">create_github_token</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">create_github_token</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#  To register a PAT:</span></span>
-<span><span class="fu">credentials</span><span class="fu">::</span><span class="fu">set_github_pat</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">credentials</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/credentials/reference/set_github_pat.html" class="external-link">set_github_pat</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
 <span><span class="fu">gitcreds</span><span class="fu">::</span><span class="fu"><a href="https://gitcreds.r-lib.org/reference/gitcreds_get.html" class="external-link">gitcreds_set</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -372,11 +372,11 @@ files. Each time the package is attached via library() or require(),
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>August 2026</p>
+  <p>October 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.2</p>
+  <p>EJAM Version 3.2022.3</p>
 </div>
 
     </footer>
