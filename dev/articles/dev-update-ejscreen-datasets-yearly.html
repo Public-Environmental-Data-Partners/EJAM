@@ -699,7 +699,7 @@ warns) without one. Get a free key at <a href="https://api.census.gov/data/key_s
 once with
 <code>tidycensus::census_api_key("YOUR KEY", install = TRUE)</code>,
 then restart R. (The bulk ACS download via
-<code>ACSdownload::get_acs_new()</code> reads Census summary files, but
+<code><a href="https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html" class="external-link">ACSdownload::get_acs_new()</a></code> reads Census summary files, but
 the metadata step still needs the key.)</p>
 </blockquote>
 <p>Start from a clean branch. For ACS 2020-2024 using local
@@ -1250,7 +1250,7 @@ groups.</p>
 <code>ejamdata_required_tag</code> in <code>DESCRIPTION</code>. If you
 have already bumped that tag to the new release but have not published
 the matching <code>ejamdata</code> release yet, attaching the package —
-including <code>devtools::load_all()</code> — will try to fetch a tag
+including <code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code> — will try to fetch a tag
 that does not exist and fail or hang.</p>
 <p>For an annual pipeline release, keep
 <code>ejamdata_required_tag</code> at the <strong>previously
@@ -1260,7 +1260,7 @@ installed</strong> tag during the data work (so it matches
 short-circuits with no network), and flip it to the new tag only after
 publishing (see <a href="dev-update-datasets.html">Updating and Managing
 the Datasets Used by EJAM</a>). Always use
-<code>devtools::load_all()</code> rather than an installed
+<code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code> rather than an installed
 <code><a href="https://public-environmental-data-partners.github.io/EJAM">library(EJAM)</a></code> here, so
 <code>ejam_package_version_current()</code> reads the
 <strong>source</strong> <code>DESCRIPTION</code> (the new
@@ -1464,7 +1464,7 @@ and Arrow cache and there is no cross-vintage collision:</p>
 <span><span class="co"># git worktree add ../EJAM-2023 ACS2023</span></span>
 <span></span>
 <span><span class="co"># then, in a SEPARATE R session per folder:</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>             <span class="co"># first load downloads this vintage's bgej (~90 MB)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span>             <span class="co"># first load downloads this vintage's bgej (~90 MB)</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">ejamdata_required_tag</span><span class="op">(</span><span class="op">)</span>      <span class="co"># confirm: "v3.2024.0" (or v3.2023.0, ...)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">blockgroupstats</span>, <span class="st">"acs_version"</span><span class="op">)</span><span class="co"># confirm: "2020-2024" (or "2019-2023", ...)</span></span>
 <span><span class="va">out_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span><span class="va">testpoints_10</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>   <span class="co"># run the SAME input in each session</span></span>
@@ -1479,7 +1479,7 @@ vintage:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># after: git switch ACS2023</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"data/bgej.arrow"</span><span class="op">)</span>   <span class="co"># force re-download of the v3.2023.0 bgej</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
 <p>As a safeguard, <code>dataload_dynamic_validate_bgej()</code>
 compares the loaded <code>bgej</code> to the package’s
 <code>blockgroupstats</code> and drops it if they do not match, so a

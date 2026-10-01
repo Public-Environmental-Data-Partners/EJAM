@@ -509,7 +509,7 @@ it.</p>
 <strong>Version fields</strong>: everything in <a href="#where-the-version-appears">Where the version appears</a>.</li>
 <li>
 <strong>Documentation</strong>: run
-<code>devtools::document()</code> so every help file matches the code. A
+<code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code> so every help file matches the code. A
 stale <code>.Rd</code> file shows up as a <code>WARNING</code> in
 <code>R CMD check</code>. Then run <code>EJAM:::pkgdown_update()</code>
 (see <a href="dev-update-documentation.html">Updating
@@ -556,12 +556,12 @@ releases.</li>
 <p>Test the exact code that will be tagged, in three places.</p>
 <p><strong>Locally</strong>, with the new data installed:</p>
 <ul>
-<li>the full test suite (<code>devtools::test()</code> or
+<li>the full test suite (<code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> or
 <code>EJAM:::test_ejam()</code>); adding or renaming a test file
 requires updating the groups in <code>R/test_ejam.R</code>
 </li>
 <li>
-<code>devtools::check()</code>, which also runs every help-page
+<code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>, which also runs every help-page
 example</li>
 <li>the examples in the articles, especially any that use changed
 datasets (for example, render the FRS-dependent articles after an FRS

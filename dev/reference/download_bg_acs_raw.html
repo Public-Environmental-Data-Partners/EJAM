@@ -89,7 +89,7 @@
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  validation_strict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  storage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"local"</span>, <span class="st">"s3"</span><span class="op">)</span>,</span>
-<span>  download_fun <span class="op">=</span> <span class="fu">ACSdownload</span><span class="fu">::</span><span class="va">get_acs_new</span>,</span>
+<span>  download_fun <span class="op">=</span> <span class="fu">ACSdownload</span><span class="fu">::</span><span class="va"><a href="https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html" class="external-link">get_acs_new</a></span>,</span>
 <span>  download_timeout <span class="op">=</span> <span class="fl">3600</span>,</span>
 <span>  download_retries <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -161,7 +161,7 @@ single <code>bg_acs_raw</code> list object.</p></dd>
 <dt id="arg-download-fun">download_fun<a class="anchor" aria-label="anchor" href="#arg-download-fun"></a></dt>
 <dd><p>ACSdownload-compatible function used to obtain a single
 ACS table for a given <code>yr</code>, <code>tables</code>, <code>fips</code>, and <code>fiveorone</code>. Defaults to
-<code>ACSdownload::get_acs_new()</code>. Supply a wrapper if you need to pin a legacy
+<code><a href="https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html" class="external-link">ACSdownload::get_acs_new()</a></code>. Supply a wrapper if you need to pin a legacy
 ACS source implementation.</p></dd>
 
 
@@ -184,7 +184,7 @@ after the initial attempt.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This creates the raw ACS checkpoint for the annual EJSCREEN/EJAM
 data update pipeline. It downloads the Census Bureau ACS table-based summary
-file tables with <code>ACSdownload::get_acs_new()</code>. By default, the saved
+file tables with <code><a href="https://ejanalysis.github.io/ACSdownload/reference/get_acs_new.html" class="external-link">ACSdownload::get_acs_new()</a></code>. By default, the saved
 checkpoint uses a folder-plus-manifest layout: one file per ACS table in
 <code>bg_acs_raw/blockgroup/</code> and <code>bg_acs_raw/tract/</code>, plus manifest files that
 describe the checkpoint. That is easier to inspect and extend than one large

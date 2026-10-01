@@ -122,12 +122,12 @@
 <p><strong>Running all tests:</strong></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Standard testthat approach</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">test</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Using package-specific test function</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="reference/test_ejam.html">test_ejam</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Test configuration:</strong> - Test framework: testthat (edition 3) - Parallel testing: DISABLED (Config/testthat/parallel: false) - Tests location: <code>tests/testthat/</code> - Special setup: <code>tests/testthat.R</code> itself does NOT reinstall the package – it just runs <code>test_check("EJAM")</code> against whichever version is currently INSTALLED. See the “Important” note below. - Web app tests: Use shinytest2 (see below)</p>
-<p><strong>Important:</strong> <code>devtools::test()</code> and <code>EJAM:::test_ejam()</code> (default <code>useloadall = TRUE</code>) call <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code>/<code>devtools::load_all()</code> first, so they test the CURRENT LOCAL SOURCE directly – no reinstall needed for those. It’s <code>testthat::test_check()</code>/<code>test_package()</code> – and therefore <code>R CMD check</code>, <code>devtools::check()</code>, and <code>rcmdcheck::rcmdcheck()</code>, which run <code>tests/testthat.R</code> – that test the INSTALLED package instead; reinstall first (<code>remotes::install_local(".", force = TRUE)</code>) if you need one of those to reflect recent changes.</p>
+<p><strong>Important:</strong> <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> and <code>EJAM:::test_ejam()</code> (default <code>useloadall = TRUE</code>) call <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code>/<code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code> first, so they test the CURRENT LOCAL SOURCE directly – no reinstall needed for those. It’s <code><a href="https://testthat.r-lib.org/reference/test_package.html" class="external-link">testthat::test_check()</a></code>/<code><a href="https://testthat.r-lib.org/reference/test_package.html" class="external-link">test_package()</a></code> – and therefore <code>R CMD check</code>, <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>, and <code><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck::rcmdcheck()</a></code>, which run <code>tests/testthat.R</code> – that test the INSTALLED package instead; reinstall first (<code>remotes::install_local(".", force = TRUE)</code>) if you need one of those to reflect recent changes.</p>
 </div>
 <div class="section level3">
 <h3 id="shiny-app-tests-shinytest2">Shiny App Tests (shinytest2)<a class="anchor" aria-label="anchor" href="#shiny-app-tests-shinytest2"></a></h3>
@@ -137,13 +137,13 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Run all web app tests</span></span>
-<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu">test_app</span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#or</span></span>
 <span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu"><a href="reference/test_ejam.html">test_ejam</a></span><span class="op">(</span>ask<span class="op">=</span><span class="cn">F</span>,run_these<span class="op">=</span><span class="st">"webapp"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Run specific web app tests, for example:</span></span>
-<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu">test_app</span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"FIPS-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu">test_app</span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"NAICS-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"FIPS-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu">shinytest2</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinytest2/reference/test_app.html" class="external-link">test_app</a></span><span class="op">(</span><span class="st">"."</span>, filter <span class="op">=</span> <span class="st">"NAICS-functionality"</span>, check_setup <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Dependencies for shinytest2:</strong></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># shinytest2 itself drives a local headless Chrome/Chromium via its own</span></span>
@@ -169,7 +169,7 @@
 <h2 id="building-documentation">Building Documentation<a class="anchor" aria-label="anchor" href="#building-documentation"></a></h2>
 <p><strong>Update just the .Rd files of documentation (roxygen2):</strong></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">document</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Build pkgdown site:</strong> - <code>.github/workflows/pkgdown.yaml</code> is an active GitHub Actions workflow that automatically builds and deploys the pkgdown site (e.g. on pushes to relevant branches) – for most changes you don’t need to build it manually. - For manual/local builds, <code>EJAM:::pkgdown_update()</code> (see <code>R/utils_pkgdown_update.R</code>) is still a working utility function with more granular options (doc rebuild, tests, install, etc.).</p>
 </div>
 <div class="section level2">
@@ -208,11 +208,11 @@
 <ol style="list-style-type: decimal"><li>
 <strong>Package attachment fails (.onAttach errors):</strong> Reinstall from source: <code>remotes::install_local(".", force = TRUE)</code> when new functions are referenced in global_defaults_package.R.</li>
 <li>
-<strong>Tests don’t reflect code changes:</strong> This mainly bites <code>R CMD check</code>/<code>devtools::check()</code>/<code>rcmdcheck::rcmdcheck()</code> (which test the INSTALLED package via <code>tests/testthat.R</code>) – reinstall first with <code>remotes::install_local(".", force = TRUE)</code> if you need one of those to reflect recent changes. <code>devtools::test()</code> and <code>EJAM:::test_ejam()</code> already test the current local source (via <code>load_all()</code>), so a reinstall isn’t required for those. See more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd</li>
+<strong>Tests don’t reflect code changes:</strong> This mainly bites <code>R CMD check</code>/<code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>/<code><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck::rcmdcheck()</a></code> (which test the INSTALLED package via <code>tests/testthat.R</code>) – reinstall first with <code>remotes::install_local(".", force = TRUE)</code> if you need one of those to reflect recent changes. <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> and <code>EJAM:::test_ejam()</code> already test the current local source (via <code>load_all()</code>), so a reinstall isn’t required for those. See more about testing in the vignette at vignettes/dev-run-unit-tests.Rmd and vignettes/dev-run-shinytests.Rmd</li>
 <li>
 <strong>shinytest2 timeouts:</strong> App init might take 2+ minutes. Use <code>load_timeout=2e+06</code> in tests.</li>
 <li>
-<strong>“Cannot find file” in .onAttach():</strong> Ensure <code>inst/global_defaults_package.R</code> exists when using <code>devtools::load_all()</code>.</li>
+<strong>“Cannot find file” in .onAttach():</strong> Ensure <code>inst/global_defaults_package.R</code> exists when using <code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code>.</li>
 <li>
 <strong>Slow builds/tests:</strong> In <code>R/aaa_onAttach.R</code>, set <code>asap_download &lt;- asap_index &lt;- asap_bg &lt;- FALSE</code> when iterating. That might help somewhat.</li>
 <li>

@@ -312,15 +312,15 @@ git credentials and the credential store</a>. Note Windows takes care of
 most of this now, in conjunction with GitHub.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##  To check for existing PATs:</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">gh_token_help</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">gh_token_help</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">git_sitrep</span><span class="op">(</span><span class="op">)</span>  <span class="co"># git situation report</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/git_sitrep.html" class="external-link">git_sitrep</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># git situation report</span></span>
 <span></span>
 <span><span class="co">#  To make a new PAT:</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">create_github_token</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/github-token.html" class="external-link">create_github_token</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#  To register a PAT:</span></span>
-<span><span class="fu">credentials</span><span class="fu">::</span><span class="fu">set_github_pat</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">credentials</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/credentials/reference/set_github_pat.html" class="external-link">set_github_pat</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
 <span><span class="fu">gitcreds</span><span class="fu">::</span><span class="fu"><a href="https://gitcreds.r-lib.org/reference/gitcreds_get.html" class="external-link">gitcreds_set</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>

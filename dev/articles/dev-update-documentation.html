@@ -176,7 +176,7 @@ files prefixed with <code>utils_</code>, such as
 named that way).</p></li>
 <li><p>It can be useful to check generated help files with
 <code>tools::checkDocFiles(".")</code> after running
-<code>roxygen2::roxygenise()</code>.</p></li>
+<code><a href="https://roxygen2.r-lib.org/reference/roxygenize.html" class="external-link">roxygen2::roxygenise()</a></code>.</p></li>
 </ul>
 </div>
 <div class="section level3">
@@ -239,7 +239,7 @@ as a PDF document built from a Word document.</li>
 problems:</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">spelling</span><span class="fu">::</span><span class="fu">spell_check_package</span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">spelling</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/spelling//reference/spell_check_package.html" class="external-link">spell_check_package</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>      frq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">found</span>, <span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span>, </span>
 <span>      word <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">word</span><span class="op">)</span></span>
@@ -382,7 +382,7 @@ desired documentation version.</p></li>
 <li><p>The first step in updating those web pages is updating the YAML
 file. The web-based documentation pages are organized by a file called
 <code>_pkgdown.yml</code> – see
-<code>usethis::edit_pkgdown_config()</code> – which specifies the
+<code><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">usethis::edit_pkgdown_config()</a></code> – which specifies the
 contents of the documentation web pages, such as the names of any
 vignette files to be shown in the list of articles, which functions are
 included in the reference pages index, and related settings. Any new,

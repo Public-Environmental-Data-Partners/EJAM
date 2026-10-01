@@ -131,7 +131,7 @@ for using that helper.</p>
 unit tests since there is not a 1-to-1 relationship between functions
 like xyz() vs the EJAM/R/xyz.R files defining functions vs
 EJAM/tests/testthat/test-xyz.R files containing unit tests.</p>
-<p>Also see <code>devtools::test_coverage()</code> which is a shortcut
+<p>Also see <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test_coverage()</a></code> which is a shortcut
 for <code>covr::package_coverage()</code> plus
 <code>covr::report()</code>. Note the <a href="https://covr.r-lib.org/" class="external-link">covr package</a> also has a related
 RStudio addin.</p>
@@ -149,7 +149,7 @@ tests</p></li>
 <li><p>while a new function is being written</p></li>
 </ul>
 <p>See <a href="https://testthat.r-lib.org" class="external-link uri">https://testthat.r-lib.org</a> and
-<code>usethis::use_test()</code> for information on how to add unit
+<code><a href="https://usethis.r-lib.org/reference/use_r.html" class="external-link">usethis::use_test()</a></code> for information on how to add unit
 tests. The unit tests are in the <code>EJAM/tests</code> and
 <code>EJAM/tests/testthat</code> folders.</p>
 <div class="section level4">
@@ -175,7 +175,7 @@ aspects of the UI would need to be updated if the UI changes.</p></li>
 <code>EJAM/tests/testthat/</code> folder that you can run and add to as
 needed.</p>
 <p>The unit tests can be run automatically by the
-<code>devtools::test()</code> function.</p>
+<code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> function.</p>
 <p>However, instead of running all the unit tests (run in alphabetical
 order by default), you might want to test only some groups of related
 functions that you are working on, and see a summary of which tests in
@@ -211,7 +211,7 @@ main or development branch. See
 </h3>
 <p>Be aware of whether the tests are using the last-installed version of
 the package or the latest, possibly recently-edited, local source
-package version that <code>devtools::load_all()</code> may be have
+package version that <code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code> may be have
 loaded.</p>
 <p>Some functions relied on the EJSCREEN API and if the API is not
 available, those tests will be skipped or would fail.</p>

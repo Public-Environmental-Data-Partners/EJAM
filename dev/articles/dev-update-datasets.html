@@ -514,7 +514,7 @@ fields on all five Arrow tables; <code>date_saved_in_package</code> is
 the local file creation date even though the Arrow tables are
 distributed as release assets. Inspect the values after reading each IPC
 file back.</p>
-<p>The normal <code>devtools::load_all()</code> attach path tries to
+<p>The normal <code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code> attach path tries to
 download assets from <code>ejamdata_required_tag</code>. If that tag
 names an empty draft release, use a fresh R session and load the source
 namespace without running <code>.onAttach()</code>:</p>
