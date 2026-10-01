@@ -75,7 +75,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">offline</span><span class="op">(</span>url <span class="op">=</span> <span class="st">"r-project.org"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">offline</span><span class="op">(</span></span>
+<span>  url <span class="op">=</span> <span class="st">"r-project.org"</span>,</span>
+<span>  fallback_hosts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"github.com"</span>, <span class="st">"census.gov"</span><span class="op">)</span>,</span>
+<span>  tries <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  wait <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  cache_seconds <span class="op">=</span> <span class="fl">30</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -83,12 +89,43 @@
 
 
 <dl><dt id="arg-url">url<a class="anchor" aria-label="anchor" href="#arg-url"></a></dt>
-<dd><p>optional URL checked, using <code><a href="https://jeroen.r-universe.dev/curl/reference/nslookup.html" class="external-link">curl::nslookup()</a></code></p></dd>
+<dd><p>optional host checked first, using <code><a href="https://jeroen.r-universe.dev/curl/reference/nslookup.html" class="external-link">curl::nslookup()</a></code></p></dd>
+
+
+<dt id="arg-fallback-hosts">fallback_hosts<a class="anchor" aria-label="anchor" href="#arg-fallback-hosts"></a></dt>
+<dd><p>other hosts to try if <code>url</code> does not resolve</p></dd>
+
+
+<dt id="arg-tries">tries<a class="anchor" aria-label="anchor" href="#arg-tries"></a></dt>
+<dd><p>how many rounds of lookups before deciding it is offline</p></dd>
+
+
+<dt id="arg-wait">wait<a class="anchor" aria-label="anchor" href="#arg-wait"></a></dt>
+<dd><p>seconds to wait before the second round (doubling after that)</p></dd>
+
+
+<dt id="arg-cache-seconds">cache_seconds<a class="anchor" aria-label="anchor" href="#arg-cache-seconds"></a></dt>
+<dd><p>how long to reuse the last answer for the same hosts;
+0 means always check again</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>logical (TRUE or FALSE), TRUE if offline, FALSE if can connect to r-project.org</p>
+    <p>logical (TRUE or FALSE), TRUE if offline, FALSE if any of the hosts
+can be resolved</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>A single DNS lookup can fail for a moment even when the machine is
+online (seen on the macOS GitHub Actions runners, where it made random
+boundary-download tests fail with "No internet connection seems to be
+available"). So this only reports offline when <strong>every</strong> host in
+<code>c(url, fallback_hosts)</code> fails to resolve on <strong>every</strong> one of <code>tries</code>
+rounds, waiting <code>wait</code>, then <code>2 * wait</code>, ... seconds between rounds.
+The answer is remembered for <code>cache_seconds</code>, so repeated calls (for
+example <code>skip_if(offline())</code> in a test and then the same check inside the
+function being tested) agree, and a machine that really is offline pays the
+retry delay only once.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
