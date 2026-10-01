@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     texlive \
     texlive-latex-extra \
     texlive-fonts-extra \
+    fontconfig \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome stable (chromium-browser on Ubuntu 22.04+ is a snap stub — won't work in Docker)
@@ -52,7 +53,7 @@ ARG GITHUB_PAT
 # EJAM-API image's EJAM_VERSION build-arg so both deploys pin EJAM the same way,
 # and makes the deployed version EXPLICIT (rather than implicitly tied to whatever
 # source happens to be checked out on this deploy branch).
-ARG EJAM_VERSION=v3.2022.2
+ARG EJAM_VERSION=v3.2022.3
 ENV EJAM_VERSION=${EJAM_VERSION}
 
 WORKDIR /root
@@ -162,12 +163,12 @@ RUN R -e "remotes::install_github(paste0('Public-Environmental-Data-Partners/EJA
 
 # Download ejamdata arrow files from GitHub release
 # Must run AFTER the EJAM package install so the data/ folder is not overwritten by the installer
-# EJAMDATA_VERSION: pinned by default to v3.2022.0 -- the ejamdata release that
-#   EJAM v3.2022.2 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
+# EJAMDATA_VERSION: pinned by default to v3.2022.3 -- the ejamdata release that
+#   EJAM v3.2022.3 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
 #   sync with EJAM_VERSION when bumping releases; override with
 #   --build-arg EJAMDATA_VERSION=vX.Y.Z. (An explicit empty string falls back to the
 #   latest ejamdata release via the GitHub API below.)
-ARG EJAMDATA_VERSION=v3.2022.0
+ARG EJAMDATA_VERSION=v3.2022.3
 RUN RESOLVED_VERSION="${EJAMDATA_VERSION:-$(curl -fsSL \
       -H "Authorization: token ${GITHUB_PAT}" \
       "https://api.github.com/repos/Public-Environmental-Data-Partners/ejamdata/releases/latest" \
@@ -190,4 +191,10 @@ WORKDIR /root
 # (calling it here made every ECS task exit 1 with "'run_app' is not an exported
 # object from 'namespace:EJAM'"). ejamapp(isPublic=...) is supported and its
 # options= list is passed to shinyApp() for host/port.
-CMD ["R", "-e", "httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
+# Rebuild the fontconfig cache when the container starts (#621). The cache baked
+# into the image at build time did not match the font files once the image ran on
+# ECS Fargate: "sans" resolved to EBGaramond-Initials.woff (a decorative
+# capitals-only font from texlive-fonts-extra), so chart text drawn by R came out
+# as boxes. The same image was fine under plain docker. A fresh cache takes a few
+# seconds and always matches the files actually present.
+CMD ["R", "-e", "system('fc-cache -r'); httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
