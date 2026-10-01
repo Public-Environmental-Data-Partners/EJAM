@@ -1,12 +1,14 @@
-pandoc: 3.8.3
-pkgdown: 2.2.0
+pandoc: '3.10'
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   analyzing: analyzing.html
   basics: basics.html
   counties: counties.html
+  dev-api: dev-api.html
   dev-app-settings: dev-app-settings.html
   dev-deploy-app: dev-deploy-app.html
+  dev-deployment: dev-deployment.html
   dev-future-plans: dev-future-plans.html
   dev-github-actions-install-tests: dev-github-actions-install-tests.html
   dev-run-shinytests: dev-run-shinytests.html
@@ -17,16 +19,19 @@ articles:
   dev-update-ejscreen-datasets-yearly: dev-update-ejscreen-datasets-yearly.html
   dev-update-package: dev-update-package.html
   distances: distances.html
+  env-indicators/ejscreen-indicators-overview-ozone: env-indicators/ejscreen-indicators-overview-ozone.html
+  env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25: env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.html
   ejscreen-map-descriptions: ejscreen-map-descriptions.html
   ejscreen: ejscreen.html
   installing: installing.html
   island-areas: island-areas.html
   naics: naics.html
+  overview-environmental-indicators-ejscreen: overview-environmental-indicators-ejscreen.html
   testdata: testdata.html
   webapp: webapp.html
   whatis: whatis.html
   zipcodes: zipcodes.html
-last_built: 2026-05-31T16:54Z
+last_built: 2026-09-28T14:10Z
 urls:
   reference: https://public-environmental-data-partners.github.io/EJAM/reference
   article: https://public-environmental-data-partners.github.io/EJAM/articles

@@ -1,6 +1,6 @@
 ---
-title: "Overview of nvironmental Indicators in EJScreen/EJAM"
-description: "Overview of nvironmental Indicators in EJScreen/EJAM"
+title: "Overview of Environmental Indicators in EJScreen/EJAM"
+description: "Overview of Environmental Indicators in EJScreen/EJAM"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -10,10 +10,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 editor_options:
   markdown:
-    wrap: 80
+    wrap: 120
 ---
 
-# Overview of nvironmental Indicators in EJScreen/EJAM
+# Overview of Environmental Indicators in EJScreen/EJAM
 
 EJScreen/EJAM provide 13 environmental indicators. Click on each environmental indicator to learn why they are important, details on how they are calculated, and to get more information about these issues.
 
@@ -21,8 +21,8 @@ EJScreen/EJAM provide 13 environmental indicators. Click on each environmental i
 
 | Key Medium | Indicator | Details | Source | Data Year |
 | --- | --- | --- | --- | --- |
-| Air | [Particulate matter 2.5 (PM 2.5)](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.html) | Annual average PM2.5 levels in air | EPA's Office of Air and Radiation, fusion of modeled and monitored data | 2022 |
-| Air | [Ozone](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.html) | Average of the annual top ten daily maximum 8-hour ozone concentrations in air | EPA's Office of Air and Radiation, fusion of modeled and monitored data | 2022 |
+| Air | [Particulate matter 2.5 (PM 2.5)](env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.html) | Annual average PM2.5 levels in air | EPA's Office of Air and Radiation, **verify this shouldn't be simply "monitored data"**: fusion of modeled and monitored data | 2022* |
+| Air | [Ozone](env-indicators/ejscreen-indicators-overview-ozone.html) | Average of the annual top ten daily maximum 8-hour ozone concentrations in air | EPA's Office of Air and Radiation, **verify this shouldn't be simply "monitored data"**: fusion of modeled and monitored data | 2022* |
 | Air | [Nitrogen Dioxide (NO2)](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-nitrogen-dioxide-no2) | Average annual nitrogen dioxide (NO2) levels expressed as part per billion (by volume). | NASA's Health and Air Quality Applied Sciences Team (HAQAST) | 2020 |
 | Air | [Diesel particulate matter](https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-diesel-particulate-matter.html) | Diesel particulate matter level in air | [EPA Hazardous Air Pollutants](https://www.epa.gov/AirToxScreen) | 2020 |
 | Air | [Toxic Releases to Air](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-toxic-releases-air) | RSEI modeled toxicity-weighted concentrations in air of TRI listed chemicals. | Calculated from 2021 Risk-Screening Environmental Indicators (RSEI) Geographic Microdata results for the air pathway, retrieved 5/16/2023 | 2021 |
@@ -35,18 +35,20 @@ EJScreen/EJAM provide 13 environmental indicators. Click on each environmental i
 | Water | [Wastewater discharge](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-wastewater-discharge) | RSEI modeled toxic concentrations at stream segments within 500 meters, divided by distance in kilometers (km) | [Calculated from RSEI modeled toxic concentrations to stream reach segments, created 12/27/2023](https://web.archive.org/web/20250123162159/https://www.epa.gov/rsei) | 2021 |
 | Water | [Drinking water non-compliance](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-drinking-water-non-compliance) | Score based on number of Safe Drinking Water Act violations not returned to compliance that community water systems have received over the past five years; violations are weighted based on age and severity | Calculated from [Safe Drinking Water Information System](https://sdwis.epa.gov/ords/sfdw_pub/r/sfdw/sdwis_fed_reports_public/200)  (2023 quarter 4 data) and [Safe Drinking Water Act Public Water System Supervision Program's Enforcement Response Policy](https://web.archive.org/web/20250123162159/https://www.epa.gov/enforcement/enforcement-response-policy-public-water-system-supervision-pwss-program-under-safe) | 2023 |
 
-**Note:** EJScreen's EJ Indexes also include demographic information that is obtained from the U.S. Census Bureau’s American Community Survey (ACS). The EJScreen 2.3 version included 2018 – 2022 ACS 5-year summary file data.
+**Notes:** 
+EJScreen/EJAM EJ Indexes also include demographic information that is obtained from the U.S. Census Bureau’s American Community Survey (ACS). The current version used the 2020–2024 ACS 5-year summary file data released in January, 2026.
 
-It is important to understand what each of these is measuring or indicating, in order to use EJScreen appropriately. There are important caveats and limitations to these screening-level indicators and anyone using EJScreen is encouraged to read these carefully.
+It is important to understand what each of the above indicators is measuring or indicating, in order to use the data appropriately. There are important caveats and limitations to these screening-level indicators and anyone relying on them is encouraged to read these carefully.
 
-Read more information about Environmental Indicators, including documentation of data sources, in the [EJScreen Technical Documentation (pdf)](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf) (770.34 KB). [(or see copy archived by archive.org here)](https://web.archive.org/web/20250121194640/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)
+For more information about Environmental Indicators, including documentation of data sources, see:
+
+- For an overview of methods and the majority of indicators listed above: [EJScreen Technical Documentation (pdf)](https://github.com/Public-Environmental-Data-Partners/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf) (770.34 KB)
+- Updated info for any indicator with an * by its Data Year: [**Need content created**](link TDB)
 
 Some of these environmental indicators quantify proximity to and the numbers of certain types of potential sources of exposure to environmental pollutants, such as nearby hazardous waste sites or traffic. The lead paint indicator indicates the presence of older housing, which often, but not always, indicates the presence of lead paint, and therefore the possibility of exposure. In some cases, the term "exposure" is used very broadly here to refer to the potential for exposure. Other indicators in EJScreen are estimates of ambient levels of air pollutants, such as PM2.5, ozone and diesel particulate matter. In other words, these environmental indicators vary widely in what they indicate.
 
-**About this page:**
-
-This page is a simplified version of the [archived version.](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)
-
-It was adapated to provide the above table without the governmental logo/header/sidebar links, and to quickly link to simplified copies of key pages or link directly to the still-live versions of some of the pages that had been archived but are still live.
-
-**[Fast-loading simplified versions of key webpages and reference documents](https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html)** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen) load very slowly).
+If you are looking for the previous, EPA-maintained versions this documentation, try these links:
+- [archived version of this page](https://web.archive.org/web/20250123162159/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen)
+- [EJScreen Technical Documentation (pdf)](https://web.archive.org/web/20250121194640/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)
+- [complete archived EPA EJSCREEN website](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen)
+but be aware that those pages will load very slowly.
