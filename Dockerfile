@@ -48,12 +48,11 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws
 
 ARG GITHUB_PAT
 
-# EJAM git ref to install: PR #627's squash commit on development for
-# pre-release validation of EJAM 3.2022.3. Replace it with the v3.2022.3 tag
-# after that tag is published. A workflow dispatch can also override
-# EJAM_VERSION with a branch, tag, or commit SHA; the deployed ref is explicit
-# and independent of this deploy branch's source checkout.
-ARG EJAM_VERSION=ca95ce57721a4c8bc91338d388ddd6e7dd2e51a6
+# EJAM git ref to install: the released tag v3.2022.3 (the same pin as
+# prod-deploy). A workflow dispatch can override EJAM_VERSION for one build with
+# a branch, tag, or commit SHA, e.g. to test a release candidate before it is
+# tagged; the next push to this branch goes back to this pin.
+ARG EJAM_VERSION=v3.2022.3
 ENV EJAM_VERSION=${EJAM_VERSION}
 
 WORKDIR /root
