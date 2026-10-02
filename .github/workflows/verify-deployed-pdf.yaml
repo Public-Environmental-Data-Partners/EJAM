@@ -44,7 +44,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: false
+          # setup-node v5+ rejects `cache: false`; this is how to turn caching off.
+          package-manager-cache: false
 
       - name: Install Playwright and Chromium
         run: |
