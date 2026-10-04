@@ -961,7 +961,7 @@ not published the matching `ejamdata` release yet, attaching the package —
 including `devtools::load_all()` — will try to fetch a tag that does not exist and
 fail or hang.
 
-Keep `ejamdata_required_tag` at the **previously installed** tag during the data
+For an annual pipeline release, keep `ejamdata_required_tag` at the **previously installed** tag during the data
 work (so it matches `data/ejamdata_version.txt` and the present local `.arrow`
 files, and `download_latest_arrow_data()` short-circuits with no network), and flip
 it to the new tag only after publishing (see
@@ -969,6 +969,10 @@ it to the new tag only after publishing (see
 Always use `devtools::load_all()` rather than an installed `library(EJAM)` here, so
 `ejam_package_version_current()` reads the **source** `DESCRIPTION` (the new
 `3.YYYY.0`), not a stale installed version.
+For a separately staged FRS release whose DESCRIPTION already pins an empty
+draft tag, use the namespace-loading recipe in
+[Refreshing FRS for a data release](dev-update-datasets.html#refreshing-frs-for-a-data-release)
+until the complete asset set is uploaded.
 
 A release update should explicitly replace at least:
 
@@ -1184,5 +1188,5 @@ Before releasing a new annual dataset build:
     data repository release process.
 
 The general release and large-data publication steps are covered in [Updating
-and Managing the Datasets Used by EJAM](dev-update-datasets.html) and [Updating
-the Package as a New Release](dev-update-package.html).
+and Managing the Datasets Used by EJAM](dev-update-datasets.html) and [Releasing a
+New Version of EJAM](dev-update-package.html).

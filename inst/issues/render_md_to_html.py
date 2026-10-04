@@ -12,11 +12,12 @@ from pathlib import Path
 ISSUE_TABLE_COLGROUP = """<colgroup>
 <col style="width: 5%" />
 <col style="width: 18%" />
-<col style="width: 14%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 8%" />
+<col style="width: 12%" />
 <col style="width: 18%" />
-<col style="width: 9%" />
-<col style="width: 16%" />
-<col style="width: 20%" />
+<col style="width: 17%" />
 </colgroup>"""
 
 ISSUE_TABLE_STYLE = """
@@ -56,14 +57,17 @@ ISSUE_TABLE_STYLE = """
 
 
 def style_issue_tables(html_path: Path) -> None:
-    """Apply report-specific widths to tables with Issue and Labels columns."""
+    """Apply report-specific widths and language metadata to issue tables."""
     document = html_path.read_text(encoding="utf-8")
     styled_table_count = 0
 
     def add_issue_table_layout(match: re.Match) -> str:
         nonlocal styled_table_count
         table = match.group(0)
-        if "<th>Issue</th>" not in table or "<th>Labels (key)</th>" not in table:
+        if (
+            "<th>Issue</th>" not in table
+            or "<th>Current GitHub labels (key)</th>" not in table
+        ):
             return table
         styled_table_count += 1
         table = table.replace("<table>", '<table class="issue-details">', 1)
@@ -83,6 +87,27 @@ def style_issue_tables(html_path: Path) -> None:
     )
     if styled_table_count and "</head>" in document:
         document = document.replace("</head>", f"{ISSUE_TABLE_STYLE}</head>", 1)
+    def normalize_html_language(match: re.Match) -> str:
+        attrs = match.group(1)
+
+        def existing_language(name: str) -> str:
+            found = re.search(
+                rf"\s{name}\s*=\s*(['\"])(.*?)\1", attrs, flags=re.IGNORECASE
+            )
+            return found.group(2).strip() if found else ""
+
+        language = existing_language("lang") or existing_language("xml:lang") or "en"
+        attrs = re.sub(
+            r"\s+(?:xml:)?lang\s*=\s*(['\"]).*?\1", "", attrs, flags=re.IGNORECASE
+        )
+        return f'<html lang="{language}" xml:lang="{language}"{attrs}>'
+
+    document = re.sub(
+        r"<html\b([^>]*)>",
+        normalize_html_language,
+        document,
+        count=1,
+    )
     html_path.write_text(document, encoding="utf-8")
 
 
@@ -104,11 +129,11 @@ def render_with_pandoc(md_path: Path, html_path: Path) -> bool:
 def render_pre_fallback(md_path: Path, html_path: Path) -> None:
     md = md_path.read_text(encoding="utf-8")
     out = (
-        "<!doctype html><meta charset=\"utf-8\">"
-        "<title>EJAM issues scored</title>"
+        "<!doctype html><html lang=\"en\" xml:lang=\"en\"><head><meta charset=\"utf-8\">"
+        "<title>EJAM issues scored</title></head><body>"
         "<pre style=\"white-space:pre-wrap;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace\">"
         + html.escape(md)
-        + "</pre>"
+        + "</pre></body></html>"
     )
     html_path.write_text(out, encoding="utf-8")
 

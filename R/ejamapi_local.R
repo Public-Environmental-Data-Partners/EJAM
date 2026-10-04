@@ -21,7 +21,8 @@
 #'
 #'  2. Mounted at `/draft`, the draft/experimental endpoints that exist only
 #'     in this package (`inst/plumber/draft/plumber.R`), e.g. `/draft/echo`,
-#'     `/draft/ejamit`, `/draft/report2`, `/draft/getblocksnearby`.
+#'     `/draft/ejamit`, `/draft/reportnew`, `/draft/all`, and
+#'     `/draft/getblocksnearby`. Draft routes are local and experimental.
 #'
 #' Note local PDF report rendering requires pandoc (e.g., the RSTUDIO_PANDOC
 #' environment variable set when running outside RStudio).

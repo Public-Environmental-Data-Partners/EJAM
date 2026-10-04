@@ -44,7 +44,7 @@
 #' @param box.cex.here Point size for analyzed-site rows when `type = "box"`.
 #' @param box.pch.ref Point symbol for sampled reference rows when `type = "box"`.
 #' @param box.pch.here Point symbol for analyzed-site rows when `type = "box"`.
-#' @param ... Additional arguments passed to [boxplot()] when `type = "box"`.
+#' @param ... Additional arguments passed to [graphics::boxplot()] when `type = "box"`.
 #'
 #' @return
 #' For `type = "ggplot"`, a [ggplot2::ggplot()] object. For `type = "plotly"`,

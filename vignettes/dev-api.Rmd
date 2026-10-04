@@ -93,7 +93,8 @@ behave -- including after a proposed EJAM-API code change, before anyone deploys
 ```{r apilocal, eval=FALSE}
 apiproc <- EJAM:::ejamapi_local()  # background server; browse http://127.0.0.1:3035/__docs__/
 # production paths served locally: /report, /data, /query, /handoff, /assets
-# draft-only endpoints mounted at:  /draft/echo, /draft/ejamit, /draft/report2, ...
+# draft-only endpoints mounted at: /draft/echo, /draft/ejamit, /draft/reportnew,
+# /draft/excel, and /draft/all (all experimental and local only)
 apiproc$kill()                     # stop it when done
 ```
 

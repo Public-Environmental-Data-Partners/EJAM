@@ -531,12 +531,18 @@ def md_escape(text: str) -> str:
       ``doaggregate()$results_bybg_people`` and ``... vs input$ ?`` left an
       unclosed span that swallowed every following table row into one cell --
       three issues disappeared from each of two tables in the rendered HTML.
+    * ``*`` and ``_`` would trigger Markdown emphasis and corrupt the title.
     * ``|`` would end a table cell early and shift the rest of the row.
 
     Applied only where a title is written into Markdown; the JSON payload keeps
     the raw title, since it is data rather than markup.
     """
-    return text.replace("$", r"\$").replace("|", r"\|")
+    return (
+        text.replace("*", r"\*")
+        .replace("_", r"\_")
+        .replace("$", r"\$")
+        .replace("|", r"\|")
+    )
 
 
 def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
@@ -552,10 +558,10 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
         )
     lines.append("")
     lines.append(
-        "| # | Issue | Cost | Benefit | Milestone | Priority | Labels (key) |"
+        "| # | Issue | Cost | Benefit | Milestone | Priority | Proposed rank | Current GitHub labels (key) |"
     )
     lines.append(
-        "|---|-------|------|---------|-----------|----------|--------------|"
+        "|---|-------|------|---------|-----------|----------|---------------|-----------------------------|"
     )
     for r in issues:
         plbl     = get_priority_label(r["labels"])
@@ -564,6 +570,11 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
             if l not in ("enhancement", "retain-0325", "from archive")
             and "PRIORITY" not in l
         ]
+        ## Show the score separately from the live metadata. A rank label can be
+        ## stale until a later, explicit GitHub-label update task applies it.
+        rank_lbl = RANK_LABELS.get(r["quad"])
+        current_rank_labs = [l for l in key_labs if l.startswith("rank:")]
+        key_labs = current_rank_labs + [l for l in key_labs if l not in current_rank_labs]
         lab_str  = ", ".join(key_labs[:4])
         ## truncate first, then escape - escaping first would let backslashes
         ## count toward the limit and could cut a "\$" in half
@@ -572,7 +583,7 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
             f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
             f"{r['cost']} ({cost_tier(r['cost'])}) | "
             f"{r['benefit']} ({benefit_tier(r['benefit'])}) | "
-            f"{r['milestone']} | {plbl} | {lab_str} |"
+            f"{r['milestone']} | {plbl} | `{rank_lbl}` | {lab_str} |"
         )
     lines.append("")
     lines.append("---")

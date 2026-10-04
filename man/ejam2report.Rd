@@ -41,6 +41,7 @@ ejam2report(
   filename = NULL,
   return_html = FALSE,
   launch_browser = TRUE,
+  original_style_report = NULL,
   shape = NULL,
   shapefile = NULL,
   sitenumber_label = NULL
@@ -132,6 +133,13 @@ a valid extension in filename (.html or .pdf) overrides the fileextension parame
 \item{return_html}{set TRUE to have function return HTML object instead of URL of local file}
 
 \item{launch_browser}{set TRUE to have it launch browser and show report.}
+
+\item{original_style_report}{optional, set to TRUE to use a template that makes
+the community report look more like the original 2024 EPA EJSCREEN Community Report,
+with graphics and layout more similar to that report.
+However, this template does not yet include the map and newer style barplot of ratios.
+It also does not show ratios of scores to US or State averages,
+and has other differences.}
 
 \item{shape}{alias (synonym) for shp}
 

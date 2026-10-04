@@ -38,15 +38,18 @@ test_that("EJAM-API mirror file plumbs and defines the deployed endpoints", {
 })
 
 test_that("draft endpoints file plumbs and defines the draft-only endpoints", {
-  fname <- system.file("plumber/draft/plumber.R", package = "EJAM")
+  # Prefer the source tree: draft development must not accidentally exercise an
+  # older installed EJAM copy.
+  fname <- testthat::test_path("..", "..", "inst", "plumber", "draft", "plumber.R")
+  if (!file.exists(fname)) fname <- system.file("plumber/draft/plumber.R", package = "EJAM")
   expect_true(nzchar(fname) && file.exists(fname))
   pr <- plumber::plumb(fname)
   paths <- route_paths(pr)
   expect_true(all(c(
-    "/echo", "/ejamit", "/ejamit_csv", "/getblocksnearby",
-    "/report2", "/reportpost", "/ejam2report", "/ejam2excel",
-    "/get_blockpoints_in_shape", "/doaggregate"
+    "/echo", "/ejamit", "/ejam2report", "/ejam2excel", "/reportnew",
+    "/excel", "/all", "/getblocksnearby", "/get_blockpoints_in_shape"
   ) %in% paths))
+  expect_length(intersect(paths, c("/report2", "/reportpost", "/ejamit_csv", "/doaggregate")), 0)
   # drafts must NOT define any deployed-API path: they are mounted under /draft,
   # and a same-named route would shadow or confuse the mirror after any re-sync
   expect_length(intersect(paths, c("/", "/data", "/query", "/report", "/handoff")), 0)
@@ -54,7 +57,9 @@ test_that("draft endpoints file plumbs and defines the draft-only endpoints", {
 
 test_that("mirror + drafts compose: drafts mount at /draft with no route collisions", {
   api <- plumb_mirror()
-  draft <- plumber::plumb(system.file("plumber/draft/plumber.R", package = "EJAM"))
+  draft_file <- testthat::test_path("..", "..", "inst", "plumber", "draft", "plumber.R")
+  if (!file.exists(draft_file)) draft_file <- system.file("plumber/draft/plumber.R", package = "EJAM")
+  draft <- plumber::plumb(draft_file)
   api$mount("/draft", draft)
   expect_true("/draft/" %in% names(api$mounts))
   expect_length(intersect(route_paths(api), route_paths(draft)), 0)
@@ -98,4 +103,36 @@ test_that("mirror of the EJAM-API code has not drifted from the EJAM-API repo's 
                               " (re-sync the mirror; see inst/plumber/ejam-api/SYNC.md)")
     )
   }
+})
+
+test_that("draft normalize_request() picks one location mode and a location-specific radius", {
+  fname <- testthat::test_path("..", "..", "inst", "plumber", "draft", "plumber.R")
+  if (!file.exists(fname)) fname <- system.file("plumber/draft/plumber.R", package = "EJAM")
+  # Load only the helper definitions (the `x <- ...` assignments), not the
+  # library() calls or the routes, so no server or data is needed.
+  env <- new.env()
+  for (x in parse(fname, keep.source = FALSE)) {
+    if (is.call(x) && identical(x[[1]], as.name("<-"))) eval(x, env)
+  }
+  nr <- env$normalize_request
+  # like ejamit(): points default to 3 miles, FIPS and shapes to 0
+  expect_equal(nr(lat = 39, lon = -75)$args$radius, 3)
+  expect_equal(nr(fips = "10001")$args$radius, 0)
+  expect_equal(nr(fips = "10001", radius = 0)$args$radius, 0)
+  # buffer is an alias for radius, compared numerically
+  expect_equal(nr(fips = "10001", buffer = 1)$args$radius, 1)
+  expect_equal(nr(lat = 39, lon = -75, radius = "1", buffer = "1.0")$args$radius, 1)
+  expect_error(nr(lat = 39, lon = -75, radius = 1, buffer = 2), "conflict")
+  expect_error(nr(lat = 39, lon = -75, radius = 0), "positive")
+  expect_error(nr(fips = "10001", radius = -1), "negative")
+  # exactly one location mode
+  expect_error(nr(), "exactly one")
+  expect_error(nr(lat = 39, lon = -75, fips = "10001"), "exactly one")
+  expect_error(nr(sites = data.frame(lat = 39, lon = -75), lat = 39, lon = -75), "not both")
+  expect_equal(nr(fips = c("10001", "10003"))$location_method, "fips")
+  expect_equal(env$bundle_from_result(list(), nr(fips = c("10001", "10003")))$input$site_count, 2)
+  # an explicit null/empty flag gets a clear message, not "argument is of length zero"
+  expect_error(nr(fips = "10001", include_ejindexes = NULL), "include_ejindexes must be true or false")
+  expect_error(nr(fips = "10001", calculate_ratios = character(0)), "calculate_ratios must be true or false")
+  expect_true(nr(fips = "10001", include_ejindexes = "TRUE")$args$include_ejindexes)
 })

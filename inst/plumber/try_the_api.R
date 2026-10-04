@@ -8,10 +8,9 @@
 #           see ejam-api/SYNC.md), so /report, /data, /query, /handoff and the
 #           Swagger docs at /__docs__/ behave like https://api.ejanalysis.com
 #  /draft = draft endpoints that exist only in this package (draft/plumber.R):
-#           /draft/echo, /draft/ejamit, /draft/ejamit_csv, /draft/report2,
-#           /draft/reportpost, /draft/ejam2report, /draft/ejam2excel,
-#           /draft/getblocksnearby, /draft/get_blockpoints_in_shape,
-#           /draft/doaggregate
+#           /draft/echo, /draft/ejamit, /draft/ejam2report, /draft/ejam2excel,
+#           /draft/reportnew, /draft/excel, /draft/all, /draft/getblocksnearby,
+#           /draft/get_blockpoints_in_shape
 #
 # START IT (in a background R process; returns a handle you can $kill()):
 
@@ -78,9 +77,12 @@ if (FALSE) {
   outx <- httr2::req_perform(httr2::request(urlx))
   s2b <- data.table::rbindlist(httr2::resp_body_json(outx))
 
-  # precalculated sample result, as json or csv
-  browseURL(paste0(test_url, "/draft/ejamit?test=true"))
-  browseURL(paste0(test_url, "/draft/ejamit_csv?lon=-101&lat=36&radius=1"))
+  # Function-oriented JSON bundle and convenience wrappers (all local only).
+  browseURL(paste0(test_url, "/draft/ejamit?lon=-101&lat=36&radius=1"))
+  browseURL(paste0(test_url, "/draft/reportnew?lon=-101&lat=36&radius=1&fileextension=html"))
+  browseURL(paste0(test_url, "/draft/all?lon=-101&lat=36&radius=1&outputs=json,xlsx"))
+  # overall summary as CSV (plain-English column names; add &names=r for short names)
+  browseURL(paste0(test_url, "/draft/all?lon=-101&lat=36&radius=1&outputs=csv"))
 
   ############## #
   # stop the background server when done

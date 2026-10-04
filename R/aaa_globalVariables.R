@@ -326,7 +326,7 @@ from_rcmdcheck_add <- c(
   "max_rel_diff", "max_rel_diff_non_island", "max_rel_diff_non_island_pct",
   "max_rel_diff_pct", "mean_rel_diff", "mean_rel_diff_non_island",
   "mean_rel_diff_non_island_pct", "mean_rel_diff_pct", "na_mismatch",
-  "na_mismatch_non_island", "site_fips", "varlist"
+  "na_mismatch_non_island", "site_fips", "varlist", "..keepcols"
 )
 ########################################### #
 
