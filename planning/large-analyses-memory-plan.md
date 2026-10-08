@@ -114,7 +114,7 @@ The changes:
 2. **`doaggregate()` copies only the blockgroups and columns it needs, once:** `blockgroupstats[bgid %in% needed, ..cols]`, then adds the `bgej` columns to that small copy by reference. This replaces a full merged copy plus two full-table column copies. Blockgroups missing from `bgej` are still dropped, as the old inner join did.
 3. **New `doaggregate(copy_sites2blocks = TRUE)` argument.** `ejamit()` passes `FALSE`, since it only checks afterwards which sites had blocks. The radius filter now copies the table only when some rows actually exceed the radius.
 4. **`getblocksnearbyviaQuadTree()`:**
-   - drops the corners of the search square inside the per-site loop (adjusting a short distance can only raise it, so this removes only rows the final filter would remove);
+   - drops blocks well beyond the radius, such as the corners of the search square, inside the per-site loop. When distances are adjusted, it keeps blocks out to radius / 0.9 there, because a short distance is set to 0.9 × `block_radius_miles`, which can bring a block from just outside the radius to inside it. The final radius filter still runs, so the result is the same. (`getblocksnearby()` and `ejamit()` use unadjusted distances by default.);
    - `rm(res)` after `rbindlist()`;
    - does not join `block_radius_miles` when distances are not adjusted;
    - reorders in place with `setorder()` instead of a join plus a filter copy.
@@ -179,7 +179,7 @@ Order and decisions from the #57 discussion, 2026-10-07.
 - [ ] **14. Run long analyses without blocking other users.** All sessions in a container share one R process, so a 10–30 minute analysis freezes the app for everyone else there.
   - Options: Shiny's `ExtendedTask` with a forked child process (`future::multicore` or `parallel::mcparallel`), or routing very large analyses to `ejamit()` in R or to the API.
   - A forked child shares the already-loaded data instead of reloading its own ~3 GB.
-  - If the child runs out of memory, the system kills the child, not the app.
+  - Forking keeps the app responsive, but it does not by itself protect the app from running out of memory. The child and the app share the container's memory limit, and when that limit is reached the system may stop either process, or the whole container. Keeping the app safe needs a separate memory limit for the worker, such as R's own cap in the child plus enough room in the container for both processes, or running large analyses in a separate task or container.
   - Set data.table to 1 thread in the child.
   - Relates to the in-app report design in Public-Environmental-Data-Partners/EJAM#476, which uses `ExtendedTask` with a `callr` worker.
 - [ ] **15. Smaller footprint for `bgej` and the FRS tables** (about 0.8 and 0.5 GB of process memory).

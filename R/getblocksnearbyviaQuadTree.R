@@ -131,6 +131,10 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
   earthRadius_miles <- 3959 # in case it is not already in global envt
   radians_per_degree <- pi / 180
   truedistance <- distance_via_surfacedistance(radius)
+  # Blocks farther than this are dropped as each site is searched, to save memory.
+  # Short distances get adjusted below to 0.9 * block_radius_miles, which can bring a block
+  # whose unadjusted distance is up to truedistance / 0.9 within truedistance, so those are kept until then.
+  loop_maxdistance <- if (use_unadjusted_distance) truedistance else truedistance / 0.9
   nRowsDf <- NROW(sitepoints)
   if (!quiet) {
     cat("Finding Census blocks with internal point within ", radius," miles of the site (point), for each of", nRowsDf," sites (points)...\n")
@@ -166,7 +170,7 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
     )
     # add the distances and ejam_uniq_id to the table of nearby blocks
     tmp[ , distance := distances]      # converts distances dt into a vector that becomes a column of tmp
-    tmp <- tmp[distance <= truedistance, ]
+    tmp <- tmp[distance <= loop_maxdistance, ]
     tmp[, ejam_uniq_id := sitepoints[a, .(ejam_uniq_id)]]
 
     ### progress bar ####
@@ -247,7 +251,7 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
   if (radius_donut_lower_edge > 0) {
     sites2blocks <- sites2blocks[distance <= truedistance & distance > radius_donut_lower_edge, ] # if analyzing a ring (donut)
   } else {
-    if (any(sites2blocks$distance > truedistance)) sites2blocks <- sites2blocks[distance <= truedistance, ] # filtered in the loop now, but adjusted short distances may exceed it
+    if (any(sites2blocks$distance > truedistance)) sites2blocks <- sites2blocks[distance <= truedistance, ] # the loop filtered only to loop_maxdistance, and adjusted distances may exceed truedistance
   }
   ################################### #
   if (!quiet && !use_unadjusted_distance) {
