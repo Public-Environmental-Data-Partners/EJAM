@@ -154,8 +154,9 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
 # from_check_var
 {
   from_check_var =  c(
+    ".siteorder",
     "..Rnames", "..acs_vars", "..allvarnames", "..availvars",
-    "..bg_join_cols_bysite", "..bg_join_cols_overall",
+    "..bg_cols_from_bgstats",
     "..calculatedcols_inbgstats", "..cnames", "..colorvarname", "..cols",
     "..cols_kept", "..cols_returned", "..colsneeded", "..column_names",
     "..countcols_inbgstats", "..demogvarname", "..ejnames_raw",
@@ -181,9 +182,9 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
     "PRIMARY_NAME", "Package", "Priority", "REGISTRY_ID", "Ratio",
     "V1", "aboutpage_texts", "acs_bgfips", "acs_tractfips",
     "acs_version_global", "analyzed_pop", "arcgis_address", "area", "area_fallback",
-    "arealand", "areawater", "avg.pctdisability", "avg.pctlingiso",
+    "area_sqmi", "arealand", "areawater", "avg.pctdisability", "avg.pctlingiso",
     "avg.pctlowinc", "avg.pctlowlifex", "avg.pctlths", "avg.pctmin",
-    "bg_suffix", "bgej", "bgid2fips", "bgid2fips_arrow", "bgpop",
+    "bg_suffix", "bgcount_near_site", "bgej", "bgid2fips", "bgid2fips_arrow", "bgpop",
     "bgwt", "block_radius_miles_round_temp", "blockcount_near_site",
     "blockfips", "blockid2fips", "blockid2fips_arrow", "blocklat",
     "blocklon", "blockpoints", "blockpop", "blockscore", "blockwts",

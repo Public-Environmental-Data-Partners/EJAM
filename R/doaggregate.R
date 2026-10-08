@@ -909,7 +909,6 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     calctype_maxbg,
     calctype_minbg
   ))
-  bg_join_cols_overall <- setdiff(bg_join_cols_bysite, "ST") # ST gets added back later, as NA values
 
   ## one small copy: only the blockgroups near these sites, only the columns needed
   bgids_needed <- sites2bgs_overall$bgid
@@ -928,7 +927,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
 
   # just be aware that this is not saving just unique blockgroups, but saves each bgid-ejam_uniq_id pairing???
 
-  bgsub[, ST := NULL] # overall table does not get ST
+  bgsub[, ST := NULL] # overall table does not get ST here (results_overall gets ST as NA later)
   sites2bgs_plusblockgroupdata_overall <- merge(
     sites2bgs_overall,
     bgsub,
