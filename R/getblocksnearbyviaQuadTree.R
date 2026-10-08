@@ -166,6 +166,7 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
     )
     # add the distances and ejam_uniq_id to the table of nearby blocks
     tmp[ , distance := distances]      # converts distances dt into a vector that becomes a column of tmp
+    tmp <- tmp[distance <= truedistance, ]
     tmp[, ejam_uniq_id := sitepoints[a, .(ejam_uniq_id)]]
 
     ### progress bar ####
@@ -191,6 +192,7 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
   # Compile as data.table ####
 
   sites2blocks <- data.table::rbindlist(res)
+  rm(res)
   data.table::setkey(sites2blocks, blockid, ejam_uniq_id, distance)
   ########################################################################### ##
   ########################################################################### ##
@@ -214,11 +216,20 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
   # including e.g., where distance to block internal point is so small the site is inside the block.
   # This also avoids infinitely small or zero distances.
   ## if retain_unadjusted_distance ####
+  # block_radius_miles is needed only to adjust short distances, so it is not joined when distances are left unadjusted
   if (retain_unadjusted_distance) {
     sites2blocks[ , distance_unadjusted := distance] # wastes space but for development/ debugging probably useful
-    sites2blocks <-  blockwts_now[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, block_radius_miles, distance_unadjusted), on = 'blockid']
+    if (use_unadjusted_distance) {
+      sites2blocks <-  blockwts_now[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, distance_unadjusted), on = 'blockid']
+    } else {
+      sites2blocks <-  blockwts_now[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, block_radius_miles, distance_unadjusted), on = 'blockid']
+    }
   } else {
-    sites2blocks <-  blockwts_now[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, block_radius_miles), on = 'blockid']
+    if (use_unadjusted_distance) {
+      sites2blocks <-  blockwts_now[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid), on = 'blockid']
+    } else {
+      sites2blocks <-  blockwts_now[sites2blocks, .(ejam_uniq_id, blockid, distance, blockwt, bgid, block_radius_miles), on = 'blockid']
+    }
   }
   if (!use_unadjusted_distance) {
     if (!quiet) {  cat("\n\nAdjusting upwards the very short distances now...\n ")}
@@ -228,7 +239,7 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
     # sites2blocks_dt[ , distance  := pmax(block_radius_miles, distance, na.rm = TRUE)] # assumes distance is in miles
   }
   # now drop that info about area or size of block to save memory. do not need it later in sites2blocks
-  sites2blocks[ , block_radius_miles := NULL]
+  if ("block_radius_miles" %in% names(sites2blocks)) sites2blocks[ , block_radius_miles := NULL]
   ################################### #
 
   ## if radius_donut_lower_edge > 0 ####
@@ -236,7 +247,7 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
   if (radius_donut_lower_edge > 0) {
     sites2blocks <- sites2blocks[distance <= truedistance & distance > radius_donut_lower_edge, ] # if analyzing a ring (donut)
   } else {
-    sites2blocks <- sites2blocks[distance <= truedistance, ] # had been inside the loop.
+    if (any(sites2blocks$distance > truedistance)) sites2blocks <- sites2blocks[distance <= truedistance, ] # filtered in the loop now, but adjusted short distances may exceed it
   }
   ################################### #
   if (!quiet && !use_unadjusted_distance) {
@@ -255,7 +266,10 @@ getblocksnearbyviaQuadTree <- function(sitepoints, radius = 3, radius_donut_lowe
 
 
   # > DROP from s2b SITES WITH NO BLOCKS FOUND ####
-  sites2blocks <- sites2blocks[sitepoints, .SD, on = "ejam_uniq_id"][!is.na(blockid), ]
+  sites2blocks[, .siteorder := match(ejam_uniq_id, sitepoints$ejam_uniq_id)]
+  setorder(sites2blocks, .siteorder, blockid, distance) # same order the join gave: site order, then key order
+  sites2blocks[, .siteorder := NULL]
+  setkey(sites2blocks, NULL)
 
   return(sites2blocks)
 }
