@@ -139,7 +139,7 @@ Time is unchanged within run-to-run noise. In this R process, 0.78 GB of R heap 
 
 ## Plan, in agreed order
 
-Order and decisions from the #57 discussion, 2026-10-07.
+Order and decisions from the #57 discussion, 2026-10-07 and 2026-10-08.
 
 ### Now
 
@@ -159,14 +159,24 @@ Order and decisions from the #57 discussion, 2026-10-07.
 - [ ] **1–5. Tier 1 copy fixes**, in Public-Environmental-Data-Partners/EJAM#649.
 - **8. `R_GC_MEM_GROW=0`: dropped.** It lowered the `doaggregate()` peak from 5.22 to 3.64 GB, but made that step about 34% slower (25 s to 34 s).
 
-### Needs decisions first
+### Next: decided 2026-10-08
 
-- [ ] **9. Smaller maps for many sites**, in the in-app map and in `ejam2report()`. Questions:
-  1. Above how many sites should popups get shorter? (suggested: 1,000)
-  2. What should a short popup show? (suggested: site number or name, population, and the 2–3 key percentiles shown at the top of the community report)
-  3. Above how many sites should individual circles become clustered markers? Above how many should the downloaded report get a static image or no map? (suggested: clusters above 5,000; a static image above 20,000)
-  4. Should the in-app map keep full popups by building each one on click from the server (no size cost), while only the downloaded report uses short popups?
-  5. For polygons: above how many shapes, or how many vertices, should shapes be simplified for the map?
+- [ ] **9. Smaller maps for many sites**, in the in-app map and in `ejam2report()`. Decided in the [#57 comment of 2026-10-08](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/57#issuecomment-6071162026). New settings go in `inst/global_defaults_package.R`, so `ejam2report()` sees them outside the app too:
+
+  | Setting | Value | Meaning |
+  |---|---|---|
+  | `default_max_pts_show_detailed_popups` | 1,000 | Above this many sites, popups are short. |
+  | `default_max_pts_map_show_unclustered` | 5,000 | Above this many sites, circles become clustered markers. |
+  | `default_max_pts_map_show_in_downloaded_report` | 20,000 | Above this many points, the downloaded report gets a static map image. |
+  | `default_max_shapes_map_show_in_downloaded_report` | 20,000, maybe lower | Same for polygons. Possibly lower than for points. |
+  | polygon simplification | 500 shapes | Placeholder; set it later from performance tests that also consider vertices. |
+
+  - **Short popup:** the first rows of today's popup: site ID, the "Residents within ..." line, longitude/latitude, area, the report links that `doaggregate()` made (per `default_reports`), and population.
+  - **In-app map:** keeps full popups by building each one on the server when it is clicked, so it has no size cost. Only the downloaded report uses short popups.
+  - **Very large runs:** above about 50,000 sites, maybe no map at all, or a static image of clustered markers for points and none for polygons. Still to decide.
+  - **Overlaps with existing settings in `inst/global_defaults_shiny.R`:**
+    - `marker_cluster_cutoff` is 1,000 today; the upload map clusters above it. It should become, or follow, the new 5,000 cutoff, so there is one clustering cutoff.
+    - `default_max_pts_map` (5,000; up to `maxmax_pts_map`, 15,000) is the cap on points the upload map shows at all. Above it, the map shows only the area. It needs to be reconciled with clustering above 5,000.
 
 ### Tier 3, in this order
 
@@ -251,8 +261,12 @@ Where the savings come from:
 - That is the same "complete blockgroup" representation items 12 (FIPS) and 13 (polygons) need. FIPS is the special case where every blockgroup is complete. So one design should cover circles, FIPS and polygons.
 - The cost is a second row type in `sites2blocks` (complete-blockgroup rows with no `blockid`). Every function that reads `sites2blocks` would need to handle it, or the compact format could be used only above a size threshold.
 
-## Decisions needed
+Decided in the [#57 comment of 2026-10-08](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/57#issuecomment-6071231806):
 
-1. Item 9 thresholds and popup content (questions above).
+- **When to use the compact form:** speed for small and medium analyses comes first. If the compact form is as fast as today, or no more than about 5% slower, use it for every analysis. If it is slower than that, use it only for large analyses, roughly above 1,000 sites. So the first prototype should be timed on small, medium and large inputs.
+- **Distance stats** (`distance_min`, `distance_min_avgperson`) are low priority. For large runs they may be left out or approximated, with a caveat in the documentation and outputs.
+
+## Decisions still needed
+
+1. Item 9: whether to show no map, or a static image of clustered markers, above about 50,000 sites; and whether the downloaded-report cap for polygons should be lower than 20,000.
 2. Item 11: whether large runs may return a unique-blockgroup `results_bybg_people` instead of site × blockgroup pairs.
-3. Blockgroup-level simplification: whether to add a complete-blockgroup row type to `sites2blocks` for every analysis, or only above a size threshold. Also, whether exact distance stats are required for complete blockgroups or may be optional in large runs.
