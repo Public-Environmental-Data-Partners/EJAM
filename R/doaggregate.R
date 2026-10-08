@@ -139,6 +139,11 @@
 #' @param testing used while testing this function
 #' @param showdrinkingwater T/F whether to include drinking water indicator values or display as NA. Defaults to TRUE.
 #' @param showpctowned T/f whether to include percent owner-occupied units indicator values or display as NA. Defaults to TRUE.
+#' @param copy_sites2blocks Optional, default TRUE, so the sites2blocks table passed here is not
+#'   modified. doaggregate() adds columns to and re-sorts sites2blocks, so by default it first makes
+#'   a copy, which needs as much memory as sites2blocks itself (gigabytes in a very large analysis).
+#'   Set to FALSE to skip that copy when the caller will not reuse sites2blocks,
+#'   as [ejamit()] does. Columns are only added and rows re-sorted; values are not changed.
 #' @param ... more to pass to another function (may not be implemented yet)
 #' @seealso [ejamit]   [getblocksnearby()]
 #'
@@ -181,6 +186,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
                         silentinteractive=TRUE, testing=FALSE,
                         showdrinkingwater = TRUE,
                         showpctowned = TRUE,
+                        copy_sites2blocks = TRUE,
                         ...) {
   ###################################################### #
   if (is.function(updateProgress)) {start_time <- Sys.time()}
@@ -203,7 +209,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     return(NULL)
   }
   # setDT(copy() -- avoid altering input data tables by reference in the calling environment, even though copy() slows it down ***
-  sites2blocks <- data.table::copy(sites2blocks)
+  if (copy_sites2blocks) sites2blocks <- data.table::copy(sites2blocks)
   # ensure sites2blocks is a data.table
   if (!data.table::is.data.table(sites2blocks)) {
     data.table::setDT(sites2blocks)
@@ -448,7 +454,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
       "as specified in radius parameter passed to doaggregate(), or else inferred from distances reported to doaggregate()\n",
       "even though some larger distances were somehow found in sites2blocks table passed from getblocksnearby() to doaggregate()\n"
     ))}
-    sites2blocks <- sites2blocks[is.na(distance) | distance <= radius, ] # now distance can be NA so let those through here? if handled later
+    if (any(sites2blocks$distance > radius, na.rm = TRUE)) sites2blocks <- sites2blocks[is.na(distance) | distance <= radius, ] # now distance can be NA so let those through here? if handled later
   }
   # end of radius adjustments
   ###################################################### #
@@ -877,26 +883,23 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   # maybe cannot use blockgroupstats[sites2bgs_bysite,    by=.(ejam_uniq_id)    since ejam_uniq_id is in sites2bgs_bysite not in blockgroupstats table.
   # So, first join blockgroupstats necessary variables to the shorter sites2bgs_bysite:
   ## *** might be efficient to drop the cols we wont need to avoid doing sums aggreg of all subgroups_nh and also subgroups_alone for example if only reporting one of those
+  bg_available_cols <- names(blockgroupstats)
   if (include_ejindexes) { # was already set to FALSE if bgej not available
-
     setDT(bgej)
-    blockgroupstats <- merge(blockgroupstats,  bgej[!is.na(bgid), c(
-      "bgid", ejnames_raw
-    ), with = FALSE], by = "bgid")
-
+    bg_available_cols <- c(bg_available_cols, setdiff(intersect(ejnames_raw, names(bgej)), bg_available_cols))
   }
   #   Remember that. . .
   # countcols     # like population count, add up within a buffer
   # wtdmeancols    # we want average person's (or hhld etc.) raw score for percentages and for Environmental (and avg person's PERCENTILE for Summary Indexes )
   # calculatedcols  # use formulas for these (e.g., user-defined custom new indicator)
-  countcols_inbgstats      <- intersect(countcols,      names(blockgroupstats))
-  wtdmeancols_inbgstats    <- intersect(wtdmeancols,    names(blockgroupstats)) # and blockgroupstats at this point includes bgej columns too if include_ejindexes = TRUE
-  calculatedcols_inbgstats <- intersect(calculatedcols, names(blockgroupstats))
-  calctype_maxbg           <- intersect(calctype_maxbg, names(blockgroupstats))
-  calctype_minbg           <- intersect(calctype_minbg, names(blockgroupstats))
+  countcols_inbgstats      <- intersect(countcols, bg_available_cols)
+  wtdmeancols_inbgstats    <- intersect(wtdmeancols, bg_available_cols) # and blockgroupstats at this point includes bgej columns too if include_ejindexes = TRUE
+  calculatedcols_inbgstats <- intersect(calculatedcols, bg_available_cols)
+  calctype_maxbg           <- intersect(calctype_maxbg, bg_available_cols)
+  calctype_minbg           <- intersect(calctype_minbg, bg_available_cols)
   denominator_cols_needed  <- unique(stats::na.omit(calcweight(wtdmeancols_inbgstats)))
   denominator_cols_needed  <- setdiff(denominator_cols_needed, c("", "pop"))
-  denominator_cols_inbgstats <- intersect(denominator_cols_needed, names(blockgroupstats))
+  denominator_cols_inbgstats <- intersect(denominator_cols_needed, bg_available_cols)
   bg_join_cols_bysite <- unique(c(
     "bgid", "ST",
     countcols_inbgstats,
@@ -906,19 +909,30 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
     calctype_maxbg,
     calctype_minbg
   ))
-  bg_join_cols_overall <- setdiff(bg_join_cols_bysite, "ST") # ST gets added back later, as NA values
 
+  ## one small copy: only the blockgroups near these sites, only the columns needed
+  bgids_needed <- sites2bgs_overall$bgid
+  bg_cols_from_bgstats <- intersect(bg_join_cols_bysite, names(blockgroupstats))
+  bgsub <- blockgroupstats[bgid %in% bgids_needed, ..bg_cols_from_bgstats]
+  if (include_ejindexes) {
+    ej_cols_to_add <- setdiff(bg_join_cols_bysite, bg_cols_from_bgstats)
+    bgsub <- bgsub[bgid %in% bgej$bgid[!is.na(bgej$bgid)]] # original merge() was an inner join
+    bgsub[bgej, (ej_cols_to_add) := mget(paste0("i.", ej_cols_to_add)), on = "bgid"]
+  }
+  setcolorder(bgsub, intersect(bg_join_cols_bysite, names(bgsub)))
   sites2bgs_plusblockgroupdata_bysite  <- merge(
     sites2bgs_bysite,  #  but has other cols like   "distance_avg" , "proximityscore"  etc.
-    blockgroupstats[ , ..bg_join_cols_bysite],
+    bgsub,
                                                 all.x = TRUE, all.y = FALSE, by = 'bgid')
 
   # just be aware that this is not saving just unique blockgroups, but saves each bgid-ejam_uniq_id pairing???
 
+  bgsub[, ST := NULL] # overall table does not get ST here (results_overall gets ST as NA later)
   sites2bgs_plusblockgroupdata_overall <- merge(
     sites2bgs_overall,
-    blockgroupstats[ , ..bg_join_cols_overall],
+    bgsub,
                                                 all.x = TRUE, all.y = FALSE, by = 'bgid')
+  rm(bgsub)
 
   # rm(sites2bgs_overall, sites2bgs_bysite); rm(blockgroupstats)
   ##################################################### #  ##################################################### #
@@ -1204,8 +1218,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   results_bysite <- merge(results_bysite, blockcount_by_site, by = "ejam_uniq_id")
   results_bysite <- merge(results_bysite, bgcount_by_site,    by = "ejam_uniq_id")
 
-  sites2bgs_plusblockgroupdata_bysite$bgcount_near_site    <- NA
-  sites2bgs_plusblockgroupdata_bysite$blockcount_near_site <- NA
+  sites2bgs_plusblockgroupdata_bysite[, c("bgcount_near_site", "blockcount_near_site") := NA]
   ##################################################### #
 
   # ____OVERALL ###
@@ -1297,7 +1310,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   suppressWarnings({
   sites2bgs_plusblockgroupdata_bysite[, statename := fips2statename(fips_state_from_state_abbrev(ST))]
   sites2bgs_plusblockgroupdata_bysite[, REGION := fips_st2eparegion(fips_state_from_state_abbrev(ST))]
-  sites2bgs_plusblockgroupdata_bysite$in_how_many_states <- 1 # since a single blockgroup can only be in one state
+  sites2bgs_plusblockgroupdata_bysite[, in_how_many_states := 1] # since a single blockgroup can only be in one state
   })
   #  ##################################################### #  ##################################################### #
   if (is.function(updateProgress)) {
@@ -1369,6 +1382,9 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   columns_bysite <- results_bysite[, .SD, .SDcols = varsneedpctiles]
   columns_overall <- results_overall[, .SD, .SDcols = varsneedpctiles]
 
+  # drop the mean and std rows once here, instead of pctile_from_raw_lookup() copying the whole lookup table on every call
+  usastats_pctiles   <- usastats[!(usastats$PCTILE %in% c("mean", "std")), ]
+  statestats_pctiles <- statestats[!(statestats$PCTILE %in% c("mean", "std")), ]
   valid_us_vars <- varsneedpctiles[varsneedpctiles %in% colnames(usastats)]
   valid_us_pctl_names <- varnames.us.pctile[varsneedpctiles %in% colnames(usastats)]
 
@@ -1383,7 +1399,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
       pctile_from_raw_lookup(
         columns_bysite[[var]],
         varname.in.lookup.table = var,
-        lookup = usastats
+        lookup = usastats_pctiles
       )
     })]
   }
@@ -1397,7 +1413,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
       pctile_from_raw_lookup(
         columns_overall[[var]],
         varname.in.lookup.table = var,
-        lookup = usastats
+        lookup = usastats_pctiles
       )
     })]
   }
@@ -1451,7 +1467,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
       pctile_from_raw_lookup(
         columns_bysite_state[[var_to_use]][idx_not_na_st],
         varname.in.lookup.table = var,
-        lookup = statestats,
+        lookup = statestats_pctiles,
         zone = ST # ST is already limited to non_na values via data.table filter above
       )
     }, valid_state_vars, valid_state_vars_to_use, SIMPLIFY = FALSE)]
@@ -1485,7 +1501,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
         pctile_from_raw_lookup(
           columns_bysite_ej[[var]],
           varname.in.lookup.table = var,
-          lookup = usastats
+          lookup = usastats_pctiles
         )
       })]
     }
@@ -1500,7 +1516,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
         pctile_from_raw_lookup(
           columns_overall_ej[[var]],
           varname.in.lookup.table = var,
-          lookup = usastats
+          lookup = usastats_pctiles
         )
       })]
     }
@@ -1513,7 +1529,7 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
         pctile_from_raw_lookup(
           columns_bysite_ej[[var]][idx_not_na_st],
           varname.in.lookup.table = var,
-          lookup = statestats,
+          lookup = statestats_pctiles,
           zone = ST[idx_not_na_st]
         )
       })]
