@@ -727,3 +727,55 @@ test_that("upload-type choices include FIPS in public and non-public configs", {
     user_specified_options = list(isPublic = FALSE), bookmarking_allowed = "disable")
   expect_true("FIPS" %in% g_private$default_choices_for_type_of_site_upload)
 })
+################################################# #
+
+test_that("Start Analysis: a memory error while buffering polygons or in ejamit() stops that analysis but keeps the session", {
+  ## With the memory cap set by memory_cap_for_app(), an analysis too large for the server stops
+  ## with an R error. Every step of the analysis, including buffering polygons before ejamit(),
+  ## has to catch it so that this user's session stays open (review of PR #650).
+  memerr <- "vector memory limit of 3.0 Gb reached, see mem.maxVSize()"
+  state <- new.env()
+  state$buffer_fails <- TRUE
+  ## app settings, as ejamapp() would provide them
+  app_defaults <- EJAM:::get_global_defaults_or_user_options(
+    user_specified_options = list(), bookmarking_allowed = "disable")
+  orig_global_or_param <- EJAM:::global_or_param
+  local_mocked_bindings(
+    global_or_param = function(vname) {
+      if (vname %in% c("default_hide_about_tab", "default_hide_written_report",
+                       "default_hide_plot_barplot_tab", "default_hide_plot_histo_tab")) {
+        return(FALSE)
+      }
+      if (vname %in% names(app_defaults)) {return(app_defaults[[vname]])}
+      orig_global_or_param(vname)
+    },
+    shape_buffered_from_shapefile = function(shapefile = NULL, radius.miles, ...) {
+      if (state$buffer_fails) {stop(memerr)}
+      shapefile
+    },
+    ejamit = function(...) {stop(memerr)},
+    .package = "EJAM"
+  )
+  testServer(app = app_server, expr = {
+    session$setInputs(testing = FALSE)
+    ## as if polygons were uploaded and a 1-mile buffer was chosen
+    assign("current_upload_method", function() "SHP", envir = session$env)
+    assign("data_uploaded", function() data.frame(id = 1:2), envir = session$env)
+    assign("sanitized_radius_now", function() 1, envir = session$env)
+
+    ## the memory error happens while buffering, before ejamit()
+    expect_message(session$setInputs(bt_get_results = 1),
+                   "shape_buffered_from_shapefile\\(\\) stopped with an error in the web app: vector memory limit")
+    expect_false(session$isClosed())
+    expect_false(analysis_complete())
+    expect_null(data_processed())
+
+    ## same session: buffering works, and then ejamit() hits the memory error
+    state$buffer_fails <- FALSE
+    expect_message(session$setInputs(bt_get_results = 2),
+                   "ejamit\\(\\) stopped with an error in the web app: vector memory limit")
+    expect_false(session$isClosed())
+    expect_false(analysis_complete())
+    expect_null(data_processed())
+  })
+})

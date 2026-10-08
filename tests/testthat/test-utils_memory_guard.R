@@ -1,4 +1,4 @@
-## tests for memory_container_limit_bytes(), memory_cap_for_app(), analysis_error_message()
+## tests for memory_container_limit_bytes(), memory_cap_for_app(), analysis_error_message(), analysis_step_in_app()
 
 test_that("memory_container_limit_bytes() reads cgroup v2 and v1 limits", {
   v2 <- withr::local_tempfile(lines = "6442450944")
@@ -46,4 +46,15 @@ test_that("analysis_error_message() explains a memory error in plain language", 
   expect_match(analysis_error_message(memerr), "needs more memory than this server allows")
   other <- simpleError("boom")
   expect_match(analysis_error_message(other), "stopped because of an error: boom")
+})
+
+test_that("analysis_step_in_app() returns the value, or a plain-language failure, and lets validate()/req() through", {
+  expect_equal(analysis_step_in_app(1 + 1), 2)
+  expect_message(
+    failed <- analysis_step_in_app(stop("vector memory limit of 3.0 Gb reached, see mem.maxVSize()"), step = "buffering"),
+    "buffering stopped with an error in the web app"
+  )
+  expect_s3_class(failed, "analysis_failed")
+  expect_match(failed$message, "needs more memory than this server allows")
+  expect_error(analysis_step_in_app(shiny::req(FALSE)), class = "shiny.silent.error")
 })

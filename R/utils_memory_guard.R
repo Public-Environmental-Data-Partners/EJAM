@@ -110,3 +110,28 @@ analysis_error_message <- function(e) {
     paste0("The analysis stopped because of an error: ", msg)
   }
 }
+############################################################################### #
+
+#' Run one step of an analysis in the web app, catching an error such as reaching the memory cap
+#'
+#' @details The Start Analysis observer in the web app runs each step that can need a lot of
+#'   memory, such as buffering polygons or [ejamit()], through this function. An error in that
+#'   step, such as reaching the cap set by [memory_cap_for_app()] in a very large analysis, then
+#'   stops just this analysis with a message for this user, instead of ending the user's session.
+#'   `validate()` and `req()` inside the step keep their usual effect.
+#'
+#' @param expr the code to run, such as a call to [ejamit()]
+#' @param step short name of the step, used in the log message
+#'
+#' @return the value of `expr`, or if it stopped with an error, a list with element `message`
+#'   (from [analysis_error_message()]) and class `"analysis_failed"`
+#'
+#' @keywords internal
+#'
+analysis_step_in_app <- function(expr, step = "ejamit()") {
+  tryCatch(expr, error = function(e) {
+    if (inherits(e, "shiny.silent.error")) {stop(e)} # from validate() or req()
+    message(step, " stopped with an error in the web app: ", conditionMessage(e))
+    structure(list(message = analysis_error_message(e)), class = "analysis_failed")
+  })
+}
