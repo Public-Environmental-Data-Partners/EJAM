@@ -1,7 +1,7 @@
 # Large analyses: memory use, diagnosis, and plan
 
 - **Tracking issue:** Public-Environmental-Data-Partners/EJAM#57. Crash reports: Public-Environmental-Data-Partners/EJAM#504.
-- **Status:** Tier 1 (items 1–5) is done in the `large-analyses` branch. Everything else below is the plan, in the order agreed in the #57 discussion (2026-10-07).
+- **Status:** Tier 1 (items 1–5) is in Public-Environmental-Data-Partners/EJAM#649. Items 6–7 (memory cap and freeing old results) are in Public-Environmental-Data-Partners/EJAM#650. Everything else below is the plan, in the order agreed in the #57 discussion (2026-10-07).
 
 ## Summary
 
@@ -143,9 +143,20 @@ Order and decisions from the #57 discussion, 2026-10-07.
 
 ### Now
 
-- [ ] **6. Cap R's memory and catch errors.** Today the operating system kills the whole container, ending every session in it. With a cap, a too-large analysis fails as an R error for that one user, who sees a clear message, and the app stays up for everyone else. The cap applies to R's heap (`mem.maxVSize()` or `R_MAX_VSIZE`) and must leave room for what the process uses outside R's heap and for pandoc/Chrome. Separate PR.
-- [ ] **7. Free the previous result before a new analysis starts:** `data_processed(NULL)` at the start of the Start Analysis observer. Separate PR, with item 6.
-- [x] **1–5. Tier 1 copy fixes.** This PR.
+- [ ] **6. Cap R's memory and catch errors**, in Public-Environmental-Data-Partners/EJAM#650.
+  - Today the operating system kills the whole container, ending every session in it.
+  - With the cap, a too-large analysis stops as an R error for that one user, who sees a plain-language message, and the app stays up for everyone else.
+  - The cap is the container limit minus a 3 GB reserve, for memory outside R's own heap and for pandoc/Chrome. That makes it 3 GB on dev and 4 GB on prod. Tested locally under those caps (full `ejamit()`, 10k points):
+
+    | Cap | 10k pts at | Today on that server | development code + cap | with Tier 1 + cap |
+    |---|---|---|---|---|
+    | 3 GB (dev) | 1 mi | works | completes | completes |
+    | 3 GB (dev) | 2 mi | crashes | stops with message | completes |
+    | 4 GB (prod) | 2 mi | works | completes | completes |
+    | 4 GB (prod) | 3.1 mi | crashes | stops with message | completes |
+
+- [ ] **7. Free the previous result before a new analysis starts:** `data_processed(NULL)` at the start of the Start Analysis observer. In Public-Environmental-Data-Partners/EJAM#650, with item 6.
+- [ ] **1–5. Tier 1 copy fixes**, in Public-Environmental-Data-Partners/EJAM#649.
 - **8. `R_GC_MEM_GROW=0`: dropped.** It lowered the `doaggregate()` peak from 5.22 to 3.64 GB, but made that step about 34% slower (25 s to 34 s).
 
 ### Needs decisions first
