@@ -2238,9 +2238,24 @@ app_server <- function(input, output, session) {
     })
   }
 
+  ## run ejamit() so that an error, such as reaching the memory cap in a very large analysis
+  ## (see memory_cap_for_app()), stops just this analysis with a message for this user,
+  ## instead of ending the user's session.
+  ejamit_in_app <- function(expr) {
+    tryCatch(expr, error = function(e) {
+      if (inherits(e, "shiny.silent.error")) {stop(e)} # validate() and req() inside ejamit() keep their usual effect
+      message("ejamit() stopped with an error in the web app: ", conditionMessage(e))
+      structure(list(message = analysis_error_message(e)), class = "ejamit_failed")
+    })
+  }
+
   observeEvent(input$bt_get_results, {  # (button is pressed)
 
     analysis_complete(FALSE)
+    # Release the previous analysis's results now, so this analysis can reuse that memory.
+    # Outputs that use data_processed() update only after this observer finishes, so they
+    # show the new results, or none if this analysis stops with an error.
+    data_processed(NULL)
     # disable download buttons until finished analysis
     download_button_disable_js(id = 'download_report_multisite')
     download_button_disable_js(id = 'download_results_spreadsheet')
@@ -2287,6 +2302,14 @@ app_server <- function(input, output, session) {
       }
       invisible(runtime_estimate)
     }
+    ## if ejamit() stopped with an error: close progress bars, tell the user why, and end this analysis quietly
+    stop_failed_analysis <- function(failed, ...) {
+      for (p in list(progress_all, ...)) {try(p$close(), silent = TRUE)}
+      if (!is.null(ejamitRunTimeNotification)) {removeNotification(ejamitRunTimeNotification)}
+      invisible(gc()) # free what the stopped analysis had allocated
+      showNotification(failed$message, type = 'error', duration = NULL)
+      req(FALSE) # stops this observer without ending the session
+    }
 
     ################################################# #
     # > ejamit() for FIPS  ####
@@ -2305,7 +2328,7 @@ app_server <- function(input, output, session) {
         analysis_subtype = speed_fips_analysis_subtype(fips_for_prediction)
       )
 
-      out <- ejamit(fips = data_uploaded(),              # unlike for SHP or latlon cases, this could include invalid FIPS!
+      out <- ejamit_in_app(ejamit(fips = data_uploaded(),              # unlike for SHP or latlon cases, this could include invalid FIPS!
                     updateProgress_getblocks = NULL, # differs in shp vs latlon cases, unused in fips case.
                     in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2346,7 +2369,8 @@ app_server <- function(input, output, session) {
                     silentinteractive = TRUE,
                     quiet = TRUE,
                     testing = input$testing
-      )
+      ))
+      if (inherits(out, "ejamit_failed")) {stop_failed_analysis(out)}
       # sitetype is "fips" and
       # now includes area_sqmi columns as output of ejamit(), for fips case, but if download_fips_bounds_to_calc_areas=F, it is NA values
 
@@ -2396,7 +2420,7 @@ app_server <- function(input, output, session) {
           progress_getblocks_shp$set(value = value, message = message_main, detail = message_detail)
         }
 
-        out <- ejamit(shapefile = shp,
+        out <- ejamit_in_app(ejamit(shapefile = shp,
                       updateProgress_getblocks = updateProgress_getblocks_shp, # differs in shp vs latlon cases, unused in fips case.
                       in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2432,7 +2456,8 @@ app_server <- function(input, output, session) {
                       silentinteractive = TRUE,
                       quiet = TRUE,
                       testing = input$testing
-        )
+        ))
+        if (inherits(out, "ejamit_failed")) {stop_failed_analysis(out, progress_getblocks_shp)}
 
         ## close getblocks progress bar
         progress_getblocks_shp$close()
@@ -2467,7 +2492,7 @@ app_server <- function(input, output, session) {
           progress_getblocks$set(value = value, message = message_main, detail = message_detail)
         }
 
-        out <-  ejamit(sitepoints = data_uploaded(),
+        out <-  ejamit_in_app(ejamit(sitepoints = data_uploaded(),
                        updateProgress_getblocks = updateProgress_getblocks, # differs in shp vs latlon cases, unused in fips case.
                        in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2503,7 +2528,8 @@ app_server <- function(input, output, session) {
                        silentinteractive = TRUE,
                        quiet = TRUE,
                        testing = input$testing
-        )
+        ))
+        if (inherits(out, "ejamit_failed")) {stop_failed_analysis(out, progress_getblocks)}
 
         ## close getblocks progress bar
         progress_getblocks$close()

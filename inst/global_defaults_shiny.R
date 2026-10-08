@@ -78,6 +78,14 @@ msg <- utils::capture.output({
     default_max_pts_run  = 10 * 1000, # initial cap but can adjust in advanced tab
     maxmax_pts_run       = 35 * 1000, # absolute max you can analyze here, even with advanced tab
 
+    ## ------------------------ Cap on R's memory in a hosted app (see EJAM:::memory_cap_for_app()) ####
+    # In a container with a memory limit (like the hosted app), R's own memory is capped at the container
+    # limit minus default_memory_reserve_gb, so a too-large analysis stops with a message for that user
+    # instead of the container running out of memory and ending every user's session. No cap if no
+    # container limit is found (e.g., on a laptop) or if the R_MAX_VSIZE environment variable is set.
+    default_memory_cap_gb     = NA, # NA means use the container limit minus default_memory_reserve_gb; or a number of GB
+    default_memory_reserve_gb = 3,  # GB left for memory used outside R's own (block index, arrow data, packages, pandoc, Chrome)
+
     # input$max_pts_showtable uses these as its starting value and max allowed value
     default_max_pts_showtable = 1000, # max to show in interactive viewer. It drops the rest.
     maxmax_pts_showtable  = 5 * 1000, # 10k is extremely slow. check server side vs client side
