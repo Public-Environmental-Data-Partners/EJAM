@@ -186,7 +186,7 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
     "bg_suffix", "bgej", "bgid2fips", "bgid2fips_arrow", "bgpop",
     "bgwt", "block_radius_miles_round_temp", "blockcount_near_site",
     "blockfips", "blockid2fips", "blockid2fips_arrow", "blocklat",
-    "blocklon", "blockpoints", "blockpop", "blockscore", "blockwts",
+    "blockcount", "blocklon", "blockpoints", "blockpop", "blockscore", "blockwts",
     "color", "coslat_x_earth", "count_city_matched",
     "count_city_state_matched", "countyfips", "countyname",
     "countyname_ST", "custom_index", "disab_universe", "disability",

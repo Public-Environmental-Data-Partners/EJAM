@@ -599,3 +599,41 @@ test_that("getblocksnearby_from_fips() return_shp=TRUE with radius preserves one
   expect_true(all(area_buf[valid_rows] >= area_orig[valid_rows]))
 })
 ################# #  ################# #  ################# #
+
+test_that("getblocksnearby_from_fips(compact = TRUE) has one row per blockgroup, and doaggregate() gives the same results", {
+  # a state and two of its counties, so some blocks are in more than one site
+  fips_input <- c("10", "10001", "10003")
+  suppressMessages(suppressWarnings({
+    full    <- getblocksnearby_from_fips(fips_input)
+    compact <- getblocksnearby_from_fips(fips_input, compact = TRUE)
+  }))
+  expect_equal(names(compact), c("ejam_uniq_id", "blockid", "distance", "blockwt", "bgid", "blockcount", "fips"))
+  expect_equal(NROW(compact), NROW(unique(full[, .(ejam_uniq_id, bgid)])))
+  expect_lt(NROW(compact), NROW(full) / 10)
+  # each row stands for all blocks of its blockgroup in that site
+  full_bysitebg <- full[, .(blockwt = sum(blockwt), blockcount = .N, fips = fips[1]), by = .(ejam_uniq_id, bgid)]
+  both <- merge(full_bysitebg, compact, by = c("ejam_uniq_id", "bgid"), suffixes = c(".full", ".compact"))
+  expect_equal(NROW(both), NROW(compact))
+  expect_equal(both$blockcount.full, both$blockcount.compact)
+  expect_equal(both$blockwt.full, both$blockwt.compact)
+  expect_equal(both$fips.full, both$fips.compact)
+  expect_true(all(compact$blockid %in% full$blockid))
+  expect_equal(unique(compact$distance), 0)
+
+  out_full    <- suppressWarnings(doaggregate(full,    radius = 999, silentinteractive = TRUE))
+  out_compact <- suppressWarnings(doaggregate(compact, radius = 999, silentinteractive = TRUE))
+  expect_equal(out_compact$results_bysite,  out_full$results_bysite)
+  expect_equal(out_compact$results_overall, out_full$results_overall)
+  expect_equal(out_compact$results_bybg_people, out_full$results_bybg_people)
+  expect_equal(out_compact$count_of_blocks_near_multiple_sites, out_full$count_of_blocks_near_multiple_sites)
+  expect_gt(out_compact$count_of_blocks_near_multiple_sites, 0)
+})
+
+test_that("getblocksnearby_from_fips(compact = TRUE) keeps one row per block if any FIPS is a city", {
+  suppressMessages(suppressWarnings({
+    s2b <- getblocksnearby_from_fips(c("10001", testinput_fips_cities[1]), compact = TRUE)
+  }))
+  skip_if(NROW(s2b) == 0, "city boundaries not available")
+  expect_false("blockcount" %in% names(s2b))
+})
+################# #  ################# #  ################# #
