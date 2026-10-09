@@ -24,7 +24,7 @@ map_facilities_proxy(
 
 \item{popup_vec, }{a vector of popup values to display when points are clicked. Length should match number of rows in the dataset.}
 
-\item{use_marker_clusters, }{boolean for whether to group points into markerClusters. Uses logic from shiny app to only implement when n > 1000.}
+\item{use_marker_clusters, }{boolean for whether to group points into markerClusters. The shiny app sets it TRUE when there are more points than default_max_pts_map_show_unclustered (see \code{\link[=map_size_setting]{map_size_setting()}}).}
 }
 \value{
 a leaflet map with circles, circleMarkers, and basic popup

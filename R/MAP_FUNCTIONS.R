@@ -21,13 +21,19 @@
 #'   site number shown in map popups, passed to [popup_from_ejscreen()].
 #'   Only relevant when mapping a single site -- see [ejam2report()], whose
 #'   sitenumber_label parameter this supports.
+#' @param popup_style `"auto"`, `"full"`, `"short"`, or `"none"` (no popups). See [map_popup_style()].
+#' @details Each polygon's layerId is the row number of that site in `out$results_bysite`,
+#'   so the web app can build the popup for a shape when it is clicked.
+#'   If there are more than `default_max_shapes_map_unsimplified` shapes, they are
+#'   simplified for the map (see [map_shapes_simplified()]).
 #'
 #' @return map html widget
 #'
 #' @keywords internal
 #'
 map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#000080', launch_browser = FALSE,
-                              sitenumber_label = NULL # name-only, at end to avoid arg shift
+                              sitenumber_label = NULL, # name-only, at end to avoid arg shift
+                              popup_style = "auto"
                               ) {
 
   ## to use it in shiny app:
@@ -115,11 +121,20 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
       leaflet::addTiles() %>%
       leaflet::fitBounds(-115, 37, -65, 48)
   } else {
-    # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
-    pops <- popup_from_ejscreen(
-      shpout %>% sf::st_drop_geometry(),
-      sitenumber_label = sitenumber_label
-    )
+    # row number of each site in out$results_bysite, as layerId, so the web app can build a popup on click
+    layer_ids <- match(shpout$ejam_uniq_id, out$results_bysite$ejam_uniq_id)
+    popup_style <- map_popup_style(NROW(shpout), popup_style)
+    if (popup_style == "none") {
+      pops <- NULL
+    } else {
+      # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+      pops <- popup_from_ejscreen(
+        shpout %>% sf::st_drop_geometry(),
+        sitenumber_label = sitenumber_label,
+        detailed = (popup_style == "full")
+      )
+    }
+    shpout <- map_shapes_simplified(shpout) # only if there are many
     if (is.null(radius_buffer)) {
       radius_buffer <- out$results_bysite$radius.miles[1]
     }
@@ -136,6 +151,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
       leaflet::addTiles()  %>%
       leaflet::addPolygons(color = circle_color,
                            popup = pops,
+                           layerId = layer_ids,
                            popupOptions = leaflet::popupOptions(maxHeight = 200))
   }
 
@@ -164,7 +180,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
 #' @param highlight, a logical for whether to highlight overlapping points (defaults to FALSE)
 #' @param clustered, a vector of T/F values for each point, indicating if they overlap with another
 #' @param popup_vec, a vector of popup values to display when points are clicked. Length should match number of rows in the dataset.
-#' @param use_marker_clusters, boolean for whether to group points into markerClusters. Uses logic from shiny app to only implement when n > 1000.
+#' @param use_marker_clusters, boolean for whether to group points into markerClusters. The shiny app sets it TRUE when there are more points than default_max_pts_map_show_unclustered (see [map_size_setting()]).
 #' @return a leaflet map with circles, circleMarkers, and basic popup
 #'
 #' @keywords internal
@@ -509,6 +525,12 @@ map_shapes_plot <- function(shapes, main = "Selected Census Units", ...) {
 #' @param popup  passed to [leaflet::addPolygons()]
 #' @param fillOpacity passed to [leaflet::addPolygons()]
 #' @param ... passed to [leaflet::addPolygons()], such as opacity=1
+#' @param popup_style used only if `popup` is NULL: `"auto"`, `"full"`, `"short"`, or `"none"`
+#'   (no popups). See [map_popup_style()].
+#' @details Each polygon's layerId is its row number in `shapes`, so the web app can build
+#'   the popup for a shape when it is clicked. If there are more than
+#'   `default_max_shapes_map_unsimplified` shapes, they are simplified for the map
+#'   (see [map_shapes_simplified()]).
 #' @return html widget from leaflet::leaflet()
 #' @examples
 #' out = testoutput_ejamit_10pts_1miles
@@ -520,7 +542,7 @@ map_shapes_plot <- function(shapes, main = "Selected Census Units", ...) {
 #'
 #' @export
 #'
-map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacity = 0.5, ...) {
+map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacity = 0.5, ..., popup_style = "auto") {
 
   # check if spatial class
   if (!inherits(shapes, "sf")) {
@@ -541,6 +563,9 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
     }
   }
 
+  # row numbers before empty geometries are dropped, to use as layerId
+  layer_ids <- seq_len(NROW(shapes))
+
   ## DROP EMPTY GEOMETRIES ####
   empty <- try(sf::st_is_empty(shapes))
   if (!inherits(empty, "try-error")) {
@@ -553,6 +578,7 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
       }
     }
     shapes = shapes[keep, ]
+    layer_ids <- layer_ids[keep]
   }
 
   if ("FIPS" %in% names(shapes) && !("pop" %in% names(shapes))) {
@@ -560,10 +586,12 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
     shapes$Population_ACS <- fips2pop(shapes$FIPS)
   }
 
-  if (is.null(popup)) {
+  popup_style <- map_popup_style(NROW(shapes), popup_style)
+  if (is.null(popup) && popup_style != "none") {
     # if all but 3 colnames are in both, looks like results of ejamit(), so use that type of popup formatting
     if (length(setdiff2(names(shapes), names(testoutput_ejamit_10pts_1miles$results_overall))) < 3) {
-      popup = popup_from_ejscreen(sf::st_drop_geometry(shapes))# linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+      popup = popup_from_ejscreen(sf::st_drop_geometry(shapes), # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+                                  detailed = (popup_style == "full"))
     } else {
       # Some columns (e.g. "EJAM Report", "EJSCREEN Map") hold EJAM-generated <a href>
       # links, so escaping them would show raw markup like "&lt;a href=..." in the
@@ -583,9 +611,12 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
     }
   }
 
+  shapes <- map_shapes_simplified(shapes) # only if there are many
+
   mymap <- leaflet::leaflet(shapes) %>%
     leaflet::addPolygons(color = color, fillOpacity = fillOpacity,
                          popup = popup, popupOptions = leaflet::popupOptions(maxHeight = 200),
+                         layerId = layer_ids,
                          ...) %>%
     leaflet::addTiles()
   return(mymap)

@@ -11,7 +11,9 @@ mapfastej(
   labels = column_names,
   launch_browser = FALSE,
   color = "#03F",
-  sitenumber_label = NULL
+  sitenumber_label = NULL,
+  popup_style = "auto",
+  cluster = NULL
 )
 }
 \arguments{
@@ -51,6 +53,15 @@ site number shown in map popups, in place of the auto-assigned row number/ejam_u
 Passed to \code{\link[=popup_from_ejscreen]{popup_from_ejscreen()}} (so used only if column_names is "ej"), and only
 relevant when mydf is a single-site (1-row) table -- see \code{\link[=ejam2report]{ejam2report()}}, whose
 sitenumber_label parameter this supports.}
+
+\item{popup_style}{\code{"auto"}, \code{"full"}, \code{"short"}, or \code{"none"}. See \code{\link[=map_popup_style]{map_popup_style()}}.
+\code{"auto"} gives short popups (if column_names is "ej") when there are more than
+\code{default_max_pts_show_detailed_popups} sites (see \code{\link[=map_size_setting]{map_size_setting()}}).
+\code{"none"} maps the sites without popups.}
+
+\item{cluster}{TRUE to show points as clustered markers instead of circles. The default, NULL,
+clusters them when there are more than \code{default_max_pts_map_show_unclustered} points
+(see \code{\link[=map_size_setting]{map_size_setting()}}).}
 }
 \value{
 like what \code{\link[=mapfast]{mapfast()}} returns

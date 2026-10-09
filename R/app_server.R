@@ -2669,10 +2669,18 @@ app_server <- function(input, output, session) {
   ############################################ #
   ### report_map ### #
 
+  ## With many sites, the map is built without popups, and the full popup for a site
+  ## is built when it is clicked (see the observer below report_map). This keeps the map fast.
+  report_map_popups_on_click <- reactive({
+    req(data_processed())
+    NROW(data_processed()$results_bysite) > map_size_setting("default_max_pts_show_detailed_popups")
+  })
+
   report_map <- reactive({
 
     validate(need(data_processed(), 'Please run an analysis to see results.'))
     circle_color <- '#000080'
+    popup_style <- if (report_map_popups_on_click()) "none" else "auto"
 
     # if shapefile, merge geometry and create buffer if nonzero buffer is set
     if (submitted_upload_method() == "SHP") {
@@ -2686,7 +2694,8 @@ app_server <- function(input, output, session) {
       map_ejam_plus_shp(
         out = data_processed(),
         shp = isolate(data_uploaded()),  # isolate here and below to avoid re-evaluation when user switches site selection method; shp already has ejam_uniq_id assigned (after which invalid rows were dropped I think)
-        radius_buffer = sanitized_radius_now()
+        radius_buffer = sanitized_radius_now(),
+        popup_style = popup_style
       )
 
     } else { #  not shapefile
@@ -2704,7 +2713,8 @@ app_server <- function(input, output, session) {
                 radius = submitted_radius_val(),
                 launch_browser = FALSE,
                 column_names = 'ej', #'all',
-                labels = popup_labels,color = circle_color)
+                labels = popup_labels,color = circle_color,
+                popup_style = popup_style)
       } else {
 
         # FIPS map - download boundaries then map ------------------------------ #
@@ -2724,8 +2734,12 @@ app_server <- function(input, output, session) {
           }
           if (!is.null(fips_shapes) && nrow(fips_shapes) > 0) {
 
-            popups <- popup_from_ejscreen(data_processed()$results_bysite) # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
-            map_shapes_leaflet(fips_shapes, popup = popups)
+            if (popup_style == "none") {
+              map_shapes_leaflet(fips_shapes, popup_style = "none")
+            } else {
+              popups <- popup_from_ejscreen(data_processed()$results_bysite) # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+              map_shapes_leaflet(fips_shapes, popup = popups)
+            }
 
           } else {
             #Possible failsafe needed if fips is invalid? Will it get to this stage? Blank map returned
@@ -2756,6 +2770,22 @@ app_server <- function(input, output, session) {
   output$quick_view_map <- leaflet::renderLeaflet({
     report_map()
   })
+
+  ## full popup for the one site clicked, when the map was built without popups (many sites).
+  ## Each circle, marker, or polygon has its row number in results_bysite as its layerId.
+  show_report_map_popup <- function(click) {
+    req(report_map_popups_on_click(), click$id)
+    i <- suppressWarnings(as.integer(click$id))
+    bysite <- data_processed()$results_bysite
+    req(!is.na(i), i >= 1, i <= NROW(bysite))
+    pop <- popup_from_ejscreen(bysite[i, ], sitenumbers = i) # same as the popups built for a map of fewer sites
+    leaflet::leafletProxy("quick_view_map", session) %>%
+      leaflet::clearPopups() %>%
+      leaflet::addPopups(lng = click$lng, lat = click$lat, popup = pop,
+                         options = leaflet::popupOptions(maxHeight = 400, maxWidth = 850))
+  }
+  observeEvent(input$quick_view_map_shape_click,  {show_report_map_popup(input$quick_view_map_shape_click)})
+  observeEvent(input$quick_view_map_marker_click, {show_report_map_popup(input$quick_view_map_marker_click)})
   ############################################ #
 
   ### leafletProxy()  "an_leaf_map"  ### #
@@ -2847,7 +2877,7 @@ app_server <- function(input, output, session) {
           map_facilities_proxy(rad = sanitized_radius_now(),
                                highlight = TRUE, #input$an_map_clusters,
                                popup_vec = popup_vec,
-                               use_marker_clusters = nrow(d_upload) > global_or_param("marker_cluster_cutoff"),
+                               use_marker_clusters = nrow(d_upload) > map_size_setting("default_max_pts_map_show_unclustered"),
                                clustered = FALSE) # is_clustered())
       )
     }

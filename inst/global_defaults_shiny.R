@@ -72,7 +72,7 @@ msg <- utils::capture.output({
     default_max_pts_map   = 5 * 1000,
     maxmax_pts_map       = 15 * 1000, # max we will show on map
 
-    marker_cluster_cutoff  = 1 * 1000,  # max before showing points as clusters, for leaflet markerClusters
+    # (marker_cluster_cutoff was replaced by default_max_pts_map_show_unclustered in global_defaults_package.R)
 
     # input$max_pts_run uses these as its starting value and max allowed value
     default_max_pts_run  = 10 * 1000, # initial cap but can adjust in advanced tab

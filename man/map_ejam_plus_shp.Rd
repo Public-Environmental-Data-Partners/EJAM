@@ -10,7 +10,8 @@ map_ejam_plus_shp(
   radius_buffer = NULL,
   circle_color = "#000080",
   launch_browser = FALSE,
-  sitenumber_label = NULL
+  sitenumber_label = NULL,
+  popup_style = "auto"
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ map_ejam_plus_shp(
 site number shown in map popups, passed to \code{\link[=popup_from_ejscreen]{popup_from_ejscreen()}}.
 Only relevant when mapping a single site -- see \code{\link[=ejam2report]{ejam2report()}}, whose
 sitenumber_label parameter this supports.}
+
+\item{popup_style}{\code{"auto"}, \code{"full"}, \code{"short"}, or \code{"none"} (no popups). See \code{\link[=map_popup_style]{map_popup_style()}}.}
 }
 \value{
 map html widget
@@ -37,5 +40,10 @@ helper - map the merge of ejamit(shapefile = x) output and the shapefile x
 }
 \details{
 used by server, \code{\link[=ejam2map]{ejam2map()}}, and \code{\link[=mapfast]{mapfast()}}
+
+Each polygon's layerId is the row number of that site in \code{out$results_bysite},
+so the web app can build the popup for a shape when it is clicked.
+If there are more than \code{default_max_shapes_map_unsimplified} shapes, they are
+simplified for the map (see \code{\link[=map_shapes_simplified]{map_shapes_simplified()}}).
 }
 \keyword{internal}
