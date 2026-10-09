@@ -10,7 +10,9 @@
 #' @export
 #'
 mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_names, launch_browser = FALSE, color = "#03F",
-                      sitenumber_label = NULL # name-only, at end to avoid arg shift
+                      sitenumber_label = NULL, # name-only, at end to avoid arg shift
+                      popup_style = "auto",
+                      cluster = NULL
                       ) {
 
   if (missing(radius)) {if ("radius.miles" %in% names(mydf)) {radius = mydf$radius.miles[1]} else {
@@ -21,7 +23,7 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
   }
 
   mapfast(mydf = mydf, radius = radius, column_names = column_names, labels = labels, launch_browser = launch_browser, color = color,
-          sitenumber_label = sitenumber_label)
+          sitenumber_label = sitenumber_label, popup_style = popup_style, cluster = cluster)
 }
 ############################################################################ #
 
@@ -58,6 +60,13 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #'   Passed to [popup_from_ejscreen()] (so used only if column_names is "ej"), and only
 #'   relevant when mydf is a single-site (1-row) table -- see [ejam2report()], whose
 #'   sitenumber_label parameter this supports.
+#' @param popup_style `"auto"`, `"full"`, `"short"`, or `"none"`. See [map_popup_style()].
+#'   `"auto"` gives short popups (if column_names is "ej") when there are more than
+#'   `default_max_pts_show_detailed_popups` sites (see [map_size_setting()]).
+#'   `"none"` maps the sites without popups.
+#' @param cluster TRUE to show points as clustered markers instead of circles. The default, NULL,
+#'   clusters them when there are more than `default_max_pts_map_show_unclustered` points
+#'   (see [map_size_setting()]).
 #' @seealso [ejam2map()] [popup_from_any()] [mapfastej()]
 #' @return plots a map via the leaflet package, with popups with all the columns from mydf,
 #'   and returns html widget
@@ -66,7 +75,9 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #' @export
 #'
 mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names, launch_browser = FALSE, color = "#03F",
-                    sitenumber_label = NULL # name-only, at end to avoid arg shift
+                    sitenumber_label = NULL, # name-only, at end to avoid arg shift
+                    popup_style = "auto",
+                    cluster = NULL
                     ) {
 
   if (missing(radius)) {if ("radius.miles" %in% names(mydf)) {radius = mydf$radius.miles[1]} else {
@@ -107,7 +118,11 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
 
   # popup text ####
 
-  if (column_names[1] == 'ej') {
+  popup_style <- map_popup_style(NROW(mydf), popup_style)
+
+  if (popup_style == "none") {
+    mypop <- NULL
+  } else if (column_names[1] == 'ej') {
 
     ejcols <- c(names_ej, names_ej_state, names_ej_supp, names_ej_supp_state)
     if (!all(ejcols %in% names(mydf))) {
@@ -117,7 +132,8 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       mydf <- cbind(mydf, ejna)
     }
 
-    mypop <- popup_from_ejscreen(sf::st_drop_geometry(mydf), sitenumber_label = sitenumber_label) # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+    mypop <- popup_from_ejscreen(sf::st_drop_geometry(mydf), sitenumber_label = sitenumber_label, # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+                                 detailed = (popup_style == "full"))
 
   } else if (column_names[1] == 'all') {
     mypop <- popup_from_df(sf::st_drop_geometry(mydf))
@@ -194,7 +210,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
         # it seems to be polygons, so map as that
         ## example:
         ##   mydf <- shapefile_from_any(testdata('portland', quiet=TRUE)[1]) ; mapfast(mydf)
-        x <- map_shapes_leaflet(mydf, popup = mypop, color = color)
+        x <- map_shapes_leaflet(mydf, popup = mypop, color = color, popup_style = popup_style)
         xok <- TRUE
 
       } else {
@@ -265,10 +281,27 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
     mydf_names_with_latlon <- latlon_infer(names(mydf))
     names(mydf) <- mydf_names_with_latlon
 
-    x <- leaflet::leaflet(data = mydf) |> leaflet::addTiles() |>
-      leaflet::addCircles(lng = ~lon, lat = ~lat, radius = radius.meters, color = color,
-                          popupOptions = list(maxHeight = 400, maxWidth = 850),
-                          popup = mypop) |>
+    # layerId is the row number, so the web app can build the popup for a site when it is clicked
+    if (is.null(cluster)) {
+      cluster <- NROW(mydf) > map_size_setting("default_max_pts_map_show_unclustered")
+    }
+    x <- leaflet::leaflet(data = mydf) |> leaflet::addTiles()
+    if (isTRUE(cluster)) {
+      # many points: clustered markers, which stay fast and readable when zoomed out
+      x <- x |>
+        leaflet::addCircleMarkers(lng = ~lon, lat = ~lat, radius = 5, color = color, weight = 1,
+                                  layerId = seq_len(NROW(mydf)),
+                                  clusterOptions = leaflet::markerClusterOptions(),
+                                  popupOptions = list(maxHeight = 400, maxWidth = 850),
+                                  popup = mypop)
+    } else {
+      x <- x |>
+        leaflet::addCircles(lng = ~lon, lat = ~lat, radius = radius.meters, color = color,
+                            layerId = seq_len(NROW(mydf)),
+                            popupOptions = list(maxHeight = 400, maxWidth = 850),
+                            popup = mypop)
+    }
+    x <- x |>
       leaflet.extras2::addEasyprint( ) # button to print or print to pdf and save
     if (NROW(mydf) == 1) {
       # zoom out to see the whole circle around the single point
@@ -305,7 +338,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       # fips <- mydf$ejam_uniq_id
       shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       ## any added buffer via radius parameter would have to be added here ***
-      x <- map_shapes_leaflet(shp, popup = mypop, color = color)
+      x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
       xok = TRUE
     }
     ######################### #
@@ -333,7 +366,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       # shp <- shapes_places_from_placefips(fips)
       shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       ## any added buffer via radius parameter would have to be added here ***
-      x <- map_shapes_leaflet(shp, popup = mypop, color = color)
+      x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
       xok = TRUE
     }
     ######################### #
@@ -342,7 +375,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       # fips <- mydf$ejam_uniq_id
       shp <- shapes_from_fips(fips) #  SLOW if many, like > 20  #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       ## any added buffer via radius parameter would have to be added here ***
-      x <- map_shapes_leaflet(shp, popup = mypop, color = color)
+      x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
       xok <- TRUE
     }
     ######################### #
@@ -353,7 +386,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       # shp <- shapes_blockgroups_from_bgfips(fips)
       shp <- shapes_from_fips(fips) #  SLOW if many, like > 20  #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       ## any added buffer via radius parameter would have to be added here ***
-      x <- map_shapes_leaflet(shp, popup = mypop, color = color)
+      x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
       xok <- TRUE
 
       ######################### #

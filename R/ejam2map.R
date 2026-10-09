@@ -28,6 +28,11 @@
 #'   site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
 #'   Only relevant when mapping a single site -- see [ejam2report()], whose
 #'   sitenumber_label parameter this supports.
+#' @param popup_style `"auto"`, `"full"`, `"short"`, or `"none"` (no popups).
+#'   `"auto"` gives short popups when there are more than
+#'   `default_max_pts_show_detailed_popups` sites. See [map_popup_style()] and [map_size_setting()].
+#'   Points are also shown as clustered markers when there are more than
+#'   `default_max_pts_map_show_unclustered`, and many polygons are simplified for the map.
 #'
 #' @return like what [mapfastej()] returns
 #' @examples
@@ -61,7 +66,8 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
                      shape = NULL,     # alias (synonym) for shp
                      shapefile = NULL, # alias (synonym) for shp
                      buffer = NULL,    # alias (synonym) for radius
-                     sitenumber_label = NULL # name-only, at end to avoid arg shift
+                     sitenumber_label = NULL, # name-only, at end to avoid arg shift
+                     popup_style = "auto"
                      ) {
 
   # Aliases (synonyms) for naming consistency with ejamit()/ejamapp() etc.
@@ -146,7 +152,8 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
                       out = ejamitout,
                       radius_buffer = radius,
                       launch_browser = launch_browser,
-                      sitenumber_label = sitenumber_label)
+                      sitenumber_label = sitenumber_label,
+                      popup_style = popup_style)
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {
       stop("cannot map results of shapefile analysis if no polygons provided in shp parameter")
@@ -156,7 +163,8 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
             radius = radius,
             column_names = column_names,
             launch_browser = launch_browser,
-            sitenumber_label = sitenumber_label
+            sitenumber_label = sitenumber_label,
+            popup_style = popup_style
     )
   }
 }

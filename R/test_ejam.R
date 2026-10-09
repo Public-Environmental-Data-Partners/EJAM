@@ -288,7 +288,8 @@ instead of tests/testthat/_logs
       ),
       test_maps = c(
         "test-MAP_FUNCTIONS.R",
-        "test-ejam2map.R"
+        "test-ejam2map.R",
+        "test-utils_map_size.R"
       ),
       test_shape = c(
         "test-latlon_from_shapefile.R",
@@ -638,6 +639,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
                    seconds_byfile = c(1, 1))
       )
 
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = "test-utils_map_size.R", seconds_byfile = 3)
+      )
 
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #

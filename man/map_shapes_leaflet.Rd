@@ -9,7 +9,8 @@ map_shapes_leaflet(
   color = "green",
   popup = NULL,
   fillOpacity = 0.5,
-  ...
+  ...,
+  popup_style = "auto"
 )
 }
 \arguments{
@@ -23,12 +24,21 @@ or at least a data.frame that can be interpreted as indicating points via \code{
 \item{fillOpacity}{passed to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}}
 
 \item{...}{passed to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}, such as opacity=1}
+
+\item{popup_style}{used only if \code{popup} is NULL: \code{"auto"}, \code{"full"}, \code{"short"}, or \code{"none"}
+(no popups). See \code{\link[=map_popup_style]{map_popup_style()}}.}
 }
 \value{
 html widget from leaflet::leaflet()
 }
 \description{
 Map - polygons - Create leaflet map from shapefile, in shiny app
+}
+\details{
+Each polygon's layerId is its row number in \code{shapes}, so the web app can build
+the popup for a shape when it is clicked. If there are more than
+\code{default_max_shapes_map_unsimplified} shapes, they are simplified for the map
+(see \code{\link[=map_shapes_simplified]{map_shapes_simplified()}}).
 }
 \examples{
 out = testoutput_ejamit_10pts_1miles

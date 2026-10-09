@@ -14,7 +14,8 @@ ejam2map(
   shape = NULL,
   shapefile = NULL,
   buffer = NULL,
-  sitenumber_label = NULL
+  sitenumber_label = NULL,
+  popup_style = "auto"
 )
 }
 \arguments{
@@ -46,6 +47,12 @@ downloaded for only that one site.}
 site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
 Only relevant when mapping a single site -- see \code{\link[=ejam2report]{ejam2report()}}, whose
 sitenumber_label parameter this supports.}
+
+\item{popup_style}{\code{"auto"}, \code{"full"}, \code{"short"}, or \code{"none"} (no popups).
+\code{"auto"} gives short popups when there are more than
+\code{default_max_pts_show_detailed_popups} sites. See \code{\link[=map_popup_style]{map_popup_style()}} and \code{\link[=map_size_setting]{map_size_setting()}}.
+Points are also shown as clustered markers when there are more than
+\code{default_max_pts_map_show_unclustered}, and many polygons are simplified for the map.}
 }
 \value{
 like what \code{\link[=mapfastej]{mapfastej()}} returns

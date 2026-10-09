@@ -81,6 +81,23 @@ global_defaults_package$pdf_map_snapshot_delay = 1
 global_defaults_package$pdf_print_wait         = 2
 ############################### #
 
+# MAP SIZE LIMITS FOR MANY SITES ####
+# Maps of many sites get simpler, so they stay fast and the downloaded report stays small.
+# Used by the web app and by ejam2report(), ejam2map(), mapfast(), etc. See map_size_setting().
+
+# Above this many sites, popups in the downloaded report are short (site ID, location, area, report links, population).
+# The map in the web app keeps full popups by building each one when it is clicked.
+global_defaults_package$default_max_pts_show_detailed_popups = 1000
+# Above this many points, points are shown as clustered markers instead of circles.
+# (This replaces the older shiny setting marker_cluster_cutoff.)
+global_defaults_package$default_max_pts_map_show_unclustered = 5000
+# Above this many points (or polygons), the downloaded report shows a static image of the map, without popups.
+global_defaults_package$default_max_pts_map_show_in_downloaded_report    = 20000
+global_defaults_package$default_max_shapes_map_show_in_downloaded_report = 20000
+# Above this many polygons, shapes are simplified for the map (placeholder until performance testing).
+global_defaults_package$default_max_shapes_map_unsimplified = 500
+############################### #
+
 # APP LOGO ####
 
 # app_logo is used in header at top of app webpage
