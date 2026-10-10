@@ -316,6 +316,8 @@ map_counties_in_state <- function(ST = "DE", colorcolumn = c('pop', "NAME", "POP
 #' Map - County polygons / boundaries - Create leaflet or static map of results of analysis
 #'
 #' @param mydf something like  ejamit(fips = fips_counties_from_statename("Kentucky"), radius = 0)$results_bysite
+#' @param ST ignored if mydf is provided. If mydf is omitted, ST can be the 2-character
+#'   abbreviation of a State, and the function will run the analysis of all counties in that state before drawing the map.
 #' @param colorvarname colname of indicator in mydf that drives color-coding
 #'   (or alternatively, colorvarname = "green" means a single specific color for all, like "green")
 #' @param static_not_leaflet set TRUE to use [map_shapes_plot()] instead of [map_shapes_leaflet()]
@@ -354,7 +356,17 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
                                colorpalette = c('gray',   'yellow', 'orange',   'red'),
                                static_not_leaflet = FALSE, main = "Selected Counties",
                                fillOpacity = 0.5,
+                               ST = "DE",
                                ...) {
+
+  if (missing(mydf)) {
+    # Data not provided, so if they specified 1 State, run analysis to get data.
+    stopifnot(!is.null(ST), length(ST) == 1, ST %in% stateinfo$ST)
+    fips <- fips_counties_from_state_abbrev(ST)
+    out <- ejamit(fips = fips, radius = 0)
+    mydf <- out$results_bysite
+    rm(out)
+  }
 
   # *** CANNOT HANDLE colorvarname = ANYTHING ELSE BESIDES THOSE SCALED 0 TO 100, SO FAR
   if (!(colorvarname %in% names(mydf))) {

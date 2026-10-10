@@ -14,6 +14,7 @@ mapfastej_counties(
   static_not_leaflet = FALSE,
   main = "Selected Counties",
   fillOpacity = 0.5,
+  ST = "DE",
   ...
 )
 }
@@ -37,6 +38,9 @@ get assigned which colors from colorpalette}
 \item{main}{title for map}
 
 \item{fillOpacity}{passed to \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}} which passes it to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}}
+
+\item{ST}{ignored if mydf is provided. If mydf is omitted, ST can be the 2-character
+abbreviation of a State, and the function will run the analysis of all counties in that state before drawing the map.}
 
 \item{...}{depending on value of static_not_leaflet T/F, passed to \code{\link[=map_shapes_plot]{map_shapes_plot()}}
 or to \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}} which passes it to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}, such as opacity=1}
