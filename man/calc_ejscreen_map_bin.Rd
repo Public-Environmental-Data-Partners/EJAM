@@ -4,13 +4,16 @@
 \alias{calc_ejscreen_map_bin}
 \title{Calculate EJSCREEN map color bins}
 \usage{
-calc_ejscreen_map_bin(x)
+calc_ejscreen_map_bin(x, colorbins = c(10, 20, 30, 40, 50, 60, 70, 80, 90, 95))
 }
 \arguments{
 \item{x}{numeric vector of percentiles on a 0-100 scale.}
+
+\item{colorbins}{numeric vector of cutoffs defining bins (not including 0 or 100)}
 }
 \value{
-integer vector of bin numbers from 1 to 11.
+integer vector (as long as x) of bin numbers from 1 to 11 by default,
+or 1 to length(colorbins) + 1 in general.
 }
 \description{
 Calculate EJSCREEN map color bins
@@ -22,5 +25,6 @@ Percentiles are expected to be represented on a 0-100 scale. Bins match the
 historical EJSCREEN thresholds: 0-9th percentile is bin 1,
 10-19 is bin 2, ..., 80-89 is bin 9, 90-94 is bin 10, and 95-100 is bin 11.
 Missing or out-of-range percentiles return \code{NA_integer_}.
+also see helper \code{calc_ejscreen_map_color()}
 }
 \keyword{internal}
