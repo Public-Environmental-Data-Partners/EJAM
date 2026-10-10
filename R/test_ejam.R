@@ -636,8 +636,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       )
       timebyfile <- rbind(
         timebyfile,
-        data.table(file = c("test-mact_labels.R", "test-utils_offline.R"),
-                   seconds_byfile = c(1, 1))
+        data.table(file = c("test-mact_labels.R", "test-utils_offline.R",
+                            "test-mapfast-colors.R", "test-map_ejscreen_indicator.R"),
+                   seconds_byfile = c(1, 1, 1, 0))
       )
 
 
