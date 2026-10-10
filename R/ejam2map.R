@@ -16,6 +16,8 @@
 #'   continuous viridis palette. An unknown column name that is not a valid R
 #'   color causes an error. When selecting one sitenumber, supply that site's
 #'   color or the column name.
+#'   NULL (the default) keeps the map helper's usual blue: `"#03F"` for
+#'   point circles or `"#000080"` for shapefile/FIPS polygons.
 #'   These point/polygon maps do not automatically add a percentile legend;
 #'   see [mapfastej_counties()] for a county choropleth with a legend.
 #' @param launch_browser logical optional whether to open the web browser to view the map
@@ -164,27 +166,22 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
 
   # MAP ####
 
+  mapargs <- list(launch_browser = launch_browser, sitenumber_label = sitenumber_label)
+  # Omit NULL so each map helper retains its own default color.
+  if (!is.null(color)) mapargs$color <- color
+
   if (!is.null(shp) && (sitetype %in% "shp" || (sitetype %in% "fips" ))) {
     ## shp/fips ####
     # we have to assume that buffer was already added to polygons passed here - do not add them again
-    map_ejam_plus_shp(shp = shp,
-                      out = ejamitout,
-                      radius_buffer = radius,
-                      launch_browser = launch_browser,
-                      color = color,
-                      sitenumber_label = sitenumber_label)
+    do.call(map_ejam_plus_shp, c(list(shp = shp, out = ejamitout,
+                                     radius_buffer = radius), mapargs))
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {
       stop("cannot map results of shapefile analysis if no polygons provided in shp parameter")
     }
     ## latlon (or missing polygons for fips case) ####
-    mapfast(mydf = ejamitout$results_bysite,
-            radius = radius,
-            column_names = column_names,
-            launch_browser = launch_browser,
-            color = color,
-            sitenumber_label = sitenumber_label
-    )
+    do.call(mapfast, c(list(mydf = ejamitout$results_bysite, radius = radius,
+                            column_names = column_names), mapargs))
   }
 }
 ############################################################################ #

@@ -50,6 +50,8 @@ helpers \code{\link[=pctile2color]{pctile2color()}} and \code{\link[=ratio2color
 continuous viridis palette. An unknown column name that is not a valid R
 color causes an error. When selecting one sitenumber, supply that site's
 color or the column name.
+NULL (the default) keeps the map helper's usual blue: \code{"#03F"} for
+point circles or \code{"#000080"} for shapefile/FIPS polygons.
 These point/polygon maps do not automatically add a percentile legend;
 see \code{\link[=mapfastej_counties]{mapfastej_counties()}} for a county choropleth with a legend.}
 

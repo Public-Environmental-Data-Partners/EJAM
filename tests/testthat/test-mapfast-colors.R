@@ -73,3 +73,48 @@ test_that("mapfast validates column names before geometry downloads", {
   df$label <- c("first", "second")
   expect_error(mapfast(df, color = "label"), "must contain numeric values", fixed = TRUE)
 })
+
+test_that("ejam2map preserves point defaults and explicit color choices", {
+  out <- list(sitetype = "latlon", results_bysite = data.frame(
+    lat = c(38, 39), lon = c(-75, -76), pop = c(100, 200),
+    valid = TRUE, radius.miles = 1, pctile.pctlowinc = c(80, 95)))
+  map <- ejam2map(out, column_names = "all", launch_browser = FALSE)
+  expect_identical(mapfast_layer_colors(map, "addCircles"), "#03F")
+  map <- ejam2map(out, column_names = "all", color = NULL, launch_browser = FALSE)
+  expect_identical(mapfast_layer_colors(map, "addCircles"), "#03F")
+  choices <- list("red", c("green", "purple"), "pctile.pctlowinc")
+  expected <- list("red", c("green", "purple"), c("yellow", "red"))
+  for (i in seq_along(choices)) {
+    map <- ejam2map(out, column_names = "all", color = choices[[i]], launch_browser = FALSE)
+    expect_identical(mapfast_layer_colors(map, "addCircles"), expected[[i]])
+  }
+})
+
+test_that("ejam2map preserves polygon defaults for supplied and downloaded boundaries", {
+  square <- function(x) sf::st_polygon(list(matrix(
+    c(x, 39, x + 0.1, 39, x + 0.1, 39.1, x, 39.1, x, 39), ncol = 2, byrow = TRUE)))
+  shp <- sf::st_sf(ejam_uniq_id = 1:2,
+                  geometry = sf::st_sfc(square(-75), square(-76), crs = 4326))
+  testthat::local_mocked_bindings(
+    popup_from_ejscreen = function(x, ...) rep("Site", nrow(x)),
+    shapes_from_fips = function(fips) shp,
+    .package = "EJAM"
+  )
+  for (type in c("shp", "fips")) {
+    out <- list(sitetype = type, results_bysite = data.frame(
+      ejam_uniq_id = if (type == "shp") 1:2 else c("01003", "01005"),
+      pop = c(100, 200), valid = TRUE, radius.miles = 0,
+      pctile.pctlowinc = c(80, 95)))
+    boundaries <- if (type == "shp") shp else NULL
+    map <- ejam2map(out, shp = boundaries, launch_browser = FALSE)
+    expect_identical(mapfast_layer_colors(map, "addPolygons"), "#000080")
+    map <- ejam2map(out, shp = boundaries, color = NULL, launch_browser = FALSE)
+    expect_identical(mapfast_layer_colors(map, "addPolygons"), "#000080")
+    choices <- list("red", c("green", "purple"), "pctile.pctlowinc")
+    expected <- list("red", c("green", "purple"), c("yellow", "red"))
+    for (i in seq_along(choices)) {
+      map <- ejam2map(out, shp = boundaries, color = choices[[i]], launch_browser = FALSE)
+      expect_identical(mapfast_layer_colors(map, "addPolygons"), expected[[i]])
+    }
+  }
+})
