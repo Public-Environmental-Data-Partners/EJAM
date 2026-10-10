@@ -10,6 +10,7 @@
 #' @param ejamitout output of ejamit()
 #' @param radius radius in miles
 #' @param column_names can be "ej", passed to [mapfast()]
+#' @param color can provide a vector to color code based on indicator score (see example)
 #' @param launch_browser logical optional whether to open the web browser to view the map
 #' @param shp shapefile it can map if analysis was for polygons, for example
 #' @param shape alias (synonym) for shp
@@ -40,7 +41,15 @@
 #' # See in RStudio viewer pane
 #' ejam2map(out, launch_browser = FALSE)
 #' mapfastej(out$results_bysite[c(12,31),])
+#'
+#' # color-code points on map to show which ones had a high indicator score
+#' out <- testoutput_ejamit_100pts_1miles
+#' mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
+#' mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
+#' mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))
 #' \dontrun{
+#'   out <- ejamit(fips = fips_counties_from_state_abbrev(c('KY', 'IN')))
+#'   ejam2map(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 #'
 #' # See in local browser instead
 #' ejam2map(out)
@@ -61,6 +70,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
                      shape = NULL,     # alias (synonym) for shp
                      shapefile = NULL, # alias (synonym) for shp
                      buffer = NULL,    # alias (synonym) for radius
+                     color = NULL,
                      sitenumber_label = NULL # name-only, at end to avoid arg shift
                      ) {
 
@@ -146,6 +156,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
                       out = ejamitout,
                       radius_buffer = radius,
                       launch_browser = launch_browser,
+                      circle_color = color,
                       sitenumber_label = sitenumber_label)
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {
@@ -156,6 +167,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
             radius = radius,
             column_names = column_names,
             launch_browser = launch_browser,
+            color = color,
             sitenumber_label = sitenumber_label
     )
   }

@@ -68,7 +68,15 @@ out = testoutput_ejamit_100pts_1miles
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
+
+# color-code points on map to show which ones had a high indicator score
+out <- testoutput_ejamit_100pts_1miles
+mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
+mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
+mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))
 \dontrun{
+  out <- ejamit(fips = fips_counties_from_state_abbrev(c('KY', 'IN')))
+  ejam2map(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 
 # See in local browser instead
 ejam2map(out)

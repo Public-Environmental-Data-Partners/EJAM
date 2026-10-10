@@ -178,7 +178,9 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
         # mydf <- ejamit(shapefile = testshapes_2, radius = 0)$results_bysite ; mapfast(mydf)
 
         shp <- ejam2shapefile(mydf, save = FALSE) # has all columns but they get ignored in next step
-        x <- map_ejam_plus_shp(shp = shp, out = mydf, radius_buffer = radius, launch_browser = launch_browser)
+        x <- map_ejam_plus_shp(shp = shp, out = mydf, radius_buffer = radius,
+                               circle_color = color, # '#000080' is default there
+                               launch_browser = launch_browser)
         xok <- TRUE
       } else {
         # has latlon but reported as "shp"

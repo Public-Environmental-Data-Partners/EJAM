@@ -14,6 +14,7 @@ ejam2map(
   shape = NULL,
   shapefile = NULL,
   buffer = NULL,
+  color = NULL,
   sitenumber_label = NULL
 )
 }
@@ -42,6 +43,8 @@ downloaded for only that one site.}
 
 \item{buffer}{alias (synonym) for radius}
 
+\item{color}{can provide a vector to color code based on indicator score (see example)}
+
 \item{sitenumber_label}{optional, display-only override (a number or short text) of the
 site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
 Only relevant when mapping a single site -- see \code{\link[=ejam2report]{ejam2report()}}, whose
@@ -69,7 +72,15 @@ out = testoutput_ejamit_100pts_1miles
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
+
+# color-code points on map to show which ones had a high indicator score
+out <- testoutput_ejamit_100pts_1miles
+mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
+mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
+mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))
 \dontrun{
+  out <- ejamit(fips = fips_counties_from_state_abbrev(c('KY', 'IN')))
+  ejam2map(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 
 # See in local browser instead
 ejam2map(out)
