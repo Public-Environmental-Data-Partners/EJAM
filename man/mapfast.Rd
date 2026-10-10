@@ -44,7 +44,8 @@ launch a default browser window to show the map
 and print the temp filepath and filename in the console.
 Normally the map would be shown in the default RStudio viewer pane.}
 
-\item{color}{color of circles or polygons}
+\item{color}{A single color or one color per row, for circles or polygons.
+See \code{\link[=pctile2color]{pctile2color()}}, \code{\link[=pctile2colorhex]{pctile2colorhex()}}, and \code{\link[=ratio2color]{ratio2color()}}.}
 
 \item{sitenumber_label}{optional, display-only override (a number or short text) of the
 site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
@@ -60,18 +61,20 @@ and returns html widget
 Map - points - Create leaflet html widget map of points using table with lat lon
 }
 \examples{
-pts = testpoints_100
+pts <- testpoints_100
+pts <- pts[is.finite(pts$lat) & is.finite(pts$lon), ]
 mapfast(pts)
 
 # out = ejamit(pts, radius = 1)
-out = testoutput_ejamit_100pts_1miles
+out <- testoutput_ejamit_100pts_1miles
+# Use valid sites so the color vector matches the rows being mapped.
+out$results_bysite <- out$results_bysite[out$results_bysite$valid \%in\% TRUE, ]
 
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
 
 # color-code points on map to show which ones had a high indicator score
-out <- testoutput_ejamit_100pts_1miles
 mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
 mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))

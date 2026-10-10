@@ -34,8 +34,8 @@
 #'
 #' out <- testoutput_ejamit_100pts_1miles
 #' plot_barplot_ratios(
-#'   unlist(out$results_overall[ ,
-#'      c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ])
+#'   unlist(out$results_overall[,
+#'     c(names_d_ratio_to_avg, names_d_subgroups_ratio_to_avg), with = FALSE])
 #' )
 #'
 #' @export
@@ -82,7 +82,9 @@ plot_barplot_ratios_ez = function(out,
 #' @param ratio.to.us.d.overall named list of a few ratios to plot, but see [ejam2barplot()]
 #'   for an easier way to specify which indicator to show.
 #' @param shortlabels optional, names to use for plot - should be same length as named list ratio.to.us.d.overall
-#' @param mycolorsavailable optional (best to leave as default)
+#' @param mycolorsavailable Four colors for ratios below 1.05, from 1.05 to
+#'   below 2, from 2 to below 3, and at least 3. The shared defaults are
+#'   gray, yellow, orange, and red. The existing legend uses these color names.
 #' @param main optional, title for plot, like "Analyzed Locations Compared to US Overall",
 #'   or if using state ratios, include the word "State" to have it try to infer what the legend should be
 #' @param ylab optional, label for y axis
@@ -202,17 +204,17 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   if (identical(vs, "state")) {
     color_labels <- c(
       "red" = "At least 3x State Average",
-      "orange" = "2-3x State Average",
-      "yellow" = "1-2x State Average",
-      "gray" = "Below State Average"
+      "orange" = "2-<3x State Average",
+      "yellow" = "1.05-<2x State Average",
+      "gray" = "Below 1.05x State Average"
     )
     legendTitle <- "Ratio vs State Average"
   } else {
     color_labels <- c(
       "red" = "At least 3x US Average",
-      "orange" = "2-3x US Average",
-      "yellow" = "1-2x US Average",
-      "gray" = "Below US Average"
+      "orange" = "2-<3x US Average",
+      "yellow" = "1.05-<2x US Average",
+      "gray" = "Below 1.05x US Average"
     )
     legendTitle <- "Ratio vs US Average"
   }

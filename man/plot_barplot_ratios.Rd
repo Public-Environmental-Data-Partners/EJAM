@@ -21,7 +21,9 @@ for an easier way to specify which indicator to show.}
 
 \item{shortlabels}{optional, names to use for plot - should be same length as named list ratio.to.us.d.overall}
 
-\item{mycolorsavailable}{optional (best to leave as default)}
+\item{mycolorsavailable}{Four colors for ratios below 1.05, from 1.05 to
+below 2, from 2 to below 3, and at least 3. The shared defaults are
+gray, yellow, orange, and red. The existing legend uses these color names.}
 
 \item{main}{optional, title for plot, like "Analyzed Locations Compared to US Overall",
 or if using state ratios, include the word "State" to have it try to infer what the legend should be}
@@ -60,8 +62,8 @@ plot_barplot_ratios_ez(
 
 out <- testoutput_ejamit_100pts_1miles
 plot_barplot_ratios(
-  unlist(out$results_overall[ ,
-     c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ])
+  unlist(out$results_overall[,
+    c(names_d_ratio_to_avg, names_d_subgroups_ratio_to_avg), with = FALSE])
 )
 
 }

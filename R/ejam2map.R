@@ -1,16 +1,20 @@
 # . ####
 
 
-#' Show EJAM results as a map of points
-#' @description Takes the output of ejamit() and uses [mapfastej()] to
-#' create a map of the points.
-#' @details Gets radius by checking ejamitout$results_overall$radius.miles
-#' You can use browse=TRUE to save it as a shareable .html file
+#' Show EJAM results as a map of points or polygons
+#' @description Takes the output of ejamit() and maps the analyzed sites,
+#' using circles for point locations or polygons for shapefile and FIPS results.
+#' @details Gets radius from ejamitout$results_bysite$radius.miles.
+#' Use launch_browser = TRUE to save it as a shareable .html file
 #' and see it in your web browser.
 #' @param ejamitout output of ejamit()
-#' @param radius radius in miles
 #' @param column_names can be "ej", passed to [mapfast()]
-#' @param color can provide a vector to color code based on indicator score (see example)
+#' @param color A single color or a vector of colors in the same order as
+#'   the rows being mapped. Internal helpers [pctile2color()],
+#'   [pctile2colorhex()], and [ratio2color()] can convert indicator values
+#'   to colors. When selecting one sitenumber, supply that site's color.
+#'   These point/polygon maps do not automatically add a percentile legend;
+#'   see [mapfastej_counties()] for a county choropleth with a legend.
 #' @param launch_browser logical optional whether to open the web browser to view the map
 #' @param shp shapefile it can map if analysis was for polygons, for example
 #' @param shape alias (synonym) for shp
@@ -32,18 +36,20 @@
 #'
 #' @return like what [mapfastej()] returns
 #' @examples
-#' pts = testpoints_100
+#' pts <- testpoints_100
+#' pts <- pts[is.finite(pts$lat) & is.finite(pts$lon), ]
 #' mapfast(pts)
 #'
 #' # out = ejamit(pts, radius = 1)
-#' out = testoutput_ejamit_100pts_1miles
+#' out <- testoutput_ejamit_100pts_1miles
+#' # Use valid sites so the color vector matches the rows being mapped.
+#' out$results_bysite <- out$results_bysite[out$results_bysite$valid %in% TRUE, ]
 #'
 #' # See in RStudio viewer pane
 #' ejam2map(out, launch_browser = FALSE)
 #' mapfastej(out$results_bysite[c(12,31),])
 #'
 #' # color-code points on map to show which ones had a high indicator score
-#' out <- testoutput_ejamit_100pts_1miles
 #' mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
 #' mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 #' mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))

@@ -17,18 +17,20 @@ name of tempfile that is the html widget
 quick way to open a map html widget in local browser (saved as tempfile you can share)
 }
 \examples{
-pts = testpoints_100
+pts <- testpoints_100
+pts <- pts[is.finite(pts$lat) & is.finite(pts$lon), ]
 mapfast(pts)
 
 # out = ejamit(pts, radius = 1)
-out = testoutput_ejamit_100pts_1miles
+out <- testoutput_ejamit_100pts_1miles
+# Use valid sites so the color vector matches the rows being mapped.
+out$results_bysite <- out$results_bysite[out$results_bysite$valid \%in\% TRUE, ]
 
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
 
 # color-code points on map to show which ones had a high indicator score
-out <- testoutput_ejamit_100pts_1miles
 mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
 mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))

@@ -17,4 +17,17 @@ A list with \code{colorbins} (interior cutoffs), \code{colorfills}, and
 \description{
 Default colors and cutoffs for percentile and ratio displays
 }
+\details{
+These defaults are shared by the color helpers, barplots, Excel
+heatmaps, and county maps. The four percentile colors cover \verb{[0, 80)},
+\verb{[80, 90)}, \verb{[90, 95)}, and \verb{[95, 100]}. Ratio cutoffs are 1.05, 2, and 3.
+The historical EJSCREEN scheme splits the range below 80 into eight
+gray bins. Labels summarize whole percentiles; fractional values use
+the same cutoffs. Changing the returned list does not change package defaults.
+}
+\examples{
+EJAM:::ejscreen_color_defaults()           # four percentile bins
+EJAM:::ejscreen_color_defaults("ratio")    # ratios to an average
+EJAM:::ejscreen_color_defaults("ejscreen") # eleven historical map bins
+}
 \keyword{internal}

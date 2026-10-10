@@ -64,14 +64,18 @@
 #' @param community_html the HTML file of the summary/community report if available (re-created if this is omitted/NULL but community_reportadd is TRUE)
 #'
 #' @param heatmap_colnames optional vector of colnames to apply heatmap colors, defaults to percentiles
-#' @param heatmap_cuts vector of values to separate heatmap colors, between 0-100 for percentiles
+#' @param heatmap_cuts Increasing lower cutoffs on the 0-100 percentile scale.
+#'   Defaults to 80, 90, and 95 from [ejscreen_color_defaults()].
 #' @param heatmap_colors vector of color names for heatmap bins, same length as
 #'   heatmap_cuts, where first color is for those >= 1st cutpoint, but <2d,
 #'   second color is for those >=2d cutpoint but <3d, etc.
 #'
 #' @param heatmap2_colnames like heatmap_colnames but for ratios by default
-#' @param heatmap2_cuts  like heatmap_cuts but for ratios by default
-#' @param heatmap2_colors like heatmap_colors but for ratios
+#' @param heatmap2_cuts Increasing lower cutoffs for ratios to an average.
+#'   Defaults to 1.05, 2, and 3 from [ejscreen_color_defaults()].
+#' @param heatmap2_colors Like heatmap_colors but for ratios; defaults to
+#'   yellow, orange, and red. Values below the first cutoff receive no heatmap
+#'   fill; other cell styles may still apply.
 #'
 #' @param graycolnames which columns to de-emphasize
 #' @param graycolor color used to de-emphasize some columns
@@ -90,6 +94,10 @@
 #'
 #'
 #' @examples
+#' # Create a workbook without launching Excel or building a community report.
+#' wb <- ejam2excel(testoutput_ejamit_10pts_1miles,
+#'   save_now = FALSE, interactive_console = FALSE,
+#'   community_reportadd = FALSE, ok2plot = FALSE, reports = NULL)
 #' \dontrun{
 #' # Add purple to flag indicators at 99th percentile
 #' ejam2excel(testoutput_ejamit_10pts_1miles,

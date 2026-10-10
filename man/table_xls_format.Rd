@@ -108,7 +108,8 @@ If report tab is added, though, standalone static map in excel tab is redundant.
 
 \item{heatmap_colnames}{optional vector of colnames to apply heatmap colors, defaults to percentiles}
 
-\item{heatmap_cuts}{vector of values to separate heatmap colors, between 0-100 for percentiles}
+\item{heatmap_cuts}{Increasing lower cutoffs on the 0-100 percentile scale.
+Defaults to 80, 90, and 95 from \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}.}
 
 \item{heatmap_colors}{vector of color names for heatmap bins, same length as
 heatmap_cuts, where first color is for those >= 1st cutpoint, but <2d,
@@ -116,9 +117,12 @@ second color is for those >=2d cutpoint but <3d, etc.}
 
 \item{heatmap2_colnames}{like heatmap_colnames but for ratios by default}
 
-\item{heatmap2_cuts}{like heatmap_cuts but for ratios by default}
+\item{heatmap2_cuts}{Increasing lower cutoffs for ratios to an average.
+Defaults to 1.05, 2, and 3 from \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}.}
 
-\item{heatmap2_colors}{like heatmap_colors but for ratios}
+\item{heatmap2_colors}{Like heatmap_colors but for ratios; defaults to
+yellow, orange, and red. Values below the first cutoff receive no heatmap
+fill; other cell styles may still apply.}
 
 \item{graycolnames}{which columns to de-emphasize}
 
@@ -154,15 +158,12 @@ a workbook, ready to be saved in spreadsheet format, with tabs like "Overall" an
 Used by table_xls_from_ejam(), and see ejam2excel()
 }
 \examples{
-\dontrun{
-  EJAM:::table_xls_format(
-    overall = testoutput_ejamit_100pts_1miles$results_overall,
-    eachsite = testoutput_ejamit_100pts_1miles$results_bysite,
-    saveas = tempfile(fileext = ".xlsx"))
- # can just pass the whole results of ejamit(), for convenience
- wb <- EJAM:::table_xls_format(testoutput_ejamit_100pts_1miles)
- openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"), overwrite = TRUE)
-}
+# Format and save a workbook without creating plots or reports.
+out <- testoutput_ejamit_10pts_1miles
+wb <- EJAM:::table_xls_format(
+  overall = out$results_overall, eachsite = out$results_bysite,
+  formatted = out$formatted, reports = NULL, ok2plot = FALSE)
+openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"))
 
 }
 \seealso{

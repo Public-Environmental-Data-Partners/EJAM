@@ -26,6 +26,12 @@ are 0-9 (bin 1), 10-19 (bin 2), through 80-89 (bin 9), 90-94 (bin 10),
 and 95-100 (bin 11). A cutoff belongs to the higher bin, including
 fractional percentiles. Missing or out-of-range values return \code{NA_integer_}.
 }
+\examples{
+EJAM:::calc_ejscreen_map_bin(c(0, 79.9, 80, 90, 95, 100, NA))
+# 1, 8, 9, 10, 11, 11, NA
+EJAM:::calc_ejscreen_map_bin(c(79, 80, 90, 95), colorbins = c(80, 90, 95))
+# 1, 2, 3, 4
+}
 \seealso{
 \code{\link[=calc_ejscreen_map_color]{calc_ejscreen_map_color()}} \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}
 }

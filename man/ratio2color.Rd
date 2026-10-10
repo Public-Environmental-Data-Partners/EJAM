@@ -28,6 +28,12 @@ Convert ratios to colors for maps, heatmap text, or barplots
 Cutoffs belong to the higher bin. Values below the first cutoff,
 including negative values, receive the first color, matching barplots.
 }
+\examples{
+EJAM:::ratio2color(c(1, 1.049, 1.05, 2, 3, 200, NA))
+# gray, gray, yellow, orange, red, red, NA
+EJAM:::ratio2color(c(1, 2, 4),
+  colorbins = c(2, 4), colorfills = c("gray", "orange", "red"))
+}
 \seealso{
 \code{\link[=pctile2color]{pctile2color()}} \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}
 }

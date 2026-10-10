@@ -5,10 +5,11 @@
 #'
 #' @inheritParams ejam2excel
 #'
-#' @examples \dontrun{
-#'   EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles,
-#'     fname = tempfile(fileext = ".xlsx"))
-#'   }
+#' @examples
+#' wb <- EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles,
+#'   save_now = FALSE, interactive_console = FALSE,
+#'   community_reportadd = FALSE, ok2plot = FALSE, reports = NULL)
+#' openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"))
 #' @return returns a workbook object for use by openxlsx::saveWorkbook(wb_out, pathname)
 #'   or returns just the full path/file name of where it was saved if save_now = TRUE
 #'

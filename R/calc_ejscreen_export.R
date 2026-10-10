@@ -1759,9 +1759,9 @@ calc_ejscreen_map_fields_added <- function(x,
 
 ###   helpers related to color-coded maps, heatmap text, or color-coded barplots
 
-# see ejam2barplot()       that used param  mycolorsavailable = c("gray", "yellow", "orange", "red") via helpers like plot_barplot_ratios() (around line 179) and plot_barplot_ratios_ez()
-# see table_xls_format()   that used params heatmap_colors = c("yellow", "orange", "red") and heatmap_cuts = c(80, 90, 95). exposed through ejam2excel(), colors Excel cells.
-# see mapfastej_counties() that used params colorfills, colorbins, and colorlabels. directly uses leaflet::colorBin() but could now use pctile2colorhex()
+# ejam2barplot() uses ratio2color() via plot_barplot_ratios_ez() and plot_barplot_ratios().
+# table_xls_format(), exposed through ejam2excel(), uses these defaults for Excel heatmap colors and cuts.
+# mapfastej_counties() uses pctile2colorhex() for explicit bin boundaries, retaining its existing legend colors.
 
 ###################################################### #
 
@@ -1771,6 +1771,16 @@ calc_ejscreen_map_fields_added <- function(x,
 #'   average, or `"ejscreen"` for the historical eleven EJSCREEN map bins.
 #' @return A list with `colorbins` (interior cutoffs), `colorfills`, and
 #'   `colorlabels`. Percentile map endpoints 0 and 100 are not included.
+#' @details These defaults are shared by the color helpers, barplots, Excel
+#'   heatmaps, and county maps. The four percentile colors cover `[0, 80)`,
+#'   `[80, 90)`, `[90, 95)`, and `[95, 100]`. Ratio cutoffs are 1.05, 2, and 3.
+#'   The historical EJSCREEN scheme splits the range below 80 into eight
+#'   gray bins. Labels summarize whole percentiles; fractional values use
+#'   the same cutoffs. Changing the returned list does not change package defaults.
+#' @examples
+#' EJAM:::ejscreen_color_defaults()           # four percentile bins
+#' EJAM:::ejscreen_color_defaults("ratio")    # ratios to an average
+#' EJAM:::ejscreen_color_defaults("ejscreen") # eleven historical map bins
 #' @keywords internal
 #'
 ejscreen_color_defaults <- function(type = c("pctile", "ratio", "ejscreen")) {
@@ -1815,6 +1825,11 @@ validate_colorbins <- function(colorbins, colorfills = NULL) {
 #' @param x Numeric vector of percentiles on a 0-100 scale.
 #' @param colorbins Strictly increasing interior cutoffs, excluding 0 and 100.
 #' @return Integer vector of bin numbers, as long as `x`.
+#' @examples
+#' EJAM:::calc_ejscreen_map_bin(c(0, 79.9, 80, 90, 95, 100, NA))
+#' # 1, 8, 9, 10, 11, 11, NA
+#' EJAM:::calc_ejscreen_map_bin(c(79, 80, 90, 95), colorbins = c(80, 90, 95))
+#' # 1, 2, 3, 4
 #' @seealso [calc_ejscreen_map_color()] [ejscreen_color_defaults()]
 #' @keywords internal
 #'
@@ -1857,7 +1872,14 @@ calc_ejscreen_map_color <- function(x,
 #'
 #' @inheritParams calc_ejscreen_map_color
 #' @inherit calc_ejscreen_map_color return
-#' @details Alias for [calc_ejscreen_map_color()].
+#' @details Alias for [calc_ejscreen_map_color()], including its historical
+#'   eleven-bin defaults. Both percentile schemes use the same four colors.
+#' @examples
+#' EJAM:::pctile2color(c(79, 80, 90, 95, 100, NA))
+#' # gray, yellow, orange, red, red, NA
+#' defaults <- EJAM:::ejscreen_color_defaults()
+#' EJAM:::pctile2color(c(79, 80, 90, 95),
+#'   colorbins = defaults$colorbins, colorfills = defaults$colorfills)
 #' @keywords internal
 #'
 pctile2color <- function(x,
@@ -1877,6 +1899,15 @@ pctile2color <- function(x,
 #' @return Character vector of hexadecimal colors, as long as `x`.
 #'   Out-of-range values also produce a warning from Leaflet.
 #' @details Cutoffs belong to the higher bin; the final endpoint is included.
+#'   The default scheme has four bins. With explicit boundaries, values are
+#'   checked against their range rather than an additional 0-100 restriction.
+#' @examples
+#' EJAM:::pctile2colorhex(c(79, 80, 90, 95, 100, NA))
+#' # #BEBEBE, #FFFF00, #FFA500, #FF0000, #FF0000, NA
+#' defaults <- EJAM:::ejscreen_color_defaults()
+#' EJAM:::pctile2colorhex(c(79, 80, 95, NA),
+#'   colorbins = c(0, defaults$colorbins, 100),
+#'   colorfills = defaults$colorfills, na.color = "#808080")
 #' @seealso [pctile2color()] [ejscreen_color_defaults()]
 #' @keywords internal
 #'
@@ -1907,6 +1938,11 @@ pctile2colorhex <- function(x,
 #' @return Character vector of colors, as long as `x`.
 #' @details Cutoffs belong to the higher bin. Values below the first cutoff,
 #'   including negative values, receive the first color, matching barplots.
+#' @examples
+#' EJAM:::ratio2color(c(1, 1.049, 1.05, 2, 3, 200, NA))
+#' # gray, gray, yellow, orange, red, red, NA
+#' EJAM:::ratio2color(c(1, 2, 4),
+#'   colorbins = c(2, 4), colorfills = c("gray", "orange", "red"))
 #' @seealso [pctile2color()] [ejscreen_color_defaults()]
 #' @keywords internal
 #'

@@ -52,7 +52,8 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #'   launch a default browser window to show the map
 #'   and print the temp filepath and filename in the console.
 #'   Normally the map would be shown in the default RStudio viewer pane.
-#' @param color color of circles or polygons
+#' @param color A single color or one color per row, for circles or polygons.
+#'   See [pctile2color()], [pctile2colorhex()], and [ratio2color()].
 #' @param sitenumber_label optional, display-only override (a number or short text) of the
 #'   site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
 #'   Passed to [popup_from_ejscreen()] (so used only if column_names is "ej"), and only

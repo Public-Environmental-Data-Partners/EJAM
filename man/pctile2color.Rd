@@ -25,6 +25,14 @@ out-of-range percentiles return \code{NA_character_}.
 Convert percentiles to color names
 }
 \details{
-Alias for \code{\link[=calc_ejscreen_map_color]{calc_ejscreen_map_color()}}.
+Alias for \code{\link[=calc_ejscreen_map_color]{calc_ejscreen_map_color()}}, including its historical
+eleven-bin defaults. Both percentile schemes use the same four colors.
+}
+\examples{
+EJAM:::pctile2color(c(79, 80, 90, 95, 100, NA))
+# gray, yellow, orange, red, red, NA
+defaults <- EJAM:::ejscreen_color_defaults()
+EJAM:::pctile2color(c(79, 80, 90, 95),
+  colorbins = defaults$colorbins, colorfills = defaults$colorfills)
 }
 \keyword{internal}

@@ -31,6 +31,16 @@ Convert percentiles to hexadecimal colors
 }
 \details{
 Cutoffs belong to the higher bin; the final endpoint is included.
+The default scheme has four bins. With explicit boundaries, values are
+checked against their range rather than an additional 0-100 restriction.
+}
+\examples{
+EJAM:::pctile2colorhex(c(79, 80, 90, 95, 100, NA))
+# #BEBEBE, #FFFF00, #FFA500, #FF0000, #FF0000, NA
+defaults <- EJAM:::ejscreen_color_defaults()
+EJAM:::pctile2colorhex(c(79, 80, 95, NA),
+  colorbins = c(0, defaults$colorbins, 100),
+  colorfills = defaults$colorfills, na.color = "#808080")
 }
 \seealso{
 \code{\link[=pctile2color]{pctile2color()}} \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}
