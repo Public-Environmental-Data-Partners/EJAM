@@ -1,8 +1,17 @@
 # EJAM 4.2024.0 (unreleased)
 
-- `ejam2map()` and mapfast() now let you draw a color-coded map of sites (circles around points or polygons)
+## New Features
+
+- Analyzing very large numbers of sites: 
+  - App can now handle much large analysis sets, including thousands of sites, without timing out or running out of memory.
+  - Large analysis is faster now. 
+  
+- Color-coded maps:
+  - `map_ejscreen_indicator()` now lets you draw a color-coded map of blockgroups, for one indicator, like an EJSCREEN map.
+  - `ejam2map()` and `mapfast()` now let you draw a color-coded map of analyzed sites (circles around points or polygons)
   by specifying the indicator name, e.g.,
   `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
 
 # EJAM 3.2022.3 (October 2026)
 
