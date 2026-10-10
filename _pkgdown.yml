@@ -470,6 +470,12 @@ reference:
   - map_headernames
 - title: internal
   contents:
+  - ejscreen_color_defaults
+  - calc_ejscreen_map_bin
+  - calc_ejscreen_map_color
+  - pctile2color
+  - pctile2colorhex
+  - ratio2color
   - calc_acs_by_geography
   - calc_ejscreen_threshold_layers
   - calc_ejscreen_threshold_layers_from_exports

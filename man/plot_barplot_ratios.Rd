@@ -7,7 +7,7 @@
 plot_barplot_ratios(
   ratio.to.us.d.overall,
   shortlabels = NULL,
-  mycolorsavailable = c("gray", "yellow", "orange", "red"),
+  mycolorsavailable = ejscreen_color_defaults("ratio")$colorfills,
   main = "Residential Populations at the Analyzed Locations Compared to US Overall",
   ylab = "Ratio vs. Average",
   caption =

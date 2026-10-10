@@ -98,7 +98,7 @@ plot_barplot_ratios_ez = function(out,
 #'
 plot_barplot_ratios <- function(ratio.to.us.d.overall,
                                 shortlabels = NULL,
-                                mycolorsavailable = c("gray","yellow","orange","red"),
+                                mycolorsavailable = ejscreen_color_defaults("ratio")$colorfills,
                                 main = "Residential Populations at the Analyzed Locations Compared to US Overall",
                                 ylab = "Ratio vs. Average",
                                 caption = 'NH = "Non-Hispanic"\nNHA = "Non-Hispanic Alone" (alone = single race)',
@@ -175,8 +175,8 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   if (any(sapply(ratio.to.us.d.overall, is.infinite))) {
     ratio.to.us.d.overall[, sapply(ratio.to.us.d.overall, is.infinite)] <- 0
   }
-  # use yellow/orange/red for ratio >= 1x, 2x, 3x  #  work in progress
-  mycolors <- mycolorsavailable[1 + findInterval(ratio.to.us.d.overall, c(1.05, 2, 3))]
+  # Shared ratio cutoffs, retaining the existing customizable palette.
+  mycolors <- ratio2color(ratio.to.us.d.overall, colorfills = mycolorsavailable)
 
   # barplot(ratio.to.us.d.overall,
   #         main = 'Ratio vs. US Average for Residential Population Indicators',
