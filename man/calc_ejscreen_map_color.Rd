@@ -2,25 +2,36 @@
 % Please edit documentation in R/calc_ejscreen_export.R
 \name{calc_ejscreen_map_color}
 \alias{calc_ejscreen_map_color}
-\title{Convert vector of percentiles into colors (for barplots or heatmap text or color-coded choropleth maps)}
+\title{Convert percentiles to colors for maps, heatmap text, or barplots}
 \usage{
 calc_ejscreen_map_color(
   x,
-  colorbins = c(10, 20, 30, 40, 50, 60, 70, 80, 90, 95),
-  colorfills = c(rep("gray", 8), "yellow", "orange", "red")
+  colorbins = ejscreen_color_defaults("ejscreen")$colorbins,
+  colorfills = ejscreen_color_defaults("ejscreen")$colorfills
 )
 }
 \arguments{
-\item{x}{numeric vector of percentiles on a 0-100 scale.}
+\item{x}{Numeric vector of percentiles on a 0-100 scale.}
 
-\item{colorbins}{numeric vector of cutoffs defining bins (not including 0 or 100)}
+\item{colorbins}{Strictly increasing interior cutoffs, excluding 0 and 100.}
 
-\item{colorfills}{vector of colors as long as length(colorbins)+1}
+\item{colorfills}{Vector of colors of length \code{length(colorbins) + 1}.}
 }
 \value{
-integer vector of colors, as long as x.
+Character vector of colors, as long as \code{x}. Missing and
+out-of-range percentiles return \code{NA_character_}.
 }
 \description{
-Convert vector of percentiles into colors (for barplots or heatmap text or color-coded choropleth maps)
+Convert percentiles to colors for maps, heatmap text, or barplots
+}
+\examples{
+percentile <- c(-1, 0.50, 78, 80, 81, 91, 96, 100, 200)
+EJAM:::calc_ejscreen_map_color(percentile)
+EJAM:::pctile2color(percentile)
+EJAM:::pctile2colorhex(percentile[percentile >= 0 & percentile <= 100])
+EJAM:::ratio2color(c(-1, 0.5, 1, 1.06, 2, 2.5, 3, 4, 5, 200))
+}
+\seealso{
+\code{\link[=pctile2colorhex]{pctile2colorhex()}} \code{\link[=ratio2color]{ratio2color()}} \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}
 }
 \keyword{internal}

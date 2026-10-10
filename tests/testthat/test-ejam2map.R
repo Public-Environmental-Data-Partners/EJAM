@@ -230,3 +230,35 @@ test_that("ejam2map() works given shp, sitenumber=2", {
 
 })
 ############################################## ############################################### #
+
+test_that("ejam2map forwards helper colors for point and polygon maps", {
+  forwarded <- NULL
+  testthat::local_mocked_bindings(
+    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label) {
+      forwarded <<- list(color = color, label = sitenumber_label)
+      leaflet::leaflet()
+    },
+    map_ejam_plus_shp = function(shp, out, radius_buffer, launch_browser,
+                                circle_color, sitenumber_label) {
+      forwarded <<- list(color = circle_color, label = sitenumber_label)
+      leaflet::leaflet()
+    },
+    .package = "EJAM"
+  )
+  colors <- EJAM:::pctile2color(c(80, 95))
+  out <- list(sitetype = "latlon", results_bysite = data.frame(
+    ejam_uniq_id = 1:2, pop = c(100, 200), lat = c(38, 39), lon = c(-75, -76),
+    radius.miles = 0
+  ))
+  m <- ejam2map(out, radius = 0, launch_browser = FALSE, color = colors,
+                sitenumber_label = 7)
+  expect_s3_class(m, "leaflet")
+  expect_identical(forwarded, list(color = c("yellow", "red"), label = 7))
+
+  out$sitetype <- "shp"
+  shp <- sf::st_as_sf(out$results_bysite, coords = c("lon", "lat"), crs = 4326)
+  m <- ejam2map(out, shp = shp, radius = 0, launch_browser = FALSE,
+                color = colors, sitenumber_label = 7)
+  expect_s3_class(m, "leaflet")
+  expect_identical(forwarded, list(color = c("yellow", "red"), label = 7))
+})

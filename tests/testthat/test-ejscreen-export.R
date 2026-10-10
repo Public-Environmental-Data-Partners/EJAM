@@ -720,3 +720,164 @@ test_that("EJSCREEN map helper fields use historical bins and current text", {
       "90 %ile", "94 %ile", "95 %ile", "100 %ile", "")
   )
 })
+
+test_that("percentile colors match the examples and include exact thresholds", {
+  x <- c(-1, 0.5, 78, 79, 80, 81, 89.99, 90, 91, 94.99, 95, 96, 100, 200, NA, Inf)
+  expected <- c(NA, "gray", "gray", "gray", "yellow", "yellow", "yellow",
+                "orange", "orange", "orange", "red", "red", "red", NA, NA, NA)
+  expect_identical(EJAM:::calc_ejscreen_map_color(x), expected)
+  expect_identical(EJAM:::pctile2color(x), expected)
+  expect_identical(EJAM:::pctile2color(numeric()), character())
+  expect_identical(EJAM:::calc_ejscreen_map_bin(numeric()), integer())
+  expect_identical(EJAM:::pctile2color(c("80", "95", "invalid")),
+                   c("yellow", "red", NA_character_))
+})
+
+test_that("percentile bin cutoffs and palettes can be customized", {
+  expect_identical(EJAM:::calc_ejscreen_map_bin(c(0, 49.9, 50, 100), colorbins = 50),
+                   c(1L, 1L, 2L, 2L))
+  expect_identical(EJAM:::pctile2color(c(0, 50, 100), colorbins = 50,
+                                     colorfills = c("blue", "purple")),
+                   c("blue", "purple", "purple"))
+  expect_error(EJAM:::pctile2color(80, colorfills = "red"), "length")
+  for (cuts in list(c(90, 80), c(80, 80), c(80, NA), c(80, Inf), "80")) {
+    expect_error(EJAM:::calc_ejscreen_map_bin(80, cuts), "strictly increasing")
+  }
+  expect_error(EJAM:::calc_ejscreen_map_bin(80, c(0, 80)), "greater than 0")
+  expect_error(EJAM:::calc_ejscreen_map_bin(80, c(80, 100)), "less than 100")
+})
+
+test_that("hex colors agree with names and retain Leaflet missing-value behavior", {
+  x <- c(0, 79.99, 80, 89.99, 90, 94.99, 95, 100, NA)
+  expected <- c("#BEBEBE", "#BEBEBE", "#FFFF00", "#FFFF00", "#FFA500",
+                "#FFA500", "#FF0000", "#FF0000", NA_character_)
+  expect_identical(EJAM:::pctile2colorhex(x), expected)
+  expect_warning(out <- EJAM:::pctile2colorhex(c(-1, 101)), "outside")
+  expect_identical(out, c(NA_character_, NA_character_))
+  expect_identical(EJAM:::pctile2colorhex(numeric()), character())
+  expect_error(EJAM:::pctile2colorhex(80, colorbins = 100), "two boundaries")
+
+  # Preserve mapfastej_counties palettes, including interpolation and NA gray.
+  for (cuts in list(c(0, 80, 90, 95, 100), c(0, 50, 100))) {
+    old <- leaflet::colorBin(c("blue", "purple"), domain = NULL, bins = cuts)
+    expect_identical(
+      EJAM:::pctile2colorhex(x, cuts, c("blue", "purple"), na.color = "#808080"),
+      old(x)
+    )
+  }
+})
+
+test_that("ratio colors are not restricted to the percentile range", {
+  x <- c(-1, 0.5, 1, 1.049, 1.05, 1.06, 2, 2.5, 3, 4, 5, 100, 200, NA, NaN, Inf)
+  expected <- c(rep("gray", 4), "yellow", "yellow", "orange", "orange",
+                rep("red", 5), NA, NA, NA)
+  expect_identical(EJAM:::ratio2color(x), expected)
+  expect_identical(EJAM:::ratio2color(numeric()), character())
+  expect_identical(EJAM:::ratio2color(c(1, 2), colorbins = 2,
+                                    colorfills = c("blue", "red")), c("blue", "red"))
+  expect_error(EJAM:::ratio2color(2, colorfills = "red"), "length")
+})
+
+test_that("barplots use shared ratio colors through their existing wrappers", {
+  ratios <- c(1, 1.05, 2, 3, 200)
+  labels <- paste0("indicator", seq_along(ratios))
+  names(ratios) <- labels
+  out <- list(results_overall = as.data.frame(as.list(ratios)),
+              results_bysite = as.data.frame(as.list(ratios)))
+  plots <- list(
+    plot_barplot_ratios(ratios, shortlabels = labels),
+    EJAM:::plot_barplot_ratios_ez(out, varnames = labels, shortlabels = labels),
+    ejam2barplot(out, varnames = labels, shortlabels = labels)
+  )
+  for (p in plots) {
+    expect_identical(as.character(p$data$color), c("gray", "yellow", "orange", "red", "red"))
+    built <- ggplot2::ggplot_build(p)
+    expect_identical(built$data[[1]]$fill, c("gray", "yellow", "orange", "red", "red"))
+  }
+  p <- plot_barplot_ratios(ratios, shortlabels = labels,
+                          mycolorsavailable = c("red", "orange", "yellow", "gray"))
+  expect_identical(as.character(p$data$color), c("red", "orange", "yellow", "gray", "gray"))
+})
+
+test_that("Excel and county-map defaults retain their existing argument names and values", {
+  ns <- asNamespace("EJAM")
+  default <- function(fun, arg) eval(formals(fun)[[arg]], envir = ns)
+  for (fun in list(ejam2excel, EJAM:::table_xls_from_ejam, EJAM:::table_xls_format)) {
+    expect_identical(default(fun, "heatmap_cuts"), c(80, 90, 95))
+    expect_identical(default(fun, "heatmap_colors"), c("yellow", "orange", "red"))
+    expect_identical(default(fun, "heatmap2_cuts"), c(1.05, 2, 3))
+    expect_identical(default(fun, "heatmap2_colors"), c("yellow", "orange", "red"))
+  }
+  expect_identical(default(mapfastej_counties, "colorbins"), c(0, 80, 90, 95, 100))
+  expect_identical(default(mapfastej_counties, "colorpalette"), c("gray", "yellow", "orange", "red"))
+  expect_identical(default(mapfastej_counties, "colorfills"), c("darkgray", "yellow", "orange", "darkred"))
+  expect_identical(default(mapfastej_counties, "colorlabels"), c("<80", "80-89", "90-94", "95+"))
+})
+
+test_that("county maps use shared hex colors and preserve single-color maps", {
+  shading <- NULL
+  testthat::local_mocked_bindings(
+    shapes_counties_from_countyfips = function(x) data.frame(id = x),
+    map_shapes_leaflet = function(shapes, color, ...) {
+      shading <<- color
+      leaflet::leaflet()
+    },
+    table_round = function(x, ...) x,
+    fips2countyname = function(x) rep("Synthetic county", length(x)),
+    fixcolnames = function(x, ...) x,
+    popup_from_any = function(x, ...) rep("Synthetic popup", NROW(x)),
+    .package = "EJAM"
+  )
+  df <- data.frame(ejam_uniq_id = sprintf("%05d", 1:4),
+                   pctile.test = c(79, 80, 90, 95))
+  for (name in paste0("metadata", 1:7)) df[[name]] <- 0
+  for (name in c(EJAM::names_d_ratio_to_state_avg,
+                 EJAM::names_d_subgroups_ratio_to_state_avg)) df[[name]] <- 1
+
+  m <- mapfastej_counties(data.table::as.data.table(df), colorvarname = "pctile.test")
+  expect_s3_class(m, "leaflet")
+  expect_identical(shading, c("#BEBEBE", "#FFFF00", "#FFA500", "#FF0000"))
+  m <- mapfastej_counties(data.table::as.data.table(df), colorvarname = "pctile.test",
+                         colorbins = c(0, 90, 100), colorpalette = c("blue", "red"),
+                         colorfills = c("blue", "red"), colorlabels = c("<90", "90+"))
+  expect_identical(shading, c("#0000FF", "#0000FF", "#FF0000", "#FF0000"))
+  m <- mapfastej_counties(data.table::as.data.table(df), colorvarname = "green")
+  expect_identical(shading, rep("#00FF00", 4))
+
+  # The map-colors ST shortcut should still work with the shared helpers.
+  testthat::local_mocked_bindings(
+    fips_counties_from_state_abbrev = function(ST) {
+      expect_identical(ST, "DE")
+      df$ejam_uniq_id
+    },
+    ejamit = function(fips, radius) {
+      expect_identical(fips, df$ejam_uniq_id)
+      expect_identical(radius, 0)
+      list(results_bysite = data.table::as.data.table(df))
+    },
+    .package = "EJAM"
+  )
+  m <- mapfastej_counties(ST = "DE", colorvarname = "pctile.test")
+  expect_s3_class(m, "leaflet")
+  expect_identical(shading, c("#BEBEBE", "#FFFF00", "#FFA500", "#FF0000"))
+})
+
+test_that("Excel heatmap defaults still produce editable conditional formatting", {
+  out <- EJAM::testoutput_ejamit_10pts_1miles
+  filename <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(filename), add = TRUE)
+  EJAM:::table_xls_format(
+    overall = out$results_overall, eachsite = out$results_bysite,
+    reports = NULL, ok2plot = FALSE, saveas = filename,
+    formatted = data.frame(indicator = "Synthetic summary", value = 1)
+  )
+  sheet <- paste(readLines(unz(filename, "xl/worksheets/sheet1.xml"), warn = FALSE),
+                  collapse = "")
+  for (threshold in c(80, 90, 95, 1.05, 2, 3)) {
+    expect_match(sheet, paste0("&gt;=", threshold, "</formula>"), fixed = TRUE)
+  }
+  styles <- paste(readLines(unz(filename, "xl/styles.xml"), warn = FALSE), collapse = "")
+  for (hex in c("FFFFFF00", "FFFFA500", "FFFF0000")) {
+    expect_match(styles, hex, fixed = TRUE)
+  }
+})

@@ -2,25 +2,33 @@
 % Please edit documentation in R/calc_ejscreen_export.R
 \name{ratio2color}
 \alias{ratio2color}
-\title{Convert vector of ratios into colors (for barplots or heatmap text or color-coded choropleth maps)}
+\title{Convert ratios to colors for maps, heatmap text, or barplots}
 \usage{
 ratio2color(
   x,
-  colorbins = c(1.05, 2, 3),
-  colorfills = c("gray", "yellow", "orange", "red")
+  colorbins = ejscreen_color_defaults("ratio")$colorbins,
+  colorfills = ejscreen_color_defaults("ratio")$colorfills
 )
 }
 \arguments{
-\item{x}{numeric vector of ratios on a 0-1.0 scale.}
+\item{x}{Numeric vector of ratios to an average (1 means equal to average).
+Finite ratios above 100 are valid. Missing and nonfinite values return \code{NA}.}
 
-\item{colorbins}{numeric vector of cutoffs defining bins (not including min or max)}
+\item{colorbins}{Strictly increasing interior cutoffs, without endpoints.}
 
-\item{colorfills}{vector of colors as long as length(colorbins)+1}
+\item{colorfills}{Vector of colors of length \code{length(colorbins) + 1}.}
 }
 \value{
-integer vector of colors, as long as x.
+Character vector of colors, as long as \code{x}.
 }
 \description{
-Convert vector of ratios into colors (for barplots or heatmap text or color-coded choropleth maps)
+Convert ratios to colors for maps, heatmap text, or barplots
+}
+\details{
+Cutoffs belong to the higher bin. Values below the first cutoff,
+including negative values, receive the first color, matching barplots.
+}
+\seealso{
+\code{\link[=pctile2color]{pctile2color()}} \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}
 }
 \keyword{internal}

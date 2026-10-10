@@ -351,9 +351,9 @@ map_counties_in_state <- function(ST = "DE", colorcolumn = c('pop', "NAME", "POP
 #'
 mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
                                colorfills = c('darkgray', 'yellow', 'orange', 'darkred'),
-                               colorlabels = c("<80", "80-89", "90-94", "95+"),
-                               colorbins = c(0,80,90,95,100),
-                               colorpalette = c('gray',   'yellow', 'orange',   'red'),
+                               colorlabels = ejscreen_color_defaults()$colorlabels,
+                               colorbins = c(0, ejscreen_color_defaults()$colorbins, 100),
+                               colorpalette = ejscreen_color_defaults()$colorfills,
                                static_not_leaflet = FALSE, main = "Selected Counties",
                                fillOpacity = 0.5,
                                ST = "DE",
@@ -405,12 +405,15 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
 
   setDT(mydf)
   ## see color-coding of one percentile variable:
-  pal <- leaflet::colorBin(
-    palette = colorpalette,
-    domain = NULL,
-    bins = colorbins
-  )
-  shading <- pal(as.vector(unlist(mydf[ , ..colorvarname])))
+  scores <- as.vector(unlist(mydf[ , ..colorvarname]))
+  if (length(colorbins) >= 2L) {
+    shading <- pctile2colorhex(scores, colorbins = colorbins,
+                               colorfills = colorpalette, na.color = "#808080")
+  } else {
+    # Retain Leaflet's numeric bin-count mode, including single-color maps.
+    pal <- leaflet::colorBin(palette = colorpalette, domain = NULL, bins = colorbins)
+    shading <- pal(scores)
+  }
 
   if (static_not_leaflet) {
 
