@@ -15,7 +15,7 @@
 #' @param shp spatial data.frame
 #' @param out output of ejamit()
 #' @param radius_buffer optional but can be obtained from out
-#' @param circle_color optional
+#' @param color optional
 #' @param launch_browser set TRUE to have it launch browser to show map.
 #' @param sitenumber_label optional, display-only override (a number or short text) of the
 #'   site number shown in map popups, passed to [popup_from_ejscreen()].
@@ -26,7 +26,7 @@
 #'
 #' @keywords internal
 #'
-map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#000080', launch_browser = FALSE,
+map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, color = '#000080', launch_browser = FALSE,
                               sitenumber_label = NULL # name-only, at end to avoid arg shift
                               ) {
 
@@ -134,7 +134,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
 
     mymap <- leaflet::leaflet(shpout, width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
       leaflet::addTiles()  %>%
-      leaflet::addPolygons(color = circle_color,
+      leaflet::addPolygons(color = color,
                            popup = pops,
                            popupOptions = leaflet::popupOptions(maxHeight = 200))
   }

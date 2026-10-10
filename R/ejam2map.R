@@ -162,7 +162,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
                       out = ejamitout,
                       radius_buffer = radius,
                       launch_browser = launch_browser,
-                      circle_color = color,
+                      color = color,
                       sitenumber_label = sitenumber_label)
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {

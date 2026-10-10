@@ -239,8 +239,8 @@ test_that("ejam2map forwards helper colors for point and polygon maps", {
       leaflet::leaflet()
     },
     map_ejam_plus_shp = function(shp, out, radius_buffer, launch_browser,
-                                circle_color, sitenumber_label) {
-      forwarded <<- list(color = circle_color, label = sitenumber_label)
+                                color, sitenumber_label) {
+      forwarded <<- list(color = color, label = sitenumber_label)
       leaflet::leaflet()
     },
     .package = "EJAM"

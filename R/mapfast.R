@@ -66,7 +66,8 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #'
 #' @export
 #'
-mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names, launch_browser = FALSE, color = "#03F",
+mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names, launch_browser = FALSE,
+                    color = "#03F",
                     sitenumber_label = NULL # name-only, at end to avoid arg shift
                     ) {
 
@@ -180,7 +181,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
 
         shp <- ejam2shapefile(mydf, save = FALSE) # has all columns but they get ignored in next step
         x <- map_ejam_plus_shp(shp = shp, out = mydf, radius_buffer = radius,
-                               circle_color = color, # '#000080' is default there
+                               color = color, # '#000080' is default there
                                launch_browser = launch_browser)
         xok <- TRUE
       } else {
