@@ -1,6 +1,6 @@
 
 .positai/settings.json
-.positai
+.posit/assistant
 
 ################################################################################### #
 # Trickier cases of items git should ignore
