@@ -1,3 +1,9 @@
+# EJAM 4.2024.0 (unreleased)
+
+- `ejam2map()` and mapfast() now let you draw a color-coded map of sites (circles around points or polygons)
+  by specifying the indicator name, e.g.,
+  `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
 # EJAM 3.2022.3 (October 2026)
 
 This is the final ACS 2018-2022 release; it is frozen from here on.

@@ -1765,6 +1765,34 @@ calc_ejscreen_map_fields_added <- function(x,
 
 ###################################################### #
 
+#' Resolve a map color argument against the table being mapped
+#' @noRd
+map_color_from_column <- function(mydf, color, data_name = "mydf") {
+  if (!is.character(color) || length(color) != 1L) return(color)
+
+  if (color %in% names(mydf)) {
+    values <- mydf[[color]]
+    vartype <- varname2vartype_ejam(fixcolnames(color, "long", "r"))
+    if (grepl("pctile", vartype)) return(pctile2color(values))
+    if (grepl("ratio", vartype)) return(ratio2color(values))
+    if (!is.numeric(values)) {
+      stop(sprintf("Column '%s' in %s must contain numeric values for color coding.", color, data_name),
+           call. = FALSE)
+    }
+    return(leaflet::colorNumeric(palette = "viridis", domain = values)(values))
+  }
+
+  valid_color <- tryCatch({
+    grDevices::col2rgb(color)
+    TRUE
+  }, error = function(e) FALSE)
+  if (!valid_color) {
+    stop(sprintf("color = '%s' is not a column in %s or a valid R color.", color, data_name),
+         call. = FALSE)
+  }
+  color
+}
+
 .ejscreen_color_defaults_cache <- new.env(parent = emptyenv())
 
 #' Default colors and cutoffs for percentile and ratio displays

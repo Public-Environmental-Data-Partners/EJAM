@@ -288,7 +288,8 @@ instead of tests/testthat/_logs
       ),
       test_maps = c(
         "test-MAP_FUNCTIONS.R",
-        "test-ejam2map.R"
+        "test-ejam2map.R",
+        "test-mapfast-colors.R"
       ),
       test_shape = c(
         "test-latlon_from_shapefile.R",

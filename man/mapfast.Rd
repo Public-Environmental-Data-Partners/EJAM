@@ -44,8 +44,12 @@ launch a default browser window to show the map
 and print the temp filepath and filename in the console.
 Normally the map would be shown in the default RStudio viewer pane.}
 
-\item{color}{A single color or one color per row, for circles or polygons.
-See \code{\link[=pctile2color]{pctile2color()}}, \code{\link[=pctile2colorhex]{pctile2colorhex()}}, and \code{\link[=ratio2color]{ratio2color()}}.}
+\item{color}{A column name in mydf (or its results_bysite table), a single
+R color, or one color per row, for circles or polygons. Percentile and ratio
+columns use the shared binned colors; other numeric columns use a continuous
+viridis palette. An unknown column name that is not a valid R color causes
+an error. These maps do not automatically add a color legend; use
+\code{\link[=mapfastej_counties]{mapfastej_counties()}} for a county choropleth with a percentile legend.}
 
 \item{sitenumber_label}{optional, display-only override (a number or short text) of the
 site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
@@ -72,6 +76,8 @@ out$results_bysite <- out$results_bysite[out$results_bysite$valid \%in\% TRUE, ]
 
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
+# Color by a percentile column without manually converting its values.
+ejam2map(out, color = "state.pctile.o3", launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
 
 # color-code points on map to show which ones had a high indicator score

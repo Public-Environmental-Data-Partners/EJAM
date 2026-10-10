@@ -262,3 +262,72 @@ test_that("ejam2map forwards helper colors for point and polygon maps", {
   expect_s3_class(m, "leaflet")
   expect_identical(forwarded, list(color = c("yellow", "red"), label = 7))
 })
+
+############################################## #
+
+test_that("ejam2map maps indicator columns to colors for points and polygons", {
+  forwarded <- NULL
+  testthat::local_mocked_bindings(
+    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label) {
+      forwarded <<- color
+      leaflet::leaflet()
+    },
+    map_ejam_plus_shp = function(shp, out, radius_buffer, launch_browser, color, sitenumber_label) {
+      forwarded <<- color
+      leaflet::leaflet()
+    },
+    .package = "EJAM"
+  )
+  out <- list(sitetype = "latlon", results_bysite = data.frame(
+    ejam_uniq_id = 1:2, pop = c(100, 200), valid = TRUE,
+    lat = c(38, 39), lon = c(-75, -76), radius.miles = 0,
+    pctile.proximity.npl = c(79, 95),
+    ratio.to.state.avg.pctlowinc = c(1.06, 3)
+  ))
+  for (as_dt in c(FALSE, TRUE)) {
+    if (as_dt) out$results_bysite <- data.table::as.data.table(out$results_bysite)
+    for (site_type in c("latlon", "fips")) {
+      out$sitetype <- site_type
+      shp <- if (site_type == "fips") {
+        sf::st_as_sf(as.data.frame(out$results_bysite), coords = c("lon", "lat"), crs = 4326)
+      } else NULL
+      ejam2map(out, shp = shp, launch_browser = FALSE, color = "pctile.proximity.npl")
+      expect_identical(forwarded, c("gray", "red"))
+      ejam2map(out, shp = shp, launch_browser = FALSE, color = "ratio.to.state.avg.pctlowinc")
+      expect_identical(forwarded, c("yellow", "red"))
+      ejam2map(out, shp = shp, sitenumber = 2, launch_browser = FALSE, color = "pctile.proximity.npl")
+      expect_identical(forwarded, "red")
+      ejam2map(out, shp = shp, launch_browser = FALSE, color = "pop")
+      expect_length(forwarded, 2)
+      expect_true(all(grepl("^#[0-9A-Fa-f]{6}$", forwarded)))
+      expect_length(unique(forwarded), 2)
+    }
+  }
+})
+
+############################################## #
+
+test_that("ejam2map rejects unknown color columns before drawing or downloading", {
+  forwarded <- NULL
+  testthat::local_mocked_bindings(
+    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label) {
+      forwarded <<- color
+      leaflet::leaflet()
+    },
+    shapes_from_fips = function(...) stop("Unexpected geometry download"),
+    .package = "EJAM"
+  )
+  out <- list(sitetype = "fips", results_bysite = data.frame(
+    ejam_uniq_id = "01003", pop = 100, valid = TRUE, radius.miles = 0
+  ))
+  expect_error(
+    ejam2map(out, color = "percentile.pctlowinc", launch_browser = FALSE),
+    "color = 'percentile[.]pctlowinc' is not a column.*valid R color"
+  )
+  expect_null(forwarded)
+  out$sitetype <- "latlon"
+  for (color in c("red", "#0070C0", "transparent")) {
+    ejam2map(out, color = color, launch_browser = FALSE)
+    expect_identical(forwarded, color)
+  }
+})

@@ -28,6 +28,8 @@ out$results_bysite <- out$results_bysite[out$results_bysite$valid \%in\% TRUE, ]
 
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
+# Color by a percentile column without manually converting its values.
+ejam2map(out, color = "state.pctile.o3", launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
 
 # color-code points on map to show which ones had a high indicator score

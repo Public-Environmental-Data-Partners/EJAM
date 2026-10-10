@@ -9,10 +9,13 @@
 #' and see it in your web browser.
 #' @param ejamitout output of ejamit()
 #' @param column_names can be "ej", passed to [mapfast()]
-#' @param color A single color or a vector of colors in the same order as
-#'   the rows being mapped. Internal helpers [pctile2color()],
-#'   [pctile2colorhex()], and [ratio2color()] can convert indicator values
-#'   to colors. When selecting one sitenumber, supply that site's color.
+#' @param color A column name in `ejamitout$results_bysite`, a single R color,
+#'   or a vector of colors in the same order as the rows being mapped.
+#'   Percentile and ratio columns are converted to binned colors using internal
+#'   helpers [pctile2color()] and [ratio2color()]; other numeric columns use a
+#'   continuous viridis palette. An unknown column name that is not a valid R
+#'   color causes an error. When selecting one sitenumber, supply that site's
+#'   color or the column name.
 #'   These point/polygon maps do not automatically add a percentile legend;
 #'   see [mapfastej_counties()] for a county choropleth with a legend.
 #' @param launch_browser logical optional whether to open the web browser to view the map
@@ -47,6 +50,8 @@
 #'
 #' # See in RStudio viewer pane
 #' ejam2map(out, launch_browser = FALSE)
+#' # Color by a percentile column without manually converting its values.
+#' ejam2map(out, color = "state.pctile.o3", launch_browser = FALSE)
 #' mapfastej(out$results_bysite[c(12,31),])
 #'
 #' # color-code points on map to show which ones had a high indicator score
@@ -137,6 +142,10 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
       shp <- shp[sitenumber, ]
     }
   }
+  ################################################## #
+  # Resolve column names after selecting the rows being mapped.
+  color <- map_color_from_column(ejamitout$results_bysite, color,
+                                  data_name = "ejamitout$results_bysite")
   ################################################## #
 
   # if missing FIPS POLYGONS, get them ####

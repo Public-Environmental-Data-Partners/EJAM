@@ -43,10 +43,13 @@ downloaded for only that one site.}
 
 \item{buffer}{alias (synonym) for radius}
 
-\item{color}{A single color or a vector of colors in the same order as
-the rows being mapped. Internal helpers \code{\link[=pctile2color]{pctile2color()}},
-\code{\link[=pctile2colorhex]{pctile2colorhex()}}, and \code{\link[=ratio2color]{ratio2color()}} can convert indicator values
-to colors. When selecting one sitenumber, supply that site's color.
+\item{color}{A column name in \code{ejamitout$results_bysite}, a single R color,
+or a vector of colors in the same order as the rows being mapped.
+Percentile and ratio columns are converted to binned colors using internal
+helpers \code{\link[=pctile2color]{pctile2color()}} and \code{\link[=ratio2color]{ratio2color()}}; other numeric columns use a
+continuous viridis palette. An unknown column name that is not a valid R
+color causes an error. When selecting one sitenumber, supply that site's
+color or the column name.
 These point/polygon maps do not automatically add a percentile legend;
 see \code{\link[=mapfastej_counties]{mapfastej_counties()}} for a county choropleth with a legend.}
 
@@ -79,6 +82,8 @@ out$results_bysite <- out$results_bysite[out$results_bysite$valid \%in\% TRUE, ]
 
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
+# Color by a percentile column without manually converting its values.
+ejam2map(out, color = "state.pctile.o3", launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
 
 # color-code points on map to show which ones had a high indicator score

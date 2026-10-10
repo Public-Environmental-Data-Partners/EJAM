@@ -52,8 +52,12 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #'   launch a default browser window to show the map
 #'   and print the temp filepath and filename in the console.
 #'   Normally the map would be shown in the default RStudio viewer pane.
-#' @param color A single color or one color per row, for circles or polygons.
-#'   See [pctile2color()], [pctile2colorhex()], and [ratio2color()].
+#' @param color A column name in mydf (or its results_bysite table), a single
+#'   R color, or one color per row, for circles or polygons. Percentile and ratio
+#'   columns use the shared binned colors; other numeric columns use a continuous
+#'   viridis palette. An unknown column name that is not a valid R color causes
+#'   an error. These maps do not automatically add a color legend; use
+#'   [mapfastej_counties()] for a county choropleth with a percentile legend.
 #' @param sitenumber_label optional, display-only override (a number or short text) of the
 #'   site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
 #'   Passed to [popup_from_ejscreen()] (so used only if column_names is "ej"), and only
@@ -94,6 +98,9 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
   }
   # if data.table was provided
   if (data.table::is.data.table(mydf)) {mydf <- as.data.frame(mydf)} # in case it was a data.table. note this could be slow as it makes a copy, but setDF(mydf) could alter mydf by reference in the calling envt.
+
+  # Resolve colors before renaming columns, preserving the supplied table's names.
+  color <- map_color_from_column(mydf, color)
 
   # fixcolnames() ####
   # use standardized format of indicator names in case they are the long versions of ejamit variable names
@@ -323,9 +330,10 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       # shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<
       # x <- map_shapes_leaflet(shp, popup = mypop, color = color)
       # xok = TRUE
-      ## *** handle specified color here...
-      ## any added buffer via radius parameter would have to be passed to and added by function below ***
-      x <- mapfastej_counties(mydf, colorvarname = color) # handles popups, ignores params above, assumes mydf$ejam_uniq_id is fips
+      # Use resolved per-row colors and the requested popup columns, as for other FIPS types.
+      # mapfastej_counties() remains the separate county choropleth/legend interface.
+      shp <- shapes_from_fips(fips)
+      x <- map_shapes_leaflet(shp, popup = mypop, color = color)
       xok <- TRUE
     }
     ######################### #
