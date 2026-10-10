@@ -21,11 +21,6 @@ which is where development continues.
 
 ## New Features
 
-- `map_ejscreen_indicator()` maps one indicator's blockgroup percentiles for
-  a county or state, with formatted popups, a percentile legend, and optional
-  initial zoom. It uses existing indicator/index data instead of running an
-  EJAM analysis (#656).
-
 - Zip code analysis: `ejamit(zipcode = 10605)`, for example, works. Zip codes are converted
   to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
   any other shapefile, and `ejam2report()` describes the places as zip codes and
