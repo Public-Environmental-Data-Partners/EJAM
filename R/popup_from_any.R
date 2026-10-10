@@ -97,6 +97,9 @@ popup_from_any <- function(x, column_names = names(x), labels = column_names, n 
     warning("for map popups, column_names and labels must be same length. Using column_names as labels.")
   }
 
+  # *** see popup_from_df_with_urls() regarding using param column_names_urls and
+  # skipping htmlEscape() for those URLs so they can be clickable links
+
   escaped_labels <- htmltools::htmlEscape(labels)
 
   ## create vector of popups with column labels, length=# of rows of data.table
