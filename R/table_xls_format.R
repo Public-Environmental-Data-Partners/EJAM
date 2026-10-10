@@ -41,14 +41,18 @@
 #' @param community_html HTML file of community report provided by shiny app to include in spreadsheet
 #'
 #' @param heatmap_colnames optional vector of colnames to apply heatmap colors, defaults to percentiles
-#' @param heatmap_cuts vector of values to separate heatmap colors, between 0-100 for percentiles
+#' @param heatmap_cuts Increasing lower cutoffs on the 0-100 percentile scale.
+#'   Defaults to 80, 90, and 95 from [ejscreen_color_defaults()].
 #' @param heatmap_colors vector of color names for heatmap bins, same length as
 #'   heatmap_cuts, where first color is for those >= 1st cutpoint, but <2d,
 #'   second color is for those >=2d cutpoint but <3d, etc.
 #'
 #' @param heatmap2_colnames like heatmap_colnames but for ratios by default
-#' @param heatmap2_cuts  like heatmap_cuts but for ratios by default
-#' @param heatmap2_colors like heatmap_colors but for ratios
+#' @param heatmap2_cuts Increasing lower cutoffs for ratios to an average.
+#'   Defaults to 1.05, 2, and 3 from [ejscreen_color_defaults()].
+#' @param heatmap2_colors Like heatmap_colors but for ratios; defaults to
+#'   yellow, orange, and red. Values below the first cutoff receive no heatmap
+#'   fill; other cell styles may still apply.
 #'
 #' @param graycolnames which columns to de-emphasize
 #' @param graycolor color used to de-emphasize some columns
@@ -70,15 +74,13 @@
 #'
 #' @seealso [ejam2excel()] and related functions like [table_xls_from_ejam()]
 #' @return a workbook, ready to be saved in spreadsheet format, with tabs like "Overall" and "Each Site"
-#' @examples \dontrun{
-#'   EJAM:::table_xls_format(
-#'     overall = testoutput_ejamit_100pts_1miles$results_overall,
-#'     eachsite = testoutput_ejamit_100pts_1miles$results_bysite,
-#'     saveas = tempfile(fileext = ".xlsx"))
-#'  # can just pass the whole results of ejamit(), for convenience
-#'  wb <- EJAM:::table_xls_format(testoutput_ejamit_100pts_1miles)
-#'  openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"), overwrite = TRUE)
-#' }
+#' @examples
+#' # Format and save a workbook without creating plots or reports.
+#' out <- testoutput_ejamit_10pts_1miles
+#' wb <- EJAM:::table_xls_format(
+#'   overall = out$results_overall, eachsite = out$results_bysite,
+#'   formatted = out$formatted, reports = NULL, ok2plot = FALSE)
+#' openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"))
 #'
 #' @keywords internal
 #'
@@ -123,8 +125,8 @@ table_xls_format <- function(overall,
                              community_html = NULL,
 
                              # column formatting
-                             heatmap_colnames = NULL,   heatmap_cuts = c(80, 90, 95),  heatmap_colors  = c("yellow", "orange", "red"), # percentiles
-                             heatmap2_colnames = NULL, heatmap2_cuts = c(1.05, 2, 3), heatmap2_colors = c("yellow", "orange", "red"), # ratios
+                             heatmap_colnames = NULL,   heatmap_cuts = ejscreen_color_defaults()$colorbins,  heatmap_colors  = ejscreen_color_defaults()$colorfills[-1], # percentiles
+                             heatmap2_colnames = NULL, heatmap2_cuts = ejscreen_color_defaults("ratio")$colorbins, heatmap2_colors = ejscreen_color_defaults("ratio")$colorfills[-1], # ratios
                              graycolnames = NULL, graycolor = 'gray',
                              narrowcolnames = NULL, narrow6 = 6,
 
@@ -152,8 +154,8 @@ table_xls_format <- function(overall,
   if (isTRUE(all.equal(heatmap_cuts,  c(80, 90, 95)))  && isTRUE(all.equal(heatmap_colors,  c("yellow", "orange", "red"))) &&
       isTRUE(all.equal(heatmap2_cuts, c(1.05, 2, 3))) && isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
     color_legend <- paste0(
-      "PERCENTILES \n  Red: at least 95th, Orange: 90-95th, Yellow: 80-90th \n",
-      "RATIOS      \n  Red: at least 3x average, Orange: 2-3x average, Yellow: above 1.0 to 2x average"
+      "PERCENTILES \n  Red: at least 95th, Orange: 90 to below 95th, Yellow: 80 to below 90th \n",
+      "RATIOS      \n  Red: at least 3x average, Orange: 2 to below 3x average, Yellow: 1.05 to below 2x average"
     )
   } else {
     if (missing(heatmap_colnames))  {h1names <- "PERCENTILES "} else {h1names <- paste0("Group 1 columns ", paste0("(", fixcolnames(heatmap_colnames[1], 'r', 'long'), ", etc.)"))}
@@ -864,7 +866,7 @@ table_xls_format <- function(overall,
     }
   }
 
-  # HEATMAP COLORING FOR SECOND SET OF COLUMNS - THESE ARE RATIOS WITH CUTS 1.0, 2.0, 3.0 x average
+  # HEATMAP COLORING FOR SECOND SET OF COLUMNS - THESE ARE RATIOS WITH CUTS 1.05, 2.0, 3.0 x average
 
   heatmap2_colnames <- intersect(heatmap2_colnames, names(eachsite))
   heatmap2_colnums <- match(heatmap2_colnames, names(eachsite))

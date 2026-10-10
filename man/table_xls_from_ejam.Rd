@@ -30,11 +30,11 @@ table_xls_from_ejam(
   community_reportadd = TRUE,
   community_html = NULL,
   heatmap_colnames = NULL,
-  heatmap_cuts = c(80, 90, 95),
-  heatmap_colors = c("yellow", "orange", "red"),
+  heatmap_cuts = ejscreen_color_defaults()$colorbins,
+  heatmap_colors = ejscreen_color_defaults()$colorfills[-1],
   heatmap2_colnames = NULL,
-  heatmap2_cuts = c(1.05, 2, 3),
-  heatmap2_colors = c("yellow", "orange", "red"),
+  heatmap2_cuts = ejscreen_color_defaults("ratio")$colorbins,
+  heatmap2_colors = ejscreen_color_defaults("ratio")$colorfills[-1],
   graycolnames = NULL,
   graycolor = "gray",
   narrowcolnames = NULL,
@@ -119,7 +119,8 @@ If report tab is added, though, standalone static map in excel tab is redundant.
 
 \item{heatmap_colnames}{optional vector of colnames to apply heatmap colors, defaults to percentiles}
 
-\item{heatmap_cuts}{vector of values to separate heatmap colors, between 0-100 for percentiles}
+\item{heatmap_cuts}{Increasing lower cutoffs on the 0-100 percentile scale.
+Defaults to 80, 90, and 95 from \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}.}
 
 \item{heatmap_colors}{vector of color names for heatmap bins, same length as
 heatmap_cuts, where first color is for those >= 1st cutpoint, but <2d,
@@ -127,9 +128,12 @@ second color is for those >=2d cutpoint but <3d, etc.}
 
 \item{heatmap2_colnames}{like heatmap_colnames but for ratios by default}
 
-\item{heatmap2_cuts}{like heatmap_cuts but for ratios by default}
+\item{heatmap2_cuts}{Increasing lower cutoffs for ratios to an average.
+Defaults to 1.05, 2, and 3 from \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}.}
 
-\item{heatmap2_colors}{like heatmap_colors but for ratios}
+\item{heatmap2_colors}{Like heatmap_colors but for ratios; defaults to
+yellow, orange, and red. Values below the first cutoff receive no heatmap
+fill; other cell styles may still apply.}
 
 \item{graycolnames}{which columns to de-emphasize}
 
@@ -161,9 +165,9 @@ or returns just the full path/file name of where it was saved if save_now = TRUE
 Almost identical to \code{\link[=ejam2excel]{ejam2excel()}}
 }
 \examples{
-\dontrun{
-  EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles,
-    fname = tempfile(fileext = ".xlsx"))
-  }
+wb <- EJAM:::table_xls_from_ejam(testoutput_ejamit_10pts_1miles,
+  save_now = FALSE, interactive_console = FALSE,
+  community_reportadd = FALSE, ok2plot = FALSE, reports = NULL)
+openxlsx::saveWorkbook(wb, file = tempfile(fileext = ".xlsx"))
 }
 \keyword{internal}

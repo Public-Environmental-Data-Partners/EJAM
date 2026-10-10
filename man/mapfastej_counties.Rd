@@ -8,12 +8,13 @@ mapfastej_counties(
   mydf,
   colorvarname = "pctile.Demog.Index.Supp",
   colorfills = c("darkgray", "yellow", "orange", "darkred"),
-  colorlabels = c("<80", "80-89", "90-94", "95+"),
-  colorbins = c(0, 80, 90, 95, 100),
-  colorpalette = c("gray", "yellow", "orange", "red"),
+  colorlabels = ejscreen_color_defaults()$colorlabels,
+  colorbins = c(0, ejscreen_color_defaults()$colorbins, 100),
+  colorpalette = ejscreen_color_defaults()$colorfills,
   static_not_leaflet = FALSE,
   main = "Selected Counties",
   fillOpacity = 0.5,
+  ST = "DE",
   ...
 )
 }
@@ -23,20 +24,27 @@ mapfastej_counties(
 \item{colorvarname}{colname of indicator in mydf that drives color-coding
 (or alternatively, colorvarname = "green" means a single specific color for all, like "green")}
 
-\item{colorfills}{vector of colors shown in legend}
+\item{colorfills}{Vector of colors shown in the legend. The historical
+default is darkgray, yellow, orange, and darkred. Set this to the same
+colors as colorpalette to match the polygon fills exactly.}
 
-\item{colorlabels}{vector of cutoffs shown in legend}
+\item{colorlabels}{Vector of text labels shown in the legend, one per bin.}
 
-\item{colorbins}{vector of cutoffs for which values of colorvarname indicator
-get assigned which colors from colorpalette}
+\item{colorbins}{Increasing bin boundaries INCLUDING endpoints; the default
+is c(0, 80, 90, 95, 100). A cutoff belongs to the higher bin, and 100 is
+included in the last bin. A single number requests Leaflet's bin-count mode.}
 
-\item{colorpalette}{vector of colors available for filling polygons}
+\item{colorpalette}{Palette for filling polygons, default gray, yellow,
+orange, and red from \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}}.}
 
 \item{static_not_leaflet}{set TRUE to use \code{\link[=map_shapes_plot]{map_shapes_plot()}} instead of \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}}}
 
 \item{main}{title for map}
 
 \item{fillOpacity}{passed to \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}} which passes it to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}}
+
+\item{ST}{ignored if mydf is provided. If mydf is omitted, ST can be the 2-character
+abbreviation of a State, and the function will run the analysis of all counties in that state before drawing the map.}
 
 \item{...}{depending on value of static_not_leaflet T/F, passed to \code{\link[=map_shapes_plot]{map_shapes_plot()}}
 or to \code{\link[=map_shapes_leaflet]{map_shapes_leaflet()}} which passes it to \code{\link[leaflet:addPolygons]{leaflet::addPolygons()}}, such as opacity=1}
@@ -49,18 +57,25 @@ returns just shapes_counties_from_countyfips(mydf$ejam_uniq_id))
 Map - County polygons / boundaries - Create leaflet or static map of results of analysis
 }
 \details{
-THIS ASSUMES THAT mydf$ejam_unique_id is the county FIPS codes.
+This assumes that mydf$ejam_uniq_id contains county FIPS codes.
 
-IMPORTANT: The percentiles shown are percentiles among blockgroups, not counties.
-A county here shown as being at 90th percentile actually is one where
-the average resident in the county is in a blockgroup that is at the 90th
-percentile of blockgroups in the US (or the State, depending on colorvarname).
+For standard percentile columns produced by \code{\link[=ejamit]{ejamit()}}, a county's
+aggregated indicator score is compared with the blockgroup distribution
+in the US or its State, depending on colorvarname. A county shown at the
+90th percentile has an aggregated score at approximately the 90th
+percentile of that blockgroup distribution. It is not ranked against
+other counties, and this is not the average of its blockgroup percentiles.
 }
 \examples{
 \dontrun{
 myfips = fips_counties_from_state_abbrev(c("AL", "GA", "MS"))
 mydf = ejamit(fips = myfips )$results_bysite
-mapfastej_counties(mydf, colorvarname = "pctile.pctnhba" )
+mapfastej_counties(mydf, colorvarname = "pctile.pctnhba")
+# Analyze and map all counties in one state without supplying mydf.
+mapfastej_counties(ST = "DE", colorvarname = "state.pctile.o3")
+# Keep the legend colors identical to the polygon palette.
+colors <- EJAM:::ejscreen_color_defaults()$colorfills
+mapfastej_counties(mydf, colorpalette = colors, colorfills = colors)
  }
 
 }

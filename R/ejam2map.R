@@ -1,15 +1,25 @@
 # . ####
 
 
-#' Show EJAM results as a map of points
-#' @description Takes the output of ejamit() and uses [mapfastej()] to
-#' create a map of the points.
-#' @details Gets radius by checking ejamitout$results_overall$radius.miles
-#' You can use browse=TRUE to save it as a shareable .html file
+#' Show EJAM results as a map of points or polygons
+#' @description Takes the output of ejamit() and maps the analyzed sites,
+#' using circles for point locations or polygons for shapefile and FIPS results.
+#' @details Gets radius from ejamitout$results_bysite$radius.miles.
+#' Use launch_browser = TRUE to save it as a shareable .html file
 #' and see it in your web browser.
 #' @param ejamitout output of ejamit()
-#' @param radius radius in miles
 #' @param column_names can be "ej", passed to [mapfast()]
+#' @param color A column name in `ejamitout$results_bysite`, a single R color,
+#'   or a vector of colors in the same order as the rows being mapped.
+#'   Percentile and ratio columns are converted to binned colors using internal
+#'   helpers [pctile2color()] and [ratio2color()]; other numeric columns use a
+#'   continuous viridis palette. An unknown column name that is not a valid R
+#'   color causes an error. When selecting one sitenumber, supply that site's
+#'   color or the column name.
+#'   NULL (the default) keeps the map helper's usual blue: `"#03F"` for
+#'   point circles or `"#000080"` for shapefile/FIPS polygons.
+#'   These point/polygon maps do not automatically add a percentile legend;
+#'   see [mapfastej_counties()] for a county choropleth with a legend.
 #' @param launch_browser logical optional whether to open the web browser to view the map
 #' @param shp shapefile it can map if analysis was for polygons, for example
 #' @param shape alias (synonym) for shp
@@ -31,16 +41,28 @@
 #'
 #' @return like what [mapfastej()] returns
 #' @examples
-#' pts = testpoints_100
+#' pts <- testpoints_100
+#' pts <- pts[is.finite(pts$lat) & is.finite(pts$lon), ]
 #' mapfast(pts)
 #'
 #' # out = ejamit(pts, radius = 1)
-#' out = testoutput_ejamit_100pts_1miles
+#' out <- testoutput_ejamit_100pts_1miles
+#' # Use valid sites so the color vector matches the rows being mapped.
+#' out$results_bysite <- out$results_bysite[out$results_bysite$valid %in% TRUE, ]
 #'
 #' # See in RStudio viewer pane
 #' ejam2map(out, launch_browser = FALSE)
+#' # Color by a percentile column without manually converting its values.
+#' ejam2map(out, color = "state.pctile.o3", launch_browser = FALSE)
 #' mapfastej(out$results_bysite[c(12,31),])
+#'
+#' # color-code points on map to show which ones had a high indicator score
+#' mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
+#' mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
+#' mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))
 #' \dontrun{
+#'   out <- ejamit(fips = fips_counties_from_state_abbrev(c('KY', 'IN')))
+#'   ejam2map(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 #'
 #' # See in local browser instead
 #' ejam2map(out)
@@ -61,6 +83,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
                      shape = NULL,     # alias (synonym) for shp
                      shapefile = NULL, # alias (synonym) for shp
                      buffer = NULL,    # alias (synonym) for radius
+                     color = NULL,
                      sitenumber_label = NULL # name-only, at end to avoid arg shift
                      ) {
 
@@ -122,6 +145,10 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     }
   }
   ################################################## #
+  # Resolve column names after selecting the rows being mapped.
+  color <- map_color_from_column(ejamitout$results_bysite, color,
+                                  data_name = "ejamitout$results_bysite")
+  ################################################## #
 
   # if missing FIPS POLYGONS, get them ####
 
@@ -139,25 +166,22 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
 
   # MAP ####
 
+  mapargs <- list(launch_browser = launch_browser, sitenumber_label = sitenumber_label)
+  # Omit NULL so each map helper retains its own default color.
+  if (!is.null(color)) mapargs$color <- color
+
   if (!is.null(shp) && (sitetype %in% "shp" || (sitetype %in% "fips" ))) {
     ## shp/fips ####
     # we have to assume that buffer was already added to polygons passed here - do not add them again
-    map_ejam_plus_shp(shp = shp,
-                      out = ejamitout,
-                      radius_buffer = radius,
-                      launch_browser = launch_browser,
-                      sitenumber_label = sitenumber_label)
+    do.call(map_ejam_plus_shp, c(list(shp = shp, out = ejamitout,
+                                     radius_buffer = radius), mapargs))
   } else {
     if (is.null(shp) && (sitetype %in% "shp")) {
       stop("cannot map results of shapefile analysis if no polygons provided in shp parameter")
     }
     ## latlon (or missing polygons for fips case) ####
-    mapfast(mydf = ejamitout$results_bysite,
-            radius = radius,
-            column_names = column_names,
-            launch_browser = launch_browser,
-            sitenumber_label = sitenumber_label
-    )
+    do.call(mapfast, c(list(mydf = ejamitout$results_bysite, radius = radius,
+                            column_names = column_names), mapargs))
   }
 }
 ############################################################################ #

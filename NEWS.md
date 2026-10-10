@@ -1,3 +1,18 @@
+# EJAM 4.2024.0 (unreleased)
+
+## New Features
+
+- Analyzing very large numbers of sites:
+  - App can now handle much larger analysis sets, including thousands of sites, without timing out or running out of memory.
+  - Large analysis is faster now.
+
+- Color-coded maps:
+  - `map_ejscreen_indicator()` now lets you draw a color-coded map of blockgroups, for one indicator, like an EJSCREEN map.
+  - `ejam2map()` and `mapfast()` now let you draw a color-coded map of analyzed sites (circles around points or polygons)
+  by specifying the indicator name, e.g.,
+  `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
+
 # EJAM 3.2022.3 (October 2026)
 
 This is the final ACS 2018-2022 release; it is frozen from here on.
@@ -125,7 +140,7 @@ which is where development continues.
 
 # EJAM 3.2022.2 (August 2026)
 
-A code-and-docs patch over v3.2022.1, led by a faster web app and 
+A code-and-docs patch over v3.2022.1, led by a faster web app and
 new information in the community report about where people live.
 
 ## Highlights
@@ -156,7 +171,7 @@ new information in the community report about where people live.
     - docs: [ejamdocs.ejanalysis.com](https://ejamdocs.ejanalysis.com)
   - API: [api.ejanalysis.com](https://api.ejanalysis.com)
     - docs: [apidocs.ejanalysis.com](https://apidocs.ejanalysis.com)
-  
+
 - **Bugs fixed**, including a crash when arriving from EJScreen's "Send to EJAM"
   button and downloaded reports that came out empty (details below).
 
@@ -193,7 +208,7 @@ new information in the community report about where people live.
   rows read Yes/No instead of 1/0. A footnote explains what the feature and
   facility counts mean, and what a State average means for a multisite report
   (part of #403 and #410).
-  
+
 - **The State flagged-areas stats are available outside the report too**
   (closes #242; addresses #156 and #410):
   `ejamit()$results_summarized$flagged_areas` gains statewide percent and
@@ -243,15 +258,15 @@ new information in the community report about where people live.
   `Config/EJAM/url_*` fields in `DESCRIPTION`, read through `url_package()`,
   which now also gives a clear error listing the valid types
   (#485, #501, #502, #503). New short aliases via Cloudflare,
-  like [api.ejanalysis.com](https://api.ejanalysis.com), 
-  [ejam.ejanalysis.com](https://ejam.ejanalysis.com), and 
+  like [api.ejanalysis.com](https://api.ejanalysis.com),
+  [ejam.ejanalysis.com](https://ejam.ejanalysis.com), and
   [ejamdev.ejanalysis.com](https://ejamdev.ejanalysis.com), etc. are easy to remember and
-  provide edge caching and 302 redirects to the actual deployed endpoints. URLs  
+  provide edge caching and 302 redirects to the actual deployed endpoints. URLs
   [ejamdocs.ejanalysis.com](https://ejamdocs.ejanalysis.com) and
-  [ejscreendocs.ejanalysis.com](https://ejscreendocs.ejanalysis.com) 
-  now redirect to documentation sites for EJAM and EJScreen and support links like 
-  - [ejamdocs.ejanalysis.com/dev](https://ejamdocs.ejanalysis.com/dev), 
-  - [ejamdocs.ejanalysis.com/dev/articles/dev-api.html](https://ejamdocs.ejanalysis.com/dev/articles/dev-api.html) or 
+  [ejscreendocs.ejanalysis.com](https://ejscreendocs.ejanalysis.com)
+  now redirect to documentation sites for EJAM and EJScreen and support links like
+  - [ejamdocs.ejanalysis.com/dev](https://ejamdocs.ejanalysis.com/dev),
+  - [ejamdocs.ejanalysis.com/dev/articles/dev-api.html](https://ejamdocs.ejanalysis.com/dev/articles/dev-api.html) or
   - [ejamdocs.ejanalysis.com/reference/url_package.html](https://ejamdocs.ejanalysis.com/dev/reference/url_package.html).
 
 - **A way to test changes to the API and test draft EJAM use of the API:**
@@ -517,7 +532,7 @@ Highlights:
 ## R Package Functions
 
 - `ejamapi()` was significantly enhanced with PDF support, query endpoint,
-  a new parameter to help save .html file reports, bug fixes, 
+  a new parameter to help save .html file reports, bug fixes,
   more error-checking, and better examples.
 - `url_ejamapp()` created as shortcut to the live web app where it is currently hosted.
 - `plot_distance_by_pctd()` fix when weights are not population.
@@ -753,13 +768,13 @@ Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/2
 
 # EJAM 2.32.7 (February 2026)
 
-- Bug fixes: 
+- Bug fixes:
 
   - Fixed a bug where the community report in version 2.32.6.003 incorrectly showed results rounded to zero decimal places. The bug was in `fixcolnames()` and had been introduced 3 weeks earlier while a separate issue was being fixed.
   - Fixed a bug where some latitude or longitude values could get somewhat rounded off in the URL from `url_ejamapi()` linking to the API to get a single-site report, so a report would show a very slightly different point and population count, for example, for some sites, versus what was intended.
   - Fixed bug in hosted app where uploads and downloads sometimes failed.
   - Fixed various other/ misc small issues.
-  
+
 - Improved the Community Report, Multisite Report, Spreadsheet
 
   - Report footer was edited, and can be customized now via `ejam2report()`
@@ -767,13 +782,13 @@ Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/2
   - Analysis Title (on reports) revised also
   - Report Footer was revised (new params in `ejam2report()` now define footer in community report, via new `generate_report_footer()` helper)
   - Multisite report is now rendered as html file automatically as soon as results are ready (and if analysis title is changed afterwards),
-  so it will be available immediately if/when a user decides to download it. And spreadsheet download may be faster, as 
+  so it will be available immediately if/when a user decides to download it. And spreadsheet download may be faster, as
   the server now does not have to re-render report for use in spreadsheet.
   - Multisite report and spreadsheet download buttons now disabled until each is ready.
-  - Spreadsheet file is now created automatically when results are done, so it will be available immediately if/when a user decides to download it. 
-  - Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day 
-  might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example. 
-  
+  - Spreadsheet file is now created automatically when results are done, so it will be available immediately if/when a user decides to download it.
+  - Client side user's timezone is now used by shiny app to use the correct date for report footer. Otherwise a report run late in the day
+  might incorrectly say it was created the next day if the app is running on a server in a timezone east of the user, for example.
+
 - Raised some limits on number of sites one can upload, map, analyze
 
   - Number of uploaded points
@@ -820,7 +835,7 @@ Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/2
   - Fixed bug in `plot_barplot_ratios()` that could affect `ejam2barplot()`
   - Fixed bug in `popshare_p_lives_at_what_pct()`, which reports info in notes tab of excel download
   - Fixed bug in utility `EJAM:::find_in_files()`
-  - Fixed bug affecting geocoding in `names2fips()` based on fips_place_from_placename() 
+  - Fixed bug affecting geocoding in `names2fips()` based on fips_place_from_placename()
   - Fixed bug in `fixcolnames()` that was only renaming the first instance of any duplicated inputs
   - Fixed various smaller issues like edge cases or typos in comments or messages.
 - Added (strong) recommendation that you obtain a Census API key, in the [guide to installing the package](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/installing.html). Also added warnings when envt var CENSUS_API_KEY not found before trying to use [tidycensus package](https://walker-data.com/tidycensus/) / [tidycensus on CRAN](https://cran.r-project.org/web/packages/tidycensus/index.html) or [tigris package](https://cran.r-project.org/web/packages/tigris/index.html) downloads of ACS Info or Census unit boundaries, e.g., in `shapes_from_fips()` and elsewhere.
@@ -835,7 +850,7 @@ Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/2
   - Revised article (vignette) on hosting, to add posit vs docker info, and updated files supporting deployment of shiny app to Posit Connect Cloud (manifest.json, etc.).
   - Fixed dependency issue where package [geojsonsf](https://github.com/SymbolixAU/geojsonsf) used in draft API code (plumber.R) had a typo so deployment to posit would fail due to not finding a package of that name.
   - Edited apparently problematic file data_names_all.R and may add back the _disable_autoload.R file
-  - Added example of using api_run() (later renamed as `ejamapi_local()`) to locally run API draft in background 
+  - Added example of using api_run() (later renamed as `ejamapi_local()`) to locally run API draft in background
   - Revised github actions; Added a github action workflow to run R CMD check, via `rcmdcheck::rcmdcheck()` to find various problems in package.
 - Added article (vignette) about [speed -- how long it takes to analyze thousands of sites](https://Public-Environmental-Data-Partners.github.io/EJAM/articles/dev-speed.html)
 - Improved `acs_bybg()` for creating new indicators based on Census Bureau ACS data
@@ -848,7 +863,7 @@ Updated the v2.32.8 release to include some additional fixes and cleanup, on 4/2
 
 # EJAM 2.32.6.002 (October 2025)
 
-This update does not add any web app features. 
+This update does not add any web app features.
 
 Changes:
 
@@ -882,7 +897,7 @@ It mainly does the following:
 
 ## Changed or Added
 
-- Added a list of URLs of archived EPA webpages documenting various aspects of EJSCREEN, in data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.md (This may get moved later 
+- Added a list of URLs of archived EPA webpages documenting various aspects of EJSCREEN, in data-raw/EJSCREEN_archived_pages/EJSCREEN_archived_pages_and_docs.md (This may get moved later
 or could even be converted to a subset of a website)
 - Added text to improve the articles on installing the package and updating datasets and others
 - Added an article about US Counties
@@ -992,9 +1007,9 @@ or could even be converted to a subset of a website)
 -   Changed how Advanced tab visibility is controlled ("default_can_show_advanced_settings" and "default_show_advanced_settings" set initial values of shiny inputs of the same names)
 -   Fixed a bug where `isPublic` parameter in `ejamapp()` was being ignored.
 -   Fixed a bug where threshold-related params in `ejamapp()` got ignored in latlon case.
--   Renamed many global_defaults\_ variables and shiny app input variables, and check in ejamapp() for special variables, so they are easier to use as parameters in `ejamapp()`. 
+-   Renamed many global_defaults\_ variables and shiny app input variables, and check in ejamapp() for special variables, so they are easier to use as parameters in `ejamapp()`.
 -   Renamed many global defaults (related to app title, logo, and version number, etc.), to be more clear and consistent, and moved several to `global_defaults_package.R`. So logos e.g. could be changed via `ejamapp(report_logo="www/EPA_logo_white_2.png", app_logo="www/EPA_logo_white_2.png")`, or report_logo="" to show no logo on reports.
-  
+
 
 ### Added documentation
 
@@ -1005,7 +1020,7 @@ or could even be converted to a subset of a website)
 -   Renamed various \*.R files and relocated some source code among those, to make some filenames more consistent.
 -   Made some functions internal that until now had been exported, to simplify things for most R users.
 -   Updated `{roxygen2}` help file docs and pkgdown documentation webpages
--   New function `url_github_preview()` makes it a bit easier to view rendered HTML reports that each package release or branch stores in the testdata/examples_of_outputs folder, to compare how they look in different versions. 
+-   New function `url_github_preview()` makes it a bit easier to view rendered HTML reports that each package release or branch stores in the testdata/examples_of_outputs folder, to compare how they look in different versions.
 -   Spell checked / fixed some typos
 -   Fixed some documentation
 
@@ -1026,10 +1041,10 @@ or could even be converted to a subset of a website)
 -   `fips_county_from_latlon()` and `fips_state_from_latlon()` are new internal functions - for each point, they identify the county or state it is in
 -   `fips2countyfips()` reports what US County contains each fips-based Census unit, such as the Counties in which some blockgroups are located.
 -   `fips2name()` now handles block fips instead of warning
--   `sites_from_input()` new internal function that helps other functions flexibly accept sites in various formats of input parameters: 
+-   `sites_from_input()` new internal function that helps other functions flexibly accept sites in various formats of input parameters:
       - lat= and lon= vectors of point coordinates, or
       - sitepoints= a data.frame with columns called lat and lon, or
-      - shapefile= a spatial data.frame of polygons, or 
+      - shapefile= a spatial data.frame of polygons, or
       - fips= a vector of census FIPS code
 -   `regids_valid()` is a new internal function
 -   `url_linkify()` improved and made internal
@@ -1104,10 +1119,10 @@ or could even be converted to a subset of a website)
 
 # EJAM v2.32.4 (June 2025)
 
-Note the URLs, emails, and notes about repository locations/owners were edited to reflect this forked non-EPA version of the EJAM package being 
-located initially at ejanalysis/EJAM, later moved to Public-Environmental-Data-Partners/EJAM, 
-so the package called the v2.32.4 
-release on ejanalysis/EJAM (later moved to Public-Environmental-Data-Partners/EJAM) is slightly different than the version called the v2.32.4 release that was 
+Note the URLs, emails, and notes about repository locations/owners were edited to reflect this forked non-EPA version of the EJAM package being
+located initially at ejanalysis/EJAM, later moved to Public-Environmental-Data-Partners/EJAM,
+so the package called the v2.32.4
+release on ejanalysis/EJAM (later moved to Public-Environmental-Data-Partners/EJAM) is slightly different than the version called the v2.32.4 release that was
 released on USEPA/EJAM-open.
 
 ## Web app

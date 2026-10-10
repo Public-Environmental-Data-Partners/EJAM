@@ -2672,16 +2672,12 @@ app_server <- function(input, output, session) {
   report_map <- reactive({
 
     validate(need(data_processed(), 'Please run an analysis to see results.'))
-    circle_color <- '#000080'
+    circle_color <- '#000080' # could be made user-selectable in advanced settings tab, but for now just hard-coded to dark blue
 
     # if shapefile, merge geometry and create buffer if nonzero buffer is set
     if (submitted_upload_method() == "SHP") {
 
       # SHP map ------------------------------ #
-
-      #   not sure this validate and circle_color belong here stil:
-      validate(need(data_processed(), 'Please run an analysis to see results.'))
-      circle_color <- '#000080'
 
       map_ejam_plus_shp(
         out = data_processed(),
@@ -2704,7 +2700,7 @@ app_server <- function(input, output, session) {
                 radius = submitted_radius_val(),
                 launch_browser = FALSE,
                 column_names = 'ej', #'all',
-                labels = popup_labels,color = circle_color)
+                labels = popup_labels, color = circle_color)
       } else {
 
         # FIPS map - download boundaries then map ------------------------------ #

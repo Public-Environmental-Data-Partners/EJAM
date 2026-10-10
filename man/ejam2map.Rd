@@ -2,7 +2,7 @@
 % Please edit documentation in R/ejam2map.R
 \name{ejam2map}
 \alias{ejam2map}
-\title{Show EJAM results as a map of points}
+\title{Show EJAM results as a map of points or polygons}
 \usage{
 ejam2map(
   ejamitout,
@@ -14,6 +14,7 @@ ejam2map(
   shape = NULL,
   shapefile = NULL,
   buffer = NULL,
+  color = NULL,
   sitenumber_label = NULL
 )
 }
@@ -42,6 +43,18 @@ downloaded for only that one site.}
 
 \item{buffer}{alias (synonym) for radius}
 
+\item{color}{A column name in \code{ejamitout$results_bysite}, a single R color,
+or a vector of colors in the same order as the rows being mapped.
+Percentile and ratio columns are converted to binned colors using internal
+helpers \code{\link[=pctile2color]{pctile2color()}} and \code{\link[=ratio2color]{ratio2color()}}; other numeric columns use a
+continuous viridis palette. An unknown column name that is not a valid R
+color causes an error. When selecting one sitenumber, supply that site's
+color or the column name.
+NULL (the default) keeps the map helper's usual blue: \code{"#03F"} for
+point circles or \code{"#000080"} for shapefile/FIPS polygons.
+These point/polygon maps do not automatically add a percentile legend;
+see \code{\link[=mapfastej_counties]{mapfastej_counties()}} for a county choropleth with a legend.}
+
 \item{sitenumber_label}{optional, display-only override (a number or short text) of the
 site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
 Only relevant when mapping a single site -- see \code{\link[=ejam2report]{ejam2report()}}, whose
@@ -51,25 +64,37 @@ sitenumber_label parameter this supports.}
 like what \code{\link[=mapfastej]{mapfastej()}} returns
 }
 \description{
-Takes the output of ejamit() and uses \code{\link[=mapfastej]{mapfastej()}} to
-create a map of the points.
+Takes the output of ejamit() and maps the analyzed sites,
+using circles for point locations or polygons for shapefile and FIPS results.
 }
 \details{
-Gets radius by checking ejamitout$results_overall$radius.miles
-You can use browse=TRUE to save it as a shareable .html file
+Gets radius from ejamitout$results_bysite$radius.miles.
+Use launch_browser = TRUE to save it as a shareable .html file
 and see it in your web browser.
 }
 \examples{
-pts = testpoints_100
+pts <- testpoints_100
+pts <- pts[is.finite(pts$lat) & is.finite(pts$lon), ]
 mapfast(pts)
 
 # out = ejamit(pts, radius = 1)
-out = testoutput_ejamit_100pts_1miles
+out <- testoutput_ejamit_100pts_1miles
+# Use valid sites so the color vector matches the rows being mapped.
+out$results_bysite <- out$results_bysite[out$results_bysite$valid \%in\% TRUE, ]
 
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
+# Color by a percentile column without manually converting its values.
+ejam2map(out, color = "state.pctile.o3", launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
+
+# color-code points on map to show which ones had a high indicator score
+mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
+mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
+mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))
 \dontrun{
+  out <- ejamit(fips = fips_counties_from_state_abbrev(c('KY', 'IN')))
+  ejam2map(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 
 # See in local browser instead
 ejam2map(out)
