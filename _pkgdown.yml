@@ -357,6 +357,7 @@ reference:
   - plot_blocks_nearby
 - subtitle: "Maps of Shapes (Polygons)"
   contents:
+  - map_ejscreen_indicator
   - mapfastej_counties
   - map_counties_in_state
   - map_shapes_leaflet
