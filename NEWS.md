@@ -3,7 +3,7 @@
 ## New Features
 
 - Analyzing very large numbers of sites:
-  - App can now handle much large analysis sets, including thousands of sites, without timing out or running out of memory.
+  - App can now handle much larger analysis sets, including thousands of sites, without timing out or running out of memory.
   - Large analysis is faster now.
 
 - Color-coded maps:
