@@ -881,3 +881,82 @@ test_that("Excel heatmap defaults still produce editable conditional formatting"
     expect_match(styles, hex, fixed = TRUE)
   }
 })
+
+test_that("color defaults are read from package settings and Shiny overrides", {
+  settings <- new.env(parent = asNamespace("EJAM"))
+  sys.source(system.file("global_defaults_package.R", package = "EJAM"), envir = settings)
+  custom <- settings$global_defaults_package
+  custom$default_color_coding$pctile <- list(
+    colorbins = c(50, 75, 90), colorfills = c("blue", "green", "purple", "black"),
+    colorlabels = c("<50", "50-<75", "75-<90", "90+")
+  )
+  custom$default_color_coding$ratio <- list(
+    colorbins = c(1.1, 2.5, 4), colorfills = c("blue", "green", "purple", "black"),
+    colorlabels = c("<1.1", "1.1-<2.5", "2.5-<4", "4+")
+  )
+  had_defaults <- exists("global_defaults_package", envir = .GlobalEnv, inherits = FALSE)
+  old_defaults <- get0("global_defaults_package", envir = .GlobalEnv, inherits = FALSE)
+  on.exit({
+    if (had_defaults) {
+      assign("global_defaults_package", old_defaults, envir = .GlobalEnv)
+    } else {
+      rm("global_defaults_package", envir = .GlobalEnv)
+    }
+  }, add = TRUE)
+  assign("global_defaults_package", custom, envir = .GlobalEnv)
+  old_options <- shiny::getShinyOption("golem_options")
+  on.exit(shiny::shinyOptions(golem_options = old_options), add = TRUE)
+  shiny::shinyOptions(golem_options = list())
+
+  expect_identical(EJAM:::ejscreen_color_defaults(), custom$default_color_coding$pctile)
+  expect_identical(EJAM:::ejscreen_color_defaults("ratio"), custom$default_color_coding$ratio)
+  expect_identical(EJAM:::pctile2colorhex(c(49, 50, 75, 90)),
+                   c("#0000FF", "#00FF00", "#A020F0", "#000000"))
+  expect_identical(EJAM:::ratio2color(c(1, 1.1, 2.5, 4)),
+                   c("blue", "green", "purple", "black"))
+  for (fun in list(ejam2excel, EJAM:::table_xls_from_ejam, EJAM:::table_xls_format)) {
+    expect_identical(eval(formals(fun)$heatmap_cuts, envir = asNamespace("EJAM")),
+                     c(50, 75, 90))
+  }
+  p <- plot_barplot_ratios(c(a = 1, b = 1.1, c = 2.5, d = 4),
+                           shortlabels = c("a", "b", "c", "d"), vs = "state")
+  expect_identical(ggplot2::ggplot_build(p)$data[[1]]$fill,
+                   c("blue", "green", "purple", "black"))
+  expect_identical(unname(p$scales$get_scales("fill")$labels),
+                   c("Below 1.1x State Average", "1.1-<2.5x State Average",
+                     "2.5-<4x State Average", "At least 4x State Average"))
+
+  # A two-bin ratio scheme should update the bars and legend together too.
+  custom$default_color_coding$ratio <- list(
+    colorbins = 2, colorfills = c("blue", "red"), colorlabels = c("<2", "2+")
+  )
+  assign("global_defaults_package", custom, envir = .GlobalEnv)
+  p <- plot_barplot_ratios(c(a = 1, b = 2), shortlabels = c("a", "b"))
+  expect_identical(ggplot2::ggplot_build(p)$data[[1]]$fill, c("blue", "red"))
+  expect_identical(unname(p$scales$get_scales("fill")$labels),
+                   c("Below 2x US Average", "At least 2x US Average"))
+
+  # Golem settings take priority over the package settings, as elsewhere in EJAM.
+  shiny::shinyOptions(golem_options = list(
+    default_color_coding = settings$global_defaults_package$default_color_coding
+  ))
+  expect_identical(EJAM:::ejscreen_color_defaults(),
+                   settings$global_defaults_package$default_color_coding$pctile)
+})
+
+test_that("namespace-only color calls use the same defaults file without creating globals", {
+  settings <- new.env(parent = asNamespace("EJAM"))
+  sys.source(system.file("global_defaults_package.R", package = "EJAM"), envir = settings)
+  cache <- EJAM:::.ejscreen_color_defaults_cache
+  old_cache <- cache$defaults
+  on.exit({ cache$defaults <- old_cache }, add = TRUE)
+  cache$defaults <- NULL
+  testthat::local_mocked_bindings(global_or_param = function(vname) NULL, .package = "EJAM")
+  globals_before <- ls(envir = .GlobalEnv, all.names = TRUE)
+  for (type in c("pctile", "ratio", "ejscreen")) {
+    expect_identical(EJAM:::ejscreen_color_defaults(type),
+                     settings$global_defaults_package$default_color_coding[[type]])
+  }
+  expect_identical(ls(envir = .GlobalEnv, all.names = TRUE), globals_before)
+  expect_identical(cache$defaults, settings$global_defaults_package$default_color_coding)
+})

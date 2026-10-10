@@ -81,6 +81,32 @@ global_defaults_package$pdf_map_snapshot_delay = 1
 global_defaults_package$pdf_print_wait         = 2
 ############################### #
 
+# COLOR CODING FOR MAPS, HEATMAPS, AND BARPLOTS ####
+
+# Shared settings, read by ejscreen_color_defaults() through global_or_param().
+# colorbins contains interior cutoffs; percentile maps add endpoints 0 and 100.
+# Excel uses colorfills[-1], leaving values below the first cutoff unhighlighted.
+# Keep colorlabels consistent with colorbins when customizing these settings.
+colorfills <- c("gray", "yellow", "orange", "red")
+global_defaults_package$default_color_coding <- list(
+  pctile = list(
+    colorbins = c(80, 90, 95), colorfills = colorfills,
+    colorlabels = c("<80", "80-89", "90-94", "95+")
+  ),
+  ratio = list(
+    colorbins = c(1.05, 2, 3), colorfills = colorfills,
+    colorlabels = c("<1.05", "1.05-<2", "2-<3", "3+")
+  ),
+  ejscreen = list(
+    colorbins = c(seq(10, 90, 10), 95),
+    colorfills = c(rep(colorfills[1], 8), colorfills[-1]),
+    colorlabels = c("0-9", "10-19", "20-29", "30-39", "40-49",
+                    "50-59", "60-69", "70-79", "80-89", "90-94", "95+")
+  )
+)
+rm(colorfills)
+############################### #
+
 # APP LOGO ####
 
 # app_logo is used in header at top of app webpage

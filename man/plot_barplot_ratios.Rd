@@ -21,9 +21,11 @@ for an easier way to specify which indicator to show.}
 
 \item{shortlabels}{optional, names to use for plot - should be same length as named list ratio.to.us.d.overall}
 
-\item{mycolorsavailable}{Four colors for ratios below 1.05, from 1.05 to
-below 2, from 2 to below 3, and at least 3. The shared defaults are
-gray, yellow, orange, and red. The existing legend uses these color names.}
+\item{mycolorsavailable}{One color per ratio bin. The default bins are
+below 1.05, from 1.05 to below 2, from 2 to below 3, and at least 3.
+The shared defaults are
+gray, yellow, orange, and red. Cutoffs come from the ratio scheme in
+\code{global_defaults_package$default_color_coding}.}
 
 \item{main}{optional, title for plot, like "Analyzed Locations Compared to US Overall",
 or if using state ratios, include the word "State" to have it try to infer what the legend should be}

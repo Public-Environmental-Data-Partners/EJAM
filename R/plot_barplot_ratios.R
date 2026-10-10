@@ -82,9 +82,11 @@ plot_barplot_ratios_ez = function(out,
 #' @param ratio.to.us.d.overall named list of a few ratios to plot, but see [ejam2barplot()]
 #'   for an easier way to specify which indicator to show.
 #' @param shortlabels optional, names to use for plot - should be same length as named list ratio.to.us.d.overall
-#' @param mycolorsavailable Four colors for ratios below 1.05, from 1.05 to
-#'   below 2, from 2 to below 3, and at least 3. The shared defaults are
-#'   gray, yellow, orange, and red. The existing legend uses these color names.
+#' @param mycolorsavailable One color per ratio bin. The default bins are
+#'   below 1.05, from 1.05 to below 2, from 2 to below 3, and at least 3.
+#'   The shared defaults are
+#'   gray, yellow, orange, and red. Cutoffs come from the ratio scheme in
+#'   `global_defaults_package$default_color_coding`.
 #' @param main optional, title for plot, like "Analyzed Locations Compared to US Overall",
 #'   or if using state ratios, include the word "State" to have it try to infer what the legend should be
 #' @param ylab optional, label for y axis
@@ -178,7 +180,9 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
     ratio.to.us.d.overall[, sapply(ratio.to.us.d.overall, is.infinite)] <- 0
   }
   # Shared ratio cutoffs, retaining the existing customizable palette.
-  mycolors <- ratio2color(ratio.to.us.d.overall, colorfills = mycolorsavailable)
+  colorbins <- ejscreen_color_defaults("ratio")$colorbins
+  mycolors <- ratio2color(ratio.to.us.d.overall, colorbins = colorbins,
+                          colorfills = mycolorsavailable)
 
   # barplot(ratio.to.us.d.overall,
   #         main = 'Ratio vs. US Average for Residential Population Indicators',
@@ -190,7 +194,7 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
                           value = as.vector(unlist(ratio.to.us.d.overall)),
                           color =  factor(
                             mycolors,
-                            levels = c( "red","orange","yellow","gray") #Set correct order from least to most
+                            levels = rev(unique(mycolorsavailable)) # highest bin first
                           )) %>%
     ## drop any indicators with Inf or NaNs
     dplyr::filter(is.finite(.data$value))
@@ -201,23 +205,21 @@ plot_barplot_ratios <- function(ratio.to.us.d.overall,
   if (isTRUE(getOption("shiny.testmode"))) {
     set.seed(12345)
   }
-  if (identical(vs, "state")) {
-    color_labels <- c(
-      "red" = "At least 3x State Average",
-      "orange" = "2-<3x State Average",
-      "yellow" = "1.05-<2x State Average",
-      "gray" = "Below 1.05x State Average"
+  reference <- if (identical(vs, "state")) "State Average" else "US Average"
+  if (length(colorbins) > 0) {
+    color_labels <- paste0(
+      c(paste0("Below ", colorbins[1]),
+        if (length(colorbins) > 1) {
+          paste0(head(colorbins, -1), "-<", tail(colorbins, -1))
+        } else {character()},
+        paste0("At least ", tail(colorbins, 1))),
+      "x ", reference
     )
-    legendTitle <- "Ratio vs State Average"
   } else {
-    color_labels <- c(
-      "red" = "At least 3x US Average",
-      "orange" = "2-<3x US Average",
-      "yellow" = "1.05-<2x US Average",
-      "gray" = "Below 1.05x US Average"
-    )
-    legendTitle <- "Ratio vs US Average"
+    color_labels <- paste0("All ratios vs ", reference)
   }
+  names(color_labels) <- mycolorsavailable
+  legendTitle <- paste("Ratio vs", reference)
 
   thisplot <- thisdata %>%
     ggplot2::ggplot(ggplot2::aes(x = name, y = value, fill = color)) +

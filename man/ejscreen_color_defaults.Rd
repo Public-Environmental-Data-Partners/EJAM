@@ -18,6 +18,10 @@ A list with \code{colorbins} (interior cutoffs), \code{colorfills}, and
 Default colors and cutoffs for percentile and ratio displays
 }
 \details{
+The settings are defined in \code{inst/global_defaults_package.R}, in
+\code{global_defaults_package$default_color_coding}. This function retrieves
+them via \code{\link[=global_or_param]{global_or_param()}}, so Shiny options override package settings.
+Namespace-only calls read the same file locally if defaults are not initialized.
 These defaults are shared by the color helpers, barplots, Excel
 heatmaps, and county maps. The four percentile colors cover \verb{[0, 80)},
 \verb{[80, 90)}, \verb{[90, 95)}, and \verb{[95, 100]}. Ratio cutoffs are 1.05, 2, and 3.

@@ -1765,13 +1765,19 @@ calc_ejscreen_map_fields_added <- function(x,
 
 ###################################################### #
 
+.ejscreen_color_defaults_cache <- new.env(parent = emptyenv())
+
 #' Default colors and cutoffs for percentile and ratio displays
 #'
 #' @param type `"pctile"` for four color bins, `"ratio"` for ratios to an
 #'   average, or `"ejscreen"` for the historical eleven EJSCREEN map bins.
 #' @return A list with `colorbins` (interior cutoffs), `colorfills`, and
 #'   `colorlabels`. Percentile map endpoints 0 and 100 are not included.
-#' @details These defaults are shared by the color helpers, barplots, Excel
+#' @details The settings are defined in `inst/global_defaults_package.R`, in
+#'   `global_defaults_package$default_color_coding`. This function retrieves
+#'   them via [global_or_param()], so Shiny options override package settings.
+#'   Namespace-only calls read the same file locally if defaults are not initialized.
+#'   These defaults are shared by the color helpers, barplots, Excel
 #'   heatmaps, and county maps. The four percentile colors cover `[0, 80)`,
 #'   `[80, 90)`, `[90, 95)`, and `[95, 100]`. Ratio cutoffs are 1.05, 2, and 3.
 #'   The historical EJSCREEN scheme splits the range below 80 into eight
@@ -1785,23 +1791,20 @@ calc_ejscreen_map_fields_added <- function(x,
 #'
 ejscreen_color_defaults <- function(type = c("pctile", "ratio", "ejscreen")) {
   type <- match.arg(type)
-  colorfills <- c("gray", "yellow", "orange", "red")
-  switch(type,
-    pctile = list(
-      colorbins = c(80, 90, 95), colorfills = colorfills,
-      colorlabels = c("<80", "80-89", "90-94", "95+")
-    ),
-    ratio = list(
-      colorbins = c(1.05, 2, 3), colorfills = colorfills,
-      colorlabels = c("<1.05", "1.05-<2", "2-<3", "3+")
-    ),
-    ejscreen = list(
-      colorbins = c(seq(10, 90, 10), 95),
-      colorfills = c(rep(colorfills[1], 8), colorfills[-1]),
-      colorlabels = c("0-9", "10-19", "20-29", "30-39", "40-49",
-                      "50-59", "60-69", "70-79", "80-89", "90-94", "95+")
-    )
-  )
+  defaults <- global_or_param("default_color_coding")
+  if (is.null(defaults)) {
+    # Namespace-only calls do not run .onAttach(); read the same settings file
+    # locally once, without creating globals or loading the national datasets.
+    if (is.null(.ejscreen_color_defaults_cache$defaults)) {
+      defaults_env <- new.env(parent = environment(ejscreen_color_defaults))
+      sys.source(system.file("global_defaults_package.R", package = "EJAM"),
+                 envir = defaults_env)
+      .ejscreen_color_defaults_cache$defaults <-
+        defaults_env$global_defaults_package$default_color_coding
+    }
+    defaults <- .ejscreen_color_defaults_cache$defaults
+  }
+  defaults[[type]]
 }
 
 #' @noRd
