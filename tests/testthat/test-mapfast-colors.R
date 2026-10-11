@@ -118,3 +118,38 @@ test_that("ejam2map preserves polygon defaults for supplied and downloaded bound
     }
   }
 })
+
+test_that("ejam2map keeps per-row colors on the right polygons when rows are dropped or reordered", {
+  square <- function(x) sf::st_polygon(list(matrix(
+    c(x, 39, x + 0.1, 39, x + 0.1, 39.1, x, 39.1, x, 39), ncol = 2, byrow = TRUE)))
+  shp <- sf::st_sf(ejam_uniq_id = 1:3,
+                  geometry = sf::st_sfc(square(-75), square(-76), square(-77), crs = 4326))
+  testthat::local_mocked_bindings(
+    popup_from_ejscreen = function(x, ...) rep("Site", nrow(x)),
+    .package = "EJAM"
+  )
+  for (type in c("shp", "fips")) {
+    # The first site is invalid so it is not drawn; the other two keep their own colors.
+    out <- list(sitetype = type, results_bysite = data.frame(
+      ejam_uniq_id = if (type == "shp") 1:3 else c("01001", "01003", "01005"),
+      pop = 100, valid = c(FALSE, TRUE, TRUE), radius.miles = 0,
+      pctile.pctlowinc = c(96, 50, 85)))
+    for (as_dt in c(FALSE, TRUE)) {
+      if (as_dt) out$results_bysite <- data.table::as.data.table(out$results_bysite)
+      suppressMessages({
+        map <- ejam2map(out, shp = shp, color = "pctile.pctlowinc", launch_browser = FALSE)
+      })
+      expect_identical(mapfast_layer_colors(map, "addPolygons"), c("gray", "yellow"))
+      suppressMessages({
+        map <- ejam2map(out, shp = shp, color = c("green", "purple", "blue"), launch_browser = FALSE)
+      })
+      expect_identical(mapfast_layer_colors(map, "addPolygons"), c("purple", "blue"))
+    }
+  }
+  # Shapefile results get merged with the polygons by ejam_uniq_id, which sorts the rows.
+  out <- list(sitetype = "shp", results_bysite = data.frame(
+    ejam_uniq_id = 3:1, pop = 100, valid = TRUE, radius.miles = 0,
+    pctile.pctlowinc = c(96, 50, 85)))
+  map <- ejam2map(out, shp = shp, color = "pctile.pctlowinc", launch_browser = FALSE)
+  expect_identical(mapfast_layer_colors(map, "addPolygons"), c("yellow", "gray", "red"))
+})

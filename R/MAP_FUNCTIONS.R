@@ -79,6 +79,12 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, color = '#000080',
     stop("map_ejam_plus_shp() received invalid shp: expected an sf spatial data.frame with a geometry column")
   }
   shp <- shp[, c("ejam_uniq_id", "geometry")] # the "valid" column is in out$results_bysite, not in shp, and shp should have even invalid rows.
+  # If color is one color per row of out$results_bysite, it has to travel with those rows,
+  # since merge() can reorder them and invalid or empty polygons get dropped below.
+  color_by_row <- length(color) > 1 && length(color) == NROW(out$results_bysite)
+  if (color_by_row) {
+    out$results_bysite$ejam_map_color <- color
+  }
   # in FIPS case, ejam_uniq_id is fips not 1:N, so merge() here would fail.
   # but if we assume same NROW and same sort for shp and out#results_bysite, then we can just use the row number to match them up, or use cbind(shp, out$results_bysite)
   if (sitetype %in% "fips") {
@@ -109,6 +115,10 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, color = '#000080',
     message("There were ", sum(!shpout$valid, na.rm = TRUE), " invalid polygons." )
   }
   shpout <- shpout[shpout$valid, ] # Drop invalid polygons, dont try to map
+  if (color_by_row) {
+    color <- shpout$ejam_map_color # now only the colors of the polygons being mapped
+    shpout$ejam_map_color <- NULL
+  }
 
   if (NROW(shpout) == 0) {
     mymap <- leaflet::leaflet(width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
