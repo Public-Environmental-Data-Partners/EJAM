@@ -1767,19 +1767,27 @@ calc_ejscreen_map_fields_added <- function(x,
 
 #' Resolve a map color argument against the table being mapped
 #' @noRd
-map_color_from_column <- function(mydf, color, data_name = "mydf") {
+map_color_from_column <- function(mydf, color, data_name = "mydf", na.color = "#D3D3D3") {
   if (!is.character(color) || length(color) != 1L) return(color)
 
   if (color %in% names(mydf)) {
     values <- mydf[[color]]
     vartype <- varname2vartype_ejam(fixcolnames(color, "long", "r"))
-    if (grepl("pctile", vartype)) return(pctile2color(values))
-    if (grepl("ratio", vartype)) return(ratio2color(values))
-    if (!is.numeric(values)) {
-      stop(sprintf("Column '%s' in %s must contain numeric values for color coding.", color, data_name),
-           call. = FALSE)
+    if (grepl("pctile", vartype)) {
+      colors <- pctile2color(values)
+    } else if (grepl("ratio", vartype)) {
+      colors <- ratio2color(values)
+    } else {
+      if (!is.numeric(values)) {
+        stop(sprintf("Column '%s' in %s must contain numeric values for color coding.", color, data_name),
+             call. = FALSE)
+      }
+      if (!any(is.finite(values))) return(rep(na.color, length(values)))
+      values[!is.finite(values)] <- NA_real_
+      colors <- leaflet::colorNumeric(palette = "viridis", domain = values, na.color = na.color)(values)
     }
-    return(leaflet::colorNumeric(palette = "viridis", domain = values)(values))
+    colors[is.na(colors)] <- na.color
+    return(colors)
   }
 
   valid_color <- tryCatch({

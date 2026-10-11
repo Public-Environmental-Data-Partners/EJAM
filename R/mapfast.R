@@ -56,7 +56,8 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 #'   R color, or one color per row, for circles or polygons. Percentile and ratio
 #'   columns use the shared binned colors; other numeric columns use a continuous
 #'   viridis palette. An unknown column name that is not a valid R color causes
-#'   an error. These maps do not automatically add a color legend; use
+#'   an error. Missing values in a color column are shown in light gray.
+#'   These maps do not automatically add a color legend; use
 #'   [mapfastej_counties()] for a county choropleth with a percentile legend.
 #' @param sitenumber_label optional, display-only override (a number or short text) of the
 #'   site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.

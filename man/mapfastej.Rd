@@ -48,7 +48,8 @@ Normally the map would be shown in the default RStudio viewer pane.}
 R color, or one color per row, for circles or polygons. Percentile and ratio
 columns use the shared binned colors; other numeric columns use a continuous
 viridis palette. An unknown column name that is not a valid R color causes
-an error. These maps do not automatically add a color legend; use
+an error. Missing values in a color column are shown in light gray.
+These maps do not automatically add a color legend; use
 \code{\link[=mapfastej_counties]{mapfastej_counties()}} for a county choropleth with a percentile legend.}
 
 \item{sitenumber_label}{optional, display-only override (a number or short text) of the

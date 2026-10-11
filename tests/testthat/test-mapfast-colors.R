@@ -119,6 +119,59 @@ test_that("ejam2map preserves polygon defaults for supplied and downloaded bound
   }
 })
 
+test_that("column-driven maps draw missing scores with an explicit no-data color", {
+  pts <- data.frame(lat = c(38, 39, 40), lon = c(-75, -76, -77),
+                    pctile.pctlowinc = c(80, NA, 95),
+                    ratio.to.state.avg.pctlowinc = c(1.06, NA, 3), score = c(2, NA, 8))
+  square <- function(x) sf::st_polygon(list(matrix(
+    c(x, 39, x + 0.1, 39, x + 0.1, 39.1, x, 39.1, x, 39), ncol = 2, byrow = TRUE)))
+  polygons <- sf::st_sf(pts, geometry = sf::st_sfc(square(-75), square(-76), square(-77), crs = 4326))
+  for (column in c("pctile.pctlowinc", "ratio.to.state.avg.pctlowinc", "score")) {
+    map <- mapfast(pts, color = column, launch_browser = FALSE)
+    colors <- mapfast_layer_colors(map, "addCircles")
+    expect_identical(colors[2], "#D3D3D3")
+    expect_false(anyNA(colors))
+    map <- mapfast(polygons, color = column, launch_browser = FALSE)
+    colors <- mapfast_layer_colors(map, "addPolygons")
+    expect_identical(colors[2], "#D3D3D3")
+    expect_false(anyNA(colors))
+  }
+  pts$score <- NA_real_
+  map <- mapfast(pts, color = "score", launch_browser = FALSE)
+  expect_identical(mapfast_layer_colors(map, "addCircles"), rep("#D3D3D3", 3))
+  expect_true(is.na(EJAM:::pctile2color(NA_real_)))
+})
+
+test_that("ejam2map selects the actual valid row when only one site is valid", {
+  square <- function(x) sf::st_polygon(list(matrix(
+    c(x, 39, x + 0.1, 39, x + 0.1, 39.1, x, 39.1, x, 39), ncol = 2, byrow = TRUE)))
+  shp <- sf::st_sf(ejam_uniq_id = 1:3,
+                  geometry = sf::st_sfc(square(-75), square(-76), square(-77), crs = 4326))
+  testthat::local_mocked_bindings(
+    popup_from_ejscreen = function(x, ...) paste("Site", x$ejam_uniq_id), .package = "EJAM"
+  )
+  for (type in c("latlon", "shp", "fips")) {
+    for (as_dt in c(FALSE, TRUE)) {
+      results <- data.frame(ejam_uniq_id = 1:3, pop = c(100, 200, 300),
+                            lat = c(38, 39, 40), lon = c(-75, -76, -77),
+                            valid = c(FALSE, TRUE, FALSE), radius.miles = if (type == "latlon") 1 else 0,
+                            pctile.pctlowinc = c(79, 95, 80))
+      for (name in unique(c(names_ej, names_ej_state, names_ej_supp, names_ej_supp_state))) {
+        results[[name]] <- 1
+      }
+      if (as_dt) results <- data.table::as.data.table(results)
+      out <- list(sitetype = type, results_bysite = results)
+      map <- ejam2map(out, shp = if (type == "latlon") NULL else shp,
+                      color = "pctile.pctlowinc", launch_browser = FALSE)
+      method <- if (type == "latlon") "addCircles" else "addPolygons"
+      expect_identical(mapfast_layer_colors(map, method), "red")
+      layer <- Filter(function(x) identical(x$method, method), map$x$calls)[[1]]
+      expect_true("Site 2" %in% unlist(layer$args))
+      expect_false("Site 1" %in% unlist(layer$args))
+    }
+  }
+})
+
 test_that("ejam2map keeps per-row colors on the right polygons when rows are dropped or reordered", {
   square <- function(x) sf::st_polygon(list(matrix(
     c(x, 39, x + 0.1, 39, x + 0.1, 39.1, x, 39.1, x, 39), ncol = 2, byrow = TRUE)))

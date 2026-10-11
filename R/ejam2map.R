@@ -18,6 +18,7 @@
 #'   color or the column name.
 #'   NULL (the default) keeps the map helper's usual blue: `"#03F"` for
 #'   point circles or `"#000080"` for shapefile/FIPS polygons.
+#'   Missing values in a color column are shown in light gray.
 #'   These point/polygon maps do not automatically add a percentile legend;
 #'   see [mapfastej_counties()] for a county choropleth with a legend.
 #' @param launch_browser logical optional whether to open the web browser to view the map
@@ -127,7 +128,7 @@ ejam2map <- function(ejamitout, column_names = "ej", launch_browser = TRUE, shp 
     sitenumber <- -1
   }
   if (sitenumber %in% -1 && nsites == 1) {
-    sitenumber <- 1
+    sitenumber <- which(ejamitout$results_bysite$valid %in% TRUE)[1]
   }
 
   ##  ALL sites vs only Nth site ###################################################
