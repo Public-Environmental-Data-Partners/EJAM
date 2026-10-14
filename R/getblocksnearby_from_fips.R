@@ -21,6 +21,14 @@
 #'   When radius > 0, the FIPS boundaries are downloaded, a buffer of that size is added
 #'   around each boundary, and blocks within the buffered area are analyzed.
 #'   Use 999 to signal FIPS analysis mode without a buffer (same as 0 for buffering purposes).
+#' @param compact set to TRUE for a much smaller table with one row per blockgroup in each FIPS unit,
+#'   instead of one row per block. This is faster and uses much less memory, such as for all US counties or states,
+#'   and [doaggregate()] gives the same results from it.
+#'   Each row stands for all the blocks of its blockgroup: `blockid` is one of those blocks,
+#'   `blockwt` is the sum of their weights, and the added column `blockcount` is how many blocks there are.
+#'   Used only for unbuffered FIPS codes of blockgroups, tracts, counties, or states.
+#'   If any FIPS are cities/places, or `radius` adds a buffer, the table has one row per block as usual.
+#'   [ejamit()] uses `compact = TRUE`.
 #'
 #' @return
 #' - if return_shp = FALSE, returns just a sites2blocks table in [data.table](https://r-datatable.com) format with colnames ejam_uniq_id, blockid, distance, blockwt, bgid, fips.
@@ -48,7 +56,7 @@
 #'
 getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRUE,
                                       return_shp = FALSE, allow_multiple_fips_types = TRUE,
-                                      radius = 0) {
+                                      radius = 0, compact = FALSE) {
 
   if (!is.null(radius) && !is.na(radius) && radius > 0 && radius != 999) {
     # Buffer case: download FIPS shapes and apply buffer around each boundary
@@ -146,7 +154,9 @@ getblocksnearby_from_fips <- function(fips, in_shiny = FALSE, need_blockwt = TRU
                                                         return_shp = return_shp,
                                                         in_shiny = in_shiny,
                                                         need_blockwt = need_blockwt,
-                                                        allow_multiple_fips_types = allow_multiple_fips_types)
+                                                        allow_multiple_fips_types = allow_multiple_fips_types,
+                                                        # one row per blockgroup only if no city rows (one per block) get combined with these
+                                                        compact = isTRUE(compact) && !any(ftype_city))
     # NULL IF NONE RETURNED AT ALL
   } else {
     output_noncity <- NULL
@@ -311,9 +321,10 @@ getblocksnearby_from_fips_cityshape <- function(fips, return_shp = FALSE) {
 
 # helper used by getblocksnearby_from_fips()
 
-getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny = FALSE, need_blockwt = TRUE, allow_multiple_fips_types = TRUE) {
+getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny = FALSE, need_blockwt = TRUE, allow_multiple_fips_types = TRUE,
+                                              compact = FALSE) {
 
-  if (!exists('blockid2fips')) {dataload_dynamic(varnames = 'blockid2fips')} # *** will drop need for this
+  if (!compact && !exists('blockid2fips')) {dataload_dynamic(varnames = 'blockid2fips')} # the compact table does not need this large dataset
   if (!exists('bgid2fips')) {dataload_dynamic(varnames = 'bgid2fips')}
 
   ##  > SORT order of input fips is saved including invalid fips input ####
@@ -406,6 +417,14 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
 
     ## Get BLOCKS in each blockgroup ####
 
+    if (compact) {
+      # Every block of each blockgroup is in the FIPS unit, so one row per blockgroup can stand for all its blocks
+      # (see the compact parameter of getblocksnearby_from_fips()). This avoids building a table of every block.
+      fips_blockpoints <- blockgroup_block_summary()[
+        all_bgs[!is.na(bgid), .(ejam_uniq_id, fips, bgid)], on = "bgid", nomatch = NULL]
+      fips_blockpoints[, distance := 0]
+      setcolorder(fips_blockpoints, c('ejam_uniq_id', 'blockid', 'distance', 'blockwt', 'bgid', 'blockcount'))
+    } else {
     suppressMessages({
       setDF(all_bgs)
       fips_blockpoints <- dplyr::left_join(all_bgs,
@@ -432,6 +451,7 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
     fips_blockpoints[ , blockfips := NULL]
     fips_blockpoints[ , lat := NULL]
     fips_blockpoints[ , lon := NULL]
+    } # end of one row per block (not compact)
     ######################################## #  ######################################## #
 
     ## > in s2b, DROP FIPS IF NO BLOCKS FOUND ####
@@ -456,5 +476,32 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
       return(fips_blockpoints)
     }
   }
+}
+######################################## #
+
+#' One row per blockgroup summarizing its blocks, for compact sites2blocks tables
+#'
+#' @details Used by [getblocksnearby_from_fips()] when `compact = TRUE`. Computed once from
+#'   [blockwts] and then kept in memory (about 243k rows).
+#'
+#' @return [data.table](https://r-datatable.com) with columns bgid, blockid (the first block of the blockgroup),
+#'   blockwt (sum of the blockgroup's block weights, which is 1 except for blockgroups with no residents),
+#'   and blockcount (number of blocks in the blockgroup)
+#'
+#' @keywords internal
+#'
+blockgroup_block_summary <- function() {
+
+  if (exists("bg_block_summary", envir = .ejam_cache, inherits = FALSE)) {
+    return(get("bg_block_summary", envir = .ejam_cache, inherits = FALSE))
+  }
+  blockwts_now <- ejam_cached_data_get("blockwts")
+  # sum each blockgroup's weights in blockid order, the same order doaggregate() would add them
+  if (is.unsorted(blockwts_now$blockid)) {
+    blockwts_now <- blockwts_now[order(blockid), .(blockid, bgid, blockwt)]
+  }
+  x <- blockwts_now[, .(blockid = min(blockid), blockwt = sum(blockwt), blockcount = .N), by = "bgid"]
+  assign("bg_block_summary", x, envir = .ejam_cache)
+  x
 }
 ######################################## #

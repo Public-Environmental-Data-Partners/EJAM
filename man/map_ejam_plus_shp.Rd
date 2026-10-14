@@ -8,7 +8,7 @@ map_ejam_plus_shp(
   shp,
   out,
   radius_buffer = NULL,
-  circle_color = "#000080",
+  color = "#000080",
   launch_browser = FALSE,
   sitenumber_label = NULL
 )
@@ -20,7 +20,7 @@ map_ejam_plus_shp(
 
 \item{radius_buffer}{optional but can be obtained from out}
 
-\item{circle_color}{optional}
+\item{color}{optional}
 
 \item{launch_browser}{set TRUE to have it launch browser to show map.}
 

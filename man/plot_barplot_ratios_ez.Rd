@@ -56,8 +56,8 @@ plot_barplot_ratios_ez(
 
 out <- testoutput_ejamit_100pts_1miles
 plot_barplot_ratios(
-  unlist(out$results_overall[ ,
-     c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ])
+  unlist(out$results_overall[,
+    c(names_d_ratio_to_avg, names_d_subgroups_ratio_to_avg), with = FALSE])
 )
 
 }

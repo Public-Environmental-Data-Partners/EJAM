@@ -15,7 +15,7 @@
 #' @param shp spatial data.frame
 #' @param out output of ejamit()
 #' @param radius_buffer optional but can be obtained from out
-#' @param circle_color optional
+#' @param color optional
 #' @param launch_browser set TRUE to have it launch browser to show map.
 #' @param sitenumber_label optional, display-only override (a number or short text) of the
 #'   site number shown in map popups, passed to [popup_from_ejscreen()].
@@ -26,7 +26,7 @@
 #'
 #' @keywords internal
 #'
-map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#000080', launch_browser = FALSE,
+map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, color = '#000080', launch_browser = FALSE,
                               sitenumber_label = NULL # name-only, at end to avoid arg shift
                               ) {
 
@@ -79,6 +79,12 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
     stop("map_ejam_plus_shp() received invalid shp: expected an sf spatial data.frame with a geometry column")
   }
   shp <- shp[, c("ejam_uniq_id", "geometry")] # the "valid" column is in out$results_bysite, not in shp, and shp should have even invalid rows.
+  # If color is one color per row of out$results_bysite, it has to travel with those rows,
+  # since merge() can reorder them and invalid or empty polygons get dropped below.
+  color_by_row <- length(color) > 1 && length(color) == NROW(out$results_bysite)
+  if (color_by_row) {
+    out$results_bysite$ejam_map_color <- color
+  }
   # in FIPS case, ejam_uniq_id is fips not 1:N, so merge() here would fail.
   # but if we assume same NROW and same sort for shp and out#results_bysite, then we can just use the row number to match them up, or use cbind(shp, out$results_bysite)
   if (sitetype %in% "fips") {
@@ -109,6 +115,10 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
     message("There were ", sum(!shpout$valid, na.rm = TRUE), " invalid polygons." )
   }
   shpout <- shpout[shpout$valid, ] # Drop invalid polygons, dont try to map
+  if (color_by_row) {
+    color <- shpout$ejam_map_color # now only the colors of the polygons being mapped
+    shpout$ejam_map_color <- NULL
+  }
 
   if (NROW(shpout) == 0) {
     mymap <- leaflet::leaflet(width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
@@ -134,7 +144,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, circle_color = '#0
 
     mymap <- leaflet::leaflet(shpout, width = if (isTRUE(getOption("shiny.testmode"))) 1000 else NULL) %>%
       leaflet::addTiles()  %>%
-      leaflet::addPolygons(color = circle_color,
+      leaflet::addPolygons(color = color,
                            popup = pops,
                            popupOptions = leaflet::popupOptions(maxHeight = 200))
   }
@@ -316,25 +326,33 @@ map_counties_in_state <- function(ST = "DE", colorcolumn = c('pop', "NAME", "POP
 #' Map - County polygons / boundaries - Create leaflet or static map of results of analysis
 #'
 #' @param mydf something like  ejamit(fips = fips_counties_from_statename("Kentucky"), radius = 0)$results_bysite
+#' @param ST ignored if mydf is provided. If mydf is omitted, ST can be the 2-character
+#'   abbreviation of a State, and the function will run the analysis of all counties in that state before drawing the map.
 #' @param colorvarname colname of indicator in mydf that drives color-coding
 #'   (or alternatively, colorvarname = "green" means a single specific color for all, like "green")
 #' @param static_not_leaflet set TRUE to use [map_shapes_plot()] instead of [map_shapes_leaflet()]
 #' @param main title for map
-#' @param colorfills  vector of colors shown in legend
-#' @param colorlabels vector of cutoffs shown in legend
-#' @param colorbins vector of cutoffs for which values of colorvarname indicator
-#'    get assigned which colors from colorpalette
-#' @param colorpalette vector of colors available for filling polygons
+#' @param colorfills Vector of colors shown in the legend. The historical
+#'   default is darkgray, yellow, orange, and darkred. Set this to the same
+#'   colors as colorpalette to match the polygon fills exactly.
+#' @param colorlabels Vector of text labels shown in the legend, one per bin.
+#' @param colorbins Increasing bin boundaries INCLUDING endpoints; the default
+#'   is c(0, 80, 90, 95, 100). A cutoff belongs to the higher bin, and 100 is
+#'   included in the last bin. A single number requests Leaflet's bin-count mode.
+#' @param colorpalette Palette for filling polygons, default gray, yellow,
+#'   orange, and red from [ejscreen_color_defaults()].
 #' @param fillOpacity passed to [map_shapes_leaflet()] which passes it to [leaflet::addPolygons()]
 #' @param ... depending on value of static_not_leaflet T/F, passed to [map_shapes_plot()]
 #' or to [map_shapes_leaflet()] which passes it to [leaflet::addPolygons()], such as opacity=1
 #'
-#' @details THIS ASSUMES THAT mydf$ejam_unique_id is the county FIPS codes.
+#' @details This assumes that mydf$ejam_uniq_id contains county FIPS codes.
 #'
-#' IMPORTANT: The percentiles shown are percentiles among blockgroups, not counties.
-#'   A county here shown as being at 90th percentile actually is one where
-#'   the average resident in the county is in a blockgroup that is at the 90th
-#'   percentile of blockgroups in the US (or the State, depending on colorvarname).
+#' For standard percentile columns produced by [ejamit()], a county's
+#'   aggregated indicator score is compared with the blockgroup distribution
+#'   in the US or its State, depending on colorvarname. A county shown at the
+#'   90th percentile has an aggregated score at approximately the 90th
+#'   percentile of that blockgroup distribution. It is not ranked against
+#'   other counties, and this is not the average of its blockgroup percentiles.
 #'
 #' @seealso [mapfastej()] [map_shapes_leaflet()]
 #' @return leaflet html widget (but if static_not_leaflet = TRUE,
@@ -342,19 +360,34 @@ map_counties_in_state <- function(ST = "DE", colorcolumn = c('pop', "NAME", "POP
 #' @examples \dontrun{
 #' myfips = fips_counties_from_state_abbrev(c("AL", "GA", "MS"))
 #' mydf = ejamit(fips = myfips )$results_bysite
-#' mapfastej_counties(mydf, colorvarname = "pctile.pctnhba" )
+#' mapfastej_counties(mydf, colorvarname = "pctile.pctnhba")
+#' # Analyze and map all counties in one state without supplying mydf.
+#' mapfastej_counties(ST = "DE", colorvarname = "state.pctile.o3")
+#' # Keep the legend colors identical to the polygon palette.
+#' colors <- EJAM:::ejscreen_color_defaults()$colorfills
+#' mapfastej_counties(mydf, colorpalette = colors, colorfills = colors)
 #'  }
 #'
 #' @export
 #'
 mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
                                colorfills = c('darkgray', 'yellow', 'orange', 'darkred'),
-                               colorlabels = c("<80", "80-89", "90-94", "95+"),
-                               colorbins = c(0,80,90,95,100),
-                               colorpalette = c('gray',   'yellow', 'orange',   'red'),
+                               colorlabels = ejscreen_color_defaults()$colorlabels,
+                               colorbins = c(0, ejscreen_color_defaults()$colorbins, 100),
+                               colorpalette = ejscreen_color_defaults()$colorfills,
                                static_not_leaflet = FALSE, main = "Selected Counties",
                                fillOpacity = 0.5,
+                               ST = "DE",
                                ...) {
+
+  if (missing(mydf)) {
+    # Data not provided, so if they specified 1 State, run analysis to get data.
+    stopifnot(!is.null(ST), length(ST) == 1, ST %in% stateinfo$ST)
+    fips <- fips_counties_from_state_abbrev(ST)
+    out <- ejamit(fips = fips, radius = 0)
+    mydf <- out$results_bysite
+    rm(out)
+  }
 
   # *** CANNOT HANDLE colorvarname = ANYTHING ELSE BESIDES THOSE SCALED 0 TO 100, SO FAR
   if (!(colorvarname %in% names(mydf))) {
@@ -393,12 +426,15 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
 
   setDT(mydf)
   ## see color-coding of one percentile variable:
-  pal <- leaflet::colorBin(
-    palette = colorpalette,
-    domain = NULL,
-    bins = colorbins
-  )
-  shading <- pal(as.vector(unlist(mydf[ , ..colorvarname])))
+  scores <- as.vector(unlist(mydf[ , ..colorvarname]))
+  if (length(colorbins) >= 2L) {
+    shading <- pctile2colorhex(scores, colorbins = colorbins,
+                               colorfills = colorpalette, na.color = "#808080")
+  } else {
+    # Retain Leaflet's numeric bin-count mode, including single-color maps.
+    pal <- leaflet::colorBin(palette = colorpalette, domain = NULL, bins = colorbins)
+    shading <- pal(scores)
+  }
 
   if (static_not_leaflet) {
 
