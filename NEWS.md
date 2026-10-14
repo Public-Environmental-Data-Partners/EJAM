@@ -1,12 +1,19 @@
 # EJAM 4.2024.0 (unreleased)
 
-## New Features
+## New Features for R users (not in web app yet)
 
-- Color-coded maps:
-  - `map_ejscreen_indicator()` now lets you draw a color-coded map of blockgroups, for one indicator, like an EJSCREEN map.
-  - `ejam2map()` and `mapfast()` now let you draw a color-coded map of analyzed sites (circles around points or polygons)
-  by specifying the indicator name, e.g.,
-  `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+- Color-coded maps to see where an indicator is highest:
+  - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county, like an EJSCREEN map,
+    by specifying the indicator name, e.g.,
+    `map_ejscreen_indicator("pctlowinc", countyfips = "10001")`
+  - `mapfastej_counties()` now lets you draw a color-coded map of all _counties_ in a state, more easily,
+    by specifying the indicator name, e.g.,
+    `mapfastej_counties(ST = "DE", colorvarname = "state.pctile.o3")`
+  - `ejam2map()` and `mapfast()` now let you draw a color-coded map of all _analyzed sites_ nationwide
+    (as circles around points or as polygons)
+    by specifying the indicator name, e.g.,
+    `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
 
 
 # EJAM 3.2022.3 (October 2026)
