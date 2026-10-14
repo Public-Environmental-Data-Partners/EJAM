@@ -7,7 +7,7 @@ The files in this folder are byte-for-byte copies from
 - `query_pagination.R`   — /query pagination helpers, `source()`d by rest_controller.r
 - `assets/`              — static files served at `/assets`
 
-**Synced from commit:** `d16c5e8e0e355ac4ea21ce142aa2ae3673855767` (2026-10-14)
+**Synced from commit:** `8f2336f0d862551269f5517693fb79f4476bc6b5` (2026-10-14)
 
 **Pending upstream:** [EJAM-API#61](https://github.com/Public-Environmental-Data-Partners/EJAM-API/pull/61), branch `codex/zip-analysis-662`. Merge that PR first, then refresh this provenance to the merged `main` commit and verify bytes before merging this companion change. Until then, the main-branch drift check is expected to differ.
 

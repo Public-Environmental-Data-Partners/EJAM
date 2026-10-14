@@ -510,6 +510,11 @@ function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, geo
     return(result)
   }
 
+  # Preserve actual normalized ZIP identities, including when requested ZIPs
+  # without ZCTAs were dropped. Wrappers can reconstruct ZIP report metadata
+  # from these codes rather than guessing row identity from the request.
+  if (method == "ZIP") result$results_bysite$zipcode <- result$zipcode
+
   # Prepare the final JSON output.
   if (geometries) {
     output_shape <- switch(method,

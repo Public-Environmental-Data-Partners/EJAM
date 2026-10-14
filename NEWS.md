@@ -1,6 +1,6 @@
 # Development
 
-* API ZIP analysis: the mirrored API adds `zip` / `zipcode` inputs for GET/POST reports and POST data, using ZCTA boundaries. `ejamit(zip=)` is now an alias for `ejamit(zipcode=)`. ZIP codes remain distinct from Census FIPS codes (#662). The hosted API requires a separate deployment; Shiny ZIP inputs remain tracked in #486.
+* API ZIP analysis: the mirrored API adds `zip` / `zipcode` inputs for GET/POST reports and POST data, using ZCTA boundaries. `ejamit(zip=)` is now an alias for `ejamit(zipcode=)`. Both aliases are supported by `ejamapi()` and `url_ejamapi()`; ZIP API URLs round-trip through `url_ejamapi2arglist()`, and ZIP analysis results retain ZIP-specific API report links. ZIP codes remain distinct from Census FIPS codes (#662). The hosted API requires a separate deployment; Shiny ZIP inputs remain tracked in #486.
 
 # EJAM 3.2022.3 (October 2026)
 

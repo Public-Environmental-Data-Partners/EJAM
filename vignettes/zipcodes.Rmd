@@ -80,6 +80,9 @@ adds `zip` and `zipcode` aliases to GET/POST `/report` and POST `/data`.
 These examples require deployment of that API change:
 
 ```{r api_zip, eval=FALSE}
+# R wrappers recognize ZIP as a geography, with zero buffer by default
+ejamapi(zip = "20912", endpoint = "data")
+url_ejamapi(zipcode = c("10012", "10506"), sitenumber = 0)
 # one ZIP (PDF by default)
 browseURL("https://api.ejanalysis.com/report?zip=10605")
 # aggregate HTML report across two ZIP/ZCTA areas
@@ -206,7 +209,7 @@ ejam2report(out,
 # put zip code in the x axis labels!
 ejam2barplot_sites(out, names.arg = z$GEOID20, sortby = FALSE) # zcta2$GEOID20
 
-# This table view works, but the links to reports do not work with zipcodes
+# API report links retain ZIP identity once the ZIP API change is deployed
 ejam2tableviewer(out)
 ```
 

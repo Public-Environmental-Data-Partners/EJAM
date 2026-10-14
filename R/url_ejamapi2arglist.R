@@ -48,6 +48,10 @@ url_ejamapi2arglist = function(xurl, add_others = FALSE) {
   ###################### #
   req_info = httr2::url_parse(xurl)
   q = req_info$query
+  params$zipcode <- zipcodes_from_input(q[["zip"]], q[["zipcode"]])
+  if (!is.null(params$zipcode) && any(c("fips", "lat", "lon", "shape", "shapefile") %in% names(q))) {
+    stop("zip/zipcode cannot be combined with coordinates, shape, or fips.")
+  }
 
   for (i in seq_along(param_info)) {
     params[[names(param_info)[i]]] <- getp(names(param_info)[i], param_info[[i]], q = q)
@@ -75,8 +79,8 @@ url_ejamapi2arglist = function(xurl, add_others = FALSE) {
 
   ###################### #
   if (add_others) {
-  otherkeynames = setdiff(names(q), as.vector(unlist(param_info)))
-  OTHERS = q[[otherkeynames]]
+  otherkeynames = setdiff(names(q), c(as.vector(unlist(param_info)), "zip", "zipcode", "shape", "shapefile"))
+  OTHERS = q[otherkeynames]
   params = c(params, OTHERS)
   }
   return(params)

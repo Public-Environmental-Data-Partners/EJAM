@@ -958,6 +958,7 @@ ejamit <- function(sitepoints = NULL,
     sitepoints = {if ("latlon" %in% sitetype) {out$results_bysite[, .(lat = lat, lon = lon, ejam_uniq_id = ejam_uniq_id)]} else {NULL} },
     fips       = {if ("fips"   %in% sitetype) {fips} else {NULL}}, # or use out$results_bysite$ejam_uniq_id if that sitetype ?
     shapefile  = {if ("shp"    %in% sitetype) {shp}  else {NULL}}, # has only valids but also has ejam_uniq_id
+    zipcode = zipcode,
     radius = buffer_for_links,
     regid = regid,
     sitetype = sitetype,
