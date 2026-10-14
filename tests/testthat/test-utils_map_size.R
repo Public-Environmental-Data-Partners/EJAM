@@ -100,6 +100,51 @@ test_that("map_shapes_leaflet() layerId is the row number, after empty shapes ar
 })
 ################################################# #
 
+test_that("map simplification uses projected metres in both S2 modes and preserves the input CRS", {
+  original_s2 <- sf::sf_use_s2()
+  on.exit(sf::sf_use_s2(original_s2), add = TRUE)
+  local_small_map_limits()
+  points <- sf::st_as_sf(data.frame(id = 1:6, x = -11000000 + (1:6) * 10000, y = 4800000),
+                         coords = c("x", "y"), crs = 3857)
+  circles <- sf::st_buffer(points, dist = 2000, nQuadSegs = 100)
+  geographic <- sf::st_transform(circles, 4269)
+  before <- sf::st_coordinates(geographic)
+  results <- list()
+  for (mode in c(TRUE, FALSE)) {
+    sf::sf_use_s2(mode)
+    simplified <- map_shapes_simplified(geographic, dTolerance_meters = 100)
+    results[[as.character(mode)]] <- simplified
+    expect_identical(sf::st_crs(simplified), sf::st_crs(geographic))
+    expect_identical(simplified$id, geographic$id)
+    expect_false(any(sf::st_is_empty(simplified)))
+    vertices <- NROW(sf::st_coordinates(simplified))
+    expect_lt(vertices, NROW(before))
+    expect_gt(vertices, 6 * 8)
+    ratio <- as.numeric(sf::st_area(sf::st_transform(simplified, 3857)) / sf::st_area(circles))
+    expect_true(all(ratio > 0.85 & ratio <= 1.01))
+    expect_identical(sf::sf_use_s2(), mode)
+  }
+  expect_identical(results[["TRUE"]], results[["FALSE"]])
+  expect_identical(sf::st_coordinates(geographic), before)
+
+  # Feet-based inputs must not interpret the numeric tolerance as feet.
+  feet <- sf::st_transform(circles, 2263)
+  from_feet <- sf::st_transform(map_shapes_simplified(feet, 100), 3857)
+  from_metres <- map_shapes_simplified(circles, 100)
+  expect_equal(sf::st_coordinates(from_feet), sf::st_coordinates(from_metres), tolerance = 0.01)
+  expect_identical(map_shapes_simplified(sf::st_set_crs(circles, NA)), sf::st_set_crs(circles, NA))
+})
+
+test_that("ejam2map forwards no-popup mode without losing column-driven colors", {
+  out <- testoutput_ejamit_10pts_1miles
+  map <- ejam2map(out, color = "pctile.pctlowinc", popup_style = "none", launch_browser = FALSE)
+  layer <- Filter(function(x) x$method == "addCircles", map$x$calls)[[1]]
+  expect_false(any(vapply(layer$args, function(x) is.character(x) && any(grepl("Site ID", x)), logical(1))))
+  expect_true(any(vapply(layer$args, function(x) is.list(x) &&
+    identical(x$color, EJAM:::pctile2color(out$results_bysite$pctile.pctlowinc)), logical(1))))
+})
+################################################# #
+
 test_that("ejam2report() shows a static image of the map, built without popups, for very many sites", {
   local_small_map_limits()
   seen <- new.env()

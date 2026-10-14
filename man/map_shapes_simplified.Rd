@@ -9,8 +9,8 @@ map_shapes_simplified(shapes, dTolerance_meters = 100)
 \arguments{
 \item{shapes}{spatial data.frame of polygons}
 
-\item{dTolerance_meters}{passed to \code{\link[sf:st_simplify]{sf::st_simplify()}} as \code{dTolerance}
-(meters for longitude/latitude coordinates)}
+\item{dTolerance_meters}{Simplification tolerance in projected map metres,
+passed to \code{\link[sf:st_simplify]{sf::st_simplify()}} as \code{dTolerance} after projection.}
 }
 \value{
 \code{shapes}, possibly simplified
@@ -22,6 +22,11 @@ Simplify polygons for a map, if there are many of them
 If there are more than \code{default_max_shapes_map_unsimplified} polygons
 (see \code{\link[=map_size_setting]{map_size_setting()}}), each is simplified with \code{\link[sf:st_simplify]{sf::st_simplify()}},
 which keeps the map smaller and faster. This affects only what is drawn, not any analysis.
+Simplification is performed in a metre-based projected CRS (EPSG:3857),
+then transformed back to the input CRS. This keeps the tolerance in metres
+regardless of \code{\link[sf:sf_use_s2]{sf::sf_use_s2()}} or the input CRS units. Shapes without a
+known CRS are returned unchanged. EPSG:3857 distances are map-plane metres,
+not geodesic ground distances (distortion increases at high latitudes).
 If simplifying fails, the polygons are returned unchanged.
 }
 \keyword{internal}

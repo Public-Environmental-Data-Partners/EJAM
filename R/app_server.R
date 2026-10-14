@@ -2687,10 +2687,6 @@ app_server <- function(input, output, session) {
 
       # SHP map ------------------------------ #
 
-      #   not sure this validate and circle_color belong here stil:
-      validate(need(data_processed(), 'Please run an analysis to see results.'))
-      circle_color <- '#000080'
-
       map_ejam_plus_shp(
         out = data_processed(),
         shp = isolate(data_uploaded()),  # isolate here and below to avoid re-evaluation when user switches site selection method; shp already has ejam_uniq_id assigned (after which invalid rows were dropped I think)
@@ -2713,7 +2709,7 @@ app_server <- function(input, output, session) {
                 radius = submitted_radius_val(),
                 launch_browser = FALSE,
                 column_names = 'ej', #'all',
-                labels = popup_labels,color = circle_color,
+                labels = popup_labels, color = circle_color,
                 popup_style = popup_style)
       } else {
 

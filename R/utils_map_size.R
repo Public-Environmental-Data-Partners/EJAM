@@ -70,11 +70,16 @@ map_popup_style <- function(n, popup_style = "auto") {
 #' @details If there are more than `default_max_shapes_map_unsimplified` polygons
 #'   (see [map_size_setting()]), each is simplified with [sf::st_simplify()],
 #'   which keeps the map smaller and faster. This affects only what is drawn, not any analysis.
+#'   Simplification is performed in a metre-based projected CRS (EPSG:3857),
+#'   then transformed back to the input CRS. This keeps the tolerance in metres
+#'   regardless of [sf::sf_use_s2()] or the input CRS units. Shapes without a
+#'   known CRS are returned unchanged. EPSG:3857 distances are map-plane metres,
+#'   not geodesic ground distances (distortion increases at high latitudes).
 #'   If simplifying fails, the polygons are returned unchanged.
 #'
 #' @param shapes spatial data.frame of polygons
-#' @param dTolerance_meters passed to [sf::st_simplify()] as `dTolerance`
-#'   (meters for longitude/latitude coordinates)
+#' @param dTolerance_meters Simplification tolerance in projected map metres,
+#'   passed to [sf::st_simplify()] as `dTolerance` after projection.
 #'
 #' @return `shapes`, possibly simplified
 #'
@@ -85,7 +90,14 @@ map_shapes_simplified <- function(shapes, dTolerance_meters = 100) {
   if (!inherits(shapes, "sf") || NROW(shapes) <= map_size_setting("default_max_shapes_map_unsimplified")) {
     return(shapes)
   }
-  simpler <- try(suppressWarnings(sf::st_simplify(shapes, preserveTopology = TRUE, dTolerance = dTolerance_meters)), silent = TRUE)
+  original_crs <- sf::st_crs(shapes)
+  if (is.na(original_crs)) return(shapes)
+  simpler <- try({
+    projected <- sf::st_transform(shapes, 3857)
+    projected <- sf::st_simplify(projected, preserveTopology = TRUE,
+                                  dTolerance = dTolerance_meters)
+    sf::st_transform(projected, original_crs)
+  }, silent = TRUE)
   if (inherits(simpler, "try-error")) {
     return(shapes)
   }

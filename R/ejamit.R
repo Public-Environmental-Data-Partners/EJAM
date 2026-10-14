@@ -563,7 +563,8 @@ ejamit <- function(sitepoints = NULL,
       in_shiny = in_shiny,
       need_blockwt = need_blockwt,
       return_shp = fips_has_real_buffer,
-      radius = user_radius  # pass actual user radius; buffer applied when > 0
+      radius = user_radius,  # pass actual user radius; buffer applied when > 0
+      compact = TRUE # one row per blockgroup instead of per block, when possible -- much faster and smaller, same results
     )
     if (isTRUE(fips_has_real_buffer)) {
       fips_buffer_polys <- mysites2blocks$polys
