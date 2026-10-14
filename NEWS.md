@@ -1,3 +1,7 @@
+# Development
+
+* API ZIP analysis: the mirrored API adds `zip` / `zipcode` inputs for GET/POST reports and POST data, using ZCTA boundaries. `ejamit(zip=)` is now an alias for `ejamit(zipcode=)`. ZIP codes remain distinct from Census FIPS codes (#662). The hosted API requires a separate deployment; Shiny ZIP inputs remain tracked in #486.
+
 # EJAM 3.2022.3 (October 2026)
 
 This is the final ACS 2018-2022 release; it is frozen from here on.

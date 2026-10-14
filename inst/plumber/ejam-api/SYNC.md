@@ -1,13 +1,15 @@
 # Verbatim mirror of the EJAM-API repo — DO NOT HAND-EDIT
 
 The files in this folder are byte-for-byte copies from
-<https://github.com/Public-Environmental-Data-Partners/EJAM-API> (`main` branch):
+<https://github.com/Public-Environmental-Data-Partners/EJAM-API> (normally the `main` branch; see the pending upstream PR below):
 
 - `rest_controller.r`    — the API route definitions (the production API)
 - `query_pagination.R`   — /query pagination helpers, `source()`d by rest_controller.r
 - `assets/`              — static files served at `/assets`
 
-**Synced from commit:** `13f73398215da401bfea7b02042a4a17f446d85e` (2026-08-26)
+**Synced from commit:** `d16c5e8e0e355ac4ea21ce142aa2ae3673855767` (2026-10-14)
+
+**Pending upstream:** [EJAM-API#61](https://github.com/Public-Environmental-Data-Partners/EJAM-API/pull/61), branch `codex/zip-analysis-662`. Merge that PR first, then refresh this provenance to the merged `main` commit and verify bytes before merging this companion change. Until then, the main-branch drift check is expected to differ.
 
 NOTE: `rest_controller.r` does `source("query_pagination.R")` and `@assets ./assets`
 with paths relative to its own directory (the Docker WORKDIR in production), so callers

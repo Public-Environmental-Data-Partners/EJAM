@@ -60,6 +60,31 @@ html_error <- function(res, status, message) {
   res
 }
 
+# ZIPs are never inferred from FIPS: both can have five digits but identify
+# different places. Normalize both aliases before selecting a location method.
+normalize_zip_input <- function(zip = NULL, zipcode = NULL) {
+  if (!is.null(zip) && !is.null(zipcode)) {
+    stop("Provide only one of zip or zipcode (they are aliases).")
+  }
+  value <- zip %||% zipcode
+  if (is.null(value)) return(NULL)
+  value <- trimws(unlist(strsplit(as.character(unlist(value)), ",", fixed = TRUE)))
+  if (!length(value) || anyNA(value) || any(!grepl("^([0-9]{3,5}|[0-9]{5}-?[0-9]{4})$", value))) {
+    stop("zip/zipcode must contain ZIP codes (for example 10605 or 01001), as a comma-separated string or an array.")
+  }
+  value <- substr(gsub("-", "", value, fixed = TRUE), 1, 5)
+  unique(sprintf("%05d", as.integer(value)))
+}
+
+# Reject conflicting location methods before analysis, rather than silently
+# analyzing a county or point when the caller also supplied ZIP boundaries.
+validate_zip_location <- function(zip, ...) {
+  if (!is.null(zip) && any(vapply(list(...), function(x) !is.null(x), logical(1)))) {
+    stop("zip/zipcode cannot be combined with coordinates, sites, shape, or fips. Use zip/zipcode for ZIPs; fips identifies Census geographies, not ZIP codes.")
+  }
+  zip
+}
+
 # The fipper function processes FIPS inputs, converting area names (e.g., states)
 # to the appropriate FIPS codes for the specified scale (e.g., counties).
 fipper <- function(area, scale = "blockgroup") {
@@ -110,6 +135,9 @@ ejamit_interface <- function(area, method, buffer = 0, scale = "blockgroup", end
              error = function(e) stop("Invalid GeoJSON provided.")
            )
            ejamit(shapefile = sf_area, radius = buffer)
+         },
+         "ZIP" = {
+           ejamit(zipcode = area, radius = buffer)
          },
          "FIPS" = {
            # Process the FIPS code using the fipper function.
@@ -244,12 +272,19 @@ report_response <- function(result, method, to_map, sitenum, ext, res, cache_hea
   if (is.character(report_output) && file.exists(report_output)) {
     res$setHeader("Content-Type", "application/pdf")
     res$setHeader("Content-Disposition", "inline; filename=ejscreen_report.pdf")
+    # Swagger UI ("Try it out") only offers a download link for a binary response
+    # when Content-Type is octet-stream, Content-Disposition is attachment, or
+    # Content-Description is "File Transfer"; for inline application/pdf it shows
+    # the raw bytes as text. Browsers ignore Content-Description, so a report URL
+    # opened directly still displays inline.
+    res$setHeader("Content-Description", "File Transfer")
     file_size <- file.info(report_output)$size
     res$body <- readBin(report_output, "raw", n = file_size)
     on.exit(unlink(report_output), add = TRUE)
     return(res)
   }
   res$setHeader("Content-Type", "application/pdf")
+  res$setHeader("Content-Description", "File Transfer")  # see note above
   res$body <- report_output
   res
 }
@@ -261,17 +296,25 @@ report_response <- function(result, method, to_map, sitenum, ext, res, cache_hea
 #* @param lat Latitude of the site
 #* @param lon Longitude of the site
 #* @param shape A GeoJSON string representing the area of interest
-#* @param fips A FIPS code for a specific US Census geography
-#* @param buffer The buffer radius in miles. Default if omitted: 3 for lat/lon points; 0 for fips or shape (analyze inside the boundary itself, no buffer).
+#* @param zip One or more ZIP codes, as a comma-separated string or array. Analyzes Census ZCTA boundaries, not point buffers. Cannot be combined with other location inputs.
+#* @param zipcode Alias for zip; provide only one alias.
+#* @param fips A FIPS code for a specific US Census geography (not a ZIP code)
+#* @param buffer The buffer radius in miles. Default if omitted: 3 for lat/lon points; 0 for zip/zipcode, fips or shape (analyze inside the boundary itself, no buffer).
 #* @param radius Synonym for buffer.
 #* @param sitenumber Which site to report on. Defaults to 1 (single-site). Use 0 (or "overall") for an aggregate MULTISITE report across all sites. When only ONE site is submitted (as in the per-site report links EJAM builds from multisite results), N > 1 is used to label the report header "Site N" -- that site's row in the original analysis -- instead of "Site 1". (The "Site N" label requires an EJAM release whose ejam2report() has the sitenumber_label parameter -- EJAM#470; with an older pinned EJAM the report falls back to the default "Site 1" header.)
 #* @param fileextension "html" or "pdf". Default if omitted: pdf for a single-site report (better page breaks when printing), html for a multisite report (sitenumber=0/overall) -- html is much faster to generate and its interactive map links each site to its own report.
 #* @serializer contentType list(type = "application/octet-stream")
 #* @get /report
-function(lat = NULL, lon = NULL, shape = NULL, fips = NULL, buffer = NULL, radius = NULL, sitenumber=1, fileextension = NULL, res) {
+function(lat = NULL, lon = NULL, shape = NULL, fips = NULL, buffer = NULL, radius = NULL, sitenumber=1, fileextension = NULL, res, zip = NULL, zipcode = NULL) {
   if (!is.null(radius)) {buffer <- radius}  # radius is a synonym (alias) for buffer
+  zip_input <- tryCatch(
+    validate_zip_location(normalize_zip_input(zip, zipcode), lat, lon, shape, fips),
+    error = function(e) e
+  )
+  if (inherits(zip_input, "error")) {return(html_error(res, 400, conditionMessage(zip_input)))}
+
   # Determine the input method and prepare the area.
-  method <- if (!is.null(lat) && !is.null(lon)) "latlon" else if (!is.null(shape)) "SHP" else if (!is.null(fips)) "FIPS" else NULL
+  method <- if (!is.null(zip_input)) "ZIP" else if (!is.null(lat) && !is.null(lon)) "latlon" else if (!is.null(shape)) "SHP" else if (!is.null(fips)) "FIPS" else NULL
 
   # Buffer default depends on the method: points keep the traditional 3-mile
   # ring (a bare point is not an area, so some buffer is required), while FIPS
@@ -301,11 +344,12 @@ function(lat = NULL, lon = NULL, shape = NULL, fips = NULL, buffer = NULL, radiu
     "latlon" = data.frame(lat = latv, lon = lonv),
     "FIPS" = trimws(strsplit(paste(fips, collapse = ","), ",")[[1]]),
     "SHP" = shape,
+    "ZIP" = zip_input,
     NULL
   )
 
   if (is.null(method) || is.null(area)) {
-    return(html_error(res, 400, "You must provide valid coordinates, a shape, or a FIPS code."))
+    return(html_error(res, 400, "You must provide valid coordinates, a shape, a FIPS code, or zip/zipcode."))
   }
 
   # Normalize sitenumber. 0 or "overall" -> aggregate multisite report
@@ -362,22 +406,30 @@ function(lat = NULL, lon = NULL, shape = NULL, fips = NULL, buffer = NULL, radiu
 #* @tag Reports
 #* @param sites An array of {lat, lon} site objects
 #* @param shape A GeoJSON FeatureCollection string (one or more polygons)
-#* @param fips An array of FIPS codes (each one a separate site)
+#* @param zip One or more ZIP codes, as a comma-separated string or array. Analyzes Census ZCTA boundaries. Cannot be combined with other location inputs.
+#* @param zipcode Alias for zip; provide only one alias.
+#* @param fips An array of FIPS codes (each one a separate site; not ZIP codes)
 #* @param buffer The buffer radius in miles (out from a polygon edge, or around a point)
 #* @param radius Synonym for buffer.
 #* @param sitenumber Which site to report on. Defaults to 0 = aggregate MULTISITE report across all sites. When only ONE site is submitted, N > 1 is used to label the report header "Site N" (that site's row in the original analysis) instead of "Site 1" -- see GET /report, including the note that the label requires an EJAM release with ejam2report(sitenumber_label=) (EJAM#470); older pinned EJAM falls back to "Site 1".
 #* @param fileextension "html" or "pdf". Default if omitted: html for the (default) multisite report, pdf when a single sitenumber is chosen. See GET /report.
 #* @serializer contentType list(type = "application/octet-stream")
 #* @post /report
-function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, sitenumber = 0, fileextension = NULL, res) {
+function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, sitenumber = 0, fileextension = NULL, res, zip = NULL, zipcode = NULL) {
   if (!is.null(radius)) {buffer <- radius}  # radius is a synonym (alias) for buffer
+  zip_input <- tryCatch(
+    validate_zip_location(normalize_zip_input(zip, zipcode), sites, shape, fips),
+    error = function(e) e
+  )
+  if (inherits(zip_input, "error")) {return(html_error(res, 400, conditionMessage(zip_input)))}
+
   # One method per analysis; require exactly one input so an ambiguous request
   # (e.g. both sites and fips) fails cleanly instead of silently picking one.
-  if (sum(!is.null(sites), !is.null(shape), !is.null(fips)) != 1) {
-    return(html_error(res, 400, "Provide exactly one of sites, shape, or fips."))
+  if (sum(!is.null(sites), !is.null(shape), !is.null(fips), !is.null(zip_input)) != 1) {
+    return(html_error(res, 400, "Provide exactly one of sites, shape, fips, or zip/zipcode."))
   }
-  method <- if (!is.null(sites)) "latlon" else if (!is.null(shape)) "SHP" else "FIPS"
-  area <- sites %||% shape %||% fips
+  method <- if (!is.null(zip_input)) "ZIP" else if (!is.null(sites)) "latlon" else if (!is.null(shape)) "SHP" else "FIPS"
+  area <- zip_input %||% sites %||% shape %||% fips
 
   # 0 or "overall" -> aggregate multisite report; otherwise the chosen single site N.
   # Invalid values are a 400, same as GET /report -- see normalize_sitenumber().
@@ -419,21 +471,29 @@ function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, sit
 #* @tag Data
 #* @param sites A data frame of site coordinates (lat/lon)
 #* @param shape A GeoJSON string representing the area of interest
-#* @param fips A FIPS code for a specific US Census geography
+#* @param zip One or more ZIP codes, as a comma-separated string or array. Analyzes Census ZCTA boundaries, not point buffers. Cannot be combined with other location inputs.
+#* @param zipcode Alias for zip; provide only one alias.
+#* @param fips A FIPS code for a specific US Census geography (not a ZIP code)
 #* @param buffer The buffer radius in miles
 #* @param radius Synonym for buffer.
 #* @param geometries A boolean to indicate whether to include geometries in the output
 #* @param scale The Census geography at which to return results (blockgroup or county)
 #* @post /data
-function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, geometries = FALSE, scale = NULL, res) {
+function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, geometries = FALSE, scale = NULL, res, zip = NULL, zipcode = NULL) {
   if (!is.null(radius)) {buffer <- radius}  # radius is a synonym (alias) for buffer
+  zip_input <- tryCatch(
+    validate_zip_location(normalize_zip_input(zip, zipcode), sites, shape, fips),
+    error = function(e) e
+  )
+  if (inherits(zip_input, "error")) {res$status <- 400; return(handle_error(conditionMessage(zip_input)))}
+
   # Determine the input method.
-  method <- if (!is.null(sites)) "latlon" else if (!is.null(shape)) "SHP" else if (!is.null(fips)) "FIPS" else NULL
-  area <- sites %||% shape %||% fips
+  method <- if (!is.null(zip_input)) "ZIP" else if (!is.null(sites)) "latlon" else if (!is.null(shape)) "SHP" else if (!is.null(fips)) "FIPS" else NULL
+  area <- zip_input %||% sites %||% shape %||% fips
 
   if (is.null(method) || is.null(area)) {
     res$status <- 400
-    return(handle_error("You must provide valid points, a shape, or a FIPS code."))
+    return(handle_error("You must provide valid points, a shape, a FIPS code, or zip/zipcode."))
   }
 
   # Perform the EJAM analysis.
@@ -455,6 +515,7 @@ function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, geo
     output_shape <- switch(method,
                            "latlon" = sf::st_as_sf(sites, coords = c("lon", "lat"), crs = 4326),
                            "SHP" = geojson_sf(shape),
+                           "ZIP" = shapes_from_zip(result$zipcode),
                            "FIPS" = shapes_from_fips(fips)
     )
     # Combine the analysis results with the geographic shapes.
