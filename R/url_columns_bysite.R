@@ -187,7 +187,7 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
     for (i in seq_along(reports)) {
       if (!is.null(zipcode) && identical(url_functions[[i]], url_ejamapi)) {
         results_overall[, i] <- url_functions[[i]](
-          zipcode = zipcode, radius = radius, sitenumber = 0,
+          zipcode = zipcode, radius = radius[1], sitenumber = 0,
           as_html = as_html, linktext = reports[[i]]$text
         )
         next
