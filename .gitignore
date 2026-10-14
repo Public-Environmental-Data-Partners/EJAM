@@ -109,3 +109,5 @@ inst/report/community_report/junk.html
 .claude/
 .claude-code-memory-import/
 
+.posit/assistant/settings.json
+.posit/assistant

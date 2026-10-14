@@ -66,7 +66,7 @@ convert_units <- function(x, from='km', towhat='mi') {
     sqyd = c(NA, NA, NA, NA, 1.1959852573e-06, 0.00011959852573, 1.1959852573, 1195985.2573, NA, NA, NA, NA,            (     3*12)^2, (     3)^2,  1,             1/((     1760)^2) ),
     sqmi = c(NA, NA, NA, NA, 3.86102158542e-13, 3.861021585e-11, 3.86102158542e-07, 0.386102158542, NA, NA, NA, NA,     (1760*3*12)^2, (1760*3)^2,    ((1760)^2),  1                 )
   ),
-  .Names = c("from", "mm", "cm", "m", "km", "sqmm", "sqcm", "sqm", "sqkm", "in", "ft", "yd", "mi", "sqin", "sqft", "sqyd", "sqmi"),
+  names = c("from", "mm", "cm", "m", "km", "sqmm", "sqcm", "sqm", "sqkm", "in", "ft", "yd", "mi", "sqin", "sqft", "sqyd", "sqmi"),
   row.names = c(NA, 16L), class = "data.frame"
   )
   ## multipliers

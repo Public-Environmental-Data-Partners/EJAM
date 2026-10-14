@@ -211,8 +211,8 @@
 <body>
 <h1 id="ejam-open-issues-scored-by-cost-benefit">EJAM Open Issues —
 Scored by Cost &amp; Benefit</h1>
-<p><strong>Total open issues:</strong> 131 | <strong>Generated:</strong>
-2026-09-28 | <strong>Source:</strong> Live GitHub REST API open issues
+<p><strong>Total open issues:</strong> 126 | <strong>Generated:</strong>
+2026-10-04 | <strong>Source:</strong> Live GitHub REST API open issues
 (Public-Environmental-Data-Partners/EJAM)</p>
 <p><strong>Score payload:</strong>
 <code>inst/issues/ejam_issues_scored_by_risk_and_value.json</code></p>
@@ -229,19 +229,19 @@ Scored by Cost &amp; Benefit</h1>
 <tbody>
 <tr>
 <td>Previous run</td>
-<td>2026-09-07</td>
+<td>2026-09-28</td>
 </tr>
 <tr>
 <td>Issues opened since previous run</td>
-<td>3</td>
+<td>1</td>
 </tr>
 <tr>
 <td>Issues closed since previous run</td>
-<td>20</td>
+<td>6</td>
 </tr>
 <tr>
 <td>Issues whose quadrant changed</td>
-<td>6</td>
+<td>5</td>
 </tr>
 </tbody>
 </table>
@@ -263,13 +263,13 @@ Scored by Cost &amp; Benefit</h1>
 <tbody>
 <tr>
 <td><strong>LOW Cost</strong><br>cost &lt; median</td>
-<td><strong>C — Other Low-Cost Work</strong><br>39 issues</td>
+<td><strong>C — Other Low-Cost Work</strong><br>34 issues</td>
 <td><strong>A — Focus Shortlist (max 20)</strong><br>20 issues</td>
 </tr>
 <tr>
 <td><strong>HIGH Cost</strong><br>cost ≥ median</td>
-<td><strong>D — WORST CANDIDATES</strong><br>28 issues</td>
-<td><strong>B — OK Candidates</strong><br>44 issues</td>
+<td><strong>D — WORST CANDIDATES</strong><br>25 issues</td>
+<td><strong>B — OK Candidates</strong><br>47 issues</td>
 </tr>
 </tbody>
 </table>
@@ -282,12 +282,16 @@ benefit then cost. Prioritize these above all others.</em></p>
 <ul>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504">#504</a>
-— Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate
-task during blockgroup join</li>
+— Web app: Large analysis on server is too slow, and 10,000-point
+analysis (3.1 mi) crashes (likely RAM insufficient)</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16">#16</a>
 — need new/updated “EJAM User Guide” (“Help” in header at right) since
 UI has changed a lot, etc.</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/644">#644</a>
+— URL-encoded parameters used to launch EJAM fail to correctly set
+upload/download/type of analysis</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/274">#274</a>
 — Add the features not yet restored from the pre-2025 EPA version of the
@@ -307,6 +311,9 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/580">#58
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73">#73</a>
 — in web app, add ways to analyze multiple radii at once or even
 continuous radius</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486">#486</a>
+— allow zip code analysis in EJAM shiny web app</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/354">#354</a>
 — consider if downloaded report map and/or excel can use polygons in map
@@ -339,12 +346,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">#16
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/152">#152</a>
 — build_community_report() needs unit tests, table_signif_round_x100()
 or table_round() too</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">#490</a>
-— swap us and state ratio columns</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/361">#361</a>
-— Add date and time of last updated to help with deploys</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/163">#163</a>
 — put certain columns last in table of results (bg count, block count,
@@ -380,11 +381,11 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">#16
 <tr>
 <td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504">504</a></td>
-<td>Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate
-tas…</td>
+<td>Web app: Large analysis on server is too slow, and 10,000-point
+analys…</td>
 <td>3 (🔵 Low)</td>
 <td>23 (🟩🟩 Very High)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, BUG, Affects Web App</td>
@@ -396,10 +397,22 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16">16</
 U…</td>
 <td>2 (🔵 Low)</td>
 <td>17 (🟩🟩 Very High)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, BUG, documentation, help wanted</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/644">644</a></td>
+<td>URL-encoded parameters used to launch EJAM fail to correctly set
+uploa…</td>
+<td>2 (🔵 Low)</td>
+<td>15 (🟩🟩 Very High)</td>
+<td>v4.2024.0</td>
+<td>PRIORITY MEDIUM</td>
+<td><code>rank:A-high-value-low-cost</code></td>
+<td>BUG, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -408,7 +421,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/274">274
 the…</td>
 <td>2 (🔵 Low)</td>
 <td>15 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, Affects Web App, Community Report</td>
@@ -420,7 +433,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/341">341
 with …</td>
 <td>3 (🔵 Low)</td>
 <td>15 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, Affects Web App, Community Report</td>
@@ -432,7 +445,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/400">400
 ap…</td>
 <td>3 (🔵 Low)</td>
 <td>13 (🟩🟩 Very High)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, Affects Web App</td>
@@ -443,9 +456,9 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/580">580
 <td>API version number displayed should reflect EJAM version it
 uses</td>
 <td>0 (🟢 Very Low)</td>
-<td>11 (🟩🟦 High)</td>
-<td>v4</td>
-<td>—</td>
+<td>12 (🟩🟦 High)</td>
+<td>v3.2022.3</td>
+<td>PRIORITY LOW</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, BUG, documentation, Affects R users only
 - NOT web app users</td>
@@ -457,10 +470,21 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73">73</
 continu…</td>
 <td>3 (🔵 Low)</td>
 <td>10 (🟩🟦 High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, Affects Web App</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486">486</a></td>
+<td>allow zip code analysis in EJAM shiny web app</td>
+<td>1 (🟢 Very Low)</td>
+<td>9 (🟩🟦 High)</td>
+<td>v4.2024.0</td>
+<td>PRIORITY MEDIUM</td>
+<td><code>rank:A-high-value-low-cost</code></td>
+<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -469,7 +493,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/354">354
 map…</td>
 <td>2 (🔵 Low)</td>
 <td>9 (🟩🟦 High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, Affects Web App, Community Report</td>
@@ -481,7 +505,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/166">166
 t…</td>
 <td>2 (🔵 Low)</td>
 <td>9 (🟩🟦 High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, Affects Web App, API</td>
@@ -492,7 +516,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/223">223
 <td>app_title parameter is not working in ejamapp()</td>
 <td>2 (🔵 Low)</td>
 <td>8 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, BUG, Affects R users only - NOT web app
@@ -505,7 +529,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/208">208
 ej…</td>
 <td>2 (🔵 Low)</td>
 <td>8 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, BUG, Affects Web App</td>
@@ -517,7 +541,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/119">119
 c…</td>
 <td>2 (🔵 Low)</td>
 <td>8 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, BUG, Affects R users only - NOT web app
@@ -529,7 +553,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/91">91</
 <td>Excel needs new tab with uploaded places or facilities found</td>
 <td>2 (🔵 Low)</td>
 <td>8 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, Affects Web App</td>
@@ -540,7 +564,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595">595
 <td>improve API documentation vignette</td>
 <td>0 (🟢 Very Low)</td>
 <td>7 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:C-low-value-low-cost, documentation, Affects R users only - NOT
@@ -552,7 +576,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">161
 <td>ejamapp() should be able to handle mix of fips types</td>
 <td>0 (🟢 Very Low)</td>
 <td>7 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, Affects Web App</td>
@@ -564,33 +588,11 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/152">152
 o…</td>
 <td>0 (🟢 Very Low)</td>
 <td>7 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, test, Affects Web App, Community
 Report</td>
-</tr>
-<tr>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">490</a></td>
-<td>swap us and state ratio columns</td>
-<td>1 (🟢 Very Low)</td>
-<td>7 (🟦 Medium)</td>
-<td>v4</td>
-<td>PRIORITY MEDIUM</td>
-<td><code>rank:A-high-value-low-cost</code></td>
-<td>rank:C-low-value-low-cost, Affects Web App, Community Report</td>
-</tr>
-<tr>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/361">361</a></td>
-<td>Add date and time of last updated to help with deploys</td>
-<td>1 (🟢 Very Low)</td>
-<td>7 (🟦 Medium)</td>
-<td>NA</td>
-<td>PRIORITY MEDIUM</td>
-<td><code>rank:A-high-value-low-cost</code></td>
-<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -610,7 +612,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">162
 <td>rename “in_how_many_states” column in table of results</td>
 <td>1 (🟢 Very Low)</td>
 <td>7 (🟦 Medium)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:A-high-value-low-cost</code></td>
 <td>rank:C-low-value-low-cost, Affects Web App</td>
@@ -622,8 +624,13 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">162
 Candidates — High Cost, High Benefit</h2>
 <p><em>Worth doing but require more effort or expertise. Plan carefully
 before starting.</em></p>
-<p><strong>44 issues</strong></p>
+<p><strong>47 issues</strong></p>
 <ul>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126">#126</a>
+— enable 1-site report on Polygons / Shapefile, via links/buttons in
+shiny map popups and table of sites (but NOT outside shiny like in
+URL-based/link in Excel table)</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/293">#293</a>
 — API takes too long to create a community report from when user
@@ -637,6 +644,10 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/44">#44<
 — Investigate options for asynchronous processing in R Shiny (espec for
 speed / performance at launch)</li>
 <li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/581">#581</a>
+— Analysis of 2 or more tract FIPS codes never completes in the web app
+(1 tract works)</li>
+<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/226">#226</a>
 — NOTES on SPEEDING UP app &amp; functions (incl load testing)</li>
 <li><a
@@ -647,20 +658,22 @@ GeoJSON</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/153">#153</a>
 — revisit work in progress on this list of .R files</li>
 <li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464">#464</a>
+— Investigate and solve high cost on AWS Fargate</li>
+<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193">#193</a>
 — Create Executive Summary helper functions - summarizer / Methods for
 Identifying and Focusing on Key Findings</li>
+<li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192">#192</a>
+— User-specified indicators (enable upload of and reporting on
+user-provided block group indicators)</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68">#68</a>
 — allow user to type in radius not only use slider</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46">#46</a>
 — Long Report text needed</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126">#126</a>
-— enable 1-site report on Polygons / Shapefile, via links/buttons in
-shiny map popups and table of sites (but NOT outside shiny like in
-URL-based/link in Excel table)</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/279">#279</a>
 — Prepare the package to submit to CRAN (and get it accepted for hosting
@@ -699,10 +712,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/81">#81<
 — confusion in UI: if user tries a second analysis by uploading new
 stuff, they sometimes click on See Results instead of reclicking “Start
 Analysis”</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192">#192</a>
-— User-specified indicators (enable upload of and reporting on
-user-provided block group indicators)</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/167">#167</a>
 — review and reduce or fix pkg dependencies</li>
@@ -783,6 +792,10 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/50">#50<
 — plotting functions all need review/ consolidation/ improvement/
 renaming/ testing</li>
 <li><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615">#615</a>
+— pct*_li language shares use a different denominator than EPA’s
+identically named PCT_HLI_*_LI fields</li>
+<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/32">#32</a>
 — *** MOVE CODE OUT OF SERVER and app_ui</li>
 <li><a
@@ -816,12 +829,24 @@ Dasymetric mapping</li>
 <tbody>
 <tr>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126">126</a></td>
+<td>enable 1-site report on Polygons / Shapefile, via links/buttons in
+shi…</td>
+<td>4 (🟡 Medium)</td>
+<td>19 (🟩🟩 Very High)</td>
+<td>v4.2024.0</td>
+<td>PRIORITY HIGH-ish but not a bug</td>
+<td><code>rank:B-high-value-high-cost</code></td>
+<td>rank:B-high-value-high-cost, Affects Web App, API</td>
+</tr>
+<tr>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/293">293</a></td>
 <td>API takes too long to create a community report from when user
 clicks</td>
 <td>5 (🟡 Medium)</td>
 <td>19 (🟩🟩 Very High)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, speed / performance (see #226), Affects
@@ -834,7 +859,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/52">52</
 pr…</td>
 <td>8 (🟠 High)</td>
 <td>17 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, distance-related, future plan list</td>
@@ -846,7 +871,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/44">44</
 for …</td>
 <td>18 (⛔ Very High)</td>
 <td>17 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, datasets-related, speed / performance
@@ -854,11 +879,23 @@ for …</td>
 </tr>
 <tr>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/581">581</a></td>
+<td>Analysis of 2 or more tract FIPS codes never completes in the web
+app …</td>
+<td>4 (🟡 Medium)</td>
+<td>16 (🟩🟩 Very High)</td>
+<td>v4.2024.0</td>
+<td>PRIORITY HIGH</td>
+<td><code>rank:B-high-value-high-cost</code></td>
+<td>rank:D-defer, BUG</td>
+</tr>
+<tr>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/226">226</a></td>
 <td>NOTES on SPEEDING UP app &amp; functions (incl load testing)</td>
 <td>7 (🟠 High)</td>
 <td>16 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, speed / performance (see #226), Affects
@@ -871,7 +908,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/349">349
 GeoJSON</td>
 <td>4 (🟡 Medium)</td>
 <td>15 (🟩🟩 Very High)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, BUG, shapefile-related,
@@ -883,10 +920,22 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/153">153
 <td>revisit work in progress on this list of .R files</td>
 <td>4 (🟡 Medium)</td>
 <td>15 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, test, Affects Web App</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464">464</a></td>
+<td>Investigate and solve high cost on AWS Fargate</td>
+<td>5 (🟡 Medium)</td>
+<td>15 (🟩🟩 Very High)</td>
+<td>v4.2024.0</td>
+<td>PRIORITY HIGH-ish but not a bug</td>
+<td><code>rank:B-high-value-high-cost</code></td>
+<td>rank:C-low-value-low-cost, speed / performance (see #226), Affects
+Web App</td>
 </tr>
 <tr>
 <td><a
@@ -895,7 +944,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193">193
 I…</td>
 <td>5 (🟡 Medium)</td>
 <td>15 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, LongReport_output, Affects Web App,
@@ -903,11 +952,23 @@ future plan list</td>
 </tr>
 <tr>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192">192</a></td>
+<td>User-specified indicators (enable upload of and reporting on
+user-prov…</td>
+<td>5 (🟡 Medium)</td>
+<td>15 (🟩🟩 Very High)</td>
+<td>v4.2024.0</td>
+<td>PRIORITY HIGH-ish but not a bug</td>
+<td><code>rank:B-high-value-high-cost</code></td>
+<td>rank:B-high-value-high-cost, Affects Web App, future plan list</td>
+</tr>
+<tr>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68">68</a></td>
 <td>allow user to type in radius not only use slider</td>
 <td>4 (🟡 Medium)</td>
 <td>13 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost</td>
@@ -918,23 +979,11 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46">46</
 <td>Long Report text needed</td>
 <td>8 (🟠 High)</td>
 <td>13 (🟩🟩 Very High)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, LongReport_output, future plan
 list</td>
-</tr>
-<tr>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126">126</a></td>
-<td>enable 1-site report on Polygons / Shapefile, via links/buttons in
-shi…</td>
-<td>4 (🟡 Medium)</td>
-<td>11 (🟩🟦 High)</td>
-<td>NA</td>
-<td>PRIORITY MEDIUM</td>
-<td><code>rank:B-high-value-high-cost</code></td>
-<td>rank:B-high-value-high-cost, Affects Web App, API</td>
 </tr>
 <tr>
 <td><a
@@ -1015,7 +1064,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19">19</
 <td>FIPS missing/problems (mostly in Connecticut)</td>
 <td>6 (🟡 Medium)</td>
 <td>8 (🟦 Medium)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, BUG, help wanted, maps-related</td>
@@ -1056,18 +1105,6 @@ stuf…</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, still relevant?, Affects Web App</td>
-</tr>
-<tr>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192">192</a></td>
-<td>User-specified indicators (enable upload of and reporting on
-user-prov…</td>
-<td>5 (🟡 Medium)</td>
-<td>7 (🟦 Medium)</td>
-<td>NA</td>
-<td>PRIORITY MEDIUM</td>
-<td><code>rank:B-high-value-high-cost</code></td>
-<td>rank:B-high-value-high-cost, Affects Web App, future plan list</td>
 </tr>
 <tr>
 <td><a
@@ -1189,7 +1226,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/66">66</
 or US…</td>
 <td>10 (🟠 High)</td>
 <td>6 (🟦 Medium)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td><code>rank:B-high-value-high-cost</code></td>
 <td>rank:B-high-value-high-cost, BUG, calculate/validate to EJScreen,
@@ -1330,6 +1367,19 @@ renami…</td>
 </tr>
 <tr>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615">615</a></td>
+<td>pct*_li language shares use a different denominator than EPA’s
+identic…</td>
+<td>11 (⛔ Very High)</td>
+<td>5 (🟦 Medium)</td>
+<td>v4.2024.0</td>
+<td>PRIORITY MEDIUM</td>
+<td><code>rank:B-high-value-high-cost</code></td>
+<td>documentation, question, calculate/validate to EJScreen,
+datasets-related</td>
+</tr>
+<tr>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/32">32</a></td>
 <td>*** MOVE CODE OUT OF SERVER and app_ui</td>
 <td>11 (⛔ Very High)</td>
@@ -1359,11 +1409,11 @@ Affects Web App</td>
 WORK</h2>
 <p><em>Cheap to do but not in the current focus shortlist. Pick these up
 when bandwidth allows or combine them with nearby work.</em></p>
-<p><strong>39 issues</strong></p>
+<p><strong>34 issues</strong></p>
 <ul>
 <li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">#588</a>
-— Web app: production serves several static assets as 404</li>
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">#490</a>
+— swap us and state ratio columns</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/70">#70</a>
 — set up alerts that monitor and alert staff when the app goes down -
@@ -1375,9 +1425,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/484">#48
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/342">#342</a>
 — use renv package to create lock state for what versions of what
 packages are used</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486">#486</a>
-— allow zip code analysis in EJAM shiny web app</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/284">#284</a>
 — resolve warning about datum, in logs/console, when web app tries to
@@ -1431,10 +1478,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/175">#17
 — drop the excel column called “Area of block group in geodatabase” and
 others</li>
 <li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/621">#621</a>
-— Community report barplot text is garbled (boxes/decorative glyphs) on
-the dev server’s new image</li>
-<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/159">#159</a>
 — integrate file-naming function and header-creating functions</li>
 <li><a
@@ -1449,13 +1492,6 @@ other functions</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/174">#174</a>
 — round to only 1 digit the area in square miles in header of summary
 report</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464">#464</a>
-— Investigate and solve high cost on AWS Fargate</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/535">#535</a>
-— Consolidate app-settings vignette: EJScreen deep links +
-cross-vignette overlap</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/181">#181</a>
 — add other ejam2xyz functions to basics.Rmd as examples</li>
@@ -1492,9 +1528,6 @@ in DESCRIPTION file</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/42">#42</a>
 — Remove unused report template files</li>
 <li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/597">#597</a>
-— Add Donate button to EJAM home page</li>
-<li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">#60</a>
 — Rename community report functions with common convention</li>
 </ul>
@@ -1524,14 +1557,14 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">#60<
 <tbody>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">588</a></td>
-<td>Web app: production serves several static assets as 404</td>
-<td>2 (🔵 Low)</td>
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">490</a></td>
+<td>swap us and state ratio columns</td>
+<td>1 (🟢 Very Low)</td>
 <td>7 (🟦 Medium)</td>
-<td>NA</td>
-<td>PRIORITY LOW</td>
+<td>v4.2024.0</td>
+<td>PRIORITY MEDIUM</td>
 <td><code>rank:C-low-value-low-cost</code></td>
-<td>rank:C-low-value-low-cost, BUG</td>
+<td>rank:C-low-value-low-cost, Affects Web App, Community Report</td>
 </tr>
 <tr>
 <td><a
@@ -1551,7 +1584,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/484">484
 <td>in overall table, change EJAM Report link for 1-site analysis</td>
 <td>3 (🔵 Low)</td>
 <td>7 (🟦 Medium)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:C-low-value-low-cost</code></td>
 <td>rank:C-low-value-low-cost, Affects Web App</td>
@@ -1563,21 +1596,10 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/342">342
 packag…</td>
 <td>3 (🔵 Low)</td>
 <td>7 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:C-low-value-low-cost</code></td>
 <td>rank:A-high-value-low-cost, help wanted, Affects Web App</td>
-</tr>
-<tr>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486">486</a></td>
-<td>allow zip code analysis in EJAM shiny web app</td>
-<td>1 (🟢 Very Low)</td>
-<td>6 (🟦 Medium)</td>
-<td>v4</td>
-<td>PRIORITY LOW</td>
-<td><code>rank:C-low-value-low-cost</code></td>
-<td>rank:C-low-value-low-cost, Affects Web App</td>
 </tr>
 <tr>
 <td><a
@@ -1610,7 +1632,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/455">455
 us…</td>
 <td>1 (🟢 Very Low)</td>
 <td>5 (🟦 Medium)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td><code>rank:C-low-value-low-cost</code></td>
 <td>rank:C-low-value-low-cost, BUG</td>
@@ -1622,7 +1644,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/403">403
 me…</td>
 <td>1 (🟢 Very Low)</td>
 <td>5 (🟦 Medium)</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:C-low-value-low-cost</code></td>
 <td>rank:C-low-value-low-cost, documentation, Affects Web App</td>
@@ -1679,7 +1701,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/454">454
 method-specific …</td>
 <td>3 (🔵 Low)</td>
 <td>5 (🟦 Medium)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td><code>rank:C-low-value-low-cost</code></td>
 <td>rank:C-low-value-low-cost, BUG</td>
@@ -1746,18 +1768,6 @@ and …</td>
 </tr>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/621">621</a></td>
-<td>Community report barplot text is garbled (boxes/decorative glyphs)
-on …</td>
-<td>3 (🔵 Low)</td>
-<td>4 (⬜ Low)</td>
-<td>NA</td>
-<td>—</td>
-<td><code>rank:C-low-value-low-cost</code></td>
-<td>BUG</td>
-</tr>
-<tr>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/159">159</a></td>
 <td>integrate file-naming function and header-creating functions</td>
 <td>3 (🔵 Low)</td>
@@ -1804,30 +1814,6 @@ re…</td>
 <td>PRIORITY LOW</td>
 <td><code>rank:C-low-value-low-cost</code></td>
 <td>rank:C-low-value-low-cost, Affects Web App, Community Report</td>
-</tr>
-<tr>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464">464</a></td>
-<td>Investigate and solve high cost on AWS Fargate</td>
-<td>2 (🔵 Low)</td>
-<td>3 (⬜ Low)</td>
-<td>NA</td>
-<td>—</td>
-<td><code>rank:C-low-value-low-cost</code></td>
-<td>rank:C-low-value-low-cost, Affects Web App</td>
-</tr>
-<tr>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/535">535</a></td>
-<td>Consolidate app-settings vignette: EJScreen deep links +
-cross-vignett…</td>
-<td>1 (🟢 Very Low)</td>
-<td>2 (⬜ Low)</td>
-<td>v4</td>
-<td>PRIORITY LOW</td>
-<td><code>rank:C-low-value-low-cost</code></td>
-<td>rank:C-low-value-low-cost, documentation, Affects R users only - NOT
-web app users</td>
 </tr>
 <tr>
 <td><a
@@ -1957,17 +1943,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/42">42</
 </tr>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/597">597</a></td>
-<td>Add Donate button to EJAM home page</td>
-<td>2 (🔵 Low)</td>
-<td>0 (⬜ Very Low)</td>
-<td>v4</td>
-<td>—</td>
-<td><code>rank:C-low-value-low-cost</code></td>
-<td>rank:C-low-value-low-cost</td>
-</tr>
-<tr>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">60</a></td>
 <td>Rename community report functions with common convention</td>
 <td>3 (🔵 Low)</td>
@@ -1984,7 +1959,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">60</
 WORST CANDIDATES — High Cost, Low Benefit</h2>
 <p><em>Expensive to fix, limited payoff. Defer or deprioritize unless
 circumstances change.</em></p>
-<p><strong>28 issues</strong></p>
+<p><strong>25 issues</strong></p>
 <ul>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/508">#508</a>
@@ -2001,10 +1976,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/182">#18
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/89">#89</a>
 — clarify what “N places” really means &amp; report on the selection
 type (in summary report etc.)</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/581">#581</a>
-— Analysis of 2 or more tract FIPS codes never completes in the web app
-(1 tract works)</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/536">#536</a>
 — redo list of URLs in url_package() documentation</li>
@@ -2023,10 +1994,6 @@ seconds</li>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/55">#55</a>
 — add links to COUNTY-LEVEL reports - on a place - from other tools/
 sources</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/592">#592</a>
-— test_ejam(): 19 test files are missing timing estimates in
-timebyfile</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/584">#584</a>
 — Speed/ETA calibration: work deliberately scoped out of #515</li>
@@ -2083,10 +2050,6 @@ formulas_ejscreen_acs is not validated against the build year
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/399">#399</a>
 — Pipeline: emit EJSCREEN-formatted ‘extensive ACS’ table (~951
 demographic breakdowns) from S3-supplied indicators</li>
-<li><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615">#615</a>
-— pct*_li language shares use a different denominator than EPA’s
-identically named PCT_HLI_*_LI fields</li>
 <li><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/25">#25</a>
 — Enable areal apportionment as option, via existing OW and/or OP
@@ -2166,23 +2129,11 @@ type (i…</td>
 </tr>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/581">581</a></td>
-<td>Analysis of 2 or more tract FIPS codes never completes in the web
-app …</td>
-<td>4 (🟡 Medium)</td>
-<td>2 (⬜ Low)</td>
-<td>NA</td>
-<td>—</td>
-<td><code>rank:D-defer</code></td>
-<td>rank:D-defer</td>
-</tr>
-<tr>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/536">536</a></td>
 <td>redo list of URLs in url_package() documentation</td>
 <td>4 (🟡 Medium)</td>
 <td>2 (⬜ Low)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td><code>rank:D-defer</code></td>
 <td>rank:D-defer, documentation, refactor, Affects R users only - NOT
@@ -2237,23 +2188,11 @@ sou…</td>
 </tr>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/592">592</a></td>
-<td>test_ejam(): 19 test files are missing timing estimates in
-timebyfile</td>
-<td>4 (🟡 Medium)</td>
-<td>0 (⬜ Very Low)</td>
-<td>NA</td>
-<td>—</td>
-<td><code>rank:D-defer</code></td>
-<td>rank:D-defer</td>
-</tr>
-<tr>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/584">584</a></td>
 <td>Speed/ETA calibration: work deliberately scoped out of #515</td>
 <td>4 (🟡 Medium)</td>
 <td>0 (⬜ Very Low)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>—</td>
 <td><code>rank:D-defer</code></td>
 <td>rank:D-defer</td>
@@ -2265,7 +2204,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/547">547
 hal…</td>
 <td>6 (🟡 Medium)</td>
 <td>4 (⬜ Low)</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td><code>rank:D-defer</code></td>
 <td>rank:D-defer, refactor, Community Report</td>
@@ -2429,18 +2368,6 @@ Affects Web App</td>
 </tr>
 <tr>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615">615</a></td>
-<td>pct*_li language shares use a different denominator than EPA’s
-identic…</td>
-<td>11 (⛔ Very High)</td>
-<td>0 (⬜ Very Low)</td>
-<td>NA</td>
-<td>—</td>
-<td><code>rank:D-defer</code></td>
-<td>question, calculate/validate to EJScreen, datasets-related</td>
-</tr>
-<tr>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/25">25</a></td>
 <td>Enable areal apportionment as option, via existing OW and/or OP
 code</td>
@@ -2454,7 +2381,7 @@ code</td>
 </tbody>
 </table>
 <hr />
-<h2 id="full-table-all-131-issues">Full Table — All 131 Issues</h2>
+<h2 id="full-table-all-126-issues">Full Table — All 126 Issues</h2>
 <p>Sorted: A first (best), then B, C, D; within each group by benefit
 DESC.</p>
 <table>
@@ -2485,10 +2412,10 @@ DESC.</p>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504">504</a></td>
 <td>3</td>
 <td>23</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH</td>
-<td>Web app: 10,000-point analysis (3.1 mi) OOM-crashes on dev Fargate
-task …</td>
+<td>Web app: Large analysis on server is too slow, and 10,000-point
+analysis…</td>
 </tr>
 <tr>
 <td>A</td>
@@ -2496,7 +2423,7 @@ task …</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/16">16</a></td>
 <td>2</td>
 <td>17</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH</td>
 <td>need new/updated “EJAM User Guide” (“Help” in header at right) since
 UI …</td>
@@ -2504,10 +2431,21 @@ UI …</td>
 <tr>
 <td>A</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/644">644</a></td>
+<td>2</td>
+<td>15</td>
+<td>v4.2024.0</td>
+<td>PRIORITY MEDIUM</td>
+<td>URL-encoded parameters used to launch EJAM fail to correctly set
+upload/…</td>
+</tr>
+<tr>
+<td>A</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/274">274</a></td>
 <td>2</td>
 <td>15</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>Add the features not yet restored from the pre-2025 EPA version of
 the C…</td>
@@ -2518,7 +2456,7 @@ the C…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/341">341</a></td>
 <td>3</td>
 <td>15</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>Align map_headernames and/or generated avg/pctile/ratio metadata
 with co…</td>
@@ -2529,7 +2467,7 @@ with co…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/400">400</a></td>
 <td>3</td>
 <td>13</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH</td>
 <td>improve how webapp users can find info on data vintage (in EJAM web
 app …</td>
@@ -2539,9 +2477,9 @@ app …</td>
 <td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/580">580</a></td>
 <td>0</td>
-<td>11</td>
-<td>v4</td>
-<td>—</td>
+<td>12</td>
+<td>v3.2022.3</td>
+<td>PRIORITY LOW</td>
 <td>API version number displayed should reflect EJAM version it
 uses</td>
 </tr>
@@ -2551,7 +2489,7 @@ uses</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/73">73</a></td>
 <td>3</td>
 <td>10</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>in web app, add ways to analyze multiple radii at once or even
 continuou…</td>
@@ -2559,10 +2497,20 @@ continuou…</td>
 <tr>
 <td>A</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486">486</a></td>
+<td>1</td>
+<td>9</td>
+<td>v4.2024.0</td>
+<td>PRIORITY MEDIUM</td>
+<td>allow zip code analysis in EJAM shiny web app</td>
+</tr>
+<tr>
+<td>A</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/354">354</a></td>
 <td>2</td>
 <td>9</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>consider if downloaded report map and/or excel can use polygons in
 map t…</td>
@@ -2573,7 +2521,7 @@ map t…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/166">166</a></td>
 <td>2</td>
 <td>9</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>could simplify polygons before mapping, saving - check if useful and
 the…</td>
@@ -2584,7 +2532,7 @@ the…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/223">223</a></td>
 <td>2</td>
 <td>8</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td>app_title parameter is not working in ejamapp()</td>
 </tr>
@@ -2594,7 +2542,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/223">223
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/208">208</a></td>
 <td>2</td>
 <td>8</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td>check/fix shapefile_from_any() handling of ejam_uniq_id (may affect
 ejam…</td>
@@ -2605,7 +2553,7 @@ ejam…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/119">119</a></td>
 <td>2</td>
 <td>8</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td>some code assumes RStudio user is in root folder of source package -
 che…</td>
@@ -2616,7 +2564,7 @@ che…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/91">91</a></td>
 <td>2</td>
 <td>8</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>Excel needs new tab with uploaded places or facilities found</td>
 </tr>
@@ -2626,7 +2574,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/91">91</
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595">595</a></td>
 <td>0</td>
 <td>7</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>improve API documentation vignette</td>
 </tr>
@@ -2636,7 +2584,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595">595
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">161</a></td>
 <td>0</td>
 <td>7</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>ejamapp() should be able to handle mix of fips types</td>
 </tr>
@@ -2646,30 +2594,10 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/161">161
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/152">152</a></td>
 <td>0</td>
 <td>7</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>build_community_report() needs unit tests, table_signif_round_x100()
 or …</td>
-</tr>
-<tr>
-<td>A</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">490</a></td>
-<td>1</td>
-<td>7</td>
-<td>v4</td>
-<td>PRIORITY MEDIUM</td>
-<td>swap us and state ratio columns</td>
-</tr>
-<tr>
-<td>A</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/361">361</a></td>
-<td>1</td>
-<td>7</td>
-<td>NA</td>
-<td>PRIORITY MEDIUM</td>
-<td>Add date and time of last updated to help with deploys</td>
 </tr>
 <tr>
 <td>A</td>
@@ -2688,9 +2616,20 @@ rad…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">162</a></td>
 <td>1</td>
 <td>7</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>rename “in_how_many_states” column in table of results</td>
+</tr>
+<tr>
+<td>B</td>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126">126</a></td>
+<td>4</td>
+<td>19</td>
+<td>v4.2024.0</td>
+<td>PRIORITY HIGH-ish but not a bug</td>
+<td>enable 1-site report on Polygons / Shapefile, via links/buttons in
+shiny…</td>
 </tr>
 <tr>
 <td>B</td>
@@ -2698,7 +2637,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/162">162
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/293">293</a></td>
 <td>5</td>
 <td>19</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>API takes too long to create a community report from when user
 clicks</td>
@@ -2709,7 +2648,7 @@ clicks</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/52">52</a></td>
 <td>8</td>
 <td>17</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>Create density score /proximity score/ count-nearby functions, then
 prov…</td>
@@ -2720,7 +2659,7 @@ prov…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/44">44</a></td>
 <td>18</td>
 <td>17</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>Investigate options for asynchronous processing in R Shiny (espec
 for sp…</td>
@@ -2728,10 +2667,21 @@ for sp…</td>
 <tr>
 <td>B</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/581">581</a></td>
+<td>4</td>
+<td>16</td>
+<td>v4.2024.0</td>
+<td>PRIORITY HIGH</td>
+<td>Analysis of 2 or more tract FIPS codes never completes in the web
+app (1…</td>
+</tr>
+<tr>
+<td>B</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/226">226</a></td>
 <td>7</td>
 <td>16</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>NOTES on SPEEDING UP app &amp; functions (incl load testing)</td>
 </tr>
@@ -2741,7 +2691,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/226">226
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/349">349</a></td>
 <td>4</td>
 <td>15</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>Polygon report links recompute API reports from simplified
 GeoJSON</td>
@@ -2752,9 +2702,19 @@ GeoJSON</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/153">153</a></td>
 <td>4</td>
 <td>15</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>revisit work in progress on this list of .R files</td>
+</tr>
+<tr>
+<td>B</td>
+<td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464">464</a></td>
+<td>5</td>
+<td>15</td>
+<td>v4.2024.0</td>
+<td>PRIORITY HIGH-ish but not a bug</td>
+<td>Investigate and solve high cost on AWS Fargate</td>
 </tr>
 <tr>
 <td>B</td>
@@ -2762,7 +2722,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/153">153
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193">193</a></td>
 <td>5</td>
 <td>15</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>Create Executive Summary helper functions - summarizer / Methods for
 Ide…</td>
@@ -2770,10 +2730,21 @@ Ide…</td>
 <tr>
 <td>B</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192">192</a></td>
+<td>5</td>
+<td>15</td>
+<td>v4.2024.0</td>
+<td>PRIORITY HIGH-ish but not a bug</td>
+<td>User-specified indicators (enable upload of and reporting on
+user-provid…</td>
+</tr>
+<tr>
+<td>B</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68">68</a></td>
 <td>4</td>
 <td>13</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>allow user to type in radius not only use slider</td>
 </tr>
@@ -2783,20 +2754,9 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/68">68</
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/46">46</a></td>
 <td>8</td>
 <td>13</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY HIGH-ish but not a bug</td>
 <td>Long Report text needed</td>
-</tr>
-<tr>
-<td>B</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126">126</a></td>
-<td>4</td>
-<td>11</td>
-<td>NA</td>
-<td>PRIORITY MEDIUM</td>
-<td>enable 1-site report on Polygons / Shapefile, via links/buttons in
-shiny…</td>
 </tr>
 <tr>
 <td>B</td>
@@ -2868,7 +2828,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/135">135
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19">19</a></td>
 <td>6</td>
 <td>8</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>FIPS missing/problems (mostly in Connecticut)</td>
 </tr>
@@ -2904,17 +2864,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/81">81</
 <td>PRIORITY MEDIUM</td>
 <td>confusion in UI: if user tries a second analysis by uploading new
 stuff,…</td>
-</tr>
-<tr>
-<td>B</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192">192</a></td>
-<td>5</td>
-<td>7</td>
-<td>NA</td>
-<td>PRIORITY MEDIUM</td>
-<td>User-specified indicators (enable upload of and reporting on
-user-provid…</td>
 </tr>
 <tr>
 <td>B</td>
@@ -3019,7 +2968,7 @@ block_radius_mil…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/66">66</a></td>
 <td>10</td>
 <td>6</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td>EJAM &amp; EJScreen report on avg PERSON generally but State Average
 or US A…</td>
@@ -3145,6 +3094,17 @@ renaming…</td>
 <tr>
 <td>B</td>
 <td><a
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615">615</a></td>
+<td>11</td>
+<td>5</td>
+<td>v4.2024.0</td>
+<td>PRIORITY MEDIUM</td>
+<td>pct*_li language shares use a different denominator than EPA’s
+identical…</td>
+</tr>
+<tr>
+<td>B</td>
+<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/32">32</a></td>
 <td>11</td>
 <td>5</td>
@@ -3166,12 +3126,12 @@ Dasym…</td>
 <tr>
 <td>C</td>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/588">588</a></td>
-<td>2</td>
+href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/490">490</a></td>
+<td>1</td>
 <td>7</td>
-<td>NA</td>
-<td>PRIORITY LOW</td>
-<td>Web app: production serves several static assets as 404</td>
+<td>v4.2024.0</td>
+<td>PRIORITY MEDIUM</td>
+<td>swap us and state ratio columns</td>
 </tr>
 <tr>
 <td>C</td>
@@ -3190,7 +3150,7 @@ ensu…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/484">484</a></td>
 <td>3</td>
 <td>7</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>in overall table, change EJAM Report link for 1-site analysis</td>
 </tr>
@@ -3200,20 +3160,10 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/484">484
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/342">342</a></td>
 <td>3</td>
 <td>7</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>use renv package to create lock state for what versions of what
 packages…</td>
-</tr>
-<tr>
-<td>C</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486">486</a></td>
-<td>1</td>
-<td>6</td>
-<td>v4</td>
-<td>PRIORITY LOW</td>
-<td>allow zip code analysis in EJAM shiny web app</td>
 </tr>
 <tr>
 <td>C</td>
@@ -3242,7 +3192,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/102">102
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/455">455</a></td>
 <td>1</td>
 <td>5</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td>fix radius slider behavior after deep link passes a radius and then
 user…</td>
@@ -3253,7 +3203,7 @@ user…</td>
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/403">403</a></td>
 <td>1</td>
 <td>5</td>
-<td>NA</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>Add explanation of what “average in state” or “percentile in state”
 mean…</td>
@@ -3305,7 +3255,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/58">58</
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/454">454</a></td>
 <td>3</td>
 <td>5</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td>fix when should radius slider reset to 0 vs 1 mile (a
 method-specific de…</td>
@@ -3368,17 +3318,6 @@ and ot…</td>
 <tr>
 <td>C</td>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/621">621</a></td>
-<td>3</td>
-<td>4</td>
-<td>NA</td>
-<td>—</td>
-<td>Community report barplot text is garbled (boxes/decorative glyphs)
-on th…</td>
-</tr>
-<tr>
-<td>C</td>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/159">159</a></td>
 <td>3</td>
 <td>4</td>
@@ -3418,27 +3357,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/174">174
 <td>PRIORITY LOW</td>
 <td>round to only 1 digit the area in square miles in header of summary
 repo…</td>
-</tr>
-<tr>
-<td>C</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464">464</a></td>
-<td>2</td>
-<td>3</td>
-<td>NA</td>
-<td>—</td>
-<td>Investigate and solve high cost on AWS Fargate</td>
-</tr>
-<tr>
-<td>C</td>
-<td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/535">535</a></td>
-<td>1</td>
-<td>2</td>
-<td>v4</td>
-<td>PRIORITY LOW</td>
-<td>Consolidate app-settings vignette: EJScreen deep links +
-cross-vignette …</td>
 </tr>
 <tr>
 <td>C</td>
@@ -3555,16 +3473,6 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/42">42</
 <tr>
 <td>C</td>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/597">597</a></td>
-<td>2</td>
-<td>0</td>
-<td>v4</td>
-<td>—</td>
-<td>Add Donate button to EJAM home page</td>
-</tr>
-<tr>
-<td>C</td>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60">60</a></td>
 <td>3</td>
 <td>0</td>
@@ -3618,21 +3526,10 @@ type (in …</td>
 <tr>
 <td>D</td>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/581">581</a></td>
-<td>4</td>
-<td>2</td>
-<td>NA</td>
-<td>—</td>
-<td>Analysis of 2 or more tract FIPS codes never completes in the web
-app (1…</td>
-</tr>
-<tr>
-<td>D</td>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/536">536</a></td>
 <td>4</td>
 <td>2</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY LOW</td>
 <td>redo list of URLs in url_package() documentation</td>
 </tr>
@@ -3682,21 +3579,10 @@ sourc…</td>
 <tr>
 <td>D</td>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/592">592</a></td>
-<td>4</td>
-<td>0</td>
-<td>NA</td>
-<td>—</td>
-<td>test_ejam(): 19 test files are missing timing estimates in
-timebyfile</td>
-</tr>
-<tr>
-<td>D</td>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/584">584</a></td>
 <td>4</td>
 <td>0</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>—</td>
 <td>Speed/ETA calibration: work deliberately scoped out of #515</td>
 </tr>
@@ -3706,7 +3592,7 @@ href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/584">584
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/547">547</a></td>
 <td>6</td>
 <td>4</td>
-<td>v4</td>
+<td>v4.2024.0</td>
 <td>PRIORITY MEDIUM</td>
 <td>Define color-coding cutoffs once, as adjustable parameters (design
 half …</td>
@@ -3853,17 +3739,6 @@ demographi…</td>
 <tr>
 <td>D</td>
 <td><a
-href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/615">615</a></td>
-<td>11</td>
-<td>0</td>
-<td>NA</td>
-<td>—</td>
-<td>pct*_li language shares use a different denominator than EPA’s
-identical…</td>
-</tr>
-<tr>
-<td>D</td>
-<td><a
 href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/25">25</a></td>
 <td>12</td>
 <td>1</td>
@@ -3885,12 +3760,16 @@ code</td>
 </thead>
 <tbody>
 <tr>
-<td>v4</td>
-<td style="text-align: right;">19</td>
+<td>v3.2022.3</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>v4.2024.0</td>
+<td style="text-align: right;">43</td>
 </tr>
 <tr>
 <td>NA</td>
-<td style="text-align: right;">112</td>
+<td style="text-align: right;">82</td>
 </tr>
 </tbody>
 </table>

@@ -4,16 +4,44 @@
 \alias{offline}
 \title{utility to check if internet connection is not available}
 \usage{
-offline(url = "r-project.org")
+offline(
+  url = "r-project.org",
+  fallback_hosts = c("github.com", "census.gov"),
+  tries = 3,
+  wait = 1,
+  cache_seconds = 30
+)
 }
 \arguments{
-\item{url}{optional URL checked, using \code{\link[curl:nslookup]{curl::nslookup()}}}
+\item{url}{optional host checked first, using \code{\link[curl:nslookup]{curl::nslookup()}}}
+
+\item{fallback_hosts}{other hosts to try if \code{url} does not resolve}
+
+\item{tries}{how many rounds of lookups before deciding it is offline}
+
+\item{wait}{seconds to wait before the second round (doubling after that)}
+
+\item{cache_seconds}{how long to reuse the last answer for the same hosts;
+0 means always check again}
 }
 \value{
-logical (TRUE or FALSE), TRUE if offline, FALSE if can connect to r-project.org
+logical (TRUE or FALSE), TRUE if offline, FALSE if any of the hosts
+can be resolved
 }
 \description{
 utility to check if internet connection is not available
+}
+\details{
+A single DNS lookup can fail for a moment even when the machine is
+online (seen on the macOS GitHub Actions runners, where it made random
+boundary-download tests fail with "No internet connection seems to be
+available"). So this only reports offline when \strong{every} host in
+\code{c(url, fallback_hosts)} fails to resolve on \strong{every} one of \code{tries}
+rounds, waiting \code{wait}, then \code{2 * wait}, ... seconds between rounds.
+The answer is remembered for \code{cache_seconds}, so repeated calls (for
+example \code{skip_if(offline())} in a test and then the same check inside the
+function being tested) agree, and a machine that really is offline pays the
+retry delay only once.
 }
 \seealso{
 offline_warning() and offline_cat() utilities unexported undocumented,

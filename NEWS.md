@@ -26,6 +26,21 @@ The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), 
 - `calc_ejscreen_dataset()` and `calc_ejscreen_export()` are a documented annual pipeline that rebuilds the EJAM and EJSCREEN datasets from each new ACS release.
 - Each release downloads its own matching version of the large datasets, and county and state boundaries are built in, so they work offline.
 
+## New Features for R users (not in web app yet)
+
+- Color-coded maps to see where an indicator is highest:
+  - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county, like an EJSCREEN map,
+    by specifying the indicator name, e.g.,
+    `map_ejscreen_indicator("pctlowinc", countyfips = "10001")`
+  - `mapfastej_counties()` now lets you draw a color-coded map of all _counties_ in a state, more easily,
+    by specifying the indicator name, e.g.,
+    `mapfastej_counties(ST = "DE", colorvarname = "state.pctile.o3")`
+  - `ejam2map()` and `mapfast()` now let you draw a color-coded map of all _analyzed sites_ nationwide
+    (as circles around points or as polygons)
+    by specifying the indicator name, e.g.,
+    `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
+
 
 # EJAM 3.2022.3 (October 2026)
 
@@ -43,6 +58,9 @@ which is where development continues.
 
 - Updated FRS facility data to the September 2026 EPA snapshot, with refreshed
   examples and update instructions.
+
+- Web-app completion estimates now reflect measured live performance, and report a
+  lower bound instead of an expected time beyond the measured range (#513).
 
 ## Dataset Fix
 
@@ -144,6 +162,10 @@ which is where development continues.
 - In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html)
   and other articles, fixed about 20 broken or incomplete links and text (#602).
 
+- Rewrote the developer articles [Releasing a New Version of EJAM](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-package.html)
+  and [Deploying the Web App to AWS](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deployment.html)
+  to match the current release and deploy process (#631, #632).
+
 
 # EJAM 3.2022.2 (August 2026)
 
@@ -227,19 +249,6 @@ new information in the community report about where people live.
 
 
 ## Bug Fixes
-
-- **Web-app completion estimates now reflect current live performance** (#513):
-  the app uses a v3.2022.2 click-to-report calibration instead of presenting
-  the local `ejamit()` regression's much wider 95% upper prediction limit as
-  an ETA. Point estimates use measured small-run anchors and remain monotone
-  across site counts. Unbuffered FIPS and shapefile estimates use separate
-  versioned web curves, while local R calls retain a separate `ejamit()`
-  profile. Multi-state live estimates are labeled as provisional lower bounds
-  after repeated service failures, and buffered polygon/FIPS runs require a
-  separate calibration. The point curve is calibrated on live production, and
-  now varies with buffer radius as well as site count. Beyond the measured
-  range -- more than 1,000 points, or a radius over 5 miles -- the app reports a
-  lower bound rather than an expected time.
 
 - **Report's percentages no longer shown as "0" or "1", or with stray decimals**
   in the report, tables, and map popups (#488). The metadata marking which
@@ -520,9 +529,9 @@ Highlights:
 - Web App Improvements: Added PDF-format report downloads. Improved Community
   Report barplot legibility, and added more barplot options in the Details tab.
 
-- Data Updates: Updated EJScreen-style ACS demographic data to ACS 2020-2024.
-  Refreshed the related package datasets and metadata, so that EJScreen community
-  reports and EJAM summary reports will be based on the newer data.
+- Data Updates: Rebuilt the EJScreen-style ACS 2018-2022 demographic data with
+  the new data pipeline, and refreshed the related package datasets and metadata
+  used by EJScreen community reports and EJAM summary reports.
 
 - Data Pipeline: Added a staged annual data pipeline for demographics,
   environmental indicators, extra indicators, geography info, EJ indexes,
@@ -563,7 +572,7 @@ Highlights:
 ## Data Updates
 
 - Updated the key nationwide datasets of demographic blockgroup-resolution data and related
-  metadata for the ACS 2020-2024 EJScreen-style data release.
+  metadata for the ACS 2018-2022 EJScreen-style data release.
 - Updated the FRS-related datasets (covering all EPA-regulated facilities) and
   related tables used for specifying facilities to analyze by industry.
 - Added year-aware metadata handling for R-native pipeline outputs, so pipeline
