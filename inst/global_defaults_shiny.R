@@ -425,14 +425,10 @@ msg <- utils::capture.output({
     # ...                          ?
 
 
-    # heatmap column names - defaults could be set here and made flexible in advanced tab
-
-
-    # heatmap cutoffs for bins - defaults could be set here and made flexible in advanced tab
-
-
-    # heatmap colors for bins - defaults could be set here and made flexible in advanced tab
-
+    # Heatmap cutoffs and colors are shared package settings in
+    # global_defaults_package$default_color_coding (global_defaults_package.R).
+    # Excel uses the pctile and ratio cutoffs and their colorfills[-1].
+    # Heatmap column selection could be made flexible in the advanced tab.
 
     default_ok2plot = TRUE, # the plots to put in excel tabs via table_xls_from_ejam() and table_xls_format() and the plot functions
 
