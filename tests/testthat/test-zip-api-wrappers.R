@@ -66,11 +66,15 @@ test_that("ZIP API URLs round-trip without FIPS inference or duplicate aliases",
                                  add_others = TRUE)
     expect_identical(parsed$zipcode, c("20912", "01001"))
     expect_null(parsed$fips)
-    expect_equal(parsed$radius, "0")
+    expect_equal(parsed$radius, 0)
     expect_equal(parsed$fileextension, "html")
     expect_equal(parsed$sitenumber, "0")
     expect_false("zip" %in% names(parsed))
   }
+  buffered <- url_ejamapi2arglist("https://example.com/report?zip=20912&buffer=1")
+  expect_identical(buffered$radius, 1)
+  expect_error(url_ejamapi2arglist("https://example.com/report?zipcode=20912&buffer=bad"),
+               "finite nonnegative")
   expect_error(url_ejamapi2arglist("https://example.com/report?zip=20912&fips=10001"),
                "cannot be combined")
   expect_error(url_ejamapi2arglist("https://example.com/report?zip=20912&zipcode=20912"),

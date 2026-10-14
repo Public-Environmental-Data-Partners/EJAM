@@ -56,6 +56,15 @@ url_ejamapi2arglist = function(xurl, add_others = FALSE) {
   for (i in seq_along(param_info)) {
     params[[names(param_info)[i]]] <- getp(names(param_info)[i], param_info[[i]], q = q)
   }
+  # Polygon buffering requires a numeric distance. Keep the legacy parsing
+  # of other geography types unchanged, but make ZIP URLs usable by ejamit().
+  if (!is.null(params$zipcode) && !is.null(params$radius)) {
+    radius <- suppressWarnings(as.numeric(params$radius))
+    if (length(radius) != 1 || !is.finite(radius) || radius < 0) {
+      stop("ZIP buffer must be one finite nonnegative number.")
+    }
+    params$radius <- radius
+  }
   ###################### #
   # special parsing beyond just csv text
 
