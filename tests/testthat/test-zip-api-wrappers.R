@@ -87,6 +87,10 @@ test_that("ZIP result API links retain identity for individual and aggregate rep
   expect_match(links$results_bysite[2, 1], "sitenumber=2")
   expect_match(URLdecode(links$results_overall[1, 1]), "zip=20912,01001", fixed = TRUE)
   expect_match(links$results_overall[1, 1], "sitenumber=0")
+  explicit <- url_columns_bysite(zip = "10001", wherestr = "Delaware",
+                                 reports = providers, as_html = FALSE)
+  expect_match(explicit$results_bysite[1, 1], "zip=10001")
+  expect_false(grepl("fips=", explicit$results_bysite[1, 1]))
   # Existing polygon providers keep their inputs when ZIP metadata is supplied.
   shapes <- testinput_shapes_2
   shapes$zip <- c("20912", "01001")

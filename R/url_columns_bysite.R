@@ -95,7 +95,7 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
 
   # clean/check inputs and sitetype
 
-  if (is.null(lat) && is.null(lon) && is.null(shapefile) && is.null(fips) && !("" %in% wherestr) && !is.null(wherestr)) {
+  if (is.null(zipcode) && is.null(lat) && is.null(lon) && is.null(shapefile) && is.null(fips) && !("" %in% wherestr) && !is.null(wherestr)) {
     fips <- fips_from_name(wherestr) # old ejscreen api used wherestr not fips so this is in case that is the only thing provided here
   }
 
