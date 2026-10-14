@@ -109,3 +109,30 @@ test_that("ZIP result API links retain identity for individual and aggregate rep
   expect_match(links$results_bysite[2, 1], "zip=01001")
   expect_identical(links$results_bysite[, 2], rep("https://example.com/shape", 2))
 })
+
+test_that("the grouped test harness includes the ZIP files and their timing rows", {
+  assignments <- list()
+  visit <- function(expr) {
+    if (!tryCatch(is.call(expr), error = function(e) FALSE)) return()
+    assignment <- identical(expr[[1]], as.name("<-")) ||
+      identical(expr[[1]], as.name("="))
+    if (assignment && is.symbol(expr[[2]]) &&
+        as.character(expr[[2]]) %in% c("testlist", "timebyfile")) {
+      assignments[[length(assignments) + 1]] <<- expr
+    }
+    for (child in as.list(expr)[-1]) visit(child)
+  }
+  visit(body(test_ejam))
+  registry <- new.env(parent = asNamespace("EJAM"))
+  # Evaluate the actual static registry and initial timing table/append, without
+  # starting the full suite, its web app tests, or interactive harness setup.
+  for (expr in assignments[1:3]) eval(expr, registry)
+  found <- basename(list.files(testthat::test_path(), pattern = "test-"))
+  listed <- unlist(registry$testlist, use.names = FALSE)
+  expect_setequal(listed, found)
+  expect_false(anyDuplicated(listed) > 0)
+  expect_true("test-ejamit-zip-alias.R" %in% registry$testlist$test_ejamit)
+  expect_true("test-zip-api-wrappers.R" %in% registry$testlist$test_url)
+  expect_true(all(c("test-ejamit-zip-alias.R", "test-zip-api-wrappers.R") %in%
+                    registry$timebyfile$file))
+})

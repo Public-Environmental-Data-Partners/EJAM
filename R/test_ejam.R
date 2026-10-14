@@ -339,6 +339,7 @@ instead of tests/testthat/_logs
       ),
       test_ejamit = c(
         "test-ejamit.R",
+        "test-ejamit-zip-alias.R",
         "test-ejamit_compare_distances.R",
         "test-ejamit_compare_types_of_places.R",
         "test-ejamit_sitetype_from_input.R",
@@ -383,6 +384,7 @@ instead of tests/testthat/_logs
         # hit the network.
         "test-ejamapi.R",
         "test-url_ejamapi.R",
+        "test-zip-api-wrappers.R",
         "test-URL_FUNCTIONS_part1.R",
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
@@ -634,8 +636,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       )
       timebyfile <- rbind(
         timebyfile,
-        data.table(file = c("test-mact_labels.R", "test-utils_offline.R"),
-                   seconds_byfile = c(1, 1))
+        data.table(file = c("test-mact_labels.R", "test-utils_offline.R",
+                            "test-ejamit-zip-alias.R", "test-zip-api-wrappers.R"),
+                   seconds_byfile = c(1, 1, 0, 1))
       )
 
 
