@@ -385,6 +385,13 @@ function(lat = NULL, lon = NULL, shape = NULL, fips = NULL, buffer = NULL, radiu
     return(html_error(res, 400, conditionMessage(result)))
   }
 
+  # A missing ZCTA can reduce the site count. Do not let a multi-ZIP
+  # selection fall back to the first remaining ZIP. A one-ZIP request may
+  # still carry its original row number as the report label (per-site links).
+  if (method == "ZIP" && length(area) > 1 && sitenum > NROW(result$results_bysite)) {
+    return(html_error(res, 400, "sitenumber must select one of the matched ZIPs; some ZIPs may have no ZCTA."))
+  }
+
   # Get submitted polygon shape(s) to appear in report map.
   to_map<-NULL # Clear any previous maps
   if (method == "SHP"){
@@ -452,6 +459,13 @@ function(sites = NULL, shape = NULL, fips = NULL, buffer = 0, radius = NULL, sit
   )
   if (inherits(result, "error")) {
     return(html_error(res, 400, conditionMessage(result)))
+  }
+
+  # A missing ZCTA can reduce the site count. Do not let a multi-ZIP
+  # selection fall back to the first remaining ZIP. A one-ZIP request may
+  # still carry its original row number as the report label (per-site links).
+  if (method == "ZIP" && length(area) > 1 && sitenum > NROW(result$results_bysite)) {
+    return(html_error(res, 400, "sitenumber must select one of the matched ZIPs; some ZIPs may have no ZCTA."))
   }
 
   # Submitted polygon(s) to appear in the report map.
