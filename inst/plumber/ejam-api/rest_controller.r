@@ -244,12 +244,19 @@ report_response <- function(result, method, to_map, sitenum, ext, res, cache_hea
   if (is.character(report_output) && file.exists(report_output)) {
     res$setHeader("Content-Type", "application/pdf")
     res$setHeader("Content-Disposition", "inline; filename=ejscreen_report.pdf")
+    # Swagger UI ("Try it out") only offers a download link for a binary response
+    # when Content-Type is octet-stream, Content-Disposition is attachment, or
+    # Content-Description is "File Transfer"; for inline application/pdf it shows
+    # the raw bytes as text. Browsers ignore Content-Description, so a report URL
+    # opened directly still displays inline.
+    res$setHeader("Content-Description", "File Transfer")
     file_size <- file.info(report_output)$size
     res$body <- readBin(report_output, "raw", n = file_size)
     on.exit(unlink(report_output), add = TRUE)
     return(res)
   }
   res$setHeader("Content-Type", "application/pdf")
+  res$setHeader("Content-Description", "File Transfer")  # see note above
   res$body <- report_output
   res
 }
