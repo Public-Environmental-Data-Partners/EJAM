@@ -341,7 +341,9 @@ grep_lines = function(pattern, x, ignore.case = TRUE, ignorecomments = FALSE, va
 #' @param path can be e.g., "./R" or "./tests/testthat" or "."
 #' @param recursive if TRUE, search includes subfolders (passed to `list.files()`)
 #' @param filename_pattern default is R code files only! A regular expression that would limit file names to search
-#' @param full.names if TRUE, returns paths not just filenames (passed to `list.files()`)
+#' @param full.names if TRUE, results are labeled with file paths (path included),
+#'   not just file names relative to `path`. Files are found and read correctly either way,
+#'   regardless of the working directory.
 #' @param ignorecomments omit hits from commented out lines
 #' @param ignore.case as in grep
 #' @param whole_line set it to FALSE to see only the matching fragments
@@ -420,8 +422,14 @@ find_in_files <- function(pattern,
     cat("\nSearching in ", path, ' to find files containing ', pattern, '\n')
     # or e.g., find_in_files(pattern = "^#'.*[^<]http", path = "./R")
   }
-  x <- list.files(path = path, pattern = filename_pattern, recursive = recursive, full.names = full.names)
-  names(x) <- x
+  # always read each file via its full path, so this works even if path is not the working directory,
+  # and use full.names only to decide how files are labeled in the results
+  x <- unlist(lapply(path, function(p) {
+    fnames <- list.files(path = p, pattern = filename_pattern, recursive = recursive, full.names = FALSE)
+    fpaths <- file.path(p, fnames)
+    names(fpaths) <- if (full.names) fpaths else fnames
+    fpaths
+  }))
   if (ignorecomments) {
     pattern <- paste0("(^|[^#])", pattern) # ignore comments, so only match if not preceded by a #
   }

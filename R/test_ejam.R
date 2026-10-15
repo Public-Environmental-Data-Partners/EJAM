@@ -288,7 +288,9 @@ instead of tests/testthat/_logs
       ),
       test_maps = c(
         "test-MAP_FUNCTIONS.R",
-        "test-ejam2map.R"
+        "test-ejam2map.R",
+        "test-mapfast-colors.R",
+        "test-map_ejscreen_indicator.R"
       ),
       test_shape = c(
         "test-latlon_from_shapefile.R",
@@ -637,8 +639,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       timebyfile <- rbind(
         timebyfile,
         data.table(file = c("test-mact_labels.R", "test-utils_offline.R",
-                            "test-ejamit-zip-alias.R", "test-zip-api-wrappers.R"),
-                   seconds_byfile = c(1, 1, 0, 1))
+                            "test-ejamit-zip-alias.R", "test-zip-api-wrappers.R",
+                            "test-mapfast-colors.R", "test-map_ejscreen_indicator.R"),
+                   seconds_byfile = c(1, 1, 0, 1, 1, 0))
       )
 
 

@@ -1198,7 +1198,14 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   #
   # Is that at all useful really?? also, the zero-block zero-population blocks are not in the sites2blocks table, so this is not reporting on those with 0 blocks nearby.
   # "blockcount_near_site"            "bgcount_near_site"
-  blockcount_by_site <- sites2blocks[, .(blockcount_near_site = sum(!is.na(blockid))),  by = ejam_uniq_id]
+  # A compact sites2blocks table, as from getblocksnearby_from_fips(compact = TRUE), has one row per blockgroup
+  # standing for all its blocks, with the number of blocks in column blockcount.
+  has_blockcount <- "blockcount" %in% names(sites2blocks)
+  if (has_blockcount) {
+    blockcount_by_site <- sites2blocks[, .(blockcount_near_site = sum(data.table::fifelse(is.na(blockid), 0L, data.table::fcoalesce(as.integer(blockcount), 1L)))), by = ejam_uniq_id]
+  } else {
+    blockcount_by_site <- sites2blocks[, .(blockcount_near_site = sum(!is.na(blockid))),  by = ejam_uniq_id]
+  }
   bgcount_by_site    <- sites2blocks[, .(bgcount_near_site = collapse::fnunique(bgid[!is.na(bgid)])), by = ejam_uniq_id]
 
   results_bysite <- merge(results_bysite, blockcount_by_site, by = "ejam_uniq_id")
@@ -1214,8 +1221,16 @@ doaggregate <- function(sites2blocks, sites2states_or_latlon=NA,
   # * COUNT SITES NEARBY ####
   # * overall, HOW OFTEN ARE BLOCKS,BGS NEAR >1 SITE?  ###
   # Note this is NOT like the other metrics - this is just an overall stat to report once over the whole set of sites and bgs.
+  if (has_blockcount) {
+    # each row stands for blockcount blocks (1 if NA)
+    block_rows_n <- sites2blocks[!is.na(blockid), .(blockid, blockcount = data.table::fcoalesce(as.integer(blockcount), 1L))]
+    blockcount_overall <- block_rows_n[, .(blockcount = blockcount[1]), by = blockid][, sum(blockcount)]
+    count_of_blocks_near_multiple_sites <- block_rows_n[, sum(blockcount)] - blockcount_overall
+    rm(block_rows_n)
+  } else {
   count_of_blocks_near_multiple_sites <- sites2blocks[, length(collapse::na_rm(blockid))] - sites2blocks_overall[, length(collapse::na_rm(blockid))]  # sum(!is.na(sites2blocks$blockid)) - sum(!is.na(sites2blocks_overall$blockid)) # removes NA rows to get right counts
   blockcount_overall     <-  sites2blocks[, collapse::fnunique(collapse::na_rm(blockid))] # blockid[!is.na(blockid)])]
+  }
   bgcount_overall        <-  sites2blocks[, collapse::fnunique(collapse::na_rm(bgid))]    # bgid[!is.na(bgid)])]
   # how many blockgroups here were found near 1, 2, or 3 sites?
   # e.g., 6k bg were near only 1/100 sites tested, 619 near 2, 76 bg had 3 of the 100 sites nearby.

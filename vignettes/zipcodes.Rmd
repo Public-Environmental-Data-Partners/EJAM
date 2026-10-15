@@ -72,34 +72,12 @@ mapfast(z)
 The rest of this article shows the manual, step-by-step version of that
 workflow, which offers more control (e.g., other sources of zip code polygons).
 
-## ZIP analysis through the EJAM API
-
-The API ZIP feature tracked by
-[EJAM#662](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/662)
-adds `zip` and `zipcode` aliases to GET/POST `/report` and POST `/data`.
-These examples require deployment of that API change:
-
-```{r api_zip, eval=FALSE}
-# R wrappers recognize ZIP as a geography, with zero buffer by default
-ejamapi(zip = "20912", endpoint = "data")
-url_ejamapi(zipcode = c("10012", "10506"), sitenumber = 0)
-# one ZIP (PDF by default)
-browseURL("https://api.ejanalysis.com/report?zip=10605")
-# aggregate HTML report across two ZIP/ZCTA areas
-browseURL("https://api.ejanalysis.com/report?zipcode=10012,10506&sitenumber=0")
-```
-
-For POST requests, provide a comma-separated string or an array, such as
-`{"zipcode": ["10012", "10506"], "buffer": 0}` for `/data`. Provide one
-location type per request, and only one ZIP alias. ZIP boundaries use zero
-buffer by default; `buffer`/`radius` can explicitly extend the analysis beyond
-the boundary. Postal ZIPs without a ZCTA are dropped with a warning, and an
-analysis with no matching ZCTAs returns an error.
-
-**ZIPs are not FIPS codes:** `zip=10001` means the Manhattan ZIP/ZCTA, whereas
-`fips=10001` means Kent County, Delaware. Never pass ZIPs through `fips`.
-The web app ZIP entry UI remains separate work tracked by
-[EJAM#486](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/486).
+`ejamapi()` and `url_ejamapi()` now accept `zip` or `zipcode` for ZIP/ZCTA
+analysis with zero buffer by default (use only one alias). GET/POST `/report`
+and POST `/data` support the same aliases once the API change is deployed.
+For example, `ejamapi(zip = "20912", endpoint = "data")` requests data, and
+`url_ejamapi(zipcode = c("10012", "10506"), sitenumber = 0)` builds an aggregate
+report link.
 
 ## Manual step-by-step approach
 
