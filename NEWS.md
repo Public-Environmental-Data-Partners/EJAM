@@ -2,7 +2,9 @@
 
 ## New Features for R users (not in web app yet)
 
-* API ZIP analysis: the mirrored API adds `zip` / `zipcode` inputs for GET/POST reports and POST data, using ZCTA boundaries. `ejamit(zip=)` is now an alias for `ejamit(zipcode=)`. Both aliases are supported by `ejamapi()` and `url_ejamapi()`; ZIP API URLs round-trip through `url_ejamapi2arglist()`, and ZIP analysis results retain ZIP-specific API report links. ZIP codes remain distinct from Census FIPS codes (#662). The hosted API requires a separate deployment; Shiny ZIP inputs remain tracked in #486.
+* API ZIP analysis:
+  * The API (in EJAM-API and mirrored in EJAM) now handles `zip` or `zipcode`
+  * `ejamit()`, `ejamapi()`, and `url_ejamapi()` now handle `zip` or `zipcode`. Zipcode results will get zip-specific API report links.
 
 - Color-coded maps to see where an indicator is highest:
   - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county, like an EJSCREEN map,
