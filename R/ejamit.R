@@ -508,7 +508,8 @@ ejamit <- function(sitepoints = NULL,
         silentinteractive = silentinteractive,
         testing = testing,
         showdrinkingwater = showdrinkingwater,
-        showpctowned = showpctowned
+        showpctowned = showpctowned,
+        copy_sites2blocks = FALSE # saves memory; afterwards this table is only used to see which sites had blocks
       )
     )
 
@@ -645,7 +646,8 @@ ejamit <- function(sitepoints = NULL,
         silentinteractive = silentinteractive,
         testing = testing,
         showdrinkingwater = showdrinkingwater,
-        showpctowned = showpctowned
+        showpctowned = showpctowned,
+        copy_sites2blocks = FALSE # saves memory; afterwards this table is only used to see which sites had blocks
       )
 
     )
@@ -802,7 +804,8 @@ ejamit <- function(sitepoints = NULL,
         silentinteractive = silentinteractive,
         testing = testing,
         showdrinkingwater = showdrinkingwater,
-        showpctowned = showpctowned
+        showpctowned = showpctowned,
+        copy_sites2blocks = FALSE # saves memory; afterwards this table is only used to see which sites had blocks
       )
     )
     #close doagg progress bar
@@ -857,9 +860,9 @@ ejamit <- function(sitepoints = NULL,
         areas <- area_sqmi(df = out$results_bysite) - area_sqmi(radius.miles = radius_donut_lower_edge)
       }
     }
-    out$results_bysite$area_sqmi <- areas
+    out$results_bysite[, area_sqmi := areas]
     out$results_overall$area_sqmi <- sum(areas, na.rm = TRUE)
-    out$results_bybg_people$area_sqmi <- NA
+    out$results_bybg_people[, area_sqmi := NA] # := not $<-, which would copy this possibly huge table
   }
   # end of lat lon vs FIPS vs shapefile
   ################################################################ #
