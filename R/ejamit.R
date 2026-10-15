@@ -92,6 +92,7 @@ ejamit_invalid_site_pop_zero <- function(results_bysite) {
 #'   If in RStudio you want it to interactively prompt you to pick a file,
 #'   use shapefile=1 (otherwise it assumes you want to pick a latlon file).
 #' @param shp alias (synonym) for shapefile
+#' @param zip alias for `zipcode`. Provide only one of these two aliases.
 #' @param zipcode optional vector of one or more 5-digit zip codes to analyze
 #'   (instead of sitepoints, fips, or shapefile). Zip codes are converted to
 #'   ZCTA polygons via [shapes_from_zip()] and then analyzed exactly like a
@@ -321,9 +322,15 @@ ejamit <- function(sitepoints = NULL,
                    buffer = NULL,  # alias (synonym) for radius
                    shape = NULL,   # alias (synonym) for shapefile
                    shp = NULL,     # alias (synonym) for shapefile
+                   zip = NULL,     # alias (synonym) for zipcode
                    zipcode = NULL, # zip code(s) to convert to ZCTA polygons analyzed like a shapefile
                    lat = NULL, lon = NULL  # optional coordinates to build sitepoints (issue #171)
 ) {
+  if (!is.null(zip) && !is.null(zipcode)) {
+    stop("Provide only one of zip or zipcode (they are aliases).")
+  }
+  if (!is.null(zip)) {zipcode <- zip}
+
   # Aliases (synonyms): buffer for radius, shape for shapefile. "buffer"/"shape"
   # read more naturally for FIPS or polygon analysis; "radius"/"shapefile" remain
   # the canonical names. The alias is used only when the canonical name was not
@@ -952,6 +959,7 @@ ejamit <- function(sitepoints = NULL,
     sitepoints = {if ("latlon" %in% sitetype) {out$results_bysite[, .(lat = lat, lon = lon, ejam_uniq_id = ejam_uniq_id)]} else {NULL} },
     fips       = {if ("fips"   %in% sitetype) {fips} else {NULL}}, # or use out$results_bysite$ejam_uniq_id if that sitetype ?
     shapefile  = {if ("shp"    %in% sitetype) {shp}  else {NULL}}, # has only valids but also has ejam_uniq_id
+    zipcode = zipcode,
     radius = buffer_for_links,
     regid = regid,
     sitetype = sitetype,

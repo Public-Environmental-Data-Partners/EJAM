@@ -543,6 +543,26 @@ See also
 
 -  [functions for seeing tables of results](`r paste0(docs_reponame_url, "/reference/index.html#tables")`)
 
+### Color-coded maps
+
+Pass a percentile column name to `ejam2map()` to color sites gray, yellow, orange,
+and red at the 80th, 90th, and 95th percentile cutoffs.
+
+```{r color-coded-maps, eval=FALSE}
+out <- testoutput_ejamit_1000pts_1miles
+ejam2map(out, color = "pctile.traffic.score", launch_browser = FALSE)
+
+# Or supply a color vector, here comparing traffic scores to State averages:
+ejam2map(out,
+         color = EJAM:::ratio2color(out$results_bysite$ratio.to.state.avg.traffic.score),
+         launch_browser = FALSE)
+```
+
+The ratio colors are gray below 1.05 times the average, yellow from 1.05 to below
+2, orange from 2 to below 3, and red at 3 or above. For percentile color vectors,
+use `EJAM:::pctile2color()` or `EJAM:::pctile2colorhex()` on a percentile column.
+These color helpers are internal functions, hence the `:::` notation.
+
 ### The most striking findings (e.g., which group is most over-represented?)
 
 See examples above using `ejam2report()` but also you can check some key findings

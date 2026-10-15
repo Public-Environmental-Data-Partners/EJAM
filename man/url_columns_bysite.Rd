@@ -17,7 +17,9 @@ url_columns_bysite(
   sitetype = NULL,
   as_html = TRUE,
   validate_regids = FALSE,
-  ...
+  ...,
+  zip = NULL,
+  zipcode = NULL
 )
 }
 \arguments{
@@ -29,6 +31,8 @@ url_columns_bysite(
 
 \item{shapefile}{spatial data.frame, class sf, see ejamit() parameter of same name.
 (and should have ejam_uniq_id column or assume 1 output row per input row, same order)}
+
+\item{zip, zipcode}{ZIP aliases for API report links. Can accompany their ZCTA shapefile; other report providers retain their geometry inputs.}
 
 \item{fips}{vector of FIPS codes if relevant  (instead of sitepoints or shapefile input)
 Note that nearly half of all county fips codes are impossible to distinguish from

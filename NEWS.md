@@ -1,6 +1,36 @@
-# EJAM 4.2024.0 (unreleased)
+# EJAM 4.2024.0 (in development)
+
+The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), from early 2025, across the EJAM app, the EJSCREEN app, the EJAM API, and the R package.
+
+## What's new in the web apps
+
+- **Newer data:** demographics now use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version, with indexes and percentiles recalculated to match.
+- **Pick several places in EJSCREEN** by clicking points, choosing areas, or drawing shapes, then get one combined report or send them all to EJAM.
+- **Shareable links** that open EJSCREEN or EJAM with places already selected.
+- **More ways to choose places in EJAM:** click on the map to add points, or pick cities, counties, or states by name.
+- **PDF download** of the Community Report, with page breaks that print well.
+- **More in the report:** counts of schools, Superfund sites, and other features, flood risk, health insurance, and the share of residents in Tribal or other flagged areas, compared with US and State averages.
+- **Each site in EJAM's results links to its own one-site report** and to EJSCREEN with that place selected.
+- **Bigger, more flexible uploads:** up to 10,000 sites (was 5,000), and areas as GeoJSON, KML, or zipped shapefiles.
+- **Faster:** the site-by-site table loads about 4 times faster, PDF reports finish sooner, and repeat report links load from a cache.
+
+## What's new for R users
+
+- `ejamapi()` gets reports or results from the new EJAM API, and `url_ejamapi()` builds a report link for any site.
+- `ejamit(zipcode = 10605)` analyzes zip code areas, using the new `shapes_from_zip()`.
+- `ejamit()` accepts `lat` and `lon` vectors and a `buffer` around FIPS places, and `buffer` and `shape` work as synonyms for `radius` and `shapefile` across functions.
+- `ejamapp()` (formerly `run_app()`) launches the app with your own settings and places pre-loaded, and `url_ejamapp()` makes a link that opens the hosted app the same way.
+- `ejam2report()` can save a PDF, report on one site via `sitenumber`, and use a custom title and footer.
+- `ejam2areafeatures()` and `ejam2barplot_areafeatures()` show the share of residents whose block group has a school or hospital or overlaps a Tribal or other flagged area, compared with US and State averages.
+- `url_ejscreenmap()` and related `url_*()` functions link each site to EJSCREEN (with the place selected), EnviroMapper, ECHO, FRS, and county or state health pages.
+- `calc_ejscreen_dataset()` and `calc_ejscreen_export()` are a documented annual pipeline that rebuilds the EJAM and EJSCREEN datasets from each new ACS release.
+- Each release downloads its own matching version of the large datasets, and county and state boundaries are built in, so they work offline.
 
 ## New Features for R users (not in web app yet)
+
+* API ZIP analysis:
+  * The API (in EJAM-API and mirrored in EJAM) now handles `zip` or `zipcode`
+  * `ejamit()`, `ejamapi()`, and `url_ejamapi()` now handle `zip` or `zipcode`. Zipcode results will get zip-specific API report links.
 
 - Color-coded maps to see where an indicator is highest:
   - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county, like an EJSCREEN map,
