@@ -7,7 +7,7 @@ The files in this folder are byte-for-byte copies from
 - `query_pagination.R`   — /query pagination helpers, `source()`d by rest_controller.r
 - `assets/`              — static files served at `/assets`
 
-**Synced from commit:** `13f73398215da401bfea7b02042a4a17f446d85e` (2026-08-26)
+**Synced from commit:** `c27f2c1f5b7b394dc4452ee303057673750a6d83` (2026-10-14 sync)
 
 NOTE: `rest_controller.r` does `source("query_pagination.R")` and `@assets ./assets`
 with paths relative to its own directory (the Docker WORKDIR in production), so callers
