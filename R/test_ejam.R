@@ -422,6 +422,7 @@ instead of tests/testthat/_logs
         "test-grepn.R",
         "test-utils_PACKAGE_DEV.R",
         "test-utils_offline.R",
+        "test-utils_memory_guard.R",
         "test-pctile_x_is_hit_by_score.R",
         "test-plot_vs_us.R",
         "test-count_sites_with_n_high_scores.R",
@@ -640,8 +641,9 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         timebyfile,
         data.table(file = c("test-mact_labels.R", "test-utils_offline.R",
                             "test-ejamit-zip-alias.R", "test-zip-api-wrappers.R",
-                            "test-mapfast-colors.R", "test-map_ejscreen_indicator.R"),
-                   seconds_byfile = c(1, 1, 0, 1, 1, 0))
+                            "test-utils_memory_guard.R", "test-mapfast-colors.R",
+                            "test-map_ejscreen_indicator.R"),
+                   seconds_byfile = c(1, 1, 0, 1, 1, 1, 0))
       )
 
 

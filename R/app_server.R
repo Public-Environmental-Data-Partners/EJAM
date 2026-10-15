@@ -2241,6 +2241,10 @@ app_server <- function(input, output, session) {
   observeEvent(input$bt_get_results, {  # (button is pressed)
 
     analysis_complete(FALSE)
+    # Release the previous analysis's results now, so this analysis can reuse that memory.
+    # Outputs that use data_processed() update only after this observer finishes, so they
+    # show the new results, or none if this analysis stops with an error.
+    data_processed(NULL)
     # disable download buttons until finished analysis
     download_button_disable_js(id = 'download_report_multisite')
     download_button_disable_js(id = 'download_results_spreadsheet')
@@ -2287,17 +2291,29 @@ app_server <- function(input, output, session) {
       }
       invisible(runtime_estimate)
     }
+    ## if a step of the analysis stopped with an error (see analysis_step_in_app()):
+    ## close progress bars, tell the user why, and end this analysis quietly
+    stop_failed_analysis <- function(failed, ...) {
+      for (p in list(progress_all, ...)) {try(p$close(), silent = TRUE)}
+      if (!is.null(ejamitRunTimeNotification)) {removeNotification(ejamitRunTimeNotification)}
+      invisible(gc()) # free what the stopped analysis had allocated
+      showNotification(failed$message, type = 'error', duration = NULL)
+      req(FALSE) # stops this observer without ending the session
+    }
 
     ################################################# #
     # > ejamit() for FIPS  ####
     if (submitted_upload_method() %in% c('FIPS', 'FIPS_PLACE')) {  # if FIPS, do everything in 1 step right here.
-      fips_uploaded_for_prediction <- data_uploaded()
-      fips_for_prediction <- if (is.data.frame(fips_uploaded_for_prediction)) {
-        fips_from_table(fips_uploaded_for_prediction, addleadzeroes = TRUE, in_shiny = TRUE)
-      } else {
-        fips_lead_zero(fips_uploaded_for_prediction)
-      }
-      fips_for_prediction <- fips_for_prediction[fips_valid(fips_for_prediction)]
+      fips_for_prediction <- analysis_step_in_app({
+        fips_uploaded_for_prediction <- data_uploaded()
+        fips_for_prediction <- if (is.data.frame(fips_uploaded_for_prediction)) {
+          fips_from_table(fips_uploaded_for_prediction, addleadzeroes = TRUE, in_shiny = TRUE)
+        } else {
+          fips_lead_zero(fips_uploaded_for_prediction)
+        }
+        fips_for_prediction[fips_valid(fips_for_prediction)]
+      }, step = "checking FIPS codes")
+      if (inherits(fips_for_prediction, "analysis_failed")) {stop_failed_analysis(fips_for_prediction)}
       show_ejamit_runtime_estimate(
         rows = length(fips_for_prediction),
         radius = submitted_radius_val(),
@@ -2305,7 +2321,7 @@ app_server <- function(input, output, session) {
         analysis_subtype = speed_fips_analysis_subtype(fips_for_prediction)
       )
 
-      out <- ejamit(fips = data_uploaded(),              # unlike for SHP or latlon cases, this could include invalid FIPS!
+      out <- analysis_step_in_app(ejamit(fips = data_uploaded(),              # unlike for SHP or latlon cases, this could include invalid FIPS!
                     updateProgress_getblocks = NULL, # differs in shp vs latlon cases, unused in fips case.
                     in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2346,7 +2362,8 @@ app_server <- function(input, output, session) {
                     silentinteractive = TRUE,
                     quiet = TRUE,
                     testing = input$testing
-      )
+      ))
+      if (inherits(out, "analysis_failed")) {stop_failed_analysis(out)}
       # sitetype is "fips" and
       # now includes area_sqmi columns as output of ejamit(), for fips case, but if download_fips_bounds_to_calc_areas=F, it is NA values
 
@@ -2370,10 +2387,11 @@ app_server <- function(input, output, session) {
           # if (!silentinteractive) {
           cat('Adding buffer around each polygon.\n')
           # }
-          shp <- shape_buffered_from_shapefile(
+          shp <- analysis_step_in_app(shape_buffered_from_shapefile(
             shapefile = data_uploaded(),
             radius.miles =  rad_buff
-          ) # default crs
+          ), step = "shape_buffered_from_shapefile()") # default crs
+          if (inherits(shp, "analysis_failed")) {stop_failed_analysis(shp)}
         } else {
           shp <- data_uploaded()
         }
@@ -2396,7 +2414,7 @@ app_server <- function(input, output, session) {
           progress_getblocks_shp$set(value = value, message = message_main, detail = message_detail)
         }
 
-        out <- ejamit(shapefile = shp,
+        out <- analysis_step_in_app(ejamit(shapefile = shp,
                       updateProgress_getblocks = updateProgress_getblocks_shp, # differs in shp vs latlon cases, unused in fips case.
                       in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2432,7 +2450,8 @@ app_server <- function(input, output, session) {
                       silentinteractive = TRUE,
                       quiet = TRUE,
                       testing = input$testing
-        )
+        ))
+        if (inherits(out, "analysis_failed")) {stop_failed_analysis(out, progress_getblocks_shp)}
 
         ## close getblocks progress bar
         progress_getblocks_shp$close()
@@ -2467,7 +2486,7 @@ app_server <- function(input, output, session) {
           progress_getblocks$set(value = value, message = message_main, detail = message_detail)
         }
 
-        out <-  ejamit(sitepoints = data_uploaded(),
+        out <-  analysis_step_in_app(ejamit(sitepoints = data_uploaded(),
                        updateProgress_getblocks = updateProgress_getblocks, # differs in shp vs latlon cases, unused in fips case.
                        in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2503,7 +2522,8 @@ app_server <- function(input, output, session) {
                        silentinteractive = TRUE,
                        quiet = TRUE,
                        testing = input$testing
-        )
+        ))
+        if (inherits(out, "analysis_failed")) {stop_failed_analysis(out, progress_getblocks)}
 
         ## close getblocks progress bar
         progress_getblocks$close()

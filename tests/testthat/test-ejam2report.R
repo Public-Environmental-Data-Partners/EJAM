@@ -849,11 +849,16 @@ testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings"
       ejam_uniq_id = "overall", valid = TRUE, invalid_msg = "", pop = 30,
       radius.miles = 0, statename = "Delaware")
   )
-  for (spelling in c("FIPS", "fips", "Fips", "NAICS")) {
+  cases <- expand.grid(spelling = c("FIPS", "fips", "Fips", "NAICS"),
+                       sitenumber = c(0L, 2L), stringsAsFactors = FALSE)
+  for (i in seq_len(nrow(cases))) {
+    spelling <- cases$spelling[i]
+    sitenumber <- cases$sitenumber[i]
     called <- new.env(parent = emptyenv()); called$n <- 0L
     local_mocked_bindings(
       shapes_from_fips = function(fips, ...) {
         called$n <- called$n + 1L
+        called$fips <- fips
         sf::st_as_sf(data.frame(fips = fips, geometry = sf::st_sfc(
           lapply(seq_along(fips), function(i) sf::st_polygon(list(rbind(
             c(-75, 39 + i), c(-74.9, 39 + i), c(-74.9, 39.1 + i), c(-75, 39 + i))))), crs = 4269)))
@@ -863,7 +868,15 @@ testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings"
       create_filename = function(...) "report.html",
       build_community_report = function(...) "<section>report</section>",
       plot_barplot_ratios_ez = function(...) ggplot2::ggplot(),
-      ejam2map = function(...) "map",
+      ejam2map = function(ejamitout, shp, ...) {
+        called$shp <- shp
+        "map"
+      },
+      # Isolate report reconstruction from mapfast's independent FIPS fallback.
+      mapfastej = function(mydf, ...) {
+        called$fallback <- mydf
+        "map"
+      },
       ensure_pandoc_available_for_ejam = function(...) invisible(TRUE),
       .package = "EJAM"
     )
@@ -875,25 +888,26 @@ testthat::test_that("ejam2report rebuilds fips polygons for FIPS/fips spellings"
     )
     out <- fips_report_output()
     out$site_method <- spelling
-    res <- suppressWarnings(try(ejam2report(out, site_method = spelling, return_html = TRUE,
+    res <- suppressWarnings(try(ejam2report(out, site_method = spelling, sitenumber = sitenumber,
+                                            return_html = TRUE,
                                             launch_browser = FALSE), silent = TRUE))
     if (spelling == "NAICS") {
-      expect_identical(called$n, 0L)                     # non-fips method must not rebuild fips
-      ## called$n == 0 on its own would ALSO be satisfied by ejam2report() dying
-      ## before it ever reached the gate, so this case has to show execution got
-      ## past it. It cannot simply complete: with a non-FIPS method against this
-      ## FIPS-shaped fixture, shp stays NULL and the unmapped branch needs
-      ## ratio.to.state.avg.* columns the minimal fixture omits. So pin that
-      ## specific downstream failure - which is only reachable past the gate.
-      expect_true(inherits(res, "try-error"))
-      expect_match(conditionMessage(attr(res, "condition")), "ratio\\.to\\.state\\.avg")
+      expect_identical(called$n, 0L)
+      expect_null(called$shp)
+      expected <- if (sitenumber == 0L) out else out$results_bysite[sitenumber, ]
+      expect_identical(called$fallback, expected)
     } else {
-      expect_gt(called$n, 0L)                            # both FIPS spellings do
-      ## and the report itself must still complete - otherwise "shapes_from_fips()
-      ## was called" would pass even if everything after it blew up.
-      expect_false(inherits(res, "try-error"))
-      expect_type(res, "character")
+      expected <- out$results_bysite$ejam_uniq_id
+      if (sitenumber > 0L) expected <- expected[sitenumber]
+      expect_identical(called$n, 1L)
+      expect_identical(called$fips, expected)
+      expect_identical(called$shp$fips, expected)
+      expect_null(called$fallback)
     }
+    # Rendering must complete in every case, not just reach the reconstruction gate.
+    expect_false(inherits(res, "try-error"))
+    expect_type(res, "character")
+    expect_match(res, "<html>report</html>", fixed = TRUE)
   }
 })
 ################ ################# ################# ################# ################# #
