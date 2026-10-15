@@ -289,6 +289,7 @@ instead of tests/testthat/_logs
       test_maps = c(
         "test-MAP_FUNCTIONS.R",
         "test-ejam2map.R",
+        "test-utils_map_size.R",
         "test-mapfast-colors.R",
         "test-map_ejscreen_indicator.R"
       ),
@@ -646,6 +647,10 @@ and all filenames listed there actually exist as in that folder called `test`.\n
                    seconds_byfile = c(1, 1, 0, 1, 1, 1, 0))
       )
 
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = "test-utils_map_size.R", seconds_byfile = 3)
+      )
 
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #

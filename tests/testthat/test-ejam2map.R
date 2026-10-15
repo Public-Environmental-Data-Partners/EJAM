@@ -234,12 +234,12 @@ test_that("ejam2map() works given shp, sitenumber=2", {
 test_that("ejam2map forwards helper colors for point and polygon maps", {
   forwarded <- NULL
   testthat::local_mocked_bindings(
-    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label) {
+    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label, popup_style) {
       forwarded <<- list(color = color, label = sitenumber_label)
       leaflet::leaflet()
     },
     map_ejam_plus_shp = function(shp, out, radius_buffer, launch_browser,
-                                color, sitenumber_label) {
+                                color, sitenumber_label, popup_style) {
       forwarded <<- list(color = color, label = sitenumber_label)
       leaflet::leaflet()
     },
@@ -268,11 +268,11 @@ test_that("ejam2map forwards helper colors for point and polygon maps", {
 test_that("ejam2map maps indicator columns to colors for points and polygons", {
   forwarded <- NULL
   testthat::local_mocked_bindings(
-    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label) {
+    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label, popup_style) {
       forwarded <<- color
       leaflet::leaflet()
     },
-    map_ejam_plus_shp = function(shp, out, radius_buffer, launch_browser, color, sitenumber_label) {
+    map_ejam_plus_shp = function(shp, out, radius_buffer, launch_browser, color, sitenumber_label, popup_style) {
       forwarded <<- color
       leaflet::leaflet()
     },
@@ -310,7 +310,7 @@ test_that("ejam2map maps indicator columns to colors for points and polygons", {
 test_that("ejam2map rejects unknown color columns before drawing or downloading", {
   forwarded <- NULL
   testthat::local_mocked_bindings(
-    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label) {
+    mapfast = function(mydf, radius, column_names, launch_browser, color, sitenumber_label, popup_style) {
       forwarded <<- color
       leaflet::leaflet()
     },

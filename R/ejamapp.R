@@ -299,6 +299,11 @@ ejamapp <- function(
     dots$default_site_method <- dots$default_upload_dropdown
   }
   dots$default_upload_dropdown <- NULL  # drop the old key so only the new name flows downstream
+  # Back-compat: marker_cluster_cutoff was replaced by default_max_pts_map_show_unclustered.
+  if ('marker_cluster_cutoff' %in% names(dots) && !('default_max_pts_map_show_unclustered' %in% names(dots))) {
+    dots$default_max_pts_map_show_unclustered <- dots$marker_cluster_cutoff
+  }
+  dots$marker_cluster_cutoff <- NULL
 
   if ("fips" %in% names(dots)) {
     # dots$fips will be used
