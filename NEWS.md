@@ -28,6 +28,10 @@ The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), 
 
 ## New Features for R users (not in web app yet)
 
+* API ZIP analysis:
+  * The API (in EJAM-API and mirrored in EJAM) now handles `zip` or `zipcode`
+  * `ejamit()`, `ejamapi()`, and `url_ejamapi()` now handle `zip` or `zipcode`. Zipcode results will get zip-specific API report links.
+
 - Color-coded maps to see where an indicator is highest:
   - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county, like an EJSCREEN map,
     by specifying the indicator name, e.g.,
