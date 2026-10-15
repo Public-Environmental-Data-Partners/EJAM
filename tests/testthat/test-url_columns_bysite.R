@@ -114,6 +114,7 @@ for (i in seq_along(allreports)) {
 
       sitepoints = testpoints_10[1:8,],
       regid = testinput_registry_id[1:8],
+      radius = 3,
       as_html = T
     )
     directly = unlinkify(directly)
@@ -122,10 +123,9 @@ for (i in seq_along(allreports)) {
     via_url_columns = unlinkify(via_url_columns)
     via_url_columns = gsub("&sitetype=latlon|&validate_regids=FALSE", "", via_url_columns)  ###   THESE ARE ADDED BY THE GENERIC WRAPPER BUT NOT BY INDIVIDUAL url_xyz functions
 
-    try(    expect_equal(
+    expect_equal(
       via_url_columns,
       directly
-    )
     )
   })
 
