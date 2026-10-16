@@ -481,7 +481,7 @@ shp1 <- shapefile_from_any(system.file("testdata/shapes/portland.gdb.zip", packa
 
 ### Map of blockgroups like an EJSCREEN map
 
-See `map_ejscreen_indicators()` for a quick EJSCREEN-style map of blockgroups in a County or State, color-coded by one indicator, without running an analysis.
+See `map_ejscreen_indicator()` for a quick EJSCREEN-style map of blockgroups in a County or State, color-coded by one indicator, without running an analysis.
 
 
 ### Counties as the places to compare
@@ -499,7 +499,7 @@ Note this direct approach is useful if you only want a map, but
 it does not save the full results. You can click on a county to see a popup with a link to the EJAM report for that county.
 
 ```{r mapfastej_counties, eval=FALSE}
-mapfastej_counties(ST = "DE", color = "ratio.to.state.avg.pctlowinc")`
+mapfastej_counties(ST = "DE", colorvarname = "ratio.to.state.avg.pctlowinc")
 ```
 
 Compare all Counties in a State, using EJAM indicators
