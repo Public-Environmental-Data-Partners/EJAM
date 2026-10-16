@@ -18,7 +18,10 @@ map_ejscreen_indicator(
   colorfills = ejscreen_color_defaults()$colorfills,
   colorlabels = NULL,
   na.color = "#D3D3D3",
-  fillOpacity = 0.7
+  fillOpacity = 0.7,
+  maptype = c("leaflet", "ggplot"),
+  year = NULL,
+  cb = TRUE
 )
 }
 \arguments{
@@ -26,9 +29,11 @@ map_ejscreen_indicator(
 \code{"proximity.npl"}, or \code{"EJ.DISPARITY.pm.eo"}. A \code{"pctile."} or
 \code{"state.pctile."} prefix is also accepted and selects the percentile scope.}
 
-\item{countyfips}{One five-character county FIPS code, including leading zeros.}
+\item{countyfips}{One county FIPS code, or a FIPS code whose parent county
+can be resolved by \code{\link[=fips2countyfips]{fips2countyfips()}}. Numeric codes are normalized to
+include leading zeros.}
 
-\item{ST}{One state abbreviation or two-character state FIPS code.}
+\item{ST}{One state abbreviation, state name, or two-digit state FIPS code.}
 
 \item{zoom}{Optional initial Leaflet zoom level from 0 to 18. If NULL,
 fit the view to all selected blockgroup polygons.}
@@ -62,14 +67,28 @@ the shared labels; custom bins get interval labels automatically.}
 the legend when needed.}
 
 \item{fillOpacity}{Polygon fill opacity between 0 and 1.}
+
+\item{maptype}{Either "leaflet" (default) for an interactive map or "ggplot"
+for a static map using the same percentile colors and legend. zoom is only
+used by Leaflet.}
+
+\item{year}{Census boundary year; defaults to \code{\link[=acs_endyear]{acs_endyear()}} to match the
+package's ACS data vintage. Ignored when shp is supplied.}
+
+\item{cb}{TRUE (default) for smaller generalized cartographic boundaries;
+FALSE for detailed TIGER/Line boundaries. Generalized boundaries are much
+faster to download and draw, but simplified and clipped along shorelines;
+use them for overview maps, not precise spatial analysis. Both choices
+reuse cached state files. Ignored when shp is supplied.}
 }
 \value{
-A Leaflet htmlwidget.
+A Leaflet htmlwidget or a ggplot object. The ggplot object's data
+contains the selected raw indicator values and a .map_percentile column.
 }
 \description{
-Draw a Leaflet choropleth for one county or state using raw
+Draw a Leaflet or ggplot choropleth for one county or state using raw
 values already in \link{blockgroupstats} and percentiles from \code{\link[=lookup_pctile]{lookup_pctile()}}.
-No EJAM analysis is run. The map includes indicator values, percentiles,
+No EJAM analysis is run. The Leaflet map includes indicator values, percentiles,
 blockgroup FIPS codes, and population (when available) in its popups.
 }
 \details{
@@ -81,14 +100,17 @@ EJ/Supplemental Summary Index scores are read from \link{bgej} when they are
 not already present in blockgroup_data.
 
 Only the selected scope is mapped. Panning or zooming does not load more
-blockgroups, and tract aggregation is not provided. Large states can be
-slow to download and render. Supply shp to reuse downloaded boundaries.
+blockgroups, and tract aggregation is not provided. Boundaries are downloaded
+as one state file through tigris and cached for reuse. Generalized cartographic
+boundaries are the default; large states can still take time to render.
+Supply shp to reuse polygons without downloading anything.
 }
 \examples{
 \dontrun{
 map_ejscreen_indicator("pctlowinc", countyfips = "10001")
 map_ejscreen_indicator("pctile.proximity.npl", countyfips = "10001", zoom = 10)
 map_ejscreen_indicator("state.pctile.pctlowinc", ST = "DE")
+map_ejscreen_indicator("pctlowinc", ST = "IL", maptype = "ggplot")
 # Reuse boundaries instead of downloading them again.
 bg <- blockgroupstats[substr(bgfips, 1, 5) == "10001", ]
 polygons <- shapes_from_fips(bg$bgfips)

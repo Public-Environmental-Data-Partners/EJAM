@@ -1,6 +1,6 @@
 
 
-#' Map - points - Create leaflet html widget map of points using EJAM results with EJ stats
+#' Map - Create leaflet html widget map using EJAM results with EJ stats
 #'
 #' Like [mapfast()] but with column_names = "ej"
 #'
@@ -28,8 +28,13 @@ mapfastej <- function(mydf, radius = 3, column_names = 'ej', labels = column_nam
 ############################################################################ #
 
 
-#' Map - points - Create leaflet html widget map of points using table with lat lon
+#' Map - Create leaflet html widget map from ejamit() output or a table of point coordinates, polygons, or fips
 #'
+#' @details Blockgroup FIPS maps explicitly use cached, generalized cartographic
+#'   boundaries for speed. These simplify edges and shorelines and are intended
+#'   for overview maps. For detailed boundaries, supply polygons obtained with
+#'   shapes_from_fips(fips, myservice_blockgroup = "tiger", year = acs_endyear()).
+#'   This display choice does not change the analysis that produced the results.
 #' @param mydf Typically something like the output of ejamit()$results_bysite, but
 #'   can also be the full output of [ejamit()] in which case this uses just the $results_bysite table,
 #'   and in general mydf can be a data.frame or table in [data.table](https://r-datatable.com) format that has a set of
@@ -120,7 +125,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
   ##
   # I think this is ok, since it is just for the popups to work right if mydf was output of analysis but used the long form variable names as headers
   # popup_from_ejscreen() code was written to assume rnames not longnames
-  # so try to accomodate that here if user provided output using long names in general
+  # so try to accommodate that here if user provided output using long names in general
   # popup_from_ejscreen() needs to flexibly allow long format names as input.
   #  app_server already handles this issue by renaming to rnames before calling popup_from_ejscreen()
 
@@ -252,28 +257,6 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
         xok <- TRUE
       }
     }
-    # cat('For analysis and map of shapefile data, you can try something like this:
-    #
-    #       shp <- shapefile_from_any(testshapes_2)
-    #       m <- map_shapes_leaflet(shp)
-    #       # or
-    #       out <- ejamit(shapefile = shp)
-    #       ejam2map(ejamit(shapefile = shp)) # does not draw polygons, since they were not provided
-    #       ejam2map(ejamit(testpoints_10, radius = 10)) # does work since it can show circles at points
-    #       # or
-    #        mapfast(out)
-    #       # or MAYBE
-    #       shp <- ejam2shapefile(out, save = FALSE, shp = shp)
-    #       map_shapes_leaflet(shp, popup = popup_from_ejscreen(out))
-    #
-    #       ')
-
-    # # for now, assume if most of the colnames in mydf are found in ejamit output table, treat popups like from ejamit
-    # if (length(intersect(names(mydf), names(testoutput_ejamit_10pts_1miles$results_overall))) > length(names(mydf)) / 2 ) {
-    #   pop <- popup_from_ejscreen(sf::st_drop_geometry(mydf))
-    # } else {
-    #   pop <- popup_from_any(sf::st_drop_geometry(mydf))
-    # }
   }
 
   ######################################################### #
@@ -347,7 +330,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
     # get boundaries
 
     if (all(ftype %in% 'state')) {
-      # fips <- mydf$ejam_uniq_id
+
       shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
@@ -358,16 +341,11 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
     # get boundaries
 
     if (all(ftype %in% 'county')) {
-      ## maybe could use:
-      # fips <- mydf$ejam_uniq_id
-      ### also see  shapes_counties_from_countyfips()
-      # shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<
-      # x <- map_shapes_leaflet(shp, popup = mypop, color = color)
-      # xok = TRUE
-      # Use resolved per-row colors and the requested popup columns, as for other FIPS types.
-      # mapfastej_counties() remains the separate county choropleth/legend interface.
-      shp <- shapes_from_fips(fips)
+
+      shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
+      # mapfastej_counties() is a separate county choropleth/legend interface.
       xok <- TRUE
     }
     ######################### #
@@ -375,8 +353,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
     # get boundaries
 
     if (all(ftype %in% 'city')) {
-      # fips <- mydf$ejam_uniq_id
-      # shp <- shapes_places_from_placefips(fips)
+
       shp <- shapes_from_fips(fips) #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
@@ -385,7 +362,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
     ######################### #
     # _Tracts ####
     if (all(ftype %in% 'tract')) {
-      # fips <- mydf$ejam_uniq_id
+
       shp <- shapes_from_fips(fips) #  SLOW if many, like > 20  #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
@@ -395,9 +372,9 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
     # _Blockgroups ####
 
     if (all(ftype %in% 'blockgroup')) {
-      # fips <- mydf$ejam_uniq_id
-      # shp <- shapes_blockgroups_from_bgfips(fips)
-      shp <- shapes_from_fips(fips) #  SLOW if many, like > 20  #  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+      # Overview map only: small cached cartographic polygons draw faster.
+      shp <- shapes_from_fips(fips, myservice_blockgroup = "cartographic", year = acs_endyear())
       ## any added buffer via radius parameter would have to be added here ***
       x <- map_shapes_leaflet(shp, popup = mypop, color = color, popup_style = popup_style)
       xok <- TRUE
@@ -407,7 +384,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       #
       # map_blockgroups = function(fips, mypop = NULL) {
       #   #example# fips <- blockgroupstats[ST %in% 'DE', bgfips][1:3]
-      #   shp <- shapes_blockgroups_from_bgfips(fips) #    SLOW if many, like > 20
+      #   shp <- shapes_from_fips(fips) #    SLOW if many, like > 20
       #   # mapview::mapview(shp) # easiest way, but requires mapview attached
       #   bb <- as.vector(sf::st_bbox(shp))
       #   mymap <- leaflet::leaflet() %>%

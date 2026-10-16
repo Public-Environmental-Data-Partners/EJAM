@@ -484,6 +484,33 @@ shp1 <- shapefile_from_any(system.file("testdata/shapes/portland.gdb.zip", packa
 See `map_ejscreen_indicator()` for a quick EJSCREEN-style map of blockgroups in a County or State, color-coded by one indicator, without running an analysis.
 
 
+For blockgroups, `shapes_from_fips()` keeps its existing service default.
+For overview maps of many blockgroups, `myservice_blockgroup = "cartographic"`
+can be much faster: it downloads and caches one small, generalized boundary
+file per State. Edges and shorelines are simplified, so these polygons can
+change area, buffer, or point-in-polygon results. Use `"tiger"` for full boundary
+detail; its larger files take longer to download and draw, but are also cached.
+Neither option needs ACS estimates or a Census API key. These options currently
+apply to blockgroups, not tracts.
+
+```{r blockgroup-boundary-options, eval=FALSE}
+bgfips <- blockgroupstats$bgfips[blockgroupstats$ST == "DE"]
+# Fast overview boundaries
+shp <- shapes_from_fips(bgfips, myservice_blockgroup = "cartographic",
+                        year = acs_endyear())
+# Full-detail boundaries
+shp_detail <- shapes_from_fips(bgfips, myservice_blockgroup = "tiger",
+                               year = acs_endyear())
+
+# Both renderers use the same percentile colors; cb = FALSE retains detail.
+map_ejscreen_indicator("pctlowinc", ST = "DE", maptype = "ggplot")
+map_ejscreen_indicator("pctlowinc", ST = "DE", cb = FALSE)
+```
+
+`mapfast()` also uses cartographic boundaries when given blockgroup FIPS codes.
+Supply `shp_detail` to `mapfast()` when you need detailed edges. These mapping
+choices do not change existing analysis defaults.
+
 ### Counties as the places to compare
 
 You can compare places defined by FIPS code, such as a group of US Counties.

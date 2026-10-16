@@ -498,3 +498,96 @@ test_that("offline type validation precedes connectivity and accepts unusable ro
     expect_true(sf::st_is_empty(shp)[2])
   }
 })
+# Cached state-file blockgroup sources share the legacy row and metadata contract.
+test_that("tigris blockgroups preserve duplicates, missing rows, and multiple states", {
+  skip_if_not_installed("tigris")
+  ids <- c(head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")], 2),
+           head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "34")], 1))
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  calls <- list()
+  local_mocked_bindings(
+    block_groups = function(state, year, cb, ...) {
+      calls[[length(calls)+1L]] <<- list(state=state, year=year, cb=cb)
+      keep <- rev(ids[c(1,3)])
+      keep <- keep[startsWith(keep, state)]
+      sf::st_sf(GEOID=keep, geometry=sf::st_sfc(rep(list(polygon),length(keep)),crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(offline_cat=function(...) stop("unexpected connectivity probe"), .package="EJAM")
+  before <- options(tigris_use_cache=FALSE)
+  on.exit(options(before), add=TRUE)
+  requested <- ids[c(3,1,3,2)]
+  shp <- shapes_from_fips(requested, myservice_blockgroup="cartographic", year=2022)
+  expect_identical(shp$FIPS, requested)
+  expect_equal(shp$SQMI, round(area_sqmi_from_fips(requested), 2))
+  expect_identical(sf::st_is_empty(shp), c(FALSE,FALSE,FALSE,TRUE))
+  expect_identical(vapply(calls, `[[`, character(1), "state"), c("34","10"))
+  expect_true(all(vapply(calls, function(x) x$year == 2022L && x$cb, logical(1))))
+  expect_true(all(c("STATE_ABBR","pop","SQMI","NAME","fipstype") %in% names(shp)))
+  expect_false(getOption("tigris_use_cache"))
+  calls <- list()
+  mixed <- c("10",ids[1],NA_character_,"99",ids[1])
+  shp <- suppressWarnings(shapes_from_fips(mixed, myservice_blockgroup="tiger", year=2023))
+  expect_identical(shp$FIPS, c("10",ids[1],NA_character_,NA_character_,ids[1]))
+  expect_true(all(sf::st_is_empty(shp)[3:4]))
+  expect_identical(calls, list(list(state="10",year=2023L,cb=FALSE)))
+})
+
+test_that("an empty tigris selection returns empty rows with requested FIPS", {
+  skip_if_not_installed("tigris")
+  ids <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")], 2)
+  local_mocked_bindings(
+    block_groups=function(...) sf::st_sf(GEOID=character(),geometry=sf::st_sfc(crs=4269)),
+    .package="tigris"
+  )
+  shp <- shapes_from_fips(ids, myservice_blockgroup="tiger", year=2022)
+  expect_identical(shp$FIPS, ids)
+  expect_true(all(sf::st_is_empty(shp)))
+})
+
+test_that("blockgroup service URLs and custom outFields keep their existing behavior", {
+  id <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")],1)
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  requests <- character()
+  local_mocked_bindings(offline_cat=function(...) FALSE, .package="EJAM")
+  local_mocked_bindings(st_read=function(dsn, ...) {
+    requests <<- c(requests, dsn)
+    sf::st_sf(FIPS=id, CUSTOM=42, geometry=sf::st_sfc(polygon,crs=4326))
+  }, .package="sf")
+  shp <- shapes_from_fips(id)
+  expect_match(requests[1], "USA_Boundaries_2022", fixed=TRUE)
+  shp <- shapes_blockgroups_from_bgfips(id, outFields=c("FIPS","CUSTOM"),
+                                       myservice="https://example.invalid/custom/query")
+  expect_equal(shp$CUSTOM,42)
+  expect_match(requests[2],"https://example.invalid/custom/query",fixed=TRUE)
+  expect_identical(httr2::url_parse(requests[2])$query$outFields,"FIPS,CUSTOM")
+  expect_error(shapes_blockgroups_from_bgfips(id, outFields="CUSTOM", myservice="tiger"),
+               "outFields require a service URL")
+})
+
+test_that("blockgroup ArcGIS batching has no extra request at multiples of 50", {
+  ids <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")],100)
+  batches <- list()
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(st_read=function(dsn, ...) {
+    where <- httr2::url_parse(dsn)$query$where
+    found <- regmatches(where,gregexpr("[0-9]{12}",where))[[1]]
+    batches[[length(batches)+1L]] <<- found
+    sf::st_sf(FIPS=rev(found),geometry=sf::st_sfc(rep(list(polygon),length(found)),crs=4326))
+  }, .package="sf")
+  shp <- shapes_blockgroups_from_bgfips(ids)
+  expect_identical(lengths(batches),c(50L,50L))
+  expect_identical(shp$FIPS,ids)
+})
+test_that("blockgroup area metadata matches aggregation for repeated and unavailable FIPS", {
+  ids <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")],2)
+  requested <- c(ids[2],ids[1],ids[2],"100019999991")
+  shp <- sf::st_sf(FIPS=requested,
+                   geometry=sf::st_sfc(rep(list(sf::st_polygon()),length(requested)),crs=4269))
+  expected <- round(area_sqmi_from_fips(requested),2)
+  shp <- shapefile_addcols(shp,addthese="SQMI")
+  expect_equal(shp$SQMI,expected)
+})

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mapfast.R
 \name{mapfast}
 \alias{mapfast}
-\title{Map - points - Create leaflet html widget map of points using table with lat lon}
+\title{Map - Create leaflet html widget map from ejamit() output or a table of point coordinates, polygons, or fips}
 \usage{
 mapfast(
   mydf,
@@ -74,7 +74,14 @@ plots a map via the leaflet package, with popups with all the columns from mydf,
 and returns html widget
 }
 \description{
-Map - points - Create leaflet html widget map of points using table with lat lon
+Map - Create leaflet html widget map from ejamit() output or a table of point coordinates, polygons, or fips
+}
+\details{
+Blockgroup FIPS maps explicitly use cached, generalized cartographic
+boundaries for speed. These simplify edges and shorelines and are intended
+for overview maps. For detailed boundaries, supply polygons obtained with
+shapes_from_fips(fips, myservice_blockgroup = "tiger", year = acs_endyear()).
+This display choice does not change the analysis that produced the results.
 }
 \examples{
 pts <- testpoints_100

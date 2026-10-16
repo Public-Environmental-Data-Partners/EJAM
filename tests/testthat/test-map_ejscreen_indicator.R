@@ -53,6 +53,11 @@ test_that("state scope, state percentiles, and initial zoom work independently",
   statefips_map <- map_ejscreen_indicator("pctlowinc", ST = "10", blockgroup_data = f$bg,
                                          shp = f$shp, lookup = f$lookup)
   expect_length(indicator_map_layer(statefips_map)[[4]]$fillColor, 3)
+  for (state in list(10, "Delaware", "de")) {
+    alias <- map_ejscreen_indicator(ST = state, blockgroup_data = f$bg,
+                                    shp = f$shp, lookup = f$lookup)
+    expect_length(indicator_map_layer(alias)[[4]]$fillColor, 3)
+  }
   county_map <- map_ejscreen_indicator("pctlowinc", countyfips = "10001", scope = "state",
                                       blockgroup_data = f$bg, shp = f$shp, lookup = lookup)
   expect_length(indicator_map_layer(county_map)[[4]]$fillColor, 2)
@@ -98,7 +103,7 @@ test_that("indicator maps request only selected boundaries and reject bad inputs
   f <- indicator_map_fixture()
   requested <- NULL
   testthat::local_mocked_bindings(
-    shapes_from_fips = function(fips) { requested <<- fips; f$shp },
+    shapes_from_fips = function(fips, myservice_blockgroup, year) { requested <<- fips; f$shp },
     .package = "EJAM"
   )
   map <- map_ejscreen_indicator(countyfips = "10001", blockgroup_data = f$bg, lookup = f$lookup)
@@ -110,8 +115,10 @@ test_that("indicator maps request only selected boundaries and reject bad inputs
   expect_null(requested)
   expect_error(map_ejscreen_indicator(), "exactly one")
   expect_error(map_ejscreen_indicator(countyfips = "10001", ST = "DE"), "exactly one")
-  expect_error(map_ejscreen_indicator(countyfips = 10001), "five-character")
-  expect_error(map_ejscreen_indicator(ST = "ZZ"), "Unknown state")
+  numeric_county <- map_ejscreen_indicator(countyfips = 10001,
+                                          blockgroup_data = f$bg, lookup = f$lookup)
+  expect_s3_class(numeric_county, "leaflet")
+  expect_error(map_ejscreen_indicator(ST = "ZZ"), "ST must be")
   expect_error(map_ejscreen_indicator(countyfips = "10001", zoom = 99), "zoom")
   expect_error(map_ejscreen_indicator("state.pctile.pctlowinc", countyfips = "10001", scope = "national"), "conflicts")
   expect_error(map_ejscreen_indicator(countyfips = "10001", colorbins = c(80, 90, 95)), "from 0 to 100")
@@ -135,18 +142,70 @@ test_that("missing boundaries are reported and remaining values stay aligned", {
   expect_match(indicator_map_layer(map)[[5]], "US percentile: 95", fixed = TRUE)
 })
 
-test_that("boundary requests handle exact multiples of 50 without an extra batch", {
+test_that("boundary downloads use one state file and retain only requested FIPS", {
+  skip_if_not_installed("tigris")
   f <- indicator_map_fixture()
-  bg <- data.frame(bgfips = sprintf("100010000%03d", 1:100), pctlowinc = 0.79)
+  bg <- data.frame(bgfips = head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")], 100), pctlowinc = 0.79)
   calls <- list()
   testthat::local_mocked_bindings(
-    shapes_from_fips = function(fips) {
-      calls[[length(calls) + 1L]] <<- fips
-      sf::st_sf(FIPS = fips, geometry = rep(sf::st_geometry(f$shp)[1], length(fips)))
-    }, .package = "EJAM"
+    block_groups = function(state, year, cb, ...) {
+      calls[[length(calls) + 1L]] <<- list(state = state, year = year, cb = cb)
+      expect_true(getOption("tigris_use_cache"))
+      ids <- c("100030000001", rev(bg$bgfips))
+      sf::st_sf(GEOID = ids, geometry = rep(sf::st_geometry(f$shp)[1], length(ids)))
+    }, .package = "tigris"
   )
-  map <- map_ejscreen_indicator(countyfips = "10001", blockgroup_data = bg, lookup = f$lookup)
-  expect_identical(lengths(calls), c(50L, 50L))
-  expect_identical(unname(unlist(calls)), bg$bgfips)
+  previous_options <- options(tigris_use_cache = FALSE)
+  on.exit(options(previous_options), add = TRUE)
+  map <- map_ejscreen_indicator(countyfips = "10001", blockgroup_data = bg,
+                                lookup = f$lookup, year = 2024)
+  expect_identical(calls, list(list(state = "10", year = 2024L, cb = TRUE)))
+  expect_false(getOption("tigris_use_cache"))
   expect_length(indicator_map_layer(map)[[4]]$fillColor, 100)
+  testthat::local_mocked_bindings(acs_endyear = function() "2022", .package = "EJAM")
+  boundaries <- shapes_blockgroups_from_tigris_bgfips(bg$bgfips, cb = FALSE)
+  expect_identical(calls[[2]], list(state = "10", year = 2022L, cb = FALSE))
+  expect_setequal(boundaries$FIPS, bg$bgfips)
+  expect_false(getOption("tigris_use_cache"))
+})
+
+test_that("ggplot and Leaflet agree at exact cutoffs and for missing values", {
+  withr::local_options(sf_use_s2 = TRUE)
+  f <- indicator_map_fixture()
+  f$bg <- rbind(f$bg, f$bg[1, ])
+  f$shp <- rbind(f$shp, f$shp[1, ])
+  f$bg$bgfips <- sprintf("100010000%03d", 1:5)
+  f$bg$pctlowinc <- c(0.8, 0.9, 0.95, 1, NA_real_)
+  f$shp$FIPS <- rev(f$bg$bgfips)
+  before <- f$bg
+  map <- map_ejscreen_indicator(ST = "DE", blockgroup_data = f$bg,
+                                shp = f$shp, lookup = f$lookup)
+  plot <- map_ejscreen_indicator(ST = "DE", blockgroup_data = f$bg,
+                                 shp = f$shp, lookup = f$lookup, maptype = "ggplot")
+  expect_s3_class(plot, "ggplot")
+  expect_identical(plot$data$bgfips, f$bg$bgfips)
+  expect_equal(plot$data$.map_percentile, c(80, 90, 95, 100, NA_real_))
+  expect_equal(plot$data$pctlowinc, f$bg$pctlowinc)
+  built <- ggplot2::ggplot_build(plot)
+  expect_identical(built$data[[1]]$fill, indicator_map_layer(map)[[4]]$fillColor)
+  scale <- built$plot$scales$get_scales("fill")
+  expect_identical(as.character(scale$get_labels()),
+                    as.character(indicator_map_legend(map)$labels))
+  expect_identical(f$bg, before)
+  expect_equal(sf::st_bbox(plot$data), sf::st_bbox(f$shp))
+})
+
+test_that("boundary helper validates inputs and restores cache options on failure", {
+  skip_if_not_installed("tigris")
+  expect_error(shapes_blockgroups_from_tigris_bgfips(rep("100010401001", 2)), "unique")
+  expect_error(shapes_blockgroups_from_tigris_bgfips("10001"), "twelve-character")
+  expect_error(shapes_blockgroups_from_tigris_bgfips("100010401001", year = "bad"), "year")
+  expect_error(shapes_blockgroups_from_tigris_bgfips("100010401001", cb = NA), "cb")
+  previous_options <- options(tigris_use_cache = FALSE)
+  on.exit(options(previous_options), add = TRUE)
+  testthat::local_mocked_bindings(
+    block_groups = function(...) stop("download failed"), .package = "tigris"
+  )
+  expect_error(shapes_blockgroups_from_tigris_bgfips("100010401001", year = 2024), "download failed")
+  expect_false(getOption("tigris_use_cache"))
 })

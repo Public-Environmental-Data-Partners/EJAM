@@ -206,3 +206,18 @@ test_that("ejam2map keeps per-row colors on the right polygons when rows are dro
   map <- ejam2map(out, shp = shp, color = "pctile.pctlowinc", launch_browser = FALSE)
   expect_identical(mapfast_layer_colors(map, "addPolygons"), c("yellow", "gray", "red"))
 })
+# Mapping blockgroups opts into simplified boundaries without changing analysis.
+test_that("mapfast explicitly chooses cartographic blockgroup boundaries", {
+  ids <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")],2)
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2,byrow=TRUE)))
+  requested <- NULL
+  local_mocked_bindings(shapes_from_fips=function(fips,myservice_blockgroup,year) {
+    requested <<- list(fips=fips,service=myservice_blockgroup,year=year)
+    sf::st_sf(FIPS=fips,geometry=sf::st_sfc(rep(list(polygon),length(fips)),crs=4326))
+  }, .package="EJAM")
+  map <- mapfast(data.frame(ejam_uniq_id=ids,score=c(1,2)),
+                  color="score",launch_browser=FALSE)
+  expect_identical(requested,list(fips=ids,service="cartographic",year=acs_endyear()))
+  expect_s3_class(map,"leaflet")
+})

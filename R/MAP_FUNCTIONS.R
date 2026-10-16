@@ -491,6 +491,10 @@ mapfastej_counties <- function(mydf, colorvarname = "pctile.Demog.Index.Supp",
 #' Map - Blockgroup polygons / boundaries near 1 site - Create leaflet map
 #'
 #' Overlay blockgroups near 1 site, after plot_blocks_nearby(returnmap = TRUE)
+#' @details Uses cached full-detail TIGER/Line blockgroup boundaries for the
+#'   package's ACS vintage. Generalized cartographic boundaries are faster to
+#'   draw but can move edges relative to the displayed block points, so this
+#'   overlay explicitly retains detail.
 #'
 #' @param y  output of [plot_blocks_nearby()] but with returnmap = TRUE
 #'
@@ -526,7 +530,9 @@ map_blockgroups_over_blocks <- function(y) {
 
   bgfips <- bgid_lookup$bgfips[as.character(bgid_lookup$bgid) %in% bgids]
 
-  x <- shapes_blockgroups_from_bgfips(bgfips) # but not for 60+ fips!  SLOW
+  # Retain detailed edges when overlaying Census block points; state caching
+  # avoids repeated queries without simplifying the boundaries.
+  x <- shapes_from_fips(bgfips, myservice_blockgroup = "tiger", year = acs_endyear())
   # add those FIPS shapes to the leaflet htmlwidget map
   mymap <-   y %>%
     leaflet::addGeoJSON(geojsonio::geojson_json(x), color = "green", group = "Blockgroups", data = x) %>%

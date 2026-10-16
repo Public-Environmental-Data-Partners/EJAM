@@ -1,8 +1,9 @@
 #' Map one EJSCREEN indicator at blockgroup resolution
 #'
-#' @description Draw a Leaflet choropleth for one county or state using raw
+#' @md
+#' @description Draw a Leaflet or ggplot choropleth for one county or state using raw
 #'   values already in [blockgroupstats] and percentiles from [lookup_pctile()].
-#'   No EJAM analysis is run. The map includes indicator values, percentiles,
+#'   No EJAM analysis is run. The Leaflet map includes indicator values, percentiles,
 #'   blockgroup FIPS codes, and population (when available) in its popups.
 #' @details Specify exactly one of countyfips or ST. National percentiles are
 #'   the default, even when only one county or state is displayed. State
@@ -12,13 +13,17 @@
 #'   not already present in blockgroup_data.
 #'
 #'   Only the selected scope is mapped. Panning or zooming does not load more
-#'   blockgroups, and tract aggregation is not provided. Large states can be
-#'   slow to download and render. Supply shp to reuse downloaded boundaries.
+#'   blockgroups, and tract aggregation is not provided. Boundaries are downloaded
+#'   as one state file through tigris and cached for reuse. Generalized cartographic
+#'   boundaries are the default; large states can still take time to render.
+#'   Supply shp to reuse polygons without downloading anything.
 #' @param indicator One raw indicator name, such as `"pctlowinc"`,
 #'   `"proximity.npl"`, or `"EJ.DISPARITY.pm.eo"`. A `"pctile."` or
 #'   `"state.pctile."` prefix is also accepted and selects the percentile scope.
-#' @param countyfips One five-character county FIPS code, including leading zeros.
-#' @param ST One state abbreviation or two-character state FIPS code.
+#' @param countyfips One county FIPS code, or a FIPS code whose parent county
+#'   can be resolved by [fips2countyfips()]. Numeric codes are normalized to
+#'   include leading zeros.
+#' @param ST One state abbreviation, state name, or two-digit state FIPS code.
 #' @param zoom Optional initial Leaflet zoom level from 0 to 18. If NULL,
 #'   fit the view to all selected blockgroup polygons.
 #' @param scope `"national"` (default) or `"state"` percentile distribution.
@@ -41,34 +46,51 @@
 #' @param na.color Fill color for missing percentiles, labeled "No data" in
 #'   the legend when needed.
 #' @param fillOpacity Polygon fill opacity between 0 and 1.
-#' @return A Leaflet htmlwidget.
+#' @param maptype Either "leaflet" (default) for an interactive map or "ggplot"
+#'   for a static map using the same percentile colors and legend. zoom is only
+#'   used by Leaflet.
+#' @param year Census boundary year; defaults to [acs_endyear()] to match the
+#'   package's ACS data vintage. Ignored when shp is supplied.
+#' @param cb TRUE (default) for smaller generalized cartographic boundaries;
+#'   FALSE for detailed TIGER/Line boundaries. Generalized boundaries are much
+#'   faster to download and draw, but simplified and clipped along shorelines;
+#'   use them for overview maps, not precise spatial analysis. Both choices
+#'   reuse cached state files. Ignored when shp is supplied.
+#' @return A Leaflet htmlwidget or a ggplot object. The ggplot object's data
+#'   contains the selected raw indicator values and a .map_percentile column.
 #' @seealso [ejam2map()] [mapfastej_counties()] [shapes_from_fips()]
 #' @examples
 #' \dontrun{
 #' map_ejscreen_indicator("pctlowinc", countyfips = "10001")
 #' map_ejscreen_indicator("pctile.proximity.npl", countyfips = "10001", zoom = 10)
 #' map_ejscreen_indicator("state.pctile.pctlowinc", ST = "DE")
+#' map_ejscreen_indicator("pctlowinc", ST = "IL", maptype = "ggplot")
 #' # Reuse boundaries instead of downloading them again.
 #' bg <- blockgroupstats[substr(bgfips, 1, 5) == "10001", ]
 #' polygons <- shapes_from_fips(bg$bgfips)
 #' map_ejscreen_indicator("pm", countyfips = "10001", shp = polygons)
 #' }
 #' @export
+#'
 map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
-                                    ST = NULL, zoom = NULL,
-                                    scope = c("national", "state"),
-                                    blockgroup_data = blockgroupstats, shp = NULL,
-                                    lookup = NULL, index_data = NULL,
-                                    colorbins = c(0, ejscreen_color_defaults()$colorbins, 100),
-                                    colorfills = ejscreen_color_defaults()$colorfills,
-                                    colorlabels = NULL, na.color = "#D3D3D3",
-                                    fillOpacity = 0.7) {
+                                   ST = NULL, zoom = NULL,
+                                   scope = c("national", "state"),
+                                   blockgroup_data = blockgroupstats, shp = NULL,
+                                   lookup = NULL, index_data = NULL,
+                                   colorbins = c(0, ejscreen_color_defaults()$colorbins, 100),
+                                   colorfills = ejscreen_color_defaults()$colorfills,
+                                   colorlabels = NULL, na.color = "#D3D3D3",
+                                   fillOpacity = 0.7,
+                                   maptype = c("leaflet", "ggplot"),
+                                   year = NULL, cb = TRUE) {
+  maptype <- match.arg(maptype)
   if (!is.character(indicator) || length(indicator) != 1L ||
       is.na(indicator) || !nzchar(indicator)) {
     stop("indicator must be one nonempty indicator name", call. = FALSE)
   }
   explicit_scope <- !missing(scope)
   scope <- match.arg(scope)
+  # what indicator to map? ####
   prefix_scope <- if (startsWith(indicator, "state.pctile.")) "state" else
     if (startsWith(indicator, "pctile.")) "national" else NULL
   if (!is.null(prefix_scope)) {
@@ -78,30 +100,41 @@ map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
     scope <- prefix_scope
     indicator <- sub("^(state[.]pctile[.]|pctile[.])", "", indicator)
   }
+  # what County or State? ####
+
   if (is.null(countyfips) == is.null(ST)) {
     stop("Specify exactly one of countyfips or ST", call. = FALSE)
   }
   if (!is.null(countyfips)) {
+    # figure out county
+    countyfips <- fips2countyfips(countyfips)
     if (!is.character(countyfips) || length(countyfips) != 1L ||
         is.na(countyfips) || !grepl("^[0-9]{5}$", countyfips)) {
-      stop("countyfips must be one five-character FIPS code", call. = FALSE)
+      stop("countyfips must be a valid five-character FIPS code or interpretable as such", call. = FALSE)
     }
     prefix <- countyfips
     statefips <- substr(countyfips, 1, 2)
   } else {
-    if (!is.character(ST) || length(ST) != 1L || is.na(ST)) {
-      stop("ST must be one state abbreviation or two-character FIPS code", call. = FALSE)
+    # figure out State
+    statefips <- if (length(ST) == 1L && !is.na(ST) &&
+                     grepl("^[0-9]{2}$", as.character(ST))) {
+      as.character(ST)
+    } else {
+      suppressWarnings(fips_state_from_state_abbrev(ST))
     }
-    statefips <- if (grepl("^[0-9]{2}$", ST)) ST else
-      stateinfo$FIPS.ST[match(toupper(ST), stateinfo$ST)]
+    if (length(statefips) != 1L || is.na(statefips) || !statefips %in% stateinfo$FIPS.ST) {
+      stop("ST must be a valid two-character state abbreviation or a two-character FIPS code or interpretable as such", call. = FALSE)
+    }
     prefix <- statefips
   }
-  ST <- stateinfo$ST[match(statefips, stateinfo$FIPS.ST)]
-  if (is.na(ST)) stop("Unknown state FIPS code or abbreviation", call. = FALSE)
+  ST <- fips2state_abbrev(statefips)
+
+  # zoom level ####
   if (!is.null(zoom) && (!is.numeric(zoom) || length(zoom) != 1L ||
                          !is.finite(zoom) || zoom < 0 || zoom > 18)) {
     stop("zoom must be one number between 0 and 18", call. = FALSE)
   }
+  # colors to use for color-coded bins ####
   if (!is.numeric(fillOpacity) || length(fillOpacity) != 1L ||
       !is.finite(fillOpacity) || fillOpacity < 0 || fillOpacity > 1) {
     stop("fillOpacity must be between 0 and 1", call. = FALSE)
@@ -118,12 +151,14 @@ map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
       defaults$colorlabels
     } else {
       paste0(head(colorbins, -1), "-", ifelse(seq_along(colorfills) == length(colorfills),
-                                           tail(colorbins, -1), paste0("<", tail(colorbins, -1))))
+                                              tail(colorbins, -1), paste0("<", tail(colorbins, -1))))
     }
   }
   if (!is.character(colorlabels) || length(colorlabels) != length(colorfills) || anyNA(colorlabels)) {
     stop("colorlabels must have one label per color bin", call. = FALSE)
   }
+
+  # what blockgroup data to use? ####
   if (!is.data.frame(blockgroup_data) || !"bgfips" %in% names(blockgroup_data)) {
     stop("blockgroup_data must be a table containing bgfips", call. = FALSE)
   }
@@ -133,6 +168,11 @@ map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
   if (anyDuplicated(selected$bgfips) || any(!grepl("^[0-9]{12}$", selected$bgfips))) {
     stop("Selected bgfips must be unique twelve-character FIPS codes", call. = FALSE)
   }
+  # . ###########################################################################
+  # WHAT INDICATOR ?  (state vs US, EJ index vs other, etc.) ####
+
+  ##   RAW vs EJ INDEX ? ####
+
   raw_indicator <- indicator
   if (scope == "state") {
     candidates <- c(paste0("state.", indicator), paste0(indicator, ".State"))
@@ -162,6 +202,9 @@ map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
   if (!is.numeric(selected[[raw_indicator]])) {
     stop("The indicator must contain numeric values", call. = FALSE)
   }
+
+  ## PERCENTILES ? *** ####
+
   if (is.null(lookup)) lookup <- if (scope == "national") usastats else statestats
   lookup_indicator <- if (raw_indicator %in% names(lookup)) raw_indicator else indicator
   zone <- if (scope == "national") "USA" else ST
@@ -171,10 +214,21 @@ map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
   }
   percentiles <- lookup_pctile(selected[[raw_indicator]], lookup_indicator,
                                lookup = lookup, zone = zone, snap_tol = 0)
+  percentile_label <- paste(if (scope == "national") "US" else ST, "percentile")
+
+  # long name of indicator ####
+  label <- fixcolnames(indicator, "r", "long")
+  # . ###########################################################################
+
+  # get polygons ####
+
   if (is.null(shp)) {
-    # Keep each request within the boundary helper's 50-blockgroup batch size.
-    batches <- split(seq_along(selected$bgfips), ceiling(seq_along(selected$bgfips) / 50))
-    shp <- do.call(rbind, lapply(batches, function(i) shapes_from_fips(selected$bgfips[i])))
+    if (!is.logical(cb) || length(cb) != 1L || is.na(cb)) {
+      stop("cb must be TRUE or FALSE", call. = FALSE)
+    }
+    shp <- shapes_from_fips(as.character(selected$bgfips),
+                            myservice_blockgroup = if (cb) "cartographic" else "tiger",
+                            year = if (is.null(year)) acs_endyear() else year)
   }
   if (!inherits(shp, "sf") || is.na(sf::st_crs(shp))) {
     stop("shp must be sf polygons with a known coordinate reference system", call. = FALSE)
@@ -202,12 +256,20 @@ map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
   selected <- selected[available, , drop = FALSE]
   percentiles <- percentiles[available]
   shp <- sf::st_transform(shp[positions[available], ], 4326)
+
+  # use ggplot to draw map ####
+  if (maptype == "ggplot") {
+    return(plot_ejscreen_indicator(shp, selected, percentiles,
+                                   label = label, percentile_label = percentile_label,
+                                   colorbins = colorbins, colorfills = colorfills,
+                                   colorlabels = colorlabels, na.color = na.color,
+                                   fillOpacity = fillOpacity))
+  }
+  # use leaflet to draw map ####
   popup_df <- selected[, intersect(c("bgfips", raw_indicator, "pop"), names(selected)), drop = FALSE]
   formatted_columns <- intersect(names(popup_df), map_headernames$rname)
   if (length(formatted_columns)) popup_df <- format_ejamit_columns(popup_df, nms = formatted_columns)
   popup_df$percentile <- ifelse(is.na(percentiles), "No data", format(round(percentiles, 1), trim = TRUE))
-  label <- fixcolnames(indicator, "r", "long")
-  percentile_label <- paste(if (scope == "national") "US" else ST, "percentile")
   popup_labels <- c(bgfips = "Blockgroup FIPS", pop = "Population", percentile = percentile_label)
   popup_labels[raw_indicator] <- label
   popup <- popup_from_any(popup_df, labels = unname(popup_labels[names(popup_df)]))
@@ -233,3 +295,42 @@ map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
     leaflet::setView(map, mean(bb[c("xmin", "xmax")]), mean(bb[c("ymin", "ymax")]), zoom = zoom)
   }
 }
+
+# Use ggplot instead of leaflet to map an EJSCREEN indicator
+# color-coded by percentiles.
+# Both renderers use the same percentile bins, including exact cutoffs and
+# missing values. Retain the raw indicators in the ggplot object's sf data.
+
+plot_ejscreen_indicator <- function(shp,
+                                    selected,
+                                    percentiles,
+                                    label,
+                                    percentile_label,
+                                    colorbins, colorfills, colorlabels,
+                                    na.color, fillOpacity) {
+
+  plotdata <- sf::st_sf(selected, geometry = sf::st_geometry(shp))
+
+  plotdata$.map_percentile <- percentiles
+  bin <- findInterval(percentiles, colorbins, rightmost.closed = TRUE)
+  bin[is.na(percentiles)] <- length(colorfills) + 1L
+  plotdata$.map_bin <- factor(bin, levels = seq_len(length(colorfills) + anyNA(percentiles)))
+  legend_colors <- unname(pctile2colorhex(head(colorbins, -1), colorbins, colorfills))
+  legend_labels <- colorlabels
+  if (anyNA(percentiles)) {
+    legend_colors <- c(legend_colors, na.color)
+    legend_labels <- c(legend_labels, "No data")
+  }
+
+  ggplot2::ggplot(plotdata,
+                  ggplot2::aes(fill = !!rlang::sym(".map_bin"))) +
+    ggplot2::geom_sf(color = NA, alpha = fillOpacity) +
+    ggplot2::scale_fill_manual(values = legend_colors,
+                               labels = legend_labels,
+                               drop = FALSE,
+                               name = paste0(label, " (", percentile_label, ")")) +
+    ggplot2::coord_sf(datum = NA) +
+    ggplot2::labs(title = label) +
+    ggplot2::theme_void()
+}
+# ########################################################################## #
