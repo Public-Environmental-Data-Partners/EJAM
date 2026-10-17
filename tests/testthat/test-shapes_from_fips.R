@@ -534,6 +534,24 @@ test_that("tigris blockgroups preserve duplicates, missing rows, and multiple st
   expect_identical(calls, list(list(state="10",year=2023L,cb=FALSE)))
 })
 
+test_that("tigris blockgroups default to the ACS data year, not the 2024 places default", {
+  skip_if_not_installed("tigris")
+  id <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")], 1)
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  years <- integer(0)
+  local_mocked_bindings(
+    block_groups = function(state, year, cb, ...) {
+      years <<- c(years, year)
+      sf::st_sf(GEOID=id, geometry=sf::st_sfc(list(polygon), crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(offline_cat=function(...) stop("unexpected connectivity probe"), .package="EJAM")
+  shapes_from_fips(id, myservice_blockgroup="cartographic")
+  shapes_from_fips(id, myservice_blockgroup="cartographic", year=2023)
+  expect_identical(years, c(as.integer(acs_endyear()), 2023L))
+})
+
 test_that("an empty tigris selection returns empty rows with requested FIPS", {
   skip_if_not_installed("tigris")
   ids <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")], 2)

@@ -508,8 +508,9 @@ map_ejscreen_indicator("pctlowinc", ST = "DE", cb = FALSE)
 ```
 
 `mapfast()` also uses cartographic boundaries when given blockgroup FIPS codes.
-Supply `shp_detail` to `mapfast()` when you need detailed edges. These mapping
-choices do not change existing analysis defaults.
+When you need detailed edges, map `shp_detail` with `map_shapes_leaflet()`, or
+pass it as `shp` to `map_ejscreen_indicator()`. These mapping choices do not
+change existing analysis defaults.
 
 ### Counties as the places to compare
 
