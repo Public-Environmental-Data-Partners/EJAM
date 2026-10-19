@@ -1,0 +1,270 @@
+---
+title: "Environmental Indicator Source Data"
+description: "Source files used by EJAM environmental indicator calculations"
+output:
+  rmarkdown::html_vignette:
+    toc: false
+params:
+  external_sources_path: null
+vignette: >
+  %\VignetteIndexEntry{Environmental Indicator Source data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 120
+---
+
+# V4.2024.0 Environmental Indicator Source Data
+
+The tables below identify the source data used in our updated environmental
+indicator calculations. "Data period" identifies the year or years
+that data was collected for each indicator or shared dataset.
+
+## Environmental indicator sources
+
+```{r setup, include=FALSE}
+sample_fips <- "56"
+sample_state_name <- "Wyoming"
+
+document_path <- knitr::current_input(dir = TRUE)
+if (is.null(document_path) || !nzchar(document_path)) {
+  stop("Could not determine the location of this R Markdown document.")
+}
+# current_input(dir = TRUE) returns the full file path, not its directory
+document_dir <- dirname(document_path)
+
+external_sources_path <- params$external_sources_path
+if (is.null(external_sources_path) || !length(external_sources_path) ||
+    is.na(external_sources_path) || !nzchar(external_sources_path)) {
+  external_sources_path <- "external_sources.json"
+}
+if (length(external_sources_path) != 1L) {
+  stop("`external_sources_path` must be a single file path.")
+}
+if (!fs::is_absolute_path(external_sources_path)) {
+  external_sources_path <- file.path(document_dir, external_sources_path)
+}
+external_sources_path <- normalizePath(
+  external_sources_path,
+  winslash = "/",
+  mustWork = TRUE
+)
+
+source_data <- jsonlite::fromJSON(
+  external_sources_path,
+  simplifyVector = FALSE
+)
+
+source_text <- function(value, default = "Not documented") {
+  if (is.null(value) || !length(value)) {
+    return(default)
+  }
+  value <- as.character(value[[1L]])
+  if (is.na(value) || !nzchar(value)) {
+    return(default)
+  }
+  value
+}
+
+escape_text <- function(value) {
+  as.character(htmltools::htmlEscape(value))
+}
+
+escape_attribute <- function(value) {
+  as.character(htmltools::htmlEscape(value, attribute = TRUE))
+}
+
+source_groups <- function(section) {
+  lapply(names(section), function(key) {
+    entry <- section[[key]]
+    label <- source_text(entry$display_name_long, default = "")
+    if (!nzchar(label)) {
+      label <- source_text(entry$display_name_short, default = "")
+    }
+    if (!nzchar(label)) {
+      label <- key
+    }
+
+    sources <- entry$external_sources
+    if (is.null(sources) || !length(sources)) {
+      sources <- list(NULL)
+    }
+
+    list(
+      label = label,
+      provider = source_text(entry$provider),
+      data_period = source_text(entry$data_period),
+      sources = sources
+    )
+  })
+}
+
+resolved_source_url <- function(value) {
+  url <- source_text(value, default = "")
+  if (!nzchar(url)) {
+    return(NULL)
+  }
+
+  has_fips <- grepl("{fips}", url, fixed = TRUE)
+  if (has_fips) {
+    url <- gsub("{fips}", sample_fips, url, fixed = TRUE)
+  }
+  if (!grepl("^https?://[^[:space:]]+$", url, ignore.case = TRUE) ||
+      grepl("\\{[^}]+\\}", url)) {
+    return(NULL)
+  }
+  host <- tolower(sub("^https?://([^/?#:]+).*$", "\\1", url, ignore.case = TRUE))
+  api_host <- if (startsWith(host, "api.")) host else NULL
+  list(url = url, has_fips = has_fips, api_host = api_host)
+}
+
+format_source_table <- function(groups, table_type) {
+  if (identical(table_type, "indicator")) {
+    columns <- c("Indicator", "Provider", "Data period", "Source file")
+    column_ids <- c("indicator", "provider", "period", "file")
+    caption <- "Environmental indicator source files"
+  } else {
+    columns <- c(
+      "Dataset", "Provider", "Data period",
+      "Source file or filename pattern", "Download link"
+    )
+    column_ids <- c("dataset", "provider", "period", "file", "example")
+    caption <- "Shared data source files"
+  }
+
+  column_headers <- paste0(
+    '<th scope="col" id="', column_ids, '-column">',
+    vapply(columns, escape_text, character(1)),
+    "</th>",
+    collapse = ""
+  )
+
+  body_rows <- unlist(lapply(seq_along(groups), function(group_index) {
+    group <- groups[[group_index]]
+    source_count <- length(group$sources)
+    group_id <- paste0(table_type, "-group-", group_index)
+    row_headers <- paste0(group_id, "-", c("label", "provider", "period"))
+    parent_values <- c(group$label, group$provider, group$data_period)
+    parent_cells <- paste0(
+      '<th scope="rowgroup" rowspan="', source_count,
+      '" id="', row_headers, '" headers="',
+      column_ids[seq_len(3L)], '-column">',
+      vapply(parent_values, escape_text, character(1)),
+      "</th>",
+      collapse = ""
+    )
+
+    group_rows <- unlist(lapply(seq_along(group$sources), function(source_index) {
+      source <- group$sources[[source_index]]
+      no_sources <- is.null(source)
+      filename <- if (no_sources) {
+        "Source files not yet documented"
+      } else {
+        source_text(source$file_name)
+      }
+      link <- if (no_sources) NULL else resolved_source_url(source$source_url)
+
+      if (identical(table_type, "indicator")) {
+        source_cell <- if (is.null(link)) {
+          "Link not available"
+        } else if (!is.null(link$api_host)) {
+          paste0(
+            escape_text(filename), "<br>",
+            escape_text(paste("Download via appropriate api call to", link$api_host))
+          )
+        } else {
+          paste0(
+            '<a href="', escape_attribute(link$url), '">',
+            escape_text(filename), "</a>"
+          )
+        }
+        source_cell <- paste0(
+          '<td headers="file-column ', paste(row_headers, collapse = " "),
+          '">', source_cell, "</td>"
+        )
+      } else {
+        source_cell <- paste0(
+          '<td headers="file-column ', paste(row_headers, collapse = " "),
+          '"><code>', escape_text(filename), "</code></td>"
+        )
+        link_text <- if (is.null(link)) {
+          "Link not available"
+        } else if (!is.null(link$api_host)) {
+          paste("Download via a call to", link$api_host)
+        } else if (link$has_fips) {
+          paste("Sample state download")
+        } else {
+          "Download"
+        }
+        example_cell <- if (is.null(link) || !is.null(link$api_host)) {
+          paste0(
+            '<td headers="example-column ',
+            paste(row_headers, collapse = " "),
+            '">', escape_text(link_text), "</td>"
+          )
+        } else {
+          paste0(
+            '<td headers="example-column ',
+            paste(row_headers, collapse = " "),
+            '"><a href="', escape_attribute(link$url), '">',
+            escape_text(link_text), "</a></td>"
+          )
+        }
+        source_cell <- paste0(source_cell, example_cell)
+      }
+
+      group_cells <- if (source_index == 1L) parent_cells else ""
+      paste0(
+        "<tr>", group_cells, source_cell, "</tr>"
+      )
+    }), use.names = FALSE)
+    paste0("<tbody>", paste0(group_rows, collapse = ""), "</tbody>")
+  }), use.names = FALSE)
+
+  style <- paste0(
+    "<style>",
+    ".source-data-table-wrapper{max-width:100%;overflow-x:auto;}",
+    ".source-data-table{width:100%;min-width:38rem;border-collapse:collapse;}",
+    ".source-data-table th,.source-data-table td{border:1px solid #b8b8b8;",
+    "padding:.45rem .6rem;text-align:left;vertical-align:top;",
+    "overflow-wrap:anywhere;word-break:break-word;}",
+    ".source-data-table th{background:#f2f2f2;}",
+    ".source-data-table code{white-space:normal;overflow-wrap:anywhere;}",
+    "</style>"
+  )
+
+  paste0(
+    style,
+    '<div class="source-data-table-wrapper"><table class="source-data-table">',
+    "<caption>", escape_text(caption), "</caption>",
+    "<thead><tr>", column_headers, "</tr></thead>",
+    paste0(body_rows, collapse = ""),
+    "</table></div>"
+  )
+}
+```
+
+```{r indicator-sources, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+knitr::asis_output(
+  format_source_table(source_groups(source_data$indicators), "indicator")
+)
+```
+
+## Shared data sources
+
+These datasets support processing across the project. Provider and data
+period describe each shared dataset as a whole; individual source files
+may represent different years or come from different providers.
+
+State-specific filenames contain `{fips}`, a placeholder for the
+two-digit state FIPS code. Example links currently use **56 (Wyoming)**.
+The population-data example returns a Census API response.
+
+Links point to external providers and may change or become unavailable.
+
+```{r shared-sources, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+knitr::asis_output(
+  format_source_table(source_groups(source_data$shared), "shared")
+)
+```

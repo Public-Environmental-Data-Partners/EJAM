@@ -46,6 +46,7 @@ articles:
   - overview-environmental-indicators-ejscreen
   - env-indicators/ejscreen-indicators-overview-ozone
   - env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25
+  - env-indicators/indicator-source-data
 - title: The EJAM Web App
   desc: Overview for EJAM Users
   navbar: Overview for EJAM Users
