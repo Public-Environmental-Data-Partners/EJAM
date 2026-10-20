@@ -257,7 +257,7 @@ testcases_each_fipstype <- function() {
       states  = f5
     ),
     `1 of valid fips lacks geom` = list(       # i = 2
-      cities = c(f3, "4273072")
+      cities = c(f3, "3600000") # "County Subdivisions not defined": never has a boundary
     ),
     `1 noncity + 1 city` = list(       # i = 3
       cities_counties = c(f3[1], f4[1])
@@ -502,8 +502,8 @@ test_that("getblocksnearby_from_fips() _cityshape case, output has NA rows, sort
   # getblocksnearby_from_fips_cityshape() is used
 
   # ONE SORT OF VALID ROW- FIPS IS REAL BUT CANNOT GET POLYGONS:
-  ## cannot obtain shapefile for "4273072" so shape_from_fips() returns NA row for that one, empty polygon
-  x <- c("4273072", "1332412", "3920212", "2966134", "4272168")
+  ## cannot obtain shapefile for "3600000" ("County Subdivisions not defined", in censusplaces but not a real place) so shape_from_fips() returns NA row for that one, empty polygon
+  x <- c("3600000", "1332412", "3920212", "2966134", "4272168")
   # AND ONE INVALID ROW:
   x[5] <- NA
   inputfips <- x
@@ -528,7 +528,7 @@ test_that("getblocksnearby_from_fips() _cityshape case, output has NA rows, sort
 test_that("getblocksnearby_from_fips() returns NA, handles mix of city & noncity FIPS", {
 
   inputfips = c("061090011001", # bg
-                "4273072",# city  lacks bounds available
+                "3600000",# in censusplaces but lacks bounds ("County Subdivisions not defined")
                 "1332412", "3920212", # cities
                 "530530723132" , NA, NA, "240338052021", "390490095901", # bgs AND 2 fips are given as NA
                 "99") # Totally INVALID FIPS code but not NA value
@@ -540,7 +540,7 @@ test_that("getblocksnearby_from_fips() returns NA, handles mix of city & noncity
 
   expect_false(99 %in% unique(s2b$fips))
   outputfips <- unique(s2b$fips)
-  expect_equal(outputfips, inputfips[fips_valid(inputfips) & !(inputfips %in% "4273072")])
+  expect_equal(outputfips, inputfips[fips_valid(inputfips) & !(inputfips %in% "3600000")])
 
   expect_true(NROW(s2b) > 3 * length(inputfips)) # at least 3 blocks per fips on avg
   expect_equal(unique(s2b$distance), 0)

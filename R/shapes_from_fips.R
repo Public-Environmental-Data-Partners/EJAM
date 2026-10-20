@@ -984,6 +984,11 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #' Get shapefiles/ boundaries of census places like cities
 #'
 #' @param fips vector of 7-digit City/town/CDP codes as in the fips column of the [censusplaces] dataset
+#' @details Codes not found in the Census places file are looked up in the
+#'   county subdivisions file for the same year. Many towns and townships,
+#'   especially in New England, NY, NJ, PA, and the Midwest, are county
+#'   subdivisions rather than Census places. A warning names any valid code
+#'   that still has no boundary.
 #' @param myservice only 'tiger' is implemented as source of boundaries, using the tigris package
 #' @param year Boundary year for [tigris::places()]; NULL (the default) uses
 #'   [acs_endyear()], matching [shapes_from_fips()].
@@ -1036,11 +1041,34 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL)
   if ("GEOID" %in% names(shp) && !("FIPS" %in% names(shp))) {
     shp$FIPS <- shp$GEOID
   }
+
+  ## towns and townships: county subdivisions ####
+  # Many entries in censusplaces, especially in New England, NY, NJ, PA, and the
+  # Midwest, are county subdivisions (minor civil divisions), not Census places,
+  # so they are not in the places file. Look up any still-missing codes there (#672).
+  missing_fips <- setdiff(unique(validfips), shp$FIPS)
+  if (length(missing_fips) > 0) {
+    cousub <- shapes_cousub_from_placefips(missing_fips, year = year)
+    if (NROW(cousub) > 0) {
+      common <- intersect(c("NAME", "NAMELSAD", "FIPS"), names(shp))
+      cousub <- sf::st_transform(cousub, sf::st_crs(shp))
+      shp <- rbind(shp[, common], cousub[, common])
+    }
+  }
   ## ensure original rows ####
   # original sort order, and ensure NROW(shp) output is same as length(fips) input
   # retain only 1 row per input fips (even if invalid FIPS or valid FIPS lacking downloaded boundaries)
   shp <- shp[match(fips, shp$FIPS), ]
   shp$FIPS <- fips # now include the original fips in output even for rows that came back NA / empty polygon
+
+  # say which valid places still have no boundary, instead of silently returning empty polygons
+  noboundary <- unique(fips[ok & sf::st_is_empty(shp)])
+  if (length(noboundary) > 0) {
+    warning("No boundaries found for ", length(noboundary), " place(s) in the ", year,
+            " Census places or county subdivisions files: ",
+            paste(head(noboundary, 10), collapse = ", "),
+            if (length(noboundary) > 10) ", ..." else "")
+  }
 
   shp <- shapefile_dropcols(shp)
   shp <- shapefile_addcols(shp)
@@ -1048,6 +1076,35 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL)
   rownames(shp) <- NULL
   return(shp)
 }
+
+# Towns and townships that are county subdivisions (minor civil divisions), not
+# Census places. Their censusplaces code is state FIPS + COUSUBFP, which is
+# unique within a state (#672). A subdivision that spans counties has one row
+# per county in the Census file, so its pieces are merged into one shape.
+shapes_cousub_from_placefips <- function(fips, year) {
+  pieces <- lapply(unique(substr(fips, 1, 2)), function(stfips) {
+    cs <- tryCatch(tigris::county_subdivisions(stfips, year = year, progress_bar = FALSE),
+                   error = function(e) NULL)
+    if (!inherits(cs, "sf") || !all(c("STATEFP", "COUSUBFP") %in% names(cs))) return(NULL)
+    # COUSUBFP 00000 is Census's "County subdivisions not defined" (mostly water),
+    # not a real town, even though censusplaces lists codes like 3600000.
+    cs <- cs[!cs$COUSUBFP %in% "00000", ]
+    id <- paste0(cs$STATEFP, cs$COUSUBFP)
+    ids <- intersect(unique(fips), id)
+    if (length(ids) == 0) return(NULL)
+    geoms <- lapply(ids, function(x) {
+      g <- sf::st_geometry(cs)[id == x]
+      if (length(g) == 1L) g else tryCatch(sf::st_union(g), error = function(e) sf::st_combine(g))
+    })
+    first <- match(ids, id)
+    sf::st_sf(NAME = cs$NAME[first], NAMELSAD = cs$NAMELSAD[first], FIPS = ids,
+              geometry = do.call(c, geoms))
+  })
+  pieces <- Filter(Negate(is.null), pieces)
+  if (length(pieces) == 0) return(NULL)
+  do.call(rbind, pieces)
+}
+####################################################### #
 ####################################################### #
 
 ## NOT USED

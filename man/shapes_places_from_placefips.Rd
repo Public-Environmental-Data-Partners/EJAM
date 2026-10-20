@@ -20,6 +20,13 @@ spatial data.frame for mapping
 \description{
 Get shapefiles/ boundaries of census places like cities
 }
+\details{
+Codes not found in the Census places file are looked up in the
+county subdivisions file for the same year. Many towns and townships,
+especially in New England, NY, NJ, PA, and the Midwest, are county
+subdivisions rather than Census places. A warning names any valid code
+that still has no boundary.
+}
 \seealso{
 \code{\link[=shapes_from_fips]{shapes_from_fips()}}
 }
