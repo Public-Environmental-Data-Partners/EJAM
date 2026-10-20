@@ -500,6 +500,14 @@ to analyze and can have newer boundaries than the demographic data overlaid
 on them. Set an explicit year, such as `year = 2024`, for a particular vintage.
 The verified places default is updated in EJAM when a newer release is checked;
 it does not probe the network or rely on the installed tigris default.
+Newer boundaries can change city analysis results even before demographic data
+are updated. If a requested place has no boundary in the selected vintage,
+EJAM warns with its FIPS code and the year, and preserves its row with empty
+geometry. An explicit older year can be used when appropriate; EJAM does not
+silently substitute another vintage.
+
+The v4 data update must also review/rebuild `censusplaces` against the selected
+places vintage, so place-name selection and FIPS validation reflect that release.
 
 Built-in county/state boundaries and service URLs retain their own vintage;
 these must match the release's demographic geography when the data are updated.

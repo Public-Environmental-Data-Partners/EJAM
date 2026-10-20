@@ -22,6 +22,10 @@ spatial data.frame for mapping
 \description{
 Get shapefiles/ boundaries of census places like cities
 }
+\details{
+Requested places without a boundary warn with their FIPS codes and
+year. Their rows retain empty geometry; no older vintage is substituted.
+}
 \seealso{
 \code{\link[=shapes_from_fips]{shapes_from_fips()}}
 }

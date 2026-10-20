@@ -640,7 +640,10 @@ test_that("places use the verified latest vintage unless an explicit year is sup
     expect_identical(tail(shp$FIPS, 1), id)
     expect_false(tail(sf::st_is_empty(shp), 1))
   }
-  expect_equal(requested_years, c(2026, 2026, 2023, 2026, 2026, 2026, 2023, 2026, 2026, 2023))
+  default_year <- shapes_places_default_year()
+  expect_equal(requested_years, c(default_year, default_year, 2023,
+                                default_year, default_year, default_year, 2023,
+                                default_year, default_year, 2023))
   expect_identical(getOption("tigris_year"), 2024)
 })
 
@@ -669,7 +672,7 @@ test_that("mixed places and blockgroups keep independent default vintages", {
   expect_identical(shp$FIPS, ids)
   expect_false(any(sf::st_is_empty(shp)))
   expect_identical(calls, list(list(type="blockgroup", year=2024L),
-                               list(type="place", year=2026L)))
+                               list(type="place", year=shapes_places_default_year())))
   calls <- list()
   shapes_from_fips(ids, myservice_blockgroup="tiger", year=2023)
   expect_identical(calls, list(list(type="blockgroup", year=2023L),
@@ -692,4 +695,65 @@ test_that("county downloads retain the ACS vintage independently of places", {
   expect_identical(shp$FIPS, "10001")
   expect_false(sf::st_is_empty(shp))
   expect_equal(requested_year, 2022)
+})
+
+test_that("missing or empty place boundaries warn without losing requested rows", {
+  skip_if_not_installed("tigris")
+  ids <- c("3669441", "3651000", "3611000", "3669441")
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(places=function(state, year, ...) {
+    if (year == 2022) {
+      return(sf::st_sf(GEOID=unique(ids),
+                      geometry=sf::st_sfc(polygon, polygon, polygon, crs=4269)))
+    }
+    sf::st_sf(GEOID=c("3651000", "3611000"),
+              geometry=sf::st_sfc(polygon, sf::st_polygon(), crs=4269))
+  }, .package="tigris")
+  local_mocked_bindings(offline_cat=function(...) FALSE,
+                        fips_place_from_placename=function(...) ids,
+                        .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  warning_text <- paste0("No place boundary found for FIPS 3669441, 3611000 in TIGER/Line ",
+                         shapes_places_default_year())
+  for (run in list(function() shapes_places_from_placefips(ids),
+                   function() shapes_from_fips(ids),
+                   function() shapes_from_fips(ids, allow_multiple_fips_types=FALSE),
+                   function() shapes_places_from_placenames("mock places"))) {
+    expect_warning(shp <- run(), warning_text, fixed=TRUE)
+    expect_identical(shp$FIPS, ids)
+    expect_identical(sf::st_is_empty(shp), c(TRUE, FALSE, TRUE, TRUE))
+  }
+  expect_no_warning(older <- shapes_from_fips(ids, year=2022))
+  expect_identical(older$FIPS, ids)
+  expect_false(any(sf::st_is_empty(older)))
+  expect_warning(missing <- shapes_places_from_placefips(rep(ids[1], 2)),
+                            paste0("FIPS 3669441 in TIGER/Line ", shapes_places_default_year()),
+                            fixed=TRUE)
+  expect_identical(missing$FIPS, rep(ids[1], 2))
+  expect_true(all(sf::st_is_empty(missing)))
+})
+
+test_that("missing place warnings identify explicit years and exclude invalid FIPS", {
+  skip_if_not_installed("tigris")
+  ids <- c("3669441", "3651000", "9999999")
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(places=function(state, year, ...) {
+    expect_equal(year, 2023)
+    sf::st_sf(GEOID="3651000", geometry=sf::st_sfc(polygon, crs=4269))
+  }, .package="tigris")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  warnings <- character()
+  shp <- withCallingHandlers(shapes_places_from_placefips(ids, year=2023),
+    warning=function(w) {
+      warnings <<- c(warnings, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    })
+  boundary_warning <- warnings[startsWith(warnings, "No place boundary found")]
+  expect_length(boundary_warning, 1)
+  expect_match(boundary_warning, "FIPS 3669441 in TIGER/Line 2023", fixed=TRUE)
+  expect_false(grepl("9999999", boundary_warning, fixed=TRUE))
+  expect_identical(shp$FIPS, c(ids[1:2], NA_character_))
+  expect_identical(sf::st_is_empty(shp), c(TRUE, FALSE, TRUE))
 })

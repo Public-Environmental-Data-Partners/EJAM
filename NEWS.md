@@ -43,6 +43,9 @@ The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), 
   to select the latest TIGER/Line places vintage verified by EJAM (currently 2026)
   for cities/towns/CDPs, while tigris blockgroups continue to use `acs_endyear()`.
   Place boundaries can be newer than the demographic data used to analyze them.
+  City analysis results may therefore differ even before the demographic data change.
+  Requested places without a boundary now warn with their FIPS codes and the
+  boundary year, while retaining empty geometry in the requested row order.
   Use an explicit year, such as `year = 2024`, to reproduce a particular vintage.
   Existing boundary-service URLs, built-in county/state boundaries, county
   download years, and the Census 2020 block data are unchanged.

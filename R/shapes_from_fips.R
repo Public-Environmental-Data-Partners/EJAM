@@ -41,6 +41,8 @@
 #'   and must be updated with the release's demographic geography.
 #'   Service URLs determine their own vintage;
 #'   year does not change the vintage embedded in a URL.
+#'   Requested places without a boundary warn with their FIPS codes and year;
+#'   their rows retain empty geometry, without substituting another vintage.
 #' @details
 #'  Results follow the input FIPS order, including duplicates. Empty geometry
 #'  rows preserve positional alignment for invalid inputs and for valid FIPS
@@ -994,6 +996,8 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #'   the latest TIGER/Line places vintage verified by EJAM (currently 2026),
 #'   independently of [acs_endyear()] and the installed tigris default.
 #'   Set an explicit year to reproduce a particular vintage.
+#' @details Requested places without a boundary warn with their FIPS codes and
+#'   year. Their rows retain empty geometry; no older vintage is substituted.
 #' @seealso [shapes_from_fips()]
 #' @return spatial data.frame for mapping
 #'
@@ -1049,6 +1053,8 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL)
   shp <- shp[match(fips, shp$FIPS), ]
   shp$FIPS <- fips # now include the original fips in output even for rows that came back NA / empty polygon
 
+  shapes_warn_missing_place_boundaries(shp[ok, ], fips[ok], year)
+
   shp <- shapefile_dropcols(shp)
   shp <- shapefile_addcols(shp)
   shp <- shapefile_sortcols(shp)
@@ -1064,6 +1070,17 @@ shapes_places_default_year <- function() {
   # Pin the verified vintage rather than guessing from Sys.Date(), probing the
   # network for each call, or relying on an older installed tigris default.
   2026L
+}
+
+shapes_warn_missing_place_boundaries <- function(shp, fips, year) {
+  empty <- sf::st_is_empty(shp)
+  missing_fips <- unique(fips[is.na(empty) | empty])
+  if (length(missing_fips)) {
+    warning("No place boundary found for FIPS ", paste(missing_fips, collapse=", "),
+            " in TIGER/Line ", year, ". Returning empty geometry for these places; ",
+            "use an explicit older year if appropriate.", call.=FALSE)
+  }
+  invisible(NULL)
 }
 
 ## NOT USED
@@ -1099,6 +1116,8 @@ shapes_places_from_placenames <- function(place_st, year = NULL) {
 
   tp = tigris::places(unique(st), year = year)  # DOWNLOAD THE BOUNDARIES of all places in an ENTIRE STATE, for EACH STATE REQUIRED HERE
   shp = tp[match(fips, tp$GEOID), ] # use FIPS of each place to get boundaries
+  shp$FIPS <- fips
+  shapes_warn_missing_place_boundaries(shp, fips, year)
 
   shp <- shapefile_dropcols(shp)
   shp <- shapefile_addcols(shp)

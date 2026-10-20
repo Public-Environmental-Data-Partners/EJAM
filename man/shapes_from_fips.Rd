@@ -56,7 +56,9 @@ County downloads continue to use \code{\link[=acs_endyear]{acs_endyear()}}; buil
 boundaries and tract/blockgroup service URLs keep their supplied vintage
 and must be updated with the release's demographic geography.
 Service URLs determine their own vintage;
-year does not change the vintage embedded in a URL.}
+year does not change the vintage embedded in a URL.
+Requested places without a boundary warn with their FIPS codes and year;
+their rows retain empty geometry, without substituting another vintage.}
 }
 \value{
 spatial data.frame with one row per fips (assuming any fips are valid)
