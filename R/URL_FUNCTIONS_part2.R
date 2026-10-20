@@ -2048,7 +2048,11 @@ url_github_preview = function(ghurl = NULL,
 #' utility to get URL of .pdf of EJSCREEN Technical Documentation
 #'
 #' @return URL string
-#'
+#' @deprecated As of v4.2024.0, we've moved away from pointing users to our
+#'   github version of this document and back to the one EPA has persisted.
+#'   We hope to gradually replace all the content of the historical doc with 
+#'   updates of our own and don't want any confusion about who was responsible
+#'   for producing the old contents.
 #' @export
 #'
 url_ejscreentechdoc = function() {
