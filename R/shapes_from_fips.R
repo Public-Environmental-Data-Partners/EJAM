@@ -30,11 +30,11 @@
 #'   "cartographic" County bounds are served from that built-in dataset rather than
 #'   downloaded, falling back to downloading only for any FIPS not found there.
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
-#' @param year Boundary year for [tigris::places()] (default 2024) and for
+#' @param year Boundary year for [tigris::places()] (e.g., 2024) and for
 #'   blockgroups when selecting "cartographic" or "tiger". If year is not
 #'   specified, those blockgroups use [acs_endyear()], the year of the package's
-#'   ACS data, not the 2024 default for places. Service URLs determine their own
-#'   vintage; year does not change the vintage embedded in a URL.
+#'   ACS data. Service URLs determine their own vintage;
+#'   year does not change the vintage embedded in a URL.
 #' @details
 #'  Results follow the input FIPS order, including duplicates. Empty geometry
 #'  rows preserve positional alignment for invalid inputs and for valid FIPS
@@ -988,14 +988,15 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #'
 #' @param fips vector of 7-digit City/town/CDP codes as in the fips column of the [censusplaces] dataset
 #' @param myservice only 'tiger' is implemented as source of boundaries, using the tigris package
-#' @param year for [tigris::places()]
+#' @param year for [tigris::places()], defaulting to [acsendyear()]
 #' @seealso [shapes_from_fips()]
 #' @return spatial data.frame for mapping
 #'
 #' @keywords internal
 #'
-shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = 2024) {
+shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL) {
 
+  if (is.null(year)) {year <- acsendyear()}
   expectedtype <- 'city'
 
   # handle invalid fips ####
