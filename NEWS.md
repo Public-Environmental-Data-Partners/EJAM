@@ -40,9 +40,12 @@ The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), 
 ## New Features for R users (not in web app yet) since October 2026
 
 - `shapes_from_fips()` and its place-boundary helpers now use `year = NULL`
-  to select `acs_endyear()` for downloaded place and tigris blockgroup boundaries.
-  Places previously defaulted to 2024; use `year = 2024` to retain that vintage.
-  Existing boundary-service URLs and built-in county/state boundaries are unchanged.
+  to select the latest TIGER/Line places vintage verified by EJAM (currently 2026)
+  for cities/towns/CDPs, while tigris blockgroups continue to use `acs_endyear()`.
+  Place boundaries can be newer than the demographic data used to analyze them.
+  Use an explicit year, such as `year = 2024`, to reproduce a particular vintage.
+  Existing boundary-service URLs, built-in county/state boundaries, county
+  download years, and the Census 2020 block data are unchanged.
 
 * API zipcode analysis:
   * The API (in EJAM-API and mirrored in EJAM) now handles `zip` or `zipcode`

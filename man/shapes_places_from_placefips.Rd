@@ -12,7 +12,9 @@ shapes_places_from_placefips(fips, myservice = "tiger", year = NULL)
 \item{myservice}{only 'tiger' is implemented as source of boundaries, using the tigris package}
 
 \item{year}{Boundary year for \code{\link[tigris:places]{tigris::places()}}; NULL (the default) uses
-\code{\link[=acs_endyear]{acs_endyear()}}, matching \code{\link[=shapes_from_fips]{shapes_from_fips()}}.}
+the latest TIGER/Line places vintage verified by EJAM (currently 2026),
+independently of \code{\link[=acs_endyear]{acs_endyear()}} and the installed tigris default.
+Set an explicit year to reproduce a particular vintage.}
 }
 \value{
 spatial data.frame for mapping

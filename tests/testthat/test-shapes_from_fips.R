@@ -610,7 +610,7 @@ test_that("blockgroup area metadata matches aggregation for repeated and unavail
   expect_equal(shp$SQMI,expected)
 })
 
-test_that("places use the ACS year consistently unless an explicit year is supplied", {
+test_that("places use the verified latest vintage unless an explicit year is supplied", {
   skip_if_not_installed("tigris")
   id <- fipslist$cityfips[1]
   polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
@@ -626,6 +626,7 @@ test_that("places use the ACS year consistently unless an explicit year is suppl
                         fips_place_from_placename=function(...) id,
                         offline_cat=function(...) FALSE, .package="EJAM")
   withr::local_envvar(CENSUS_API_KEY="mock-key")
+  withr::local_options(tigris_year=2024)
   for (shp in list(shapes_places_from_placefips(id),
                    shapes_places_from_placefips(id, year=NULL),
                    shapes_places_from_placefips(id, year=2023),
@@ -639,5 +640,56 @@ test_that("places use the ACS year consistently unless an explicit year is suppl
     expect_identical(tail(shp$FIPS, 1), id)
     expect_false(tail(sf::st_is_empty(shp), 1))
   }
-  expect_equal(requested_years, c(2022, 2022, 2023, 2022, 2022, 2022, 2023, 2022, 2022, 2023))
+  expect_equal(requested_years, c(2026, 2026, 2023, 2026, 2026, 2026, 2023, 2026, 2026, 2023))
+  expect_identical(getOption("tigris_year"), 2024)
+})
+
+test_that("mixed places and blockgroups keep independent default vintages", {
+  skip_if_not_installed("tigris")
+  place <- fipslist$cityfips[1]
+  bg <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")], 1)
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  calls <- list()
+  local_mocked_bindings(
+    places=function(state, year, ...) {
+      calls[[length(calls)+1L]] <<- list(type="place", year=as.integer(year))
+      sf::st_sf(GEOID=place, geometry=sf::st_sfc(polygon, crs=4269))
+    },
+    block_groups=function(state, year, cb, ...) {
+      calls[[length(calls)+1L]] <<- list(type="blockgroup", year=as.integer(year))
+      sf::st_sf(GEOID=bg, geometry=sf::st_sfc(polygon, crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(acs_endyear=function(...) "2024",
+                        offline_cat=function(...) FALSE, .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  ids <- c(place, bg, place)
+  shp <- shapes_from_fips(ids, myservice_blockgroup="cartographic")
+  expect_identical(shp$FIPS, ids)
+  expect_false(any(sf::st_is_empty(shp)))
+  expect_identical(calls, list(list(type="blockgroup", year=2024L),
+                               list(type="place", year=2026L)))
+  calls <- list()
+  shapes_from_fips(ids, myservice_blockgroup="tiger", year=2023)
+  expect_identical(calls, list(list(type="blockgroup", year=2023L),
+                               list(type="place", year=2023L)))
+})
+
+test_that("county downloads retain the ACS vintage independently of places", {
+  skip_if_not_installed("tidycensus")
+  requested_year <- NULL
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(get_acs=function(year, ...) {
+    requested_year <<- year
+    sf::st_sf(GEOID="10001", geometry=sf::st_sfc(polygon, crs=4269))
+  }, .package="tidycensus")
+  local_mocked_bindings(acs_endyear=function(...) "2022",
+                        offline_cat=function(...) FALSE, .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  shp <- shapes_from_fips("10001", myservice_county="tiger")
+  expect_identical(shp$FIPS, "10001")
+  expect_false(sf::st_is_empty(shp))
+  expect_equal(requested_year, 2022)
 })

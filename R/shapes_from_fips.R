@@ -31,9 +31,14 @@
 #'   downloaded, falling back to downloading only for any FIPS not found there.
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
 #' @param year Boundary year for [tigris::places()] and for blockgroups when
-#'   selecting "cartographic" or "tiger". NULL (the default) uses
-#'   [acs_endyear()], the year of the package's ACS data, for both places and
-#'   those blockgroups. Specify a year explicitly to use another vintage.
+#'   selecting "cartographic" or "tiger". NULL (the default) uses the latest
+#'   TIGER/Line places vintage verified by EJAM (currently 2026) for places,
+#'   and [acs_endyear()] for those blockgroups. Places define areas to analyze
+#'   and need not share the vintage of the demographic data overlaid on them.
+#'   Specify a year explicitly to use another vintage for these downloads.
+#'   County downloads continue to use [acs_endyear()]; built-in county/state
+#'   boundaries and tract/blockgroup service URLs keep their supplied vintage
+#'   and must be updated with the release's demographic geography.
 #'   Service URLs determine their own vintage;
 #'   year does not change the vintage embedded in a URL.
 #' @details
@@ -986,7 +991,9 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #' @param fips vector of 7-digit City/town/CDP codes as in the fips column of the [censusplaces] dataset
 #' @param myservice only 'tiger' is implemented as source of boundaries, using the tigris package
 #' @param year Boundary year for [tigris::places()]; NULL (the default) uses
-#'   [acs_endyear()], matching [shapes_from_fips()].
+#'   the latest TIGER/Line places vintage verified by EJAM (currently 2026),
+#'   independently of [acs_endyear()] and the installed tigris default.
+#'   Set an explicit year to reproduce a particular vintage.
 #' @seealso [shapes_from_fips()]
 #' @return spatial data.frame for mapping
 #'
@@ -994,7 +1001,7 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #'
 shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL) {
 
-  if (is.null(year)) {year <- acs_endyear()}
+  if (is.null(year)) {year <- shapes_places_default_year()}
   expectedtype <- 'city'
 
   # handle invalid fips ####
@@ -1050,11 +1057,20 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL)
 }
 ####################################################### #
 
+shapes_places_default_year <- function() {
+  # Latest published TIGER/Line vintage verified on 2026-10-20:
+  # https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.2026.html
+  # Update this value and the year documentation when a newer release is verified.
+  # Pin the verified vintage rather than guessing from Sys.Date(), probing the
+  # network for each call, or relying on an older installed tigris default.
+  2026L
+}
+
 ## NOT USED
 
 shapes_places_from_placenames <- function(place_st, year = NULL) {
 
-  if (is.null(year)) {year <- acs_endyear()}
+  if (is.null(year)) {year <- shapes_places_default_year()}
 
   # name2fips()  uses fips_place_from_placename()
 
