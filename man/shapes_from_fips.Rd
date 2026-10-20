@@ -13,7 +13,7 @@ shapes_from_fips(
   myservice_place = "tiger",
   myservice_county = "cartographic",
   allow_multiple_fips_types = TRUE,
-  year = 2024
+  year = NULL
 )
 }
 \arguments{
@@ -47,9 +47,11 @@ downloaded, falling back to downloading only for any FIPS not found there.}
 \item{allow_multiple_fips_types}{if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips}
 
 \item{year}{Boundary year for \code{\link[tigris:places]{tigris::places()}} and for blockgroups when
-selecting "cartographic" or "tiger". NULL uses \code{\link[=acs_endyear]{acs_endyear()}} for those
-blockgroups. Service URLs determine their own vintage; year does not change
-the vintage embedded in a URL.}
+selecting "cartographic" or "tiger". NULL (the default) uses
+\code{\link[=acs_endyear]{acs_endyear()}}, the year of the package's ACS data, for both places and
+those blockgroups. Specify a year explicitly to use another vintage.
+Service URLs determine their own vintage;
+year does not change the vintage embedded in a URL.}
 }
 \value{
 spatial data.frame with one row per fips (assuming any fips are valid)

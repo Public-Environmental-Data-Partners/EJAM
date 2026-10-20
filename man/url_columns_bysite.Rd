@@ -32,8 +32,6 @@ url_columns_bysite(
 \item{shapefile}{spatial data.frame, class sf, see ejamit() parameter of same name.
 (and should have ejam_uniq_id column or assume 1 output row per input row, same order)}
 
-\item{zip, zipcode}{ZIP aliases for API report links. Can accompany their ZCTA shapefile; other report providers retain their geometry inputs.}
-
 \item{fips}{vector of FIPS codes if relevant  (instead of sitepoints or shapefile input)
 Note that nearly half of all county fips codes are impossible to distinguish from
 5-digit zipcodes because the same numbers are used for both purposes.}
@@ -63,6 +61,10 @@ currently being used by this package (which might not be the very latest from EP
 If set FALSE, faster since avoids checking but some links might not work and not warn about bad regid values.}
 
 \item{...}{passed to each function, and can be any parameter that any of them uses}
+
+\item{zip, zipcode}{ZIP aliases for the API report links. Can accompany their
+ZCTA shapefile from an analysis; other report providers keep their existing
+geometry inputs.}
 }
 \value{
 list of data.frames to append to the list of data.frames created by

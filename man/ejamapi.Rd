@@ -110,12 +110,12 @@ Default is NULL here, meaning it uses the default found in \code{\link[=url_ejam
 passed to \code{\link[=url_ejamapi]{url_ejamapi()}} in the "report" case, and used for the
 required \code{attribute} and \code{value} parameters in the "query" case}
 
-\item{shp}{alias (synonym) for shapefile/shape}
-
 \item{zip, zipcode}{One or more ZIP codes (ZCTA boundaries), as a vector or
 comma-separated string. These are aliases; provide only one. ZIPs cannot be
 combined with coordinates, sites, shapefiles, or FIPS. The default ZIP buffer
 is zero. Leading zeroes are restored and ZIP+4 is reduced to five digits.}
+
+\item{shp}{alias (synonym) for shapefile/shape}
 }
 \value{
 If dry_run=TRUE

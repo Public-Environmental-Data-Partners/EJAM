@@ -31,9 +31,11 @@
 #'   downloaded, falling back to downloading only for any FIPS not found there.
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
 #' @param year Boundary year for [tigris::places()] and for blockgroups when
-#'   selecting "cartographic" or "tiger". NULL uses [acs_endyear()] for those
-#'   blockgroups. Service URLs determine their own vintage; year does not change
-#'   the vintage embedded in a URL.
+#'   selecting "cartographic" or "tiger". NULL (the default) uses
+#'   [acs_endyear()], the year of the package's ACS data, for both places and
+#'   those blockgroups. Specify a year explicitly to use another vintage.
+#'   Service URLs determine their own vintage;
+#'   year does not change the vintage embedded in a URL.
 #' @details
 #'  Results follow the input FIPS order, including duplicates. Empty geometry
 #'  rows preserve positional alignment for invalid inputs and for valid FIPS
@@ -89,7 +91,7 @@ shapes_from_fips <- function(fips,
                              # "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/2/query"), # an alternative
                              # myservice_state is built into the package as dataset
                              allow_multiple_fips_types = TRUE,
-                             year = 2024
+                             year = NULL
 ) {
 
   # preserve original input SORT order ####
@@ -983,14 +985,16 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #'
 #' @param fips vector of 7-digit City/town/CDP codes as in the fips column of the [censusplaces] dataset
 #' @param myservice only 'tiger' is implemented as source of boundaries, using the tigris package
-#' @param year for [tigris::places()]
+#' @param year Boundary year for [tigris::places()]; NULL (the default) uses
+#'   [acs_endyear()], matching [shapes_from_fips()].
 #' @seealso [shapes_from_fips()]
 #' @return spatial data.frame for mapping
 #'
 #' @keywords internal
 #'
-shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = 2024) {
+shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL) {
 
+  if (is.null(year)) {year <- acs_endyear()}
   expectedtype <- 'city'
 
   # handle invalid fips ####
@@ -1048,7 +1052,9 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = 2024)
 
 ## NOT USED
 
-shapes_places_from_placenames <- function(place_st, year = 2024) {
+shapes_places_from_placenames <- function(place_st, year = NULL) {
+
+  if (is.null(year)) {year <- acs_endyear()}
 
   # name2fips()  uses fips_place_from_placename()
 

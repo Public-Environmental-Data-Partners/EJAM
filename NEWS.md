@@ -4,6 +4,12 @@
 
 - **See updated data:** demographics now use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version, with indexes and percentiles recalculated to match.
 
+- **Large analyses use less memory:** the same results with about 1–1.7 GB less peak memory, and unbuffered county, state, tract, or blockgroup analyses run about twice as fast (#649, #652).
+
+- **Too-large analyses stop with a message** instead of stopping the app for everyone using it (#650).
+
+- **Maps of many sites stay quick:** shorter popups and clustered markers, and much smaller downloaded reports (#651).
+
 
 ## What's new in EJSCREEN and EJAM (the multisite tool) since EPA's last versions (late 2024/early 2025)
 
@@ -33,12 +39,17 @@ The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), 
 
 ## New Features for R users (not in web app yet) since October 2026
 
+- `shapes_from_fips()` and its place-boundary helpers now use `year = NULL`
+  to select `acs_endyear()` for downloaded place and tigris blockgroup boundaries.
+  Places previously defaulted to 2024; use `year = 2024` to retain that vintage.
+  Existing boundary-service URLs and built-in county/state boundaries are unchanged.
+
 * API zipcode analysis:
   * The API (in EJAM-API and mirrored in EJAM) now handles `zip` or `zipcode`
   * `ejamit()`, `ejamapi()`, and `url_ejamapi()` now handle `zip` or `zipcode`. Zipcode results will get zip-specific API report links.
 
 - Color-coded maps to see where an indicator is highest:
-  - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county, like an EJSCREEN map,
+  - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county or state, like an EJSCREEN map, as an interactive or static (`maptype = "ggplot"`) map,
     by specifying the indicator name, e.g.,
     `map_ejscreen_indicator("pctlowinc", countyfips = "10001")`
   - `mapfastej_counties()` now lets you draw a color-coded map of all _counties_ in a state, more easily,
