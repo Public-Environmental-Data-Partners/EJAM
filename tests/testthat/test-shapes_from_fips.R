@@ -534,7 +534,7 @@ test_that("tigris blockgroups preserve duplicates, missing rows, and multiple st
   expect_identical(calls, list(list(state="10",year=2023L,cb=FALSE)))
 })
 
-test_that("tigris blockgroups default to the ACS data year, not the 2024 places default", {
+test_that("tigris blockgroups default to the ACS data year", {
   skip_if_not_installed("tigris")
   id <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")], 1)
   polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
@@ -608,4 +608,36 @@ test_that("blockgroup area metadata matches aggregation for repeated and unavail
   expected <- round(area_sqmi_from_fips(requested),2)
   shp <- shapefile_addcols(shp,addthese="SQMI")
   expect_equal(shp$SQMI,expected)
+})
+
+test_that("places use the ACS year consistently unless an explicit year is supplied", {
+  skip_if_not_installed("tigris")
+  id <- fipslist$cityfips[1]
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  requested_years <- numeric()
+  local_mocked_bindings(
+    places = function(state, year, ...) {
+      requested_years <<- c(requested_years, as.numeric(year))
+      sf::st_sf(GEOID=id, FIPS=id, geometry=sf::st_sfc(polygon, crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(acs_endyear=function(...) "2022",
+                        fips_place_from_placename=function(...) id,
+                        offline_cat=function(...) FALSE, .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  for (shp in list(shapes_places_from_placefips(id),
+                   shapes_places_from_placefips(id, year=NULL),
+                   shapes_places_from_placefips(id, year=2023),
+                   shapes_from_fips(id),
+                   shapes_from_fips(id, allow_multiple_fips_types=FALSE),
+                   shapes_from_fips(id, year=NULL),
+                   shapes_from_fips(c("10", id), year=2023),
+                   shapes_places_from_placenames("Rehoboth Beach city, DE"),
+                   shapes_places_from_placenames("Rehoboth Beach city, DE", year=NULL),
+                   shapes_places_from_placenames("Rehoboth Beach city, DE", year=2023))) {
+    expect_identical(tail(shp$FIPS, 1), id)
+    expect_false(tail(sf::st_is_empty(shp), 1))
+  }
+  expect_equal(requested_years, c(2022, 2022, 2023, 2022, 2022, 2022, 2023, 2022, 2022, 2023))
 })

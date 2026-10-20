@@ -493,6 +493,11 @@ detail; its larger files take longer to download and draw, but are also cached.
 Neither option needs ACS estimates or a Census API key. These options currently
 apply to blockgroups, not tracts.
 
+For places and either tigris blockgroup option, omitting `year` or using
+`year = NULL` selects `acs_endyear()` to match the package's ACS data.
+Specify a year such as `year = 2024` to request that vintage instead.
+This does not change the vintage of built-in boundaries or service URLs.
+
 ```{r blockgroup-boundary-options, eval=FALSE}
 bgfips <- blockgroupstats$bgfips[blockgroupstats$ST == "DE"]
 # Fast overview boundaries
