@@ -47,8 +47,9 @@ downloaded, falling back to downloading only for any FIPS not found there.}
 \item{allow_multiple_fips_types}{if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips}
 
 \item{year}{Boundary year for \code{\link[tigris:places]{tigris::places()}} and for blockgroups when
-selecting "cartographic" or "tiger". NULL (the default) uses the latest
-TIGER/Line places vintage verified by EJAM (currently 2026) for places,
+selecting "cartographic" or "tiger". NULL (the default) uses the
+calendar-predicted latest TIGER/Line places vintage for places (assuming
+an October 14 annual release, without checking publication),
 and \code{\link[=acs_endyear]{acs_endyear()}} for those blockgroups. Places define areas to analyze
 and need not share the vintage of the demographic data overlaid on them.
 Specify a year explicitly to use another vintage for these downloads.

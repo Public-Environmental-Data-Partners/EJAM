@@ -31,9 +31,9 @@
 #'   downloaded, falling back to downloading only for any FIPS not found there.
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
 #' @param year Boundary year for [tigris::places()] and for blockgroups when
-#'   selecting "cartographic" or "tiger". NULL (the default) uses the latest
-#'   TIGER/Line places vintage verified by EJAM (e.g., as of October 15, 2026 that was 2026) for places,
-#'   (or could be estimated using internal function predicted_latest_year_available())
+#'   selecting "cartographic" or "tiger". NULL (the default) uses the
+#'   calendar-predicted latest TIGER/Line places vintage for places (assuming
+#'   an October 14 annual release, without checking publication),
 #'   and [acs_endyear()] for those blockgroups. Places define areas to analyze
 #'   and need not share the vintage of the demographic data overlaid on them.
 #'   Specify a year explicitly to use another vintage for these downloads.
@@ -489,8 +489,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
                                             use_local = TRUE
 ) {
 
-  acs_endyear_carto_tiger = acs_endyear() 
-  # but also see   internal function predicted_latest_year_available() 
+  acs_endyear_carto_tiger = acs_endyear()
 
   # for a vector of  FIPS,
   # was using looped/batched arcgis API to obtain map boundaries of just those census units
@@ -852,7 +851,6 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
 #'
 #'   for example provides EJSCREEN indicator values, NPL_CNT, TSDF_CNT, EXCEED_COUNT_90, etc.
 #' @param year Boundary year for the tigris options; NULL uses [acs_endyear()].
-#'   But also see internal function predicted_latest_year_available().
 #'   Ignored for service URLs, whose vintage is controlled by the service.
 #' @seealso [shapes_from_fips()]
 #' @return An sf data.frame with standard EJAM metadata and input FIPS ordering.
@@ -996,7 +994,8 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #' @param fips vector of 7-digit City/town/CDP codes as in the fips column of the [censusplaces] dataset
 #' @param myservice only 'tiger' is implemented as source of boundaries, using the tigris package
 #' @param year Boundary year for [tigris::places()]; NULL (the default) uses
-#'   the latest TIGER/Line places vintage verified by EJAM (e.g., 2026),
+#'   the calendar-predicted latest TIGER/Line places vintage, assuming an
+#'   October 14 annual release without checking publication,
 #'   independently of [acs_endyear()] and the installed tigris default.
 #'   Set an explicit year to reproduce a particular vintage.
 #' @details Requested places without a boundary warn with their FIPS codes and
@@ -1068,17 +1067,23 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL)
 
 # predict / guess which vintage of TIGER/Line Shapefiles are the most recent published
 
-predicted_latest_year_available <- function(asofsysdate = Sys.Date(), 
+predicted_latest_year_available <- function(asofsysdate = Sys.Date(),
                                             predicted_release_dates = paste0(2022:2036, "-10-14")) {
-  
-  valid_years <- lubridate::year(predicted_release_dates)
-  if (lubridate::year(asofsysdate) %in% valid_years) {
-    yr <- lubridate::year(predicted_release_dates[max(which(predicted_release_dates < asofsysdate))])
-  } else {
-    yr <- NA
+  asofsysdate <- as.Date(asofsysdate)
+  predicted_release_dates <- as.Date(predicted_release_dates)
+  if (length(asofsysdate) != 1L || is.na(asofsysdate)) {
+    stop("asofsysdate must be one non-missing date", call. = FALSE)
   }
-  return(yr)
-  
+  if (!length(predicted_release_dates) || anyNA(predicted_release_dates)) {
+    stop("predicted_release_dates must contain non-missing dates", call. = FALSE)
+  }
+  valid_years <- as.integer(format(predicted_release_dates, "%Y"))
+  eligible <- predicted_release_dates <= asofsysdate
+  if (!as.integer(format(asofsysdate, "%Y")) %in% valid_years || !any(eligible)) {
+    return(NA_integer_)
+  }
+  return(as.integer(format(max(predicted_release_dates[eligible]), "%Y")))
+
   # e.g., predicted_latest_year_available(asofsysdate = "2023-10-13") returns 2022
   # based on predicted release dates of 2022-10-14, 2023-10-14, 2024-10-14, etc.
   # based on the 2026 release of TIGER boundaries data
@@ -1089,18 +1094,14 @@ predicted_latest_year_available <- function(asofsysdate = Sys.Date(),
 ############################ #
 
 shapes_places_default_year <- function() {
-  
-  # Check and maybe update this value and the year documentation when a newer release is verified.
-  # Ideally, Pin the verified vintage rather than guessing from Sys.Date(), 
-  # probing the network for each call, or relying on an older installed tigris default.
-  # 
-  # The 2026 TIGER/Line Shapefiles were released on October 14, 2026.
-  # Latest published TIGER/Line vintage verified on 2026-10-20:
-  # https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.2026.html
-  # 2026L  #   hard-coded value that would be relevant for late 2026-early 2027.
-  
-  # Estimate based on historic release timing:
-  predicted_latest_year_available()
+  # This is a calendar estimate, not a publication check. Explicit years remain
+  # available for reproducibility or when the predicted release is unavailable.
+  year <- predicted_latest_year_available()
+  if (is.na(year)) {
+    stop("Cannot predict the places boundary year from the configured release calendar; supply an explicit year.",
+         call. = FALSE)
+  }
+  year
 }
 ############################ #
 

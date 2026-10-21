@@ -494,12 +494,12 @@ Neither option needs ACS estimates or a Census API key. These options currently
 apply to blockgroups, not tracts.
 
 Omitting `year` or using `year = NULL` selects `acs_endyear()` for either
-tigris blockgroup option. For cities/towns/CDPs, it instead selects the latest
-TIGER/Line places vintage verified by EJAM (currently 2026). Places are areas
+tigris blockgroup option. For cities/towns/CDPs, it instead predicts the latest
+TIGER/Line places vintage from an assumed October 14 annual release. Places are areas
 to analyze and can have newer boundaries than the demographic data overlaid
 on them. Set an explicit year, such as `year = 2024`, for a particular vintage.
-The verified places default is updated in EJAM when a newer release is checked;
-it does not probe the network or rely on the installed tigris default.
+This calendar estimate does not verify publication or rely on the installed
+tigris default; use an explicit available year if a release is delayed.
 Newer boundaries can change city analysis results even before demographic data
 are updated. If a requested place has no boundary in the selected vintage,
 EJAM warns with its FIPS code and the year, and preserves its row with empty

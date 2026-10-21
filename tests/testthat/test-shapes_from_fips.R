@@ -647,6 +647,30 @@ test_that("places use the verified latest vintage unless an explicit year is sup
   expect_identical(getOption("tigris_year"), 2024)
 })
 
+test_that("places calendar prediction handles release dates and supported limits", {
+  expect_identical(predicted_latest_year_available("2023-10-13"), 2022L)
+  expect_identical(predicted_latest_year_available(as.Date("2023-10-14")), 2023L)
+  expect_identical(predicted_latest_year_available("2023-10-15"), 2023L)
+  expect_identical(predicted_latest_year_available("2026-10-21"), 2026L)
+  expect_identical(predicted_latest_year_available("2027-10-15"), 2027L)
+  expect_no_warning(early <- predicted_latest_year_available("2022-01-01"))
+  expect_identical(early, NA_integer_)
+  expect_identical(predicted_latest_year_available("2037-01-01"), NA_integer_)
+  dates <- c("2024-11-01", "2023-10-14", "2024-10-14")
+  expect_identical(predicted_latest_year_available("2024-10-14", dates), 2024L)
+  expect_error(predicted_latest_year_available(as.Date(character())), "one non-missing date")
+  expect_error(predicted_latest_year_available(as.Date(NA)), "one non-missing date")
+  expect_error(predicted_latest_year_available("2026-10-21", character()), "non-missing dates")
+  expect_error(predicted_latest_year_available("2026-10-21", c("2026-10-14", NA)), "non-missing dates")
+})
+
+test_that("places default uses the calendar prediction and rejects an unsupported date clearly", {
+  local_mocked_bindings(predicted_latest_year_available=function(...) 2027L, .package="EJAM")
+  expect_identical(shapes_places_default_year(), 2027L)
+  local_mocked_bindings(predicted_latest_year_available=function(...) NA_integer_, .package="EJAM")
+  expect_error(shapes_places_default_year(), "supply an explicit year")
+})
+
 test_that("mixed places and blockgroups keep independent default vintages", {
   skip_if_not_installed("tigris")
   place <- fipslist$cityfips[1]

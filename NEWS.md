@@ -40,7 +40,7 @@ The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), 
 ## New Features for R users (not in web app yet) since October 2026
 
 - `shapes_from_fips()` and its place-boundary helpers now use `year = NULL`
-  to select the latest TIGER/Line places vintage verified by EJAM (currently 2026)
+  to select the calendar-predicted latest TIGER/Line places vintage (assuming an October 14 release)
   for cities/towns/CDPs, while tigris blockgroups continue to use `acs_endyear()`.
   Place boundaries can be newer than the demographic data used to analyze them.
   City analysis results may therefore differ even before the demographic data change.
