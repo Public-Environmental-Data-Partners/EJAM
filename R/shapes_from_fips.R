@@ -31,11 +31,19 @@
 #'   downloaded, falling back to downloading only for any FIPS not found there.
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
 #' @param year Boundary year for [tigris::places()] and for blockgroups when
-#'   selecting "cartographic" or "tiger". NULL (the default) uses
-#'   [acs_endyear()], the year of the package's ACS data, for both places and
-#'   those blockgroups. Specify a year explicitly to use another vintage.
+#'   selecting "cartographic" or "tiger". NULL (the default) uses the
+#'   calendar-predicted latest TIGER/Line places vintage for places (assuming
+#'   an October 14 annual release, without checking publication),
+#'   and [acs_endyear()] for those blockgroups. Places define areas to analyze
+#'   and need not share the vintage of the demographic data overlaid on them.
+#'   Specify a year explicitly to use another vintage for these downloads.
+#'   County downloads continue to use [acs_endyear()]; built-in county/state
+#'   boundaries and tract/blockgroup service URLs keep their supplied vintage
+#'   and must be updated with the release's demographic geography.
 #'   Service URLs determine their own vintage;
 #'   year does not change the vintage embedded in a URL.
+#'   Requested places without a boundary warn with their FIPS codes and year;
+#'   their rows retain empty geometry, without substituting another vintage.
 #' @details
 #'  Results follow the input FIPS order, including duplicates. Empty geometry
 #'  rows preserve positional alignment for invalid inputs and for valid FIPS
@@ -986,7 +994,12 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #' @param fips vector of 7-digit City/town/CDP codes as in the fips column of the [censusplaces] dataset
 #' @param myservice only 'tiger' is implemented as source of boundaries, using the tigris package
 #' @param year Boundary year for [tigris::places()]; NULL (the default) uses
-#'   [acs_endyear()], matching [shapes_from_fips()].
+#'   the calendar-predicted latest TIGER/Line places vintage, assuming an
+#'   October 14 annual release without checking publication,
+#'   independently of [acs_endyear()] and the installed tigris default.
+#'   Set an explicit year to reproduce a particular vintage.
+#' @details Requested places without a boundary warn with their FIPS codes and
+#'   year. Their rows retain empty geometry; no older vintage is substituted.
 #' @seealso [shapes_from_fips()]
 #' @return spatial data.frame for mapping
 #'
@@ -994,7 +1007,7 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #'
 shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL) {
 
-  if (is.null(year)) {year <- acs_endyear()}
+  if (is.null(year)) {year <- shapes_places_default_year()}
   expectedtype <- 'city'
 
   # handle invalid fips ####
@@ -1042,6 +1055,8 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL)
   shp <- shp[match(fips, shp$FIPS), ]
   shp$FIPS <- fips # now include the original fips in output even for rows that came back NA / empty polygon
 
+  shapes_warn_missing_place_boundaries(shp[ok, ], fips[ok], year)
+
   shp <- shapefile_dropcols(shp)
   shp <- shapefile_addcols(shp)
   shp <- shapefile_sortcols(shp)
@@ -1050,11 +1065,63 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL)
 }
 ####################################################### #
 
+# predict / guess which vintage of TIGER/Line Shapefiles are the most recent published
+
+predicted_latest_year_available <- function(asofsysdate = Sys.Date(),
+                                            predicted_release_dates = paste0(2022:2036, "-10-14")) {
+  asofsysdate <- as.Date(asofsysdate)
+  predicted_release_dates <- as.Date(predicted_release_dates)
+  if (length(asofsysdate) != 1L || is.na(asofsysdate)) {
+    stop("asofsysdate must be one non-missing date", call. = FALSE)
+  }
+  if (!length(predicted_release_dates) || anyNA(predicted_release_dates)) {
+    stop("predicted_release_dates must contain non-missing dates", call. = FALSE)
+  }
+  valid_years <- as.integer(format(predicted_release_dates, "%Y"))
+  eligible <- predicted_release_dates <= asofsysdate
+  if (!as.integer(format(asofsysdate, "%Y")) %in% valid_years || !any(eligible)) {
+    return(NA_integer_)
+  }
+  return(as.integer(format(max(predicted_release_dates[eligible]), "%Y")))
+
+  # e.g., predicted_latest_year_available(asofsysdate = "2023-10-13") returns 2022
+  # based on predicted release dates of 2022-10-14, 2023-10-14, 2024-10-14, etc.
+  # based on the 2026 release of TIGER boundaries data
+  # The 2026 TIGER/Line Shapefiles were released on October 14, 2026.
+  # Latest published TIGER/Line vintage verified on 2026-10-20:
+  # https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.2026.html
+}
+############################ #
+
+shapes_places_default_year <- function() {
+  # This is a calendar estimate, not a publication check. Explicit years remain
+  # available for reproducibility or when the predicted release is unavailable.
+  year <- predicted_latest_year_available()
+  if (is.na(year)) {
+    stop("Cannot predict the places boundary year from the configured release calendar; supply an explicit year.",
+         call. = FALSE)
+  }
+  year
+}
+############################ #
+
+shapes_warn_missing_place_boundaries <- function(shp, fips, year) {
+  empty <- sf::st_is_empty(shp)
+  missing_fips <- unique(fips[is.na(empty) | empty])
+  if (length(missing_fips)) {
+    warning("No place boundary found for FIPS ", paste(missing_fips, collapse=", "),
+            " in TIGER/Line ", year, ". Returning empty geometry for these places; ",
+            "use an explicit older year if appropriate.", call.=FALSE)
+  }
+  invisible(NULL)
+}
+############################ #
+
 ## NOT USED
 
 shapes_places_from_placenames <- function(place_st, year = NULL) {
 
-  if (is.null(year)) {year <- acs_endyear()}
+  if (is.null(year)) {year <- shapes_places_default_year()}
 
   # name2fips()  uses fips_place_from_placename()
 
@@ -1083,6 +1150,8 @@ shapes_places_from_placenames <- function(place_st, year = NULL) {
 
   tp = tigris::places(unique(st), year = year)  # DOWNLOAD THE BOUNDARIES of all places in an ENTIRE STATE, for EACH STATE REQUIRED HERE
   shp = tp[match(fips, tp$GEOID), ] # use FIPS of each place to get boundaries
+  shp$FIPS <- fips
+  shapes_warn_missing_place_boundaries(shp, fips, year)
 
   shp <- shapefile_dropcols(shp)
   shp <- shapefile_addcols(shp)

@@ -493,10 +493,27 @@ detail; its larger files take longer to download and draw, but are also cached.
 Neither option needs ACS estimates or a Census API key. These options currently
 apply to blockgroups, not tracts.
 
-For places and either tigris blockgroup option, omitting `year` or using
-`year = NULL` selects `acs_endyear()` to match the package's ACS data.
-Specify a year such as `year = 2024` to request that vintage instead.
-This does not change the vintage of built-in boundaries or service URLs.
+Omitting `year` or using `year = NULL` selects `acs_endyear()` for either
+tigris blockgroup option. For cities/towns/CDPs, it instead predicts the latest
+TIGER/Line places vintage from an assumed October 14 annual release. Places are areas
+to analyze and can have newer boundaries than the demographic data overlaid
+on them. Set an explicit year, such as `year = 2024`, for a particular vintage.
+This calendar estimate does not verify publication or rely on the installed
+tigris default; use an explicit available year if a release is delayed.
+Newer boundaries can change city analysis results even before demographic data
+are updated. If a requested place has no boundary in the selected vintage,
+EJAM warns with its FIPS code and the year, and preserves its row with empty
+geometry. An explicit older year can be used when appropriate; EJAM does not
+silently substitute another vintage.
+
+The v4 data update must also review/rebuild `censusplaces` against the selected
+places vintage, so place-name selection and FIPS validation reflect that release.
+
+Built-in county/state boundaries and service URLs retain their own vintage;
+these must match the release's demographic geography when the data are updated.
+Census blocks retain the vintage of EJAM's block data (currently Census 2020),
+rather than automatically taking the ACS end year. The `year` argument here
+does not override these datasets or service URLs.
 
 ```{r blockgroup-boundary-options, eval=FALSE}
 bgfips <- blockgroupstats$bgfips[blockgroupstats$ST == "DE"]

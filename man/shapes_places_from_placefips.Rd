@@ -12,13 +12,20 @@ shapes_places_from_placefips(fips, myservice = "tiger", year = NULL)
 \item{myservice}{only 'tiger' is implemented as source of boundaries, using the tigris package}
 
 \item{year}{Boundary year for \code{\link[tigris:places]{tigris::places()}}; NULL (the default) uses
-\code{\link[=acs_endyear]{acs_endyear()}}, matching \code{\link[=shapes_from_fips]{shapes_from_fips()}}.}
+the calendar-predicted latest TIGER/Line places vintage, assuming an
+October 14 annual release without checking publication,
+independently of \code{\link[=acs_endyear]{acs_endyear()}} and the installed tigris default.
+Set an explicit year to reproduce a particular vintage.}
 }
 \value{
 spatial data.frame for mapping
 }
 \description{
 Get shapefiles/ boundaries of census places like cities
+}
+\details{
+Requested places without a boundary warn with their FIPS codes and
+year. Their rows retain empty geometry; no older vintage is substituted.
 }
 \seealso{
 \code{\link[=shapes_from_fips]{shapes_from_fips()}}
