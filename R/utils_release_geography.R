@@ -122,10 +122,16 @@ release_geography_validate <- function(bundle) {
     if (!is.character(x$GEOID) || anyNA(x$GEOID) || anyDuplicated(x$GEOID) ||
         any(!grepl(paste0("^[0-9]{",width,"}$"), x$GEOID)) ||
         anyNA(x$STATEFP) || any(substr(x$GEOID,1,2) != x$STATEFP)) stop("Invalid/duplicate FIPS: ", name)
+    geometry_types <- as.character(sf::st_geometry_type(x,by_geometry=TRUE))
+    if (anyNA(geometry_types) || any(!geometry_types %in% c("POLYGON","MULTIPOLYGON"))) {
+      stop("Non-polygon boundary geometry: ",name," (expected POLYGON or MULTIPOLYGON)",call.=FALSE)
+    }
     if (is.na(sf::st_crs(x)) || anyNA(sf::st_is_valid(x)) || any(!sf::st_is_valid(x)) ||
         anyNA(sf::st_is_empty(x)) || any(sf::st_is_empty(x)) ||
         any(!is.finite(as.numeric(x$ALAND))) || any(!is.finite(as.numeric(x$AWATER))) ||
         any(x$ALAND < 0 | x$AWATER < 0)) stop("Invalid geometry/area: ", name)
+    geometry_area <- as.numeric(sf::st_area(x))
+    if (any(!is.finite(geometry_area) | geometry_area <= 0)) stop("Invalid geometry/area: ",name,call.=FALSE)
   }
   states <- bundle$states_shapefile
   counties <- bundle$counties_shapefile
