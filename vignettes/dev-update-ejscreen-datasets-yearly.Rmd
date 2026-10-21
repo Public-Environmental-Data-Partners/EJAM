@@ -218,6 +218,9 @@ these update groups to decide what must be rebuilt, validated, or only checked.
    care because it is tied to Census 2020 geography. Related state/place
    geography objects such as `states_shapefile`, `stateinfo2`, and
    `censusplaces` should also be checked when their FIPS or boundaries change.
+   Each year, when reviewing or updating datasets such as `blockwts`, also
+   check the built-in `counties_shapefile` and `states_shapefile` and update
+   them if necessary to match the release's ACS geographic vintage.
    For the v3 Island Area decision and live EJSCREEN layer availability
    notes, see [Island Areas in EJAM v3](island-areas.html).
 
