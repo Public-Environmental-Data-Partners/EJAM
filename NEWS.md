@@ -1,3 +1,86 @@
+# EJAM 4.2024.0 (in development)
+
+## New web app features since October 2026
+
+- **See updated data:** demographics now use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version, with indexes and percentiles recalculated to match.
+
+- **Large analyses use less memory:** the same results with about 1–1.7 GB less peak memory, and unbuffered county, state, tract, or blockgroup analyses run about twice as fast (#649, #652).
+
+- **Too-large analyses stop with a message** instead of stopping the app for everyone using it (#650).
+
+- **Towns and townships can be analyzed and mapped:** in New England, New York, New Jersey, Pennsylvania, and the Midwest, most towns and townships previously got no boundary, so an analysis of them found no residents. They now use Census county subdivision boundaries (#672).
+
+- **Maps of many sites stay quick:** shorter popups and clustered markers, and much smaller downloaded reports (#651).
+
+
+## What's new in EJSCREEN and EJAM (the multisite tool) since EPA's last versions (late 2024/early 2025)
+
+The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), from early 2025, across the EJAM app, the EJSCREEN app, the EJAM API, and the R package, are the following:
+
+- **Get reports on several places directly from EJSCREEN** by clicking points, choosing areas, or drawing shapes, then get one combined report (via the EJAM-API) or send them all to EJAM for further analysis and viewing detailed results.
+- **Use a weblink to specify locations** to open EJSCREEN or EJAM with places already selected. You can share or bookmark these URLs.
+  
+  See [About custom EJAM links](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html#launch-an-already-running-ejam-app)
+  e.g., https://ejam.publicenvirodata.org/?lat=41.71059,41.65741&lon=-87.59676,-87.8136&radius=1.5
+  
+  See [About custom EJSCREEN links](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html#links-from-ejam-to-ejscreen)
+  e.g., https://pedp-ejscreen.azurewebsites.net/index.html?lat=41.71059,41.65741&lon=-87.59676,-87.8136&radius=1.5
+  
+- **Choose places in EJAM more easily:** click on the map to add points, or pick cities, counties, or states by name.
+
+- **PDF reports are available** of the Community Report, with page breaks that print well.
+
+- **Reports have more information now:** counts of schools, Superfund sites, and other features, flood risk, health insurance, and the share of residents in Tribal or other flagged areas, compared with US and State averages.
+
+- **Each site in EJAM's results links to its own one-site report** and to EJSCREEN with that place selected.
+
+- **Bigger, more flexible uploads:** up to 10,000 sites (was 5,000), and areas as GeoJSON, KML, or zipped shapefiles.
+
+- **Faster results:** the site-by-site table loads about 4 times faster, PDF reports finish sooner, and repeat report links load from a cache.
+
+
+## New Features for R users (not in web app yet) since October 2026
+
+- `shapes_from_fips()` and its place-boundary helpers now use `year = NULL`
+  to select the calendar-predicted latest TIGER/Line places vintage (assuming an October 14 release)
+  for cities/towns/CDPs, while tigris blockgroups continue to use `acs_endyear()`.
+  Place boundaries can be newer than the demographic data used to analyze them.
+  City analysis results may therefore differ even before the demographic data change.
+  Requested places without a boundary now warn with their FIPS codes and the
+  boundary year, while retaining empty geometry in the requested row order.
+  Use an explicit year, such as `year = 2024`, to reproduce a particular vintage.
+  Existing boundary-service URLs, built-in county/state boundaries, county
+  download years, and the Census 2020 block data are unchanged.
+
+* API zipcode analysis:
+  * The API (in EJAM-API and mirrored in EJAM) now handles `zip` or `zipcode`
+  * `ejamit()`, `ejamapi()`, and `url_ejamapi()` now handle `zip` or `zipcode`. Zipcode results will get zip-specific API report links.
+
+- Color-coded maps to see where an indicator is highest:
+  - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county or state, like an EJSCREEN map, as an interactive or static (`maptype = "ggplot"`) map,
+    by specifying the indicator name, e.g.,
+    `map_ejscreen_indicator("pctlowinc", countyfips = "10001")`
+  - `mapfastej_counties()` now lets you draw a color-coded map of all _counties_ in a state, more easily,
+    by specifying the indicator name, e.g.,
+    `mapfastej_counties(ST = "DE", colorvarname = "state.pctile.o3")`
+  - `ejam2map()` and `mapfast()` now let you draw a color-coded map of all _analyzed sites_ nationwide
+    (as circles around points or as polygons)
+    by specifying the indicator name, e.g.,
+    `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
+## New Features for R users (not in web app yet), since 2024/2025
+
+- `ejamapi()` gets reports or results from the new EJAM API, and `url_ejamapi()` builds a report link for any site.
+- `ejamit(zipcode = 10605)` analyzes zip code areas, using the new `shapes_from_zip()`.
+- `ejamit()` accepts `lat` and `lon` vectors and a `buffer` around FIPS places, and `buffer` and `shape` work as synonyms for `radius` and `shapefile` across functions.
+- `ejamapp()` (formerly `run_app()`) launches the app with your own settings and places pre-loaded, and `url_ejamapp()` makes a link that opens the hosted app the same way.
+- `ejam2report()` can save a PDF, report on one site via `sitenumber`, and use a custom title and footer.
+- `ejam2areafeatures()` and `ejam2barplot_areafeatures()` show the share of residents whose block group has a school or hospital or overlaps a Tribal or other flagged area, compared with US and State averages.
+- `url_ejscreenmap()` and related `url_*()` functions link each site to EJSCREEN (with the place selected), EnviroMapper, ECHO, FRS, and county or state health pages.
+- `calc_ejscreen_dataset()` and `calc_ejscreen_export()` are a documented annual pipeline that rebuilds the EJAM and EJSCREEN datasets from each new ACS release.
+- Each release downloads its own matching version of the large datasets, and county and state boundaries are built in, so they work offline.
+
+
 # EJAM 3.2022.3 (October 2026)
 
 This is the final ACS 2018-2022 release; it is frozen from here on.

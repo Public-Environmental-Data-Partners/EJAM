@@ -2,7 +2,7 @@
 % Please edit documentation in R/mapfast.R
 \name{mapfast}
 \alias{mapfast}
-\title{Map - points - Create leaflet html widget map of points using table with lat lon}
+\title{Map - Create leaflet html widget map from ejamit() output or a table of point coordinates, polygons, or fips}
 \usage{
 mapfast(
   mydf,
@@ -11,7 +11,9 @@ mapfast(
   labels = column_names,
   launch_browser = FALSE,
   color = "#03F",
-  sitenumber_label = NULL
+  sitenumber_label = NULL,
+  popup_style = "auto",
+  cluster = NULL
 )
 }
 \arguments{
@@ -44,32 +46,66 @@ launch a default browser window to show the map
 and print the temp filepath and filename in the console.
 Normally the map would be shown in the default RStudio viewer pane.}
 
-\item{color}{color of circles or polygons}
+\item{color}{A column name in mydf (or its results_bysite table), a single
+R color, or one color per row, for circles or polygons. Percentile and ratio
+columns use the shared binned colors; other numeric columns use a continuous
+viridis palette. An unknown column name that is not a valid R color causes
+an error. Missing values in a color column are shown in light gray.
+These maps do not automatically add a color legend; use
+\code{\link[=mapfastej_counties]{mapfastej_counties()}} for a county choropleth with a percentile legend.}
 
 \item{sitenumber_label}{optional, display-only override (a number or short text) of the
 site number shown in map popups, in place of the auto-assigned row number/ejam_uniq_id.
 Passed to \code{\link[=popup_from_ejscreen]{popup_from_ejscreen()}} (so used only if column_names is "ej"), and only
 relevant when mydf is a single-site (1-row) table -- see \code{\link[=ejam2report]{ejam2report()}}, whose
 sitenumber_label parameter this supports.}
+
+\item{popup_style}{\code{"auto"}, \code{"full"}, \code{"short"}, or \code{"none"}. See \code{\link[=map_popup_style]{map_popup_style()}}.
+\code{"auto"} gives short popups (if column_names is "ej") when there are more than
+\code{default_max_pts_show_detailed_popups} sites (see \code{\link[=map_size_setting]{map_size_setting()}}).
+\code{"none"} maps the sites without popups.}
+
+\item{cluster}{TRUE to show points as clustered markers instead of circles. The default, NULL,
+clusters them when there are more than \code{default_max_pts_map_show_unclustered} points
+(see \code{\link[=map_size_setting]{map_size_setting()}}).}
 }
 \value{
 plots a map via the leaflet package, with popups with all the columns from mydf,
 and returns html widget
 }
 \description{
-Map - points - Create leaflet html widget map of points using table with lat lon
+Map - Create leaflet html widget map from ejamit() output or a table of point coordinates, polygons, or fips
+}
+\details{
+Blockgroup FIPS maps explicitly use cached, generalized cartographic
+boundaries for speed. These simplify edges and shorelines and are intended
+for overview maps. For detailed boundaries, supply polygons obtained with
+shapes_from_fips(fips, myservice_blockgroup = "tiger", year = acs_endyear()).
+This display choice does not change the analysis that produced the results.
 }
 \examples{
-pts = testpoints_100
+pts <- testpoints_100
+pts <- pts[is.finite(pts$lat) & is.finite(pts$lon), ]
 mapfast(pts)
 
 # out = ejamit(pts, radius = 1)
-out = testoutput_ejamit_100pts_1miles
+out <- testoutput_ejamit_100pts_1miles
+# Use valid sites so the color vector matches the rows being mapped.
+out$results_bysite <- out$results_bysite[out$results_bysite$valid \%in\% TRUE, ]
 
 # See in RStudio viewer pane
 ejam2map(out, launch_browser = FALSE)
+# Color by a percentile column without manually converting its values.
+ejam2map(out, color = "state.pctile.o3", launch_browser = FALSE)
 mapfastej(out$results_bysite[c(12,31),])
+
+# color-code points on map to show which ones had a high indicator score
+mapfastej(out, color = EJAM:::ratio2color( out$results_bysite$ratio.to.state.avg.traffic.score))
+mapfastej(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
+mapfastej(out, color = EJAM:::pctile2color(out$results_bysite$pctile.Demog.Index.Supp))
 \dontrun{
+  out <- ejamit(fips = fips_counties_from_state_abbrev(c('KY', 'IN')))
+  ejam2map(out, color = EJAM:::pctile2color( out$results_bysite$state.pctile.o3))
 
 # See in local browser instead
 ejam2map(out)

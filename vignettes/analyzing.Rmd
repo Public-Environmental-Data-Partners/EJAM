@@ -124,6 +124,9 @@ codes)
     Census Units such as Counties or other types of Census Units are defined by
     FIPS code (e.g., Counties in one State).
 
+ZIP codes can also be analyzed as ZCTA polygons; see the
+[article on zipcodes](`r paste0(docs_reponame_url, "/articles/zipcodes.html")`).
+
 # NEAR EACH POINT (PROXIMITY ANALYSIS) {#near-each-point-proximity-analysis}
 
 ## Latitude and Longitude
@@ -476,11 +479,78 @@ shp1 <- shapefile_from_any(system.file("testdata/shapes/portland.gdb.zip", packa
 
 # FIPS CODES
 
+### Map of blockgroups like an EJSCREEN map
+
+See `map_ejscreen_indicator()` for a quick EJSCREEN-style map of blockgroups in a County or State, color-coded by one indicator, without running an analysis.
+
+
+For blockgroups, `shapes_from_fips()` keeps its existing service default.
+For overview maps of many blockgroups, `myservice_blockgroup = "cartographic"`
+can be much faster: it downloads and caches one small, generalized boundary
+file per State. Edges and shorelines are simplified, so these polygons can
+change area, buffer, or point-in-polygon results. Use `"tiger"` for full boundary
+detail; its larger files take longer to download and draw, but are also cached.
+Neither option needs ACS estimates or a Census API key. These options currently
+apply to blockgroups, not tracts.
+
+Omitting `year` or using `year = NULL` selects `acs_endyear()` for either
+tigris blockgroup option. For cities/towns/CDPs, it instead predicts the latest
+TIGER/Line places vintage from an assumed October 14 annual release. Places are areas
+to analyze and can have newer boundaries than the demographic data overlaid
+on them. Set an explicit year, such as `year = 2024`, for a particular vintage.
+This calendar estimate does not verify publication or rely on the installed
+tigris default; use an explicit available year if a release is delayed.
+Newer boundaries can change city analysis results even before demographic data
+are updated. If a requested place has no boundary in the selected vintage,
+EJAM warns with its FIPS code and the year, and preserves its row with empty
+geometry. An explicit older year can be used when appropriate; EJAM does not
+silently substitute another vintage.
+
+The v4 data update must also review/rebuild `censusplaces` against the selected
+places vintage, so place-name selection and FIPS validation reflect that release.
+
+Built-in county/state boundaries and service URLs retain their own vintage;
+these must match the release's demographic geography when the data are updated.
+Census blocks retain the vintage of EJAM's block data (currently Census 2020),
+rather than automatically taking the ACS end year. The `year` argument here
+does not override these datasets or service URLs.
+
+```{r blockgroup-boundary-options, eval=FALSE}
+bgfips <- blockgroupstats$bgfips[blockgroupstats$ST == "DE"]
+# Fast overview boundaries
+shp <- shapes_from_fips(bgfips, myservice_blockgroup = "cartographic",
+                        year = acs_endyear())
+# Full-detail boundaries
+shp_detail <- shapes_from_fips(bgfips, myservice_blockgroup = "tiger",
+                               year = acs_endyear())
+
+# Both renderers use the same percentile colors; cb = FALSE retains detail.
+map_ejscreen_indicator("pctlowinc", ST = "DE", maptype = "ggplot")
+map_ejscreen_indicator("pctlowinc", ST = "DE", cb = FALSE)
+```
+
+`mapfast()` also uses cartographic boundaries when given blockgroup FIPS codes.
+When you need detailed edges, map `shp_detail` with `map_shapes_leaflet()`, or
+pass it as `shp` to `map_ejscreen_indicator()`. These mapping choices do not
+change existing analysis defaults.
+
 ### Counties as the places to compare
 
 You can compare places defined by FIPS code, such as a group of US Counties.
 
 See a list of [functions for working with Census FIPS codes](`r paste0(docs_reponame_url, "/reference/index.html#specify-counties-etc-")`).
+
+Map EJ stat for each county in the State:
+
+See `mapfastej_counties()` for a quick map of the counties in a State,
+color-coded by one of the EJAM indicators, such as the ratio of low-income population to the State average.
+
+Note this direct approach is useful if you only want a map, but
+it does not save the full results. You can click on a county to see a popup with a link to the EJAM report for that county.
+
+```{r mapfastej_counties, eval=FALSE}
+mapfastej_counties(ST = "DE", colorvarname = "ratio.to.state.avg.pctlowinc")
+```
 
 Compare all Counties in a State, using EJAM indicators
 
@@ -542,6 +612,26 @@ See also
 -  [functions for seeing plots/graphics](`r paste0(docs_reponame_url, "/reference/index.html#plots-mean-of-one-indicator-at-each-site-or-type-of-site-comparing-sites-or-categories-of-sites-")`)
 
 -  [functions for seeing tables of results](`r paste0(docs_reponame_url, "/reference/index.html#tables")`)
+
+### Color-coded maps
+
+Pass a percentile column name to `ejam2map()` to color sites gray, yellow, orange,
+and red at the 80th, 90th, and 95th percentile cutoffs.
+
+```{r color-coded-maps, eval=FALSE}
+out <- testoutput_ejamit_1000pts_1miles
+ejam2map(out, color = "pctile.traffic.score", launch_browser = FALSE)
+
+# Or supply a color vector, here comparing traffic scores to State averages:
+ejam2map(out,
+         color = EJAM:::ratio2color(out$results_bysite$ratio.to.state.avg.traffic.score),
+         launch_browser = FALSE)
+```
+
+The ratio colors are gray below 1.05 times the average, yellow from 1.05 to below
+2, orange from 2 to below 3, and red at 3 or above. For percentile color vectors,
+use `EJAM:::pctile2color()` or `EJAM:::pctile2colorhex()` on a percentile column.
+These color helpers are internal functions, hence the `:::` notation.
 
 ### The most striking findings (e.g., which group is most over-represented?)
 
