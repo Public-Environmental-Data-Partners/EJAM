@@ -1,6 +1,6 @@
 # EJAM Open Issues — Scored by Cost & Benefit
 
-**Total open issues:** 135  |  **Generated:** 2026-10-18  |  **Source:** Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)
+**Total open issues:** 136  |  **Generated:** 2026-10-21  |  **Source:** Live GitHub REST API open issues (Public-Environmental-Data-Partners/EJAM)
 
 **Score payload:** `inst/issues/ejam_issues_scored_by_risk_and_value.json`
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Previous run | 2026-10-14 |
-| Issues opened since previous run | 2 |
+| Previous run | 2026-10-18 |
+| Issues opened since previous run | 1 |
 | Issues closed since previous run | 0 |
-| Issues whose quadrant changed | 17 |
+| Issues whose quadrant changed | 0 |
 
 ---
 
@@ -24,7 +24,7 @@
 | Cost / Benefit | **LOW Benefit**<br>value < median | **HIGH Benefit**<br>value ≥ median |
 |---|---|---|
 | **LOW Cost**<br>cost < median | **C — Other Low-Cost Work**<br>38 issues | **A — Focus Shortlist (max 20)**<br>20 issues |
-| **HIGH Cost**<br>cost ≥ median | **D — WORST CANDIDATES**<br>34 issues | **B — OK Candidates**<br>43 issues |
+| **HIGH Cost**<br>cost ≥ median | **D — WORST CANDIDATES**<br>34 issues | **B — OK Candidates**<br>44 issues |
 
 ---
 
@@ -82,7 +82,7 @@
 ## Quadrant B — OK Candidates — High Cost, High Benefit
 *Worth doing but require more effort or expertise. Plan carefully before starting.*
 
-**43 issues**
+**44 issues**
 
 - [#581](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/581) — Analysis of 2 or more tract FIPS codes never completes in the web app (1 tract works)
 - [#126](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/126) — enable 1-site report on Polygons / Shapefile, via links/buttons in shiny map popups and table of sites (but NOT outside shiny like in URL-based/link in Excel table)
@@ -97,6 +97,7 @@
 - [#464](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464) — Investigate and solve high cost on AWS Fargate
 - [#193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) — Create Executive Summary helper functions - summarizer / Methods for Identifying and Focusing on Key Findings
 - [#192](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192) — User-specified indicators (enable upload of and reporting on user-provided block group indicators)
+- [#671](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/671) — Align bundled state/county geography and information with 2024 for v4.2024.0
 - [#31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) — fix distance\_avg in doaggregate()\$results\_bybg\_people
 - [#553](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/553) — plot\_lorenz\_\*() draft plots are broken: undefined bysite, filter on a literal, constant aes mapping
 - [#56](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/56) — check/ fix Distance and Site Count summary stats, in doaggregate()
@@ -143,6 +144,7 @@
 | [464](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464) | Investigate and solve high cost on AWS Fargate | 5 (🟡 Medium) | 15 (🟩🟩 Very High) | v4.2024.0 | PRIORITY HIGH-ish but not a bug | `rank:B-high-value-high-cost` | rank:B-high-value-high-cost, speed / performance (see #226), Affects Web App |
 | [193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) | Create Executive Summary helper functions - summarizer / Methods for I… | 5 (🟡 Medium) | 15 (🟩🟩 Very High) | v4.2024.1 placeholder | PRIORITY HIGH-ish but not a bug | `rank:B-high-value-high-cost` | rank:B-high-value-high-cost, LongReport_output, Affects Web App, future plan list |
 | [192](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192) | User-specified indicators (enable upload of and reporting on user-prov… | 5 (🟡 Medium) | 15 (🟩🟩 Very High) | v4.2024.1 placeholder | PRIORITY HIGH-ish but not a bug | `rank:B-high-value-high-cost` | rank:B-high-value-high-cost, Affects Web App, future plan list |
+| [671](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/671) | Align bundled state/county geography and information with 2024 for v4.… | 7 (🟠 High) | 15 (🟩🟩 Very High) | v4.2024.0 | PRIORITY HIGH-ish but not a bug | `rank:B-high-value-high-cost` | datasets-related, Affects Web App |
 | [31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) | fix distance\_avg in doaggregate()\$results\_bybg\_people | 4 (🟡 Medium) | 12 (🟩🟦 High) | v4.2024.1 placeholder | PRIORITY MEDIUM | `rank:B-high-value-high-cost` | rank:B-high-value-high-cost, BUG, distance-related, Affects Web App |
 | [553](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/553) | plot\_lorenz\_\*() draft plots are broken: undefined bysite, filter on a … | 6 (🟡 Medium) | 12 (🟩🟦 High) | v4.2024.1 placeholder | PRIORITY LOW | `rank:B-high-value-high-cost` | rank:B-high-value-high-cost, BUG, Affects R users only - NOT web app users |
 | [56](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/56) | check/ fix Distance and Site Count summary stats, in doaggregate() | 6 (🟡 Medium) | 12 (🟩🟦 High) | v4.2024.1 placeholder | PRIORITY MEDIUM | `rank:B-high-value-high-cost` | rank:B-high-value-high-cost, BUG, documentation, calculate/validate to EJScreen |
@@ -258,7 +260,7 @@
 | [350](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/350) | Add report regression tests for FIPS, shapefile, sitenumber, NAICS, an… | 2 (🔵 Low) | 1 (⬜ Very Low) | NA | PRIORITY LOW | `rank:C-low-value-low-cost` | rank:C-low-value-low-cost, test, Community Report |
 | [183](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/183) | use more standardized format in NEWS / changelog? | 0 (🟢 Very Low) | 0 (⬜ Very Low) | NA | PRIORITY LOW | `rank:C-low-value-low-cost` | rank:C-low-value-low-cost, documentation, refactor, Affects R users only - NOT web app users |
 | [42](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/42) | Remove unused report template files | 1 (🟢 Very Low) | 0 (⬜ Very Low) | NA | PRIORITY LOW | `rank:C-low-value-low-cost` | rank:C-low-value-low-cost, Community Report |
-| [666](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/666) | Design decision: How to provide updated Technical Documentation for in… | 2 (🔵 Low) | 0 (⬜ Very Low) | NA | — | `rank:C-low-value-low-cost` | documentation |
+| [666](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/666) | Design decision: How to provide updated Technical Documentation for in… | 2 (🔵 Low) | 0 (⬜ Very Low) | v4.2024.0 | — | `rank:C-low-value-low-cost` | documentation |
 | [60](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60) | Rename community report functions with common convention | 3 (🔵 Low) | 0 (⬜ Very Low) | NA | PRIORITY LOW | `rank:C-low-value-low-cost` | rank:C-low-value-low-cost, documentation, refactor, server |
 
 ---
@@ -342,7 +344,7 @@
 
 ---
 
-## Full Table — All 135 Issues
+## Full Table — All 136 Issues
 
 Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 
@@ -381,6 +383,7 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 | B | [464](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/464) | 5 | 15 | v4.2024.0 | PRIORITY HIGH-ish but not a bug | Investigate and solve high cost on AWS Fargate |
 | B | [193](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/193) | 5 | 15 | v4.2024.1 placeholder | PRIORITY HIGH-ish but not a bug | Create Executive Summary helper functions - summarizer / Methods for Ide… |
 | B | [192](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/192) | 5 | 15 | v4.2024.1 placeholder | PRIORITY HIGH-ish but not a bug | User-specified indicators (enable upload of and reporting on user-provid… |
+| B | [671](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/671) | 7 | 15 | v4.2024.0 | PRIORITY HIGH-ish but not a bug | Align bundled state/county geography and information with 2024 for v4.20… |
 | B | [31](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/31) | 4 | 12 | v4.2024.1 placeholder | PRIORITY MEDIUM | fix distance\_avg in doaggregate()\$results\_bybg\_people |
 | B | [553](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/553) | 6 | 12 | v4.2024.1 placeholder | PRIORITY LOW | plot\_lorenz\_\*() draft plots are broken: undefined bysite, filter on a li… |
 | B | [56](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/56) | 6 | 12 | v4.2024.1 placeholder | PRIORITY MEDIUM | check/ fix Distance and Site Count summary stats, in doaggregate() |
@@ -447,7 +450,7 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 | C | [350](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/350) | 2 | 1 | NA | PRIORITY LOW | Add report regression tests for FIPS, shapefile, sitenumber, NAICS, and … |
 | C | [183](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/183) | 0 | 0 | NA | PRIORITY LOW | use more standardized format in NEWS / changelog? |
 | C | [42](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/42) | 1 | 0 | NA | PRIORITY LOW | Remove unused report template files |
-| C | [666](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/666) | 2 | 0 | NA | — | Design decision: How to provide updated Technical Documentation for indi… |
+| C | [666](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/666) | 2 | 0 | v4.2024.0 | — | Design decision: How to provide updated Technical Documentation for indi… |
 | C | [60](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/60) | 3 | 0 | NA | PRIORITY LOW | Rename community report functions with common convention |
 | D | [83](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/83) | 4 | 5 | NA | PRIORITY LOW | enable selecting a folder as way to upload shapefile(s) |
 | D | [584](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/584) | 4 | 4 | v4.2024.1 placeholder | PRIORITY LOW | Speed/ETA calibration: work deliberately scoped out of #515 |
@@ -490,9 +493,9 @@ Sorted: A first (best), then B, C, D; within each group by benefit DESC.
 
 | Milestone | Issue count |
 |-----------|------------:|
-| v4.2024.0 | 11 |
+| v4.2024.0 | 13 |
 | v4.2024.1 placeholder | 41 |
-| NA | 83 |
+| NA | 82 |
 
 ---
 
