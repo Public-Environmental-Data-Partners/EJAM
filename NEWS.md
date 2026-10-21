@@ -2,7 +2,7 @@
 
 ## New web app features since October 2026
 
-- **Planned data update (on hold):** after the environmental updates are accepted and Mark authorizes the data/version swap, demographics will use the 2020-2024 American Community Survey (ACS), with indexes and percentiles recalculated to match. This update has not been applied; the branch still uses ACS 2018-2022.
+- **See updated data:** demographics now use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version, with indexes and percentiles recalculated to match.
 
 - **Large analyses use less memory:** the same results with about 1–1.7 GB less peak memory, and unbuffered county, state, tract, or blockgroup analyses run about twice as fast (#649, #652).
 
@@ -40,14 +40,6 @@ The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), 
 
 
 ## New Features for R users (not in web app yet) since October 2026
-
-- Release geography preparation now validates state/county source vintages,
-  lookup areas and provenance, FIPS coverage, and candidate block/crosswalk
-  links. Data preparation remains on hold: no 2024 payloads are included in
-  this change, and building release inputs requires explicit approval.
-  Default tract/blockgroup services follow the active ACS vintage; the 2024
-  path uses Census TIGERweb rather than nonexistent Esri 2024 endpoints (#671).
-
 
 - `shapes_from_fips()` and its place-boundary helpers now use `year = NULL`
   to select the calendar-predicted latest TIGER/Line places vintage (assuming an October 14 release)
