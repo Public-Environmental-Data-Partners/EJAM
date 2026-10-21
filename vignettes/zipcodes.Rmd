@@ -58,6 +58,8 @@ file, which is slow, but it is cached locally so later uses are fast):
 
 ```{r ejamit_zipcode, eval=FALSE, include=TRUE}
 out <- ejamit(zipcode = c("10012", "10506"))
+# zip is an equivalent alias (provide only one alias)
+out <- ejamit(zip = c("10012", "10506"))
 
 # summary report, with the places described as zip codes and their bounds mapped
 ejam2report(out)
@@ -69,6 +71,13 @@ mapfast(z)
 
 The rest of this article shows the manual, step-by-step version of that
 workflow, which offers more control (e.g., other sources of zip code polygons).
+
+`ejamapi()` and `url_ejamapi()` now accept `zip` or `zipcode` for ZIP/ZCTA
+analysis with zero buffer by default (use only one alias). GET/POST `/report`
+and POST `/data` support the same aliases once the API change is deployed.
+For example, `ejamapi(zip = "20912", endpoint = "data")` requests data, and
+`url_ejamapi(zipcode = c("10012", "10506"), sitenumber = 0)` builds an aggregate
+report link.
 
 ## Manual step-by-step approach
 
@@ -178,7 +187,7 @@ ejam2report(out,
 # put zip code in the x axis labels!
 ejam2barplot_sites(out, names.arg = z$GEOID20, sortby = FALSE) # zcta2$GEOID20
 
-# This table view works, but the links to reports do not work with zipcodes
+# API report links retain ZIP identity once the ZIP API change is deployed
 ejam2tableviewer(out)
 ```
 

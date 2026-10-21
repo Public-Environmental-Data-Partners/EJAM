@@ -105,3 +105,46 @@ pts <- testpoints_10[1,]
 ### >1 point, some invalid
 
 ######################################################################################################## #
+
+######################################################################################################## #
+
+test_that("a block just beyond the radius is kept if its adjusted short distance is within the radius", {
+  ## One block, 1.02 miles from the site, with block_radius_miles 1.07.
+  ## Adjusted distance is 0.9 * 1.07 = 0.963 miles, so the block is within a 1-mile radius,
+  ## unless distances are left unadjusted. (Review of PR 649: the search loop must not drop it early.)
+  earth_miles <- 3959
+  xyz <- function(lat, lon) {
+    r <- pi / 180
+    earth_miles * c(cos(lat * r) * cos(lon * r), cos(lat * r) * sin(lon * r), sin(lat * r))
+  }
+  site <- data.frame(lat = 40, lon = -100)
+  block_lat <- 40 + 1.02 / 69.05 # about 1.02 miles north of the site
+  b <- xyz(block_lat, -100)
+  d_unadjusted <- sqrt(sum((b - xyz(site$lat, site$lon))^2))
+  expect_true(d_unadjusted > 1 && d_unadjusted < 1.07)
+
+  quaddata_test <- data.table::data.table(BLOCK_X = b[1], BLOCK_Z = b[3], BLOCK_Y = b[2], blockid = 1L)
+  blockwts_test <- data.table::data.table(blockid = 1L, bgid = 1, blockwt = 1, block_radius_miles = 1.07)
+  tree_test <- SearchTrees::createTree(quaddata_test, treeType = "quad", dataType = "point")
+  local_mocked_bindings(
+    ejam_cached_data_get = function(name) {
+      switch(name, quaddata = quaddata_test, blockwts = blockwts_test, stop("unexpected dataset ", name))
+    },
+    .package = "EJAM"
+  )
+
+  adjusted <- getblocksnearbyviaQuadTree(site, radius = 1, quadtree = tree_test, quiet = TRUE,
+                                         use_unadjusted_distance = FALSE)
+  expect_equal(NROW(adjusted), 1)
+  expect_equal(adjusted$distance, 0.9 * 1.07)
+  expect_equal(adjusted$distance_unadjusted, d_unadjusted, tolerance = 1e-3) # pdist works in single precision
+
+  unadjusted <- getblocksnearbyviaQuadTree(site, radius = 1, quadtree = tree_test, quiet = TRUE,
+                                           use_unadjusted_distance = TRUE)
+  expect_equal(NROW(unadjusted), 0)
+
+  ## in a ring from 0.98 to 1 mile, the adjusted distance 0.963 is below the inner edge
+  donut <- getblocksnearbyviaQuadTree(site, radius = 1, radius_donut_lower_edge = 0.98, quadtree = tree_test,
+                                      quiet = TRUE, use_unadjusted_distance = FALSE)
+  expect_equal(NROW(donut), 0)
+})

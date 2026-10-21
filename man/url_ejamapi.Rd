@@ -20,6 +20,8 @@ url_ejamapi(
   version = NULL,
   fileextension = "auto",
   ...,
+  zip = NULL,
+  zipcode = NULL,
   shape = NULL,
   shp = NULL
 )
@@ -96,6 +98,11 @@ API /report URLs, never to app-fallback or ifna links.}
 
 \item{...}{a named list of other query parameters passed to the API,
 to allow for expansion of allowed parameters}
+
+\item{zip, zipcode}{One or more ZIP codes (ZCTA boundaries), as a vector or
+comma-separated string. These are aliases; provide only one. ZIPs cannot be
+combined with coordinates, sites, shapefiles, or FIPS. The default ZIP buffer
+is zero. Leading zeroes are restored and ZIP+4 is reduced to five digits.}
 
 \item{shape, shp}{aliases (synonyms) for shapefile}
 }

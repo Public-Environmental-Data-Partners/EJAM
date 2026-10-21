@@ -141,3 +141,33 @@ test_that("pkg_functions_by_roxygen_tag reports tags without nearby functions", 
   expect_null(funcs)
   expect_true(any(grepl("no function definition found", out)))
 })
+
+test_that("find_in_files works when path is not the working directory", {
+  tmp <- tempfile("find-in-files-")
+  dir.create(file.path(tmp, "sub"), recursive = TRUE)
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+
+  writeLines(c("nothing here", "a toque here"), file.path(tmp, "one.txt"))
+  writeLines(c("toque again", "and toque twice"), file.path(tmp, "sub", "two.txt"))
+  writeLines("toque in a file type not searched", file.path(tmp, "three.md"))
+
+  # full.names = FALSE used to fail in readLines() unless path was the working directory
+  expect_false(normalizePath(getwd()) == normalizePath(tmp))
+  short <- EJAM:::find_in_files("toque", path = tmp, filename_pattern = "\\.txt$",
+                                full.names = FALSE, quiet = TRUE)
+  expect_equal(names(short), c("one.txt", "sub/two.txt"))
+  expect_equal(short[["one.txt"]], c(`2` = "a toque here"))
+  expect_equal(names(short[["sub/two.txt"]]), c("1", "2"))
+
+  full <- EJAM:::find_in_files("toque", path = tmp, filename_pattern = "\\.txt$",
+                               full.names = TRUE, quiet = TRUE)
+  expect_equal(names(full), file.path(tmp, c("one.txt", "sub/two.txt")))
+  expect_equal(unname(full), unname(short))
+
+  fragments <- EJAM:::find_in_files("toque [a-z]+", path = tmp, filename_pattern = "\\.txt$",
+                                    full.names = FALSE, whole_line = FALSE, quiet = TRUE)
+  expect_equal(fragments[["sub/two.txt"]], c(`1` = "toque again", `2` = "toque twice"))
+
+  expect_null(EJAM:::find_in_files("zzznotfoundzzz", path = tmp, filename_pattern = "\\.txt$",
+                                   full.names = FALSE, quiet = TRUE))
+})

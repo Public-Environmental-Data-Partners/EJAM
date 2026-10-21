@@ -3,7 +3,7 @@
 `global_or_param()` vs shiny `input$` vs launch-URL params vs bookmarking — and how to keep it organized.
 
 - **Date:** 2026-06-29
-- **Author of analysis:** review for Mark (ejanalysis), based on a 3-part audit of `R/app_ui.R`, `R/app_server.R`, `R/ejamapp.R`, `R/utils_get_global_defaults_or_user_options.R`, `R/utils_global_or_param.R` on branch `mapclick-app-integration` (PR #418).
+- **Author of analysis:** review for @ejanalysis, based on a 3-part audit of `R/app_ui.R`, `R/app_server.R`, `R/ejamapp.R`, `R/utils_get_global_defaults_or_user_options.R`, `R/utils_global_or_param.R` on branch `mapclick-app-integration` (PR #418).
 - **Status:** Reference/analysis. The CLEANUP items at the end are **deferred to a separate branch/PR `refactoring_app_settings`** (its own session, based on `development`).
 
 ---

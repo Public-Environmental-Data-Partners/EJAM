@@ -9,7 +9,9 @@ popup_from_ejscreen(
   linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header),
   verbose = FALSE,
   site_method = NULL,
-  sitenumber_label = NULL
+  sitenumber_label = NULL,
+  detailed = TRUE,
+  sitenumbers = NULL
 )
 }
 \arguments{
@@ -43,6 +45,14 @@ Only used when \code{out} is a single-site (1-row) table, as when \code{\link[=e
 one site that was row N of a larger analysis (e.g., the EJAM API per-site report links
 made by \code{\link[=url_ejamapi]{url_ejamapi()}}) -- the regenerated run's row index (1) is not the site number
 the user expects to see. A number N is shown as "Site N"; text is shown as-is.}
+
+\item{detailed}{set to FALSE for a short popup, as used for maps of many sites (see \code{\link[=map_popup_style]{map_popup_style()}}):
+the site ID, the "Residents within ..." line, longitude/latitude, area, links to reports, and population,
+but not the other indicators.}
+
+\item{sitenumbers}{optional site numbers shown in the popups, one per row of \code{out}.
+Default is the row numbers, \code{1:NROW(out)}. The web app uses this when it builds the popup
+for just the one site that was clicked on a map.}
 }
 \value{
 HTML ready to be used for map popups

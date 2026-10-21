@@ -6,24 +6,33 @@
 \usage{
 shapes_from_fips(
   fips,
-  myservice_blockgroup = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"),
-  myservice_tract = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
+  myservice_blockgroup = shapes_acs_boundary_service("blockgroup"),
+  myservice_tract = shapes_acs_boundary_service("tract"),
   myservice_place = "tiger",
   myservice_county = "cartographic",
   allow_multiple_fips_types = TRUE,
-  year = 2024
+  year = NULL
 )
 }
 \arguments{
 \item{fips}{vector of one or more Census FIPS codes such as from \code{\link[=name2fips]{name2fips()}}}
 
-\item{myservice_blockgroup}{URL of feature service to get shapes from,
-or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.}
+\item{myservice_blockgroup}{A feature-service URL (the existing default),
+"cartographic", or "tiger". The latter two use optional package tigris to
+download and cache one boundary file per state, without requesting ACS data.
+This can be much faster than repeated service queries for many blockgroups.
+"cartographic" uses smaller, generalized 1:500,000 boundaries: fast to
+download and draw, but simplified and clipped along shorelines. Use it for
+overview maps, not precise area, buffering, or point-in-polygon analysis.
+"tiger" retains full TIGER/Line boundary detail; files are larger and slower
+to download and draw, but state-file caching still avoids repeated queries.
+The default service follows the active ACS vintage (Esri for 2022/2023,
+Census TIGERweb ACS2024 for 2024);
+tigris is required only when explicitly selecting either tigris option.}
 
-\item{myservice_tract}{URL of feature service to get shapes from,
-or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.}
+\item{myservice_tract}{URL of feature service to get tract shapes from.
+The "cartographic" and "tiger" options are not implemented for tracts;
+the tract helper warns and uses its default service if these are requested.}
 
 \item{myservice_place}{only "tiger" is implemented}
 
@@ -36,7 +45,20 @@ downloaded, falling back to downloading only for any FIPS not found there.}
 
 \item{allow_multiple_fips_types}{if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips}
 
-\item{year}{passed to \code{\link[tigris:places]{tigris::places()}} for bounds or city/town type of fips}
+\item{year}{Boundary year for \code{\link[tigris:places]{tigris::places()}} and for blockgroups when
+selecting "cartographic" or "tiger". NULL (the default) uses the
+calendar-predicted latest TIGER/Line places vintage for places (assuming
+an October 14 annual release, without checking publication),
+and \code{\link[=acs_endyear]{acs_endyear()}} for those blockgroups. Places define areas to analyze
+and need not share the vintage of the demographic data overlaid on them.
+Specify a year explicitly to use another vintage for these downloads.
+County downloads continue to use \code{\link[=acs_endyear]{acs_endyear()}}; built-in county/state
+boundaries must be rebuilt for the release's demographic geography.
+Default tract/blockgroup services follow the active ACS vintage.
+Service URLs determine their own vintage;
+year does not change the vintage embedded in a URL.
+Requested places without a boundary warn with their FIPS codes and year;
+their rows retain empty geometry, without substituting another vintage.}
 }
 \value{
 spatial data.frame with one row per fips (assuming any fips are valid)
@@ -45,14 +67,17 @@ spatial data.frame with one row per fips (assuming any fips are valid)
 Download shapefiles based on FIPS codes of States, Counties, Cities/CDPs, Tracts, or Blockgroups (not blocks)
 }
 \details{
-The functions this relies on should return results in the same order as the input fips,
-but will exclude rows for invalid fips, and will also exclude output rows that would
-correspond to fips for which boundaries could not be obtained for some reason.
-So the output table might not have the same number of rows as the input fips vector.
+Results follow the input FIPS order, including duplicates. Empty geometry
+rows preserve positional alignment for invalid inputs and for valid FIPS
+whose polygons could not be obtained. Only the supported FIPS types are
+downloaded; validation and Shiny errors retain their existing behavior.
 
-When using tigris package ("tiger" as service-related parameter here),
-it uses the year that is the default in the version of the tigris package that is installed.
-You can use options(tigris_year = 2023) for example to specify it explicitly.
+Choose the boundary source explicitly when accuracy matters. A speed gain
+from state-file caching does not require simplifying the boundaries: use
+"tiger" to retain detail. Simplification with "cartographic" can change area,
+point membership, and buffer results, even if the FIPS codes are unchanged.
+Cached tigris blockgroups can be read offline; other download paths retain
+their connectivity checks. Missing polygons remain empty rows in the output.
 
 Blocks are not implemented yet here. For info on blocks bounds, see  \code{\link[tigris:block_groups]{tigris::block_groups()}}
 Also note the \link{blockwts} dataset had a placeholder column block_radius_miles that
@@ -60,7 +85,7 @@ was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on ho
 If it were used, it could be a way to quickly get the area of each block,
 using the formula  area = pi * (block_radius_miles^2)
 
-For zip code boundaries, see the \href{ejanalysis.org/ejamdocs}{EJAM documentation} article on zipcodes.
+For zip code boundaries, see \code{\link[=shapes_from_zip]{shapes_from_zip()}} and \href{ejanalysis.org/ejamdocs}{EJAM documentation} article on zipcodes.
 }
 \examples{
  # shp2 = shapes_from_fips("10001", "10005") # Counties not zip codes!

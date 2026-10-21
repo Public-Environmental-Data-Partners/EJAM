@@ -182,7 +182,7 @@ ejamapp(isPublic=TRUE)
 
 **EJScreen web app integration**
 - Since the v3.2022.1 patch release, EJScreen can hand off multiple selected places to EJAM (deep-link/launch-URL parameters, plus a token-based `POST /handoff` on the API) so EJAM opens pre-loaded with those sites, or the API can return one combined "multisite" report directly. See `vignettes/dev-app-settings.Rmd` for the launch-URL parameters, and `NEWS.md` (top entry) for the full feature description.
-- The EJScreen app/repo is separate from EJAM; treat it (like EJAM-API) as a stricter-approval repo -- see "Cross-Tool Working Conventions" below.
+- The EJScreen app/repo is related to but separate from EJAM; treat it (like EJAM-API) as a stricter-approval repo -- see "Cross-Tool Working Conventions" below.
 
 ## GitHub Actions / CI Workflows
 
@@ -286,7 +286,8 @@ Two ACS vintages are supported at once: a **frozen** one and a **live** one (the
 
 - **A vintage is a data property, not a code property.** Comparing two vintages shows no differences under `R/`. Only a handful of bundled `data/*.rda` files carry real content differences (`blockgroupstats`, `usastats`, `statestats`, `avg.in.us`); the rest differ only by stamped metadata attributes. Changing vintage means swapping those datasets and restamping metadata -- not migrating code.
 - Those bundled `.rda` datasets are **not** in `ejamdata` releases. The git tag for a vintage is their source. `ejamdata` releases hold the `.arrow` files, of which only `bgej` is vintage-specific (geography and FRS files are shared).
-- **Do not backport code into the `ACS2022`/`ACS2023`/`ACS2024` branches.** They are stale historical branches, not active release lines; `development`/`main` carry the currently-shipping vintage. A new vintage is produced by swapping data onto the main line.
+- Use release tags (`v3.2022.3` and `v4.2024.0`, and possibly `v3.2023.0`  ) for historical vintages; do not recreate or backport into retired vintage-named branches. During october 2026, integrating v4 work into `v4.2024.0-prep`, moving some of it into `development`, and 
+  keeping  `main` on the v3 line until team approves the transition. Fresh pipeline outputs, package versions, and asset pins must be activated together in an approved data/version-swap PR; branch cleanup is not authorization to run or activate that swap.
 - `data/testoutput_*.rda` fixtures are vintage-sensitive and must be regenerated when the vintage changes -- several tests assert exact equality against them. Do not reuse fixtures from an older vintage branch.
 - The annual pipeline runbook is `vignettes/dev-update-ejscreen-datasets-yearly.Rmd`; dataset/release identifier rules are in `vignettes/dev-update-datasets.Rmd`.
 

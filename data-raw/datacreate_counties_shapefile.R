@@ -20,7 +20,10 @@ if (!dir.exists(td)) {stop('failed to create temp subfolder /countyshp')}
 ## "changes where the boundaries come from, not which boundaries they are"
 ## contract (flagged in review of PR #472). Do NOT use
 ## acs_endyear(guess_census_has_published = T) here.
-yr = acs_endyear(); print(yr)
+yr = EJAM:::release_geography_year(Sys.getenv("EJAM_GEOGRAPHY_YEAR", acs_endyear())); print(yr)
+if (yr != as.integer(acs_endyear())) {
+  stop("Builder year must match active ACS data; use datacreate_release_geography.R for inactive staging")
+}
 
 cat("CONFIRM YEAR SHOULD BE ", yr, " (must equal acs_endyear(), the runtime download vintage)", '\n')
 
@@ -92,6 +95,7 @@ if (exists("counties_shapefile", where = asNamespace("EJAM"), inherits = FALSE))
 # add the dataset to this package as a dataset to be installed with the package and lazy loaded when needed
 cat("updating metadata \n")
 
+attr(counties_shapefile, "boundary_year") <- as.integer(yr)
 attr(counties_shapefile, "source_url")          <- baseurl
 attr(counties_shapefile, "date_downloaded")     <- as.character(Sys.Date())
 attr(counties_shapefile, "date_saved_in_package") <- as.character(Sys.Date())
@@ -121,6 +125,9 @@ EJAM:::dataset_documenter(
 #'   by default (tidycensus/tigris with cb = TRUE) -- so baking them in changes
 #'   where the boundaries come from, not which boundaries they are.
 #'   They are generalized for mapping and are not intended for area calculations.
+#'   Release geography builds record physical source vintage in boundary_year,
+#'   separately from ACS/package stamps. Stale bundled counties are not used
+#'   when their physical vintage differs from the active ACS end year.
 #'
 #'   It includes counties and county equivalents in the 50 states, DC, PR, and
 #'   the island areas.

@@ -1,7 +1,4 @@
 
-.positai/settings.json
-.positai
-
 ################################################################################### #
 # Trickier cases of items git should ignore
 
@@ -109,3 +106,7 @@ inst/report/community_report/junk.html
 .claude/
 .claude-code-memory-import/
 
+# Posit
+.posit/assistant
+.posit/assistant/settings.json
+.positai/settings.json

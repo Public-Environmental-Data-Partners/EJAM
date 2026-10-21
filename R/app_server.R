@@ -2241,6 +2241,10 @@ app_server <- function(input, output, session) {
   observeEvent(input$bt_get_results, {  # (button is pressed)
 
     analysis_complete(FALSE)
+    # Release the previous analysis's results now, so this analysis can reuse that memory.
+    # Outputs that use data_processed() update only after this observer finishes, so they
+    # show the new results, or none if this analysis stops with an error.
+    data_processed(NULL)
     # disable download buttons until finished analysis
     download_button_disable_js(id = 'download_report_multisite')
     download_button_disable_js(id = 'download_results_spreadsheet')
@@ -2287,17 +2291,29 @@ app_server <- function(input, output, session) {
       }
       invisible(runtime_estimate)
     }
+    ## if a step of the analysis stopped with an error (see analysis_step_in_app()):
+    ## close progress bars, tell the user why, and end this analysis quietly
+    stop_failed_analysis <- function(failed, ...) {
+      for (p in list(progress_all, ...)) {try(p$close(), silent = TRUE)}
+      if (!is.null(ejamitRunTimeNotification)) {removeNotification(ejamitRunTimeNotification)}
+      invisible(gc()) # free what the stopped analysis had allocated
+      showNotification(failed$message, type = 'error', duration = NULL)
+      req(FALSE) # stops this observer without ending the session
+    }
 
     ################################################# #
     # > ejamit() for FIPS  ####
     if (submitted_upload_method() %in% c('FIPS', 'FIPS_PLACE')) {  # if FIPS, do everything in 1 step right here.
-      fips_uploaded_for_prediction <- data_uploaded()
-      fips_for_prediction <- if (is.data.frame(fips_uploaded_for_prediction)) {
-        fips_from_table(fips_uploaded_for_prediction, addleadzeroes = TRUE, in_shiny = TRUE)
-      } else {
-        fips_lead_zero(fips_uploaded_for_prediction)
-      }
-      fips_for_prediction <- fips_for_prediction[fips_valid(fips_for_prediction)]
+      fips_for_prediction <- analysis_step_in_app({
+        fips_uploaded_for_prediction <- data_uploaded()
+        fips_for_prediction <- if (is.data.frame(fips_uploaded_for_prediction)) {
+          fips_from_table(fips_uploaded_for_prediction, addleadzeroes = TRUE, in_shiny = TRUE)
+        } else {
+          fips_lead_zero(fips_uploaded_for_prediction)
+        }
+        fips_for_prediction[fips_valid(fips_for_prediction)]
+      }, step = "checking FIPS codes")
+      if (inherits(fips_for_prediction, "analysis_failed")) {stop_failed_analysis(fips_for_prediction)}
       show_ejamit_runtime_estimate(
         rows = length(fips_for_prediction),
         radius = submitted_radius_val(),
@@ -2305,7 +2321,7 @@ app_server <- function(input, output, session) {
         analysis_subtype = speed_fips_analysis_subtype(fips_for_prediction)
       )
 
-      out <- ejamit(fips = data_uploaded(),              # unlike for SHP or latlon cases, this could include invalid FIPS!
+      out <- analysis_step_in_app(ejamit(fips = data_uploaded(),              # unlike for SHP or latlon cases, this could include invalid FIPS!
                     updateProgress_getblocks = NULL, # differs in shp vs latlon cases, unused in fips case.
                     in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2346,7 +2362,8 @@ app_server <- function(input, output, session) {
                     silentinteractive = TRUE,
                     quiet = TRUE,
                     testing = input$testing
-      )
+      ))
+      if (inherits(out, "analysis_failed")) {stop_failed_analysis(out)}
       # sitetype is "fips" and
       # now includes area_sqmi columns as output of ejamit(), for fips case, but if download_fips_bounds_to_calc_areas=F, it is NA values
 
@@ -2370,10 +2387,11 @@ app_server <- function(input, output, session) {
           # if (!silentinteractive) {
           cat('Adding buffer around each polygon.\n')
           # }
-          shp <- shape_buffered_from_shapefile(
+          shp <- analysis_step_in_app(shape_buffered_from_shapefile(
             shapefile = data_uploaded(),
             radius.miles =  rad_buff
-          ) # default crs
+          ), step = "shape_buffered_from_shapefile()") # default crs
+          if (inherits(shp, "analysis_failed")) {stop_failed_analysis(shp)}
         } else {
           shp <- data_uploaded()
         }
@@ -2396,7 +2414,7 @@ app_server <- function(input, output, session) {
           progress_getblocks_shp$set(value = value, message = message_main, detail = message_detail)
         }
 
-        out <- ejamit(shapefile = shp,
+        out <- analysis_step_in_app(ejamit(shapefile = shp,
                       updateProgress_getblocks = updateProgress_getblocks_shp, # differs in shp vs latlon cases, unused in fips case.
                       in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2432,7 +2450,8 @@ app_server <- function(input, output, session) {
                       silentinteractive = TRUE,
                       quiet = TRUE,
                       testing = input$testing
-        )
+        ))
+        if (inherits(out, "analysis_failed")) {stop_failed_analysis(out, progress_getblocks_shp)}
 
         ## close getblocks progress bar
         progress_getblocks_shp$close()
@@ -2467,7 +2486,7 @@ app_server <- function(input, output, session) {
           progress_getblocks$set(value = value, message = message_main, detail = message_detail)
         }
 
-        out <-  ejamit(sitepoints = data_uploaded(),
+        out <-  analysis_step_in_app(ejamit(sitepoints = data_uploaded(),
                        updateProgress_getblocks = updateProgress_getblocks, # differs in shp vs latlon cases, unused in fips case.
                        in_shiny = TRUE, # used only in fips case, passed to getblocksnearby_from_fips()
 
@@ -2503,7 +2522,8 @@ app_server <- function(input, output, session) {
                        silentinteractive = TRUE,
                        quiet = TRUE,
                        testing = input$testing
-        )
+        ))
+        if (inherits(out, "analysis_failed")) {stop_failed_analysis(out, progress_getblocks)}
 
         ## close getblocks progress bar
         progress_getblocks$close()
@@ -2676,24 +2696,29 @@ app_server <- function(input, output, session) {
   ############################################ #
   ### report_map ### #
 
+  ## With many sites, the map is built without popups, and the full popup for a site
+  ## is built when it is clicked (see the observer below report_map). This keeps the map fast.
+  report_map_popups_on_click <- reactive({
+    req(data_processed())
+    NROW(data_processed()$results_bysite) > map_size_setting("default_max_pts_show_detailed_popups")
+  })
+
   report_map <- reactive({
 
     validate(need(data_processed(), 'Please run an analysis to see results.'))
     circle_color <- '#000080'
+    popup_style <- if (report_map_popups_on_click()) "none" else "auto"
 
     # if shapefile, merge geometry and create buffer if nonzero buffer is set
     if (submitted_upload_method() == "SHP") {
 
       # SHP map ------------------------------ #
 
-      #   not sure this validate and circle_color belong here stil:
-      validate(need(data_processed(), 'Please run an analysis to see results.'))
-      circle_color <- '#000080'
-
       map_ejam_plus_shp(
         out = data_processed(),
         shp = isolate(data_uploaded()),  # isolate here and below to avoid re-evaluation when user switches site selection method; shp already has ejam_uniq_id assigned (after which invalid rows were dropped I think)
-        radius_buffer = sanitized_radius_now()
+        radius_buffer = sanitized_radius_now(),
+        popup_style = popup_style
       )
 
     } else { #  not shapefile
@@ -2711,7 +2736,8 @@ app_server <- function(input, output, session) {
                 radius = submitted_radius_val(),
                 launch_browser = FALSE,
                 column_names = 'ej', #'all',
-                labels = popup_labels,color = circle_color)
+                labels = popup_labels, color = circle_color,
+                popup_style = popup_style)
       } else {
 
         # FIPS map - download boundaries then map ------------------------------ #
@@ -2731,8 +2757,12 @@ app_server <- function(input, output, session) {
           }
           if (!is.null(fips_shapes) && nrow(fips_shapes) > 0) {
 
-            popups <- popup_from_ejscreen(data_processed()$results_bysite) # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
-            map_shapes_leaflet(fips_shapes, popup = popups)
+            if (popup_style == "none") {
+              map_shapes_leaflet(fips_shapes, popup_style = "none")
+            } else {
+              popups <- popup_from_ejscreen(data_processed()$results_bysite) # linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header)
+              map_shapes_leaflet(fips_shapes, popup = popups)
+            }
 
           } else {
             #Possible failsafe needed if fips is invalid? Will it get to this stage? Blank map returned
@@ -2763,6 +2793,22 @@ app_server <- function(input, output, session) {
   output$quick_view_map <- leaflet::renderLeaflet({
     report_map()
   })
+
+  ## full popup for the one site clicked, when the map was built without popups (many sites).
+  ## Each circle, marker, or polygon has its row number in results_bysite as its layerId.
+  show_report_map_popup <- function(click) {
+    req(report_map_popups_on_click(), click$id)
+    i <- suppressWarnings(as.integer(click$id))
+    bysite <- data_processed()$results_bysite
+    req(!is.na(i), i >= 1, i <= NROW(bysite))
+    pop <- popup_from_ejscreen(bysite[i, ], sitenumbers = i) # same as the popups built for a map of fewer sites
+    leaflet::leafletProxy("quick_view_map", session) %>%
+      leaflet::clearPopups() %>%
+      leaflet::addPopups(lng = click$lng, lat = click$lat, popup = pop,
+                         options = leaflet::popupOptions(maxHeight = 400, maxWidth = 850))
+  }
+  observeEvent(input$quick_view_map_shape_click,  {show_report_map_popup(input$quick_view_map_shape_click)})
+  observeEvent(input$quick_view_map_marker_click, {show_report_map_popup(input$quick_view_map_marker_click)})
   ############################################ #
 
   ### leafletProxy()  "an_leaf_map"  ### #
@@ -2854,7 +2900,7 @@ app_server <- function(input, output, session) {
           map_facilities_proxy(rad = sanitized_radius_now(),
                                highlight = TRUE, #input$an_map_clusters,
                                popup_vec = popup_vec,
-                               use_marker_clusters = nrow(d_upload) > global_or_param("marker_cluster_cutoff"),
+                               use_marker_clusters = nrow(d_upload) > map_size_setting("default_max_pts_map_show_unclustered"),
                                clustered = FALSE) # is_clustered())
       )
     }
