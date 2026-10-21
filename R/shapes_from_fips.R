@@ -1116,6 +1116,8 @@ shapes_cousub_from_placefips <- function(fips, year) {
 
 predicted_latest_year_available <- function(asofsysdate = Sys.Date(),
                                             predicted_release_dates = paste0(2022:2036, "-10-14")) {
+  # may be used by shapes_places_default_year()
+
   asofsysdate <- as.Date(asofsysdate)
   predicted_release_dates <- as.Date(predicted_release_dates)
   if (length(asofsysdate) != 1L || is.na(asofsysdate)) {

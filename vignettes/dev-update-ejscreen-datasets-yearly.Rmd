@@ -162,7 +162,9 @@ The annual workflow creates or reads these stages:
     optional EJScreen-style percentile lookup CSVs created from `usastats` and
     `statestats`. These use EJScreen field names and add `std` rows to match
     EPA lookup tables such as `EJScreen_2024_BG_National_Lookup.csv` and
-    `EJScreen_2024_BG_State_Lookup.csv`. The annual pipeline does not create
+    `EJScreen_2024_BG_State_Lookup.csv`. Note the "2024" in those filenames
+    does NOT refer to the ACS vintage. It is just the year in which EPA released
+    those files. The annual pipeline does not create
     these by default because the live EJScreen app maps from the blockgroup
     exports and reports are served through EJAM-API/EJAM.
 
@@ -237,7 +239,11 @@ and whether block-level IDs line up across `blockwts`, `blockpoints`,
 
 For a given ACS 5-year release, use the Census geography vintage associated
 with the ACS end year. For example, ACS 2020-2024 should use 2024 Census/TIGER
-or TIGERweb geography attributes. The release pipeline prefers the downloadable
+or TIGERweb geography attributes. Note that is not usually the newest version
+of TIGER/Line shapefiles, which are updated annually. 
+(See also EJAM:::predicted_latest_year_available() as used for 
+downloading polygons for mapping, which has a different set of needs).
+The release pipeline prefers the downloadable
 Census TIGER/Line block group shapefiles for `arealand` and `areawater`, with
 TIGERweb as a fallback. Those geography sources can occasionally include
 block groups that are valid geography features but that are not present in the
@@ -486,7 +492,7 @@ those settings carefully, especially the year, storage backend, stage formats,
 force flags, Island Areas settings, provisional-input flags, and prior
 validation target.
 
-For ACS2024/v3 and later annual/release runs, AS/GU/MP/VI rows are added by
+For ACS 2024/v3 and later annual/release runs, AS/GU/MP/VI rows are added by
 default at the blockgroup dataset, EJSCREEN export, and map-data visibility
 level, in the same general style as the legacy EPA/EJScreen export. The default
 source for Island Areas row IDs, area fields, and available environmental
@@ -932,9 +938,13 @@ formula or missing-value rule.
 Pipeline stage files are review artifacts. After they are accepted, update the
 package data objects deliberately. The runner currently has an interactive
 helper path for replacing `blockgroupstats`, but it does not automatically
-replace every final package dataset. Work on the vintage's branch
-(`ACS2024` / `ACS2023` / `ACS2022`) with the package version and metadata fields in
-`DESCRIPTION` already set, because the metadata helpers stamp datasets from
+replace every final package dataset. For the v4 release, for example, one would start a
+short-lived data/version-swap branch from the current head, such as `v4.2024.0-prep`,
+only after the accepted pipeline outputs are confirmed. Keep the
+new datasets and their matching package version, ACS vintage, and asset pin in
+one coordinated PR back to prep; do not change `development` until the version
+transition is approved. Set the matching fields in `DESCRIPTION` before
+stamping the new datasets, because the metadata helpers stamp datasets from
 `DESCRIPTION` via `desc::description$new("DESCRIPTION")` and
 `ejam_package_version_current()`.
 
@@ -1132,37 +1142,42 @@ pipeline source carries these provisions:
 ## Comparing Two Vintages Side by Side
 
 While testing an annual update it is useful to run two vintages/releases at once
-(for example the new `ACS2024` / `v3.2024.0` build and the prior `ACS2023` /
-`v3.2023.0` build) and compare the same sites in each. Each EJAM release pins its
+(for example the historical releases `v4.2024.0` and `v3.2023.3`) and compare
+the same sites in each. These tags reproduce those releases, including their
+then-existing limitations; they are not inputs for the fresh version's build. Each EJAM release pins its
 own `ejamdata_required_tag` in DESCRIPTION, so each pulls the matching vintage of
 the large Arrow datasets (`bgej`, etc.) from its tagged `ejamdata` release.
 
-The cleanest approach is one **git worktree per vintage**, so each checkout has its
+The cleanest approach is **one git worktree per vintage**, so each checkout has its
 own `data/` folder and Arrow cache and there is no cross-vintage collision:
 
 ```{r, eval=FALSE}
-# from the main checkout, create a worktree per release branch/tag:
+# from the main checkout, create a detached worktree per release tag:
 # (run in a terminal)
-# git worktree add ../EJAM-2024 ACS2024
-# git worktree add ../EJAM-2023 ACS2023
+# git worktree add --detach ../EJAM-2024 v4.2024.0
+# git worktree add --detach ../EJAM-2023 v3.2023.3
 
 # then, in a SEPARATE R session per folder:
 devtools::load_all(".")             # first load downloads this vintage's bgej (~90 MB)
-EJAM:::ejamdata_required_tag()      # confirm: "v3.2024.0" (or v3.2023.0, ...)
-attr(blockgroupstats, "acs_version")# confirm: "2020-2024" (or "2019-2023", ...)
+EJAM:::ejamdata_required_tag()      # confirm: "v3.2024.0" for example
+attr(blockgroupstats, "acs_version")# confirm: "2020-2024" for example
 out_new <- ejamit(testpoints_10, radius = 1)   # run the SAME input in each session
 # compare out_new$results_overall across the two sessions / vintages
 ```
 
-If instead you stay in **one checkout and switch branches**, the downloaded
+For an unreleased comparison, use a separate worktree at the approved v4
+candidate's exact commit, not an assumed version tag or a retired vintage branch.
+Keep a worktree until its session's work and validation are finished.
+
+If instead you stay in **one checkout and switch refs**, the downloaded
 `data/bgej.arrow` is gitignored and persists across `git switch`, while the version
-marker `data/ejamdata_version.txt` is tracked and changes with the branch. To be
+marker `data/ejamdata_version.txt` is tracked and changes with the ref. To be
 sure you are testing the right vintage's EJ indexes, remove the cached file so it is
 re-downloaded for the new vintage:
 
 ```{r, eval=FALSE}
-# after: git switch ACS2023
-file.remove("data/bgej.arrow")   # force re-download of the v3.2023.0 bgej
+# after: git switch --detach v3.2023.3
+file.remove("data/bgej.arrow")   # force re-download of the v3.2023.3 bgej
 devtools::load_all(".")
 ```
 

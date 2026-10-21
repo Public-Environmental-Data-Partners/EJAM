@@ -146,17 +146,30 @@ pkg <- "Public-Environmental-Data-Partners/EJAM@*release"
 # development branch, often well ahead of latest release:
 # pkg <- "Public-Environmental-Data-Partners/EJAM@development"
 
-# ACS2024 branch:
-# pkg <- "Public-Environmental-Data-Partners/EJAM@ACS2024"
+# a hypothetical current vX preparation branch for vintage YY
+# (unreleased; inspect DESCRIPTION for its data vintage):
+# pkg <- "Public-Environmental-Data-Partners/EJAM@vX.20YY.0-prep"
 
-# a specific release (version):
-# pkg <- "Public-Environmental-Data-Partners/EJAM@v2.32.8.001"
+# a specific released version (ACS 2018-2022):
+# pkg <- "Public-Environmental-Data-Partners/EJAM@v3.2022.3"
+
+# a specific released version (ACS 2019-2023):
+# pkg <- "Public-Environmental-Data-Partners/EJAM@v3.2023.0"
+
+# a specific released version (ACS 2020-2024):
+# pkg <- "Public-Environmental-Data-Partners/EJAM@v4.2024.0"
 
 pak::pkg_install(pkg = pkg,
                  dependencies = NA, upgrade = FALSE)
 
 library(EJAM)
 ```
+
+Use release tags for reproducible installs of historical data vintages, not
+vintage-named branches. Tags like `v3.2022.3` or `v3.2023.0` or `v3.2024.0` preserve specific earlier
+releases that used ACS 2018-2022 or ACS 2019-2023 or ACS 2020-2024 data. 
+The latter is a historical snapshot, not the most recent release using ACS 2020-2024 data;
+see the [annual-update guide](dev-update-ejscreen-datasets-yearly.html).
 
 ### Installing from local source
 
