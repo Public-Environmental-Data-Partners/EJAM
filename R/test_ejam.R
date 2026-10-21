@@ -298,6 +298,7 @@ instead of tests/testthat/_logs
         "test-shapefix.R",
         "test-shapefile_xyz.R",
         "test-shapes_from_fips.R",
+        "test-release-geography.R",
         "test-shapes_from_zip.R",
         "test-ejam2shapefile.R",
         "test-shape2zip.R",

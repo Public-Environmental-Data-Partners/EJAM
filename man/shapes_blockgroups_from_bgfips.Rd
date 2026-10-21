@@ -7,9 +7,7 @@
 shapes_blockgroups_from_bgfips(
   bgfips = "010890029222",
   outFields = c("FIPS", "STATE_ABBR", "SQMI"),
-  myservice =
-    c(paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
-    "USA_Boundaries_2022/FeatureServer/5/query"),
+  myservice = c(shapes_acs_boundary_service("blockgroup"),
     paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
     "USA_Block_Groups/FeatureServer/0/query"), "cartographic", "tiger")[1],
   year = NULL
@@ -44,7 +42,7 @@ Service URLs query only requested blockgroups. For large selections,
 "cartographic" and "tiger" use cached state boundary files through tigris.
 Cartographic boundaries are generalized for fast overview maps; full
 TIGER/Line boundaries retain detail for spatial work. The existing URL
-default is retained; no automatic change of boundary source is made.
+default follows the active ACS vintage; explicit URLs retain their source.
 }
 \seealso{
 \code{\link[=shapes_from_fips]{shapes_from_fips()}}

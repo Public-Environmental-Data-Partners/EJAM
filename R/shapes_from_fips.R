@@ -17,7 +17,8 @@
 #'   overview maps, not precise area, buffering, or point-in-polygon analysis.
 #'   "tiger" retains full TIGER/Line boundary detail; files are larger and slower
 #'   to download and draw, but state-file caching still avoids repeated queries.
-#'   The default service URL is retained to preserve existing analysis behavior;
+#'   The default service follows the active ACS vintage (Esri for 2022/2023,
+#'   Census TIGERweb ACS2024 for 2024);
 #'   tigris is required only when explicitly selecting either tigris option.
 #' @param myservice_tract URL of feature service to get tract shapes from.
 #'   The "cartographic" and "tiger" options are not implemented for tracts;
@@ -38,8 +39,8 @@
 #'   and need not share the vintage of the demographic data overlaid on them.
 #'   Specify a year explicitly to use another vintage for these downloads.
 #'   County downloads continue to use [acs_endyear()]; built-in county/state
-#'   boundaries and tract/blockgroup service URLs keep their supplied vintage
-#'   and must be updated with the release's demographic geography.
+#'   boundaries must be rebuilt for the release's demographic geography.
+#'   Default tract/blockgroup services follow the active ACS vintage.
 #'   Service URLs determine their own vintage;
 #'   year does not change the vintage embedded in a URL.
 #'   Requested places without a boundary warn with their FIPS codes and year;
@@ -89,10 +90,8 @@
 #' @export
 #'
 shapes_from_fips <- function(fips,
-                             myservice_blockgroup = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-                                                           "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"),
-                             myservice_tract      = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-                                                           "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
+                             myservice_blockgroup = shapes_acs_boundary_service("blockgroup"),
+                             myservice_tract = shapes_acs_boundary_service("tract"),
                              myservice_place  = 'tiger',
                              myservice_county = 'cartographic',
                              #  myservice_county = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
@@ -426,6 +425,9 @@ shapes_counties_from_countyfips_local <- function(fips) {
     return(NULL)
   }
 
+  # Never serve stale bundled counties after the demographic vintage changes.
+  if (!identical(release_geography_boundary_year(cshp), release_geography_year())) return(NULL)
+
   idx <- match(fips, cshp$GEOID)
   if (anyNA(idx)) {
     # at least one requested county is not among the built-in boundaries
@@ -480,8 +482,7 @@ shapes_counties_from_countyfips_local <- function(fips) {
 #'
 shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c("NAME", "FIPS", "STATE_ABBR", "STATE_NAME"), # "",
                                             myservice = c(
-                                              paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
-                                                     "USA_Boundaries_2022/FeatureServer/2/query"),
+                                              shapes_acs_boundary_service("county"),
                                               paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
                                                      "USA_Counties_and_States_with_PR/FeatureServer/0/query"),
                                               'cartographic', 'tiger'
@@ -676,7 +677,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
     if (myservice[1] %in% c("cartographic", "tiger") && !tidycensus_ok) {
       # those were requested but failed due to problem with census api key or tidycensus package
       warning(paste0("need tidycensus package and census API key to use myservice = '", myservice[1], "', so using default service instead"))
-      myservice <- "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/2/query"
+      myservice <- shapes_acs_boundary_service("county")
     }
 
     if (length(outFields) > 1) {
@@ -719,6 +720,10 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
 
     # > ejscreen service ####
     if (grepl("ejscreen", myservice, ignore.case = TRUE)) {FIPSVARNAME <- "ID"} else {FIPSVARNAME <- "FIPS"}
+    if (shapes_is_census_service(myservice)) {
+      FIPSVARNAME <- "GEOID"
+      outFields <- "*" # Census schema is normalized below by shapefile_addcols().
+    }
     myurl <- httr2::url_parse(myservice)
     myurl$query <- list(
       where = paste0(paste0(FIPSVARNAME, "='", fips, "'"), collapse = " OR "),  ########################### #
@@ -727,6 +732,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
       f = "geojson")
     request <- httr2::url_build(myurl)
     shp <- sf::st_read(request) # st_read returns data.frame, read_sf returns tibble
+    if ("GEOID" %in% names(shp) && !"FIPS" %in% names(shp)) shp$FIPS <- shp$GEOID
 
     ### ensure original rows ####
     # original sort order, and ensure NROW(shp) output is same as length(fips) input
@@ -760,8 +766,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
 #'
 shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR", "SQMI"),
                                         myservice = c(
-                                          paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-                                                 "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
+                                          shapes_acs_boundary_service("tract"),
                                           "cartographic", "tigris")[1]) {
 
   if (myservice[1] %in% c("cartographic", "tiger")) {
@@ -769,13 +774,13 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
     # see code in shapes_counties_from_countyfips() to possibly add those options
 
     warning("only arcgis service supported here for tracts currently, so using that")
-    myservice <- "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"
+    myservice <- shapes_acs_boundary_service("tract")
   }
 
   outFields <- paste0(outFields, collapse = ',')
 
   if (is.null(myservice)) {
-    myservice <- "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"
+    myservice <- shapes_acs_boundary_service("tract")
   }
   expectedtype = 'tract'
 
@@ -810,6 +815,10 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
   }
 
   if (grepl("ejscreen", myservice, ignore.case = TRUE)) {FIPSVARNAME <- "ID"} else {FIPSVARNAME <- "FIPS"}
+  if (shapes_is_census_service(myservice)) {
+    FIPSVARNAME <- "GEOID"
+    outFields <- "*" # Census schema is normalized below by shapefile_addcols().
+  }
   myurl <- httr2::url_parse(myservice)
   myurl$query <- list(
     where = paste0(paste0(FIPSVARNAME, "='", fips, "'"), collapse = " OR "),  ########################### #
@@ -818,6 +827,7 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
     f = "geojson")
   request <- httr2::url_build(myurl)
   shp <- sf::st_read(request) # data.frame not tibble
+  if ("GEOID" %in% names(shp) && !"FIPS" %in% names(shp)) shp$FIPS <- shp$GEOID
 
   ## ensure original rows ####
   # original sort order, and ensure NROW(shp) output is same as length(fips) input
@@ -840,7 +850,7 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
 #'   "cartographic" and "tiger" use cached state boundary files through tigris.
 #'   Cartographic boundaries are generalized for fast overview maps; full
 #'   TIGER/Line boundaries retain detail for spatial work. The existing URL
-#'   default is retained; no automatic change of boundary source is made.
+#'   default follows the active ACS vintage; explicit URLs retain their source.
 #' @param bgfips one or more blockgroup FIPS codes as 12-character strings in a vector
 #' @param outFields can be "*" for all, or can be
 #'   just a vector of variables that particular service provides, like FIPS, SQMI, POPULATION_2020, etc.
@@ -861,8 +871,7 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
 #'
 shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = c("FIPS", "STATE_ABBR", "SQMI"),
                                            myservice = c(
-                                             paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
-                                                    "USA_Boundaries_2022/FeatureServer/5/query"),
+                                             shapes_acs_boundary_service("blockgroup"),
                                              paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
                                                     "USA_Block_Groups/FeatureServer/0/query"), # token required?
                                              "cartographic", "tiger")[1],
@@ -929,6 +938,10 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
   }
 
   if (grepl("ejscreen", myservice, ignore.case = TRUE)) {FIPSVARNAME <- "ID"} else {FIPSVARNAME <- "FIPS"}
+  if (shapes_is_census_service(myservice)) {
+    FIPSVARNAME <- "GEOID"
+    outFields <- "*" # Census schema is normalized below by shapefile_addcols().
+  }
   myurl <- httr2::url_parse(myservice)
   myurl$query <- list(
     where = paste0(paste0(FIPSVARNAME, "='", fips, "'"), collapse = " OR "),  ########################### #
@@ -937,6 +950,7 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
     f = "geojson")
   request <- httr2::url_build(myurl)
   shp <- sf::st_read(request) # data.frame not tibble
+  if ("GEOID" %in% names(shp) && !"FIPS" %in% names(shp)) shp$FIPS <- shp$GEOID
 
   # # ensure all via shapes_from_fips() have a FIPS colname
   if ("GEOID" %in% names(shp) && !("FIPS" %in% names(shp))) {

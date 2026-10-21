@@ -6,10 +6,8 @@
 \usage{
 shapes_from_fips(
   fips,
-  myservice_blockgroup = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"),
-  myservice_tract = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-    "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
+  myservice_blockgroup = shapes_acs_boundary_service("blockgroup"),
+  myservice_tract = shapes_acs_boundary_service("tract"),
   myservice_place = "tiger",
   myservice_county = "cartographic",
   allow_multiple_fips_types = TRUE,
@@ -28,7 +26,8 @@ download and draw, but simplified and clipped along shorelines. Use it for
 overview maps, not precise area, buffering, or point-in-polygon analysis.
 "tiger" retains full TIGER/Line boundary detail; files are larger and slower
 to download and draw, but state-file caching still avoids repeated queries.
-The default service URL is retained to preserve existing analysis behavior;
+The default service follows the active ACS vintage (Esri for 2022/2023,
+Census TIGERweb ACS2024 for 2024);
 tigris is required only when explicitly selecting either tigris option.}
 
 \item{myservice_tract}{URL of feature service to get tract shapes from.
@@ -54,8 +53,8 @@ and \code{\link[=acs_endyear]{acs_endyear()}} for those blockgroups. Places defi
 and need not share the vintage of the demographic data overlaid on them.
 Specify a year explicitly to use another vintage for these downloads.
 County downloads continue to use \code{\link[=acs_endyear]{acs_endyear()}}; built-in county/state
-boundaries and tract/blockgroup service URLs keep their supplied vintage
-and must be updated with the release's demographic geography.
+boundaries must be rebuilt for the release's demographic geography.
+Default tract/blockgroup services follow the active ACS vintage.
 Service URLs determine their own vintage;
 year does not change the vintage embedded in a URL.
 Requested places without a boundary warn with their FIPS codes and year;
