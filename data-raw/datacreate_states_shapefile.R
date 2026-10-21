@@ -14,8 +14,11 @@ if (!dir.exists(td)) {stop('failed to create temp subfolder /shp')}
 
 ## based on what is probably in the EJScreen package:
 # yr = acs_endyear(guess_always = T); print(yr)
-## or latest published:
-yr = acs_endyear(guess_census_has_published = T); print(yr)
+## Active ACS geography, with an explicit matching-year override if needed:
+yr = EJAM:::release_geography_year(Sys.getenv("EJAM_GEOGRAPHY_YEAR", acs_endyear())); print(yr)
+if (yr != as.integer(acs_endyear())) {
+  stop("Builder year must match active ACS data; use datacreate_release_geography.R for inactive staging")
+}
 
 cat("CONFIRM YEAR SHOULD BE ", yr, '\n')
 
@@ -91,6 +94,7 @@ all.equal(EJAM::states_shapefile[, shared], states_shapefile[, shared], check.at
 # add the dataset to this package as a dataset to be installed with the package and lazy loaded when needed
 cat("updating metadata \n")
 
+attr(states_shapefile, "boundary_year") <- as.integer(yr)
 attr(states_shapefile, "source_url")       <- baseurl
 attr(states_shapefile, "date_downloaded")       <- as.character(Sys.Date())
 attr(states_shapefile, "date_saved_in_package") <- as.character(Sys.Date())
@@ -113,6 +117,8 @@ cat("saving in package in data folder\n")
 #'   which downloads the data from Census Bureau.
 #'
 #'   It includes 50 states, DC, PR, and 4 island areas (GU, MP, VI, AS).
+#'   Release geography preparation validates the physical source vintage and
+#'   records boundary_year separately from ACS/package release stamps.
 #'
 #'   Source: ", baseurl, "                   "))
 

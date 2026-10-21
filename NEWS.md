@@ -41,6 +41,14 @@ The main changes since EPA's last versions of EJAM (2.32.2) and EJSCREEN (2.3), 
 
 ## New Features for R users (not in web app yet) since October 2026
 
+- Release geography preparation now validates state/county source vintages,
+  lookup areas and provenance, FIPS coverage, and candidate block/crosswalk
+  links. Data preparation remains on hold: no 2024 payloads are included in
+  this change, and building release inputs requires explicit approval.
+  Default tract/blockgroup services follow the active ACS vintage; the 2024
+  path uses Census TIGERweb rather than nonexistent Esri 2024 endpoints (#671).
+
+
 - `shapes_from_fips()` and its place-boundary helpers now use `year = NULL`
   to select the calendar-predicted latest TIGER/Line places vintage (assuming an October 14 release)
   for cities/towns/CDPs, while tigris blockgroups continue to use `acs_endyear()`.

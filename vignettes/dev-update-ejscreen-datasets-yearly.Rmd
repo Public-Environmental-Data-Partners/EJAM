@@ -235,6 +235,115 @@ category 3 and 4 Arrow files cover the current `blockgroupstats` blockgroups
 and whether block-level IDs line up across `blockwts`, `blockpoints`,
 `quaddata`, and `blockid2fips`.
 
+## Preparing state and county geography for a release
+
+State/county polygons and lookup information must be reviewed together with the
+ACS data swap ([#671](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/671)).
+Follow Mark's saved **PLAN - V4.2024.0 RELEASE INPUTS (ACS 2020-2024 DATA BUILD)
+- 2026-10-20.md**. Its hold takes precedence over the procedural examples below:
+wait for the environmental-indicator updates and Mark's approval. No pipeline,
+2024 data build, upload, publication, activation, or data/version swap is
+authorized by these instructions. A possible dry run requires separate approval.
+No 2024-vintage datasets or generated data reports belong in this branch while
+that hold applies; excluding them from a built package would not be sufficient.
+
+The code below prepares for future approved work. Previously generated
+geography artifacts have been preserved outside the checkout in the plan's
+release-inputs folder, on hold; they are not the accepted ACS/environmental
+release build. Do not treat their existence or prior geometry validation as
+acceptance, or copy them into the branch while the hold remains.
+
+After Mark accepts the environmental inputs and authorizes resumption, use a
+new clearly named subfolder of `EJAM-worktrees/release-inputs-v4.2024.0/`,
+keep original file names, and do not overwrite existing inputs. Set
+`EJAM_RELEASE_INPUTS_APPROVED=true` only after that authorization, set
+`EJAM_GEOGRAPHY_YEAR` explicitly to the approved release year, and set
+`EJAM_GEOGRAPHY_OUTPUT` to that new external directory before running
+`Rscript --vanilla data-raw/datacreate_release_geography.R`. The builder also
+requires strict logical `approved=TRUE`; the default blocks network requests
+and output creation. These flags guard against accidental execution and do
+not confer approval. New manifests record SHA-256 source/archive and payload checksums,
+row counts and field/row provenance. The individual state/county builders
+accept an explicit `EJAM_GEOGRAPHY_YEAR` only when it matches the active ACS
+year because they write active package data. The state builder no longer
+guesses the latest publication year.
+
+The final demographic build must come after the approved environmental updates.
+Do not select a newer S3 build automatically, combine build identities, or use
+the stale `v3.2024.0`/pre-#596 archive data. Preserve the existing #615
+limited-English-households denominator, formulas and indicator scope. Follow
+the plan's separate source-identity, SHA-256, matching `bgej` and Arrow, and
+handoff checks; no AWS or publication operation is performed by this tooling.
+
+The bundle contains full TIGER state polygons and generalized 1:500,000 county
+polygons, preserving the existing county download resolution. It refreshes
+state names/abbreviations, total/land/water areas in square miles and kilometers,
+and Census internal points in the existing lookup schemas. US area totals sum
+the 50 states plus DC. US coordinates, UM, water subcategory breakdowns, EPA
+regions, classifications, and FTP names retain their previous provenance;
+TIGER does not provide replacements for all of those fields. `countyinfo.csv`
+is an audit table, not a new public dataset. Do not relabel retained fields as
+new Census measurements or use generalized polygons to recompute land areas.
+
+After Mark authorizes the coordinated data/version swap, use an isolated
+release-input branch with matching DESCRIPTION, accepted `blockgroupstats`,
+and the candidate Arrow datasets. Read the manifest-checked bundle, then run
+this complete release gate against those **candidate** inputs:
+
+```{r, eval=FALSE}
+# approved_geography_dir identifies the newly approved external input folder.
+geo <- EJAM:::release_geography_read(approved_geography_dir)
+stopifnot(geo$year == as.integer(EJAM:::acs_endyear()))
+links <- EJAM:::release_geography_check_links(
+  geo, blockgroupstats, bgid2fips, blockwts, blockid2fips, blockpoints, quaddata
+)
+print(links)
+# Review and record differences as required by the saved plan before promotion.
+# The conservative assertion stops for unresolved review rows as well as errors.
+EJAM:::release_geography_assert_links(links)
+```
+
+Missing inputs are `not_checked`, not passing checks. The `info` row explicitly
+records retained source-specific Island Area identifiers (seven digits for
+AS/GU/MP and ten for VI); these are
+not padded into fake Census blockgroup/county codes or required to have
+nonexistent block crosswalks. Their state coverage is checked separately.
+List every mismatch and review it against the accepted same-build inputs;
+**do not change IDs or drop records** to make a report pass. The 19 near-zero-
+weight Connecticut slivers are a known case in the plan, not automatically a
+new defect. Crosswalk set differences and repeated block FIPS are `review`
+observations, distinct from malformed identifiers or duplicate internal block
+IDs. A repeated external block FIPS alone does not prove a bad internal ID.
+Document the approved interpretation of such cases; these helpers do not
+silently whitelist them, accept exceptions, or rewrite data. Check planning
+regions, Alaska, PR and the supported island areas. The 686 Island Area rows
+have no blocks by design; geography coverage does not imply ACS availability
+for all territories. Keep Census 2020 block IDs and the five reused geography
+files intact while comparing them with the accepted new blockgroups.
+A diagnostic based on current 2022 inputs is not 2024 release acceptance.
+
+Only after Mark authorizes activation and the accepted inputs and any review
+findings are resolved, load the four staged `.rda` objects into
+the release-working R session and save each using
+`EJAM:::metadata_add_and_use_this()` so the new package/ACS stamps match
+DESCRIPTION. Keep the geography source/vintage and retained-field attributes.
+Do this in the same reviewed PR as the matching demographic datasets and pin.
+Regenerate dataset source documentation via `EJAM:::dataset_documenter()`
+using each object's actual `source_url` and `boundary_year`, then regenerate
+Rd files with `devtools::document()`. Include the `stateinfo2` field/row
+provenance limitations, rather than claiming all its fields were refreshed.
+Verify the saved objects again, including offline state/county maps and
+state lookups, plus bundled versus same-year downloaded county results.
+
+Default tract/blockgroup services now follow the active ACS year. ACS
+2022/2023 retain the existing Esri services; ACS2024 uses official Census
+TIGERweb layers (tracts 8, blockgroups 10, counties 82 for service fallback).
+The Esri `USA_Boundaries_2024` endpoint does not exist. Census requests use
+`GEOID` and normalize the different schema to EJAM's usual output. Explicit
+service URLs retain their own vintage; `year` cannot change a URL's data.
+Unverified future default service years fail clearly rather than guessing an
+endpoint. Places/towns retain their independent calendar-based year policy.
+
 ## ACS Geography Universe
 
 For a given ACS 5-year release, use the Census geography vintage associated

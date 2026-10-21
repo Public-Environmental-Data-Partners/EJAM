@@ -3,7 +3,7 @@
 \docType{data}
 \name{stateinfo2}
 \alias{stateinfo2}
-\title{stateinfo2 (DATA) data.frame of state abbreviations and state names (50+DC+PR; not AS, GU, MP, VI, UM)}
+\title{stateinfo2 (DATA) state and territory reference information}
 \format{
 An object of class \code{data.frame} with 58 rows and 26 columns.
 }
@@ -11,11 +11,15 @@ An object of class \code{data.frame} with 58 rows and 26 columns.
 stateinfo2
 }
 \description{
-52 rows and several variables: ST is the 2-letter abbreviation,
+58 rows, including the US total and UM: ST is the 2-letter abbreviation,
 statename is the State name, etc.
 }
 \details{
 Created for EJAM by datacreate_stateinfo2.R script
+Release geography preparation refreshes names, areas and internal points
+where Census supplies them. Updated fields and retained fields/rows are
+recorded in geography provenance attributes; water subcategories, EPA
+regions, classifications and unsupported rows retain their previous sources.
 
 Also see \href{https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html}{Census info}
 
