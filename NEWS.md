@@ -2,7 +2,7 @@
 
 ## New web app features since October 2026
 
-- **See updated data:** demographics now use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version, with indexes and percentiles recalculated to match.
+- **Planned data update (on hold):** after the environmental updates are accepted and Mark authorizes the data/version swap, demographics will use the 2020-2024 American Community Survey (ACS), with indexes and percentiles recalculated to match. This update has not been applied; the branch still uses ACS 2018-2022.
 
 - **Large analyses use less memory:** the same results with about 1–1.7 GB less peak memory, and unbuffered county, state, tract, or blockgroup analyses run about twice as fast (#649, #652).
 
