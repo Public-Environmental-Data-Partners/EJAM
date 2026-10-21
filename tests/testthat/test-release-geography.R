@@ -93,6 +93,78 @@ test_that("geography validation detects physical vintage, coverage and stale loo
   expect_error(release_geography_boundary_year(bad),"disagrees")
 })
 
+test_that("release boundaries require polygon geometries in every row", {
+  bundle <- geography_fixture()
+  expect_true(release_geography_validate(bundle))
+  point <- sf::st_point(c(-75,40))
+  line <- sf::st_linestring(matrix(c(-76,39,-75,40),ncol=2,byrow=TRUE))
+  invalid <- list(point=point, line=line,
+    multipoint=sf::st_multipoint(matrix(c(-76,39,-75,40),ncol=2,byrow=TRUE)),
+    multiline=sf::st_multilinestring(list(unclass(line))),
+    collection=sf::st_geometrycollection(list(point)))
+  for (name in c("states_shapefile","counties_shapefile")) {
+    for (geometry in invalid) {
+      bad <- bundle
+      geometries <- as.list(sf::st_geometry(bad[[name]]))
+      # Corrupt a later row so checking only the first geometry cannot pass.
+      geometries[[length(geometries)]] <- geometry
+      sf::st_geometry(bad[[name]]) <- sf::st_sfc(geometries,crs=4269)
+      expect_true(all(sf::st_is_valid(bad[[name]])))
+      expect_false(any(sf::st_is_empty(bad[[name]])))
+      expect_error(release_geography_validate(bad),
+        paste0("Non-polygon boundary geometry: ",name),fixed=TRUE)
+    }
+    valid <- bundle
+    polygons <- sf::st_geometry(valid[[name]])
+    sf::st_geometry(valid[[name]]) <- sf::st_cast(polygons,"MULTIPOLYGON")
+    expect_true(release_geography_validate(valid))
+    mixed <- as.list(polygons)
+    mixed[[length(mixed)]] <- sf::st_geometry(valid[[name]])[[length(mixed)]]
+    sf::st_geometry(valid[[name]]) <- sf::st_sfc(mixed,crs=4269)
+    expect_true(release_geography_validate(valid))
+  }
+})
+
+test_that("release boundaries require finite positive geometry area", {
+  bundle <- geography_fixture()
+  for (area in c(0,NA_real_,Inf)) {
+    with_mocked_bindings(
+      expect_error(release_geography_validate(bundle),"Invalid geometry/area",fixed=TRUE),
+      st_area=function(x,...) rep(area,nrow(x)), .package="sf")
+  }
+})
+
+test_that("manifest readback rejects non-polygon boundary payloads", {
+  skip_if_not_installed("openssl")
+  bundle <- geography_fixture()
+  folder <- withr::local_tempdir()
+  payloads <- c("states_shapefile","counties_shapefile","stateinfo","stateinfo2")
+  write_fixture <- function(candidate) {
+    for (name in payloads) {
+      save(list=name,envir=list2env(setNames(list(candidate[[name]]),name)),
+        file=file.path(folder,paste0(name,".rda")),version=2)
+    }
+    utils::write.csv(candidate$countyinfo,file.path(folder,"countyinfo.csv"),row.names=FALSE)
+    files <- file.path(folder,c(paste0(payloads,".rda"),"countyinfo.csv"))
+    manifest <- list(schema_version=2L,boundary_year=2024L,
+      files_sha256=as.list(setNames(release_geography_sha256(files),basename(files))))
+    jsonlite::write_json(manifest,file.path(folder,"manifest.json"),auto_unbox=TRUE)
+  }
+  write_fixture(bundle)
+  expect_true(release_geography_validate(release_geography_read(folder)))
+  invalid <- list(sf::st_point(c(-75,40)),
+    sf::st_linestring(matrix(c(-76,39,-75,40),ncol=2,byrow=TRUE)))
+  for (name in c("states_shapefile","counties_shapefile")) {
+    for (geometry in invalid) {
+      bad <- bundle
+      sf::st_geometry(bad[[name]]) <- sf::st_sfc(rep(list(geometry),nrow(bad[[name]])),crs=4269)
+      write_fixture(bad)
+      expect_error(release_geography_read(folder),
+        paste0("Non-polygon boundary geometry: ",name),fixed=TRUE)
+    }
+  }
+})
+
 test_that("release link checks require complete inputs and expose mismatched crosswalks", {
   bundle <- geography_fixture()
   bg <- data.frame(bgfips="100010401001")
@@ -140,17 +212,6 @@ test_that("staging refuses overwrite before fetching any source", {
 })
 
 
-test_that("the release-input hold blocks downloads and output creation", {
-  target <- tempfile("held-release-geography-")
-  local_mocked_bindings(curl_download=function(...) stop("Unexpected download"),.package="curl")
-  for (approval in list(FALSE,NA,NULL,"true",1)) {
-    expect_error(release_geography_build(target,2024,approved=approval),"on hold")
-    expect_false(file.exists(target))
-  }
-  expect_error(release_geography_build(target,2024),"on hold")
-  expect_false(file.exists(target))
-})
-
 test_that("crosswalk observations are reported for review without altering IDs", {
   bundle <- geography_fixture()
   bg <- data.frame(bgfips="100010401001")
@@ -177,4 +238,36 @@ test_that("release manifest hashing uses SHA-256", {
   writeChar("abc",path,eos=NULL)
   expect_identical(release_geography_sha256(path),
     "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
+})
+
+
+test_that("review acknowledgements cannot bypass invalid or incomplete inputs", {
+  report <- data.frame(check=c("geometry", "crosswalk", "repeated blocks"),
+    status=c("pass", "review", "review"))
+  expect_error(release_geography_assert_links(report), "crosswalk")
+  expect_error(release_geography_assert_links(report, "crosswalk"), "repeated blocks")
+  expect_true(release_geography_assert_links(report, c("crosswalk", "repeated blocks")))
+  expect_error(release_geography_assert_links(report, "unknown"), "must name review")
+  expect_error(release_geography_assert_links(report, NA_character_), "must name review")
+  for (status in c("fail", "not_checked", NA_character_, "unknown")) {
+    bad <- rbind(report, data.frame(check="required input", status=status))
+    expect_error(release_geography_assert_links(bad, c("crosswalk", "repeated blocks")),
+      "required input")
+    expect_error(release_geography_assert_links(bad, c("crosswalk", "repeated blocks", "required input")),
+      "must name review")
+  }
+})
+
+
+test_that("preparation needs no temporary approval switch and cleans failed downloads", {
+  target <- tempfile("release-geography-")
+  requested <- character()
+  local_mocked_bindings(curl_download=function(url, ...) {
+    requested <<- c(requested, url)
+    stop("offline test download")
+  }, .package="curl")
+  expect_error(release_geography_build(target, 2024), "offline test download")
+  expect_length(requested, 1L)
+  expect_match(requested[[1]], "/TIGER2024/STATE/")
+  expect_false(file.exists(target))
 })

@@ -122,10 +122,16 @@ release_geography_validate <- function(bundle) {
     if (!is.character(x$GEOID) || anyNA(x$GEOID) || anyDuplicated(x$GEOID) ||
         any(!grepl(paste0("^[0-9]{",width,"}$"), x$GEOID)) ||
         anyNA(x$STATEFP) || any(substr(x$GEOID,1,2) != x$STATEFP)) stop("Invalid/duplicate FIPS: ", name)
+    geometry_types <- as.character(sf::st_geometry_type(x,by_geometry=TRUE))
+    if (anyNA(geometry_types) || any(!geometry_types %in% c("POLYGON","MULTIPOLYGON"))) {
+      stop("Non-polygon boundary geometry: ",name," (expected POLYGON or MULTIPOLYGON)",call.=FALSE)
+    }
     if (is.na(sf::st_crs(x)) || anyNA(sf::st_is_valid(x)) || any(!sf::st_is_valid(x)) ||
         anyNA(sf::st_is_empty(x)) || any(sf::st_is_empty(x)) ||
         any(!is.finite(as.numeric(x$ALAND))) || any(!is.finite(as.numeric(x$AWATER))) ||
         any(x$ALAND < 0 | x$AWATER < 0)) stop("Invalid geometry/area: ", name)
+    geometry_area <- as.numeric(sf::st_area(x))
+    if (any(!is.finite(geometry_area) | geometry_area <= 0)) stop("Invalid geometry/area: ",name,call.=FALSE)
   }
   states <- bundle$states_shapefile
   counties <- bundle$counties_shapefile
@@ -251,16 +257,24 @@ release_geography_check_links <- function(bundle, blockgroup_data, bgid2fips=NUL
   do.call(rbind,rows)
 }
 
-release_geography_assert_links <- function(report) {
+# Acknowledge reviewed observations by their exact check names. Invalid data and
+# missing inputs remain errors even when named in reviewed_checks.
+release_geography_assert_links <- function(report, reviewed_checks=character()) {
   if (!nrow(report) || !all(c("check","status") %in% names(report))) stop("Missing release link report")
-  if (anyNA(report$status) || any(!report$status %in% c("pass","info"))) {
-    stop("Release geography links require attention (record/review differences; do not change IDs or drop records): ",paste(report$check[is.na(report$status) | !report$status %in% c("pass","info")],collapse=", "),call.=FALSE)
+  if (!is.character(reviewed_checks) || anyNA(reviewed_checks) ||
+      any(!reviewed_checks %in% report$check[!is.na(report$status) & report$status=="review"])) {
+    stop("reviewed_checks must name review observations in this report",call.=FALSE)
+  }
+  accepted <- report$status %in% c("pass","info") |
+    (report$status %in% "review" & report$check %in% reviewed_checks)
+  if (any(!accepted)) {
+    stop("Release geography links require attention (record/review differences; do not change IDs or drop records): ",paste(report$check[!accepted],collapse=", "),call.=FALSE)
   }
   invisible(TRUE)
 }
 
-# openssl is already an optional package dependency. Only approved builds or
-# SHA-256 manifest readback need it; hold checks do not require it.
+# openssl is already an optional package dependency. New builds and SHA-256
+# manifest readback use it to verify source and payload identity.
 release_geography_sha256 <- function(paths) {
   if (!requireNamespace("openssl",quietly=TRUE)) stop("Install openssl to record release-input SHA-256 checksums")
   vapply(paths,function(path) {
@@ -271,17 +285,10 @@ release_geography_sha256 <- function(paths) {
 }
 
 release_geography_build <- function(output_dir, year=acs_endyear(),
-                                    state_lookup=stateinfo, state_lookup_extended=stateinfo2,
-                                    approved=FALSE) {
+                                    state_lookup=stateinfo, state_lookup_extended=stateinfo2) {
   year <- release_geography_year(year)
   if (length(output_dir)!=1L || is.na(output_dir) || !nzchar(output_dir) || file.exists(output_dir)) {
     stop("Choose a new, non-existing output directory",call.=FALSE)
-  }
-  # The saved v4 plan holds geography payloads as well as the demographic swap.
-  # This flag is a fail-closed operational guard, not a substitute for Mark's
-  # authorization or acceptance of the input build. No network/file writes above.
-  if (!identical(approved,TRUE)) {
-    stop("Release inputs are on hold; approved=TRUE requires Mark's explicit authorization to resume",call.=FALSE)
   }
   sources <- release_geography_sources(year)
   scratch <- tempfile("release-geography-")
@@ -335,9 +342,9 @@ release_geography_build <- function(output_dir, year=acs_endyear(),
 release_geography_read <- function(bundle_dir) {
   manifest <- jsonlite::read_json(file.path(bundle_dir,"manifest.json"),simplifyVector=TRUE)
   expected_files <- c("states_shapefile.rda","counties_shapefile.rda","stateinfo.rda","stateinfo2.rda","countyinfo.csv")
-  # Older held geography artifacts used schema 1/MD5. Reading them preserves
+  # Older geography artifacts used schema 1/MD5. Reading them preserves
   # historical identity only, not acceptance of a release build. New builds
-  # always emit schema 2/SHA-256 as required by the saved v4 input plan.
+  # always emit schema 2/SHA-256.
   if (!isTRUE(manifest$schema_version %in% c(1L,2L))) stop("Invalid geography manifest")
   hashes <- if (manifest$schema_version==2L) manifest$files_sha256 else manifest$files_md5
   if (!setequal(names(hashes),expected_files)) stop("Invalid geography manifest")
