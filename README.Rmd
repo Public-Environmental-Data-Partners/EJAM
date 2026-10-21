@@ -70,7 +70,7 @@ deploylink <- paste0(docs_reponame_url, "/articles/dev-deploy-app.html")
 
 The `r as.vector(desc::desc_get("Title"))` lets you easily and quickly see residential population and environmental information aggregated within and across hundreds or thousands of places, all at the same time. 
 
-EJAM is tighly integrated with EJSCREEN. It provides EJSCREEN's reports, and it is the "multisite tool" for EJSCREEN. It also can be
+EJAM is tightly integrated with EJSCREEN. It provides EJSCREEN's reports, and it is the "multisite tool" for EJSCREEN. It also can be
 used independently as a web app or in RStudio for analysis.
 
 ## What Can You Do with EJAM?
