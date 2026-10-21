@@ -12,7 +12,10 @@ shapes_places_from_placefips(fips, myservice = "tiger", year = NULL)
 \item{myservice}{only 'tiger' is implemented as source of boundaries, using the tigris package}
 
 \item{year}{Boundary year for \code{\link[tigris:places]{tigris::places()}}; NULL (the default) uses
-\code{\link[=acs_endyear]{acs_endyear()}}, matching \code{\link[=shapes_from_fips]{shapes_from_fips()}}.}
+the calendar-predicted latest TIGER/Line places vintage, assuming an
+October 14 annual release without checking publication,
+independently of \code{\link[=acs_endyear]{acs_endyear()}} and the installed tigris default.
+Set an explicit year to reproduce a particular vintage.}
 }
 \value{
 spatial data.frame for mapping
@@ -25,7 +28,8 @@ Codes not found in the Census places file are looked up in the
 county subdivisions file for the same year. Many towns and townships,
 especially in New England, NY, NJ, PA, and the Midwest, are county
 subdivisions rather than Census places. A warning names any valid code
-that still has no boundary.
+that still has no boundary, with its year. Its row retains empty geometry;
+no older vintage is substituted.
 }
 \seealso{
 \code{\link[=shapes_from_fips]{shapes_from_fips()}}
