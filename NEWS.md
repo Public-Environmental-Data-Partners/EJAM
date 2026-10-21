@@ -2,7 +2,11 @@
 
 ## New web app features since October 2026
 
-- **See updated data:** demographics now use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version, with indexes and percentiles recalculated to match.
+- **Updated data in v4.2024.0 (once it is released)**
+
+  - Demographics use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version.
+  - Environmental indicators for ozone and PM2.5 have been updated.
+  - EJ indexes and percentiles have been recalculated to use the new data.
 
 - **Large analyses use less memory:** the same results with about 1–1.7 GB less peak memory, and unbuffered county, state, tract, or blockgroup analyses run about twice as fast (#649, #652).
 
