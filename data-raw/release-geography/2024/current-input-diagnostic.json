@@ -1,0 +1,137 @@
+{
+  "purpose": "Diagnostic with unchanged ACS 2018-2022 inputs; NOT release acceptance",
+  "report": [
+    {
+      "check": "retained Island Area identifiers",
+      "status": "info",
+      "count": 686,
+      "examples": "6000100, 6002500, 6003300, 6004500, 6004900, 6006500, 6007300, 6008100, 6008900, 6009700"
+    },
+    {
+      "check": "blockgroup FIPS schema",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockgroup counties",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "Island Area state coverage",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockgroup ACS vintage",
+      "status": "fail",
+      "count": 1,
+      "examples": "mismatched or missing ACS stamp"
+    },
+    {
+      "check": "bgid2fips schema",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "crosswalk FIPS schema",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "crosswalk blockgroups outside ACS",
+      "status": "fail",
+      "count": 19,
+      "examples": "091104101022, 091104101023, 091108003001, 091108005011, 091301941011, 091304002001, 091401573001, 091401601003, 091402301004, 091700812001"
+    },
+    {
+      "check": "ACS blockgroups without crosswalk",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockwts bgids",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockwts values",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockwts unique blockids",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockwts block coverage",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockid2fips unique blockids",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockid2fips block coverage",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockpoints unique blockids",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "blockpoints block coverage",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "quaddata unique blockids",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "quaddata block coverage",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "block internal points",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "block spatial-index coordinates",
+      "status": "pass",
+      "count": 0,
+      "examples": ""
+    },
+    {
+      "check": "Census 2020 block FIPS schema",
+      "status": "fail",
+      "count": 1,
+      "examples": "091309901000005"
+    }
+  ]
+}

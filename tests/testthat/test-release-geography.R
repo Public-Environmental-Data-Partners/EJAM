@@ -212,17 +212,6 @@ test_that("staging refuses overwrite before fetching any source", {
 })
 
 
-test_that("the release-input hold blocks downloads and output creation", {
-  target <- tempfile("held-release-geography-")
-  local_mocked_bindings(curl_download=function(...) stop("Unexpected download"),.package="curl")
-  for (approval in list(FALSE,NA,NULL,"true",1)) {
-    expect_error(release_geography_build(target,2024,approved=approval),"on hold")
-    expect_false(file.exists(target))
-  }
-  expect_error(release_geography_build(target,2024),"on hold")
-  expect_false(file.exists(target))
-})
-
 test_that("crosswalk observations are reported for review without altering IDs", {
   bundle <- geography_fixture()
   bg <- data.frame(bgfips="100010401001")
@@ -249,4 +238,36 @@ test_that("release manifest hashing uses SHA-256", {
   writeChar("abc",path,eos=NULL)
   expect_identical(release_geography_sha256(path),
     "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
+})
+
+
+test_that("review acknowledgements cannot bypass invalid or incomplete inputs", {
+  report <- data.frame(check=c("geometry", "crosswalk", "repeated blocks"),
+    status=c("pass", "review", "review"))
+  expect_error(release_geography_assert_links(report), "crosswalk")
+  expect_error(release_geography_assert_links(report, "crosswalk"), "repeated blocks")
+  expect_true(release_geography_assert_links(report, c("crosswalk", "repeated blocks")))
+  expect_error(release_geography_assert_links(report, "unknown"), "must name review")
+  expect_error(release_geography_assert_links(report, NA_character_), "must name review")
+  for (status in c("fail", "not_checked", NA_character_, "unknown")) {
+    bad <- rbind(report, data.frame(check="required input", status=status))
+    expect_error(release_geography_assert_links(bad, c("crosswalk", "repeated blocks")),
+      "required input")
+    expect_error(release_geography_assert_links(bad, c("crosswalk", "repeated blocks", "required input")),
+      "must name review")
+  }
+})
+
+
+test_that("preparation needs no temporary approval switch and cleans failed downloads", {
+  target <- tempfile("release-geography-")
+  requested <- character()
+  local_mocked_bindings(curl_download=function(url, ...) {
+    requested <<- c(requested, url)
+    stop("offline test download")
+  }, .package="curl")
+  expect_error(release_geography_build(target, 2024), "offline test download")
+  expect_length(requested, 1L)
+  expect_match(requested[[1]], "/TIGER2024/STATE/")
+  expect_false(file.exists(target))
 })
