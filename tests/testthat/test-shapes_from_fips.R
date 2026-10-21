@@ -93,7 +93,7 @@ if (offline()) {
 } else {
 inputfips <- c(NA,        # fips is NA
                "10",      # State
-               "4273072", # fips valid but no polygons downloaded, so shape_from_fips() returns NA row for that one, empty polygon
+               "3600000", # fips valid ("County Subdivisions not defined") but no polygons, so shape_from_fips() returns NA row for that one, empty polygon
                "10001",   # County not city
                99,        # fips is invalid but not NA
                "2966134", # city
@@ -125,7 +125,7 @@ junk = capture.output({
 ##
 ## 1      <NA>   XXXX        XXXX              XXXX      XXXX
 ## 2        10      y           y                 y         y
-## 3   4273072      y           y              XXXX         y
+## 3   3600000      y           y              XXXX         y
 ## 4     10001      y           y                 y         y
 ## 5        99      y        XXXX              XXXX         y
 ## 6   2966134      y           y                 y      XXXX
@@ -188,7 +188,7 @@ testthat::test_that("bad fips - returns the (VALID) fips at least, ignoring sort
   #  ignoring sort
   expect_setequal(
     shp$FIPS[ fips_valid(shp$FIPS)],
-    inputfips[fips_valid(inputfips)] # "10"      "4273072" "10001"     "2966134" "2966134"
+    inputfips[fips_valid(inputfips)] # "10"      "3600000" "10001"     "2966134" "2966134"
   )
 })
 ################ #
@@ -610,7 +610,106 @@ test_that("blockgroup area metadata matches aggregation for repeated and unavail
   expect_equal(shp$SQMI,expected)
 })
 
-test_that("places use the verified latest vintage unless an explicit year is supplied", {
+test_that("towns that are county subdivisions get boundaries, and missing places warn (#672)", {
+  skip_if_not_installed("tigris")
+  place <- "3651000"   # New York city: in the places file
+  town  <- "3606211"   # Berne town: only in the county subdivisions file
+  span  <- "3613035"   # Cattaraugus Reservation: split across counties
+  gone  <- "3669441"   # South Nyack village: in neither file
+  undef <- "3600000"   # "County Subdivisions not defined": not a real town
+  square <- function(x0) sf::st_polygon(list(matrix(c(x0,40, x0+1,40, x0+1,41, x0,41, x0,40),
+                                                    ncol=2, byrow=TRUE)))
+  cousub_calls <- list()
+  local_mocked_bindings(
+    places = function(state, year, ...) {
+      sf::st_sf(GEOID=place, NAME="New York", NAMELSAD="New York city",
+                geometry=sf::st_sfc(list(square(-74)), crs=4269))
+    },
+    county_subdivisions = function(state, year, ...) {
+      cousub_calls[[length(cousub_calls)+1L]] <<- list(state=state, year=year)
+      sf::st_sf(STATEFP="36", COUSUBFP=c("06211", "13035", "13035", "00000"),
+                NAME=c("Berne", "Cattaraugus", "Cattaraugus", "not defined"),
+                NAMELSAD=c("Berne town", "Cattaraugus Reservation", "Cattaraugus Reservation", "County subdivisions not defined"),
+                geometry=sf::st_sfc(list(square(-73), square(-72), square(-71), square(-70)), crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(offline_cat=function(...) FALSE, .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  requested <- c(town, place, span, gone, town, undef)
+  expect_warning(shp <- shapes_places_from_placefips(requested, year=2022), "3669441, 3600000")
+  expect_identical(shp$FIPS, requested)
+  expect_identical(sf::st_is_empty(shp), c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE))
+  expect_identical(cousub_calls, list(list(state="36", year=2022)))  # only for the codes places lacked
+  # the two county pieces of the spanning town are merged into one shape
+  expect_equal(as.numeric(sf::st_area(sf::st_transform(shp[3, ], 5070))),
+               as.numeric(sum(sf::st_area(sf::st_transform(sf::st_sfc(list(square(-72), square(-71)), crs=4269), 5070)))),
+               tolerance=1e-6)
+  # no county-subdivision lookup, and no warning, when every place is found
+  cousub_calls <- list()
+  expect_no_warning(shapes_places_from_placefips(place, year=2022))
+  expect_length(cousub_calls, 0)
+})
+
+test_that("calendar defaults and county subdivisions compose across states and dispatch paths", {
+  skip_if_not_installed("tigris")
+  wanted <- 2027L
+  calls <- list()
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(
+    predicted_latest_year_available=function(...) 2027L,
+    acs_endyear=function(...) "2022",
+    offline_cat=function(...) FALSE, .package="EJAM"
+  )
+  local_mocked_bindings(
+    places=function(state, year, ...) {
+      expect_equal(year, wanted)
+      sf::st_sf(GEOID="3651000", NAME="New York", NAMELSAD="New York city",
+                geometry=sf::st_sfc(polygon, crs=4269))
+    },
+    county_subdivisions=function(state, year, ...) {
+      expect_equal(year, wanted)
+      calls[[length(calls)+1L]] <<- list(state=state, year=year)
+      code <- if (state == "36") "06211" else "00325"
+      sf::st_sf(STATEFP=state, COUSUBFP=code, NAME="town", NAMELSAD="town",
+                geometry=sf::st_sfc(polygon, crs=4269))
+    }, .package="tigris"
+  )
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  withr::local_options(tigris_year=2024)
+  requested <- c("3606211", "3651000", "5000325", "3606211", "99", "3600000")
+  for (dispatch in c(TRUE, FALSE)) {
+    calls <- list()
+    expect_warning(shp <- shapes_from_fips(requested, allow_multiple_fips_types=dispatch),
+                   "FIPS 3600000 in TIGER/Line 2027", fixed=TRUE)
+    expect_identical(shp$FIPS, c(requested[1:4], NA_character_, "3600000"))
+    expect_identical(sf::st_is_empty(shp), c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE))
+    expect_identical(calls, list(list(state="36", year=2027L), list(state="50", year=2027L)))
+  }
+  wanted <- 2022L
+  calls <- list()
+  expect_warning(shp <- shapes_from_fips(requested, year=2022), "TIGER/Line 2022", fixed=TRUE)
+  expect_true(all(vapply(calls, function(x) x$year == 2022, logical(1))))
+  expect_identical(getOption("tigris_year"), 2024)
+})
+
+test_that("county-subdivision download failures retain aligned missing-boundary warnings", {
+  skip_if_not_installed("tigris")
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(
+    places=function(...) sf::st_sf(GEOID="3651000", geometry=sf::st_sfc(polygon, crs=4269)),
+    county_subdivisions=function(...) stop("boundary service unavailable"), .package="tigris"
+  )
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  requested <- c("3606211", "3651000", "3606211")
+  expect_warning(shp <- shapes_places_from_placefips(requested, year=2026),
+                 "FIPS 3606211 in TIGER/Line 2026", fixed=TRUE)
+  expect_identical(shp$FIPS, requested)
+  expect_identical(sf::st_is_empty(shp), c(TRUE, FALSE, TRUE))
+})
+
+test_that("places use the calendar-predicted vintage unless an explicit year is supplied", {
   skip_if_not_installed("tigris")
   id <- fipslist$cityfips[1]
   polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
@@ -733,6 +832,9 @@ test_that("missing or empty place boundaries warn without losing requested rows"
     }
     sf::st_sf(GEOID=c("3651000", "3611000"),
               geometry=sf::st_sfc(polygon, sf::st_polygon(), crs=4269))
+  }, county_subdivisions=function(...) {
+    sf::st_sf(STATEFP=character(), COUSUBFP=character(),
+              geometry=sf::st_sfc(crs=4269))
   }, .package="tigris")
   local_mocked_bindings(offline_cat=function(...) FALSE,
                         fips_place_from_placename=function(...) ids,
@@ -766,6 +868,9 @@ test_that("missing place warnings identify explicit years and exclude invalid FI
   local_mocked_bindings(places=function(state, year, ...) {
     expect_equal(year, 2023)
     sf::st_sf(GEOID="3651000", geometry=sf::st_sfc(polygon, crs=4269))
+  }, county_subdivisions=function(...) {
+    sf::st_sf(STATEFP=character(), COUSUBFP=character(),
+              geometry=sf::st_sfc(crs=4269))
   }, .package="tigris")
   withr::local_envvar(CENSUS_API_KEY="mock-key")
   warnings <- character()

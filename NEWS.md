@@ -8,6 +8,8 @@
 
 - **Too-large analyses stop with a message** instead of stopping the app for everyone using it (#650).
 
+- **Towns and townships can be analyzed and mapped:** in New England, New York, New Jersey, Pennsylvania, and the Midwest, most towns and townships previously got no boundary, so an analysis of them found no residents. They now use Census county subdivision boundaries (#672).
+
 - **Maps of many sites stay quick:** shorter popups and clustered markers, and much smaller downloaded reports (#651).
 
 
