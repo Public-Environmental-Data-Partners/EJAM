@@ -110,14 +110,10 @@ plot_boxplot_pctiles <- function(out, vars = names_d_state_pctile, ylab = "Perce
   )
 
   if (grepl("Percentile", ylab)) {
-    scheme <- ejscreen_color_defaults("pctile")
-    abline(h = 50, col = scheme$colorfills[1])
-    abline(h = scheme$colorbins, col = scheme$colorfills[-1])
+    abline(h = 50, col = 'gray'); abline(h = 80, col = 'yellow'); abline(h = 90, col = "orange"); abline(h = 95, col = "red")
   }
   if (grepl("ratio", ylab, ignore.case = T)) {
-    scheme <- ejscreen_color_defaults("ratio")
-    abline(h = 1, col = scheme$colorfills[1])
-    abline(h = scheme$colorbins, col = scheme$colorfills[-1])
+    abline(h = 1, col = 'gray'); abline(h = 2, col = 'yellow'); abline(h = 3, col = 'orange'); abline(h = 5, col = 'red')
   }
 
   # dot per site

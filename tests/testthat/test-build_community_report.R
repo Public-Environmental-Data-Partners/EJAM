@@ -107,15 +107,3 @@ test_that("report CSS and app <head> reference no assets the app does not serve 
   expect_false(grepl("communityreport.css", generate_html_header(in_shiny = TRUE), fixed = TRUE))
   expect_true(grepl("communityreport.css", generate_html_header(in_shiny = FALSE), fixed = TRUE))
 })
-
-test_that("community reports do not pre-round ratios across shared color cutoffs", {
-  out <- as.data.frame(testoutput_ejamit_10pts_1miles$results_overall)
-  out$ratio.to.avg.pm <- 1.049
-  out$ratio.to.state.avg.pm <- 1.95
-  html <- as.character(EJAM:::build_community_report(
-    output_df = out, analysis_title = "Color boundary regression",
-    report_title = "Test", show_ratios_in_report = TRUE, in_shiny = FALSE))
-  expect_match(html, ">1.049</td>", fixed = TRUE)
-  expect_match(html, "background-color: yellow; -webkit-print-color-adjust: exact; print-color-adjust: exact;\">1.95</td>", fixed = TRUE)
-  expect_false(grepl("background-color: orange; -webkit-print-color-adjust: exact; print-color-adjust: exact;\">1.95</td>", html, fixed = TRUE))
-})

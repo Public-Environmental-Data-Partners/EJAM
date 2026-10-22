@@ -96,9 +96,10 @@ count_sites_with_n_high_scores <- function(
 
   if (is.null(thresholds)) {
     if (indicator_type == "percentile") {thresholds <- c(80, 90, 95, 99)[2]}
-    # Share the first elevation cutoff with color coding. Higher count
-    # benchmarks (2x, 5x, 10x) are analytical categories, not color bins.
-    if (indicator_type == "ratio")      {thresholds <- c(ejscreen_color_defaults("ratio")$colorbins[1], 2, 5, 10)}
+    # 1.05, not 1.01: matches the yellow ratio cutoff set everywhere ratios are
+    # color-coded (see EJAM#369 / EJAM#288). A ratio that rounds to a displayed
+    # "1.0" should not be counted as elevated here either.
+    if (indicator_type == "ratio")      {thresholds <- c(1.05, 2, 5, 10)}
     if (indicator_type == "other") {stop("must specify threshold(s) if indicator_type is 'other' ")}
   }
 

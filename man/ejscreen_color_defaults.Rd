@@ -23,14 +23,10 @@ The settings are defined in \code{inst/global_defaults_package.R}, in
 them via \code{\link[=global_or_param]{global_or_param()}}, so Shiny options override package settings.
 Namespace-only calls read the same file locally if defaults are not initialized.
 These defaults are shared by the color helpers, barplots, Excel
-heatmaps, reports, boxplot reference lines, and county maps.
-The four percentile colors cover \verb{[0, 80)},
+heatmaps, and county maps. The four percentile colors cover \verb{[0, 80)},
 \verb{[80, 90)}, \verb{[90, 95)}, and \verb{[95, 100]}. Ratio cutoffs are 1.05, 2, and 3.
 The historical EJSCREEN scheme splits the range below 80 into eight
-gray bins. Reports and Excel preserve enough ratio decimals for the shared
-cutoffs and metadata precision, so rounding does not change the color bin.
-Values below the first cutoff are unhighlighted in reports and Excel.
-Labels summarize whole percentiles; fractional values use
+gray bins. Labels summarize whole percentiles; fractional values use
 the same cutoffs. Changing the returned list does not change package defaults.
 }
 \examples{

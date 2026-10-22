@@ -151,14 +151,21 @@ table_xls_format <- function(overall,
     "). To run a one-site report, provide the original shapefile polygon again in the app."
   )
 
-  h1names <- if (is.null(heatmap_colnames)) "PERCENTILES" else
-    paste0("Group 1 columns (", paste(heatmap_colnames, collapse = ", "), ")")
-  h2names <- if (is.null(heatmap2_colnames)) "RATIOS (times the average)" else
-    paste0("Group 2 columns (", paste(heatmap2_colnames, collapse = ", "), ")")
-  color_legend <- paste0(
-    h1names, "\n", heatmap_color_legend(heatmap_cuts, heatmap_colors),
-    "\n", h2names, "\n", heatmap_color_legend(heatmap2_cuts, heatmap2_colors)
-  )
+  if (isTRUE(all.equal(heatmap_cuts,  c(80, 90, 95)))  && isTRUE(all.equal(heatmap_colors,  c("yellow", "orange", "red"))) &&
+      isTRUE(all.equal(heatmap2_cuts, c(1.05, 2, 3))) && isTRUE(all.equal(heatmap2_colors, c("yellow", "orange", "red")))) {
+    color_legend <- paste0(
+      "PERCENTILES \n  Red: at least 95th, Orange: 90 to below 95th, Yellow: 80 to below 90th \n",
+      "RATIOS      \n  Red: at least 3x average, Orange: 2 to below 3x average, Yellow: 1.05 to below 2x average"
+    )
+  } else {
+    if (missing(heatmap_colnames))  {h1names <- "PERCENTILES "} else {h1names <- paste0("Group 1 columns ", paste0("(", fixcolnames(heatmap_colnames[1], 'r', 'long'), ", etc.)"))}
+    if (missing(heatmap2_colnames)) {h2names <- "RATIOS "}      else {h2names <- paste0("Group 2 columns ", paste0("(", fixcolnames(heatmap2_colnames[1], 'r', 'long'), ", etc.)"))}
+    color_legend <-  paste0(
+      h1names, "\n", paste0(heatmap_colors,  ": ", heatmap_cuts,  collapse = ", "),
+      '\n',
+      h2names, "\n", paste0(heatmap2_colors, ": ", heatmap2_cuts, collapse = ", ")
+    )
+  }
   ###################  #   ###################  #   ###################  #   ###################  #
 
   # HANDLE ERRORS ETC. ####
@@ -531,11 +538,6 @@ table_xls_format <- function(overall,
     # (same cuts/colors as heatmap2, so the color legend on the notes tab stays accurate)
     fa_ratiocols <- which(names(fa_tab) %in% c("ratio", "ratio_to_state_avg"))
     for (fa_cc in fa_ratiocols) {
-      fa_digits <- ratio_color_digits(fa_tab[[fa_cc]], heatmap2_cuts)
-      openxlsx::addStyle(wb, flagged_areas_tab_name,
-                         rows = 2:(1 + NROW(fa_tab)), cols = fa_cc,
-                         style = openxlsx::createStyle(numFmt = paste0("#,##0.", strrep("0", fa_digits))),
-                         stack = TRUE)
       for (fa_i in 1:length(heatmap2_colors)) {
         openxlsx::conditionalFormatting(wb, flagged_areas_tab_name,
                                         rows = 2:(1 + NROW(fa_tab)),
@@ -972,12 +974,8 @@ table_xls_format <- function(overall,
   openxlsx::addStyle(wb, sheet = 'Overall',   rows = 2,                      cols = distance_colnums, style = openxlsx::createStyle(numFmt = '#,##0.00'), stack = TRUE)
   openxlsx::addStyle(wb, sheet = 'Each Site', rows = 2:(1 + NROW(eachsite)), cols = distance_colnums, style = openxlsx::createStyle(numFmt = '#,##0.00'), stack = TRUE, gridExpand = TRUE)
 
-  ### RATIO - preserve metadata precision and the actual color boundaries ####
-  ratio_values <- suppressWarnings(as.numeric(unlist(c(
-    lapply(ratio_colnums_overall, function(i) overall[[i]]),
-    lapply(ratio_colnums_eachsite, function(i) eachsite[[i]])))))
-  ratio_digits <- ratio_color_digits(ratio_values, heatmap2_cuts[is.finite(heatmap2_cuts)])
-  ratio_var_style <- openxlsx::createStyle(numFmt = paste0('#,##0.', strrep('0', ratio_digits)))
+  ### RATIO - rounded to one decimal place    ####
+  ratio_var_style <- openxlsx::createStyle(numFmt = '#,##0.0')
   openxlsx::addStyle(wb, sheet = 'Overall',   rows = 2,                      cols = ratio_colnums_overall,  style = ratio_var_style, stack = TRUE)
   openxlsx::addStyle(wb, sheet = 'Each Site', rows = 2:(1 + NROW(eachsite)), cols = ratio_colnums_eachsite, style = ratio_var_style, stack = TRUE, gridExpand = TRUE)
 
