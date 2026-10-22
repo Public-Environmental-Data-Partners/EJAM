@@ -13,12 +13,12 @@ _since October 2026_
 
 #### Towns and townships added
 
-  - Towns and townships now can be analyzed and mapped. In New England, New York, New Jersey, Pennsylvania, and the Midwest, most towns and townships previously got no boundary, so an analysis of them found no residents. They now use Census county subdivision boundaries (#672).
+  - Towns and townships can now be analyzed and mapped. In New England, New York, New Jersey, Pennsylvania, and the Midwest, most towns and townships previously got no boundary, so an analysis of them found no residents. They now use Census county subdivision boundaries (#672).
 
 #### Analyzing thousands of sites is faster and more efficient
 
-  - **Maps are faster:** Maps stay fast by using shortened popup text and clustered markers, and enable much smaller downloaded reports for large analyses (#651).
-  - **Larger analyses work better:** Analyzing thousands of sites on the web app used to be slow or would crash. The same EJAM multisite results run about twice as fast and use about 1–1.7 GB less peak memory, for unbuffered county, state, tract, or blockgroup analyses run about twice as fast (#649, #652).
+  - **Maps are faster:** Shorter popup text and clustered markers keep maps responsive and make downloaded reports much smaller for large analyses (#651).
+  - **Larger analyses work better:** Analyzing thousands of sites on the web app used to be slow or would crash. Unbuffered county, state, tract, or blockgroup analyses now run about twice as fast and use about 1–1.7 GB less peak memory, with the same results (#649, #652).
   - **Extremely large requests stop with an explanation** instead of stopping the app for everyone using it (#650).
 
 
@@ -31,7 +31,7 @@ _since 2024 (EPA's last updates, EJAM 2.32.2 and EJSCREEN 2.3)_
 - PDF reports are available for the Community Report, with page breaks that print well. This was missing from the first post-EPA release.
 
 #### Choose places in EJSCREEN more easily
-- EJSCREEN now lets you pick several places to get reports on directly from the EJSCREEN map. You can select multiple locations by clicking points, choosing areas, or drawing shapes, then get one combined report (via the EJAM-API) or send them all to EJAM for further analysis and viewing detailed results.
+- EJSCREEN now lets you pick several places to get reports on directly from the EJSCREEN map. You can select multiple locations by clicking points, choosing areas, or drawing shapes, then get one combined report (via the EJAM-API) or send them all to EJAM for further analysis and detailed results.
 
 #### Choose places in EJAM more easily 
 - EJAM now lets you click on the map to add points, or pick cities, counties, or states by name.
@@ -62,7 +62,7 @@ _since October 2026_
   - **States and Counties:** State and county boundaries and related functions use an
   explicit vintage, with checks for boundary years, FIPS codes, lookup metadata,
   and block/crosswalk consistency.
-  - **Tracts and blockgroups:** Map services defaults
+  - **Tracts and blockgroups:** Default map services
   follow the ACS data vintage, including Census TIGERweb support for 2024 (#671).
   - **Cities / Towns / CDPs:** `shapes_from_fips()` and its place-boundary helpers 
   now use `year = NULL` to select the calendar-predicted 
@@ -73,11 +73,10 @@ _since October 2026_
   Requested places without a boundary now warn with their FIPS codes and the
   boundary year, while retaining empty geometry in the requested row order.
   Use an explicit year, such as `year = 2024`, to reproduce a particular vintage.
-  Existing boundary-service URLs, built-in county/state boundaries, county
-  download years, and the Census 2020 block data are unchanged.
+  This automatic year selection applies only to place boundaries. State and county
+  boundaries follow the ACS data vintage, while block data retain their Census 2020 vintage.
 
-- **Zipcode analysis via API:**
-  - API now handles `zip` or `zipcode`
+- **ZIP code analysis via the API:**
   - `ejamit()`, `ejamapi()`, and `url_ejamapi()` now handle `zip` or `zipcode`. Results get zip-specific API report links.
 
 - **Color-coded maps** to see where an indicator is highest:
