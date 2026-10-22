@@ -114,6 +114,7 @@ for (i in seq_along(allreports)) {
 
       sitepoints = testpoints_10[1:8,],
       regid = testinput_registry_id[1:8],
+      radius = 3,
       as_html = T
     )
     directly = unlinkify(directly)
@@ -122,10 +123,9 @@ for (i in seq_along(allreports)) {
     via_url_columns = unlinkify(via_url_columns)
     via_url_columns = gsub("&sitetype=latlon|&validate_regids=FALSE", "", via_url_columns)  ###   THESE ARE ADDED BY THE GENERIC WRAPPER BUT NOT BY INDIVIDUAL url_xyz functions
 
-    try(    expect_equal(
+    expect_equal(
       via_url_columns,
       directly
-    )
     )
   })
 
@@ -135,3 +135,22 @@ for (i in seq_along(allreports)) {
 rm(allreports)
 rm(x)
 
+
+test_that("overall EJAM report links distinguish single and multiple sites", {
+  reports <- list(list(header = "EJAM Report", text = "Report", FUN = url_ejamapi))
+  for (html in c(FALSE, TRUE)) {
+    one <- url_columns_bysite(lat = 38.9, lon = -77, radius = 1,
+                             reports = reports, as_html = html)
+    expect_identical(one$results_overall, one$results_bysite)
+    many <- url_columns_bysite(lat = c(38.9, 39), lon = c(-77, -76), radius = 1,
+                              reports = reports, as_html = html)
+    expected <- url_package("ejamapp")
+    if (html) expected <- url_linkify(expected, text = "Report")
+    expect_identical(many$results_overall[[1]], expected)
+    expect_true(all(grepl("/report?", many$results_bysite[[1]], fixed = TRUE)))
+  }
+  zip <- url_columns_bysite(zip = c("20912", "10605"), radius = 0,
+                            reports = reports, as_html = FALSE)
+  expect_match(zip$results_overall[[1]], "sitenumber=0", fixed = TRUE)
+  expect_match(zip$results_overall[[1]], "/report?", fixed = TRUE)
+})

@@ -40,8 +40,8 @@ order, and why. For the detailed mechanics of deployment and of building
 datasets, it points to the articles that already document them.
 
 The current development version is **`r this_version`** (ACS `r this_acs` data,
-ejamdata release `r this_datatag`). The examples below use the v3.2022.3
-release of October 2026.
+ejamdata release `r this_datatag`). The examples below may use an older 
+release.
 
 Related articles:
 
@@ -81,7 +81,7 @@ EJAM versions are **`MAJOR.ACSENDYEAR.PATCH`**. The middle field is the end year
 of the American Community Survey (ACS) 5-year data the release uses, not a minor
 version number:
 
-- `3.2022.3`: major version 3, ACS 2018-2022 data, third patch.
+- `3.2022.3`: major version 3, ACS 2018-2022 data, third patch, final release on that data.
 - `4.2024.0`: major version 4, ACS 2020-2024 data, first release on that data.
 
 Two data vintages can be supported at once. The highest version is the live
@@ -90,17 +90,17 @@ example, v3.2022.3 is the final ACS 2018-2022 release).
 
 Conventions and the guard that enforces them:
 
-- **Git tags carry a `v`** (`v3.2022.3`). The `DESCRIPTION` `Version` field does
-  not (`3.2022.3`). The same applies to `ejamdata` release tags, which do carry
+- **Git tags carry a lowercase `v`** (`v4.2024.0`). The `DESCRIPTION` `Version` field does
+  not (`4.2024.0`). The same applies to `ejamdata` release tags, which do carry
   the `v`.
 - **The version and the data vintage must agree.** The release workflow reads
   `VersionACS` from `DESCRIPTION` and refuses to release if the version's middle
   field is not the end year of `VersionACS` (for example, `4.2024.0` with
   `VersionACS: 2018-2022` is blocked). So a new ACS vintage's version number has
   to land in the **same commit** as its data.
-- **A patch release** (`3.2022.2` → `3.2022.3`) keeps the vintage and may
+- **A patch release** (`4.2024.0` → `4.2024.1`) keeps the vintage and may
   change code, documentation, or data corrections. **A vintage release**
-  (`3.2022.x` → `4.2024.0`) swaps the ACS data and follows the annual pipeline
+  (`3.2022.3` → `4.2024.0`) swaps the ACS data and follows the annual pipeline
   article first.
 
 ### Where the version appears
@@ -165,9 +165,17 @@ Two rules make this work:
   squash leaves `main` without `development`'s history, and every conflict
   resolved in this release comes back at the next one.
 
-The ACS vintage branches (`ACS2022`, `ACS2023`, `ACS2024`) hold earlier
-vintage-specific work. Keep them until the next vintage release has shipped and
-been verified.
+Use existing release tags to recover earlier code and data vintages:
+`v3.2022.3`, `v3.2023.0`, or e.g., `v4.2024.0`. Separate branches per historical
+vintage are not maintained. An older tag is a frozen historical snapshot, not
+a source of fresh pipeline outputs or later corrections.
+
+Integrate ongoing new-version X work into a branch like `vX.20YY.0-prep`. 
+When maintainers confirm readiness for the
+coordinated data/version swap, create a short-lived branch from its current
+head and review the combined change in one PR back to prep. Keep `development`
+on the current version line until the version transition is approved; do not bump versions,
+activate data, publish assets, or deploy merely because a preparation branch exists.
 
 ## Data changes and the ejamdata release
 
@@ -246,7 +254,7 @@ branch, which may be stale.
 
 ## Prepare the release on `development`
 
-Work on a short-lived branch (for example `v3.2022.3-version-bump`) and merge it
+Work on a short-lived branch (for example `v4.2024.0-prep`) and merge it
 into `development` through a pull request, so CI and review run on it.
 
 - **Version fields**: everything in [Where the version
@@ -268,7 +276,7 @@ The release workflow publishes the **section of `NEWS.md` whose heading matches
 the version** as the GitHub Release notes. So the NEWS file is both the
 changelog and the release announcement:
 
-- Use one top-level heading per release: `# EJAM 3.2022.3 (October 2026)`. The
+- Use one top-level heading per release: `# EJAM 4.2024.0 (November 2026)`. The
   workflow finds it by the version number, with or without a `v`, so the month
   in parentheses is fine.
 - Keep entries short: one or two sentences each, with the issue or pull request
@@ -340,7 +348,7 @@ Then check, in a fresh browser tab:
 Open a pull request from `development` into `main`. If `main` has commits that
 `development` lacks (for example, a hotfix or release-workflow change made
 directly on `main`), GitHub reports conflicts. Resolve them once, either by
-merging `main` into `development` or, as for v3.2022.3, on an integration branch
+merging `main` into `development` or on an integration branch
 cut from `main` that merges `development`, then use that branch for the pull
 request. In both cases, take `development`'s version of each file unless `main`
 holds something `development` lacks.
@@ -391,11 +399,11 @@ there is deliberately no scheduled release. Always do a dry run first:
 ```{bash, eval=FALSE}
 # Dry run: creates nothing. Read the job summary: tag, title, and release notes.
 gh workflow run release.yaml --repo Public-Environmental-Data-Partners/EJAM --ref main \
-  -f expected_version=3.2022.3 -f dry_run=true -f mark_latest=true
+  -f expected_version=4.2024.0 -f dry_run=true -f mark_latest=true
 
 # Publish
 gh workflow run release.yaml --repo Public-Environmental-Data-Partners/EJAM --ref main \
-  -f expected_version=3.2022.3 -f dry_run=false -f mark_latest=true
+  -f expected_version=4.2024.0 -f dry_run=false -f mark_latest=true
 ```
 
 What it does:
@@ -404,7 +412,7 @@ What it does:
   `expected_version` does not match, or if the version and vintage disagree
 - if a **draft** Release for that version already exists, publishes the draft
   as it is (its reviewed title and notes are kept); otherwise creates tag
-  `vX.YYYY.Z` and a Release titled like "EJAM v3.2022.3 (ACS 2018-2022)", with
+  `vX.YYYY.Z` and a Release titled like "EJAM 4.2024.0 (ACS 2020-2024)", with
   the matching NEWS section as the notes
 - never changes a Release that is already published, so re-running is safe
 - marks the Release **Latest** if `mark_latest=true` (use `false` when releasing

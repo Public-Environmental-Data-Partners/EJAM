@@ -8,10 +8,21 @@
 #'
 #' @param fips vector of one or more Census FIPS codes such as from [name2fips()]
 #'
-#' @param myservice_blockgroup URL of feature service to get shapes from,
-#'   or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
-#' @param myservice_tract URL of feature service to get shapes from,
-#'   or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
+#' @param myservice_blockgroup A feature-service URL (the existing default),
+#'   "cartographic", or "tiger". The latter two use optional package tigris to
+#'   download and cache one boundary file per state, without requesting ACS data.
+#'   This can be much faster than repeated service queries for many blockgroups.
+#'   "cartographic" uses smaller, generalized 1:500,000 boundaries: fast to
+#'   download and draw, but simplified and clipped along shorelines. Use it for
+#'   overview maps, not precise area, buffering, or point-in-polygon analysis.
+#'   "tiger" retains full TIGER/Line boundary detail; files are larger and slower
+#'   to download and draw, but state-file caching still avoids repeated queries.
+#'   The default service follows the active ACS vintage (Esri for 2022/2023,
+#'   Census TIGERweb ACS2024 for 2024);
+#'   tigris is required only when explicitly selecting either tigris option.
+#' @param myservice_tract URL of feature service to get tract shapes from.
+#'   The "cartographic" and "tiger" options are not implemented for tracts;
+#'   the tract helper warns and uses its default service if these are requested.
 #' @param myservice_place only "tiger" is implemented
 #' @param myservice_county URL of feature service to get shapes from,
 #'   or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.
@@ -20,16 +31,32 @@
 #'   "cartographic" County bounds are served from that built-in dataset rather than
 #'   downloaded, falling back to downloading only for any FIPS not found there.
 #' @param allow_multiple_fips_types if enabled, set TRUE to allow mix of blockgroup, tract, city, county, state fips
-#' @param year passed to [tigris::places()] for bounds or city/town type of fips
+#' @param year Boundary year for [tigris::places()] and for blockgroups when
+#'   selecting "cartographic" or "tiger". NULL (the default) uses the
+#'   calendar-predicted latest TIGER/Line places vintage for places (assuming
+#'   an October 14 annual release, without checking publication),
+#'   and [acs_endyear()] for those blockgroups. Places define areas to analyze
+#'   and need not share the vintage of the demographic data overlaid on them.
+#'   Specify a year explicitly to use another vintage for these downloads.
+#'   County downloads continue to use [acs_endyear()]; built-in county/state
+#'   boundaries must be rebuilt for the release's demographic geography.
+#'   Default tract/blockgroup services follow the active ACS vintage.
+#'   Service URLs determine their own vintage;
+#'   year does not change the vintage embedded in a URL.
+#'   Requested places without a boundary warn with their FIPS codes and year;
+#'   their rows retain empty geometry, without substituting another vintage.
 #' @details
-#'  The functions this relies on should return results in the same order as the input fips,
-#'  but will exclude rows for invalid fips, and will also exclude output rows that would
-#'  correspond to fips for which boundaries could not be obtained for some reason.
-#'  So the output table might not have the same number of rows as the input fips vector.
+#'  Results follow the input FIPS order, including duplicates. Empty geometry
+#'  rows preserve positional alignment for invalid inputs and for valid FIPS
+#'  whose polygons could not be obtained. Only the supported FIPS types are
+#'  downloaded; validation and Shiny errors retain their existing behavior.
 #'
-#' When using tigris package ("tiger" as service-related parameter here),
-#' it uses the year that is the default in the version of the tigris package that is installed.
-#' You can use options(tigris_year = 2023) for example to specify it explicitly.
+#' Choose the boundary source explicitly when accuracy matters. A speed gain
+#' from state-file caching does not require simplifying the boundaries: use
+#' "tiger" to retain detail. Simplification with "cartographic" can change area,
+#' point membership, and buffer results, even if the FIPS codes are unchanged.
+#' Cached tigris blockgroups can be read offline; other download paths retain
+#' their connectivity checks. Missing polygons remain empty rows in the output.
 #'
 #'  Blocks are not implemented yet here. For info on blocks bounds, see  [tigris::block_groups()]
 #'  Also note the [blockwts] dataset had a placeholder column block_radius_miles that
@@ -37,7 +64,7 @@
 #'  If it were used, it could be a way to quickly get the area of each block,
 #'  using the formula  area = pi * (block_radius_miles^2)
 #'
-#'  For zip code boundaries, see the [EJAM documentation](ejanalysis.org/ejamdocs) article on zipcodes.
+#'  For zip code boundaries, see [shapes_from_zip()] and [EJAM documentation](ejanalysis.org/ejamdocs) article on zipcodes.
 #'
 #' @return spatial data.frame with one row per fips (assuming any fips are valid)
 #' @examples
@@ -63,17 +90,15 @@
 #' @export
 #'
 shapes_from_fips <- function(fips,
-                             myservice_blockgroup = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-                                                           "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"),
-                             myservice_tract      = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-                                                           "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
+                             myservice_blockgroup = shapes_acs_boundary_service("blockgroup"),
+                             myservice_tract = shapes_acs_boundary_service("tract"),
                              myservice_place  = 'tiger',
                              myservice_county = 'cartographic',
                              #  myservice_county = paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
                              # "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/2/query"), # an alternative
                              # myservice_state is built into the package as dataset
                              allow_multiple_fips_types = TRUE,
-                             year = 2024
+                             year = NULL
 ) {
 
   # preserve original input SORT order ####
@@ -143,7 +168,14 @@ shapes_from_fips <- function(fips,
   # State bounds and the default county bounds can be served without a network.
   # Check only after validating the FIPS, and before the try() download handlers,
   # so an offline download request retains its clear error rather than empty shapes.
-  needs_download <- any(ftype %in% c("blockgroup", "tract", "city"))
+  tigris_blockgroups <- isTRUE(myservice_blockgroup[1] %in% c("cartographic", "tiger"))
+  if (tigris_blockgroups && any(ftype %in% "blockgroup") &&
+      !requireNamespace("tigris", quietly = TRUE)) {
+    stop("Install tigris for cartographic or tiger blockgroups, or use a service URL", call. = FALSE)
+  }
+  # Let tigris try its cache before requiring a network connection.
+  needs_download <- any(ftype %in% c("tract", "city")) ||
+    (any(ftype %in% "blockgroup") && !tigris_blockgroups)
   county_fips <- fips[ftype %in% "county"]
   if (length(county_fips) > 0) {
     needs_download <- needs_download ||
@@ -154,7 +186,8 @@ shapes_from_fips <- function(fips,
     stop("Cannot download boundaries - No internet connection seems to be available.")
   }
 
-  options(tigris_use_cache = TRUE) # done in .onAttach() now
+  previous_options <- options(tigris_use_cache = TRUE)
+  on.exit(options(previous_options), add = TRUE)
   # options(tigris_year = 2022) # uses default of the tigris package version installed
 
   error_downloading <- function(shp) {
@@ -177,7 +210,7 @@ shapes_from_fips <- function(fips,
   if (allow_multiple_fips_types) {
     oktype <- ftype %in% expectedtype & !is.na(ftype)
     if (any(oktype)) {
-      x <- try(shapes_blockgroups_from_bgfips(fips[oktype], myservice = myservice_blockgroup), silent = TRUE)
+      x <- try(shapes_blockgroups_from_bgfips(fips[oktype], myservice = myservice_blockgroup, year = year), silent = TRUE)
       errx <- error_downloading(x)
       if (is.null(errx)) {return(NULL)} # NULL means it is in a shiny app, which expects this to abort and return NULL if there is any problem
       if (errx) {shp_this <- shapes_empty_table(fips[oktype])} else {shp_this <- x} # if errx, provide NA rows of empty polygon
@@ -186,7 +219,7 @@ shapes_from_fips <- function(fips,
     }
   } else {
     if (all(ftype[!is.na(ftype)] %in% 'blockgroup')) {
-      shp_combined <- try(shapes_blockgroups_from_bgfips(fips, myservice = myservice_blockgroup), silent = TRUE)
+      shp_combined <- try(shapes_blockgroups_from_bgfips(fips, myservice = myservice_blockgroup, year = year), silent = TRUE)
     }
   }
   ##                                                  tract ####
@@ -392,6 +425,9 @@ shapes_counties_from_countyfips_local <- function(fips) {
     return(NULL)
   }
 
+  # Never serve stale bundled counties after the demographic vintage changes.
+  if (!identical(release_geography_boundary_year(cshp), release_geography_year())) return(NULL)
+
   idx <- match(fips, cshp$GEOID)
   if (anyNA(idx)) {
     # at least one requested county is not among the built-in boundaries
@@ -446,8 +482,7 @@ shapes_counties_from_countyfips_local <- function(fips) {
 #'
 shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c("NAME", "FIPS", "STATE_ABBR", "STATE_NAME"), # "",
                                             myservice = c(
-                                              paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
-                                                     "USA_Boundaries_2022/FeatureServer/2/query"),
+                                              shapes_acs_boundary_service("county"),
                                               paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
                                                      "USA_Counties_and_States_with_PR/FeatureServer/0/query"),
                                               'cartographic', 'tiger'
@@ -642,7 +677,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
     if (myservice[1] %in% c("cartographic", "tiger") && !tidycensus_ok) {
       # those were requested but failed due to problem with census api key or tidycensus package
       warning(paste0("need tidycensus package and census API key to use myservice = '", myservice[1], "', so using default service instead"))
-      myservice <- "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/2/query"
+      myservice <- shapes_acs_boundary_service("county")
     }
 
     if (length(outFields) > 1) {
@@ -685,6 +720,10 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
 
     # > ejscreen service ####
     if (grepl("ejscreen", myservice, ignore.case = TRUE)) {FIPSVARNAME <- "ID"} else {FIPSVARNAME <- "FIPS"}
+    if (shapes_is_census_service(myservice)) {
+      FIPSVARNAME <- "GEOID"
+      outFields <- "*" # Census schema is normalized below by shapefile_addcols().
+    }
     myurl <- httr2::url_parse(myservice)
     myurl$query <- list(
       where = paste0(paste0(FIPSVARNAME, "='", fips, "'"), collapse = " OR "),  ########################### #
@@ -693,6 +732,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
       f = "geojson")
     request <- httr2::url_build(myurl)
     shp <- sf::st_read(request) # st_read returns data.frame, read_sf returns tibble
+    if ("GEOID" %in% names(shp) && !"FIPS" %in% names(shp)) shp$FIPS <- shp$GEOID
 
     ### ensure original rows ####
     # original sort order, and ensure NROW(shp) output is same as length(fips) input
@@ -726,8 +766,7 @@ shapes_counties_from_countyfips <- function(countyfips = '10001', outFields = c(
 #'
 shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR", "SQMI"),
                                         myservice = c(
-                                          paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/",
-                                                 "ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"),
+                                          shapes_acs_boundary_service("tract"),
                                           "cartographic", "tigris")[1]) {
 
   if (myservice[1] %in% c("cartographic", "tiger")) {
@@ -735,13 +774,13 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
     # see code in shapes_counties_from_countyfips() to possibly add those options
 
     warning("only arcgis service supported here for tracts currently, so using that")
-    myservice <- "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"
+    myservice <- shapes_acs_boundary_service("tract")
   }
 
   outFields <- paste0(outFields, collapse = ',')
 
   if (is.null(myservice)) {
-    myservice <- "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"
+    myservice <- shapes_acs_boundary_service("tract")
   }
   expectedtype = 'tract'
 
@@ -776,6 +815,10 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
   }
 
   if (grepl("ejscreen", myservice, ignore.case = TRUE)) {FIPSVARNAME <- "ID"} else {FIPSVARNAME <- "FIPS"}
+  if (shapes_is_census_service(myservice)) {
+    FIPSVARNAME <- "GEOID"
+    outFields <- "*" # Census schema is normalized below by shapefile_addcols().
+  }
   myurl <- httr2::url_parse(myservice)
   myurl$query <- list(
     where = paste0(paste0(FIPSVARNAME, "='", fips, "'"), collapse = " OR "),  ########################### #
@@ -784,6 +827,7 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
     f = "geojson")
   request <- httr2::url_build(myurl)
   shp <- sf::st_read(request) # data.frame not tibble
+  if ("GEOID" %in% names(shp) && !"FIPS" %in% names(shp)) shp$FIPS <- shp$GEOID
 
   ## ensure original rows ####
   # original sort order, and ensure NROW(shp) output is same as length(fips) input
@@ -802,8 +846,11 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
 
 #' Get blockgroups boundaries, via API, to map them
 #'
-#' @details This is useful mostly for small numbers of blockgroups.
-#'   The EJSCREEN map services provide other ways to map blockgroups and see EJSCREEN data.
+#' @details Service URLs query only requested blockgroups. For large selections,
+#'   "cartographic" and "tiger" use cached state boundary files through tigris.
+#'   Cartographic boundaries are generalized for fast overview maps; full
+#'   TIGER/Line boundaries retain detail for spatial work. The existing URL
+#'   default follows the active ACS vintage; explicit URLs retain their source.
 #' @param bgfips one or more blockgroup FIPS codes as 12-character strings in a vector
 #' @param outFields can be "*" for all, or can be
 #'   just a vector of variables that particular service provides, like FIPS, SQMI, POPULATION_2020, etc.
@@ -813,30 +860,23 @@ shapes_tract_from_tractfips <- function(fips, outFields = c("FIPS", "STATE_ABBR"
 #'   EJScreen_2_21_US_Percentiles_Block_Groups/FeatureServer/0/query"
 #'
 #'   for example provides EJSCREEN indicator values, NPL_CNT, TSDF_CNT, EXCEED_COUNT_90, etc.
+#' @param year Boundary year for the tigris options; NULL uses [acs_endyear()].
+#'   Ignored for service URLs, whose vintage is controlled by the service.
 #' @seealso [shapes_from_fips()]
-#' @return spatial object via [sf::st_read()] # sf-data.frame, not sf-tibble like [sf::read_sf()]
+#' @return An sf data.frame with standard EJAM metadata and input FIPS ordering.
+#'   With a tigris source, outFields supports the standard EJAM fields, or "*"
+#'   for all standard fields. ArcGIS-specific fields require a service URL.
 #'
 #' @keywords internal
 #'
 shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = c("FIPS", "STATE_ABBR", "SQMI"),
                                            myservice = c(
-                                             paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
-                                                    "USA_Boundaries_2022/FeatureServer/5/query"),
+                                             shapes_acs_boundary_service("blockgroup"),
                                              paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
                                                     "USA_Block_Groups/FeatureServer/0/query"), # token required?
-                                             "cartographic", "tiger")[1]
+                                             "cartographic", "tiger")[1],
+                                           year = NULL
 ) {
-
-  if (myservice[1] %in% c("cartographic", "tiger")) {
-
-    # see code in shapes_counties_from_countyfips()
-
-    warning("only arcgis service supported currently, so using that")
-    myservice <- "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"
-    # example, all blockgroups in 1 county:
-    # "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query?where=STCOFIPS%3D10001&objectIds=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&relationParam=&returnGeodetic=false&outFields=*&returnGeometry=false&returnCentroid=false&returnEnvelope=false&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&defaultSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&collation=&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnTrueCurves=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=html&token="
-    # "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query?where=STCOFIPS%3D10001&outFields=*&returnGeodetic=false"
-  }
 
   outFields <- paste0(outFields, collapse = ',')
 
@@ -858,19 +898,38 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
   }
   fips = fips_lead_zero(fips)
   fips = fips[fips_valid(fips)]
-  if (length(fips) == 0) {warning('no valid fips')} # just warn now?
+  if (length(fips) == 0) {warning('no valid fips'); return(NULL)}
+
+  if (myservice[1] %in% c("cartographic", "tiger")) {
+    standard_fields <- c("FIPS", "STATE_ABBR", "SQMI", "fipstype", "pop",
+                         "NAME", "STATE_NAME", "POP_SQMI", "geometry")
+    requested <- trimws(strsplit(outFields, ",", fixed = TRUE)[[1]])
+    if (any(!requested %in% c("*", standard_fields))) {
+      stop("ArcGIS-specific outFields require a service URL, not a tigris source", call. = FALSE)
+    }
+    shp <- shapes_blockgroups_from_tigris_bgfips(unique(fips), year = year,
+                                                 cb = myservice[1] == "cartographic")
+    # Rejoin after downloading unique IDs so duplicates and missing polygons
+    # retain the same positions as in the service path.
+    if (!nrow(shp)) shp <- shapes_empty_table(fips)
+    shp <- shp[match(fips, shp$FIPS), , drop = FALSE]
+    shp$FIPS <- fips
+    shp <- shapefile_dropcols(shp)
+    shp <- shapefile_addcols(shp)
+    return(shapefile_sortcols(shp))
+  }
 
   if (length(fips) > 50) {
     ## (loop if over 50 fips) ####
     # The API does let you get >50 at once but instead of figuring out that syntax, this function works well enough
     batchsize <- 50
-    batches <- 1 + (length(fips) %/% batchsize)
+    batches <- ceiling(length(fips) / batchsize)
     # ***  add code here to handle 50 at a time and assemble them
     out <- list()
     for (i in 1:batches) {
       first <- 1 + ((i - 1) * batchsize)
       last <- min(first + batchsize - 1, length(fips))
-      out[[i]] <- shapes_blockgroups_from_bgfips(fips[first:last], outFields = outFields, myservice = myservice)
+      out[[i]] <- shapes_blockgroups_from_bgfips(fips[first:last], outFields = outFields, myservice = myservice, year = year)
     }
     out <- do.call(rbind, out)
     return(out)
@@ -879,6 +938,10 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
   }
 
   if (grepl("ejscreen", myservice, ignore.case = TRUE)) {FIPSVARNAME <- "ID"} else {FIPSVARNAME <- "FIPS"}
+  if (shapes_is_census_service(myservice)) {
+    FIPSVARNAME <- "GEOID"
+    outFields <- "*" # Census schema is normalized below by shapefile_addcols().
+  }
   myurl <- httr2::url_parse(myservice)
   myurl$query <- list(
     where = paste0(paste0(FIPSVARNAME, "='", fips, "'"), collapse = " OR "),  ########################### #
@@ -887,6 +950,7 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
     f = "geojson")
   request <- httr2::url_build(myurl)
   shp <- sf::st_read(request) # data.frame not tibble
+  if ("GEOID" %in% names(shp) && !"FIPS" %in% names(shp)) shp$FIPS <- shp$GEOID
 
   # # ensure all via shapes_from_fips() have a FIPS colname
   if ("GEOID" %in% names(shp) && !("FIPS" %in% names(shp))) {
@@ -942,15 +1006,26 @@ shapes_blockgroups_from_bgfips <- function(bgfips = '010890029222', outFields = 
 #' Get shapefiles/ boundaries of census places like cities
 #'
 #' @param fips vector of 7-digit City/town/CDP codes as in the fips column of the [censusplaces] dataset
+#' @details Codes not found in the Census places file are looked up in the
+#'   county subdivisions file for the same year. Many towns and townships,
+#'   especially in New England, NY, NJ, PA, and the Midwest, are county
+#'   subdivisions rather than Census places. A warning names any valid code
+#'   that still has no boundary, with its year. Its row retains empty geometry;
+#'   no older vintage is substituted.
 #' @param myservice only 'tiger' is implemented as source of boundaries, using the tigris package
-#' @param year for [tigris::places()]
+#' @param year Boundary year for [tigris::places()]; NULL (the default) uses
+#'   the calendar-predicted latest TIGER/Line places vintage, assuming an
+#'   October 14 annual release without checking publication,
+#'   independently of [acs_endyear()] and the installed tigris default.
+#'   Set an explicit year to reproduce a particular vintage.
 #' @seealso [shapes_from_fips()]
 #' @return spatial data.frame for mapping
 #'
 #' @keywords internal
 #'
-shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = 2024) {
+shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = NULL) {
 
+  if (is.null(year)) {year <- shapes_places_default_year()}
   expectedtype <- 'city'
 
   # handle invalid fips ####
@@ -992,11 +1067,27 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = 2024)
   if ("GEOID" %in% names(shp) && !("FIPS" %in% names(shp))) {
     shp$FIPS <- shp$GEOID
   }
+
+  ## towns and townships: county subdivisions ####
+  # Many entries in censusplaces, especially in New England, NY, NJ, PA, and the
+  # Midwest, are county subdivisions (minor civil divisions), not Census places,
+  # so they are not in the places file. Look up any still-missing codes there (#672).
+  missing_fips <- setdiff(unique(validfips), shp$FIPS)
+  if (length(missing_fips) > 0) {
+    cousub <- shapes_cousub_from_placefips(missing_fips, year = year)
+    if (NROW(cousub) > 0) {
+      common <- intersect(c("NAME", "NAMELSAD", "FIPS"), names(shp))
+      cousub <- sf::st_transform(cousub, sf::st_crs(shp))
+      shp <- rbind(shp[, common], cousub[, common])
+    }
+  }
   ## ensure original rows ####
   # original sort order, and ensure NROW(shp) output is same as length(fips) input
   # retain only 1 row per input fips (even if invalid FIPS or valid FIPS lacking downloaded boundaries)
   shp <- shp[match(fips, shp$FIPS), ]
   shp$FIPS <- fips # now include the original fips in output even for rows that came back NA / empty polygon
+
+  shapes_warn_missing_place_boundaries(shp[ok, ], fips[ok], year)
 
   shp <- shapefile_dropcols(shp)
   shp <- shapefile_addcols(shp)
@@ -1004,11 +1095,96 @@ shapes_places_from_placefips <- function(fips, myservice = 'tiger', year = 2024)
   rownames(shp) <- NULL
   return(shp)
 }
+
+# Towns and townships that are county subdivisions (minor civil divisions), not
+# Census places. Their censusplaces code is state FIPS + COUSUBFP, which is
+# unique within a state (#672). A subdivision that spans counties has one row
+# per county in the Census file, so its pieces are merged into one shape.
+shapes_cousub_from_placefips <- function(fips, year) {
+  pieces <- lapply(unique(substr(fips, 1, 2)), function(stfips) {
+    cs <- tryCatch(tigris::county_subdivisions(stfips, year = year, progress_bar = FALSE),
+                   error = function(e) NULL)
+    if (!inherits(cs, "sf") || !all(c("STATEFP", "COUSUBFP") %in% names(cs))) return(NULL)
+    # COUSUBFP 00000 is Census's "County subdivisions not defined" (mostly water),
+    # not a real town, even though censusplaces lists codes like 3600000.
+    cs <- cs[!cs$COUSUBFP %in% "00000", ]
+    id <- paste0(cs$STATEFP, cs$COUSUBFP)
+    ids <- intersect(unique(fips), id)
+    if (length(ids) == 0) return(NULL)
+    geoms <- lapply(ids, function(x) {
+      g <- sf::st_geometry(cs)[id == x]
+      if (length(g) == 1L) g else tryCatch(sf::st_union(g), error = function(e) sf::st_combine(g))
+    })
+    first <- match(ids, id)
+    sf::st_sf(NAME = cs$NAME[first], NAMELSAD = cs$NAMELSAD[first], FIPS = ids,
+              geometry = do.call(c, geoms))
+  })
+  pieces <- Filter(Negate(is.null), pieces)
+  if (length(pieces) == 0) return(NULL)
+  do.call(rbind, pieces)
+}
 ####################################################### #
+####################################################### #
+
+# predict / guess which vintage of TIGER/Line Shapefiles are the most recent published
+
+predicted_latest_year_available <- function(asofsysdate = Sys.Date(),
+                                            predicted_release_dates = paste0(2022:2036, "-10-14")) {
+  # may be used by shapes_places_default_year()
+
+  asofsysdate <- as.Date(asofsysdate)
+  predicted_release_dates <- as.Date(predicted_release_dates)
+  if (length(asofsysdate) != 1L || is.na(asofsysdate)) {
+    stop("asofsysdate must be one non-missing date", call. = FALSE)
+  }
+  if (!length(predicted_release_dates) || anyNA(predicted_release_dates)) {
+    stop("predicted_release_dates must contain non-missing dates", call. = FALSE)
+  }
+  valid_years <- as.integer(format(predicted_release_dates, "%Y"))
+  eligible <- predicted_release_dates <= asofsysdate
+  if (!as.integer(format(asofsysdate, "%Y")) %in% valid_years || !any(eligible)) {
+    return(NA_integer_)
+  }
+  return(as.integer(format(max(predicted_release_dates[eligible]), "%Y")))
+
+  # e.g., predicted_latest_year_available(asofsysdate = "2023-10-13") returns 2022
+  # based on predicted release dates of 2022-10-14, 2023-10-14, 2024-10-14, etc.
+  # based on the 2026 release of TIGER boundaries data
+  # The 2026 TIGER/Line Shapefiles were released on October 14, 2026.
+  # Latest published TIGER/Line vintage verified on 2026-10-20:
+  # https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.2026.html
+}
+############################ #
+
+shapes_places_default_year <- function() {
+  # This is a calendar estimate, not a publication check. Explicit years remain
+  # available for reproducibility or when the predicted release is unavailable.
+  year <- predicted_latest_year_available()
+  if (is.na(year)) {
+    stop("Cannot predict the places boundary year from the configured release calendar; supply an explicit year.",
+         call. = FALSE)
+  }
+  year
+}
+############################ #
+
+shapes_warn_missing_place_boundaries <- function(shp, fips, year) {
+  empty <- sf::st_is_empty(shp)
+  missing_fips <- unique(fips[is.na(empty) | empty])
+  if (length(missing_fips)) {
+    warning("No place boundary found for FIPS ", paste(missing_fips, collapse=", "),
+            " in TIGER/Line ", year, ". Returning empty geometry for these places; ",
+            "use an explicit older year if appropriate.", call.=FALSE)
+  }
+  invisible(NULL)
+}
+############################ #
 
 ## NOT USED
 
-shapes_places_from_placenames <- function(place_st, year = 2024) {
+shapes_places_from_placenames <- function(place_st, year = NULL) {
+
+  if (is.null(year)) {year <- shapes_places_default_year()}
 
   # name2fips()  uses fips_place_from_placename()
 
@@ -1037,6 +1213,8 @@ shapes_places_from_placenames <- function(place_st, year = 2024) {
 
   tp = tigris::places(unique(st), year = year)  # DOWNLOAD THE BOUNDARIES of all places in an ENTIRE STATE, for EACH STATE REQUIRED HERE
   shp = tp[match(fips, tp$GEOID), ] # use FIPS of each place to get boundaries
+  shp$FIPS <- fips
+  shapes_warn_missing_place_boundaries(shp, fips, year)
 
   shp <- shapefile_dropcols(shp)
   shp <- shapefile_addcols(shp)
@@ -1206,7 +1384,17 @@ shapefile_addcols <- function(shp, addthese = c('fipstype', 'pop', 'NAME', 'STAT
     })
   }
   if ('SQMI' %in% addthese) {
-    shp$SQMI <- area_sqmi_from_fips(fipsvector, download_city_fips_bounds = FALSE, download_noncity_fips_bounds = FALSE)
+    if (all(ftype %in% "blockgroup") &&
+        all(c("arealand", "areawater") %in% names(blockgroupstats))) {
+      # The general area helper aggregates constituent blockgroups separately
+      # for each FIPS. Here every row is already one blockgroup, so a single
+      # lookup gives the same ACS land area without thousands of full-table scans.
+      land <- blockgroupstats$arealand[match(fipsvector, blockgroupstats$bgfips)]
+      land[is.na(land)] <- 0 # same as the general helper's sum(..., na.rm = TRUE)
+      shp$SQMI <- convert_units(land, from = "sqmeter", towhat = "sqmi")
+    } else {
+      shp$SQMI <- area_sqmi_from_fips(fipsvector, download_city_fips_bounds = FALSE, download_noncity_fips_bounds = FALSE)
+    }
     shp$SQMI[ftype %in% "city" & !is.na(ftype)] <- area_sqmi_from_shp(shp[ftype %in% "city" & !is.na(ftype), ]) # *** check the numbers
     shp$SQMI <- round(shp$SQMI, 2)
   }
@@ -1255,4 +1443,46 @@ shapefile_sortcols2 = function(x,
   x <- shapefile_fix_sf_column(x)
   shapefile_fix_sf_column(
     x[, c(intersect(putfirst, names(x)), setdiff(names(x), c(putfirst, putlast)), intersect(putlast, names(x)))])
+}
+
+# Fetch only geometry; validation, row restoration, and metadata belong to
+# shapes_blockgroups_from_bgfips(). tigris caches one file per state and year.
+shapes_blockgroups_from_tigris_bgfips <- function(bgfips, year = NULL, cb = TRUE) {
+
+  if (!is.character(bgfips) || !length(bgfips) || anyNA(bgfips) ||
+      any(!grepl("^[0-9]{12}$", bgfips)) || anyDuplicated(bgfips)) {
+    stop("bgfips must contain unique twelve-character FIPS codes", call. = FALSE)
+  }
+  if (is.null(year)) year <- acs_endyear()
+  if (length(year) != 1L || is.na(year) ||
+      !grepl("^[0-9]{4}$", as.character(year))) {
+    stop("year must be one four-digit Census boundary year", call. = FALSE)
+  }
+  if (!is.logical(cb) || length(cb) != 1L || is.na(cb)) {
+    stop("cb must be TRUE or FALSE", call. = FALSE)
+  }
+  if (!requireNamespace("tigris", quietly = TRUE)) {
+    stop("Install tigris to download blockgroup boundaries, or supply shp", call. = FALSE)
+  }
+  previous_options <- options(tigris_use_cache = TRUE)
+  on.exit(options(previous_options), add = TRUE)
+  states <- unique(substr(bgfips, 1, 2))
+  pieces <- lapply(states, function(state) {
+    shp <- tigris::block_groups(state = state, year = as.integer(year), cb = cb,
+                                class = "sf", progress_bar = FALSE)
+    if (!inherits(shp, "sf") || is.na(sf::st_crs(shp))) {
+      stop("Downloaded boundaries must be sf polygons with a known CRS", call. = FALSE)
+    }
+    idcolumn <- intersect(c("GEOID", "GEOID20", "GEOID10"), names(shp))[1]
+    if (is.na(idcolumn)) stop("Downloaded boundaries have no blockgroup GEOID", call. = FALSE)
+    ids <- as.character(shp[[idcolumn]])
+    keep <- ids %in% bgfips
+    if (anyDuplicated(ids[keep])) stop("Downloaded boundaries have duplicate GEOIDs", call. = FALSE)
+    sf::st_sf(FIPS = ids[keep], geometry = sf::st_geometry(shp)[keep])
+  })
+  nonempty <- vapply(pieces, nrow, integer(1)) > 0L
+  if (!any(nonempty)) return(pieces[[1]])
+  pieces <- pieces[nonempty]
+  if (length(pieces) == 1L) return(pieces[[1]])
+  do.call(rbind, pieces)
 }

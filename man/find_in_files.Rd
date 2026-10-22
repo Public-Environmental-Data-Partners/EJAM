@@ -25,7 +25,9 @@ find_in_files(
 
 \item{filename_pattern}{default is R code files only! A regular expression that would limit file names to search}
 
-\item{full.names}{if TRUE, returns paths not just filenames (passed to \code{list.files()})}
+\item{full.names}{if TRUE, results are labeled with file paths (path included),
+not just file names relative to \code{path}. Files are found and read correctly either way,
+regardless of the working directory.}
 
 \item{ignorecomments}{omit hits from commented out lines}
 

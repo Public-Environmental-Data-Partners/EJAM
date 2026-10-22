@@ -38,6 +38,10 @@
 #' @param radius  analysis radius in miles; see [ejamit()]. Default is 3 miles for point
 #'   (lat/lon/sitepoints) analysis, but 0 (no buffer) when fips or shapefile is specified.
 #'
+#' @param zip,zipcode One or more ZIP codes (ZCTA boundaries), as a vector or
+#'   comma-separated string. These are aliases; provide only one. ZIPs cannot be
+#'   combined with coordinates, sites, shapefiles, or FIPS. The default ZIP buffer
+#'   is zero. Leading zeroes are restored and ZIP+4 is reduced to five digits.
 #' @param fips  see [ejamit()]
 #'
 #' @param shapefile  see [ejamit()], but each polygon is encoded as geojson string
@@ -200,11 +204,21 @@ url_ejamapi = function(
 
   ...,
 
+  zip = NULL, zipcode = NULL,
   shape = NULL, shp = NULL   # name-only aliases (after ... so positional args still flow into ... unchanged)
 ) {
 
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
+
+  zipcode <- zipcodes_from_input(zip, zipcode)
+  if (!is.null(zipcode)) {
+    if (any(vapply(list(sitepoints, lat, lon, shapefile, fips),
+                   function(x) !is.null(x), logical(1)))) {
+      stop("zip/zipcode cannot be combined with coordinates, sites, shape, or fips.")
+    }
+    if (missing(radius) || is.null(radius)) radius <- 0
+  }
 
   # Single source of truth: the EJAM API base URL lives in DESCRIPTION as
   # Config/EJAM/url_api and is read via url_package("api"). Default NULL (and
@@ -273,7 +287,12 @@ url_ejamapi = function(
   ################################################## #  sitetype  --------------------- -
   # sitetype ####
   # and convert any lat,lon to sitepoints
-  sites <- sites_from_input(sitepoints = sitepoints, lat = lat, lon = lon, fips = fips, shapefile = shapefile)
+  sites <- if (!is.null(zipcode)) {
+    list(sitepoints = NULL, shapefile = NULL, fips = NULL, sitetype = "zip")
+  } else {
+    sites_from_input(sitepoints = sitepoints, lat = lat, lon = lon,
+                     fips = fips, shapefile = shapefile)
+  }
   sitepoints <- sites$sitepoints
   shapefile <- sites$shapefile
   fips <- sites$fips
@@ -321,7 +340,27 @@ url_ejamapi = function(
   }
   ###################################### #  shapefile  ###################################### #
   # > shapefile ####
-  if ("shp" %in% sitetype) {
+  if ("zip" %in% sitetype) {
+    if (length(zipcode) == 1) sitenumber <- 1
+    if (sitenumber == 0) {
+      zip_values <- paste(zipcode, collapse = ",")
+      zip_numbers <- 0
+    } else if (sitenumber == -1) {
+      zip_values <- zipcode
+      zip_numbers <- seq_along(zipcode)
+    } else {
+      if (!is.finite(sitenumber) || sitenumber != floor(sitenumber) ||
+          sitenumber < 1 || sitenumber > length(zipcode)) {
+        stop("sitenumber must select an existing ZIP, or be 'each' or 'overall'.")
+      }
+      zip_values <- zipcode[sitenumber]
+      zip_numbers <- sitenumber
+    }
+    url_of_report <- paste0(urls_from_keylists(
+      baseurl = baseurl,
+      keylist_bysite = list(zip = zip_values, buffer = radius, sitenumber = zip_numbers)
+    ), and_other_query_terms)
+  } else if ("shp" %in% sitetype) {
 
     if (missing(radius) || is.null(radius) || all(radius %in% c(0, "", NA))) {radius <- 0}
     # geojson format

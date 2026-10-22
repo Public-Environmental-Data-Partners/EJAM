@@ -11,6 +11,9 @@
 #' @param shapefile spatial data.frame, class sf, see ejamit() parameter of same name.
 #'   (and should have ejam_uniq_id column or assume 1 output row per input row, same order)
 #'
+#' @param zip,zipcode ZIP aliases for the API report links. Can accompany their
+#'   ZCTA shapefile from an analysis; other report providers keep their existing
+#'   geometry inputs.
 #' @param fips vector of FIPS codes if relevant  (instead of sitepoints or shapefile input)
 #'   Note that nearly half of all county fips codes are impossible to distinguish from
 #'   5-digit zipcodes because the same numbers are used for both purposes.
@@ -73,20 +76,33 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                                sitetype = NULL,
                                as_html = TRUE,
                                validate_regids = FALSE,
-                               ...) {
+                               ..., zip = NULL, zipcode = NULL) {
 
   # Note that various settings passed to ejamit() are so far ignored by EJAM-API (and old ejscreen api), so results of API will often differ from actual results!!
   # message("API providing links to EJSCREEN/EJAM reports so far ignore most parameters that ejamit() does allow (and allow only blockgroup fips), so the link-based html report may differ from the actual ejamit() results_bysite table info!!")
 
+  # ZIP identity may accompany its already-built polygons from ejamit().
+  # Only the API-report path uses ZIP query inputs; other report providers keep
+  # their existing geometry/location inputs.
+  zipcode <- zipcodes_from_input(zip, zipcode)
+  if (!is.null(zipcode) && any(vapply(list(sitepoints, lat, lon, fips),
+                                     function(x) !is.null(x), logical(1)))) {
+    stop("zip/zipcode cannot be combined with coordinates or fips.")
+  }
+  if (!is.null(zipcode) && !is.null(shapefile) && "zip" %in% names(shapefile)) {
+    zipcode <- as.character(shapefile$zip)
+  }
+
   # clean/check inputs and sitetype
 
-  if (is.null(lat) && is.null(lon) && is.null(shapefile) && is.null(fips) && !("" %in% wherestr) && !is.null(wherestr)) {
+  if (is.null(zipcode) && is.null(lat) && is.null(lon) && is.null(shapefile) && is.null(fips) && !("" %in% wherestr) && !is.null(wherestr)) {
     fips <- fips_from_name(wherestr) # old ejscreen api used wherestr not fips so this is in case that is the only thing provided here
   }
 
   sites <- sites_from_input(sitepoints = sitepoints, lat = lat, lon = lon, shapefile = shapefile, fips = fips)
   sitepoints <- sites$sitepoints
   sitetype <- sites$sitetype
+  if (is.null(sitetype) && !is.null(zipcode)) sitetype <- "zip"
 
   # get regid
   #    -  uses regid in some functions but I don't think only regid would ever  be the sole input
@@ -116,6 +132,7 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   ######################################################################################### #
 
   # I don't think only regid would ever  be the sole input
+  if ("zip" %in% sitetype)   {rowcount <- length(zipcode)}
   if ("fips" %in% sitetype)   {rowcount <- NROW(fips)}
   if ("shp" %in% sitetype)    {rowcount <- NROW(shapefile)}
   if ("latlon" %in% sitetype) {rowcount <- NROW(sitepoints)}
@@ -138,6 +155,14 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   ## The ... parameter(s) in every report-generating FUN ensures any params not needed by a given FUN can be passed to it from here and just get ignored for that type of report.
 
   for (i in seq_along(reports)) {
+    if (!is.null(zipcode) && identical(url_functions[[i]], url_ejamapi)) {
+      if (length(zipcode) != rowcount) stop("ZIP codes must match the result rows.")
+      links[, i] <- url_functions[[i]](
+        zipcode = zipcode, radius = radius, as_html = as_html,
+        linktext = reports[[i]]$text, ...
+      )
+      next
+    }
     links[, i] <- url_functions[[i]](
 
       sitetype   = sitetype,
@@ -160,6 +185,20 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   } else {
 
     for (i in seq_along(reports)) {
+      if (!is.null(zipcode) && identical(url_functions[[i]], url_ejamapi)) {
+        results_overall[, i] <- url_functions[[i]](
+          zipcode = zipcode, radius = radius[1], sitenumber = 0,
+          as_html = as_html, linktext = reports[[i]]$text
+        )
+        next
+      }
+      if (identical(url_functions[[i]], url_ejamapi)) {
+        app_url <- url_package("ejamapp")
+        results_overall[, i] <- if (as_html) {
+          url_linkify(app_url, text = reports[[i]]$text)
+        } else app_url
+        next
+      }
       results_overall[, i] <- url_functions[[i]](
 
         ## use NULL or NA values here to get all the url_xyz() functions to return their ifna values, generic URLs for each service/report type.

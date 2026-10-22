@@ -68,24 +68,24 @@ deploylink <- paste0(docs_reponame_url, "/articles/dev-deploy-app.html")
 ```
 <!-- badges: end -->
 
-The `r as.vector(desc::desc_get("Title"))` lets you easily and quickly see residential population and environmental information aggregated within and across hundreds or thousands of places, all at the same time.
+The `r as.vector(desc::desc_get("Title"))` lets you easily and quickly see residential population and environmental information aggregated within and across hundreds or thousands of places, all at the same time. 
+
+EJAM is tightly integrated with EJSCREEN. It provides EJSCREEN's reports, and it is the "multisite tool" for EJSCREEN. It also can be
+used independently as a web app or in RStudio for analysis.
 
 ## What Can You Do with EJAM?
 
 [What is EJAM?](`r whatislink`)
 
-EJAM lets you specify the places to analyze in several ways -- uploading a table of point locations (latitude/longitude), picking facilities by industry category or ID, uploading shapefiles or lists of Census FIPS codes, or clicking on a map to specify one or more points -- and it returns a summary report comparing residents and environmental conditions at those places to the rest of the country.
+EJAM lets you specify places to analyze in several ways -- uploading a table of point locations (latitude/longitude), picking facilities by industry category or ID, uploading shapefiles or lists of Census FIPS codes, or clicking on a map to specify one or more points -- and it returns a summary report comparing residents and environmental conditions at those places to the rest of the country.
 
-## About v3.2022.3 (October 2026)
+## About this version
 
-**This is the final release that uses the ACS 2018-2022 data, and it is frozen from here on.
-Development continues with the ACS 2020-2024 data in v4.2024.0.**
-
-See [NEWS.md](NEWS.md) for the full list of recent enhancements and fixes.
+See [NEWS.md](NEWS.md) for the full list of recent releases, enhancements, and fixes.
 
 ## Status of EJAM package in 2026
 
-See [ejanalysis.org/status](https://ejanalysis.org/status) for more information.
+See [ejanalysis.org/status](https://ejanalysis.org/status) for background.
 
 *In 2025, content related to what had been the USEPA-hosted open source R package EJAM was archived.*
 
