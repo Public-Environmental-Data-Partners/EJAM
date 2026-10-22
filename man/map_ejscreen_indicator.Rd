@@ -107,9 +107,11 @@ Supply shp to reuse polygons without downloading anything.
 }
 \examples{
 \dontrun{
+map_ejscreen_indicator("pctlowinc", countyfips = fips_from_name("Cook County, IL"))
 map_ejscreen_indicator("pctlowinc", countyfips = "10001")
 map_ejscreen_indicator("pctile.proximity.npl", countyfips = "10001", zoom = 10)
 map_ejscreen_indicator("state.pctile.pctlowinc", ST = "DE")
+map_ejscreen_indicator("pctlowinc", ST = "IL")
 map_ejscreen_indicator("pctlowinc", ST = "IL", maptype = "ggplot")
 # Reuse boundaries instead of downloading them again.
 bg <- blockgroupstats[substr(bgfips, 1, 5) == "10001", ]
