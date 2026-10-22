@@ -192,6 +192,13 @@ url_columns_bysite <- function(sitepoints = NULL, lat = NULL, lon = NULL,
         )
         next
       }
+      if (identical(url_functions[[i]], url_ejamapi)) {
+        app_url <- url_package("ejamapp")
+        results_overall[, i] <- if (as_html) {
+          url_linkify(app_url, text = reports[[i]]$text)
+        } else app_url
+        next
+      }
       results_overall[, i] <- url_functions[[i]](
 
         ## use NULL or NA values here to get all the url_xyz() functions to return their ifna values, generic URLs for each service/report type.

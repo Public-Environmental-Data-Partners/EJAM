@@ -135,3 +135,22 @@ for (i in seq_along(allreports)) {
 rm(allreports)
 rm(x)
 
+
+test_that("overall EJAM report links distinguish single and multiple sites", {
+  reports <- list(list(header = "EJAM Report", text = "Report", FUN = url_ejamapi))
+  for (html in c(FALSE, TRUE)) {
+    one <- url_columns_bysite(lat = 38.9, lon = -77, radius = 1,
+                             reports = reports, as_html = html)
+    expect_identical(one$results_overall, one$results_bysite)
+    many <- url_columns_bysite(lat = c(38.9, 39), lon = c(-77, -76), radius = 1,
+                              reports = reports, as_html = html)
+    expected <- url_package("ejamapp")
+    if (html) expected <- url_linkify(expected, text = "Report")
+    expect_identical(many$results_overall[[1]], expected)
+    expect_true(all(grepl("/report?", many$results_bysite[[1]], fixed = TRUE)))
+  }
+  zip <- url_columns_bysite(zip = c("20912", "10605"), radius = 0,
+                            reports = reports, as_html = FALSE)
+  expect_match(zip$results_overall[[1]], "sitenumber=0", fixed = TRUE)
+  expect_match(zip$results_overall[[1]], "/report?", fixed = TRUE)
+})

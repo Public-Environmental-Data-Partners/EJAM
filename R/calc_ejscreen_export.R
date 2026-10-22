@@ -1814,10 +1814,14 @@ map_color_from_column <- function(mydf, color, data_name = "mydf", na.color = "#
 #'   them via [global_or_param()], so Shiny options override package settings.
 #'   Namespace-only calls read the same file locally if defaults are not initialized.
 #'   These defaults are shared by the color helpers, barplots, Excel
-#'   heatmaps, and county maps. The four percentile colors cover `[0, 80)`,
+#'   heatmaps, reports, boxplot reference lines, and county maps.
+#'   The four percentile colors cover `[0, 80)`,
 #'   `[80, 90)`, `[90, 95)`, and `[95, 100]`. Ratio cutoffs are 1.05, 2, and 3.
 #'   The historical EJSCREEN scheme splits the range below 80 into eight
-#'   gray bins. Labels summarize whole percentiles; fractional values use
+#'   gray bins. Reports and Excel preserve enough ratio decimals for the shared
+#'   cutoffs and metadata precision, so rounding does not change the color bin.
+#'   Values below the first cutoff are unhighlighted in reports and Excel.
+#'   Labels summarize whole percentiles; fractional values use
 #'   the same cutoffs. Changing the returned list does not change package defaults.
 #' @examples
 #' EJAM:::ejscreen_color_defaults()           # four percentile bins
@@ -1994,4 +1998,30 @@ ratio2color <- function(x,
   valid <- is.finite(x_num)
   bins[valid] <- 1L + findInterval(x_num[valid], colorbins)
   colorfills[bins]
+}
+
+#' Decimal precision that preserves ratio color boundaries
+#' @noRd
+ratio_color_digits <- function(x = numeric(), colorbins = ejscreen_color_defaults("ratio")$colorbins) {
+  validate_colorbins(colorbins)
+  # Respect metadata precision, and show every digit needed by the cutoffs.
+  metadata <- map_headernames
+  digits <- suppressWarnings(as.numeric(metadata$decimals[grepl("^ratio\\.", metadata$rname)]))
+  cut_digits <- nchar(sub("^[^.]*[.]?", "", format(colorbins, scientific = FALSE, trim = TRUE)))
+  digits <- max(c(1L, digits[is.finite(digits)], cut_digits))
+  values <- x[is.finite(x)]
+  # A rounded value must not move to a different color bin.
+  while (digits < 15L && any(findInterval(round(values, digits), colorbins) !=
+                            findInterval(values, colorbins))) digits <- digits + 1L
+  as.integer(digits)
+}
+
+#' Describe the actual heatmap bins, including custom palettes and cutoffs
+#' @noRd
+heatmap_color_legend <- function(cuts, colors) {
+  validate_colorbins(cuts, c("unhighlighted", colors))
+  labels <- paste0("at least ", cuts)
+  if (length(cuts) > 1L) labels[-length(cuts)] <- paste0(
+    cuts[-length(cuts)], " to below ", cuts[-1L])
+  paste0(colors, ": ", labels, collapse = "; ")
 }

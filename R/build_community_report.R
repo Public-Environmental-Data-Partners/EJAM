@@ -189,6 +189,10 @@ build_community_report <- function(
   # If done here, probably should switch to table_signif_round_x100() not format_ejamit_columns() ***
   output_df_rounded <-   as.data.frame(output_df)
   output_df_rounded <- format_ejamit_columns(output_df_rounded, names(output_df_rounded))
+  # Ratio cells choose colors from original values, then format without crossing
+  # a shared color cutoff. Pre-rounding here would change the selected bin.
+  ratio_cols <- grep("^ratio\\.", names(output_df_rounded), value = TRUE)
+  for (column in ratio_cols) output_df_rounded[[column]] <- output_df[[column]]
 
   # Feature/facility count rows are estimated totals (see issue #410), so like other
   # totals they use the 0-decimal rounding from map_headernames via format_ejamit_columns()

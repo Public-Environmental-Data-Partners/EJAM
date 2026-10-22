@@ -54,28 +54,7 @@ fill_tbl_row <- function(output_df, Rname, longname, show_ratios_in_report) {
       return(paste0('<td>', val, '</td>'))  # Return the value without any background color
     } else if (hdr_names[i] == 'ratio-to-us-avg' || hdr_names[i] == 'ratio-to-state-avg') {
 
-      # Color code the ratio column
-      # val may be a formatted character string (e.g. "1,234" or "N/A") after
-      # format_ejamit_columns() runs, so parse to numeric for threshold logic.
-      num_val <- suppressWarnings(as.numeric(gsub(",", "", val)))
-      bg_color <- if (!is.na(num_val)) {
-        if (num_val > 2.9) {
-          "red"
-        } else if (num_val > 1.9) {
-          "orange"
-        } else if (num_val >= 1.05) {
-          "yellow"
-        } else {
-          NULL
-        }
-      } else {
-        NULL
-      }
-      if (!is.null(bg_color)) {
-        return(paste0('<td style="background-color: ', bg_color, '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', val, '</td>'))  # Apply color to ratio column
-      } else {
-        return(paste0('<td>', val, '</td>'))
-      }
+      return(ratio_td_html(val))
     } else {
       return(paste0('<td>', val, '</td>'))  # Default case for other columns
     }
@@ -328,39 +307,19 @@ fill_tbl_full_ej <- function(output_df,
 #' @keywords internal
 #' @noRd
 ratio_td_html <- function(val) {
-
-  # helper - one <td> cell of a ratio value, color-coded via the heatmap thresholds
-  # (red >2.9, orange >1.9, yellow >=1.05) used for ratio columns throughout the report.
-  # Used by fill_tbl_row_subgroups() and fill_tbl_flagged_areas_section(),
-  # so any change to the ratio color cutoffs (see issue #288) can be made in one place.
-
-  val <- suppressWarnings(as.numeric(val))
-  # show missing/non-numeric ratios as "N/A", matching how format_ejamit_columns()
-  # displays missing values elsewhere in the table (not the literal string "NA")
-  if (length(val) != 1 || !is.finite(val)) {
-    return('<td>N/A</td>')
-  }
-
-  bg_color <- if (is.numeric(val) && !is.na(val)) {
-    if (val > 2.9) {
-      "red"
-    } else if (val > 1.9) {
-      "orange"
-    } else if (val >= 1.05) {
-      "yellow"
-    } else {
-      NULL
-    }
-  } else {
-    NULL
-  }
-  # Add background color if applicable
-  if (!is.null(bg_color)) {
-    return(paste0('<td style="background-color: ', bg_color, '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', val, '</td>'))
-  } else {
-    return(paste0('<td>', val, '</td>'))
-  }
+  num_val <- suppressWarnings(as.numeric(gsub(",", "", val)))
+  if (length(num_val) != 1L || !is.finite(num_val)) return('<td>N/A</td>')
+  scheme <- ejscreen_color_defaults("ratio")
+  bin <- findInterval(num_val, scheme$colorbins)
+  # The first bin is unhighlighted in both reports and Excel.
+  text <- formatC(num_val, format = "f",
+                  digits = ratio_color_digits(num_val, scheme$colorbins), big.mark = ",")
+  if (bin == 0L) return(paste0('<td>', text, '</td>'))
+  bg_color <- ratio2color(num_val, scheme$colorbins, scheme$colorfills)
+  paste0('<td style="background-color: ', bg_color,
+         '; -webkit-print-color-adjust: exact; print-color-adjust: exact;">', text, '</td>')
 }
+
 ################################################################################## #
 
 #' Write a residential population subgroup indicator to an html table row
@@ -676,9 +635,9 @@ fill_tbl_flagged_areas_section <- function(flagged_areas_df,
     if (cn %in% names(flagged_areas_df)) {flagged_areas_df[[cn]]} else {rep(NA_real_, NROW(flagged_areas_df))}
   }
   vals     <- suppressWarnings(as.numeric(getcol("Percent_of_these_People")))
-  # ratios display with 1 decimal place, like the other ratio columns in this table
-  ratio_us <- round(suppressWarnings(as.numeric(getcol("ratio"))), 1)
-  ratio_st <- round(suppressWarnings(as.numeric(getcol("ratio_to_state_avg"))), 1)
+  # Keep raw ratios until the shared cell helper chooses colors and precision.
+  ratio_us <- suppressWarnings(as.numeric(getcol("ratio")))
+  ratio_st <- suppressWarnings(as.numeric(getcol("ratio_to_state_avg")))
 
   # report-section-page-break starts this section on a fresh page in the PDF
   # (the row order changed in #444, so the old breaks fell mid-section) - see

@@ -960,3 +960,64 @@ test_that("namespace-only color calls use the same defaults file without creatin
   expect_identical(ls(envir = .GlobalEnv, all.names = TRUE), globals_before)
   expect_identical(cache$defaults, settings$global_defaults_package$default_color_coding)
 })
+
+test_that("reports share ratio colors and preserve boundary precision", {
+  values <- c(1, 1.049, 1.05, 1.95, 2, 2.95, 3, 200)
+  cells <- vapply(values, EJAM:::ratio_td_html, character(1))
+  expect_false(any(grepl("background-color", cells[1:2])))
+  expect_true(all(grepl("background-color: yellow", cells[3:4], fixed = TRUE)))
+  expect_true(all(grepl("background-color: orange", cells[5:6], fixed = TRUE)))
+  expect_true(all(grepl("background-color: red", cells[7:8], fixed = TRUE)))
+  expect_match(cells[3], ">1.05</td>", fixed = TRUE)
+  expect_match(cells[2], ">1.049</td>", fixed = TRUE)
+  expect_identical(EJAM:::ratio_td_html(NA_real_), "<td>N/A</td>")
+  row <- data.frame(pm = 1, state.avg.pm = 1, state.pctile.pm = 50,
+                    avg.pm = 1, pctile.pm = 50,
+                    ratio.to.avg.pm = 1.95, ratio.to.state.avg.pm = 2.95)
+  html <- EJAM:::fill_tbl_row(row, "pm", "PM", TRUE)
+  expect_match(html, "background-color: yellow", fixed = TRUE)
+  expect_match(html, "background-color: orange", fixed = TRUE)
+  expect_false(grepl("background-color: red", html, fixed = TRUE))
+})
+
+test_that("custom report colors and legends follow shared settings", {
+  scheme <- list(colorbins = c(1.2, 2.5, 4),
+                 colorfills = c("gray", "blue", "purple", "black"))
+  testthat::local_mocked_bindings(
+    ejscreen_color_defaults = function(type = "ratio") scheme,
+    .package = "EJAM")
+  expect_match(EJAM:::ratio_td_html(2.5), "background-color: purple", fixed = TRUE)
+  expect_false(grepl("background-color", EJAM:::ratio_td_html(1.19)))
+  expect_identical(EJAM:::heatmap_color_legend(scheme$colorbins, scheme$colorfills[-1]),
+    "blue: 1.2 to below 2.5; purple: 2.5 to below 4; black: at least 4")
+  expect_gte(EJAM:::ratio_color_digits(1.1999, scheme$colorbins), 4L)
+})
+
+test_that("ratio precision respects metadata and colors near cutoffs", {
+  metadata <- as.data.frame(EJAM::map_headernames)
+  metadata$decimals[grepl("^ratio\\.", metadata$rname)] <- "3"
+  testthat::local_mocked_bindings(map_headernames = metadata, .package = "EJAM")
+  expect_gte(EJAM:::ratio_color_digits(), 3L)
+  values <- c(1.04999, 1.05, 1.99999, 2, 2.99999, 3)
+  digits <- EJAM:::ratio_color_digits(values)
+  expect_identical(EJAM:::ratio2color(round(values, digits)), EJAM:::ratio2color(values))
+})
+
+test_that("custom Excel heatmaps save their real cutoffs, legends and precision", {
+  out <- EJAM::testoutput_ejamit_10pts_1miles
+  out$results_overall$ratio.to.avg.pm <- 1.1999
+  filename <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(filename), add = TRUE)
+  EJAM:::table_xls_format(
+    overall = out$results_overall, eachsite = out$results_bysite,
+    reports = NULL, ok2plot = FALSE, saveas = filename,
+    formatted = data.frame(indicator = "Synthetic summary", value = 1),
+    heatmap2_cuts = c(1.2, 2.5, 4), heatmap2_colors = c("blue", "purple", "black"))
+  notes <- openxlsx::read.xlsx(filename, sheet = "notes", colNames = FALSE)
+  expect_true(any(grepl("blue: 1.2 to below 2.5; purple: 2.5 to below 4; black: at least 4",
+                       unlist(notes), fixed = TRUE)))
+  sheet <- paste(readLines(unz(filename, "xl/worksheets/sheet1.xml"), warn = FALSE), collapse = "")
+  for (cut in c(1.2, 2.5, 4)) expect_match(sheet, paste0("&gt;=", cut, "</formula>"), fixed = TRUE)
+  styles <- paste(readLines(unz(filename, "xl/styles.xml"), warn = FALSE), collapse = "")
+  expect_match(styles, "#,##0.0000", fixed = TRUE)
+})
