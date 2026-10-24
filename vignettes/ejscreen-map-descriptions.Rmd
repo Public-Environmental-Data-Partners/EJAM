@@ -45,7 +45,7 @@ Source: [EPA’s Office of Air and Radiation](https://www.epa.gov/aboutepa/about
 
 For more details on the PM2.5 indicator, including why it is important and what
 you can do moving forward, please visit the 
-[EJScreen Indicator Overview for PM2.5](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="ejscreen-indicators-overview-particulate-matter-25-pm25.html", launch_browser = FALSE)`) 
+[EJScreen Indicator Overview for PM2.5](env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.html) 
 or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-particulate-matter-25-pm25).
 
 #### Ozone {#ozone}
@@ -61,7 +61,7 @@ Source: EPA’s [Office of Air and Radiation](https://www.epa.gov/aboutepa/about
 
 For more details on the ozone indicator, including why it is important and what
 you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Ozone](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="ejscreen-indicators-overview-ozone.html", launch_browser = FALSE)`) 
+[EJScreen Indicator Overview for Ozone](env-indicators/ejscreen-indicators-overview-ozone.html) 
 or [as archived](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-ozone).
 
 #### Nitrogen Dioxide (NO2) {#nitrogen}

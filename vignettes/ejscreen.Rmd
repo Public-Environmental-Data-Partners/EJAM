@@ -63,7 +63,7 @@ EJAM-related repositories.
         May 2026.
 
     -   [**Key environmental indicators with year and source of
-        each**](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="overview-environmental-indicators-ejscreen.html", launch_browser = FALSE)`){target="_blank"}.
+        each**](overview-environmental-indicators-ejscreen.html){target="_blank"}.
         Also [at
         archive.org](https://web.archive.org/web/20250124214227/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen){target="_blank"}
 
@@ -163,7 +163,7 @@ kable(links_table,  col.names = NULL, label = NA)
         -   [EJ and Supplemental
             Indexes](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen){target="_blank"}
         -   [Environmental
-            Indicators](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="overview-environmental-indicators-ejscreen.html", launch_browser = FALSE)`){target="_blank"}
+            Indicators](overview-environmental-indicators-ejscreen.html){target="_blank"}
         -   [Socioeconomic
             Indicators](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="overview-socioeconomic-indicators-ejscreen.html", launch_browser = FALSE)`){target="_blank"}
         -   [How was EJScreen

@@ -46,9 +46,10 @@ The “PM2.5 indicator” measures the potential exposure to inhalable particles
     Planning and Standards using a fusion of monitor data and Community
     Multiscale Air Quality (CMAQ) air quality modeling. For more information
     about the methods used, see [EPA Report EPA-454/S-15-001](https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P100OORX.PDF).
--   For technical details on the calculations and source data, visit the
-    [EJSCREEN Technical Documentation](`r EJAM::url_ejscreentechdoc()`)
-    or [archived EJSCREEN Technical Documentation page](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/technical-information-and-data-downloads) or [archived EJSCREEN Technical Documentation pdf](https://web.archive.org/web/20250121194640/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf)
+-   
+```
+- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```
 
 ## Moving forward – What you can do
 
@@ -63,10 +64,3 @@ The “PM2.5 indicator” measures the potential exposure to inhalable particles
   - Everyone can take steps to lessen air pollution and keep the air clean. It is also important to take certain precautions to safeguard your health. [Visit AirNow for tips on what you can do](https://www.airnow.gov/education/what-you-can-do/).
 
 - See what the EPA and others are doing to reduce particulate matter pollution. The EPA has national and regional rules that reduce pollutant emissions that form PM and help state and local governments meet national air quality standards. Learn about how air quality standards help reduce PM.
-
---------------------
- _About this page:_
-
-- _This page is a simplified version of the original saved by archive.org. It was adapted from [an archived copy](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-particulate-matter-25-pm25) that captured the version that had been last updated on July 30, 2024._
-- _**[Fast-loading simplified versions of key webpages and reference documents](`r paste0(EJAM::url_package("docs"), "/articles/ejscreen.html")`){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
-

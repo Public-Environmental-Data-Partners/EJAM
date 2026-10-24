@@ -2046,18 +2046,19 @@ url_github_preview = function(ghurl = NULL,
 ######################################################################### #
 
 #' utility to get URL of .pdf of EJSCREEN Technical Documentation
+#' As of v4.2024.0, we've moved away from pointing users to our
+#'   github version of this document and back to the one EPA has persisted
+#'   as an "historical reference". Given that EPA could remove that file
+#'   at any time, I'm updating this central function to reflect the current
+#'   location. If EPA's copy goes away, we'll have to change this to point
+#'   to the Wayback Machine's copy or our own github archived one.
 #'
 #' @return URL string
-#' @deprecated As of v4.2024.0, we've moved away from pointing users to our
-#'   github version of this document and back to the one EPA has persisted.
-#'   We hope to gradually replace all the content of the historical doc with 
-#'   updates of our own and don't want any confusion about who was responsible
-#'   for producing the old contents.
 #' @export
 #'
 url_ejscreentechdoc = function() {
 
-  paste0(url_package("code", get_full_url = TRUE), "/blob/main/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf")
+  "https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf"
 
   # could relocate it at some point to serve as normal pdf doc from a web server
 }

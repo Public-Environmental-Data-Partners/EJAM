@@ -19,6 +19,7 @@ articles:
   dev-update-ejscreen-datasets-yearly: dev-update-ejscreen-datasets-yearly.html
   dev-update-package: dev-update-package.html
   distances: distances.html
+  env-indicators/ejscreen-indicators-overview-diesel-particulate-matter: env-indicators/ejscreen-indicators-overview-diesel-particulate-matter.html
   env-indicators/ejscreen-indicators-overview-ozone: env-indicators/ejscreen-indicators-overview-ozone.html
   env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25: env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.html
   ejscreen-map-descriptions: ejscreen-map-descriptions.html
@@ -27,6 +28,8 @@ articles:
   island-areas: island-areas.html
   naics: naics.html
   overview-environmental-indicators-ejscreen: overview-environmental-indicators-ejscreen.html
+  overview-socioeconomic-indicators-ejscreen: overview-socioeconomic-indicators-ejscreen.html
+  technical-information-and-data-downloads: technical-information-and-data-downloads.html
   testdata: testdata.html
   webapp: webapp.html
   whatis: whatis.html
