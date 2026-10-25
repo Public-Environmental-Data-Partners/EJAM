@@ -47,8 +47,18 @@ articles:
   - overview-socioeconomic-indicators-ejscreen
   - technical-information-and-data-downloads
   - env-indicators/ejscreen-indicators-overview-diesel-particulate-matter
+  - env-indicators/ejscreen-indicators-overview-drinking-water-non-compliance
+  - env-indicators/ejscreen-indicators-overview-hazardous-waste-proximity
+  - env-indicators/ejscreen-indicators-overview-lead-paint
+  - env-indicators/ejscreen-indicators-overview-nitrogen-dioxide-no2
   - env-indicators/ejscreen-indicators-overview-ozone
   - env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25
+  - env-indicators/ejscreen-indicators-overview-risk-management-program-rmp-facility-proximity
+  - env-indicators/ejscreen-indicators-overview-superfund-proximity
+  - env-indicators/ejscreen-indicators-overview-toxic-releases-air
+  - env-indicators/ejscreen-indicators-overview-traffic-proximity-and-volume
+  - env-indicators/ejscreen-indicators-overview-underground-storage-tanks-ust
+  - env-indicators/ejscreen-indicators-overview-wastewater-discharge
   - env-indicators/indicator-source-data
 - title: The EJAM Web App
   desc: Overview for EJAM Users
