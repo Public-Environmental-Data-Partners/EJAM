@@ -88,7 +88,9 @@
 <span>  sitetype <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  as_html <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  validate_regids <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  zip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  zipcode <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -157,6 +159,12 @@ If set FALSE, faster since avoids checking but some links might not work and not
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>passed to each function, and can be any parameter that any of them uses</p></dd>
+
+
+<dt id="arg-zip-zipcode">zip, zipcode<a class="anchor" aria-label="anchor" href="#arg-zip-zipcode"></a></dt>
+<dd><p>ZIP aliases for the API report links. Can accompany their
+ZCTA shapefile from an analysis; other report providers keep their existing
+geometry inputs.</p></dd>
 
 </dl></div>
     <div class="section level2">

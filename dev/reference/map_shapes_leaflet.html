@@ -80,7 +80,8 @@
 <span>  color <span class="op">=</span> <span class="st">"green"</span>,</span>
 <span>  popup <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  fillOpacity <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  popup_style <span class="op">=</span> <span class="st">"auto"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -108,10 +109,22 @@ or at least a data.frame that can be interpreted as indicating points via <code>
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>passed to <code><a href="https://rstudio.github.io/leaflet/reference/map-layers.html" class="external-link">leaflet::addPolygons()</a></code>, such as opacity=1</p></dd>
 
+
+<dt id="arg-popup-style">popup_style<a class="anchor" aria-label="anchor" href="#arg-popup-style"></a></dt>
+<dd><p>used only if <code>popup</code> is NULL: <code>"auto"</code>, <code>"full"</code>, <code>"short"</code>, or <code>"none"</code>
+(no popups). See <code><a href="map_popup_style.html">map_popup_style()</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>html widget from leaflet::leaflet()</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Each polygon's layerId is its row number in <code>shapes</code>, so the web app can build
+the popup for a shape when it is clicked. If there are more than
+<code>default_max_shapes_map_unsimplified</code> shapes, they are simplified for the map
+(see <code><a href="map_shapes_simplified.html">map_shapes_simplified()</a></code>).</p>
     </div>
 
     <div class="section level2">

@@ -113,8 +113,8 @@ what has to happen, in what order, and why. For the detailed mechanics
 of deployment and of building datasets, it points to the articles that
 already document them.</p>
 <p>The current development version is <strong>3.2022.3</strong> (ACS
-2018-2022 data, ejamdata release v3.2022.3). The examples below use the
-v3.2022.3 release of October 2026.</p>
+2018-2022 data, ejamdata release v3.2022.3). The examples below may use
+an older release.</p>
 <p>Related articles:</p>
 <ul>
 <li>
@@ -221,7 +221,7 @@ release uses, not a minor version number:</p>
 <ul>
 <li>
 <code>3.2022.3</code>: major version 3, ACS 2018-2022 data, third
-patch.</li>
+patch, final release on that data.</li>
 <li>
 <code>4.2024.0</code>: major version 4, ACS 2020-2024 data, first
 release on that data.</li>
@@ -232,9 +232,9 @@ frozen (for example, v3.2022.3 is the final ACS 2018-2022 release).</p>
 <p>Conventions and the guard that enforces them:</p>
 <ul>
 <li>
-<strong>Git tags carry a <code>v</code></strong>
-(<code>v3.2022.3</code>). The <code>DESCRIPTION</code>
-<code>Version</code> field does not (<code>3.2022.3</code>). The same
+<strong>Git tags carry a lowercase <code>v</code></strong>
+(<code>v4.2024.0</code>). The <code>DESCRIPTION</code>
+<code>Version</code> field does not (<code>4.2024.0</code>). The same
 applies to <code>ejamdata</code> release tags, which do carry the
 <code>v</code>.</li>
 <li>
@@ -246,10 +246,10 @@ field is not the end year of <code>VersionACS</code> (for example,
 blocked). So a new ACS vintage’s version number has to land in the
 <strong>same commit</strong> as its data.</li>
 <li>
-<strong>A patch release</strong> (<code>3.2022.2</code> →
-<code>3.2022.3</code>) keeps the vintage and may change code,
+<strong>A patch release</strong> (<code>4.2024.0</code> →
+<code>4.2024.1</code>) keeps the vintage and may change code,
 documentation, or data corrections. <strong>A vintage release</strong>
-(<code>3.2022.x</code> → <code>4.2024.0</code>) swaps the ACS data and
+(<code>3.2022.3</code> → <code>4.2024.0</code>) swaps the ACS data and
 follows the annual pipeline article first.</li>
 </ul>
 <div class="section level3">
@@ -391,9 +391,18 @@ squash.</strong> A squash leaves <code>main</code> without
 <code>development</code>’s history, and every conflict resolved in this
 release comes back at the next one.</li>
 </ul>
-<p>The ACS vintage branches (<code>ACS2022</code>, <code>ACS2023</code>,
-<code>ACS2024</code>) hold earlier vintage-specific work. Keep them
-until the next vintage release has shipped and been verified.</p>
+<p>Use existing release tags to recover earlier code and data vintages:
+<code>v3.2022.3</code>, <code>v3.2023.0</code>, or e.g.,
+<code>v4.2024.0</code>. Separate branches per historical vintage are not
+maintained. An older tag is a frozen historical snapshot, not a source
+of fresh pipeline outputs or later corrections.</p>
+<p>Integrate ongoing new-version X work into a branch like
+<code>vX.20YY.0-prep</code>. When maintainers confirm readiness for the
+coordinated data/version swap, create a short-lived branch from its
+current head and review the combined change in one PR back to prep. Keep
+<code>development</code> on the current version line until the version
+transition is approved; do not bump versions, activate data, publish
+assets, or deploy merely because a preparation branch exists.</p>
 </div>
 <div class="section level2">
 <h2 id="data-changes-and-the-ejamdata-release">Data changes and the ejamdata release<a class="anchor" aria-label="anchor" href="#data-changes-and-the-ejamdata-release"></a>
@@ -501,9 +510,8 @@ another branch, which may be stale.</p>
 <h2 id="prepare-the-release-on-development">Prepare the release on <code>development</code><a class="anchor" aria-label="anchor" href="#prepare-the-release-on-development"></a>
 </h2>
 <p>Work on a short-lived branch (for example
-<code>v3.2022.3-version-bump</code>) and merge it into
-<code>development</code> through a pull request, so CI and review run on
-it.</p>
+<code>v4.2024.0-prep</code>) and merge it into <code>development</code>
+through a pull request, so CI and review run on it.</p>
 <ul>
 <li>
 <strong>Version fields</strong>: everything in <a href="#where-the-version-appears">Where the version appears</a>.</li>
@@ -535,7 +543,7 @@ GitHub Release notes. So the NEWS file is both the changelog and the
 release announcement:</p>
 <ul>
 <li>Use one top-level heading per release:
-<code># EJAM 3.2022.3 (October 2026)</code>. The workflow finds it by
+<code># EJAM 4.2024.0 (November 2026)</code>. The workflow finds it by
 the version number, with or without a <code>v</code>, so the month in
 parentheses is fine.</li>
 <li>Keep entries short: one or two sentences each, with the issue or
@@ -629,11 +637,11 @@ errors or missing files</label></li>
 <code>development</code> lacks (for example, a hotfix or
 release-workflow change made directly on <code>main</code>), GitHub
 reports conflicts. Resolve them once, either by merging
-<code>main</code> into <code>development</code> or, as for v3.2022.3, on
-an integration branch cut from <code>main</code> that merges
-<code>development</code>, then use that branch for the pull request. In
-both cases, take <code>development</code>’s version of each file unless
-<code>main</code> holds something <code>development</code> lacks.</p>
+<code>main</code> into <code>development</code> or on an integration
+branch cut from <code>main</code> that merges <code>development</code>,
+then use that branch for the pull request. In both cases, take
+<code>development</code>’s version of each file unless <code>main</code>
+holds something <code>development</code> lacks.</p>
 <p>In the pull request description:</p>
 <ul>
 <li>summarize the release, or point to the NEWS section</li>
@@ -683,11 +691,11 @@ GitHub Release. It only runs when started by hand; there is deliberately
 no scheduled release. Always do a dry run first:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Dry run: creates nothing. Read the job summary: tag, title, and release notes.</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">gh</span> workflow run release.yaml <span class="at">--repo</span> Public-Environmental-Data-Partners/EJAM <span class="at">--ref</span> main <span class="dt">\</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">-f</span> expected_version=3.2022.3 <span class="at">-f</span> dry_run=true <span class="at">-f</span> mark_latest=true</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">-f</span> expected_version=4.2024.0 <span class="at">-f</span> dry_run=true <span class="at">-f</span> mark_latest=true</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># Publish</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="ex">gh</span> workflow run release.yaml <span class="at">--repo</span> Public-Environmental-Data-Partners/EJAM <span class="at">--ref</span> main <span class="dt">\</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">-f</span> expected_version=3.2022.3 <span class="at">-f</span> dry_run=false <span class="at">-f</span> mark_latest=true</span></code></pre></div>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">-f</span> expected_version=4.2024.0 <span class="at">-f</span> dry_run=false <span class="at">-f</span> mark_latest=true</span></code></pre></div>
 <p>What it does:</p>
 <ul>
 <li>reads <code>Version</code> and <code>VersionACS</code> from
@@ -697,7 +705,7 @@ vintage disagree</li>
 <li>if a <strong>draft</strong> Release for that version already exists,
 publishes the draft as it is (its reviewed title and notes are kept);
 otherwise creates tag <code>vX.YYYY.Z</code> and a Release titled like
-“EJAM v3.2022.3 (ACS 2018-2022)”, with the matching NEWS section as the
+“EJAM 4.2024.0 (ACS 2020-2024)”, with the matching NEWS section as the
 notes</li>
 <li>never changes a Release that is already published, so re-running is
 safe</li>

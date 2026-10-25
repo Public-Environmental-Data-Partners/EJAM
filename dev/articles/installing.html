@@ -250,16 +250,30 @@ this article.</p>
 <span><span class="co"># development branch, often well ahead of latest release:</span></span>
 <span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@development"</span></span>
 <span></span>
-<span><span class="co"># ACS2024 branch:</span></span>
-<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@ACS2024"</span></span>
+<span><span class="co"># a hypothetical current vX preparation branch for vintage YY</span></span>
+<span><span class="co"># (unreleased; inspect DESCRIPTION for its data vintage):</span></span>
+<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@vX.20YY.0-prep"</span></span>
 <span></span>
-<span><span class="co"># a specific release (version):</span></span>
-<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@v2.32.8.001"</span></span>
+<span><span class="co"># a specific released version (ACS 2018-2022):</span></span>
+<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@v3.2022.3"</span></span>
+<span></span>
+<span><span class="co"># a specific released version (ACS 2019-2023):</span></span>
+<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@v3.2023.0"</span></span>
+<span></span>
+<span><span class="co"># a specific released version (ACS 2020-2024):</span></span>
+<span><span class="co"># pkg &lt;- "Public-Environmental-Data-Partners/EJAM@v4.2024.0"</span></span>
 <span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span>pkg <span class="op">=</span> <span class="va">pkg</span>,</span>
 <span>                 dependencies <span class="op">=</span> <span class="cn">NA</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span></code></pre></div>
+<p>Use release tags for reproducible installs of historical data
+vintages, not vintage-named branches. Tags like <code>v3.2022.3</code>
+or <code>v3.2023.0</code> or <code>v3.2024.0</code> preserve specific
+earlier releases that used ACS 2018-2022 or ACS 2019-2023 or ACS
+2020-2024 data. The latter is a historical snapshot, not the most recent
+release using ACS 2020-2024 data; see the <a href="dev-update-ejscreen-datasets-yearly.html">annual-update
+guide</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="installing-from-local-source">Installing from local source<a class="anchor" aria-label="anchor" href="#installing-from-local-source"></a>

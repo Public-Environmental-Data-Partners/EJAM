@@ -140,7 +140,7 @@
           <code><a href="ejam2map.html">ejam2map()</a></code>
 
         </dt>
-        <dd>Show EJAM results as a map of points</dd>
+        <dd>Show EJAM results as a map of points or polygons</dd>
 
         <dt>
 
@@ -753,20 +753,6 @@
 
         <dt>
 
-          <code><a href="shapes_counties_from_countyfips.html">shapes_counties_from_countyfips()</a></code>
-
-        </dt>
-        <dd>Get Counties boundaries via API, to map them</dd>
-
-        <dt>
-
-          <code><a href="shapes_blockgroups_from_bgfips.html">shapes_blockgroups_from_bgfips()</a></code>
-
-        </dt>
-        <dd>Get blockgroups boundaries, via API, to map them</dd>
-
-        <dt>
-
           <code><a href="shape2zip.html">shape2zip()</a></code>
 
         </dt>
@@ -909,20 +895,6 @@
 
       <dl><dt>
 
-          <code><a href="counties_shapefile.html">counties_shapefile</a></code>
-
-        </dt>
-        <dd>Boundaries of US Counties (and county equivalents), built into the package for mapping.</dd>
-
-        <dt>
-
-          <code><a href="counties_as_sites.html">counties_as_sites()</a></code>
-
-        </dt>
-        <dd>FIPS - Analyze US Counties as if they were sites, to get summary indicators summary for each county</dd>
-
-        <dt>
-
           <code><a href="fips_counties_from_statefips.html">fips_counties_from_statefips()</a></code>
 
         </dt>
@@ -958,6 +930,13 @@
 
         <dt>
 
+          <code><a href="counties_shapefile.html">counties_shapefile</a></code>
+
+        </dt>
+        <dd>Boundaries of US Counties (and county equivalents), built into the package for mapping.</dd>
+
+        <dt>
+
           <code><a href="shapes_counties_from_countyfips.html">shapes_counties_from_countyfips()</a></code>
 
         </dt>
@@ -965,10 +944,10 @@
 
         <dt>
 
-          <code><a href="acs_bycounty.html">acs_bycounty()</a></code>
+          <code><a href="map_counties_in_state.html">map_counties_in_state()</a></code>
 
         </dt>
-        <dd>download ACS 5year data from Census API, at County resolution</dd>
+        <dd>Basic map of county outlines within specified state(s) Not used by shiny app</dd>
 
         <dt>
 
@@ -976,6 +955,20 @@
 
         </dt>
         <dd>plot comparison of counties in 1 state, for 1 indicator (variable)</dd>
+
+        <dt>
+
+          <code><a href="counties_as_sites.html">counties_as_sites()</a></code>
+
+        </dt>
+        <dd>FIPS - Analyze US Counties as if they were sites, to get summary indicators summary for each county</dd>
+
+        <dt>
+
+          <code><a href="acs_bycounty.html">acs_bycounty()</a></code>
+
+        </dt>
+        <dd>download ACS 5year data from Census API, at County resolution</dd>
 
         <dt>
 
@@ -1263,7 +1256,7 @@
           <code><a href="stateinfo2.html">stateinfo2</a></code>
 
         </dt>
-        <dd>stateinfo2 (DATA) data.frame of state abbreviations and state names (50+DC+PR; not AS, GU, MP, VI, UM)</dd>
+        <dd>stateinfo2 (DATA) state and territory reference information</dd>
 
         <dt>
 
@@ -1679,7 +1672,7 @@
           <code><a href="ejam2map.html">ejam2map()</a></code>
 
         </dt>
-        <dd>Show EJAM results as a map of points</dd>
+        <dd>Show EJAM results as a map of points or polygons</dd>
 
         <dt>
 
@@ -1693,14 +1686,14 @@
           <code><a href="mapfast.html">mapfast()</a></code>
 
         </dt>
-        <dd>Map - points - Create leaflet html widget map of points using table with lat lon</dd>
+        <dd>Map - Create leaflet html widget map from ejamit() output or a table of point coordinates, polygons, or fips</dd>
 
         <dt>
 
           <code><a href="mapfastej.html">mapfastej()</a></code>
 
         </dt>
-        <dd>Map - points - Create leaflet html widget map of points using EJAM results with EJ stats</dd>
+        <dd>Map - Create leaflet html widget map using EJAM results with EJ stats</dd>
 
         <dt>
 
@@ -1740,6 +1733,27 @@
 
 
       <dl><dt>
+
+          <code><a href="ejam2map.html">ejam2map()</a></code>
+
+        </dt>
+        <dd>Show EJAM results as a map of points or polygons</dd>
+
+        <dt>
+
+          <code><a href="mapfast.html">mapfast()</a></code>
+
+        </dt>
+        <dd>Map - Create leaflet html widget map from ejamit() output or a table of point coordinates, polygons, or fips</dd>
+
+        <dt>
+
+          <code><a href="map_ejscreen_indicator.html">map_ejscreen_indicator()</a></code>
+
+        </dt>
+        <dd>Map one EJSCREEN indicator at blockgroup resolution</dd>
+
+        <dt>
 
           <code><a href="mapfastej_counties.html">mapfastej_counties()</a></code>
 
@@ -1783,10 +1797,10 @@
 
         <dt>
 
-          <code><a href="shapes_blockgroups_from_bgfips.html">shapes_blockgroups_from_bgfips()</a></code>
+          <code><a href="shapes_from_fips.html">shapes_from_fips()</a></code>
 
         </dt>
-        <dd>Get blockgroups boundaries, via API, to map them</dd>
+        <dd>Download shapefiles based on FIPS codes of States, Counties, Cities/CDPs, Tracts, or Blockgroups (not blocks)</dd>
       </dl></div><div class="section level2">
 
       <h3 id="map-popups">Map Popups<a class="anchor" aria-label="anchor" href="#map-popups"></a></h3>

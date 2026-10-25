@@ -77,14 +77,12 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shapes_from_fips</span><span class="op">(</span></span>
 <span>  <span class="va">fips</span>,</span>
-<span>  myservice_blockgroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/"</span>,</span>
-<span>    <span class="st">"ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/5/query"</span><span class="op">)</span>,</span>
-<span>  myservice_tract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/"</span>,</span>
-<span>    <span class="st">"ArcGIS/rest/services/USA_Boundaries_2022/FeatureServer/4/query"</span><span class="op">)</span>,</span>
+<span>  myservice_blockgroup <span class="op">=</span> <span class="fu">shapes_acs_boundary_service</span><span class="op">(</span><span class="st">"blockgroup"</span><span class="op">)</span>,</span>
+<span>  myservice_tract <span class="op">=</span> <span class="fu">shapes_acs_boundary_service</span><span class="op">(</span><span class="st">"tract"</span><span class="op">)</span>,</span>
 <span>  myservice_place <span class="op">=</span> <span class="st">"tiger"</span>,</span>
 <span>  myservice_county <span class="op">=</span> <span class="st">"cartographic"</span>,</span>
 <span>  allow_multiple_fips_types <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  year <span class="op">=</span> <span class="fl">2024</span></span>
+<span>  year <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -97,13 +95,24 @@
 
 
 <dt id="arg-myservice-blockgroup">myservice_blockgroup<a class="anchor" aria-label="anchor" href="#arg-myservice-blockgroup"></a></dt>
-<dd><p>URL of feature service to get shapes from,
-or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.</p></dd>
+<dd><p>A feature-service URL (the existing default),
+"cartographic", or "tiger". The latter two use optional package tigris to
+download and cache one boundary file per state, without requesting ACS data.
+This can be much faster than repeated service queries for many blockgroups.
+"cartographic" uses smaller, generalized 1:500,000 boundaries: fast to
+download and draw, but simplified and clipped along shorelines. Use it for
+overview maps, not precise area, buffering, or point-in-polygon analysis.
+"tiger" retains full TIGER/Line boundary detail; files are larger and slower
+to download and draw, but state-file caching still avoids repeated queries.
+The default service follows the active ACS vintage (Esri for 2022/2023,
+Census TIGERweb ACS2024 for 2024);
+tigris is required only when explicitly selecting either tigris option.</p></dd>
 
 
 <dt id="arg-myservice-tract">myservice_tract<a class="anchor" aria-label="anchor" href="#arg-myservice-tract"></a></dt>
-<dd><p>URL of feature service to get shapes from,
-or "cartographic" or "tiger" to use approx or slow/accurate bounds from tidycensus and tigris packages.</p></dd>
+<dd><p>URL of feature service to get tract shapes from.
+The "cartographic" and "tiger" options are not implemented for tracts;
+the tract helper warns and uses its default service if these are requested.</p></dd>
 
 
 <dt id="arg-myservice-place">myservice_place<a class="anchor" aria-label="anchor" href="#arg-myservice-place"></a></dt>
@@ -124,7 +133,20 @@ downloaded, falling back to downloading only for any FIPS not found there.</p></
 
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
-<dd><p>passed to <code><a href="https://rdrr.io/pkg/tigris/man/places.html" class="external-link">tigris::places()</a></code> for bounds or city/town type of fips</p></dd>
+<dd><p>Boundary year for <code><a href="https://rdrr.io/pkg/tigris/man/places.html" class="external-link">tigris::places()</a></code> and for blockgroups when
+selecting "cartographic" or "tiger". NULL (the default) uses the
+calendar-predicted latest TIGER/Line places vintage for places (assuming
+an October 14 annual release, without checking publication),
+and <code><a href="acs_endyear.html">acs_endyear()</a></code> for those blockgroups. Places define areas to analyze
+and need not share the vintage of the demographic data overlaid on them.
+Specify a year explicitly to use another vintage for these downloads.
+County downloads continue to use <code><a href="acs_endyear.html">acs_endyear()</a></code>; built-in county/state
+boundaries must be rebuilt for the release's demographic geography.
+Default tract/blockgroup services follow the active ACS vintage.
+Service URLs determine their own vintage;
+year does not change the vintage embedded in a URL.
+Requested places without a boundary warn with their FIPS codes and year;
+their rows retain empty geometry, without substituting another vintage.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -133,19 +155,22 @@ downloaded, falling back to downloading only for any FIPS not found there.</p></
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The functions this relies on should return results in the same order as the input fips,
-but will exclude rows for invalid fips, and will also exclude output rows that would
-correspond to fips for which boundaries could not be obtained for some reason.
-So the output table might not have the same number of rows as the input fips vector.</p>
-<p>When using tigris package ("tiger" as service-related parameter here),
-it uses the year that is the default in the version of the tigris package that is installed.
-You can use options(tigris_year = 2023) for example to specify it explicitly.</p>
+    <p>Results follow the input FIPS order, including duplicates. Empty geometry
+rows preserve positional alignment for invalid inputs and for valid FIPS
+whose polygons could not be obtained. Only the supported FIPS types are
+downloaded; validation and Shiny errors retain their existing behavior.</p>
+<p>Choose the boundary source explicitly when accuracy matters. A speed gain
+from state-file caching does not require simplifying the boundaries: use
+"tiger" to retain detail. Simplification with "cartographic" can change area,
+point membership, and buffer results, even if the FIPS codes are unchanged.
+Cached tigris blockgroups can be read offline; other download paths retain
+their connectivity checks. Missing polygons remain empty rows in the output.</p>
 <p>Blocks are not implemented yet here. For info on blocks bounds, see  <code><a href="https://rdrr.io/pkg/tigris/man/block_groups.html" class="external-link">tigris::block_groups()</a></code>
 Also note the <a href="blockwts.html">blockwts</a> dataset had a placeholder column block_radius_miles that
 was just zero values, but see notes in EJAM/data-raw/datacreate_blockwts.R on how it could be obtained.
 If it were used, it could be a way to quickly get the area of each block,
 using the formula  area = pi * (block_radius_miles^2)</p>
-<p>For zip code boundaries, see the <a href="ejanalysis.org/ejamdocs">EJAM documentation</a> article on zipcodes.</p>
+<p>For zip code boundaries, see <code><a href="shapes_from_zip.html">shapes_from_zip()</a></code> and <a href="ejanalysis.org/ejamdocs">EJAM documentation</a> article on zipcodes.</p>
     </div>
 
     <div class="section level2">

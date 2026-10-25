@@ -78,11 +78,10 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">shapes_blockgroups_from_bgfips</span><span class="op">(</span></span>
 <span>  bgfips <span class="op">=</span> <span class="st">"010890029222"</span>,</span>
 <span>  outFields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FIPS"</span>, <span class="st">"STATE_ABBR"</span>, <span class="st">"SQMI"</span><span class="op">)</span>,</span>
-<span>  myservice <span class="op">=</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/"</span>,</span>
-<span>    <span class="st">"USA_Boundaries_2022/FeatureServer/5/query"</span><span class="op">)</span>,</span>
+<span>  myservice <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">shapes_acs_boundary_service</span><span class="op">(</span><span class="st">"blockgroup"</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/"</span>,</span>
-<span>    <span class="st">"USA_Block_Groups/FeatureServer/0/query"</span><span class="op">)</span>, <span class="st">"cartographic"</span>, <span class="st">"tiger"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>    <span class="st">"USA_Block_Groups/FeatureServer/0/query"</span><span class="op">)</span>, <span class="st">"cartographic"</span>, <span class="st">"tiger"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  year <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,15 +104,25 @@ just a vector of variables that particular service provides, like FIPS, SQMI, PO
 EJScreen_2_21_US_Percentiles_Block_Groups/FeatureServer/0/query"</p>
 <p>for example provides EJSCREEN indicator values, NPL_CNT, TSDF_CNT, EXCEED_COUNT_90, etc.</p></dd>
 
+
+<dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
+<dd><p>Boundary year for the tigris options; NULL uses <code><a href="acs_endyear.html">acs_endyear()</a></code>.
+Ignored for service URLs, whose vintage is controlled by the service.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>spatial object via <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::st_read()</a></code> # sf-data.frame, not sf-tibble like <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::read_sf()</a></code></p>
+    <p>An sf data.frame with standard EJAM metadata and input FIPS ordering.
+With a tigris source, outFields supports the standard EJAM fields, or "*"
+for all standard fields. ArcGIS-specific fields require a service URL.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This is useful mostly for small numbers of blockgroups.
-The EJSCREEN map services provide other ways to map blockgroups and see EJSCREEN data.</p>
+    <p>Service URLs query only requested blockgroups. For large selections,
+"cartographic" and "tiger" use cached state boundary files through tigris.
+Cartographic boundaries are generalized for fast overview maps; full
+TIGER/Line boundaries retain detail for spatial work. The existing URL
+default follows the active ACS vintage; explicit URLs retain their source.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

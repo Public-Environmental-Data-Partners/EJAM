@@ -69,6 +69,138 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="4.2024.0" id="ejam-420240-in-development">EJAM 4.2024.0 (in development)<a class="anchor" aria-label="anchor" href="#ejam-420240-in-development"></a></h2>
+<div class="section level4">
+<h4 id="new-in-ejscreen-and-ejam-4-2024-0">New in EJSCREEN and EJAM<a class="anchor" aria-label="anchor" href="#new-in-ejscreen-and-ejam-4-2024-0"></a></h4>
+<p><em>since October 2026</em></p>
+<div class="section level5">
+<h5 id="updated-data-in-the-v420240-release-4-2024-0">Updated data in the v4.2024.0 release!<a class="anchor" aria-label="anchor" href="#updated-data-in-the-v420240-release-4-2024-0"></a></h5>
+<ul><li>
+<strong>Demographics</strong> use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA’s last version.</li>
+<li>
+<strong>Environmental</strong> indicators for ozone and PM2.5 are updated.</li>
+<li>
+<strong>EJ indexes and percentiles</strong> are recalculated to use the new data.</li>
+</ul></div>
+<div class="section level5">
+<h5 id="towns-and-townships-added-4-2024-0">Towns and townships added<a class="anchor" aria-label="anchor" href="#towns-and-townships-added-4-2024-0"></a></h5>
+<ul><li>Towns and townships can now be analyzed and mapped. In New England, New York, New Jersey, Pennsylvania, and the Midwest, most towns and townships previously got no boundary, so an analysis of them found no residents. They now use Census county subdivision boundaries (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/672" class="external-link">#672</a>).</li>
+</ul></div>
+<div class="section level5">
+<h5 id="analyzing-thousands-of-sites-is-faster-and-more-efficient-4-2024-0">Analyzing thousands of sites is faster and more efficient<a class="anchor" aria-label="anchor" href="#analyzing-thousands-of-sites-is-faster-and-more-efficient-4-2024-0"></a></h5>
+<ul><li>
+<strong>Maps are faster:</strong> Shorter popup text and clustered markers keep maps responsive and make downloaded reports much smaller for large analyses (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/651" class="external-link">#651</a>).</li>
+<li>
+<strong>Larger analyses work better:</strong> Analyzing thousands of sites on the web app used to be slow or would crash. Unbuffered county, state, tract, or blockgroup analyses now run about twice as fast and use about 1–1.7 GB less peak memory, with the same results (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/649" class="external-link">#649</a>, <a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/652" class="external-link">#652</a>).</li>
+<li>
+<strong>Extremely large requests stop with an explanation</strong> instead of stopping the app for everyone using it (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/650" class="external-link">#650</a>).</li>
+</ul><p><em>since 2024 (EPA’s last updates, EJAM 2.32.2 and EJSCREEN 2.3)</em></p>
+</div>
+<div class="section level5">
+<h5 id="reports-have-more-information-4-2024-0">Reports have more information<a class="anchor" aria-label="anchor" href="#reports-have-more-information-4-2024-0"></a></h5>
+<ul><li>Counts of schools, Superfund sites, and other features, flood risk, health insurance, and the share of residents in Tribal or other flagged areas, compared with US and State averages.</li>
+</ul></div>
+<div class="section level5">
+<h5 id="reports-in-pdf-format-4-2024-0">Reports in PDF format<a class="anchor" aria-label="anchor" href="#reports-in-pdf-format-4-2024-0"></a></h5>
+<ul><li>PDF reports are available for the Community Report, with page breaks that print well. This was missing from the first post-EPA release.</li>
+</ul></div>
+<div class="section level5">
+<h5 id="choose-places-in-ejscreen-more-easily-4-2024-0">Choose places in EJSCREEN more easily<a class="anchor" aria-label="anchor" href="#choose-places-in-ejscreen-more-easily-4-2024-0"></a></h5>
+<ul><li>EJSCREEN now lets you pick several places to get reports on directly from the EJSCREEN map. You can select multiple locations by clicking points, choosing areas, or drawing shapes, then get one combined report (via the EJAM-API) or send them all to EJAM for further analysis and detailed results.</li>
+</ul></div>
+<div class="section level5">
+<h5 id="choose-places-in-ejam-more-easily-4-2024-0">Choose places in EJAM more easily<a class="anchor" aria-label="anchor" href="#choose-places-in-ejam-more-easily-4-2024-0"></a></h5>
+<ul><li>EJAM now lets you click on the map to add points, or pick cities, counties, or states by name.</li>
+</ul></div>
+<div class="section level5">
+<h5 id="faster-results-4-2024-0">Faster results<a class="anchor" aria-label="anchor" href="#faster-results-4-2024-0"></a></h5>
+<ul><li>The site-by-site table loads about 4 times faster, PDF reports finish sooner, and repeat report links load from a cache.</li>
+</ul></div>
+<div class="section level5">
+<h5 id="bigger-more-flexible-uploads-4-2024-0">Bigger, more flexible uploads<a class="anchor" aria-label="anchor" href="#bigger-more-flexible-uploads-4-2024-0"></a></h5>
+<ul><li>Up to 10,000 sites (was 5,000), and areas as GeoJSON, KML, or zipped shapefiles.</li>
+</ul></div>
+<div class="section level5">
+<h5 id="links-to-site-reports-4-2024-0">Links to 1-site reports<a class="anchor" aria-label="anchor" href="#links-to-site-reports-4-2024-0"></a></h5>
+<ul><li>Each site in EJAM’s multisite results now links to its own one-site report, and links to EJSCREEN’s view of that location.</li>
+</ul></div>
+<div class="section level5">
+<h5 id="link-to-places-by-url-4-2024-0">Link to places by URL<a class="anchor" aria-label="anchor" href="#link-to-places-by-url-4-2024-0"></a></h5>
+<ul><li>Use the EJSCREEN or EJAM weblink to specify locations and open EJSCREEN or EJAM with places already selected. You can share or bookmark these URLs.</li>
+<li>
+<a href="https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html#launch-an-already-running-ejam-app">About custom EJAM links</a>
+<ul><li>e.g., <a href="https://ejam.publicenvirodata.org/?lat=41.71059,41.65741&amp;lon=-87.59676,-87.8136&amp;radius=1.5" class="external-link uri">https://ejam.publicenvirodata.org/?lat=41.71059,41.65741&amp;lon=-87.59676,-87.8136&amp;radius=1.5</a>
+</li>
+</ul></li>
+<li>
+<a href="https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html#links-from-ejam-to-ejscreen">About custom EJSCREEN links</a>
+<ul><li>e.g., <a href="https://pedp-ejscreen.azurewebsites.net/index.html?lat=41.71059,41.65741&amp;lon=-87.59676,-87.8136&amp;radius=1.5" class="external-link uri">https://pedp-ejscreen.azurewebsites.net/index.html?lat=41.71059,41.65741&amp;lon=-87.59676,-87.8136&amp;radius=1.5</a>
+</li>
+</ul></li>
+</ul></div>
+</div>
+<div class="section level4">
+<h4 id="new-for-r-users-not-in-web-app-yet-4-2024-0">New for R users (not in web app yet)<a class="anchor" aria-label="anchor" href="#new-for-r-users-not-in-web-app-yet-4-2024-0"></a></h4>
+<p><em>since October 2026</em></p>
+<ul><li>
+<p><strong>Geographies:</strong></p>
+<ul><li>
+<strong>States and Counties:</strong> State and county boundaries and related functions use an explicit vintage, with checks for boundary years, FIPS codes, lookup metadata, and block/crosswalk consistency.</li>
+<li>
+<strong>Tracts and blockgroups:</strong> Default map services follow the ACS data vintage, including Census TIGERweb support for 2024 (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/671" class="external-link">#671</a>).</li>
+<li>
+<strong>Cities / Towns / CDPs:</strong> <code><a href="../reference/shapes_from_fips.html">shapes_from_fips()</a></code> and its place-boundary helpers now use <code>year = NULL</code> to select the calendar-predicted latest TIGER/Line places vintage (assuming an October 14 release) for cities/towns/CDPs, while tigris blockgroups continue to use <code><a href="../reference/acs_endyear.html">acs_endyear()</a></code>. Place boundaries can be newer than the demographic data used to analyze them. City analysis results may therefore differ even before the demographic data change. Requested places without a boundary now warn with their FIPS codes and the boundary year, while retaining empty geometry in the requested row order. Use an explicit year, such as <code>year = 2024</code>, to reproduce a particular vintage. This automatic year selection applies only to place boundaries. State and county boundaries follow the ACS data vintage, while block data retain their Census 2020 vintage.</li>
+</ul></li>
+<li>
+<p><strong>ZIP code analysis via the API:</strong></p>
+<ul><li>
+<code><a href="../reference/ejamit.html">ejamit()</a></code>, <code><a href="../reference/ejamapi.html">ejamapi()</a></code>, and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> now handle <code>zip</code> or <code>zipcode</code>. Results get zip-specific API report links.</li>
+</ul></li>
+<li>
+<p><strong>Color-coded maps</strong> to see where an indicator is highest:</p>
+<ul><li>
+<code><a href="../reference/map_ejscreen_indicator.html">map_ejscreen_indicator()</a></code> now lets you draw a color-coded map of all <em>blockgroups</em> in a county or state, like an EJSCREEN map, as an interactive or static (<code>maptype = "ggplot"</code>) map, by specifying the indicator name, e.g., <code>map_ejscreen_indicator("pctlowinc", countyfips = "10001")</code>
+</li>
+<li>
+<code><a href="../reference/mapfastej_counties.html">mapfastej_counties()</a></code> now lets you draw a color-coded map of all <em>counties</em> in a state, more easily, by specifying the indicator name, e.g., <code>mapfastej_counties(ST = "DE", colorvarname = "state.pctile.o3")</code>
+</li>
+<li>
+<code><a href="../reference/ejam2map.html">ejam2map()</a></code> and <code><a href="../reference/mapfast.html">mapfast()</a></code> now let you draw a color-coded map of all <em>analyzed sites</em> nationwide (as circles around points or as polygons) by specifying the indicator name, e.g., <code>ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")</code>
+</li>
+</ul></li>
+</ul><p><em>since 2024/2025</em></p>
+<ul><li>
+<strong>Datasets</strong>
+<ul><li>Each release downloads its own matching version of the large datasets, and county and state boundaries are built in, so they work offline.</li>
+<li>
+<code><a href="../reference/calc_ejscreen_dataset.html">calc_ejscreen_dataset()</a></code> and <code><a href="../reference/calc_ejscreen_export.html">calc_ejscreen_export()</a></code> are a documented annual pipeline that rebuilds the EJAM and EJSCREEN datasets from each new ACS release.</li>
+</ul></li>
+<li>
+<strong>API</strong>
+<ul><li>
+<code><a href="../reference/ejamapi.html">ejamapi()</a></code> gets reports or results from the new EJAM API, and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> builds a report link for any site.</li>
+</ul></li>
+<li>
+<strong>Analysis in R</strong>
+<ul><li>
+<code><a href="../reference/ejam2report.html">ejam2report()</a></code> can save a PDF, report on one site via <code>sitenumber</code>, and use a custom title and footer.</li>
+<li>
+<code><a href="../reference/ejam2areafeatures.html">ejam2areafeatures()</a></code> and <code><a href="../reference/ejam2barplot_areafeatures.html">ejam2barplot_areafeatures()</a></code> show the share of residents whose block group has a school or hospital or overlaps a Tribal or other flagged area, compared with US and State averages.</li>
+<li>
+<code>ejamit(zipcode = 10605)</code> analyzes zip code areas, using the new <code><a href="../reference/shapes_from_zip.html">shapes_from_zip()</a></code>.</li>
+<li>
+<code><a href="../reference/ejamit.html">ejamit()</a></code> accepts <code>lat</code> and <code>lon</code> vectors and a <code>buffer</code> around FIPS places, and <code>buffer</code> and <code>shape</code> work as synonyms for <code>radius</code> and <code>shapefile</code> across functions.</li>
+</ul></li>
+<li>
+<strong>Launching EJAM or EJSCREEN webapps</strong>
+<ul><li>
+<code><a href="../reference/ejamapp.html">ejamapp()</a></code> (formerly <code><a href="../reference/run_app.html">run_app()</a></code>) launches the app with your own settings and places pre-loaded, and <code><a href="../reference/url_ejamapp.html">url_ejamapp()</a></code> makes a link that opens the hosted app the same way.</li>
+<li>
+<code><a href="../reference/url_ejscreenmap.html">url_ejscreenmap()</a></code> and related <code>url_*()</code> functions link each site to EJSCREEN (with the place selected), EnviroMapper, ECHO, FRS, and county or state health pages.</li>
+</ul></li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2022.3" id="ejam-320223-october-2026">EJAM 3.2022.3 (October 2026)<a class="anchor" aria-label="anchor" href="#ejam-320223-october-2026"></a></h2>
 <p>This is the final ACS 2018-2022 release; it is frozen from here on. The ACS 2020-2024 vintage version will be released as <code>4.2024.0</code>, which is where development continues.</p>
 <div class="section level3">

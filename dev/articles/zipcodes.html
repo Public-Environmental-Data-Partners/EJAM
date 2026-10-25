@@ -130,6 +130,8 @@ shapefile (the first use downloads a large national boundaries file,
 which is slow, but it is cached locally so later uses are fast):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>zipcode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10012"</span>, <span class="st">"10506"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># zip is an equivalent alias (provide only one alias)</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10012"</span>, <span class="st">"10506"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># summary report, with the places described as zip codes and their bounds mapped</span></span>
 <span><span class="fu"><a href="../reference/ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
@@ -140,6 +142,15 @@ which is slow, but it is cached locally so later uses are fast):</p>
 <p>The rest of this article shows the manual, step-by-step version of
 that workflow, which offers more control (e.g., other sources of zip
 code polygons).</p>
+<p><code><a href="../reference/ejamapi.html">ejamapi()</a></code> and <code><a href="../reference/url_ejamapi.html">url_ejamapi()</a></code> now accept
+<code>zip</code> or <code>zipcode</code> for ZIP/ZCTA analysis with zero
+buffer by default (use only one alias). GET/POST <code>/report</code>
+and POST <code>/data</code> support the same aliases once the API change
+is deployed. For example,
+<code>ejamapi(zip = "20912", endpoint = "data")</code> requests data,
+and
+<code>url_ejamapi(zipcode = c("10012", "10506"), sitenumber = 0)</code>
+builds an aggregate report link.</p>
 </div>
 <div class="section level3">
 <h3 id="manual-step-by-step-approach">Manual step-by-step approach<a class="anchor" aria-label="anchor" href="#manual-step-by-step-approach"></a>
@@ -248,7 +259,7 @@ boundaries, use the zcta polygons approach above.</p>
 <code class="sourceCode R"><span><span class="co"># put zip code in the x axis labels!</span></span>
 <span><span class="fu"><a href="../reference/ejam2barplot_sites.html">ejam2barplot_sites</a></span><span class="op">(</span><span class="va">out</span>, names.arg <span class="op">=</span> <span class="va">z</span><span class="op">$</span><span class="va">GEOID20</span>, sortby <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="co"># zcta2$GEOID20</span></span>
 <span></span>
-<span><span class="co"># This table view works, but the links to reports do not work with zipcodes</span></span>
+<span><span class="co"># API report links retain ZIP identity once the ZIP API change is deployed</span></span>
 <span><span class="fu"><a href="../reference/ejam2tableviewer.html">ejam2tableviewer</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">

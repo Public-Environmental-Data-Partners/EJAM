@@ -96,6 +96,8 @@
 <span>  dry_run <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  version <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span>,</span>
+<span>  zip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  zipcode <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  shp <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -209,6 +211,13 @@ Default is NULL here, meaning it uses the default found in <code><a href="url_ej
 <dd><p>other parameters, passed to <code><a href="https://httr2.r-lib.org/reference/req_body.html" class="external-link">httr2::req_body_json()</a></code> in the "data" case,
 passed to <code><a href="url_ejamapi.html">url_ejamapi()</a></code> in the "report" case, and used for the
 required <code>attribute</code> and <code>value</code> parameters in the "query" case</p></dd>
+
+
+<dt id="arg-zip-zipcode">zip, zipcode<a class="anchor" aria-label="anchor" href="#arg-zip-zipcode"></a></dt>
+<dd><p>One or more ZIP codes (ZCTA boundaries), as a vector or
+comma-separated string. These are aliases; provide only one. ZIPs cannot be
+combined with coordinates, sites, shapefiles, or FIPS. The default ZIP buffer
+is zero. Leading zeroes are restored and ZIP+4 is reduced to five digits.</p></dd>
 
 
 <dt id="arg-shp">shp<a class="anchor" aria-label="anchor" href="#arg-shp"></a></dt>

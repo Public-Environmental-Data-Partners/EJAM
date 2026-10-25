@@ -75,7 +75,10 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_ejscreen_map_bin</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calc_ejscreen_map_bin</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  colorbins <span class="op">=</span> <span class="fu"><a href="ejscreen_color_defaults.html">ejscreen_color_defaults</a></span><span class="op">(</span><span class="st">"ejscreen"</span><span class="op">)</span><span class="op">$</span><span class="va">colorbins</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -83,23 +86,36 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>numeric vector of percentiles on a 0-100 scale.</p></dd>
+<dd><p>Numeric vector of percentiles on a 0-100 scale.</p></dd>
+
+
+<dt id="arg-colorbins">colorbins<a class="anchor" aria-label="anchor" href="#arg-colorbins"></a></dt>
+<dd><p>Strictly increasing interior cutoffs, excluding 0 and 100.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>integer vector of bin numbers from 1 to 11.</p>
+    <p>Integer vector of bin numbers, as long as <code>x</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>EJSCREEN shows color-coded maps based on percentile bins.
-This helper calculates those bin numbers so the can be stored in EJSCREEN's dataset of blockgroups.
-Percentiles are expected to be represented on a 0-100 scale. Bins match the
-historical EJSCREEN thresholds: 0-9th percentile is bin 1,
-10-19 is bin 2, ..., 80-89 is bin 9, 90-94 is bin 10, and 95-100 is bin 11.
-Missing or out-of-range percentiles return <code>NA_integer_</code>.</p>
+    <p>Percentiles use a 0-100 scale. The default historical EJSCREEN bins
+are 0-9 (bin 1), 10-19 (bin 2), through 80-89 (bin 9), 90-94 (bin 10),
+and 95-100 (bin 11). A cutoff belongs to the higher bin, including
+fractional percentiles. Missing or out-of-range values return <code>NA_integer_</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="calc_ejscreen_map_color.html">calc_ejscreen_map_color()</a></code> <code><a href="ejscreen_color_defaults.html">ejscreen_color_defaults()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">calc_ejscreen_map_bin</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">79.9</span>, <span class="fl">80</span>, <span class="fl">90</span>, <span class="fl">95</span>, <span class="fl">100</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># 1, 8, 9, 10, 11, 11, NA</span></span>
+<span><span class="fu">EJAM</span><span class="fu">:::</span><span class="fu">calc_ejscreen_map_bin</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">79</span>, <span class="fl">80</span>, <span class="fl">90</span>, <span class="fl">95</span><span class="op">)</span>, colorbins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">90</span>, <span class="fl">95</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># 1, 2, 3, 4</span></span></code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

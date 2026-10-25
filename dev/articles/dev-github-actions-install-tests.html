@@ -158,10 +158,9 @@ use.</p>
 <ul>
 <li>
 <code>workflow_dispatch</code>, with a <code>ref</code> such as
-<code>development</code>, <code>ACS2024</code>, <code>v3.2024.0</code>,
-or a commit SHA</li>
-<li>optional <code>expected_version</code>, such as
-<code>3.2024.0</code>
+<code>development</code>, <code>v4.2024.0</code>, or a commit SHA</li>
+<li>optional <code>expected_version</code>, matching
+<code>Version</code> in that ref’s <code>DESCRIPTION</code>
 </li>
 <li>
 <code>test_scope</code> set to <code>user-style</code>,
@@ -220,7 +219,7 @@ to create or publish a release.</li>
 <p>GitHub Actions uses the workflow file from the branch or ref that
 triggers the event, with some event-specific details. In practice, keep
 workflow files as similar as possible in <code>development</code>,
-<code>main</code>, and active release branches unless there is a
+<code>main</code>, and the active preparation branch unless there is a
 deliberate reason for a branch-specific workflow.</p>
 <p>Manual <code>workflow_dispatch</code> runs are easiest to use once
 the workflow file exists on the repository’s default branch. The Actions
@@ -230,19 +229,20 @@ depending on the workflow inputs.</p>
 <ul>
 <li>Edit and test workflow changes on the active working branch
 first.</li>
-<li>Push them to <code>development</code> once they are ready for
-routine development use.</li>
-<li>Merge them to <code>main</code> before relying on them for release
-validation.</li>
-<li>For a release branch such as <code>ACS2024</code>, bring the same
-workflow changes into that branch before testing or tagging a release
-from that branch.</li>
+<li>Integrate vX workflow changes into <code>vX.20YY.0-prep</code>
+first. Keep <code>development</code> on the current version line until
+team authorizes the version change/transition.</li>
+<li>At that transition, bring the approved changes into
+<code>development</code>, then <code>main</code> through the release
+process before relying on them for release validation.</li>
+<li>For historical install checks, select an existing release tag rather
+than maintaining a separate branch per data vintage.</li>
 </ul>
-<p>If a branch says <code>Version: 3.2024.0</code> in
-<code>DESCRIPTION</code>, the branch workflow can prove that the branch
-or commit installs as version 3.2024.0. It does not prove that the tag
-<code>v3.2024.0</code> installs until the tag exists and the
-tag-triggered workflow passes.</p>
+<p>The branch workflow proves only that its branch or commit installs as
+the version in <code>DESCRIPTION</code>. It does not prove that a
+release tag installs until that tag exists and its tag-triggered
+workflow passes. In particular, the preparation branch name does not
+activate v4 data or change its package version.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -1,4 +1,5 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/AGENTS.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/CONTRIBUTING.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/LICENSE-text.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/LICENSE.html</loc></url>
@@ -42,6 +43,8 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/acs_table_info.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/address_from_table.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/address_from_table_goodnames.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/analysis_error_message.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/analysis_step_in_app.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/app_run_EJAM.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/app_server.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/app_ui.html</loc></url>
@@ -56,6 +59,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/bgid2fips.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/bgid_from_blockid.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/bgpts.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/blockgroup_block_summary.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/blockgroupstats.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/blockid2fips.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/blockpoints.html</loc></url>
@@ -84,6 +88,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/calc_ejscreen_export_reference_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/calc_ejscreen_export_schema_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/calc_ejscreen_map_bin.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/calc_ejscreen_map_color.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/calc_ejscreen_map_fields_added.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/calc_ejscreen_map_pctile_text.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/calc_ejscreen_pctile_lookup_export.html</loc></url>
@@ -168,6 +173,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/ejamit_sitetype_from_input.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/ejampackages.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/ejscreen_arcgis_service_field.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/ejscreen_color_defaults.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/ejscreen_compare_geography_to_epa.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/ejscreen_dataset_creator_input_fields.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/ejscreen_dataset_creator_placeholder_fields.html</loc></url>
@@ -332,17 +338,25 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_blockgroups_over_blocks.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_counties_in_state.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_ejam_plus_shp.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_ejscreen_indicator.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_facilities_proxy.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_google.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_headernames.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_png_from_widget.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_popup_style.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_shapes_leaflet.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_shapes_leaflet_proxy.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_shapes_mapview.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_shapes_plot.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_shapes_simplified.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_size_setting.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/map_static_in_report.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/mapfast.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/mapfast_gg.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/mapfastej.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/mapfastej_counties.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/memory_cap_for_app.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/memory_container_limit_bytes.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/metadata_add.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/metadata_add_and_use_this.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/metadata_check.html</loc></url>
@@ -471,6 +485,8 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/out_bydistance2results_bydistance.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/out_bydistance2results_bydistance_bysite.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/out_bydistance2results_bysite_bydistance.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pctile2color.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pctile2colorhex.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pctile_from_raw_lookup.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pctile_x_is_hit_by_score.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/pctiles_lookup_create.html</loc></url>
@@ -518,6 +534,7 @@
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/quaddata.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/radiobox.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/radius_inferred.html</loc></url>
+<url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/ratio2color.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/read_and_clean_points.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/read_csv_or_xl.html</loc></url>
 <url><loc>https://public-environmental-data-partners.github.io/EJAM/dev/reference/regid_from_input.html</loc></url>
