@@ -1,0 +1,89 @@
+---
+title: "EJScreen Indicators Overview – Superfund Proximity"
+description: "EJScreen Indicators Overview – Superfund Proximity"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Superfund Proximity}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Superfund Proximity
+
+## What is the Superfund proximity indicator?
+
+The "Superfund proximity indicator" measures how close people might live
+to sites listed on the National Priorities List (NPL). EJScreen presents
+Superfund proximity using percentile rank, ranging from 0 (lowest) to
+100 (highest) with higher scores representing closer proximities.
+
+## Why is Superfund proximity important?
+
+- The EPA Superfund program is responsible for cleaning up some of the
+  nation's most contaminated land, air, water, and groundwater and
+  responding to environmental emergencies, oil spills, and natural
+  disasters. The program develops a National Priorities List (NPL)
+  primarily to guide the EPA in determining which sites warrant further
+  investigation.
+- NPL sites can expose people to danger in various ways. Some volatile
+  contaminants can turn into gases that we might breathe in. In dry
+  areas or seasons, pollutants on the ground can become dust and get
+  into the air, either directly inhaled or settling on surfaces we
+  touch. They can also land on farmland and get into the food we eat.
+  Some pollutants seep into groundwater, which can end up in our
+  drinking water or even seep into buildings.
+
+## How does EJScreen create the Superfund proximity indicator?
+
+- The Superfund proximity indicator is based on the total count of sites
+  proposed and listed on the NPL in each census block group within 5 km
+  of the average resident (or the closest within 10 km), divided by
+  distance, and calculated as the population-weighted average of blocks
+  in each block group. The count excludes sites that have been deleted
+  from the NPL.
+- Final and proposed NPL sites are downloaded from the [Superfund
+  Enterprise Management System (SEMS)
+  website](https://cumulis.epa.gov/supercpad/CurSites/srchsites.cfm).
+  NPL site polygons are used when available, and when not available,
+  point locations are used. NPL site polygons are taken from
+  [data.gov](https://data.gov/).
+
+```
+- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```
+
+## Moving Forward – What You Can Do
+
+- Learn about the Comprehensive Environmental Response, Compensation,
+  and Liability Act, also known as CERCLA or Superfund.
+  - [Superfund Overview](/superfund/superfund-cercla-overview)
+  - [Cleanup Process](/superfund/superfund-cleanup-process)
+  - [Superfund Alternative
+    Approach](/enforcement/superfund-alternative-approach)
+- Get involved and get support through the EPA's [Superfund Community
+  Involvement Program](/superfund/superfund-community-involvement).
+  - [Environmental Justice and
+    Superfund](/superfund/supporting-environmental-justice-superfund-sites)
+  - [Success Stories](/superfund/superfund-success-stories)
+- [Search for Superfund sites where you
+  live](/superfund/search-superfund-sites-where-you-live).
+- View mapped data highlighting current cleanup work at Superfund sites
+  throughout the country on the EPA's [Superfund Enforcement Cleanup
+  Work Map](/enforcement/map-superfund-enforcement-cleanup-work).
+- Get more information on active and archived sites in the EPA
+  [Superfund Enterprise Management
+  System](https://cumulis.epa.gov/supercpad/CurSites/srchsites.cfm)
+  National Priorities List and Superfund Alternative Approach sites have
+  web profiles with extensive detail about the EPA's activities.
+- Visit the [Superfund Human Exposure
+  Dashboard](/superfund/superfund-human-exposure-dashboard) to view the
+  status of the EPA's site-wide Human Exposure environmental indicator
+  for each Superfund National Priorities List and Superfund Alternative
+  Approach site. Human Exposure is one of the metrics the EPA uses to
+  communicate its progress in cleaning up Superfund sites

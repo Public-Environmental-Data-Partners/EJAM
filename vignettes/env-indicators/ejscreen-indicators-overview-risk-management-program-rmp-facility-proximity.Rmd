@@ -1,0 +1,76 @@
+---
+title: "EJScreen Indicators Overview – Risk Management Program (RMP) Facility Proximity"
+description: "EJScreen Indicators Overview – Risk Management Program (RMP) Facility Proximity"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Risk Management Program (RMP) Facility Proximity}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Risk Management Program (RMP) Facility Proximity
+
+## What is the RMP facility proximity?
+
+The "RMP facility proximity indicator" measures how close people might
+live to an active facility with a required Risk Management Plan
+(potential chemical accident management plan). EJScreen presents RMP
+facility proximity using percentile rank, ranging from 0 (lowest) to 100
+(highest) with higher scores representing closer proximities.
+
+## Why is RMP facility proximity important?
+
+- Chemical safety is a top priority of the EPA. The goal of the [Risk
+  Management Program (RMP)](/rmp) is to prevent accidental releases of
+  substances that can cause serious harm to the public and to mitigate
+  the severity of releases that do occur.
+- Under the Clean Air Act (CAA), the EPA was required to issue a rule
+  specifying the types of actions to be taken by facilities to prevent
+  accidental releases of such hazardous chemicals into the atmosphere
+  and reduce their potential impact on the public and the environment.
+  The rule requires that covered facilities must develop and implement a
+  risk management program and maintain documentation of the program at
+  the site. The risk management program must include an analysis of the
+  potential offsite consequences of a worst-case accidental release, a
+  five-year accident history, a release prevention program, and
+  emergency planning.
+- A relatively small subset of all facilities that are regulated by the
+  EPA are required to develop such risk management programs. Potential
+  for "serious harm" is determined based on the types of chemicals and
+  how much of the chemicals are being handled. Proximity to RMP
+  facilities is included in EJScreen because of the potential public
+  health and environmental hazard impacts these facilities can have on a
+  community.
+
+## How does EJScreen create the RMP facility proximity indicator?
+
+- The RMP facility proximity indicator is based on the total count of
+  active facilities with required Risk Management Plans in each census
+  block group within 5 km of the average resident in a block group (or
+  the closest within 10 km), divided by distance, and calculated as the
+  population-weighted average of blocks in each block group.
+  - RMP facilities are pulled from the EPA [Facility Registry Service
+    (FRS)](/frs/frs-query#national) by selecting facilities included in
+    the RMP National Program System.
+```
+- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```
+## Moving Forward – What You Can Do
+
+- [Learn how the Risk Management Program (RMP) rule helps prevent
+  chemical accidents and enhances emergency preparedness](/rmp).
+- Access Risk Management Plan information on facilities near you. Risk
+  management plans (RMPs) provide valuable information to local fire,
+  police, and emergency response personnel to prepare for and respond to
+  chemical emergencies in their community. Making RMP information
+  available to the public also fosters communication and awareness to
+  improve accident prevention and emergency response practices at the
+  local level. [Learn several ways the public can access or request
+  certain RMP
+  information](/rmp/how-access-risk-management-plan-information).

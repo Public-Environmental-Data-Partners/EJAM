@@ -1,0 +1,87 @@
+---
+title: "EJScreen Indicators Overview – Wastewater Discharge"
+description: "EJScreen Indicators Overview – Wastewater Discharge"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Wastewater Discharge}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Wastewater Discharge
+
+## What is the wastewater discharge indicator?
+
+The "wastewater discharge indicator" measures how much relative risk
+there is of being exposed to pollutants from wastewater that flows into
+rivers or other bodies of water downstream. This relative risk is based
+on estimated concentrations of pollutants in downstream water bodies
+which EJScreen presents using percentile rank, ranging from 0 (lowest)
+to 100 (highest) with higher scores representing higher relative risks.
+
+## Why is wastewater discharge important?
+
+- The [NPDES permit program](/npdes) established by the Clean Water Act
+  (CWA) addresses water pollution by regulating point sources that
+  discharge pollutants to waters of the United States. There are
+  approximately 6,700 major direct dischargers in the U.S. These
+  facilities discharge around 50 billion pounds of pollutants each year
+  directly into the nation's streams and rivers (including conventional
+  pollutants such as nitrogen and phosphorus).
+- Water pollutants can have adverse human health or ecological effects
+  depending on concentration in the water, exposure to the water,
+  toxicity of the specific chemical, and other factors. People may be
+  exposed to the discharged pollutants either directly or through
+  indirect pathways. People swimming in the downstream waters or
+  engaging in water-based recreation may be directly exposed through the
+  skin, mouth, or by breathing in the volatile substances.
+- If the released substances reach a downstream drinking water intake,
+  consumers of the finished waters may consume whatever portion of the
+  substances is not removed by the drinking water utility. Some portion
+  of the discharged materials may enter the groundwater of neighboring
+  areas and reach people through drinking water derived from wells that
+  draw upon that aquifer.
+
+## How does EJScreen create the wastewater discharge indicator?
+
+- The wastewater discharge indicator utilizes pollutant loadings from
+  the Discharge Monitoring Report (DMR) Loading Tool along with the
+  Risk-Screening Environmental Indicators (RSEI) model to estimate
+  concentrations of pollutants in downstream water bodies and derive a
+  toxicity-weighted concentration.
+- The wastewater discharge indicator includes all National Pollutant
+  Discharge Elimination System (NPDES) facilities with pollutant
+  loadings greater than zero.
+- To place higher emphasis on stream reaches with higher
+  toxicity-weighted pollutant concentrations, the toxicity-weighted
+  value for all stream reaches within 10 km of a census block centroid
+  is divided by the distance in meters to the census block centroid to
+  create a weighted proximity value indicating a block's risk of
+  exposure to pollutants in the stream reaches.
+```
+- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```
+
+## Moving Forward – What You Can Do
+
+- Stay informed on the latest relevant information and resources on the
+  EPA [Source Water Protection](/sourcewaterprotection) website.
+- Help [protect drinking water
+  sources](/sourcewaterprotection/how-can-you-help-protect-source-water)
+  at the local level.
+- Search for facilities in your community to assess their compliance
+  with wastewater and other environmental regulations on the EPA's
+  [Enforcement and Compliance History Online
+  (ECHO)](https://echo.epa.gov/) website.
+- Search for facilities and wastewater dischargers in your community
+  with the EPA's [Water Pollutant Loading
+  Tool](https://echo.epa.gov/trends/loading-tool/water-pollution-search)
+  and [TRI Toxics Tracker](/toxics-release-inventory-tri-program).
+- Explore detailed information about the conditions of your local waters
+  on the EPA [How's My Waterway Tool](/waterdata/hows-my-waterway).

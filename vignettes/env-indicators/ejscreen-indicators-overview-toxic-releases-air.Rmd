@@ -1,0 +1,88 @@
+---
+title: "EJScreen Indicators Overview – Toxic Releases to Air"
+description: "EJScreen Indicators Overview – Toxic Releases to Air"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Toxic Releases to Air}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Toxic Releases to Air
+
+## What is the toxic releases to air indicator?
+
+The "toxic releases to air indicator" measures the average annual
+chemical concentrations in air weighted by the toxicity of each
+chemical. EJScreen presents these weighted concentrations using
+percentile rank, ranging from 0 (lowest) to 100 (highest) with higher
+scores representing higher weighted concentrations.
+
+## Why are these specific toxic releases important?
+
+- A "release" of a toxic chemical in this context means that it is
+  emitted by a regulated facility into the air. Facilities that report
+  to the [EPA Toxics Release Inventory (TRI)
+  Program](/toxics-release-inventory-tri-program) are typically larger
+  in size and involved in manufacturing, metal mining, electric power
+  generation, chemical manufacturing, and hazardous waste treatment.
+- In general, chemicals covered by the TRI Program are those that cause
+  cancer or other chronic human health effects, cause significant
+  adverse acute human health effects, are reactive, ignitable, or can
+  cause significant adverse environmental effects.
+- Reporting to the TRI is required by law to inform the public about
+  environmental releases and other toxic chemical waste management
+  activities in communities. The TRI also gives EPA, state, and Tribal
+  officials data and information to help assess the need for future
+  regulations.
+
+## How does EJScreen create the toxic releases to air indicator?
+
+- EJScreen quantifies the relative potential human health impacts of
+  certain toxic chemicals on the list established under Section 313 of
+  the Emergency Planning and Community Right-to-Know Act (EPCRA) based
+  on the quantities released to air by facilities.
+- [Source data are derived from the EPA Risk-Screening Environmental
+  Indicators (RSEI) model](/rsei), which primarily relies on data
+  submitted by regulated facilities to the [EPA's Toxics Release
+  Inventory (TRI) Program](/toxics-release-inventory-tri-program) and
+  can be accessed through the [RSEI Geographic Microdata
+  Modeled](/rsei/rsei-geographic-microdata-rsei-gm) toxicity-weighted
+  concentrations produced by RSEI are then aggregated to census block
+  groups.
+
+```
+- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```
+
+## Moving Forward – What You Can Do
+
+- Visit the EPA's [TRI Data in
+  Action](/toxics-release-inventory-tri-program/tri-data-action-0) page
+  which provides resources for seeing how people are using TRI data and
+  what you can do next to further explore data and other information
+  related to toxic chemical releases and pollution prevention activities
+  and opportunities.
+- Use the EPA's [TRI Toxics
+  Tracker](https://edap.epa.gov/public/extensions/TRIToxicsTracker/TRIToxicsTracker.html)
+  to map and learn about nearby facilities releasing toxic chemicals and
+  other ways to [access TRI
+  data](/toxics-release-inventory-tri-program/tri-toolbox) to find out
+  about specific facilities, chemicals, and geographic areas.
+- Learn more about [TRI and estimating potential risk from chemical
+  releases](/toxics-release-inventory-tri-program/tri-and-estimating-potential-risk)
+  and visit EPA's Risk-Screening Environmental Indicators
+  ([RSEI](/rsei)) and Air Toxics Screening Assessment
+  ([AirToxScreen](/AirToxScreen)) webpages to learn more about which
+  chemicals may be of concern to you and to better understand potential
+  health impacts involving toxic chemical releases to air.
+- Search for facilities in your community to assess their compliance
+  with the Clean Air Act and other environmental regulations on EPA's
+  [Enforcement and Compliance History Online
+  (ECHO)](https://echo.epa.gov/) website.

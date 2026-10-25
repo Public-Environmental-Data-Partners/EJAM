@@ -1,0 +1,82 @@
+---
+title: "EJScreen Indicators Overview – Hazardous Waste Proximity"
+description: "EJScreen Indicators Overview – Hazardous Waste Proximity"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Hazardous Waste Proximity}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Hazardous Waste Proximity
+
+## What is the hazardous waste proximity?
+
+The "hazardous waste proximity indicator" measures how close people
+might live to a facility that handles hazardous waste. EJScreen presents
+hazardous waste proximity using percentile rank, ranging from 0 (lowest)
+to 100 (highest) with higher scores representing closer proximities.
+
+## Why is hazardous waste proximity important?
+
+- The EPA requires all facilities that currently treat, store, or
+  dispose of hazardous wastes or plan to do so to obtain a Resource
+  Conservation and Recovery Act (RCRA) permit. Permits typically require
+  facilities to develop emergency plans, find insurance and financial
+  backing, and train employees to handle hazards.
+- Hazardous waste facilities can expose people to danger in various
+  ways. Some volatile contaminants can turn into gases that we might
+  breathe in. In dry areas or seasons, pollutants on the ground can
+  become dust and get into the air, either directly inhaled or settling
+  on surfaces we touch. They can also land on farmland and get into the
+  food we eat. Some pollutants seep into groundwater, which can end up
+  in our drinking water or even seep into buildings.
+
+## How does EJScreen create the hazardous waste proximity?
+
+- The hazardous waste proximity indicator is based on the total count of
+  hazardous waste facilities in each census block group within 5 km of
+  the average resident in a block group (or the closest within 10 km),
+  divided by distance, and calculated as the population-weighted average
+  of blocks in each block group. Hazardous waste facilities include RCRA
+  handlers that are operating Treatment, Storage, and Disposal
+  Facilities or reporting Large Quantity Generators.
+- Data were collected through the [RCRAInfo Search
+  website](https://enviro.epa.gov/facts/rcrainfo/search.html) and [BR
+  Search website](/enviro/br-search).
+```
+- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```
+
+## Moving Forward – What You Can Do
+
+- Stay informed on the latest relevant information and resources on the
+  EPA [Hazardous Waste](/hw) page.
+- [Learn about the EPA's Hazardous Waste
+  Initiatives](/hw/learn-basics-hazardous-waste#initiatives).
+- Search for hazardous waste handler information in the [Resource
+  Conservation and Recovery Act Information
+  (RCRAInfo)](/enviro/rcrainfo-overview), a national program management
+  and inventory system about hazardous waste handlers. In general, all
+  generators, transporters, treaters, storers, and disposers of
+  hazardous waste are required to provide information about their
+  activities to state environmental agencies.
+- Access detailed hazardous waste information for large quantity
+  generators near you with the [Biennial Report
+  Search](/enviro/br-overview). This Hazardous Waste Report collects
+  data on the generation, management, and minimization of hazardous
+  waste from Large Quantity Generators and Treatment, Storage, and
+  Disposal Facilities.
+- View a map of hazardous waste cleanup locations and access details
+  about those cleanups, grants, and other related information on the
+  [Cleanups in My Community](/cleanups/cleanups-my-community) web app.
+- Search for facilities in your community to check their compliance with
+  hazardous waste and other environmental regulations on the EPA's
+  [Enforcement and Compliance History Online
+  (ECHO)](https://echo.epa.gov/) website.

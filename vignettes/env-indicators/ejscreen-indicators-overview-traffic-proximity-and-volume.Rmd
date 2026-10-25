@@ -1,0 +1,67 @@
+---
+title: "EJScreen Indicators Overview – Traffic Proximity and Volume"
+description: "EJScreen Indicators Overview – Traffic Proximity and Volume"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Traffic Proximity and Volume}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Traffic Proximity and Volume
+
+## What is the traffic proximity indicator?
+
+The "traffic proximity indicator" measures the count of vehicles per day
+(average annual daily traffic- AADT) divided by distance. EJScreen
+presents traffic proximity using percentile rank, ranging from 0
+(lowest) to 100 (highest) with higher scores representing closer
+proximities.
+
+## Why is traffic proximity important?
+
+- Pollutants directly emitted from cars, trucks, and other motor
+  vehicles are found in higher concentrations near major roads. Examples
+  include particulate matter (PM), carbon monoxide (CO), oxides of
+  nitrogen (NO~x~), and benzene, though hundreds of chemicals are
+  emitted by motor vehicles.
+- People who live, work, or attend school near major roads may have an
+  increased risk for certain health problems including asthma onset and
+  aggravation, acute respiratory infections in children, adverse birth
+  outcomes (e.g., small for gestational age, pre-term, and
+  low-birthweight infants), childhood leukemia, lung cancer in adults,
+  and premature death.
+- More than [72 million
+  people](/mobile-source-pollution/environmental-justice-and-transportation#hd-phase3)
+  live near major truck routes in the United States and are more likely
+  to be people of color or low-income.
+
+## How does EJScreen create the traffic proximity indicator?
+
+- Highway segments are from the Highway Performance Monitoring System
+  (HPMS) lines and the annual average daily traffic counts are from the
+  most recent HPMS release, Federal Highway Administration, U.S.
+  Department of Transportation (DOT).
+- Information about HPMS can be found on the [FHWA
+  website](https://www.fhwa.dot.gov/policyinformation/hpms.cfm).
+```
+- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```
+
+## Moving Forward – What You Can Do
+
+- Stay informed on the latest relevant information and resources on the
+  EPA [Mobile Source Pollution](/mobile-source-pollution) site.
+- [Learn about the health effects related to mobile source
+  pollution](/mobile-source-pollution/learn-about-how-mobile-source-pollution-affects-your-health).
+- See what the EPA and others are doing to [reduce harmful health
+  effects and exposure to mobile source
+  pollution](/regulations-emissions-vehicles-and-engines). Learn more
+  about [environmental justice work in
+  transportation](/mobile-source-pollution/environmental-justice-and-transportation).

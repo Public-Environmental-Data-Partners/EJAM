@@ -18,7 +18,7 @@ editor_options:
 
 ## What is the ozone indicator?
 
-The “ozone indicator” measures how much ground-level ozone people might be exposed to. EJScreen presents ground-level ozone concentrations using percentile rank, ranging from 0 (lowest) to 100 (highest) with higher scores representing higher concentrations. This indicator does not designate compliance with the national ambient air quality standard for ozone.
+The "ozone indicator" measures how much ground-level ozone people might be exposed to. EJScreen presents ground-level ozone concentrations using percentile rank, ranging from 0 (lowest) to 100 (highest) with higher scores representing higher concentrations. This indicator does not designate compliance with the national ambient air quality standard for ozone.
 
 ## Why is ozone important?
 
@@ -46,7 +46,7 @@ The “ozone indicator” measures how much ground-level ozone people might be e
 
 - Reduce your ground-level ozone exposure:
 
-  - EPA’s [Air Quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/), on [AirNow](http://www.airnow.gov/), tells you how clean or polluted your outdoor air is, as well as actions to protect your health and reduce exposure. The AQI provides current and forecasted AQI values. Go to [Using the AQI](https://www.airnow.gov/aqi/aqi-basics/using-air-quality-index/) to learn how to use current and forecasted air quality to plan your day.
+  - EPA's [Air Quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/), on [AirNow](http://www.airnow.gov/), tells you how clean or polluted your outdoor air is, as well as actions to protect your health and reduce exposure. The AQI provides current and forecasted AQI values. Go to [Using the AQI](https://www.airnow.gov/aqi/aqi-basics/using-air-quality-index/) to learn how to use current and forecasted air quality to plan your day.
 
   - The [Air Quality Flag Program](https://www.airnow.gov/air-quality-flag-program/) can help air agencies, schools, and other community organizations notify their citizens of harmful air quality conditions and provides guidance on how to adjust physical activities to help reduce exposure to air pollution, while still keeping people active.
 

@@ -1,0 +1,91 @@
+---
+title: "EJScreen Indicators Overview – Underground Storage Tanks (UST)"
+description: "EJScreen Indicators Overview – Underground Storage Tanks (UST)"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Underground Storage Tanks (UST)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Underground Storage Tanks (UST)
+
+## What is the UST indicator?
+
+The "UST indicator" measures how many underground storage tanks and UST
+release sites are near where people live. EJScreen presents this
+relative density of USTs using percentile rank, ranging from 0 (lowest)
+to 100 (highest) with higher scores representing higher relative
+densities.
+
+## Why are underground storage tanks important?
+
+- There have been over 2.5 million USTs installed in the US, over
+  530,000 of which are active tanks, or currently in use. Relatedly,
+  there have been over 570,000 reported UST releases, including 58,000
+  that have not reached the cleanup completed milestone. The greatest
+  potential threat from an UST release is contamination of groundwater,
+  the source of drinking water for nearly half of the US. UST releases
+  can also contaminate soil, surface water, and indoor air.
+- Until the mid-1980s, most USTs were made of bare steel, which is
+  likely to corrode over time and allow UST contents (typically oil,
+  diesel, and gasoline) to leak into the environment. Faulty
+  installation, human error, or inadequate operating and maintenance
+  procedures also can cause USTs to release their contents into the
+  environment.
+- Petroleum products, such as gasoline or diesel, are of primary concern
+  as these releases can spread through the groundwater and contaminate
+  private drinking well water, travel into public drinking water
+  intakes, and migrate underneath building foundations, causing
+  petroleum vapor intrusion.
+- Petroleum products from UST releases can make air unsafe to breathe
+  and water unsafe or unpleasant to drink. Benzene, a constituent of
+  fuels, is a known carcinogen. The current maximum contaminant
+  level (MCL) of benzene is .005 mg/L; however, the taste threshold is
+  approximately 4.5 mg/L. This is of particular concern for the more
+  than 15% of the US population who get their drinking water from
+  private domestic wells which are not regulated under the Safe Drinking
+  Water Act.
+
+## How does EJScreen create the underground storage tanks indicator?
+
+- The UST indicator scores are provided by the EPA's Office of Research
+  and Development and Office of Underground Storage Tanks and can be
+  accessed through the EPA [UST Finder](/ust/ust-finder).
+- EJScreen's UST indicator is calculated using the sum of UST releases
+  (multiplied by a factor of 7.7) and the number of USTs within a
+  1,500-foot buffered block group. That number is then divided by the
+  area of the buffered block group in km². The 7.7 multiplier is derived
+  from the average number of active USTs divided by the average number
+  of UST releases (cleanups remaining). A 1,500-foot buffer is used as a
+  radius of influence for the benzene plume migration to encompass
+  USTs/UST releases near block groups that could potentially be affected
+  by a release.
+- For technical details on the calculations and source data, visit the
+  [EJScreen Technical
+  Documentation](/ejscreen/technical-information-and-data-downloads).  
+
+## Moving Forward – What You Can Do
+
+- Learn more about USTs and UST releases on the EPA [Underground Storage
+  Tanks](/ust) site.
+- Access the EPA's resources on [UST Regulatory
+  Requirements](/ust/meeting-underground-storage-tank-ust-requirements),
+  [Preventing and Detecting UST
+  Releases](/ust/preventing-and-detecting-underground-storage-tank-releases),
+  and [Cleaning Up UST
+  Releases](/ust/releases-underground-storage-tanks).
+- Reach out to your [UST State
+  Contacts](/ust/underground-storage-tank-ust-state-contacts) for
+  state-specific inquiries.
+- Search for UST locations and details with the [UST
+  Finder](/ust/ust-finder). UST Finder contains information about
+  proximity of UST facilities and UST releases to surface and
+  groundwater public drinking water protection areas, private domestic
+  wells, and flooding and wildfires areas.

@@ -15,7 +15,7 @@ output: html_document
 
 ## What is the diesel particulate matter indicator?
 
-The “diesel particulate matter (PM) indicator” measures how much diesel PM (a mixture of particles from diesel exhaust) people might be exposed to. EJScreen presents diesel PM concentrations using percentile rank, ranging from 0 (lowest) to 100 (highest) with higher scores representing higher concentrations.
+The "diesel particulate matter (PM) indicator" measures how much diesel PM (a mixture of particles from diesel exhaust) people might be exposed to. EJScreen presents diesel PM concentrations using percentile rank, ranging from 0 (lowest) to 100 (highest) with higher scores representing higher concentrations.
 
 ## Why is diesel PM important?
 
@@ -26,7 +26,7 @@ The “diesel particulate matter (PM) indicator” measures how much diesel PM (
 ## How does EJScreen create the diesel particulate matter indicator?
 
 - The diesel PM concentration is measured in units of micrograms per cubic meter(μg/m3).
-- Diesel PM concentrations are provided by the EPA’s Office of Air Quality Planning and Standards. The source data are from the [EPA Air Toxics Screening Assessment](https://www.epa.gov/AirToxScreen).
+- Diesel PM concentrations are provided by the EPA's Office of Air Quality Planning and Standards. The source data are from the [EPA Air Toxics Screening Assessment](https://www.epa.gov/AirToxScreen).
 ```
 - {r child='_epa_archived_tech_doc_2.3.Rmd'}
 ```
@@ -37,6 +37,6 @@ The “diesel particulate matter (PM) indicator” measures how much diesel PM (
 
 - [Learn about the human health and environmental effects of diesel exhaust](https://web.archive.org/web/20250121194841/https://www.epa.gov/dera/document-page-learn-about-impacts-diesel-exhaust-and-diesel-emissions-reduction-act-dera).
 
-- Visit the EPA’s [AirToxScreen](https://www.epa.gov/AirToxScreen) to learn which air toxics may be of concern to you, to better understand the risks from air toxics exposures, and how to open a dialogue with your local air agency about air quality in your area.
+- Visit the EPA's [AirToxScreen](https://www.epa.gov/AirToxScreen) to learn which air toxics may be of concern to you, to better understand the risks from air toxics exposures, and how to open a dialogue with your local air agency about air quality in your area.
 
 - See what the EPA and others are doing to [reduce diesel emissions through new technologies and regulations](https://web.archive.org/web/20250121194841/https://www.epa.gov/dera/learn-about-impacts-diesel-exhaust-and-diesel-emissions-reduction-act-dera). Also learn about the [Diesel Emissions Reduction Act (DERA)](https://web.archive.org/web/20250121194841/https://www.epa.gov/dera) and [Clean Heavy-Duty Vehicles Program (CHDV)](https://web.archive.org/web/20250121194841/https://www.epa.gov/clean-heavy-duty-vehicles-program) funding opportunities that may be relevant to your state or local authorities, as well as [Ports Initiative](https://web.archive.org/web/20250121194841/https://www.epa.gov/ports-initiative) resources to support stakeholders in reducing port-related diesel emissions.
