@@ -72,11 +72,19 @@ msg <- utils::capture.output({
     default_max_pts_map   = 5 * 1000,
     maxmax_pts_map       = 15 * 1000, # max we will show on map
 
-    marker_cluster_cutoff  = 1 * 1000,  # max before showing points as clusters, for leaflet markerClusters
+    # (marker_cluster_cutoff was replaced by default_max_pts_map_show_unclustered in global_defaults_package.R)
 
     # input$max_pts_run uses these as its starting value and max allowed value
     default_max_pts_run  = 10 * 1000, # initial cap but can adjust in advanced tab
     maxmax_pts_run       = 35 * 1000, # absolute max you can analyze here, even with advanced tab
+
+    ## ------------------------ Cap on R's memory in a hosted app (see EJAM:::memory_cap_for_app()) ####
+    # In a container with a memory limit (like the hosted app), R's own memory is capped at the container
+    # limit minus default_memory_reserve_gb, so a too-large analysis stops with a message for that user
+    # instead of the container running out of memory and ending every user's session. No cap if no
+    # container limit is found (e.g., on a laptop) or if the R_MAX_VSIZE environment variable is set.
+    default_memory_cap_gb     = NA, # NA means use the container limit minus default_memory_reserve_gb; or a number of GB
+    default_memory_reserve_gb = 3,  # GB left for memory used outside R's own (block index, arrow data, packages, pandoc, Chrome)
 
     # input$max_pts_showtable uses these as its starting value and max allowed value
     default_max_pts_showtable = 1000, # max to show in interactive viewer. It drops the rest.
@@ -425,14 +433,10 @@ msg <- utils::capture.output({
     # ...                          ?
 
 
-    # heatmap column names - defaults could be set here and made flexible in advanced tab
-
-
-    # heatmap cutoffs for bins - defaults could be set here and made flexible in advanced tab
-
-
-    # heatmap colors for bins - defaults could be set here and made flexible in advanced tab
-
+    # Heatmap cutoffs and colors are shared package settings in
+    # global_defaults_package$default_color_coding (global_defaults_package.R).
+    # Excel uses the pctile and ratio cutoffs and their colorfills[-1].
+    # Heatmap column selection could be made flexible in the advanced tab.
 
     default_ok2plot = TRUE, # the plots to put in excel tabs via table_xls_from_ejam() and table_xls_format() and the plot functions
 

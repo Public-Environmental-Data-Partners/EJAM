@@ -846,13 +846,23 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     ## MAP ####
 
     # This presumes shp was provided in SHP cases
+    static_map <- FALSE
     if (is.null(sitenumber) || length(sitenumber) == 0 || sitenumber %in% 0) {
       # Map from community report should be ALL the sites that were passed here, UNLESS sitenumber param was used to pick 1
+      # With very many sites, the report shows a static image of the map, built without popups, to keep the file small.
+      # With many sites, popups are short and points are clustered (see map_size_setting()).
+      nsites_to_map <- if ("valid" %in% names(ejamitout$results_bysite)) {
+        sum(ejamitout$results_bysite$valid %in% TRUE)
+      } else {
+        NROW(ejamitout$results_bysite)
+      }
+      static_map <- map_static_in_report(nsites_to_map, polygons = sitetype %in% c("fips", "shp"))
+      popup_style <- if (static_map) "none" else "auto"
       if (sitetype %in% c("fips", "shp") && !is.null(shp)) {
         # radius gets found, and used just in popups since shapefile given
-        map <- ejam2map(ejamitout = ejamitout, shp = shp, launch_browser = FALSE)
+        map <- ejam2map(ejamitout = ejamitout, shp = shp, launch_browser = FALSE, popup_style = popup_style)
       } else {
-        map <- mapfastej(ejamitout, radius = rad)
+        map <- mapfastej(ejamitout, radius = rad, popup_style = popup_style)
       }
     } else {
       # just 1 site specified by sitenumber so map should show just that 1 site! shp and ejamout1 both 1 row already in this case
@@ -885,6 +895,14 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
     if (!is.null(map)) {
       report_params$map = map
     }
+    if (static_map) {
+      map_png_path <- map_png_from_widget(map)
+      if (!is.null(map_png_path)) {
+        on.exit(unlink(map_png_path), add = TRUE)
+        report_params$map_png_path <- map_png_path
+        report_params$map <- NULL
+      } # otherwise the report keeps the interactive map, which has no popups
+    }
     report_params <- c(report_params,
                        # NULL means use defaults
                        footer_version_number = footer_version_number,
@@ -914,35 +932,10 @@ ejam2report <- function(ejamitout = testoutput_ejamit_10pts_1miles,
 
         # For PDF: convert interactive leaflet map to a static PNG so it renders
         # reliably in headless Chrome instead of depending on tile loading and JS timing.
-        map_widget_html  <- NULL
-        map_widget_files <- NULL
-        map_png          <- NULL
-        on.exit({
-          if (!is.null(map_widget_html)) unlink(map_widget_html)
-          if (!is.null(map_widget_files)) unlink(map_widget_files, recursive = TRUE)
-          if (!is.null(map_png)) unlink(map_png)
-        }, add = TRUE)
-        if (!is.null(report_params$map) &&
-            !anyNA(report_params$map) &&
-            length(report_params$map) > 0) {
-          map_png_path <- tryCatch({
-            map_widget_html  <- tempfile(fileext = ".html")
-            map_widget_files <- sub("\\.html$", "_files", map_widget_html)
-            map_png          <- tempfile(fileext = ".png")
-            htmlwidgets::saveWidget(report_params$map, file = map_widget_html,
-                                    selfcontained = TRUE)
-            # delay is an unconditional pause covering content that arrives after
-            # the page load event (mainly leaflet basemap tiles) -- see pdf_wait_seconds()
-            webshot2::webshot(map_widget_html, file = map_png,
-                              delay = pdf_wait_seconds("map_snapshot"),
-                              vwidth = 900, vheight = 500)
-            if (file.exists(map_png)) map_png else NULL
-          }, error = function(e) {
-            message("Could not capture static map snapshot for PDF: ",
-                    conditionMessage(e))
-            NULL
-          })
+        if (is.null(report_params$map_png_path)) {
+          map_png_path <- map_png_from_widget(report_params$map) # NULL if no map or no image
           if (!is.null(map_png_path)) {
+            on.exit(unlink(map_png_path), add = TRUE)
             report_params$map_png_path <- map_png_path
             # Remove the interactive widget so knitr does not also render it into the
             # intermediate HTML that chrome_print() will convert — the PNG is all we need.
