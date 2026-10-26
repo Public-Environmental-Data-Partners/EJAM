@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Nitrogen Dioxide (NO2)"
-description: "EJScreen Indicators Overview – Nitrogen Dioxide (NO2)"
+title: "EJScreen Indicators: Nitrogen Dioxide (NO2)"
+description: "EJScreen Indicators: Nitrogen Dioxide (NO2)"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Nitrogen Dioxide (NO2)}
+  %\VignetteIndexEntry{EJScreen Indicators: Nitrogen Dioxide (NO2)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Nitrogen Dioxide (NO2)
 
 ## What is the NO~2~ indicator?
 

@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Traffic Proximity and Volume"
-description: "EJScreen Indicators Overview – Traffic Proximity and Volume"
+title: "EJScreen Indicators: Traffic Proximity and Volume"
+description: "EJScreen Indicators: Traffic Proximity and Volume"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Traffic Proximity and Volume}
+  %\VignetteIndexEntry{EJScreen Indicators: Traffic Proximity and Volume}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Traffic Proximity and Volume
 
 ## What is the traffic proximity indicator?
 

@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Lead Paint"
-description: "EJScreen Indicators Overview – Lead Paint"
+title: "EJScreen Indicators: Lead Paint"
+description: "EJScreen Indicators: Lead Paint"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Lead Paint}
+  %\VignetteIndexEntry{EJScreen Indicators: Lead Paint}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Lead Paint
 
 ## What is the lead paint indicator?
 

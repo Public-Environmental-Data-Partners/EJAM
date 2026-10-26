@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Wastewater Discharge"
-description: "EJScreen Indicators Overview – Wastewater Discharge"
+title: "EJScreen Indicators: Wastewater Discharge"
+description: "EJScreen Indicators: Wastewater Discharge"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Wastewater Discharge}
+  %\VignetteIndexEntry{EJScreen Indicators: Wastewater Discharge}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Wastewater Discharge
 
 ## What is the wastewater discharge indicator?
 

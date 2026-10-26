@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Superfund Proximity"
-description: "EJScreen Indicators Overview – Superfund Proximity"
+title: "EJScreen Indicators: Superfund Proximity"
+description: "EJScreen Indicators: Superfund Proximity"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Superfund Proximity}
+  %\VignetteIndexEntry{EJScreen Indicators: Superfund Proximity}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Superfund Proximity
 
 ## What is the Superfund proximity indicator?
 

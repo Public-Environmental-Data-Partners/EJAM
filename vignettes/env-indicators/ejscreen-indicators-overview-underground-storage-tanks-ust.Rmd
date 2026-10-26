@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Underground Storage Tanks (UST)"
-description: "EJScreen Indicators Overview – Underground Storage Tanks (UST)"
+title: "EJScreen Indicators: Underground Storage Tanks (UST)"
+description: "EJScreen Indicators: Underground Storage Tanks (UST)"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Underground Storage Tanks (UST)}
+  %\VignetteIndexEntry{EJScreen Indicators: Underground Storage Tanks (UST)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Underground Storage Tanks (UST)
 
 ## What is the UST indicator?
 

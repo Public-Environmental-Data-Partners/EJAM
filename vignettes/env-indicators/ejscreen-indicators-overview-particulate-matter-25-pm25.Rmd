@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Particulate Matter 2.5 (PM2.5)"
-description: "EJScreen Indicators Overview – Particulate Matter 2.5 (PM2.5)"
+title: "EJScreen Indicators: Particulate Matter 2.5 (PM2.5)"
+description: "EJScreen Indicators: Particulate Matter 2.5 (PM2.5)"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Particulate Matter 2.5 (PM2.5)}
+  %\VignetteIndexEntry{EJScreen Indicators: Particulate Matter 2.5 (PM2.5)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -14,8 +14,6 @@ editor_options:
 ---
 
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Particulate Matter 2.5 (PM2.5)
 
 ## What is the PM2.5 indicator?
 
@@ -46,7 +44,6 @@ The "PM2.5 indicator" measures the potential exposure to inhalable particles 2.5
     Planning and Standards using a fusion of monitor data and Community
     Multiscale Air Quality (CMAQ) air quality modeling. For more information
     about the methods used, see [EPA Report EPA-454/S-15-001](https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P100OORX.PDF).
--   
 ```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 

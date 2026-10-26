@@ -1,6 +1,6 @@
 ---
-title: "EJScreen Indicators Overview – Diesel Particulate Matter"
-description: "EJScreen Indicators Overview – Diesel Particulate Matter"
+title: "EJScreen Indicators: Diesel Particulate Matter"
+description: "EJScreen Indicators: Diesel Particulate Matter"
 output: html_document
 ---
 
@@ -12,6 +12,8 @@ output: html_document
 ```{r notes, eval=FALSE, echo=FALSE}
 <!-- ejscreen-indicators-overview-diesel-particulate-matter -->
 ```
+
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 ## What is the diesel particulate matter indicator?
 

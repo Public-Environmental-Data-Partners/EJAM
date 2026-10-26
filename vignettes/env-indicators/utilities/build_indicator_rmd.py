@@ -44,7 +44,8 @@ def get_title(markdown: str, name: str) -> str:
     if match is None:
         raise ValueError(f"{name}: no top-level heading found")
     # pandoc turned the original en dash into "--"
-    return match.group(1).strip().replace(" -- ", " \u2013 ")
+    title = match.group(1).strip().replace(" -- ", " \u2013 ")
+    return title.replace("EJScreen Indicators Overview \u2013 ", "EJScreen Indicators: ")
 
 
 def main() -> int:
@@ -67,7 +68,9 @@ def main() -> int:
             print(f"FAILED: {error}")
             continue
         # pandoc turned the en dashes in the headings into "--"
-        body = markdown.replace(" -- ", " \u2013 ")
+        # the title comes from the page's YAML, so drop the level-1 heading from the body
+        body = re.sub(r"^# .+\n\n?", "", markdown, count=1, flags=re.MULTILINE)
+        body = body.replace(" -- ", " \u2013 ")
         destination.write_text(HEADER.format(title=title) + body, encoding="utf-8", newline="\n")
         print(f"WROTE: {destination}")
     return 1 if failed else 0

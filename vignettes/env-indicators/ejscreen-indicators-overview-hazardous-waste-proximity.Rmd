@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Hazardous Waste Proximity"
-description: "EJScreen Indicators Overview – Hazardous Waste Proximity"
+title: "EJScreen Indicators: Hazardous Waste Proximity"
+description: "EJScreen Indicators: Hazardous Waste Proximity"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Hazardous Waste Proximity}
+  %\VignetteIndexEntry{EJScreen Indicators: Hazardous Waste Proximity}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Hazardous Waste Proximity
 
 ## What is the hazardous waste proximity?
 

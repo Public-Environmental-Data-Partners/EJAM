@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Ozone"
-description: "EJScreen Indicators Overview – Ozone"
+title: "EJScreen Indicators: Ozone"
+description: "EJScreen Indicators: Ozone"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Ozone}
+  %\VignetteIndexEntry{EJScreen Indicators: Ozone}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Ozone
 
 ## What is the ozone indicator?
 

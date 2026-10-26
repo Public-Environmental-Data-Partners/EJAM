@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Toxic Releases to Air"
-description: "EJScreen Indicators Overview – Toxic Releases to Air"
+title: "EJScreen Indicators: Toxic Releases to Air"
+description: "EJScreen Indicators: Toxic Releases to Air"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Toxic Releases to Air}
+  %\VignetteIndexEntry{EJScreen Indicators: Toxic Releases to Air}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Toxic Releases to Air
 
 ## What is the toxic releases to air indicator?
 

@@ -1,11 +1,11 @@
 ---
-title: "EJScreen Indicators Overview – Drinking Water Non-Compliance"
-description: "EJScreen Indicators Overview – Drinking Water Non-Compliance"
+title: "EJScreen Indicators: Drinking Water Non-Compliance"
+description: "EJScreen Indicators: Drinking Water Non-Compliance"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators Overview – Drinking Water Non-Compliance}
+  %\VignetteIndexEntry{EJScreen Indicators: Drinking Water Non-Compliance}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -13,8 +13,6 @@ editor_options:
     wrap: 80
 ---
 [Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
-# EJScreen Indicators Overview – Drinking Water Non-Compliance
 
 ## What is the drinking water non-compliance indicator?
 
