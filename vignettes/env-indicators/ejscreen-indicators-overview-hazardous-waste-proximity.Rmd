@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Hazardous Waste Proximity
 
@@ -50,8 +50,7 @@ to 100 (highest) with higher scores representing closer proximities.
 - Data were collected through the [RCRAInfo Search
   website](https://enviro.epa.gov/facts/rcrainfo/search.html) and [BR
   Search website](/enviro/br-search).
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving Forward – What You Can Do

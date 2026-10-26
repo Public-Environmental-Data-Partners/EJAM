@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Underground Storage Tanks (UST)
 
@@ -67,9 +67,8 @@ densities.
   radius of influence for the benzene plume migration to encompass
   USTs/UST releases near block groups that could potentially be affected
   by a release.
-- For technical details on the calculations and source data, visit the
-  [EJScreen Technical
-  Documentation](/ejscreen/technical-information-and-data-downloads).  
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
+``` 
 
 ## Moving Forward – What You Can Do
 

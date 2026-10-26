@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Superfund Proximity
 
@@ -54,8 +54,7 @@ Superfund proximity using percentile rank, ranging from 0 (lowest) to
   point locations are used. NPL site polygons are taken from
   [data.gov](https://data.gov/).
 
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving Forward – What You Can Do

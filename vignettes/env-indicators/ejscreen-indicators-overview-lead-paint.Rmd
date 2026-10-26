@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Lead Paint
 
@@ -58,8 +58,7 @@ with higher scores representing higher potential for exposure.
   (ACS) 5-year
   Summary](https://www.census.gov/data/developers/data-sets/acs-5year.html)
   block group-level estimates.
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving Forward – What You Can Do

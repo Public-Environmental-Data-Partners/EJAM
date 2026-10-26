@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Risk Management Program (RMP) Facility Proximity
 
@@ -58,8 +58,7 @@ facility proximity using percentile rank, ranging from 0 (lowest) to 100
   - RMP facilities are pulled from the EPA [Facility Registry Service
     (FRS)](/frs/frs-query#national) by selecting facilities included in
     the RMP National Program System.
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 ## Moving Forward – What You Can Do
 

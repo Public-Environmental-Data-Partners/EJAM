@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Drinking Water Non-Compliance
 
@@ -72,8 +72,7 @@ compliance challenges.
 - A drinking water non-compliance score is calculated for each community
   water system service area. The scores are then aggregated from the
   service area into the census block group geography used in EJScreen.
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving Forward – What You Can Do

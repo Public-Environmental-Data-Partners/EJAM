@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Wastewater Discharge
 
@@ -64,8 +64,7 @@ to 100 (highest) with higher scores representing higher relative risks.
   is divided by the distance in meters to the census block centroid to
   create a weighted proximity value indicating a block's risk of
   exposure to pollutants in the stream reaches.
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving Forward – What You Can Do

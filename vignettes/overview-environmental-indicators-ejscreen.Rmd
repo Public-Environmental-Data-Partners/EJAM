@@ -47,6 +47,5 @@ EJScreen/EJAM provide 13 environmental indicators. Click on each environmental i
 
 - For more information about Environmental Indicators, including documentation of data sources, click through the indicator's name in the table above. The resulting pages will be updated with new information as the indicators scores and indexes are updated.
 
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='_epa_archived_tech_doc_2.3.Rmd'}
 ```

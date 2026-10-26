@@ -13,7 +13,7 @@ editor_options:
     wrap: 80
 ---
 
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Particulate Matter 2.5 (PM2.5)
 
@@ -47,8 +47,7 @@ The "PM2.5 indicator" measures the potential exposure to inhalable particles 2.5
     Multiscale Air Quality (CMAQ) air quality modeling. For more information
     about the methods used, see [EPA Report EPA-454/S-15-001](https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P100OORX.PDF).
 -   
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving forward – What you can do

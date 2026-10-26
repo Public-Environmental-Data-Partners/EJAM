@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Nitrogen Dioxide (NO2)
 
@@ -59,8 +59,7 @@ air quality standard for NO~2~.
   resolution. These values are then aggregated and averaged to census
   block values and expressed in parts per billion (by volume).
 
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving forward – What you can do

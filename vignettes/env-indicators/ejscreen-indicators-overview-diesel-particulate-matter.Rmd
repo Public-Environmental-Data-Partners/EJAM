@@ -27,8 +27,7 @@ The "diesel particulate matter (PM) indicator" measures how much diesel PM (a mi
 
 - The diesel PM concentration is measured in units of micrograms per cubic meter(μg/m3).
 - Diesel PM concentrations are provided by the EPA's Office of Air Quality Planning and Standards. The source data are from the [EPA Air Toxics Screening Assessment](https://www.epa.gov/AirToxScreen).
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving Forward – What You Can Do

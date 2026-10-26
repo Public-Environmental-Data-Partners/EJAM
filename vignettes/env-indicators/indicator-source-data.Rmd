@@ -7,7 +7,7 @@ output:
 params:
   external_sources_path: null
 vignette: >
-  %\VignetteIndexEntry{Environmental Indicator Source data}
+  %\VignetteIndexEntry{Environmental Indicator Source Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:

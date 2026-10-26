@@ -12,7 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
-# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 # EJScreen Indicators Overview – Traffic Proximity and Volume
 
@@ -50,8 +50,7 @@ proximities.
   Department of Transportation (DOT).
 - Information about HPMS can be found on the [FHWA
   website](https://www.fhwa.dot.gov/policyinformation/hpms.cfm).
-```
-- {r child='_epa_archived_tech_doc_2.3.Rmd'}
+```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 
 ## Moving Forward – What You Can Do
