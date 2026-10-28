@@ -1,28 +1,30 @@
 ---
-title: "EJScreen Indicators: Drinking Water Non-Compliance"
-description: "EJScreen Indicators: Drinking Water Non-Compliance"
+title: "EJScreen Indicators Overview – Drinking Water Non-Compliance"
+description: "EJScreen Indicators Overview – Drinking Water Non-Compliance"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators: Drinking Water Non-Compliance}
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Drinking Water Non-Compliance}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
   markdown:
     wrap: 80
 ---
-[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Drinking Water Non-Compliance
 
 ## What is the drinking water non-compliance indicator?
 
 The "drinking water non-compliance indicator" highlights populations
 served by community water systems that have challenges complying with
 [Safe Drinking Water
-Act](/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting)
+Act](https://www.epa.gov/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting)
 requirements. Points are calculated using a modified version of the
 EPA's [Enforcement Targeting
-Tool](/tribaldrinkingwater/drinking-water-enforcement-response-policy-and-enforcement-targeting-tool)
+Tool](https://www.epa.gov/tribaldrinkingwater/drinking-water-enforcement-response-policy-and-enforcement-targeting-tool)
 criteria, which accounts for violation severity and age. EJScreen
 presents drinking water non-compliance using percentile rank, ranging
 from 0 (lowest) to 100 (highest) with higher scores representing more
@@ -30,7 +32,7 @@ compliance challenges.
 
 ## Why is drinking water non-compliance important?
 
-- The [Safe Drinking Water Act (SDWA)](/sdwa) regulates various drinking
+- The [Safe Drinking Water Act (SDWA)](https://www.epa.gov/sdwa) regulates various drinking
   water contaminates such as lead, nitrate, E. coli, and benzene.
   Consuming substances above the EPA's maximum contaminate level can be
   harmful.
@@ -39,7 +41,7 @@ compliance challenges.
   community water systems.
 - Most systems are within compliance of the EPA's SDWA [National Primary
   Drinking Water Regulations
-  (NPDWR)](/ground-water-and-drinking-water/national-primary-drinking-water-regulations)
+  (NPDWR)](https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations)
   on any given quarter. While the NPDWR aims to provide safe, clean
   drinking water for all consumers, some systems are in non-compliance
   with one or more health-based and non-health-based violations.
@@ -56,22 +58,23 @@ compliance challenges.
   System](https://sdwis.epa.gov/ords/sfdw_pub/r/sfdw/sdwis_fed_reports_public/200).
   It then translates these violations into points using a modified
   version of the [EPA's Enforcement Targeting
-  Tool](/tribaldrinkingwater/drinking-water-enforcement-response-policy-and-enforcement-targeting-tool)
+  Tool](https://www.epa.gov/tribaldrinkingwater/drinking-water-enforcement-response-policy-and-enforcement-targeting-tool)
   criteria, which accounts for violation severity and age. Scores above
   0 represent the number of weighted health-based violations (including
   the number of years in non-compliance) and monitoring and reporting
   violations within a 5-year period for community water systems
   currently in non-compliance.
 - EJScreen uses the [Community Water System Service Area
-  Boundaries](/ground-water-and-drinking-water/community-water-system-service-area-boundaries)
+  Boundaries](https://www.epa.gov/ground-water-and-drinking-water/community-water-system-service-area-boundaries)
   dataset, which includes both state supplied and modeled boundaries, to
   represent the areas served by community water systems in the drinking
   water non-compliance indicator.
 - A drinking water non-compliance score is calculated for each community
   water system service area. The scores are then aggregated from the
   service area into the census block group geography used in EJScreen.
-```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
-```
+  For technical details on the calculations and source data, visit the
+  [EJScreen Technical
+  Documentation](https://www.epa.gov/ejscreen/technical-information-and-data-downloads).
 
 ## Moving Forward – What You Can Do
 
@@ -81,7 +84,7 @@ compliance challenges.
   This site provides information on facilities, violations, recent site
   visits, and more for public water systems.
 - Read your community water system's annual [Consumer Confidence
-  Report](/ccr/ccr-information-consumers). Community water systems are
+  Report](https://www.epa.gov/ccr/ccr-information-consumers). Community water systems are
   required under SDWA to provide customers with consumer confidence
   reports. These reports provide information on the quality of drinking
   water supplied to customers and can help with better understanding any
@@ -93,17 +96,17 @@ compliance challenges.
   out to your community water system directly.
 - Visit the EPA's [Contact Information for Certification Programs and
   Certified Laboratories for Drinking
-  Water](/dwlabcert/contact-information-certification-programs-and-certified-laboratories-drinking-water)
+  Water](https://www.epa.gov/dwlabcert/contact-information-certification-programs-and-certified-laboratories-drinking-water)
   page to find a certified laboratory in your state and learn more about
   available options to test your drinking water at home.
 - Stay informed on the latest relevant information and resources on the
-  EPA's [Drinking Water](/ground-water-and-drinking-water) program.
+  EPA's [Drinking Water](https://www.epa.gov/ground-water-and-drinking-water) program.
 - Build community-based water resiliency. The EPA [Communities and
-  Utilities Partnering for Water Resilience](/waterresilience) page
+  Utilities Partnering for Water Resilience](https://www.epa.gov/waterresilience) page
   provides many strategies and resources for building resiliency.
 - Explore detailed information about the conditions of your local waters
   and drinking water providers on the EPA [How's My Waterway
-  Tool](/waterdata/hows-my-waterway).
+  Tool](https://www.epa.gov/waterdata/hows-my-waterway).
 - Learn more about drinking water sources with the EPA's [Drinking Water
   Mapping Application to Protect Source Waters
-  (DWMAPS)](/sourcewaterprotection/drinking-water-mapping-application-protect-source-waters-dwmaps#What).
+  (DWMAPS)](https://www.epa.gov/sourcewaterprotection/drinking-water-mapping-application-protect-source-waters-dwmaps#What).

@@ -1,18 +1,20 @@
 ---
-title: "EJScreen Indicators: Hazardous Waste Proximity"
-description: "EJScreen Indicators: Hazardous Waste Proximity"
+title: "EJScreen Indicators Overview – Hazardous Waste Proximity"
+description: "EJScreen Indicators Overview – Hazardous Waste Proximity"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{EJScreen Indicators: Hazardous Waste Proximity}
+  %\VignetteIndexEntry{EJScreen Indicators Overview – Hazardous Waste Proximity}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
   markdown:
     wrap: 80
 ---
-[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
+# TEMP: [test link back to Overview page](../overview-environmental-indicators-ejscreen.html)
+
+# EJScreen Indicators Overview – Hazardous Waste Proximity
 
 ## What is the hazardous waste proximity?
 
@@ -47,32 +49,33 @@ to 100 (highest) with higher scores representing closer proximities.
   Facilities or reporting Large Quantity Generators.
 - Data were collected through the [RCRAInfo Search
   website](https://enviro.epa.gov/facts/rcrainfo/search.html) and [BR
-  Search website](/enviro/br-search).
-```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
-```
+  Search website](https://www.epa.gov/enviro/br-search).
+- For technical details on the calculations and source data, visit the
+  [EJScreen Technical
+  Documentation](https://www.epa.gov/ejscreen/technical-information-and-data-downloads).
 
 ## Moving Forward – What You Can Do
 
 - Stay informed on the latest relevant information and resources on the
-  EPA [Hazardous Waste](/hw) page.
+  EPA [Hazardous Waste](https://www.epa.gov/hw) page.
 - [Learn about the EPA's Hazardous Waste
-  Initiatives](/hw/learn-basics-hazardous-waste#initiatives).
+  Initiatives](https://www.epa.gov/hw/learn-basics-hazardous-waste#initiatives).
 - Search for hazardous waste handler information in the [Resource
   Conservation and Recovery Act Information
-  (RCRAInfo)](/enviro/rcrainfo-overview), a national program management
+  (RCRAInfo)](https://www.epa.gov/enviro/rcrainfo-overview), a national program management
   and inventory system about hazardous waste handlers. In general, all
   generators, transporters, treaters, storers, and disposers of
   hazardous waste are required to provide information about their
   activities to state environmental agencies.
 - Access detailed hazardous waste information for large quantity
   generators near you with the [Biennial Report
-  Search](/enviro/br-overview). This Hazardous Waste Report collects
+  Search](https://www.epa.gov/enviro/br-overview). This Hazardous Waste Report collects
   data on the generation, management, and minimization of hazardous
   waste from Large Quantity Generators and Treatment, Storage, and
   Disposal Facilities.
 - View a map of hazardous waste cleanup locations and access details
   about those cleanups, grants, and other related information on the
-  [Cleanups in My Community](/cleanups/cleanups-my-community) web app.
+  [Cleanups in My Community](https://www.epa.gov/cleanups/cleanups-my-community) web app.
 - Search for facilities in your community to check their compliance with
   hazardous waste and other environmental regulations on the EPA's
   [Enforcement and Compliance History Online

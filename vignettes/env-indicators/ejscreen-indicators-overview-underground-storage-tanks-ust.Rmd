@@ -55,7 +55,7 @@ densities.
 
 - The UST indicator scores are provided by the EPA's Office of Research
   and Development and Office of Underground Storage Tanks and can be
-  accessed through the EPA [UST Finder](/ust/ust-finder).
+  accessed through the EPA [UST Finder](https://www.epa.gov/ust/ust-finder).
 - EJScreen's UST indicator is calculated using the sum of UST releases
   (multiplied by a factor of 7.7) and the number of USTs within a
   1,500-foot buffered block group. That number is then divided by the
@@ -71,18 +71,18 @@ densities.
 ## Moving Forward – What You Can Do
 
 - Learn more about USTs and UST releases on the EPA [Underground Storage
-  Tanks](/ust) site.
+  Tanks](https://www.epa.gov/ust) site.
 - Access the EPA's resources on [UST Regulatory
-  Requirements](/ust/meeting-underground-storage-tank-ust-requirements),
+  Requirements](https://www.epa.gov/ust/meeting-underground-storage-tank-ust-requirements),
   [Preventing and Detecting UST
-  Releases](/ust/preventing-and-detecting-underground-storage-tank-releases),
+  Releases](https://www.epa.gov/ust/preventing-and-detecting-underground-storage-tank-releases),
   and [Cleaning Up UST
-  Releases](/ust/releases-underground-storage-tanks).
+  Releases](https://www.epa.gov/ust/releases-underground-storage-tanks).
 - Reach out to your [UST State
-  Contacts](/ust/underground-storage-tank-ust-state-contacts) for
+  Contacts](https://www.epa.gov/ust/underground-storage-tank-ust-state-contacts) for
   state-specific inquiries.
 - Search for UST locations and details with the [UST
-  Finder](/ust/ust-finder). UST Finder contains information about
+  Finder](https://www.epa.gov/ust/ust-finder). UST Finder contains information about
   proximity of UST facilities and UST releases to surface and
   groundwater public drinking water protection areas, private domestic
   wells, and flooding and wildfires areas.

@@ -25,7 +25,7 @@ to 100 (highest) with higher scores representing higher relative risks.
 
 ## Why is wastewater discharge important?
 
-- The [NPDES permit program](/npdes) established by the Clean Water Act
+- The [NPDES permit program](https://www.epa.gov/npdes) established by the Clean Water Act
   (CWA) addresses water pollution by regulating point sources that
   discharge pollutants to waters of the United States. There are
   approximately 6,700 major direct dischargers in the U.S. These
@@ -68,9 +68,9 @@ to 100 (highest) with higher scores representing higher relative risks.
 ## Moving Forward – What You Can Do
 
 - Stay informed on the latest relevant information and resources on the
-  EPA [Source Water Protection](/sourcewaterprotection) website.
+  EPA [Source Water Protection](https://www.epa.gov/sourcewaterprotection) website.
 - Help [protect drinking water
-  sources](/sourcewaterprotection/how-can-you-help-protect-source-water)
+  sources](https://www.epa.gov/sourcewaterprotection/how-can-you-help-protect-source-water)
   at the local level.
 - Search for facilities in your community to assess their compliance
   with wastewater and other environmental regulations on the EPA's
@@ -79,6 +79,6 @@ to 100 (highest) with higher scores representing higher relative risks.
 - Search for facilities and wastewater dischargers in your community
   with the EPA's [Water Pollutant Loading
   Tool](https://echo.epa.gov/trends/loading-tool/water-pollution-search)
-  and [TRI Toxics Tracker](/toxics-release-inventory-tri-program).
+  and [TRI Toxics Tracker](https://www.epa.gov/toxics-release-inventory-tri-program).
 - Explore detailed information about the conditions of your local waters
-  on the EPA [How's My Waterway Tool](/waterdata/hows-my-waterway).
+  on the EPA [How's My Waterway Tool](https://www.epa.gov/waterdata/hows-my-waterway).

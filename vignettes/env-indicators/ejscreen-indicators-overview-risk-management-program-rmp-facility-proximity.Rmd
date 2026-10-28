@@ -25,7 +25,7 @@ facility proximity using percentile rank, ranging from 0 (lowest) to 100
 ## Why is RMP facility proximity important?
 
 - Chemical safety is a top priority of the EPA. The goal of the [Risk
-  Management Program (RMP)](/rmp) is to prevent accidental releases of
+  Management Program (RMP)](https://www.epa.gov/rmp) is to prevent accidental releases of
   substances that can cause serious harm to the public and to mitigate
   the severity of releases that do occur.
 - Under the Clean Air Act (CAA), the EPA was required to issue a rule
@@ -54,14 +54,14 @@ facility proximity using percentile rank, ranging from 0 (lowest) to 100
   the closest within 10 km), divided by distance, and calculated as the
   population-weighted average of blocks in each block group.
   - RMP facilities are pulled from the EPA [Facility Registry Service
-    (FRS)](/frs/frs-query#national) by selecting facilities included in
+    (FRS)](https://www.epa.gov/frs/frs-query#national) by selecting facilities included in
     the RMP National Program System.
 ```{r child='../_epa_archived_tech_doc_2.3.Rmd'}
 ```
 ## Moving Forward – What You Can Do
 
 - [Learn how the Risk Management Program (RMP) rule helps prevent
-  chemical accidents and enhances emergency preparedness](/rmp).
+  chemical accidents and enhances emergency preparedness](https://www.epa.gov/rmp).
 - Access Risk Management Plan information on facilities near you. Risk
   management plans (RMPs) provide valuable information to local fire,
   police, and emergency response personnel to prepare for and respond to
@@ -70,4 +70,4 @@ facility proximity using percentile rank, ranging from 0 (lowest) to 100
   improve accident prevention and emergency response practices at the
   local level. [Learn several ways the public can access or request
   certain RMP
-  information](/rmp/how-access-risk-management-plan-information).
+  information](https://www.epa.gov/rmp/how-access-risk-management-plan-information).
