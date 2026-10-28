@@ -40,6 +40,13 @@ RUN printf '#!/bin/bash\nexec /usr/bin/google-chrome-stable --no-sandbox --disab
 ENV CHROMOTE_CHROME=/usr/local/bin/chrome-wrapper
 ENV PAGEDOWN_CHROME=/usr/local/bin/chrome-wrapper
 
+# PostHog usage analytics (EJAM#679): the app adds the PostHog script only when
+# this key is set, so local runs and tests of EJAM send nothing. A phc_ key is a
+# public project key (every visitor's browser sees it), not a secret. It has no
+# effect until EJAM_VERSION is a release that includes posthog_script()
+# (v4.2024.0 or later). dev-deploy leaves it unset, or uses a separate project.
+ENV EJAM_POSTHOG_KEY=phc_uqi6pCvaCTqoztpU7gN3KRSW5PLCz7K4ufTfj67YBBww
+
 # Install AWS CLI v2
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
     unzip /tmp/awscliv2.zip -d /tmp && \
