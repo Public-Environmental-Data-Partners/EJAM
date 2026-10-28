@@ -21,7 +21,7 @@ same time.
 ## What Can You Do with EJAM?
 
 [What is
-EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html)
+EJAM?](https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/whatis.html)
 
 EJAM lets you specify the places to analyze in several ways – uploading
 a table of point locations (latitude/longitude), picking facilities by
@@ -79,4 +79,4 @@ list under the “Tools” tab in EJSCREEN), or directly via this link:
 [ejanalysis.org/ejamapp](https://ejanalysis.org/ejamapp)
 
 For information about how to host the web app, see [Deploying the Web
-App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deploy-app.html)
+App](https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/dev-deploy-app.html)

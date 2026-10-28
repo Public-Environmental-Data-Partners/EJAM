@@ -54,8 +54,10 @@ data_reponame <- gsub(".*/", "", data_reponame_with_owner)    #       "REPONAME"
 docs_reponame_url        <- EJAM::url_package(type = "docs", get_full_url = TRUE)  # "https://OWNER.github.io/REPONAME"
 # only the full URL is useful in this case
 
-whatislink <- paste0(docs_reponame_url, "/articles/whatis.html")
-deploylink <- paste0(docs_reponame_url, "/articles/dev-deploy-app.html")
+# docs-fixes-v3.2022.3 branch only: point at the frozen v3.2022.3 docs folder,
+# not the docs root, which always shows the Latest release
+whatislink <- paste0(docs_reponame_url, "/v3.2022.3/articles/whatis.html")
+deploylink <- paste0(docs_reponame_url, "/v3.2022.3/articles/dev-deploy-app.html")
 ```
 
 <!-- badges: start -->
