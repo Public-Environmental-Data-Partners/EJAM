@@ -1084,6 +1084,7 @@ AIR,	IL000031012ACJ<br>
 <!--     <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> | -->
 
 <!--      /articles/ejscreen.html would be a more direct link than  /articles/index.html -->
+<a href="', EJAM::url_package("docs"), '/articles/whatis.html#data-updates-and-data-vintage" target="_blank" rel="noreferrer" title="Which years of data this version uses">Data sources</a> |
 <a href="', EJAM::url_package("docs"), '/articles/index.html" target="_blank" rel="noreferrer">EJSCREEN/EJAM Help</a>
 
 <!--     <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a> | -->
