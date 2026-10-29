@@ -654,6 +654,11 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         data.table(file = "test-utils_map_size.R", seconds_byfile = 3)
       )
 
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = "test-url_description.R", seconds_byfile = 1)
+      )
+
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
       timebyfile$seconds_byfile <- round(timebyfile$seconds_byfile, 0)
