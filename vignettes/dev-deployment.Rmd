@@ -271,16 +271,18 @@ Both versions stay in this repository **as releases** (`v3.2022.3` and `v4.2024.
 The published `v3.2022.3` tag and GitHub Release are never moved or replaced.
 For the archive deployments, Mark selected **G12 option B** in
 [#681](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/681):
-after [#691](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/691)
-is reviewed and merged into `docs-fixes-v3.2022.3`, create a new tag on that exact
-merged commit, for example `v3.2022.3-archive`. That tag is never moved and has
+[#691](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/691)
+merged into `docs-fixes-v3.2022.3` as
+`3d20f78f6a4774ece9146e838f2268b8d9f15fb5`. The annotated tag
+**`v3.2022.3-archive`** points to that exact merged commit. It is never moved and has
 **no GitHub Release**. The package's `Version` remains `3.2022.3`; its data and
 analysis remain ACS 2018-2022. The archive build changes service links, not the
 published release or the data vintage.
 
-The tag name below is an example until the exact name and merged commit are
-recorded. Do not build from a moving branch or create the tag before that review
-and merge. Record the resolved commit and image digest for both archive deployments.
+Build from that tag, not a moving branch, and verify that it resolves to the
+commit above. Record the resolved commit and image digest for both archive
+deployments. Creating the tag did not deploy either service; install checks and
+archive acceptance remain separate gates.
 
 ### The archive web app
 
@@ -295,7 +297,7 @@ and merge. Record the resolved commit and image digest for both archive deployme
   production's, with:
 
   ```
-  # Example: use the exact immutable archive-build tag approved by Mark.
+  # Immutable archive build; never move or recreate this tag.
   ARG EJAM_VERSION=v3.2022.3-archive
   ARG EJAMDATA_VERSION=v3.2022.3
   ENV EJAM_API_BASEURL=https://api-archive.ejanalysis.com
@@ -319,10 +321,17 @@ the shapefile report fallbacks, written-report links, `url_ejamapp()`'s default,
 the API/EJSCREEN documentation metadata, and the citation. Check the generated
 links, not just the displayed package version, after an archive deploy.
 
-The remaining exception is the **two documentation links in the verbatim API
-mirror**, `inst/plumber/ejam-api/rest_controller.r` lines 16 and 18. They still
-open the current documentation. Eric checks the corresponding copy in the
-EJAM-API repository. Apart from that documented exception and intentionally
+The remaining G3 exceptions are the **two documentation links in the verbatim
+API mirror**, `inst/plumber/ejam-api/rest_controller.r`:
+
+| Line | Link | After the cutover |
+|---|---|---|
+| 16 | `https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html` | Current EJSCREEN documentation (v4) |
+| 18 | `https://ejanalysis.org/ejamdocs` | Current EJAM documentation root (v4) |
+
+This is the list for Mark to accept, not evidence of live cutover acceptance.
+Eric checks the corresponding copy in the EJAM-API repository. Apart from these
+documented exceptions and intentionally
 shared repository/data links, service and version-specific documentation links
 must stay within the archive stack
 ([#676](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/676)).
@@ -348,7 +357,7 @@ To fix a page there without touching the release:
 2. Generate Rd and README from that checkout's metadata (use
    `devtools::build_readme()` for README), with API/docs overrides unset. The
    metadata already includes `/v3.2022.3`; do not append it again.
-3. For the initial archive-correct rebuild, use `-f ref=<approved archive tag>`
+3. For the initial archive-correct rebuild, use `-f ref=v3.2022.3-archive`
    in the command above, so docs and archive deployments use the same reviewed
    source. Rebuild during the coordinated cutover, after the archive services
    serve v3. Before then, their names may be absent or point at v4 test services.
