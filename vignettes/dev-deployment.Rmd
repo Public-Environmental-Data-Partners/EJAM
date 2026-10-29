@@ -90,6 +90,7 @@ copy of the package source; it was removed in
 | Environment | URL |
 |---|---|
 | Production | <`r EJAM::url_package("ejam")`> (Squarespace CNAME → prod ALB, ACM TLS) |
+| Archive (the frozen previous data vintage) | `https://ejam-archive.publicenvirodata.org`, a separate service; see [Two data vintages](#two-data-vintages-the-current-and-archive-apps) |
 | Dev | the dev ALB DNS name printed by `terraform output` (an `…elb.amazonaws.com` address) |
 
 **Task sizing** (set in the `.tfvars` files)
@@ -247,6 +248,139 @@ and broke the builds; it is no longer used.)
   [#623](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/623); the
   matching `prod-deploy` change is
   [#624](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/624).)
+
+## Two data vintages: the current and archive apps
+
+From v4.2024.0 on, two versions of the EJAM/EJSCREEN stack run side by side: the
+**current** one, with the newest data, and an **archive** of the previous data vintage,
+frozen. The step-by-step plan for the first switch is in
+[#681](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/681).
+
+| | Current (newest data) | Archive (frozen previous vintage) |
+|---|---|---|
+| Version | v4.2024.0 (ACS 2020-2024) | v3.2022.3 (ACS 2018-2022) |
+| EJAM web app | `ejam.ejanalysis.com` → `ejam.publicenvirodata.org` | `ejam-archive.ejanalysis.com` → `ejam-archive.publicenvirodata.org` |
+| EJAM-API | `api.ejanalysis.com` | `api-archive.ejanalysis.com` |
+| EJSCREEN | `ejscreen.ejanalysis.com` | `ejscreen-archive.ejanalysis.com` |
+| Documentation | `docs.ejanalysis.com` (the docs root, which shows the Latest release) | `docs-archive.ejanalysis.com` → `…/EJAM/v3.2022.3/` |
+
+The archive names other than `docs-archive.` are created during the switch itself.
+Until then, the current names keep serving v3.2022.3.
+
+Both versions stay in this repository **as releases** (`v3.2022.3` and `v4.2024.0`).
+The published `v3.2022.3` tag and GitHub Release are never moved or replaced.
+For the archive deployments, Mark selected **G12 option B** in
+[#681](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/681):
+[#691](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/691)
+merged into `docs-fixes-v3.2022.3` as
+`3d20f78f6a4774ece9146e838f2268b8d9f15fb5`. The annotated tag
+**`v3.2022.3-archive`** points to that exact merged commit. It is never moved and has
+**no GitHub Release**. The package's `Version` remains `3.2022.3`; its data and
+analysis remain ACS 2018-2022. The archive build changes service links, not the
+published release or the data vintage.
+
+Build from that tag, not a moving branch, and verify that it resolves to the
+commit above. Record the resolved commit and image digest for both archive
+deployments. Creating the tag did not deploy either service; install checks and
+archive acceptance remain separate gates.
+
+### The archive web app
+
+- **Its own AWS service**, separate from production: its own ECS service,
+  task-definition family, hostname, logs, and Terraform state, so nothing done to it
+  can change production
+  ([#686](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/686)).
+  The family must not be `ejam`: the production deploy workflow updates the latest
+  task definition in that family.
+- **Its own deploy branch** (e.g. `archive-deploy`), with its own copy of the deploy
+  workflow, so merges into `prod-deploy` never touch it. Its `Dockerfile` is
+  production's, with:
+
+  ```
+  # Immutable archive build; never move or recreate this tag.
+  ARG EJAM_VERSION=v3.2022.3-archive
+  ARG EJAMDATA_VERSION=v3.2022.3
+  ENV EJAM_API_BASEURL=https://api-archive.ejanalysis.com
+  ENV EJAM_DOCS_BASE_URL=https://public-environmental-data-partners.github.io/EJAM/v3.2022.3
+  ```
+
+  It keeps `isPublic = TRUE` and the `fc-cache -r` start command, as in production.
+- The archive build's DESCRIPTION selects the archive app, API and documentation
+  addresses. The two environment settings above are an explicit safety net, not
+  a substitute for the archive build: they do not override every app or
+  alias/redirect lookup.
+- `EJAM_API_BASEURL` makes the API links the app builds use the archive API: report
+  links in tables and map popups, `url_ejamapi()`, and `ejamapi()` (see
+  [Testing against a local or draft API](#testing-against-a-local-or-draft-api)).
+  `EJAM_DOCS_BASE_URL` makes the app's docs and Help links open the frozen docs folder.
+
+### Check the archive links
+
+The archive URL changes in #691 cover the EJSCREEN links in results and About,
+the shapefile report fallbacks, written-report links, `url_ejamapp()`'s default,
+the API/EJSCREEN documentation metadata, and the citation. Check the generated
+links, not just the displayed package version, after an archive deploy.
+
+The remaining G3 exceptions are the **two documentation links in the verbatim
+API mirror**, `inst/plumber/ejam-api/rest_controller.r`:
+
+| Line | Link | After the cutover |
+|---|---|---|
+| 16 | `https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html` | Current EJSCREEN documentation (v4) |
+| 18 | `https://ejanalysis.org/ejamdocs` | Current EJAM documentation root (v4) |
+
+This is the list for Mark to accept, not evidence of live cutover acceptance.
+Eric checks the corresponding copy in the EJAM-API repository. Apart from these
+documented exceptions and intentionally
+shared repository/data links, service and version-specific documentation links
+must stay within the archive stack
+([#676](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/676)).
+
+### The frozen documentation
+
+The docs site's root always shows the Latest release. The frozen version's docs live
+in their own folder on the `gh-pages` branch: `…/EJAM/v3.2022.3/`, which is also
+reachable as `docs.ejanalysis.com/v3.2022.3/` and `docs-archive.ejanalysis.com`. That
+folder was built once from the release tag:
+
+```bash
+gh workflow run pkgdown.yaml --repo Public-Environmental-Data-Partners/EJAM \
+  --ref development -f ref=v3.2022.3 -f target_folder=v3.2022.3 -f pkgdown_dev_mode=release
+```
+
+To fix a page there without touching the release:
+
+1. Prepare the source on `docs-fixes-v3.2022.3`, made from the release tag and
+   never merged into `development` or `main`. With #691 it also holds the narrowly
+   scoped archive-link changes used by the immutable archive build; it is not
+   an ongoing v3 analysis-development branch.
+2. Generate Rd and README from that checkout's metadata (use
+   `devtools::build_readme()` for README), with API/docs overrides unset. The
+   metadata already includes `/v3.2022.3`; do not append it again.
+3. For the initial archive-correct rebuild, use `-f ref=v3.2022.3-archive`
+   in the command above, so docs and archive deployments use the same reviewed
+   source. Rebuild during the coordinated cutover, after the archive services
+   serve v3. Before then, their names may be absent or point at v4 test services.
+   Later docs-only corrections may use an exact reviewed docs-branch commit;
+   they do not move the immutable archive tag or change running services.
+
+That rebuild touches nothing but the `v3.2022.3/` folder.
+
+### EJAM-API and EJSCREEN
+
+The archive API (Cloud Run) and the archive EJSCREEN (Azure) are deployed from their
+own repositories.
+
+- **The archive API** installs EJAM from the same approved immutable archive tag
+  as the archive app, with `EJAMDATA_VERSION=v3.2022.3` (or the equivalent data
+  pin in its build). The same `EJAM_API_BASEURL` setting applies there. Record
+  the exact package commit, data pin, image digest and effective settings.
+- **The archive EJSCREEN's** `config.js` sets
+  `EJAM_API_BASE = https://api-archive.ejanalysis.com` and
+  `EJAM_APP_URL = https://ejam-archive.ejanalysis.com`.
+- **In Cloudflare**, `ejscreen-archive.` needs its **own** Worker. The EJSCREEN
+  Worker's cache ignores the hostname, so one Worker can't serve two versions of
+  EJSCREEN.
 
 ## First-time setup (manual / infrastructure)
 
