@@ -666,8 +666,8 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                             fips = NULL, wherestr = NULL,
                             as_html = FALSE,
                             linktext = "EJSCREEN",
-                            ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
-                            baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
+                            ifna    = NULL, # was hardcoded
+                            baseurl = NULL, # was hardcoded
                             ...,
                             # new params are after ... so they must be passed by name -
                             # this keeps the original positional order (as_html, linktext,
@@ -680,6 +680,8 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
+  if (is.null(baseurl)) {baseurl <- url_package("ejscreenapp")} # get correct URL from DESCRIPTION file, e.g., for frozen v3.2022.3 or latest as needed
+  if (is.null(ifna))    {ifna    <- url_package("ejscreenapp")}
   if (is.null(linktext)) {linktext <- paste0("EJSCREEN")}
 
   ##   linktext could also} be numbered:

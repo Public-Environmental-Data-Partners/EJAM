@@ -207,7 +207,7 @@ do_url_tests("url_ejamapi", url_ejamapi, sitenumber = 2)
 rm(specified_sitenumber)
 
 test_that("url_ejamapi falls back to app URL for polygon one-site report links", {
-  fallback_url <- "https://ejanalysis.com/ejamapp"
+  fallback_url <- EJAM::url_package("ejam")
 
   expect_equal(
     url_ejamapi(shapefile = testinput_shapes_2[1, ], as_html = FALSE),
@@ -263,7 +263,7 @@ test_that("url_ejamapi fileextension: auto = pdf for single-site, html for multi
   # the single-polygon app-fallback link is not an API /report URL and is untouched
   expect_equal(
     url_ejamapi(shapefile = testinput_shapes_2[1, ], as_html = FALSE),
-    "https://ejanalysis.com/ejamapp"
+    EJAM::url_package("ejam", get_full_url = T)
   )
 })
 

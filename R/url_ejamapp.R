@@ -36,12 +36,10 @@
 #' @param dTolerance meters tolerance for [sf::st_simplify()] so a polygon fits in a URL
 #' @param baseurl base URL of the live EJAM app. Defaults to
 #'   `url_package("ejamapp", desc_or_alias = "alias")` (the DESCRIPTION field
-#'   `Config/EJAM/url_ejamapp_alias`, currently `https://ejam.ejanalysis.com` — equivalently
-#'   `https://ejamapp.ejanalysis.com`), a Cloudflare-fronted shortcut on
-#'   ejanalysis.com that forwards the query string (302 redirect) to the app, so
+#'   `Config/EJAM/url_ejamapp_alias`, currently `r EJAM::url_package("ejam", desc_or_alias="alias")`), a Cloudflare-fronted shortcut
+#'   that forwards the query string (302 redirect) to the app, so
 #'   the launch parameters arrive intact. Any base works as long as it preserves
-#'   the `?...` query; a plain 301 that drops it would open the app empty (which
-#'   is why `https://ejanalysis.com/ejamapp` — a Squarespace 301 — is not used).
+#'   the `?...` query; a plain 301 that drops it would open the app empty.
 #' @param browse set TRUE to open the URL in a browser (if interactive)
 #' @returns URL (character) for the live EJAM app
 #' @seealso [url_ejamapi()] [ejamapi()] [ejamapp()] [url_ejscreenmap()]

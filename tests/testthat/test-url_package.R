@@ -129,7 +129,7 @@ testthat::test_that("url_package api returns the branded full URL with no traili
   x <- url_package("api")
   expect_match(x, "^https://")
   expect_false(grepl("/$", x))
-  expect_identical(x, "https://api.ejanalysis.com")
+  expect_identical(x, as.character(desc::desc_get("Config/EJAM/url_api")))
 })
 
 testthat::test_that("url_package app/api/docs types return full URLs even with default get_full_url", {
@@ -162,11 +162,12 @@ testthat::test_that("url_package alias and redirect variants return full URLs", 
     expect_match(url_package(ty, desc_or_alias = "alias"), "^https://", info = ty)
     expect_match(url_package(ty, desc_or_alias = "redirect"), "^https://", info = ty)
   }
-  expect_identical(
-    url_package("apidocs", desc_or_alias = "alias"),
-    "https://apidocs.ejanalysis.com"
-  )
-  expect_identical(url_package("api", desc_or_alias = "redirect"), "https://ejanalysis.com/api")
+  ## depends on what is in DESCRIPTION so these tests should not hardcode the URL
+  # expect_identical(
+  #   url_package("apidocs", desc_or_alias = "alias"),
+  #   "https://apidocs.ejanalysis.com"
+  # )
+  # expect_identical(url_package("api", desc_or_alias = "redirect"), "https://ejanalysis.com/api")
 })
 
 testthat::test_that("url_package gives useful errors for invalid types", {
@@ -217,7 +218,8 @@ testthat::test_that("EJAM_API_BASEURL env var overrides the api base URL (and on
     expect_false(identical(url_package("ejamapp"), "http://127.0.0.1:3035"))
     # explicit alias/redirect lookups are unaffected by the override
     expect_match(url_package("api", desc_or_alias = "alias"), "^https://")
-    expect_identical(url_package("api", desc_or_alias = "redirect"), "https://ejanalysis.com/api")
+    ## depends on what is in DESCRIPTION so these tests should not hardcode the URL
+    # expect_identical(url_package("api", desc_or_alias = "redirect"), "https://ejanalysis.com/api")
   })
 })
 

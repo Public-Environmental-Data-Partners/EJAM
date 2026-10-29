@@ -4,58 +4,7 @@
 #'
 #' @details
 #' This function reads `Config/EJAM/url_*` fields from the DESCRIPTION file.
-#' Below is a snapshot of those fields at the time of writing (7/2026):
 #'
-#' ```
-#' Config/EJAM/url_api: https://api.ejanalysis.com
-#' Config/EJAM/url_api_alias: https://ejamapi.ejanalysis.com
-#' Config/EJAM/url_api_redirect: https://ejanalysis.com/api
-#' Config/EJAM/url_api_direct: https://ejamapi-84652557241.us-central1.run.app
-#'
-#' Config/EJAM/url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
-#' Config/EJAM/url_apirepo_alias: https://apirepo.ejanalysis.com
-#' Config/EJAM/url_apirepo_redirect: https://ejanalysis.com/apirepo
-#'
-#' Config/EJAM/url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
-#' Config/EJAM/url_apidocs_alias: https://apidocs.ejanalysis.com
-#' Config/EJAM/url_apidocs_redirect: https://ejanalysis.com/apidocs
-#'
-#' Config/EJAM/url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
-#'
-#' Config/EJAM/url_ejamapp: https://ejam.publicenvirodata.org
-#' Config/EJAM/url_ejamapp_alias: https://ejam.ejanalysis.com
-#' Config/EJAM/url_ejamapp_redirect: https://ejanalysis.com/ejamapp
-#'
-#' Config/EJAM/url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
-#' Config/EJAM/url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
-#' Config/EJAM/url_ejamapp_dev_redirect: https://ejanalysis.com/ejamdev
-#'
-#' Config/EJAM/url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
-#' Config/EJAM/url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
-#' Config/EJAM/url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
-#'
-#' Config/EJAM/url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
-#' Config/EJAM/url_ejamdocs_alias: https://docs.ejanalysis.com
-#' Config/EJAM/url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
-#'
-#' Config/EJAM/url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
-#' Config/EJAM/url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
-#' Config/EJAM/url_ejscreenapp_redirect: https://ejanalysis.com/ejscreenapp
-#'
-#' Config/EJAM/url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
-#' Config/EJAM/url_ejscreenrepo_alias: https://ejscreenrepo.ejanalysis.com
-#' Config/EJAM/url_ejscreenrepo_redirect: https://ejanalysis.com/ejscreenrepo
-#'
-#' Config/EJAM/url_ejscreendocs: https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html
-#' Config/EJAM/url_ejscreendocs_alias: https://ejscreendocs.ejanalysis.com
-#' Config/EJAM/url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
-#'
-#' Config/EJAM/url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
-#'
-#' Config/EJAM/url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
-#' Config/EJAM/url_ejamdata_alias: https://ejamdata.ejanalysis.com
-#' Config/EJAM/url_ejamdata_redirect: https://ejanalysis.com/ejamdata
-#' ```
 #'
 #' (`Config/EJAM/url_api_direct`, `Config/EJAM/url_apidocker`, and
 #' `Config/EJAM/url_ejscreendocs_old` are informational only -- they are stored
@@ -97,8 +46,8 @@
 #'   - "api" (`Config/EJAM/url_api`) is for the EJAM REST API base URL.
 #'     Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
 #'     endpoint can be changed in one place (by editing `Config/EJAM/url_api`).
-#'     It is the branded Cloudflare edge proxy `https://api.ejanalysis.com`
-#'     (equivalently `https://ejamapi.ejanalysis.com`, stored in
+#'     It is the branded Cloudflare edge proxy `r EJAM::url_package("api")`
+#'     (stored in
 #'     `Config/EJAM/url_api_alias`), which fronts the direct Cloud Run origin
 #'     recorded informationally in `Config/EJAM/url_api_direct`.
 #'
@@ -135,9 +84,9 @@
 #' @param desc_or_alias must be "desc" or "alias" or "redirect" to use info from DESCRIPTION file
 #'   or the URL based on a cloudflare alias or a simple 301 redirect such as
 #'
-#'   - https://api.ejanalysis.com (if "desc", use the basic URL from the "url_xyz" field)
-#'   - https://ejamapi.ejanalysis.com (if "alias", use the cloudflare alias from the "url_xyz_alias" field, which can handle subpaths and query strings passed through to the final URL)
-#'   - https://ejanalysis.com/api (if "redirect", use the simple 301 redirect from the "url_xyz_redirect" field, which cannot handle subpaths or query strings)
+#'   - `r EJAM::url_package("api", desc_or_alias = "desc")` (if "desc", use the basic URL from the "url_xyz" field)
+#'   - `r EJAM::url_package("api", desc_or_alias = "alias")` (if "alias", use the cloudflare alias from the "url_xyz_alias" field, which can handle subpaths and query strings passed through to the final URL)
+#'   - `r EJAM::url_package("api", desc_or_alias = "redirect")` (if "redirect", use the simple 301 redirect from the "url_xyz_redirect" field, which cannot handle subpaths or query strings)
 #'
 #'   If the "_alias" or "_redirect" field is missing from DESCRIPTION, the basic
 #'   "url_xyz" field is used as a fallback.
@@ -314,7 +263,7 @@ url_package <- function(
     one_url <- url_desc(field_by_type[[type]])
     if (is_missing_value(one_url)) {
       if (type == "api") {
-        one_url <- "https://api.ejanalysis.com"
+        one_url <- url_package("api")
       } else {
         stop("DESCRIPTION file of the EJAM package is missing the field '",
              url_config_prefix, field_by_type[[type]],

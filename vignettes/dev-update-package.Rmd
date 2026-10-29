@@ -612,16 +612,9 @@ be carefully checked.
 
 - It would not make sense to simply replace every instance of "ejanalysis" with
 a new owner name. Some web links within the R package, mostly in documentation,
-use the domain [ejanalysis.com](https://ejanalysis.com) or equivalently
-[ejanalysis.org](https://ejanalysis.org). These are convenient redirect aliases
-for the code repository, documentation, data repository, and related resources.
-Those aliases include [ejanalysis.org/code](https://ejanalysis.org/code),
-[ejanalysis.org/data](https://ejanalysis.org/data), and
-[ejanalysis.org/docs](https://ejanalysis.org/docs). They are also available via
-helpers such as `url_package("code", desc_or_alias = "alias")`. The redirects
-for those domains would need to be updated to point to any new URLs for the
-data, code, or documentation. The alias domain does not need to match the owner
-of any GitHub repository.
+are created when the documents are rendered, using helpers such as 
+`url_package("code", desc_or_alias = "alias")`. This in turn relies on
+URLs defined in the DESCRIPTION file, including URLs for data, code, and documentation.
 
 
 #### Name of the code repository and/or the R package

@@ -19,8 +19,8 @@ knitr::opts_chunk$set(eval = FALSE, comment = "#>")
 
 This is a short overview. For the authoritative and most current details, see:
 
-- the **[EJAM-API repository](https://github.com/Public-Environmental-Data-Partners/EJAM-API)**
-  and its [README](https://github.com/Public-Environmental-Data-Partners/EJAM-API?tab=readme-ov-file#ejam-api) -- it documents every endpoint, parameter, and example;
+- the **[EJAM-API repository](`r EJAM::url_package("apirepo", get_full_url = T)`)**
+  and its [README](`r EJAM::url_package("apirepo", get_full_url = T)`?tab=readme-ov-file#ejam-api) -- it documents every endpoint, parameter, and example;
 - the help for **`?ejamapi`** and **`?url_ejamapi`**; and
 - the [Defaults and Custom Settings for the Web App](dev-app-settings.html) article, for the
   *deep links* (launch-URL parameters + token handoff) that pre-load the EJAM web app.
@@ -53,9 +53,9 @@ ejamapi(lat = 33, lon = -112, radius = 3)              # get a report or data ba
 url_ejamapi(lat = c(33, 34), lon = c(-112, -114))      # just build the URL(s)
 ```
 
-The API base URL -- and a friendlier branded alias such as `https://api.ejanalysis.com` --
+The API base URL -- and a friendlier branded alias such as `r EJAM::url_package("api")` --
 are described in the
-[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API). You do not
+[EJAM-API README](`r EJAM::url_package("apirepo", get_full_url = T)`). You do not
 normally need to set the base URL yourself.
 
 ## Deep linking: launch the app pre-loaded
@@ -70,7 +70,7 @@ codes travel directly in the URL; larger sets and drawn polygons use a token **h
 
 For the launch-URL vocabulary and the handoff endpoints, see the
 [Defaults and Custom Settings for the Web App](dev-app-settings.html) article and the
-[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
+[EJAM-API README](`r EJAM::url_package("apirepo", get_full_url = T)`).
 
 ## A few notes on parameters
 
@@ -80,7 +80,7 @@ For the launch-URL vocabulary and the handoff endpoints, see the
   (the default for a single site is `sitenumber=1`; a positive `N` reports on just the Nth
   site). Many or large polygons that would exceed a GET URL's length can be sent via a
   `POST /report` request. See the parameter notes in the
-  [EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API).
+  [EJAM-API README](`r EJAM::url_package("apirepo", get_full_url = T)`).
 
 ## Running the API locally
 
@@ -110,5 +110,5 @@ single source of the API base URL. Details and the deployed-app variant are in t
 [deployment article](dev-deployment.html) under "Testing against a local or draft API".
 
 For anything not covered here, the
-[EJAM-API README](https://github.com/Public-Environmental-Data-Partners/EJAM-API) is the
+[EJAM-API README](`r EJAM::url_package("apirepo", get_full_url = T)`) is the
 source of truth, and `?ejamapi` / `?url_ejamapi` document the R interface.

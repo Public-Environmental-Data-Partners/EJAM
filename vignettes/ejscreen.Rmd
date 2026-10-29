@@ -120,7 +120,7 @@ EPA is committed to protecting the environment and public health in low-income,
 tribal and other overburdened communities by integrating environmental justice
 in all programs, policies and activities.
 
-[Launch the EJScreen Tool](https://ejanalysis.com/ejscreenapp){target="_blank"}
+[Launch the EJScreen Tool](`r EJAM::url_package("ejscreen")`){target="_blank"}
 
 ```{r echo = FALSE, results = 'asis'}
 
@@ -154,7 +154,7 @@ kable(links_table,  col.names = NULL, label = NA)
 **EJScreen: Environmental Justice Screening and Mapping Tool**
 
 -   [Launch the EJScreen
-    Tool](https://ejanalysis.com/ejscreenapp){target="_blank"}
+    Tool](`r EJAM::url_package("ejscreen")`){target="_blank"}
 -   [**Tool Basics and
     Uses**](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/tool-basics-and-uses){target="_blank"}
     -   **General**
