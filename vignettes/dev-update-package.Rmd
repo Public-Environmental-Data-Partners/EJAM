@@ -269,8 +269,16 @@ into `development` through a pull request, so CI and review run on it.
   docs site's home page both show `README.md`, so an edit that is never knit
   doesn't appear anywhere, and the next person to knit picks it up unexpectedly.
   Knit with `devtools::build_readme()` (it needs pandoc; from a terminal, set
-  `RSTUDIO_PANDOC` to RStudio's pandoc folder). To check that the two agree,
-  knit again and confirm `git diff README.md` shows nothing.
+  `RSTUDIO_PANDOC` to RStudio's pandoc folder). It installs a temporary copy of
+  your checkout first. That matters because `README.Rmd` gets its links from
+  `EJAM::url_package()`, which reads the DESCRIPTION of the EJAM that is
+  installed. RStudio's Knit button and `rmarkdown::render()` use whatever EJAM
+  you have installed, often the previous release, so if a release changes a
+  link field in DESCRIPTION or `url_package()` itself, they would write the old
+  links. Also leave `EJAM_DOCS_BASE_URL` and `EJAM_API_BASEURL` unset while
+  knitting: they are settings for a deployment or a versioned docs build, and
+  they change the docs and API links. To check that the two agree, knit again
+  and confirm `git diff README.md` shows nothing.
 - **Dependencies**: consider raising minimum versions in `Imports` and
   `Suggests` if the release relies on newer package behavior.
 - **NEWS**: see the next section.
@@ -568,7 +576,7 @@ new vintage replaces what the current addresses serve. The new vintage's
 - The web app, EJAM-API, and EJSCREEN don't follow a release automatically.
 - `--match-head-commit` needs the pull request's current full commit SHA.
 - Edit `README.Rmd`, never `README.md`, and knit `README.md` in the same pull
-  request.
+  request, with `devtools::build_readme()` rather than the installed EJAM.
 
 ## Appendix: the install-test workflows
 
