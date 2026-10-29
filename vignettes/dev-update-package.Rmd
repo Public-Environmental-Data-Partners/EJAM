@@ -611,10 +611,17 @@ but generated documentation pages, code test results, and code comments should
 be carefully checked.
 
 - It would not make sense to simply replace every instance of "ejanalysis" with
-a new owner name. Some web links within the R package, mostly in documentation,
-are created when the documents are rendered, using helpers such as 
-`url_package("code", desc_or_alias = "alias")`. This in turn relies on
-URLs defined in the DESCRIPTION file, including URLs for data, code, and documentation.
+a new owner name. Most web links within the R package, mostly in documentation,
+are created when the documents are rendered, using helpers such as
+`url_package("code", desc_or_alias = "alias")`. These rely on the URLs in the
+`Config/EJAM/url_*` fields of DESCRIPTION, for data, code, documentation, the
+apps and the API, so a move means editing those fields and then regenerating the
+documentation (see
+[Updating Documentation](dev-update-documentation.html#building-documentation-with-the-intended-package-metadata)).
+The short `*.ejanalysis.com` aliases in those fields are Cloudflare Workers whose
+code is in the repository's `cloudflare/` folder; they would need to point to the
+new URLs too. The alias domain does not need to match the owner of any GitHub
+repository.
 
 
 #### Name of the code repository and/or the R package
