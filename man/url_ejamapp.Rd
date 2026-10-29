@@ -44,12 +44,10 @@ many/large polygons).}
 
 \item{baseurl}{base URL of the live EJAM app. Defaults to
 \code{url_package("ejamapp", desc_or_alias = "alias")} (the DESCRIPTION field
-\code{Config/EJAM/url_ejamapp_alias}, currently \verb{https://ejam.ejanalysis.com} — equivalently
-\verb{https://ejamapp.ejanalysis.com}), a Cloudflare-fronted shortcut on
-ejanalysis.com that forwards the query string (302 redirect) to the app, so
+\code{Config/EJAM/url_ejamapp_alias}, currently https://ejam-archive.ejanalysis.com), a Cloudflare-fronted shortcut
+that forwards the query string (302 redirect) to the app, so
 the launch parameters arrive intact. Any base works as long as it preserves
-the \code{?...} query; a plain 301 that drops it would open the app empty (which
-is why \verb{https://ejanalysis.com/ejamapp} — a Squarespace 301 — is not used).}
+the \code{?...} query; a plain 301 that drops it would open the app empty.}
 
 \item{browse}{set TRUE to open the URL in a browser (if interactive)}
 

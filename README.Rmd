@@ -54,10 +54,9 @@ data_reponame <- gsub(".*/", "", data_reponame_with_owner)    #       "REPONAME"
 docs_reponame_url        <- EJAM::url_package(type = "docs", get_full_url = TRUE)  # "https://OWNER.github.io/REPONAME"
 # only the full URL is useful in this case
 
-# docs-fixes-v3.2022.3 branch only: point at the frozen v3.2022.3 docs folder,
-# not the docs root, which always shows the Latest release
-whatislink <- paste0(docs_reponame_url, "/v3.2022.3/articles/whatis.html")
-deploylink <- paste0(docs_reponame_url, "/v3.2022.3/articles/dev-deploy-app.html")
+# DESCRIPTION already selects the frozen docs folder for this build.
+whatislink <- paste0(docs_reponame_url, "/articles/whatis.html")
+deploylink <- paste0(docs_reponame_url, "/articles/dev-deploy-app.html")
 ```
 
 <!-- badges: start -->
@@ -95,20 +94,20 @@ See [ejanalysis.org/status](https://ejanalysis.org/status) for more information.
 
 ### code repositories and open source contributions
 
-See [ejanalysis.org/ejamrepo](https://ejanalysis.org/ejamrepo)
+See <`r EJAM::url_package("code", get_full_url = TRUE)`>
 
 ### documentation
 
-See [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs) for current documentation.
+See <`r EJAM::url_package("docs")`> for documentation of this version.
 
 ### datasets
 
-See [ejanalysis.com/ejam-code](https://ejanalysis.com/ejam-code)
+See <`r EJAM::url_package("data", get_full_url = TRUE)`>
 
 Until mid-2025, datasets had been in a repository *archived and/or unpublished in mid-2025* ([USEPA/ejamdata](https://github.com/USEPA/ejamdata)) with no plans for it to be further updated by EPA.
 
 ### web app hosting
 
-A (non-EPA) version of the EJAM web app may be found from within the [EJSCREEN app](http://ejanalysis.org/ejscreenapp) (at the bottom of the list under the "Tools" tab in EJSCREEN), or directly via this link: [ejanalysis.org/ejamapp](https://ejanalysis.org/ejamapp)
+A (non-EPA) version of the EJAM web app may be found from within the [EJSCREEN app](`r EJAM::url_package("ejscreen", desc_or_alias = "alias")`) (at the bottom of the list under the "Tools" tab in EJSCREEN), or directly via this link: <`r EJAM::url_package("ejam", desc_or_alias = "alias")`>
 
 For information about how to host the web app, see [Deploying the Web App](`r deploylink`)

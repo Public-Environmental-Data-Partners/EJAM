@@ -17,13 +17,13 @@ or a developer can load them via
 \code{dataload_dynamic(c('frs','frs_by_programid','frs_by_naics','frs_by_sic'))}
 
 This dataset can be updated by a package maintainer as explained in the
-\href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{article on data updates}.
+\href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/dev-update-datasets.html}{article on data updates}.
 
 The definitions of active/inactive here are not quite the
 same as used in ECHO. See attributes(frs) to see date created, etc.
 
-Also, \href{https://ejanalysis.com/ejscreenapp}{EJSCREEN} has maps of EPA-regulated
-\href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities}{facilities}
+Also, \href{https://pedp-ejscreen-archive.azurewebsites.net/index.html}{EJSCREEN} has maps of EPA-regulated
+\href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/ejscreen-map-descriptions.html#epa-regulated-facilities}{facilities}
 of a few program types
 and for a table of acronym definitions
 see https://www.epa.gov/sites/default/files/2021-05/frs_program_abbreviations_and_names.xlsx

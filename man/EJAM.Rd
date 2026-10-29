@@ -13,7 +13,7 @@ proximity to points like regulated facilities, areas defined as shapefiles/polyg
 or areas specified as Census units (e.g., Counties).
 }
 \section{\strong{What is EJAM and How to do Analysis with the EJAM R Package}}{
-\href{https://public-environmental-data-partners.github.io/EJAM}{EJAM package documentation} provides
+\href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3}{EJAM package documentation} provides
 an overview of EJAM, a complete reference document on all functions, and
 articles (vignettes) introducing key functions and how to use them.
 }

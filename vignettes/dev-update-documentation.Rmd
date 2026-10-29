@@ -32,6 +32,33 @@ This document describes how to update the documentation that supports the
 package, including R help pages, dataset documentation, articles, app help
 materials, and the pkgdown website.
 
+## Archive URL build for v3.2022.3
+
+This branch prepares the v3.2022.3 documentation for the archive hosts in
+[EJAM issue 681](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/681).
+Its DESCRIPTION points the API, EJAM and EJSCREEN apps, and their documentation
+at the archive destinations, including explicit alias and redirect lookups.
+Shared repositories and datasets keep their existing URLs. The version and
+data-vintage fields are unchanged.
+
+Build in a fresh R session with this checkout loaded or installed, rather than
+with the published v3.2022.3 package. Verify the returned values for
+`url_package("api")`, `url_package("ejam")`, `url_package("ejscreen")`,
+`url_package("docs")`, `url_package("apidocs")`, and
+`url_package("ejscreendocs")`, including their alias and redirect variants.
+Leave `EJAM_API_BASEURL` and `EJAM_DOCS_BASE_URL` unset unless deliberately
+overriding those fields for the build. Regenerate `man/*.Rd` from roxygen and
+knit `README.md` from this copy before running pkgdown. DESCRIPTION already
+includes `/v3.2022.3`, so do not append that folder a second time.
+
+This is a review candidate for the existing docs-only branch. Merging it there
+does not change the published package tag or deploy a patched archive app.
+Mark still needs to choose whether any URL-only package changes will be
+published or used for deployments and under what version or commit identity.
+Until then, the published v3.2022.3 package retains its original links.
+The app/API archive hosts must be checked after the coordinated cutover;
+changing DESCRIPTION does not create those services.
+
 ## Updating package documentation
 
 The R package is documented in web pages and in standard R help files viewable

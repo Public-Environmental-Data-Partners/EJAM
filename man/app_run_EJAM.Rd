@@ -80,7 +80,7 @@ some (the ones that are inputs in the ui / server)
 can be bookmarked (saved in a URL) for later use.
 
 For more details, see the article on
-\href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html}{Defaults and Custom Settings for the Web App}
+\href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/dev-app-settings.html}{Defaults and Custom Settings for the Web App}
 
 \strong{Examples of custom parameters that you could pass to ejamapp() are shown below.}
 

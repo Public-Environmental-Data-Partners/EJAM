@@ -50,6 +50,6 @@ release with no assets at all, or a release missing the requested files.
 Transient failures are retried with backoff. Without that check, a degraded
 GitHub API that answers with an empty list looks exactly like a release with
 nothing in it, and nothing gets downloaded without any error being raised.
-For details, see \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{technical details of how datasets are updated}
+For details, see \href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/dev-update-datasets.html}{technical details of how datasets are updated}
 }
 \keyword{internal}

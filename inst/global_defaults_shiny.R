@@ -688,7 +688,7 @@ aboutpage_texts <- list(
           target = "_blank", rel = "noreferrer noopener") ),
 
     p('EJAM is what provides community reports for ',
-      a(href = "https://pedp-ejscreen.azurewebsites.net/index.html", "EJSCREEN",
+      a(href = url_package("ejscreen"), "EJSCREEN",
         target = "_blank", rel = "noreferrer noopener"),
       ', and is also known as "EJSCREEN\'s multisite tool."'),
     p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting EJSCREEN reports for hundreds or thousands of places, all at the same time."),
@@ -1138,7 +1138,7 @@ AIR,	IL000031012ACJ<br>
       aria-hidden="true"
     />
   </a>
-  
+
 
   <a
     class="cejst-style-btn"
