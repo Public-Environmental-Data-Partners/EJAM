@@ -79,7 +79,9 @@ used independently as a web app or in RStudio for analysis.
 
 EJAM lets you specify places to analyze in several ways -- uploading a table of point locations (latitude/longitude), picking facilities by industry category or ID, uploading shapefiles or lists of Census FIPS codes, or clicking on a map to specify one or more points -- and it returns a summary report comparing residents and environmental conditions at those places to the rest of the country.
 
-## About this version
+## About v4.2024.0 (November 2026)
+
+**This release uses the 2020-2024 American Community Survey (ACS) data, and updated ozone and PM2.5 data.** The previous release, [v3.2022.3](https://github.com/Public-Environmental-Data-Partners/EJAM/releases/tag/v3.2022.3), used the ACS 2018-2022 data and is frozen. It stays available as that release, with its documentation at [docs-archive.ejanalysis.com](https://docs-archive.ejanalysis.com).
 
 See [NEWS.md](NEWS.md) for the full list of recent releases, enhancements, and fixes.
 

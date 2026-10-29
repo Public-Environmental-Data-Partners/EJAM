@@ -10,8 +10,14 @@
 # How to use:
 #  1. Check out the branch whose DESCRIPTION has the right Version / VersionACS /
 #     VersionEJSCREEN / ReleaseDate* fields (e.g. v3.2022.3-version-bump).
-#  2. Have the current copies of the six files in data/ (e.g. from ejamdata
-#     v3.2022.0; data/ejamdata_version.txt says which release they came from).
+#  2. Have the current copies of the files in data/ (e.g. from ejamdata
+#     v3.2022.3; data/ejamdata_version.txt says which release they came from).
+#     By default all 11 files EJAM downloads are restamped, including the five
+#     FRS files, because a vintage release such as v4.2024.0 reuses the previous
+#     release's FRS and Census 2020 geography files unchanged. To restamp only
+#     some, list them in EJAM_ARROW_RESTAMP_FILES, e.g.
+#     EJAM_ARROW_RESTAMP_FILES="bgej,blockwts,bgid2fips,blockid2fips,blockpoints,quaddata"
+#     (as for v3.2022.3, whose five FRS files were freshly built and stamped).
 #     Set EJAM_ARROW_RESTAMP_INPUT and EJAM_ARROW_RESTAMP_OUTPUT if the inputs
 #     and outputs belong in other folders. The two folders must differ.
 #  3. From the root of the EJAM source folder, run:
@@ -21,8 +27,8 @@
 #     EJAM is deliberately not attached: attaching it tries to download the
 #     arrow data named by DESCRIPTION's ejamdata_required_tag, which may not
 #     exist yet.
-#  4. Review the six files written to `outdir`, stage them with five current
-#     FRS files, and upload all 11 to the new ejamdata release draft.
+#  4. Review the files written to `outdir` (all 11 by default) and upload them
+#     to the new ejamdata release draft.
 #
 # The stamps mirror R/metadata_mapping.R's default_metadata plus
 # date_saved_in_package, i.e. what metadata_add() would set. Source dates such
@@ -42,7 +48,14 @@ dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 if (normalizePath(indir, mustWork = TRUE) == normalizePath(outdir, mustWork = TRUE)) {
   stop("Input and output folders must differ")
 }
-files  <- c("bgej", "blockwts", "bgid2fips", "blockid2fips", "blockpoints", "quaddata")
+all_files <- c("bgej", "blockwts", "bgid2fips", "blockid2fips", "blockpoints", "quaddata",
+               "frs", "frs_by_programid", "frs_by_naics", "frs_by_sic", "frs_by_mact")
+files <- Sys.getenv("EJAM_ARROW_RESTAMP_FILES", paste(all_files, collapse = ","))
+files <- trimws(strsplit(files, ",", fixed = TRUE)[[1]])
+if (length(setdiff(files, all_files))) {
+  stop("Unknown file(s) in EJAM_ARROW_RESTAMP_FILES: ", paste(setdiff(files, all_files), collapse = ", "))
+}
+cat("Restamping", length(files), "file(s):", paste(files, collapse = ", "), "\n")
 
 d <- desc::description$new("DESCRIPTION")
 stamps <- list(
@@ -115,8 +128,9 @@ cat("\nWritten to:", normalizePath(outdir), "\n")
 ############################################################################# #
 # Publishing (by hand, after reviewing the files):
 #
-# Stage these six files with the five refreshed FRS assets and run
-# EJAM:::datasets_arrow_publish(..., dry_run = TRUE) against all 11. For the
+# Stage all 11 files (restamped here, or freshly built ones such as v3.2022.3's
+# FRS files) and run EJAM:::datasets_arrow_publish(..., dry_run = TRUE) against
+# all 11. For the
 # existing saved draft, use `gh release upload v3.2022.3 ... --repo
 # Public-Environmental-Data-Partners/ejamdata` to preserve its title, notes,
 # and draft status. Replacing previously uploaded assets needs --clobber and
