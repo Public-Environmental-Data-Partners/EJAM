@@ -48,9 +48,9 @@ APP OR API SERVERS:
 \item "api" (\code{Config/EJAM/url_api}) is for the EJAM REST API base URL.
 Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
 endpoint can be changed in one place (by editing \code{Config/EJAM/url_api}).
-It is the branded Cloudflare edge proxy \verb{https://api.ejanalysis.com}
-(equivalently \verb{https://ejamapi.ejanalysis.com}, stored in
-\code{Config/EJAM/url_api_alias}), which fronts the direct Cloud Run origin
+It is the branded Cloudflare edge proxy https://api.ejanalysis.com
+(\code{Config/EJAM/url_api}); its alternate alias is stored in
+\code{Config/EJAM/url_api_alias}. These front the direct Cloud Run origin
 recorded informationally in \code{Config/EJAM/url_api_direct}.
 
 For development/testing, the API base can be overridden without editing
@@ -112,57 +112,6 @@ as specified in the DESCRIPTION file or by redirects or aliases
 }
 \details{
 This function reads \verb{Config/EJAM/url_*} fields from the DESCRIPTION file.
-Below is a snapshot of those fields at the time of writing (7/2026):
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Config/EJAM/url_api: https://api.ejanalysis.com
-Config/EJAM/url_api_alias: https://ejamapi.ejanalysis.com
-Config/EJAM/url_api_redirect: https://ejanalysis.com/api
-Config/EJAM/url_api_direct: https://ejamapi-84652557241.us-central1.run.app
-
-Config/EJAM/url_apirepo: https://github.com/Public-Environmental-Data-Partners/EJAM-API
-Config/EJAM/url_apirepo_alias: https://apirepo.ejanalysis.com
-Config/EJAM/url_apirepo_redirect: https://ejanalysis.com/apirepo
-
-Config/EJAM/url_apidocs: https://public-environmental-data-partners.github.io/EJAM/articles/dev-api.html
-Config/EJAM/url_apidocs_alias: https://apidocs.ejanalysis.com
-Config/EJAM/url_apidocs_redirect: https://ejanalysis.com/apidocs
-
-Config/EJAM/url_apidocker: https://hub.docker.com/r/ericnost/ejamapi
-
-Config/EJAM/url_ejamapp: https://ejam.publicenvirodata.org
-Config/EJAM/url_ejamapp_alias: https://ejam.ejanalysis.com
-Config/EJAM/url_ejamapp_redirect: https://ejanalysis.com/ejamapp
-
-Config/EJAM/url_ejamapp_dev: http://ejam-dev-alb-971929002.us-east-1.elb.amazonaws.com
-Config/EJAM/url_ejamapp_dev_alias: https://ejamdev.ejanalysis.com
-Config/EJAM/url_ejamapp_dev_redirect: https://ejanalysis.com/ejamdev
-
-Config/EJAM/url_ejamrepo: https://github.com/Public-Environmental-Data-Partners/EJAM
-Config/EJAM/url_ejamrepo_alias: https://ejamrepo.ejanalysis.com
-Config/EJAM/url_ejamrepo_redirect: https://ejanalysis.com/ejamrepo
-
-Config/EJAM/url_ejamdocs: https://public-environmental-data-partners.github.io/EJAM
-Config/EJAM/url_ejamdocs_alias: https://docs.ejanalysis.com
-Config/EJAM/url_ejamdocs_redirect: https://ejanalysis.com/ejamdocs
-
-Config/EJAM/url_ejscreenapp: https://pedp-ejscreen.azurewebsites.net/index.html
-Config/EJAM/url_ejscreenapp_alias: https://ejscreen.ejanalysis.com
-Config/EJAM/url_ejscreenapp_redirect: https://ejanalysis.com/ejscreenapp
-
-Config/EJAM/url_ejscreenrepo: https://github.com/Public-Environmental-Data-Partners/EJScreen
-Config/EJAM/url_ejscreenrepo_alias: https://ejscreenrepo.ejanalysis.com
-Config/EJAM/url_ejscreenrepo_redirect: https://ejanalysis.com/ejscreenrepo
-
-Config/EJAM/url_ejscreendocs: https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html
-Config/EJAM/url_ejscreendocs_alias: https://ejscreendocs.ejanalysis.com
-Config/EJAM/url_ejscreendocs_redirect: https://ejanalysis.com/ejscreendocs
-
-Config/EJAM/url_ejscreendocs_old: https://github.com/Public-Environmental-Data-Partners/EJScreen#ejscreen
-
-Config/EJAM/url_ejamdata: https://github.com/Public-Environmental-Data-Partners/ejamdata
-Config/EJAM/url_ejamdata_alias: https://ejamdata.ejanalysis.com
-Config/EJAM/url_ejamdata_redirect: https://ejanalysis.com/ejamdata
-}\if{html}{\out{</div>}}
 
 (\code{Config/EJAM/url_api_direct}, \code{Config/EJAM/url_apidocker}, and
 \code{Config/EJAM/url_ejscreendocs_old} are informational only -- they are stored

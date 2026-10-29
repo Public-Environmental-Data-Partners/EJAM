@@ -64,7 +64,7 @@
 #'  If it were used, it could be a way to quickly get the area of each block,
 #'  using the formula  area = pi * (block_radius_miles^2)
 #'
-#'  For zip code boundaries, see [shapes_from_zip()] and [EJAM documentation](ejanalysis.org/ejamdocs) article on zipcodes.
+#'  For zip code boundaries, see [shapes_from_zip()] and [EJAM documentation](`r paste0(EJAM::url_package("docs"), "/articles/zipcodes.html")`) article on zipcodes.
 #'
 #' @return spatial data.frame with one row per fips (assuming any fips are valid)
 #' @examples
