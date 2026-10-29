@@ -40,7 +40,7 @@ EJAM-related repositories.
         archive.org](https://web.archive.org/web/20250203174905/https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf){target="_blank"}
 
     -   [EJSCREEN Multisite Tool User
-        Guide](https://ejam.publicenvirodata.org/www/user-guide-2025-02.pdf){target="_blank"}
+        Guide](`r paste0(EJAM::url_package("ejam"), "/www/user-guide-2025-02.pdf")`){target="_blank"}
         (aka EJAM walkthrough). Also [saved in repo](`r paste0(EJAM::url_package(get_full_url = TRUE), "/blob/main/inst/app/www/user-guide-2025-02.pdf")`){target="_blank"}
 
 ## Documentation of Data Sources and Technical Methods
@@ -104,7 +104,7 @@ EJAM-related repositories.
 
     -   Documentation of EJAM software that generates EJSCREEN reports
         (from 2025 on):
-        [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs){target="_blank"}
+        [EJAM documentation](`r EJAM::url_package("docs")`){target="_blank"}
 
 --------------------------------------------------------------------------------
 

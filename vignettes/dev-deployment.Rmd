@@ -89,7 +89,7 @@ copy of the package source; it was removed in
 
 | Environment | URL |
 |---|---|
-| Production | <https://ejam.publicenvirodata.org> (Squarespace CNAME → prod ALB, ACM TLS) |
+| Production | <`r EJAM::url_package("ejam")`> (Squarespace CNAME → prod ALB, ACM TLS) |
 | Dev | the dev ALB DNS name printed by `terraform output` (an `…elb.amazonaws.com` address) |
 
 **Task sizing** (set in the `.tfvars` files)

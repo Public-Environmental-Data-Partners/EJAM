@@ -70,7 +70,7 @@ test_that("url_columns_bysite uses app fallback for polygon EJAM Report links", 
 
   expect_equal(
     x$results_bysite$`EJAM Report`,
-    rep(EJAM::url_package("apirepo", get_full_url = T), NROW(testinput_shapes_2))
+    rep(url_package("ejam", desc_or_alias = "alias"), NROW(testinput_shapes_2))
   )
 })
 ############# ############## ############## ############## ############## #

@@ -97,7 +97,7 @@ See `r EJAM::url_package("code", desc_or_alias = "alias")`
 
 ### documentation and datasets
 
-See `r EJAM::url_package("docs", desc_or_alias = "alias")`
+See `r EJAM::url_package("docs")`
 
 ### API
 

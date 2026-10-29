@@ -49,8 +49,8 @@ APP OR API SERVERS:
 Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
 endpoint can be changed in one place (by editing \code{Config/EJAM/url_api}).
 It is the branded Cloudflare edge proxy https://api.ejanalysis.com
-(stored in
-\code{Config/EJAM/url_api_alias}), which fronts the direct Cloud Run origin
+(\code{Config/EJAM/url_api}); its alternate alias is stored in
+\code{Config/EJAM/url_api_alias}. These front the direct Cloud Run origin
 recorded informationally in \code{Config/EJAM/url_api_direct}.
 
 For development/testing, the API base can be overridden without editing

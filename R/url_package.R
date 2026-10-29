@@ -47,8 +47,8 @@
 #'     Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
 #'     endpoint can be changed in one place (by editing `Config/EJAM/url_api`).
 #'     It is the branded Cloudflare edge proxy `r EJAM::url_package("api")`
-#'     (stored in
-#'     `Config/EJAM/url_api_alias`), which fronts the direct Cloud Run origin
+#'     (`Config/EJAM/url_api`); its alternate alias is stored in
+#'     `Config/EJAM/url_api_alias`. These front the direct Cloud Run origin
 #'     recorded informationally in `Config/EJAM/url_api_direct`.
 #'
 #'     For development/testing, the API base can be overridden without editing
@@ -258,17 +258,13 @@ url_package <- function(
   one_url <- url_desc(paste0(field_by_type[[type]], suffix))
   if (is_missing_value(one_url)) {
     # Fall back to the basic Config/EJAM/url_xyz field if its "_alias" or
-    # "_redirect" field is missing, and for the API fall back further to the
-    # built-in production API base.
+    # "_redirect" field is missing. Missing basic fields are configuration errors;
+    # never silently send an archive build to the current service.
     one_url <- url_desc(field_by_type[[type]])
     if (is_missing_value(one_url)) {
-      if (type == "api") {
-        one_url <- url_package("api")
-      } else {
-        stop("DESCRIPTION file of the EJAM package is missing the field '",
-             url_config_prefix, field_by_type[[type]],
-             "' needed for url_package(type='", type, "')")
-      }
+      stop("DESCRIPTION file of the EJAM package is missing the field '",
+           url_config_prefix, field_by_type[[type]],
+           "' needed for url_package(type='", type, "')")
     }
   }
   one_url <- sub("/+$", "", trimws(one_url[1]))

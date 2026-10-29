@@ -59,7 +59,7 @@ See <https://ejamrepo.ejanalysis.com>
 
 ### documentation and datasets
 
-See <https://docs.ejanalysis.com>
+See <https://public-environmental-data-partners.github.io/EJAM>
 
 ### API
 

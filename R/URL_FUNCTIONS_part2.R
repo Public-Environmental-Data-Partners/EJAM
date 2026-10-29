@@ -639,8 +639,10 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'   site, with a warning.
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
-#' @param ifna URL shown for missing, NA, NULL, bad input values
-#' @param baseurl do not change unless endpoint actually changed
+#' @param ifna URL shown for missing, NA, NULL, bad input values. NULL uses
+#'   `url_package("ejscreenapp")` from DESCRIPTION; NA keeps missing URLs as NA.
+#' @param baseurl EJScreen app base URL. NULL uses
+#'   `url_package("ejscreenapp")` from DESCRIPTION.
 #' @param ... regid can be provided (used to look up lat,lon as a last resort if no sites provided); other arguments ignored
 #'
 #' @return URL(s), or a single URL if combined = TRUE
@@ -666,8 +668,8 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                             fips = NULL, wherestr = NULL,
                             as_html = FALSE,
                             linktext = "EJSCREEN",
-                            ifna    = NULL, # was hardcoded
-                            baseurl = NULL, # was hardcoded
+                            ifna    = NULL,
+                            baseurl = NULL,
                             ...,
                             # new params are after ... so they must be passed by name -
                             # this keeps the original positional order (as_html, linktext,
@@ -680,7 +682,7 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
-  if (is.null(baseurl)) {baseurl <- url_package("ejscreenapp")} # get correct URL from DESCRIPTION file, e.g., for frozen v3.2022.3 or latest as needed
+  if (is.null(baseurl)) {baseurl <- url_package("ejscreenapp")} # resolve the app URL from the loaded package DESCRIPTION
   if (is.null(ifna))    {ifna    <- url_package("ejscreenapp")}
   if (is.null(linktext)) {linktext <- paste0("EJSCREEN")}
 
