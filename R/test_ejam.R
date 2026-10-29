@@ -638,6 +638,12 @@ and all filenames listed there actually exist as in that folder called `test`.\n
         data.table(file = "test-mact_labels.R", seconds_byfile = 1)
       )
 
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = c("test-url_description.R", "test-url_v3_archive.R"),
+                   seconds_byfile = c(1, 1))
+      )
+
 
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
