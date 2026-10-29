@@ -277,11 +277,11 @@ url_ejamapi = function(
   }
   ################################################## #  ################################################## #
   # (baseurl and ifna were already resolved from url_package("api") near the top.)
-  shp_one_site_fallback_url <- "https://ejanalysis.com/ejamapp"
-  # see https://github.com/Public-Environmental-Data-Partners/EJAM-API/tree/main
-  # baseurl = "https://ejamapi-84652557241.us-central1.run.app/report?"
-  # e.g.,
-  # https://ejamapi-84652557241.us-central1.run.app/report?lat=33&lon=-112&buffer=4
+  shp_one_site_fallback_url <- url_package("ejam", desc_or_alias = "alias")
+  # see https://github.com/Public-Environmental-Data-Partners/EJAM-API
+  #
+  # e.g., paste0(url_package("api"), "/report?lat=33&lon=-112&buffer=4")
+
   ################################################## #  ################################################## #
 
   ################################################## #  sitetype  --------------------- -
