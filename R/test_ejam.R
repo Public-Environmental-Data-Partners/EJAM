@@ -386,7 +386,9 @@ instead of tests/testthat/_logs
         "test-URL_FUNCTIONS_part1.R",
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
-        "test-url_package.R"
+        "test-url_description.R",
+        "test-url_package.R",
+        "test-url_v3_archive.R"
       ),
       test_live_url = c(
         # Live url_online() smoke tests. Skipped by default via skip_these.

@@ -36,7 +36,7 @@ the United States Census Bureau annually and then used in EJAM.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://public-environmental-data-partners.github.io/EJAM}
+  \item \url{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3}
   \item \url{https://github.com/Public-Environmental-Data-Partners/EJAM}
   \item \url{https://ejanalysis.org}
 }
