@@ -265,7 +265,12 @@ into `development` through a pull request, so CI and review run on it.
   documentation](dev-update-documentation.html)), which also refreshes the
   version in `_pkgdown.yml`.
 - **README**: update the "About" section in `README.Rmd` and knit `README.md` in
-  the same pull request.
+  the same pull request. Edit only `README.Rmd`: GitHub's front page and the
+  docs site's home page both show `README.md`, so an edit that is never knit
+  doesn't appear anywhere, and the next person to knit picks it up unexpectedly.
+  Knit with `devtools::build_readme()` (it needs pandoc; from a terminal, set
+  `RSTUDIO_PANDOC` to RStudio's pandoc folder). To check that the two agree,
+  knit again and confirm `git diff README.md` shows nothing.
 - **Dependencies**: consider raising minimum versions in `Imports` and
   `Suggests` if the release relies on newer package behavior.
 - **NEWS**: see the next section.
@@ -371,6 +376,8 @@ commit**, that:
 - [ ] the Copilot review of that head commit has been read, including its
       collapsed "Suppressed comments", and every review thread is resolved
 - [ ] nothing in the pull request is still marked as waiting for a decision
+- [ ] `README.md` is knit from the current `README.Rmd`: knitting it again
+      changes nothing
 
 Then merge, guarding against last-minute pushes:
 
@@ -560,6 +567,8 @@ new vintage replaces what the current addresses serve. The new vintage's
   don't queue.
 - The web app, EJAM-API, and EJSCREEN don't follow a release automatically.
 - `--match-head-commit` needs the pull request's current full commit SHA.
+- Edit `README.Rmd`, never `README.md`, and knit `README.md` in the same pull
+  request.
 
 ## Appendix: the install-test workflows
 
