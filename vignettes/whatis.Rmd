@@ -114,3 +114,5 @@ as.vector(desc::desc_get("Version")),
 )`
 
 Census `r desc::desc_get("VersionCensus")` block population counts are used for the approximate distribution of residents within a given blockgroup.
+
+For the environmental indicators, v4.2024.0 uses newer data for ozone and PM2.5. The other environmental indicators are the same as in v3.2022.3, the last release based on ACS 2018-2022 data.
