@@ -44,7 +44,9 @@ With `MAINTENANCE` unset or `off`, the Worker behaves exactly as it did before t
 `MAINTENANCE_MESSAGE` and `MAINTENANCE_RETRY_AFTER` (seconds, default 600) change what
 the 503 says. To check the new API through Cloudflare while the gate is on, add a Secret
 `GATE_BYPASS_TOKEN`: a request with the header `X-EJAM-Gate-Bypass: <that value>` then
-passes. Don't post the value anywhere.
+passes. It also skips the cache both ways: it never gets a cached report, which could
+be from the old data release, and its answer isn't stored for the public. The header
+isn't passed on to Cloud Run. Don't post the value anywhere.
 
 **If something goes wrong:** turn the gate off. If the code itself misbehaves, redeploy
 the previous version (Deployments tab, or this file from an earlier commit).

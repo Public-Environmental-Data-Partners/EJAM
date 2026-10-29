@@ -13,7 +13,8 @@
  *   MAINTENANCE_MESSAGE      optional replacement for the default message
  *   GATE_BYPASS_TOKEN        optional secret (set it as a Secret, not a plain variable).
  *                            A request whose X-EJAM-Gate-Bypass header equals it
- *                            passes the gate. If unset, nothing bypasses.
+ *                            passes the gate, skipping the cache both ways, so it
+ *                            checks Cloud Run itself. If unset, nothing bypasses.
  *   UPSTREAM                 optional origin, so the same code can serve another name,
  *                            e.g. https://ejamapi-archive-84652557241.us-central1.run.app
  *   CACHE_TAG                tag on cached /report answers (default "ejam-api-report"),
@@ -23,15 +24,23 @@
 const DEFAULT_UPSTREAM = "https://ejamapi-84652557241.us-central1.run.app";
 const DEFAULT_CACHE_TAG = "ejam-api-report";
 const DEFAULT_MESSAGE = "EJAM is being updated to newer data. Please try again in a few minutes.";
+const BYPASS_HEADER = "X-EJAM-Gate-Bypass";
 
 export default {
   async fetch(request, env = {}) {
     const url = new URL(request.url);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors() });
 
-    if (gateIsOn(env) && !bypassed(request, env)) return maintenance(request, env);
+    // A bypassed request while the gate is on is a check of the new API, so it must
+    // reach Cloud Run: no cached answer (it could be from the old data release), and
+    // nothing stored in the shared cache.
+    const gated = gateIsOn(env);
+    const probe = gated && bypassed(request, env);
+    if (gated && !probe) return maintenance(request, env);
 
     const upstream = String(env.UPSTREAM || DEFAULT_UPSTREAM).replace(/\/+$/, "");
+    const upstreamRequest = new Request(upstream + url.pathname + url.search, request);
+    upstreamRequest.headers.delete(BYPASS_HEADER); // the secret is for this Worker only
     // Edge-cache GET /report: a report is deterministic for a given URL +
     // deployed data release (the API also sends Cache-Control: public,
     // max-age=86400 on successes, no-store on errors). cacheTtlByStatus caches
@@ -42,14 +51,16 @@ export default {
     // The cache tag lets a data-release switch purge exactly these answers.
     const isReportGet = request.method === "GET" && url.pathname === "/report";
     const resp = await fetch(
-      new Request(upstream + url.pathname + url.search, request),
-      isReportGet
-        ? { cf: { cacheEverything: true, cacheTtlByStatus: { "200-299": 86400, "400-599": 0 },
-                  cacheTags: [String(env.CACHE_TAG || DEFAULT_CACHE_TAG)] } }
-        : undefined
+      upstreamRequest,
+      probe ? { cache: "no-store" }
+        : isReportGet
+          ? { cf: { cacheEverything: true, cacheTtlByStatus: { "200-299": 86400, "400-599": 0 },
+                    cacheTags: [String(env.CACHE_TAG || DEFAULT_CACHE_TAG)] } }
+          : undefined
     );
     const headers = new Headers(resp.headers);
     const c = cors(); for (const k in c) headers.set(k, c[k]);
+    if (probe) headers.set("Cache-Control", "no-store");
     return new Response(resp.body, { status: resp.status, headers });
   }
 };
@@ -60,7 +71,7 @@ function gateIsOn(env) {
 
 function bypassed(request, env) {
   const token = env.GATE_BYPASS_TOKEN;
-  return Boolean(token) && request.headers.get("X-EJAM-Gate-Bypass") === token;
+  return Boolean(token) && request.headers.get(BYPASS_HEADER) === token;
 }
 
 function maintenance(request, env) {

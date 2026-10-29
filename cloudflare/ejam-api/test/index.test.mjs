@@ -12,8 +12,22 @@ let calls = [];
 function mockUpstream(status = 200, headers = { "Content-Type": "text/html" }) {
   calls = [];
   globalThis.fetch = async (req, init) => {
-    calls.push({ url: req.url, method: req.method, init });
+    calls.push({ url: req.url, method: req.method, init, bypassHeader: req.headers.get("X-EJAM-Gate-Bypass") });
     return new Response("upstream body", { status, headers });
+  };
+}
+
+// Also stands in for Cloudflare's edge cache in front of Cloud Run, following its
+// documented rules: answers fetched with cf.cacheEverything are stored and reused by
+// URL, and cache: "no-store" neither reads nor writes the cache.
+function mockCachedUpstream(cache, body) {
+  calls = [];
+  globalThis.fetch = async (req, init = {}) => {
+    calls.push({ url: req.url, method: req.method, init, bypassHeader: req.headers.get("X-EJAM-Gate-Bypass") });
+    const useCache = init.cache !== "no-store" && init.cf?.cacheEverything === true;
+    if (useCache && cache.has(req.url)) return new Response(cache.get(req.url), { status: 200 });
+    if (useCache) cache.set(req.url, body);
+    return new Response(body, { status: 200, headers: { "Cache-Control": "public, max-age=86400" } });
   };
 }
 afterEach(() => { globalThis.fetch = realFetch; });
@@ -128,4 +142,41 @@ test("only the right bypass secret passes the gate", async () => {
   resp = await worker.fetch(withHeader(""), { MAINTENANCE: "on" });
   assert.equal(resp.status, 503);
   assert.equal(calls.length, 0);
+});
+
+test("a bypassed check reaches Cloud Run, not a cached old report, and stores nothing", async () => {
+  const reportUrl = `${PUBLIC_ORIGIN}/report?lat=33&lon=-112&buffer=1`;
+  const cache = new Map();
+
+  // Before the switch, the public gets a report and it's cached.
+  mockCachedUpstream(cache, "v3 report");
+  let resp = await worker.fetch(new Request(reportUrl), {});
+  assert.equal(await resp.text(), "v3 report");
+  assert.equal(cache.size, 1);
+
+  // During the switch, a bypassed check gets the new API's answer, uncached.
+  mockCachedUpstream(cache, "v4 report");
+  const env = { MAINTENANCE: "on", GATE_BYPASS_TOKEN: "s3cret" };
+  resp = await worker.fetch(new Request(reportUrl, { headers: { "X-EJAM-Gate-Bypass": "s3cret" } }), env);
+  assert.equal(resp.status, 200);
+  assert.equal(await resp.text(), "v4 report");
+  assert.deepEqual(calls[0].init, { cache: "no-store" });
+  assert.equal(calls[0].bypassHeader, null);
+  assert.equal(resp.headers.get("Cache-Control"), "no-store");
+  assert.equal(cache.get(`${CLOUD_RUN}/report?lat=33&lon=-112&buffer=1`), "v3 report");
+
+  // Public caching is unchanged: until the purge, the public copy is the old one.
+  resp = await worker.fetch(new Request(reportUrl), {});
+  assert.equal(await resp.text(), "v3 report");
+});
+
+test("the bypass header is never sent to Cloud Run, and doesn't change caching when the gate is off", async () => {
+  mockUpstream();
+  const resp = await worker.fetch(
+    new Request(`${PUBLIC_ORIGIN}/report?lat=33`, { headers: { "X-EJAM-Gate-Bypass": "s3cret" } }),
+    { GATE_BYPASS_TOKEN: "s3cret" });
+  assert.equal(resp.status, 200);
+  assert.equal(calls[0].bypassHeader, null);
+  assert.equal(calls[0].init.cf.cacheEverything, true);
+  assert.equal(resp.headers.get("Cache-Control"), null);
 });
