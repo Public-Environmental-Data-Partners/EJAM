@@ -265,7 +265,20 @@ into `development` through a pull request, so CI and review run on it.
   documentation](dev-update-documentation.html)), which also refreshes the
   version in `_pkgdown.yml`.
 - **README**: update the "About" section in `README.Rmd` and knit `README.md` in
-  the same pull request.
+  the same pull request. Edit only `README.Rmd`: GitHub's front page and the
+  docs site's home page both show `README.md`, so an edit that is never knit
+  doesn't appear anywhere, and the next person to knit picks it up unexpectedly.
+  Knit with `devtools::build_readme()` (it needs pandoc; from a terminal, set
+  `RSTUDIO_PANDOC` to RStudio's pandoc folder). It installs a temporary copy of
+  your checkout first. That matters because `README.Rmd` gets its links from
+  `EJAM::url_package()`, which reads the DESCRIPTION of the EJAM that is
+  installed. RStudio's Knit button and `rmarkdown::render()` use whatever EJAM
+  you have installed, often the previous release, so if a release changes a
+  link field in DESCRIPTION or `url_package()` itself, they would write the old
+  links. Also leave `EJAM_DOCS_BASE_URL` and `EJAM_API_BASEURL` unset while
+  knitting: they are settings for a deployment or a versioned docs build, and
+  they change the docs and API links. To check that the two agree, knit again
+  and confirm `git diff README.md` shows nothing.
 - **Dependencies**: consider raising minimum versions in `Imports` and
   `Suggests` if the release relies on newer package behavior.
 - **NEWS**: see the next section.
@@ -371,6 +384,8 @@ commit**, that:
 - [ ] the Copilot review of that head commit has been read, including its
       collapsed "Suppressed comments", and every review thread is resolved
 - [ ] nothing in the pull request is still marked as waiting for a decision
+- [ ] `README.md` is knit from the current `README.Rmd`: knitting it again
+      changes nothing
 
 Then merge, guarding against last-minute pushes:
 
@@ -565,6 +580,8 @@ in the deployment article.
   don't queue.
 - The web app, EJAM-API, and EJSCREEN don't follow a release automatically.
 - `--match-head-commit` needs the pull request's current full commit SHA.
+- Edit `README.Rmd`, never `README.md`, and knit `README.md` in the same pull
+  request, with `devtools::build_readme()` rather than the installed EJAM.
 
 ## Appendix: the install-test workflows
 
@@ -616,17 +633,17 @@ but generated documentation pages, code test results, and code comments should
 be carefully checked.
 
 - It would not make sense to simply replace every instance of "ejanalysis" with
-a new owner name. Some web links within the R package, mostly in documentation,
-use the domain [ejanalysis.com](https://ejanalysis.com) or equivalently
-[ejanalysis.org](https://ejanalysis.org). These are convenient redirect aliases
-for the code repository, documentation, data repository, and related resources.
-Those aliases include [ejanalysis.org/code](https://ejanalysis.org/code),
-[ejanalysis.org/data](https://ejanalysis.org/data), and
-[ejanalysis.org/docs](https://ejanalysis.org/docs). They are also available via
-helpers such as `url_package("code", desc_or_alias = "alias")`. The redirects
-for those domains would need to be updated to point to any new URLs for the
-data, code, or documentation. The alias domain does not need to match the owner
-of any GitHub repository.
+a new owner name. Most web links within the R package, mostly in documentation,
+are created when the documents are rendered, using helpers such as
+`url_package("code", desc_or_alias = "alias")`. These rely on the URLs in the
+`Config/EJAM/url_*` fields of DESCRIPTION, for data, code, documentation, the
+apps and the API, so a move means editing those fields and then regenerating the
+documentation (see
+[Updating Documentation](dev-update-documentation.html#building-documentation-with-the-intended-package-metadata)).
+The short `*.ejanalysis.com` aliases in those fields are Cloudflare Workers whose
+code is in the repository's `cloudflare/` folder; they would need to point to the
+new URLs too. The alias domain does not need to match the owner of any GitHub
+repository.
 
 
 #### Name of the code repository and/or the R package

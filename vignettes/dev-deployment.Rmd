@@ -89,7 +89,7 @@ copy of the package source; it was removed in
 
 | Environment | URL |
 |---|---|
-| Production | <https://ejam.publicenvirodata.org> (Squarespace CNAME → prod ALB, ACM TLS) |
+| Production | <`r EJAM::url_package("ejam")`> (Squarespace CNAME → prod ALB, ACM TLS) |
 | Archive (the frozen previous data vintage) | `https://ejam-archive.publicenvirodata.org`, a separate service; see [Two data vintages](#two-data-vintages-the-current-and-archive-apps) |
 | Dev | the dev ALB DNS name printed by `terraform output` (an `…elb.amazonaws.com` address) |
 
@@ -522,7 +522,7 @@ package **builds URLs that point at the API**: the per-site report links in resu
 tables and map popups (built by `url_ejamapi()`), `ejamapi()` calls, and the
 EJScreen-to-EJAM token handoff. All of those read the base URL from one place,
 `url_package("api")`, which normally comes from the `url_api` field of `DESCRIPTION`
-(the production API, https://api.ejanalysis.com).
+(the production API, `r EJAM::url_package("api")`).
 
 To test an app release candidate against a **different API** -- most usefully the local
 API served by `EJAM:::ejamapi_local()`, which mirrors the latest EJAM-API code before it
