@@ -62,28 +62,23 @@ a non-EPA, detached fork.
 
 ### code repositories and open source contributions
 
-See [ejanalysis.org/ejamrepo](https://ejanalysis.org/ejamrepo)
+See <https://ejamrepo.ejanalysis.com>
 
-### documentation
+### documentation and datasets
 
-See [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs) for
-current documentation.
+See <https://public-environmental-data-partners.github.io/EJAM> for
+documentation, and <https://ejamdata.ejanalysis.com> for the datasets.
 
-### datasets
+### API
 
-See [ejanalysis.com/ejam-code](https://ejanalysis.com/ejam-code)
-
-Until mid-2025, datasets had been in a repository *archived and/or
-unpublished in mid-2025*
-([USEPA/ejamdata](https://github.com/USEPA/ejamdata)) with no plans for
-it to be further updated by EPA.
+See <https://ejamapi.ejanalysis.com>
 
 ### web app hosting
 
 A (non-EPA) version of the EJAM web app may be found from within the
-[EJSCREEN app](http://ejanalysis.org/ejscreenapp) (at the bottom of the
+[EJSCREEN app](https://ejscreen.ejanalysis.com) (at the bottom of the
 list under the “Tools” tab in EJSCREEN), or directly via this link:
-[ejanalysis.org/ejamapp](https://ejanalysis.org/ejamapp)
+<https://ejam.ejanalysis.com>
 
 For information about how to host the web app, see [Deploying the Web
 App](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deploy-app.html)

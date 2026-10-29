@@ -140,7 +140,7 @@ or
   in communities living
 `r params$within_x_miles_of` selected sites.
 
-The analysis used the [EJAM tool](https://ejanalysis.org/ejamdocs) 
+The analysis used the [EJAM tool](`r EJAM::url_package("docs")`)
 `r params$app_version_header_text` with demographic data based on the Census
 Bureau's `r params$acs_version` American Community Survey (ACS).
 
@@ -257,7 +257,7 @@ Locations of residential populations were based on Census block points
 and then summarized by blockgroup, then by 
 location analyzed, and finally overall across the locations as a whole.
 
-See [EJAM package documentation](https://ejanalysis.org/ejamdocs) for methodology details.
+See [EJAM package documentation](`r EJAM::url_package("docs")`) for methodology details.
 
 ### Analytic method for buffering, and tools used to implement that method
 

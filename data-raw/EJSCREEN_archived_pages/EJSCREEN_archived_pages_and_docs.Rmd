@@ -4,4 +4,4 @@ description: "EJSCREEN Documentation Links"
 output: html_document
 ---
 
-See https://ejanalysis.com/docs
+See `r EJAM::url_package("ejscreendocs")`

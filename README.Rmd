@@ -95,20 +95,19 @@ See [ejanalysis.org/status](https://ejanalysis.org/status) for background.
 
 ### code repositories and open source contributions
 
-See [ejanalysis.org/ejamrepo](https://ejanalysis.org/ejamrepo)
+See <`r EJAM::url_package("code", desc_or_alias = "alias")`>
 
-### documentation
+### documentation and datasets
 
-See [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs) for current documentation.
+See <`r EJAM::url_package("docs")`> for documentation, and
+<`r EJAM::url_package("data", desc_or_alias = "alias")`> for the datasets.
 
-### datasets
+### API
 
-See [ejanalysis.com/ejam-code](https://ejanalysis.com/ejam-code)
-
-Until mid-2025, datasets had been in a repository *archived and/or unpublished in mid-2025* ([USEPA/ejamdata](https://github.com/USEPA/ejamdata)) with no plans for it to be further updated by EPA.
+See <`r EJAM::url_package("api", desc_or_alias = "alias")`>
 
 ### web app hosting
 
-A (non-EPA) version of the EJAM web app may be found from within the [EJSCREEN app](http://ejanalysis.org/ejscreenapp) (at the bottom of the list under the "Tools" tab in EJSCREEN), or directly via this link: [ejanalysis.org/ejamapp](https://ejanalysis.org/ejamapp)
+A (non-EPA) version of the EJAM web app may be found from within the [EJSCREEN app](`r EJAM::url_package("ejscreen", desc_or_alias = "alias")`) (at the bottom of the list under the "Tools" tab in EJSCREEN), or directly via this link: <`r EJAM::url_package("ejam", desc_or_alias = "alias")`>
 
 For information about how to host the web app, see [Deploying the Web App](`r deploylink`)

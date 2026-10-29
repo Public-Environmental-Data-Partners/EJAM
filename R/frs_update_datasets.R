@@ -11,7 +11,7 @@
 #'  These datasets are obtained from EPA servers, reformatted for this package,
 #'  and written as local Arrow IPC files for validation before they are uploaded
 #'  to an `ejamdata` release - see
-#'  [updating data for package](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html).
+#'  [updating data for package](`r paste0(EJAM::url_package("docs"), "/articles/dev-update-datasets.html")`).
 #'  The `save_as_data_*` parameters are obsolete and kept only to make old
 #'  maintainer scripts fail clearly. FRS tables are no longer saved as
 #'  lazy-loaded `.rda` package data in `EJAM/data/`.

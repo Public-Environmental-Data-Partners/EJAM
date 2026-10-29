@@ -13,7 +13,7 @@
 #'  1. At the root, a verbatim mirror of the deployed EJAM-API
 #'     (`inst/plumber/ejam-api/rest_controller.r` -- see the SYNC.md there),
 #'     so local paths like `/report`, `/data`, `/query`, `/handoff`, and the
-#'     Swagger docs at `/__docs__/` behave like <https://api.ejanalysis.com>.
+#'     Swagger docs at `/__docs__/` behave like <`r EJAM::url_package("api")`>.
 #'     Since the EJAM-API has no staging server, this is the way to preview
 #'     how it will behave -- including how it will behave after a proposed
 #'     EJAM-API code edit (edit the mirror copy, rerun this, test, then
