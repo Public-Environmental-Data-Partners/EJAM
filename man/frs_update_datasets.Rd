@@ -69,7 +69,7 @@ This function is only for a package maintainer/updater
 These datasets are obtained from EPA servers, reformatted for this package,
 and written as local Arrow IPC files for validation before they are uploaded
 to an \code{ejamdata} release - see
-\href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{updating data for package}.
+\href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/dev-update-datasets.html}{updating data for package}.
 The \verb{save_as_data_*} parameters are obsolete and kept only to make old
 maintainer scripts fail clearly. FRS tables are no longer saved as
 lazy-loaded \code{.rda} package data in \verb{EJAM/data/}.

@@ -32,6 +32,30 @@ This document describes how to update the documentation that supports the
 package, including R help pages, dataset documentation, articles, app help
 materials, and the pkgdown website.
 
+## Archive URL build for v3.2022.3
+
+These pages document EJAM v3.2022.3 (ACS 2018-2022) as kept on the archive
+addresses, after v4.2024.0 took over the current ones. They are built from the
+`docs-fixes-v3.2022.3` branch, whose DESCRIPTION points the API, the EJAM and
+EJSCREEN apps, and their documentation at the archive addresses, including the
+alias and redirect forms. The shared repositories and datasets keep their usual
+addresses, and the version and data-vintage fields are unchanged. The published
+v3.2022.3 package itself keeps its original links.
+
+To rebuild these pages:
+
+- Use a fresh R session with that branch's checkout loaded or installed, not the
+  published v3.2022.3 package.
+- Check what `url_package()` returns for `"api"`, `"ejam"`, `"ejscreen"`,
+  `"docs"`, `"apidocs"` and `"ejscreendocs"`, in the `"desc"`, `"alias"` and
+  `"redirect"` forms. `tests/testthat/test-url_v3_archive.R` checks all of them.
+- Leave `EJAM_API_BASEURL` and `EJAM_DOCS_BASE_URL` unset unless you mean to
+  override those fields.
+- Regenerate `man/*.Rd` from roxygen, and knit `README.md` with
+  `devtools::build_readme()`, from that checkout before running pkgdown.
+- DESCRIPTION already includes `/v3.2022.3`, so don't add that folder a
+  second time.
+
 ## Updating package documentation
 
 The R package is documented in web pages and in standard R help files viewable

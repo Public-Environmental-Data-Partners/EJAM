@@ -135,7 +135,9 @@ unambiguous zip links:
 ```{r url_ejscreenmap_zip, eval=FALSE, include=TRUE}
 # one zip code: EJScreen opens centered there, with a pin and the site report popup
 browseURL(url_ejscreenmap(zip = "20019"))
-#> opens https://pedp-ejscreen.azurewebsites.net/index.html?zip=20019
+```
+
+```{r url_ejscreenmap_zip2, eval=TRUE, include=TRUE}
 
 # note the zip parameter, unlike wherestr, is never confused with a county FIPS:
 url_ejscreenmap(zip = "10001")  # zip 10001, in Manhattan, NY
@@ -144,15 +146,13 @@ url_ejscreenmap(fips = "10001") # county FIPS 10001 = Kent County, DE (boundary 
 # several zips in one link (the map zooms to fit all of them),
 # and radius= prefills the report buffer distance in miles:
 url_ejscreenmap(zip = c("20019", "20020"), combined = TRUE, radius = 1)
-#> "https://pedp-ejscreen.azurewebsites.net/index.html?zip=20019,20020&radius=1"
 
 # a zip passed as a number gets its leading zeroes restored:
 url_ejscreenmap(zip = 1001) # zip 01001, Agawam, MA
 ```
 
-These links need the EJScreen release that added deep links (see
-[Public-Environmental-Data-Partners/EJScreen#70](https://github.com/Public-Environmental-Data-Partners/EJScreen/pull/70));
-the map pins the zip's location -- for analyzing the zip code's actual boundaries, use
+These links use EJScreen "deep links".
+The map pins the zip's location -- for analyzing the zip code's actual boundaries, use
 the zcta polygons approach above.
 
 ## analyzing zip codes in EJAM

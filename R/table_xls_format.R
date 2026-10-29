@@ -142,7 +142,7 @@ table_xls_format <- function(overall,
     ejscreen_ejam_caveat <- "Numbers shown in EJSCREEN reports are estimates, and there is uncertainty inherent in the data sources and methods, such as the American Community Survey data as used in EJSCREEN to estimate statistics for residents in a certain area."
   }
 
-  shp_ejam_report_fallback_url <- "https://ejanalysis.com/ejamapp"
+  shp_ejam_report_fallback_url <- url_package("ejam", desc_or_alias = "alias")
   shp_ejam_report_note <- paste0(
     "This analysis used shapefile polygons, so site-level EJAM report links in this workbook open the EJAM app (",
     shp_ejam_report_fallback_url,

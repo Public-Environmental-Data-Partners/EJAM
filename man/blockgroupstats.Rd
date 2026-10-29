@@ -19,7 +19,7 @@ Survey 5-year summary file. ACS calculations are based primarily on
 \link{formulas_ejscreen_acs}, \link{formulas_ejscreen_acs_disability}, and
 \link{formulas_ejscreen_demog_index}.
 \item The EJ Indexes (aka Summary Indexes) are calculated by EJAM based on blockgroupstats data, and are stored in a separate table, \link{bgej}
-\item The \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html}{definition of and source of data for every indicator was originally documented by EPA for EJSCREEN}. Originally, the environmental, demographic, and EJ indicators/indexes and extra indicators all were provided by EPA for EJAM versions through v2.32.8 (early 2026).
+\item The \href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/ejscreen.html}{definition of and source of data for every indicator was originally documented by EPA for EJSCREEN}. Originally, the environmental, demographic, and EJ indicators/indexes and extra indicators all were provided by EPA for EJAM versions through v2.32.8 (early 2026).
 \item Metadata on each indicator, such as its glossary definition or long name, are stored in the EJAM package, and can be accessed with the function \code{\link[=varinfo]{varinfo()}} and the dataset \link{map_headernames}.
 \item EJAM versions through v2.32.8.001 converted missing values of the
 drinking-water non-compliance indicator to zero when creating
@@ -96,9 +96,9 @@ convert units:
 \itemize{
 \item OTHER KEY DATASETS:
 \itemize{
-\item List of key datasets used by EJAM and details about annual updates: \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{technical article on updating datasets}
-\item Datasets stored within the EJAM package (.rda files): \href{https://public-environmental-data-partners.github.io/EJAM/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data}{access to installed data files}
-\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/ejamdata/releases}{release assets with downloadable data files}
+\item List of key datasets used by EJAM and details about annual updates: \href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/dev-update-datasets.html}{technical article on updating datasets}
+\item Datasets stored within the EJAM package (.rda files): \href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/reference/index.html#datasets-with-indicators-raw-data-means-percentiles-}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/EJAM/tree/main/data}{access to installed data files}
+\item Datasets used by EJAM but stored separately (large .arrow files): \href{https://public-environmental-data-partners.github.io/EJAM/v3.2022.3/articles/dev-update-datasets.html#blockgroup-and-block-level-arrow-files}{Documentation} and \href{https://github.com/Public-Environmental-Data-Partners/ejamdata/releases}{release assets with downloadable data files}
 }
 }
 }
