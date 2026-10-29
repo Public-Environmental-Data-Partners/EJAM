@@ -36,6 +36,7 @@ test("edge-caches only successful GET /report answers, for one day", async () =>
   const cf = calls[0].init.cf;
   assert.equal(cf.cacheEverything, true);
   assert.deepEqual(cf.cacheTtlByStatus, { "200-299": 86400, "400-599": 0 });
+  assert.deepEqual(cf.cacheTags, ["ejam-api-report"]);
 
   mockUpstream();
   await worker.fetch(new Request(`${PUBLIC_ORIGIN}/report`, { method: "POST" }), {});
@@ -55,4 +56,76 @@ test("passes upstream errors through unchanged", async () => {
   mockUpstream(500);
   const resp = await worker.fetch(new Request(`${PUBLIC_ORIGIN}/report?lat=0`), {});
   assert.equal(resp.status, 500);
+});
+
+test("UPSTREAM and CACHE_TAG settings override the defaults", async () => {
+  mockUpstream();
+  const env = { UPSTREAM: "https://archive.example.run.app/", CACHE_TAG: "ejam-api-archive-report" };
+  await worker.fetch(new Request(`${PUBLIC_ORIGIN}/report?lat=33`), env);
+  assert.equal(calls[0].url, "https://archive.example.run.app/report?lat=33");
+  assert.deepEqual(calls[0].init.cf.cacheTags, ["ejam-api-archive-report"]);
+});
+
+test("the gate stays off unless MAINTENANCE is on", async () => {
+  for (const value of [undefined, "", "off", "no", "true"]) {
+    mockUpstream();
+    const resp = await worker.fetch(new Request(`${PUBLIC_ORIGIN}/data`), { MAINTENANCE: value });
+    assert.equal(resp.status, 200, String(value));
+    assert.equal(calls.length, 1, String(value));
+  }
+});
+
+test("with the gate on, programs get a JSON 503 and nothing reaches Cloud Run", async () => {
+  mockUpstream();
+  const resp = await worker.fetch(new Request(`${PUBLIC_ORIGIN}/report?lat=33`), { MAINTENANCE: " ON " });
+  assert.equal(resp.status, 503);
+  assert.equal(calls.length, 0);
+  assert.equal(resp.headers.get("Retry-After"), "600");
+  assert.equal(resp.headers.get("Cache-Control"), "no-store");
+  assert.equal(resp.headers.get("Access-Control-Allow-Origin"), "*");
+  assert.match(resp.headers.get("Content-Type"), /^application\/json/);
+  assert.deepEqual(await resp.json(), {
+    error: "maintenance",
+    message: "EJAM is being updated to newer data. Please try again in a few minutes.",
+    retry_after_seconds: 600,
+  });
+});
+
+test("with the gate on, browsers get an HTML page with the message escaped", async () => {
+  mockUpstream();
+  const env = { MAINTENANCE: "on", MAINTENANCE_RETRY_AFTER: "120", MAINTENANCE_MESSAGE: "Back <soon> & \"ready\"" };
+  const resp = await worker.fetch(
+    new Request(`${PUBLIC_ORIGIN}/report?lat=33`, { headers: { Accept: "text/html,*/*" } }), env);
+  assert.equal(resp.status, 503);
+  assert.equal(resp.headers.get("Retry-After"), "120");
+  assert.match(resp.headers.get("Content-Type"), /^text\/html/);
+  const html = await resp.text();
+  assert.match(html, /Back &lt;soon&gt; &amp; &quot;ready&quot;/);
+  assert.doesNotMatch(html, /<soon>/);
+});
+
+test("with the gate on, CORS preflight is still answered", async () => {
+  mockUpstream();
+  const resp = await worker.fetch(new Request(`${PUBLIC_ORIGIN}/report`, { method: "OPTIONS" }), { MAINTENANCE: "on" });
+  assert.equal(resp.status, 204);
+});
+
+test("only the right bypass secret passes the gate", async () => {
+  const withHeader = value =>
+    new Request(`${PUBLIC_ORIGIN}/data`, { headers: { "X-EJAM-Gate-Bypass": value } });
+
+  mockUpstream();
+  let resp = await worker.fetch(withHeader("s3cret"), { MAINTENANCE: "on", GATE_BYPASS_TOKEN: "s3cret" });
+  assert.equal(resp.status, 200);
+  assert.equal(calls.length, 1);
+
+  mockUpstream();
+  resp = await worker.fetch(withHeader("wrong"), { MAINTENANCE: "on", GATE_BYPASS_TOKEN: "s3cret" });
+  assert.equal(resp.status, 503);
+
+  // With no secret set, nothing bypasses, not even an empty header.
+  mockUpstream();
+  resp = await worker.fetch(withHeader(""), { MAINTENANCE: "on" });
+  assert.equal(resp.status, 503);
+  assert.equal(calls.length, 0);
 });
