@@ -392,6 +392,7 @@ instead of tests/testthat/_logs
         "test-URL_FUNCTIONS_part1.R",
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
+        "test-url_description.R",
         "test-url_package.R"
       ),
       test_live_url = c(
@@ -651,6 +652,11 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       timebyfile <- rbind(
         timebyfile,
         data.table(file = "test-utils_map_size.R", seconds_byfile = 3)
+      )
+
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = "test-url_description.R", seconds_byfile = 1)
       )
 
       ############################ #      ############################ #      ############################ #

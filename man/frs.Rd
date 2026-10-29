@@ -22,7 +22,7 @@ This dataset can be updated by a package maintainer as explained in the
 The definitions of active/inactive here are not quite the
 same as used in ECHO. See attributes(frs) to see date created, etc.
 
-Also, \href{https://ejanalysis.com/ejscreenapp}{EJSCREEN} has maps of EPA-regulated
+Also, \href{https://pedp-ejscreen.azurewebsites.net/index.html}{EJSCREEN} has maps of EPA-regulated
 \href{https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen-map-descriptions.html#epa-regulated-facilities}{facilities}
 of a few program types
 and for a table of acronym definitions
