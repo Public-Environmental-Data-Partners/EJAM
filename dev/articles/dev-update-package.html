@@ -950,15 +950,18 @@ for the code repository, or via
 should work, but generated documentation pages, code test results, and
 code comments should be carefully checked.</p></li>
 <li><p>It would not make sense to simply replace every instance of
-“ejanalysis” with a new owner name. Some web links within the R package,
-mostly in documentation, use the domain <a href="https://ejanalysis.com" class="external-link">ejanalysis.com</a> or equivalently <a href="https://ejanalysis.org" class="external-link">ejanalysis.org</a>. These are convenient
-redirect aliases for the code repository, documentation, data
-repository, and related resources. Those aliases include <a href="https://ejanalysis.org/code" class="external-link">ejanalysis.org/code</a>, <a href="https://ejanalysis.org/data" class="external-link">ejanalysis.org/data</a>, and <a href="https://ejanalysis.org/docs" class="external-link">ejanalysis.org/docs</a>. They are
-also available via helpers such as
-<code>url_package("code", desc_or_alias = "alias")</code>. The redirects
-for those domains would need to be updated to point to any new URLs for
-the data, code, or documentation. The alias domain does not need to
-match the owner of any GitHub repository.</p></li>
+“ejanalysis” with a new owner name. Most web links within the R package,
+mostly in documentation, are created when the documents are rendered,
+using helpers such as
+<code>url_package("code", desc_or_alias = "alias")</code>. These rely on
+the URLs in the <code>Config/EJAM/url_*</code> fields of DESCRIPTION,
+for data, code, documentation, the apps and the API, so a move means
+editing those fields and then regenerating the documentation (see <a href="dev-update-documentation.html#building-documentation-with-the-intended-package-metadata">Updating
+Documentation</a>). The short <code>*.ejanalysis.com</code> aliases in
+those fields are Cloudflare Workers whose code is in the repository’s
+<code>cloudflare/</code> folder; they would need to point to the new
+URLs too. The alias domain does not need to match the owner of any
+GitHub repository.</p></li>
 </ul>
 </div>
 <div class="section level4">

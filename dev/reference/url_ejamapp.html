@@ -156,12 +156,10 @@ many/large polygons).</p></dd>
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
 <dd><p>base URL of the live EJAM app. Defaults to
 <code>url_package("ejamapp", desc_or_alias = "alias")</code> (the DESCRIPTION field
-<code>Config/EJAM/url_ejamapp_alias</code>, currently <code>https://ejam.ejanalysis.com</code> — equivalently
-<code>https://ejamapp.ejanalysis.com</code>), a Cloudflare-fronted shortcut on
-ejanalysis.com that forwards the query string (302 redirect) to the app, so
+<code>Config/EJAM/url_ejamapp_alias</code>, currently https://ejam.ejanalysis.com), a Cloudflare-fronted shortcut
+that forwards the query string (302 redirect) to the app, so
 the launch parameters arrive intact. Any base works as long as it preserves
-the <code><a href="https://rdrr.io/r/base/dots.html" class="external-link">?...</a></code> query; a plain 301 that drops it would open the app empty (which
-is why <code>https://ejanalysis.com/ejamapp</code> — a Squarespace 301 — is not used).</p></dd>
+the <code><a href="https://rdrr.io/r/base/dots.html" class="external-link">?...</a></code> query; a plain 301 that drops it would open the app empty.</p></dd>
 
 
 <dt id="arg-browse">browse<a class="anchor" aria-label="anchor" href="#arg-browse"></a></dt>

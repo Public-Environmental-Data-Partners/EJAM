@@ -218,35 +218,38 @@ county FIPS, and EJScreen deep links read a bare 5-digit
 unambiguous zip links:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># one zip code: EJScreen opens centered there, with a pin and the site report popup</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="st">"20019"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; opens https://pedp-ejscreen.azurewebsites.net/index.html?zip=20019</span></span>
-<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html" class="external-link">browseURL</a></span><span class="op">(</span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="st">"20019"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="co"># note the zip parameter, unlike wherestr, is never confused with a county FIPS:</span></span>
 <span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="st">"10001"</span><span class="op">)</span>  <span class="co"># zip 10001, in Manhattan, NY</span></span>
+<span><span class="co">#&gt; [1] "https://pedp-ejscreen.azurewebsites.net/index.html?zip=10001"</span></span>
 <span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>fips <span class="op">=</span> <span class="st">"10001"</span><span class="op">)</span> <span class="co"># county FIPS 10001 = Kent County, DE (boundary drawn)</span></span>
+<span><span class="co">#&gt; [1] "https://pedp-ejscreen.azurewebsites.net/index.html?fips=10001"</span></span>
 <span></span>
 <span><span class="co"># several zips in one link (the map zooms to fit all of them),</span></span>
 <span><span class="co"># and radius= prefills the report buffer distance in miles:</span></span>
 <span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"20019"</span>, <span class="st">"20020"</span><span class="op">)</span>, combined <span class="op">=</span> <span class="cn">TRUE</span>, radius <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; "https://pedp-ejscreen.azurewebsites.net/index.html?zip=20019,20020&amp;radius=1"</span></span>
+<span><span class="co">#&gt; [1] "https://pedp-ejscreen.azurewebsites.net/index.html?zip=20019,20020&amp;radius=1"</span></span>
 <span></span>
 <span><span class="co"># a zip passed as a number gets its leading zeroes restored:</span></span>
-<span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="fl">1001</span><span class="op">)</span> <span class="co"># zip 01001, Agawam, MA</span></span></code></pre></div>
-<p>These links need the EJScreen release that added deep links (see <a href="https://github.com/Public-Environmental-Data-Partners/EJScreen/pull/70" class="external-link">Public-Environmental-Data-Partners/EJScreen#70</a>);
-the map pins the zip’s location – for analyzing the zip code’s actual
-boundaries, use the zcta polygons approach above.</p>
+<span><span class="fu"><a href="../reference/url_ejscreenmap.html">url_ejscreenmap</a></span><span class="op">(</span>zip <span class="op">=</span> <span class="fl">1001</span><span class="op">)</span> <span class="co"># zip 01001, Agawam, MA</span></span>
+<span><span class="co">#&gt; [1] "https://pedp-ejscreen.azurewebsites.net/index.html?zip=01001"</span></span></code></pre></div>
+<p>These links use EJScreen “deep links”. The map pins the zip’s
+location – for analyzing the zip code’s actual boundaries, use the zcta
+polygons approach above.</p>
 </div>
 <div class="section level3">
 <h3 id="analyzing-zip-codes-in-ejam">analyzing zip codes in EJAM<a class="anchor" aria-label="anchor" href="#analyzing-zip-codes-in-ejam"></a>
 </h3>
 <p>You can analyze zip codes in EJAM like this:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">out</span> <span class="op">=</span> <span class="fu"><a href="../reference/ejamit.html">ejamit</a></span><span class="op">(</span>shapefile <span class="op">=</span> <span class="va">z</span>, radius <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="summary-report-on-zipcodes">summary report on zipcodes<a class="anchor" aria-label="anchor" href="#summary-report-on-zipcodes"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ejam2report.html">ejam2report</a></span><span class="op">(</span><span class="va">out</span>, </span>
 <span>            analysis_title <span class="op">=</span> <span class="st">"Zip codes"</span>,</span>
 <span>            site_method <span class="op">=</span> <span class="st">'SHP'</span>, </span>
@@ -255,7 +258,7 @@ boundaries, use the zcta polygons approach above.</p>
 <div class="section level3">
 <h3 id="compare-sites">compare sites<a class="anchor" aria-label="anchor" href="#compare-sites"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># put zip code in the x axis labels!</span></span>
 <span><span class="fu"><a href="../reference/ejam2barplot_sites.html">ejam2barplot_sites</a></span><span class="op">(</span><span class="va">out</span>, names.arg <span class="op">=</span> <span class="va">z</span><span class="op">$</span><span class="va">GEOID20</span>, sortby <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="co"># zcta2$GEOID20</span></span>
 <span></span>
@@ -265,7 +268,7 @@ boundaries, use the zcta polygons approach above.</p>
 <div class="section level3">
 <h3 id="map-of-detailed-results">map of detailed results<a class="anchor" aria-label="anchor" href="#map-of-detailed-results"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">out_plus_shape</span> <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">results_bysite</span>, <span class="va">z</span><span class="op">)</span></span>

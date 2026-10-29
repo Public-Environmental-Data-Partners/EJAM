@@ -118,9 +118,9 @@ documentation website.</p></li>
 <li><p>"api" (<code>Config/EJAM/url_api</code>) is for the EJAM REST API base URL.
 Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
 endpoint can be changed in one place (by editing <code>Config/EJAM/url_api</code>).
-It is the branded Cloudflare edge proxy <code>https://api.ejanalysis.com</code>
-(equivalently <code>https://ejamapi.ejanalysis.com</code>, stored in
-<code>Config/EJAM/url_api_alias</code>), which fronts the direct Cloud Run origin
+It is the branded Cloudflare edge proxy https://api.ejanalysis.com
+(<code>Config/EJAM/url_api</code>); its alternate alias is stored in
+<code>Config/EJAM/url_api_alias</code>. These front the direct Cloud Run origin
 recorded informationally in <code>Config/EJAM/url_api_direct</code>.</p>
 <p>For development/testing, the API base can be overridden without editing
 DESCRIPTION: <code>options(ejam.api.baseurl = ...)</code> takes highest precedence,
@@ -179,56 +179,7 @@ to the root docs site only.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function reads <code>Config/EJAM/url_*</code> fields from the DESCRIPTION file.
-Below is a snapshot of those fields at the time of writing (7/2026):</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_api<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>api.ejanalysis.com</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_api_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejamapi.ejanalysis.com</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_api_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>api</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_api_direct<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejamapi<span class="fl">-84652557241.</span>us<span class="sc">-</span>central1.run.app</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_apirepo<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>Public<span class="sc">-</span>Environmental<span class="sc">-</span>Data<span class="sc">-</span>Partners<span class="sc">/</span>EJAM<span class="sc">-</span>API</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_apirepo_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>apirepo.ejanalysis.com</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_apirepo_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>apirepo</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_apidocs<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span>articles<span class="sc">/</span>dev<span class="sc">-</span>api.html</span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_apidocs_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>apidocs.ejanalysis.com</span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_apidocs_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>apidocs</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_apidocker<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>hub.docker.com<span class="sc">/</span>r<span class="sc">/</span>ericnost<span class="sc">/</span>ejamapi</span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamapp<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejam.publicenvirodata.org</span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamapp_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejam.ejanalysis.com</span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamapp_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejamapp</span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamapp_dev<span class="sc">:</span> http<span class="sc">:</span><span class="er">//</span>ejam<span class="sc">-</span>dev<span class="sc">-</span>alb<span class="fl">-971929002.</span>us<span class="sc">-</span>east<span class="fl">-1.</span>elb.amazonaws.com</span>
-<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamapp_dev_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejamdev.ejanalysis.com</span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamapp_dev_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejamdev</span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamrepo<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>Public<span class="sc">-</span>Environmental<span class="sc">-</span>Data<span class="sc">-</span>Partners<span class="sc">/</span>EJAM</span>
-<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamrepo_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejamrepo.ejanalysis.com</span>
-<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamrepo_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejamrepo</span>
-<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamdocs<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM</span>
-<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamdocs_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>docs.ejanalysis.com</span>
-<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamdocs_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejamdocs</span>
-<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreenapp<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>pedp<span class="sc">-</span>ejscreen.azurewebsites.net<span class="sc">/</span>index.html</span>
-<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreenapp_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejscreen.ejanalysis.com</span>
-<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreenapp_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejscreenapp</span>
-<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreenrepo<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>Public<span class="sc">-</span>Environmental<span class="sc">-</span>Data<span class="sc">-</span>Partners<span class="sc">/</span>EJScreen</span>
-<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreenrepo_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejscreenrepo.ejanalysis.com</span>
-<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreenrepo_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejscreenrepo</span>
-<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a></span>
-<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreendocs<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>public<span class="sc">-</span>environmental<span class="sc">-</span>data<span class="sc">-</span>partners.github.io<span class="sc">/</span>EJAM<span class="sc">/</span>articles<span class="sc">/</span>ejscreen.html</span>
-<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreendocs_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejscreendocs.ejanalysis.com</span>
-<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreendocs_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejscreendocs</span>
-<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a></span>
-<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejscreendocs_old<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>Public<span class="sc">-</span>Environmental<span class="sc">-</span>Data<span class="sc">-</span>Partners<span class="sc">/</span>EJScreen<span class="co">#ejscreen</span></span>
-<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a></span>
-<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamdata<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>Public<span class="sc">-</span>Environmental<span class="sc">-</span>Data<span class="sc">-</span>Partners<span class="sc">/</span>ejamdata</span>
-<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamdata_alias<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejamdata.ejanalysis.com</span>
-<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a>Config<span class="sc">/</span>EJAM<span class="sc">/</span>url_ejamdata_redirect<span class="sc">:</span> https<span class="sc">:</span><span class="er">//</span>ejanalysis.com<span class="sc">/</span>ejamdata</span></code></pre><p></p></div>
+    <p>This function reads <code>Config/EJAM/url_*</code> fields from the DESCRIPTION file.</p>
 <p>(<code>Config/EJAM/url_api_direct</code>, <code>Config/EJAM/url_apidocker</code>, and
 <code>Config/EJAM/url_ejscreendocs_old</code> are informational only – they are stored
 in DESCRIPTION but are not <code>type</code> values this function accepts.)</p>

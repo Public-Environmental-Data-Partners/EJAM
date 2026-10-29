@@ -110,6 +110,28 @@
 the package, including R help pages, dataset documentation, articles,
 app help materials, and the pkgdown website.</p>
 <div class="section level2">
+<h2 id="building-documentation-with-the-intended-package-metadata">Building documentation with the intended package metadata<a class="anchor" aria-label="anchor" href="#building-documentation-with-the-intended-package-metadata"></a>
+</h2>
+<p>Links written with <code><a href="../reference/url_package.html">EJAM::url_package()</a></code> use the
+DESCRIPTION of the EJAM package resolved in the build session. Editing
+DESCRIPTION in another checkout does not change a loaded package. Load
+or install the intended package copy before generating documentation,
+and check its URL settings. For README,
+<code><a href="https://devtools.r-lib.org/reference/build_readme.html" class="external-link">devtools::build_readme()</a></code> installs a temporary copy of the
+checkout so its links use that copy’s metadata.</p>
+<p><code>EJAM_API_BASEURL</code> and <code>EJAM_DOCS_BASE_URL</code>
+override the canonical API and EJAM docs lookups, respectively. Leave
+them unset for a normal release build; set them deliberately when
+building documentation for another destination. They do not change app
+URLs or explicit alias/redirect lookups.</p>
+<p>Inline R in roxygen comments is evaluated when generating
+<code>man/*.Rd</code>, and inline R in <code>README.Rmd</code> is
+evaluated when knitting <code>README.md</code>. Regenerate those files
+with the intended URL settings before running pkgdown; rebuilding
+pkgdown alone does not re-evaluate URLs already saved in those
+files.</p>
+</div>
+<div class="section level2">
 <h2 id="updating-package-documentation">Updating package documentation<a class="anchor" aria-label="anchor" href="#updating-package-documentation"></a>
 </h2>
 <p>The R package is documented in web pages and in standard R help files

@@ -84,8 +84,8 @@
 <span>  wherestr <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  as_html <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  linktext <span class="op">=</span> <span class="st">"EJSCREEN"</span>,</span>
-<span>  ifna <span class="op">=</span> <span class="st">"https://pedp-ejscreen.azurewebsites.net/index.html"</span>,</span>
-<span>  baseurl <span class="op">=</span> <span class="st">"https://pedp-ejscreen.azurewebsites.net/index.html"</span>,</span>
+<span>  ifna <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  baseurl <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  zip <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  radius <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -158,11 +158,13 @@ but using the fips parameter is probably a better idea.</p></dd>
 
 
 <dt id="arg-ifna">ifna<a class="anchor" aria-label="anchor" href="#arg-ifna"></a></dt>
-<dd><p>URL shown for missing, NA, NULL, bad input values</p></dd>
+<dd><p>URL shown for missing, NA, NULL, bad input values. NULL uses
+<code>url_package("ejscreenapp")</code> from DESCRIPTION; NA keeps missing URLs as NA.</p></dd>
 
 
 <dt id="arg-baseurl">baseurl<a class="anchor" aria-label="anchor" href="#arg-baseurl"></a></dt>
-<dd><p>do not change unless endpoint actually changed</p></dd>
+<dd><p>EJScreen app base URL. NULL uses
+<code>url_package("ejscreenapp")</code> from DESCRIPTION.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
