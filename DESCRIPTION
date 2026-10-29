@@ -6,8 +6,8 @@ ejamdata_required_tag: v3.2022.3
 VersionACS: 2020-2024
 ReleaseDateACS: 2026-01-29
 VersionDate: November 2026
-ReleaseDateEJAM: 2026-11-30
-ReleaseDateEJSCREEN: 2026-11-30
+ReleaseDateEJAM: 2026-11-11
+ReleaseDateEJSCREEN: 2026-11-11
 VersionCensus: 2020
 Description: Web app and set of tools providing EJScreen Community Reports
     and multisite analysis. Summarizes demographic and environmental indicators
