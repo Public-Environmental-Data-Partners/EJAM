@@ -1,13 +1,13 @@
 Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
-Version: 3.2022.3
-VersionEJSCREEN: 3.2022.3
+Version: 4.2024.0
+VersionEJSCREEN: 4.2024.0
 ejamdata_required_tag: v3.2022.3
-VersionACS: 2018-2022
-ReleaseDateACS: 2023-12-07
-VersionDate: October 2026
-ReleaseDateEJAM: 2026-10-01
-ReleaseDateEJSCREEN: 2026-10-01
+VersionACS: 2020-2024
+ReleaseDateACS: 2026-01-29
+VersionDate: November 2026
+ReleaseDateEJAM: 2026-11-30
+ReleaseDateEJSCREEN: 2026-11-30
 VersionCensus: 2020
 Description: Web app and set of tools providing EJScreen Community Reports
     and multisite analysis. Summarizes demographic and environmental indicators

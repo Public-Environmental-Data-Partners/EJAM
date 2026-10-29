@@ -18,31 +18,38 @@ quickly see residential population and environmental information
 aggregated within and across hundreds or thousands of places, all at the
 same time.
 
+EJAM is tightly integrated with EJSCREEN. It provides EJSCREEN’s
+reports, and it is the “multisite tool” for EJSCREEN. It also can be
+used independently as a web app or in RStudio for analysis.
+
 ## What Can You Do with EJAM?
 
 [What is
 EJAM?](https://public-environmental-data-partners.github.io/EJAM/articles/whatis.html)
 
-EJAM lets you specify the places to analyze in several ways – uploading
-a table of point locations (latitude/longitude), picking facilities by
+EJAM lets you specify places to analyze in several ways – uploading a
+table of point locations (latitude/longitude), picking facilities by
 industry category or ID, uploading shapefiles or lists of Census FIPS
 codes, or clicking on a map to specify one or more points – and it
 returns a summary report comparing residents and environmental
 conditions at those places to the rest of the country.
 
-## About v3.2022.3 (October 2026)
+## About v4.2024.0 (November 2026)
 
-**This is the final release that uses the ACS 2018-2022 data, and it is
-frozen from here on. Development continues with the ACS 2020-2024 data
-in v4.2024.0.**
+**This release uses the 2020-2024 American Community Survey (ACS) data,
+and updated ozone and PM2.5 data.** The previous release,
+[v3.2022.3](https://github.com/Public-Environmental-Data-Partners/EJAM/releases/tag/v3.2022.3),
+used the ACS 2018-2022 data and is frozen. It stays available as that
+release, with its documentation at
+[docs-archive.ejanalysis.com](https://docs-archive.ejanalysis.com).
 
-See [NEWS.md](NEWS.md) for the full list of recent enhancements and
-fixes.
+See [NEWS.md](NEWS.md) for the full list of recent releases,
+enhancements, and fixes.
 
 ## Status of EJAM package in 2026
 
-See [ejanalysis.org/status](https://ejanalysis.org/status) for more
-information.
+See [ejanalysis.org/status](https://ejanalysis.org/status) for
+background.
 
 *In 2025, content related to what had been the USEPA-hosted open source
 R package EJAM was archived.*
