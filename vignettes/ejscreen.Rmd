@@ -40,7 +40,7 @@ EJAM-related repositories.
         archive.org](https://web.archive.org/web/20250203174905/https://ejscreen.epa.gov/mapper/help/ejscreen_help.pdf){target="_blank"}
 
     -   [EJSCREEN Multisite Tool User
-        Guide](https://ejam.publicenvirodata.org/www/user-guide-2025-02.pdf){target="_blank"}
+        Guide](`r paste0(EJAM::url_package("ejam"), "/www/user-guide-2025-02.pdf")`){target="_blank"}
         (aka EJAM walkthrough). Also [saved in repo](`r paste0(EJAM::url_package(get_full_url = TRUE), "/blob/main/inst/app/www/user-guide-2025-02.pdf")`){target="_blank"}
 
 ## Documentation of Data Sources and Technical Methods
@@ -104,7 +104,7 @@ EJAM-related repositories.
 
     -   Documentation of EJAM software that generates EJSCREEN reports
         (from 2025 on):
-        [ejanalysis.org/ejamdocs](https://ejanalysis.org/ejamdocs){target="_blank"}
+        [EJAM documentation](`r EJAM::url_package("docs")`){target="_blank"}
 
 --------------------------------------------------------------------------------
 
@@ -120,7 +120,7 @@ EPA is committed to protecting the environment and public health in low-income,
 tribal and other overburdened communities by integrating environmental justice
 in all programs, policies and activities.
 
-[Launch the EJScreen Tool](https://ejanalysis.com/ejscreenapp){target="_blank"}
+[Launch the EJScreen Tool](`r EJAM::url_package("ejscreen")`){target="_blank"}
 
 ```{r echo = FALSE, results = 'asis'}
 
@@ -154,7 +154,7 @@ kable(links_table,  col.names = NULL, label = NA)
 **EJScreen: Environmental Justice Screening and Mapping Tool**
 
 -   [Launch the EJScreen
-    Tool](https://ejanalysis.com/ejscreenapp){target="_blank"}
+    Tool](`r EJAM::url_package("ejscreen")`){target="_blank"}
 -   [**Tool Basics and
     Uses**](https://web.archive.org/web/20250121194840/https://www.epa.gov/ejscreen/tool-basics-and-uses){target="_blank"}
     -   **General**

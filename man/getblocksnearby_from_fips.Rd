@@ -10,7 +10,8 @@ getblocksnearby_from_fips(
   need_blockwt = TRUE,
   return_shp = FALSE,
   allow_multiple_fips_types = TRUE,
-  radius = 0
+  radius = 0,
+  compact = FALSE
 )
 }
 \arguments{
@@ -36,6 +37,15 @@ Default is 0 (no buffer: only blocks within the FIPS boundaries are analyzed).
 When radius > 0, the FIPS boundaries are downloaded, a buffer of that size is added
 around each boundary, and blocks within the buffered area are analyzed.
 Use 999 to signal FIPS analysis mode without a buffer (same as 0 for buffering purposes).}
+
+\item{compact}{set to TRUE for a much smaller table with one row per blockgroup in each FIPS unit,
+instead of one row per block. This is faster and uses much less memory, such as for all US counties or states,
+and \code{\link[=doaggregate]{doaggregate()}} gives the same results from it.
+Each row stands for all the blocks of its blockgroup: \code{blockid} is one of those blocks,
+\code{blockwt} is the sum of their weights, and the added column \code{blockcount} is how many blocks there are.
+Used only for unbuffered FIPS codes of blockgroups, tracts, counties, or states.
+If any FIPS are cities/places, or \code{radius} adds a buffer, the table has one row per block as usual.
+\code{\link[=ejamit]{ejamit()}} uses \code{compact = TRUE}.}
 }
 \value{
 \itemize{

@@ -6,7 +6,7 @@
 #
 #  ROOT   = verbatim mirror of the deployed EJAM-API (ejam-api/rest_controller.r;
 #           see ejam-api/SYNC.md), so /report, /data, /query, /handoff and the
-#           Swagger docs at /__docs__/ behave like https://api.ejanalysis.com
+#           Swagger docs at /__docs__/ behave like EJAM::url_package("api")
 #  /draft = draft endpoints that exist only in this package (draft/plumber.R):
 #           /draft/echo, /draft/ejamit, /draft/ejam2report, /draft/ejam2excel,
 #           /draft/reportnew, /draft/excel, /draft/all, /draft/getblocksnearby,

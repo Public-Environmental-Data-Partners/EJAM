@@ -1,6 +1,7 @@
 # test-fips_bg_from_latlon.R
 
 test_that("fips_bg_from_latlon ok if 2", {
+  skip_if(offline(), "requires a live boundary service")
   expect_no_error({
     suppressWarnings({
       x = fips_bg_from_latlon(testpoints_10[1:2,])
@@ -17,6 +18,7 @@ test_that("fips_bg_from_latlon ok if 2", {
 
 
 test_that("fips_bg_from_latlon ok if 1", {
+  skip_if(offline(), "requires a live boundary service")
   expect_no_error({
     suppressWarnings({
       x = fips_bg_from_latlon(testpoints_10[1,])
@@ -38,6 +40,7 @@ test_that("fips_bg_from_latlon if no valid latlon", {
 })
 
 test_that("fips_bg_from_latlon if some valid latlon", {
+  skip_if(offline(), "requires a live boundary service")
   expect_no_error({
 
     fips_bg_from_latlon(data.frame(lat=c(35,NA), lon= c(-100,NA)))

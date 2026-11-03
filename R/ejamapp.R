@@ -299,6 +299,11 @@ ejamapp <- function(
     dots$default_site_method <- dots$default_upload_dropdown
   }
   dots$default_upload_dropdown <- NULL  # drop the old key so only the new name flows downstream
+  # Back-compat: marker_cluster_cutoff was replaced by default_max_pts_map_show_unclustered.
+  if ('marker_cluster_cutoff' %in% names(dots) && !('default_max_pts_map_show_unclustered' %in% names(dots))) {
+    dots$default_max_pts_map_show_unclustered <- dots$marker_cluster_cutoff
+  }
+  dots$marker_cluster_cutoff <- NULL
 
   if ("fips" %in% names(dots)) {
     # dots$fips will be used
@@ -404,6 +409,22 @@ ejamapp <- function(
     user_specified_options = dots, # list(...),
     bookmarking_allowed = enableBookmarking
   )
+
+  ## cap R's memory while the app runs, in a container with a memory limit like the hosted app ####
+  # so a too-large analysis stops with a message for that user instead of crashing the app for everyone.
+  # See memory_cap_for_app() and default_memory_cap_gb in global_defaults_shiny.R
+  memory_cap_gb     <- global_defaults_or_user_options$default_memory_cap_gb
+  memory_reserve_gb <- global_defaults_or_user_options$default_memory_reserve_gb
+  if (is.null(memory_reserve_gb) || length(memory_reserve_gb) != 1 || is.na(memory_reserve_gb)) {memory_reserve_gb <- 3}
+  user_onStart <- onStart
+  onStart <- function() {
+    vsize_before <- mem.maxVSize()
+    capped_gb <- memory_cap_for_app(cap_gb = memory_cap_gb, reserve_gb = memory_reserve_gb)
+    if (!is.na(capped_gb)) {
+      shiny::onStop(function() {mem.maxVSize(vsize_before)}) # restore the earlier limit when the app stops
+    }
+    if (is.function(user_onStart)) {user_onStart()}
+  }
 
   golem::with_golem_options(
     app = shiny::shinyApp(

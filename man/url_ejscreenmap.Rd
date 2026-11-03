@@ -13,8 +13,8 @@ url_ejscreenmap(
   wherestr = NULL,
   as_html = FALSE,
   linktext = "EJSCREEN",
-  ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
-  baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
+  ifna = NULL,
+  baseurl = NULL,
   ...,
   zip = NULL,
   radius = NULL,
@@ -74,9 +74,11 @@ but using the fips parameter is probably a better idea.}
 
 \item{linktext}{used as text for hyperlinks, if supplied and as_html=TRUE}
 
-\item{ifna}{URL shown for missing, NA, NULL, bad input values}
+\item{ifna}{URL shown for missing, NA, NULL, bad input values. NULL uses
+\code{url_package("ejscreenapp")} from DESCRIPTION; NA keeps missing URLs as NA.}
 
-\item{baseurl}{do not change unless endpoint actually changed}
+\item{baseurl}{EJScreen app base URL. NULL uses
+\code{url_package("ejscreenapp")} from DESCRIPTION.}
 
 \item{...}{regid can be provided (used to look up lat,lon as a last resort if no sites provided); other arguments ignored}
 
