@@ -18,6 +18,7 @@
 ^Rplots.pdf$
 ^app.R$
 ^CITATION\.cff$
+^AGENTS\.md$
 ^CONTRIBUTING\.md$
 ^LICENSE\.md$
 ^README\.Rmd$
