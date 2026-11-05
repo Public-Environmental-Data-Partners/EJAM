@@ -10,6 +10,7 @@ _since October 2026_
   - **Demographics** use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version.
   - **Environmental** indicators for ozone and PM2.5 are updated.
   - **EJ indexes and percentiles** are recalculated to use the new data.
+  - A **Data sources** link at the top of the web app says which years of data this version uses (#400).
 
 #### Towns and townships added
 
