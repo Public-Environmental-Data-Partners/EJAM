@@ -1154,13 +1154,13 @@ Only three Arrow files carry `bgid`: `bgej` (string from the stage), `blockwts`
 # bgej from the accepted stage file, bgid -> double
 e <- new.env(); load(file.path(pipeline_dir, "bgej.rda"), envir = e)
 bgej <- e$bgej; setDT(bgej)[, bgid := as.numeric(bgid)]
-arrow::write_feather(bgej, "data/bgej.arrow")
+arrow::write_ipc_file(bgej, "data/bgej.arrow")
 
 # geography Arrow files
-bw <- as.data.table(arrow::read_feather("data/blockwts.arrow")); bw[, bgid := as.numeric(bgid)]
-arrow::write_feather(bw, "data/blockwts.arrow")
-bf <- as.data.table(arrow::read_feather("data/bgid2fips.arrow")); bf[, bgid := as.numeric(bgid)]
-arrow::write_feather(bf, "data/bgid2fips.arrow")
+bw <- as.data.table(arrow::read_ipc_file("data/blockwts.arrow")); bw[, bgid := as.numeric(bgid)]
+arrow::write_ipc_file(bw, "data/blockwts.arrow")
+bf <- as.data.table(arrow::read_ipc_file("data/bgid2fips.arrow")); bf[, bgid := as.numeric(bgid)]
+arrow::write_ipc_file(bf, "data/bgid2fips.arrow")
 ```
 
 `data/*.arrow` files are gitignored build artifacts (published to `ejamdata`, not
