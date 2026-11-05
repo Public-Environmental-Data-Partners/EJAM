@@ -11,6 +11,7 @@ _since October 2026_
   - **Environmental** indicators for ozone and PM2.5 are updated.
   - **EJ indexes and percentiles** are recalculated to use the new data.
   - A **Data sources** link at the top of the web app says which years of data this version uses (#400).
+  - The **language shares for limited-English households** (e.g. % speaking Spanish) are shares of limited-English-speaking households, as the report labels them, not of all households as in EPA's EJSCREEN data files (#615).
 
 #### Towns and townships added
 
