@@ -692,7 +692,7 @@ aboutpage_texts <- list(
           target = "_blank", rel = "noreferrer noopener") ),
 
     p('EJAM is what provides community reports for ',
-      a(href = "https://pedp-ejscreen.azurewebsites.net/index.html", "EJSCREEN",
+      a(href = url_package("ejscreen"), "EJSCREEN",
         target = "_blank", rel = "noreferrer noopener"),
       ', and is also known as "EJSCREEN\'s multisite tool."'),
     p("EJAM is a tool that makes it easy to see residential population and environmental information summarized in and across any list of places in the nation. Using this tool is like getting EJSCREEN reports for hundreds or thousands of places, all at the same time."),
@@ -1084,7 +1084,6 @@ AIR,	IL000031012ACJ<br>
 <!--     <a href="www/user-guide-2025-02.pdf" alt="Go to help document" title="Go to help document" target="_blank">Help</a> | -->
 
 <!--      /articles/ejscreen.html would be a more direct link than  /articles/index.html -->
-<a href="', EJAM::url_package("docs"), '/articles/whatis.html#data-updates-and-data-vintage" target="_blank" rel="noreferrer" title="Which years of data this version uses">Data sources</a> |
 <a href="', EJAM::url_package("docs"), '/articles/index.html" target="_blank" rel="noreferrer">EJSCREEN/EJAM Help</a>
 
 <!--     <a href="mailto:ejam@ejanalysis.com?subject=EJAM%20Multisite%20Tool%20Question" id="emailLink" alt="Contact Us" title="Contact Us">Contact Us</a> | -->
@@ -1143,7 +1142,7 @@ AIR,	IL000031012ACJ<br>
       aria-hidden="true"
     />
   </a>
-  
+
 
   <a
     class="cejst-style-btn"
