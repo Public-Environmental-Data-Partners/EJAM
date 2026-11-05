@@ -23,9 +23,10 @@ relevant rows of the table in \href{https://r-datatable.com}{data.table} format 
 Use EPA Program ID to see FRS Facility Registry Service data on those EPA-regulated sites
 }
 \examples{
- test <- data.frame(programname = c('STATE','FIS','FIS'),
-                    programid = c('#5005','0-0000-01097','0-0000-01103'))
- x = frs_from_programid(test$programname, test$programid)
+ x <- frs_from_programid(
+   testinput_program_sys_id$program[1],
+   testinput_program_sys_id$pgm_sys_id[1]
+ )
  x
  mapfast(x)
 

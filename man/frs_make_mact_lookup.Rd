@@ -17,6 +17,10 @@ list, of \link{frs_by_mact} table in \href{https://r-datatable.com}{data.table} 
 \description{
 Create updated version of frs_by_mact and mact_table
 }
+\details{
+Leading, trailing, and repeated whitespace in \code{title} and
+\code{dropdown_label} is normalized in both returned tables.
+}
 \seealso{
 \code{\link[=frs_update_datasets]{frs_update_datasets()}}
 }

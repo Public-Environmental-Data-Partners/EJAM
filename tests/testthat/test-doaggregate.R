@@ -344,7 +344,14 @@ test_that("***replicate other wtdmeans?", {
 
 })
 ################### #
-# bgstats$lan_universe seems wrong - why the same for each bg that is aggregated in this analysis? ***
+test_that("blockgroupstats language counts are apportioned, not repeated per tract (#596)", {
+  # lan_universe counts people age 5 and up, so it cannot exceed total population.
+  # Copying each tract's C16001 totals onto every one of its block groups made
+  # the sums about 3x too high (e.g., 2.9x population nationally).
+  s <- blockgroupstats[, .(lan = sum(lan_universe, na.rm = TRUE), pop = sum(pop, na.rm = TRUE)), by = ST]
+  expect_lte(sum(s$lan), sum(s$pop))
+  expect_true(all(s$lan <= s$pop))
+})
 
 othercols = setdiff(othercols, c(   otherwtdmeancols))
 # none left

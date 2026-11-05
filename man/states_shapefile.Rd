@@ -22,6 +22,8 @@ It is created by the package via a script at EJAM/data-raw/datacreate_states_sha
 which downloads the data from Census Bureau.
 
 It includes 50 states, DC, PR, and 4 island areas (GU, MP, VI, AS).
+Release geography preparation validates the physical source vintage and
+records boundary_year separately from ACS/package release stamps.
 
 Source: https://www2.census.gov/geo/tiger/TIGER2024/STATE/tl_2024_us_state.zip
 }

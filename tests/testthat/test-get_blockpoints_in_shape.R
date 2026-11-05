@@ -47,9 +47,9 @@ test_that("1 row EMPTY GEOMETRY/INVALID POLYGONS handled, sorts output as input"
 # empty shape - 2 rows, both empty, 1 valid row
 test_that("2 row EMPTY GEOMETRY/INVALID POLYGONS handled", {
 junk =  capture_output({
-  shp = shapes_from_fips(c(4273072,
+  shp = shapes_from_fips(c("3600000", # "County Subdivisions not defined": no boundary
                            fips_counties_from_state_abbrev("DE")[1],
-                           4273072))
+                           "3600000"))
   # states_shapefile[1, ]
   suppressWarnings({
   s2b = get_blockpoints_in_shape(shp)
@@ -65,7 +65,7 @@ expect_equal(unique(s2b$pts$ejam_uniq_id), 2) # only second fips has nonempty ge
 test_that("all polygons EMPTY GEOMETRY/INVALID", {
   # only  INVALID ROWs
   suppressWarnings({
-    shp = shapes_from_fips(c(4273072,4273072))
+    shp = shapes_from_fips(c("3600000", "3600000"))
     s2b <- get_blockpoints_in_shape(polys = shp)
   })
   # cbind(inputfips, outputfips)

@@ -1,0 +1,45 @@
+name: 'Check Cloudflare Workers'
+
+# Tests the Worker code in cloudflare/ and checks each Worker's wrangler.toml.
+# It never deploys: deploying is a manual step (see cloudflare/README.md).
+
+on:
+  push:
+    branches: [ "main", "development" ]
+    paths:
+      - ".github/workflows/check-cloudflare-workers.yaml"
+      - "cloudflare/**"
+  pull_request:
+    paths:
+      - ".github/workflows/check-cloudflare-workers.yaml"
+      - "cloudflare/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-workers-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: cloudflare
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run unit tests
+        run: node --test
+      - name: Check each Worker's syntax and Wrangler configuration
+        run: |
+          for dir in */; do
+            name="${dir%/}"
+            node --check "$name/src/index.mjs"
+            (cd "$name" && npx --yes wrangler@4.126.0 deploy --dry-run --outdir "$RUNNER_TEMP/wrangler-$name")
+          done

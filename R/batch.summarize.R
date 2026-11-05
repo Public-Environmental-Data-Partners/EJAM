@@ -177,7 +177,10 @@ batch.summarize <- function(ejamitout,
   }
 
   sitestats <- as.data.frame(sitestats) # in case it was a data.table, or tibble. this makes a copy unlike data.table::setDF(sitestats) but using "by reference" functions from data.table:: will alter the dt that was passed here as sitestats= param, in the calling envt!!
-  popstats  <- as.data.frame(popstats)  # ditto
+  # popstats (results_bybg_people) can be ~1 GB in a large analysis, so do not deep-copy it like sitestats.
+  # This makes a new data.frame whose columns are the caller's column vectors (no copy of the data).
+  # The only column changed below, pop, gets its own copy first, so the caller's table is never modified.
+  popstats  <- data.table::setDF(as.list(popstats))
   overall   <- as.data.frame(overall)   # ditto
 
   bgwt_popstats <- popstats$bgwt # hardcoded here since it is by bg and not in sitestats and is needed for correct wts like for wtdmean by unique person
@@ -734,8 +737,10 @@ batch.summarize <- function(ejamitout,
 
     # quantiles of people ####
     numcol = sapply(popstats, class) %in%  c('numeric', 'integer')
+    pop_no_na <- popstats$pop # a copy is made on the next line, so the caller's pop column is not modified
+    pop_no_na[is.na(pop_no_na)] <- 0L # NA pop crashes fquantile
+    popstats$pop <- pop_no_na # replaces only this column (popstats is a plain data.frame here)
     setDT(popstats)
-    popstats[is.na(pop), pop := 0] # crashes fquantile if pop is NA here
     x <-  popstats[ ,  lapply(.SD, function(x) {
       if (collapse::allNA(x)) {return(rep(NA, length(probs)))}
       collapse::fquantile(x, w = pop, na.rm = na.rm, probs = probs) # weighted quantiles -- see notes on selecting weights

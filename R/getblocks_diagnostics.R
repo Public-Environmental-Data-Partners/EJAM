@@ -67,7 +67,7 @@ blockcounts_table <- function(blockcounts,
 #' @param n optional count of sites should be length(blockcounts)
 #' @param cuts optional vector defining bins
 #' @param labels optional vector of text labels for bins
-#' @param ... passed to [barplot()]
+#' @param ... passed to [graphics::barplot()]
 #'
 #' @return barplot
 #' @noRd
@@ -81,7 +81,7 @@ blockcounts_plot <- function(blockcounts, radius, n = length(blockcounts),
 
   maintext  <- paste0("How many blocks are ", gsub("Residents ", "", report_residents_within_xyz(nsites = n, radius = radius)), "?")
 
-  barplot(
+  graphics::barplot(
     justcounts,
     names.arg = labels,
     main = maintext,
@@ -311,7 +311,7 @@ getblocks_diagnostics <- function(x, detailed=FALSE, see_pctiles=FALSE, see_dist
       cat("plotting a sample of blocks since too many to easily plot them all\n")
       x <- x[sample(1:NROW(x), 10000), .(distance, distance_unadjusted)]
     }
-    plot(x$distance, x$distance_unadjusted,
+    graphics::plot(x$distance, x$distance_unadjusted,
          xlab = "Adjusted Distance to avoid unrealistic short distances",
          ylab = "Distance as calculated (unadjusted for short distances, but should be < radius if avoidorphans=F ?)",
          xlim = c(0,max(x$distance, x$distance_unadjusted, na.rm = T)),

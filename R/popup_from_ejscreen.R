@@ -44,6 +44,12 @@
 #'   one site that was row N of a larger analysis (e.g., the EJAM API per-site report links
 #'   made by [url_ejamapi()]) -- the regenerated run's row index (1) is not the site number
 #'   the user expects to see. A number N is shown as "Site N"; text is shown as-is.
+#' @param detailed set to FALSE for a short popup, as used for maps of many sites (see [map_popup_style()]):
+#'   the site ID, the "Residents within ..." line, longitude/latitude, area, links to reports, and population,
+#'   but not the other indicators.
+#' @param sitenumbers optional site numbers shown in the popups, one per row of `out`.
+#'   Default is the row numbers, `1:NROW(out)`. The web app uses this when it builds the popup
+#'   for just the one site that was clicked on a map.
 #'
 #' @return HTML ready to be used for map popups
 #'
@@ -54,7 +60,9 @@ popup_from_ejscreen <- function(out,
                                 linkcolnames = sapply(global_or_param("default_reports"), function(x) x$header),
                                 verbose = FALSE,
                                 site_method = NULL,
-                                sitenumber_label = NULL # name-only, at end to avoid arg shift
+                                sitenumber_label = NULL, # name-only, at end to avoid arg shift
+                                detailed = TRUE,
+                                sitenumbers = NULL
                                 ) {
   # ornull = function(n) {
   #   x <- try(global_or_param("default_reports")[[n]]$header)
@@ -80,6 +88,9 @@ popup_from_ejscreen <- function(out,
   if (data.table::is.data.table(out)) {out <- data.table::copy(out); data.table::setDF(out)}
   if (NROW(out) == 0) {
     return(character(0))
+  }
+  if (is.null(sitenumbers) || length(sitenumbers) != NROW(out)) {
+    sitenumbers <- seq_len(NROW(out))
   }
 
   # sitenumber_label: display-only override of the site number shown in popups, only
@@ -339,7 +350,10 @@ popup_from_ejscreen <- function(out,
 
   ################################################################ #
   # popups text for DEMOG (US & STATE PCTILES) ####
-  if (length(dok) == 0) {
+  if (!detailed) {
+    # short popups (for maps of many sites) show population but no other indicators
+    poptext.d <- NULL
+  } else if (length(dok) == 0) {
     warning('none of names_d were found in out')
     poptext.d <- NULL
   } else {
@@ -352,7 +366,9 @@ popup_from_ejscreen <- function(out,
   }
 
   # popups text for ENVT  (US & STATE PCTILES) ####
-  if (length(eok) == 0) {
+  if (!detailed) {
+    poptext.e <- NULL
+  } else if (length(eok) == 0) {
     warning('none of names_e were found in out')
     poptext.e <- NULL
   } else {
@@ -366,7 +382,9 @@ popup_from_ejscreen <- function(out,
   }
 
   # popups text for summary INDEXES (US & STATE PCTILES, FOR NORMAL & SUPPLEMENTARY summary INDEXES) ####
-  if (length(pok) == 0) {
+  if (!detailed) {
+    poptext.ej <- NULL
+  } else if (length(pok) == 0) {
     message('none of names_ej_pctile found in out')
     poptext.ej <- NULL
   } else {
@@ -417,6 +435,11 @@ popup_from_ejscreen <- function(out,
       '<b>', 'Residential Population Indicators: ', '</b>',                 '<br>',
       'Population: ', prettyNum(out$pop, big.mark = ','),        '<br>',
       apply(poptext.d, FUN = function(x) paste0(names(x), ': ', x, collapse = '<br>'), MARGIN = 1), '<br>'
+    )
+  } else if (!detailed && 'pop' %in% names(out)) {
+    pops_d <- paste0(
+      '<b>', 'Residential Population Indicators: ', '</b>',                 '<br>',
+      'Population: ', prettyNum(out$pop, big.mark = ','),        '<br>'
     )
   } else {
     pops_d <- ""
@@ -496,7 +519,7 @@ popup_from_ejscreen <- function(out,
         # display-only override (see sitenumber_label param): show the site number the user
         # expects, and drop the auto row-number id when it would contradict that label,
         # like report_residents_within_xyz_from_ejamit() does for the report header
-        sitenumber = if (is.null(sitenumber_label)) n else sitenumber_label,
+        sitenumber = if (is.null(sitenumber_label)) sitenumbers[n] else sitenumber_label,
         ejam_uniq_id = if (label_replaces_id) NULL else out$ejam_uniq_id[n],
         sitetype = sitetype,
         site_method = site_method, # detailed sitetype like MACT/NAICS/etc. if relevant as from server

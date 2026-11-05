@@ -13,55 +13,25 @@ This file is not stored in the package, but is obtained via \code{\link[=dataloa
 The EPA also provides a \href{https://www.epa.gov/frs/frs-query#industrial}{FRS Facility Industrial Classification Search tool}
 where you can find facilities based on NAICS or SIC.
 
-MOST SITES LACK NAICS INFO IN FRS! NAICS is missing for about 80 percent of these facilities.
-
-frs here had about 2.5 million unique REGISTRY_ID values, but
-
-frs_by_naics had only about 700k rows
-
-about 581,000 unique REGISTRY_ID values with
-
-about 1,858 unique NAICS codes.
-
-length(unique(frs_by_naics$REGISTRY_ID))
-
-\code{length(unique(frs_by_naics[,REGISTRY_ID]))}
-
-\code{length(frs_by_naics[, unique(REGISTRY_ID)])}
-
-\code{frs_by_naics[,uniqueN(REGISTRY_ID)]}
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{   e.g., 581,416 in 02/2025
-
-    lat       lon  REGISTRY_ID  NAICS
-}\if{html}{\out{</div>}}
-
-1: 34.04722 -81.15136 110000854246 325211
-
-2: 34.04722 -81.15136 110000854246 325220
-
-3: 34.04722 -81.15136 110000854246 325222
+Many FRS facilities lack NAICS information. Use \code{nrow(frs_by_naics)},
+\code{data.table::uniqueN(frs_by_naics$REGISTRY_ID)}, and
+\code{data.table::uniqueN(frs_by_naics$NAICS)} for the installed snapshot.
 }
 \examples{
  dataload_dynamic("frs")
  dataload_dynamic("frs_by_naics")
  library(data.table)
- # NAICS is missing for almost 80 percent of facilities
+ # Compare coverage for the installed snapshot.
  frs[ NAICS == "", .N] / frs[,.N]
- # only about 647k facilities had some NAICS info as of 02/2025
  frs[ NAICS != "", .N]
- frs_by_naics[, uniqueN(REGISTRY_ID)]  # about 581k as of 02/2025
+ frs_by_naics[, uniqueN(REGISTRY_ID)]
 
  dim(frs_by_naics)
- # about 680k rows here, or pairs of 1 NAICS - 1 registry ID pair,
- #  since some IDs have 2 or more NAICS so appear as 2 or more rows here.
+ # Some registry IDs appear more than once because they have multiple NAICS codes.
 
- # About 1858 different NAICS codes appear here:
  frs_by_naics[,  uniqueN(NAICS)]
  frs_by_naics[, .(sum(.N > 1)), by=NAICS][,sum(V1)]
-   #  1,699 NAICS codes are used to describe more than one Registry ID
   frs_by_naics[, .(sum(.N == 1)), by=NAICS][,sum(V1)]
-   #  almost 200 NAICS codes appear only once, i.e., apply to only a single facility
 
  # Which 2-digit NAICS are found here most often?
  frs_by_naics[ , .N, keyby=substr(NAICS,1,2)]

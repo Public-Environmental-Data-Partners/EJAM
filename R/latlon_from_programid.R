@@ -17,10 +17,8 @@
 #'  about 2.7 million unique pgm_sys_id values because the same number
 #'  may be used under different program types, like RCRAINFO AND EGRID.
 #'
-#'  These are two distinct facilities both using the number 1:
-#'
-#'  latlon_from_programid('EGRID', 1)
-#'  latlon_from_programid('ICIS', 1)
+#'  The program name is needed because an ID can occur in more than one
+#'  program. Use the current `testinput_program_sys_id` fixture for examples.
 #'
 #'  Also note the FRS API:
 #'   <https://www.epa.gov/frs/facility-registry-service-frs-api>
@@ -35,15 +33,10 @@
 #'
 #' @return table in [data.table](https://r-datatable.com) format with lat  lon  REGISTRY_ID  program   pgm_sys_id
 #' @examples
-#'  ids = c("00603DSCFPRD459", "00603MCRNTRD11K", "00605VNMRBMONTA" )
-#'  latlon_from_programid("TRIS", ids)
-#'
-#'  latlon_from_programid('EGRID', 1)
-#'  latlon_from_programid('ICIS', 1)
-#'
-#'  # ambiguous to only use the number! 354362 is used by two programs here:
-#'  frs_by_programid[match(testinput_program_sys_id, frs_by_programid$pgm_sys_id), ]
-#'  frs_by_programid[frs_by_programid$pgm_sys_id %in% testinput_program_sys_id, ]
+#'  latlon_from_programid(
+#'    testinput_program_sys_id$program[1],
+#'    testinput_program_sys_id$pgm_sys_id[1]
+#'  )
 #'
 #' @export
 #'

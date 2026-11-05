@@ -1031,12 +1031,21 @@ generate_html_header <- function(analysis_title = NULL, # defaults of NULL here 
     shift_hbd <- 0
   }
   ########## #  ########## #  ########## #  ########## #
+  # A standalone report finds communityreport.css next to its HTML file. The app
+  # already includes that CSS via app_ui(), and does not serve it at the site
+  # root, so linking it there was a failed request on every analysis (#588).
+  css_link <- if (isTRUE(in_shiny)) {
+    ""
+  } else {
+    '
+  <link rel=\"stylesheet\"  type=\"text/css\" media=\"all\" href=\"communityreport.css\" />'
+  }
   paste0(
     '
   <link href=\"https://fonts.googleapis.com/css2?family=Heebo:wght@500;600\" rel=\"stylesheet\">
   <link href=\"https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&amp;display=swap\" rel=\"stylesheet\">
-  <link href=\"https://fonts.googleapis.com/css2?family=Noto+Sans&amp;display=swap\" rel=\"stylesheet\">
-  <link rel=\"stylesheet\"  type=\"text/css\" media=\"all\" href=\"communityreport.css\" />',
+  <link href=\"https://fonts.googleapis.com/css2?family=Noto+Sans&amp;display=swap\" rel=\"stylesheet\">',
+    css_link,
 
     '<div id="header-primary-background">',
     '<div id="header-primary-background-inner">',

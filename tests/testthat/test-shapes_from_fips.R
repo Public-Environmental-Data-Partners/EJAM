@@ -93,7 +93,7 @@ if (offline()) {
 } else {
 inputfips <- c(NA,        # fips is NA
                "10",      # State
-               "4273072", # fips valid but no polygons downloaded, so shape_from_fips() returns NA row for that one, empty polygon
+               "3600000", # fips valid ("County Subdivisions not defined") but no polygons, so shape_from_fips() returns NA row for that one, empty polygon
                "10001",   # County not city
                99,        # fips is invalid but not NA
                "2966134", # city
@@ -125,7 +125,7 @@ junk = capture.output({
 ##
 ## 1      <NA>   XXXX        XXXX              XXXX      XXXX
 ## 2        10      y           y                 y         y
-## 3   4273072      y           y              XXXX         y
+## 3   3600000      y           y              XXXX         y
 ## 4     10001      y           y                 y         y
 ## 5        99      y        XXXX              XXXX         y
 ## 6   2966134      y           y                 y      XXXX
@@ -188,7 +188,7 @@ testthat::test_that("bad fips - returns the (VALID) fips at least, ignoring sort
   #  ignoring sort
   expect_setequal(
     shp$FIPS[ fips_valid(shp$FIPS)],
-    inputfips[fips_valid(inputfips)] # "10"      "4273072" "10001"     "2966134" "2966134"
+    inputfips[fips_valid(inputfips)] # "10"      "3600000" "10001"     "2966134" "2966134"
   )
 })
 ################ #
@@ -497,4 +497,392 @@ test_that("offline type validation precedes connectivity and accepts unusable ro
     expect_false(sf::st_is_empty(shp)[1])
     expect_true(sf::st_is_empty(shp)[2])
   }
+})
+# Cached state-file blockgroup sources share the legacy row and metadata contract.
+test_that("tigris blockgroups preserve duplicates, missing rows, and multiple states", {
+  skip_if_not_installed("tigris")
+  ids <- c(head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")], 2),
+           head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "34")], 1))
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  calls <- list()
+  local_mocked_bindings(
+    block_groups = function(state, year, cb, ...) {
+      calls[[length(calls)+1L]] <<- list(state=state, year=year, cb=cb)
+      keep <- rev(ids[c(1,3)])
+      keep <- keep[startsWith(keep, state)]
+      sf::st_sf(GEOID=keep, geometry=sf::st_sfc(rep(list(polygon),length(keep)),crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(offline_cat=function(...) stop("unexpected connectivity probe"), .package="EJAM")
+  before <- options(tigris_use_cache=FALSE)
+  on.exit(options(before), add=TRUE)
+  requested <- ids[c(3,1,3,2)]
+  shp <- shapes_from_fips(requested, myservice_blockgroup="cartographic", year=2022)
+  expect_identical(shp$FIPS, requested)
+  expect_equal(shp$SQMI, round(area_sqmi_from_fips(requested), 2))
+  expect_identical(sf::st_is_empty(shp), c(FALSE,FALSE,FALSE,TRUE))
+  expect_identical(vapply(calls, `[[`, character(1), "state"), c("34","10"))
+  expect_true(all(vapply(calls, function(x) x$year == 2022L && x$cb, logical(1))))
+  expect_true(all(c("STATE_ABBR","pop","SQMI","NAME","fipstype") %in% names(shp)))
+  expect_false(getOption("tigris_use_cache"))
+  calls <- list()
+  mixed <- c("10",ids[1],NA_character_,"99",ids[1])
+  shp <- suppressWarnings(shapes_from_fips(mixed, myservice_blockgroup="tiger", year=2023))
+  expect_identical(shp$FIPS, c("10",ids[1],NA_character_,NA_character_,ids[1]))
+  expect_true(all(sf::st_is_empty(shp)[3:4]))
+  expect_identical(calls, list(list(state="10",year=2023L,cb=FALSE)))
+})
+
+test_that("tigris blockgroups default to the ACS data year", {
+  skip_if_not_installed("tigris")
+  id <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")], 1)
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  years <- integer(0)
+  local_mocked_bindings(
+    block_groups = function(state, year, cb, ...) {
+      years <<- c(years, year)
+      sf::st_sf(GEOID=id, geometry=sf::st_sfc(list(polygon), crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(offline_cat=function(...) stop("unexpected connectivity probe"), .package="EJAM")
+  shapes_from_fips(id, myservice_blockgroup="cartographic")
+  shapes_from_fips(id, myservice_blockgroup="cartographic", year=2023)
+  expect_identical(years, c(as.integer(acs_endyear()), 2023L))
+})
+
+test_that("an empty tigris selection returns empty rows with requested FIPS", {
+  skip_if_not_installed("tigris")
+  ids <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")], 2)
+  local_mocked_bindings(
+    block_groups=function(...) sf::st_sf(GEOID=character(),geometry=sf::st_sfc(crs=4269)),
+    .package="tigris"
+  )
+  shp <- shapes_from_fips(ids, myservice_blockgroup="tiger", year=2022)
+  expect_identical(shp$FIPS, ids)
+  expect_true(all(sf::st_is_empty(shp)))
+})
+
+test_that("blockgroup service URLs and custom outFields keep their existing behavior", {
+  id <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")],1)
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  requests <- character()
+  local_mocked_bindings(offline_cat=function(...) FALSE, .package="EJAM")
+  local_mocked_bindings(st_read=function(dsn, ...) {
+    requests <<- c(requests, dsn)
+    sf::st_sf(FIPS=id, CUSTOM=42, geometry=sf::st_sfc(polygon,crs=4326))
+  }, .package="sf")
+  shp <- shapes_from_fips(id)
+  expect_match(requests[1], "USA_Boundaries_2022", fixed=TRUE)
+  shp <- shapes_blockgroups_from_bgfips(id, outFields=c("FIPS","CUSTOM"),
+                                       myservice="https://example.invalid/custom/query")
+  expect_equal(shp$CUSTOM,42)
+  expect_match(requests[2],"https://example.invalid/custom/query",fixed=TRUE)
+  expect_identical(httr2::url_parse(requests[2])$query$outFields,"FIPS,CUSTOM")
+  expect_error(shapes_blockgroups_from_bgfips(id, outFields="CUSTOM", myservice="tiger"),
+               "outFields require a service URL")
+})
+
+test_that("blockgroup ArcGIS batching has no extra request at multiples of 50", {
+  ids <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")],100)
+  batches <- list()
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(st_read=function(dsn, ...) {
+    where <- httr2::url_parse(dsn)$query$where
+    found <- regmatches(where,gregexpr("[0-9]{12}",where))[[1]]
+    batches[[length(batches)+1L]] <<- found
+    sf::st_sf(FIPS=rev(found),geometry=sf::st_sfc(rep(list(polygon),length(found)),crs=4326))
+  }, .package="sf")
+  shp <- shapes_blockgroups_from_bgfips(ids)
+  expect_identical(lengths(batches),c(50L,50L))
+  expect_identical(shp$FIPS,ids)
+})
+test_that("blockgroup area metadata matches aggregation for repeated and unavailable FIPS", {
+  ids <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips,"10")],2)
+  requested <- c(ids[2],ids[1],ids[2],"100019999991")
+  shp <- sf::st_sf(FIPS=requested,
+                   geometry=sf::st_sfc(rep(list(sf::st_polygon()),length(requested)),crs=4269))
+  expected <- round(area_sqmi_from_fips(requested),2)
+  shp <- shapefile_addcols(shp,addthese="SQMI")
+  expect_equal(shp$SQMI,expected)
+})
+
+test_that("towns that are county subdivisions get boundaries, and missing places warn (#672)", {
+  skip_if_not_installed("tigris")
+  place <- "3651000"   # New York city: in the places file
+  town  <- "3606211"   # Berne town: only in the county subdivisions file
+  span  <- "3613035"   # Cattaraugus Reservation: split across counties
+  gone  <- "3669441"   # South Nyack village: in neither file
+  undef <- "3600000"   # "County Subdivisions not defined": not a real town
+  square <- function(x0) sf::st_polygon(list(matrix(c(x0,40, x0+1,40, x0+1,41, x0,41, x0,40),
+                                                    ncol=2, byrow=TRUE)))
+  cousub_calls <- list()
+  local_mocked_bindings(
+    places = function(state, year, ...) {
+      sf::st_sf(GEOID=place, NAME="New York", NAMELSAD="New York city",
+                geometry=sf::st_sfc(list(square(-74)), crs=4269))
+    },
+    county_subdivisions = function(state, year, ...) {
+      cousub_calls[[length(cousub_calls)+1L]] <<- list(state=state, year=year)
+      sf::st_sf(STATEFP="36", COUSUBFP=c("06211", "13035", "13035", "00000"),
+                NAME=c("Berne", "Cattaraugus", "Cattaraugus", "not defined"),
+                NAMELSAD=c("Berne town", "Cattaraugus Reservation", "Cattaraugus Reservation", "County subdivisions not defined"),
+                geometry=sf::st_sfc(list(square(-73), square(-72), square(-71), square(-70)), crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(offline_cat=function(...) FALSE, .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  requested <- c(town, place, span, gone, town, undef)
+  expect_warning(shp <- shapes_places_from_placefips(requested, year=2022), "3669441, 3600000")
+  expect_identical(shp$FIPS, requested)
+  expect_identical(sf::st_is_empty(shp), c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE))
+  expect_identical(cousub_calls, list(list(state="36", year=2022)))  # only for the codes places lacked
+  # the two county pieces of the spanning town are merged into one shape
+  expect_equal(as.numeric(sf::st_area(sf::st_transform(shp[3, ], 5070))),
+               as.numeric(sum(sf::st_area(sf::st_transform(sf::st_sfc(list(square(-72), square(-71)), crs=4269), 5070)))),
+               tolerance=1e-6)
+  # no county-subdivision lookup, and no warning, when every place is found
+  cousub_calls <- list()
+  expect_no_warning(shapes_places_from_placefips(place, year=2022))
+  expect_length(cousub_calls, 0)
+})
+
+test_that("calendar defaults and county subdivisions compose across states and dispatch paths", {
+  skip_if_not_installed("tigris")
+  wanted <- 2027L
+  calls <- list()
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(
+    predicted_latest_year_available=function(...) 2027L,
+    acs_endyear=function(...) "2022",
+    offline_cat=function(...) FALSE, .package="EJAM"
+  )
+  local_mocked_bindings(
+    places=function(state, year, ...) {
+      expect_equal(year, wanted)
+      sf::st_sf(GEOID="3651000", NAME="New York", NAMELSAD="New York city",
+                geometry=sf::st_sfc(polygon, crs=4269))
+    },
+    county_subdivisions=function(state, year, ...) {
+      expect_equal(year, wanted)
+      calls[[length(calls)+1L]] <<- list(state=state, year=year)
+      code <- if (state == "36") "06211" else "00325"
+      sf::st_sf(STATEFP=state, COUSUBFP=code, NAME="town", NAMELSAD="town",
+                geometry=sf::st_sfc(polygon, crs=4269))
+    }, .package="tigris"
+  )
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  withr::local_options(tigris_year=2024)
+  requested <- c("3606211", "3651000", "5000325", "3606211", "99", "3600000")
+  for (dispatch in c(TRUE, FALSE)) {
+    calls <- list()
+    expect_warning(shp <- shapes_from_fips(requested, allow_multiple_fips_types=dispatch),
+                   "FIPS 3600000 in TIGER/Line 2027", fixed=TRUE)
+    expect_identical(shp$FIPS, c(requested[1:4], NA_character_, "3600000"))
+    expect_identical(sf::st_is_empty(shp), c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE))
+    expect_identical(calls, list(list(state="36", year=2027L), list(state="50", year=2027L)))
+  }
+  wanted <- 2022L
+  calls <- list()
+  expect_warning(shp <- shapes_from_fips(requested, year=2022), "TIGER/Line 2022", fixed=TRUE)
+  expect_true(all(vapply(calls, function(x) x$year == 2022, logical(1))))
+  expect_identical(getOption("tigris_year"), 2024)
+})
+
+test_that("county-subdivision download failures retain aligned missing-boundary warnings", {
+  skip_if_not_installed("tigris")
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(
+    places=function(...) sf::st_sf(GEOID="3651000", geometry=sf::st_sfc(polygon, crs=4269)),
+    county_subdivisions=function(...) stop("boundary service unavailable"), .package="tigris"
+  )
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  requested <- c("3606211", "3651000", "3606211")
+  expect_warning(shp <- shapes_places_from_placefips(requested, year=2026),
+                 "FIPS 3606211 in TIGER/Line 2026", fixed=TRUE)
+  expect_identical(shp$FIPS, requested)
+  expect_identical(sf::st_is_empty(shp), c(TRUE, FALSE, TRUE))
+})
+
+test_that("places use the calendar-predicted vintage unless an explicit year is supplied", {
+  skip_if_not_installed("tigris")
+  id <- fipslist$cityfips[1]
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  requested_years <- numeric()
+  local_mocked_bindings(
+    places = function(state, year, ...) {
+      requested_years <<- c(requested_years, as.numeric(year))
+      sf::st_sf(GEOID=id, FIPS=id, geometry=sf::st_sfc(polygon, crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(acs_endyear=function(...) "2022",
+                        fips_place_from_placename=function(...) id,
+                        offline_cat=function(...) FALSE, .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  withr::local_options(tigris_year=2024)
+  for (shp in list(shapes_places_from_placefips(id),
+                   shapes_places_from_placefips(id, year=NULL),
+                   shapes_places_from_placefips(id, year=2023),
+                   shapes_from_fips(id),
+                   shapes_from_fips(id, allow_multiple_fips_types=FALSE),
+                   shapes_from_fips(id, year=NULL),
+                   shapes_from_fips(c("10", id), year=2023),
+                   shapes_places_from_placenames("Rehoboth Beach city, DE"),
+                   shapes_places_from_placenames("Rehoboth Beach city, DE", year=NULL),
+                   shapes_places_from_placenames("Rehoboth Beach city, DE", year=2023))) {
+    expect_identical(tail(shp$FIPS, 1), id)
+    expect_false(tail(sf::st_is_empty(shp), 1))
+  }
+  default_year <- shapes_places_default_year()
+  expect_equal(requested_years, c(default_year, default_year, 2023,
+                                default_year, default_year, default_year, 2023,
+                                default_year, default_year, 2023))
+  expect_identical(getOption("tigris_year"), 2024)
+})
+
+test_that("places calendar prediction handles release dates and supported limits", {
+  expect_identical(predicted_latest_year_available("2023-10-13"), 2022L)
+  expect_identical(predicted_latest_year_available(as.Date("2023-10-14")), 2023L)
+  expect_identical(predicted_latest_year_available("2023-10-15"), 2023L)
+  expect_identical(predicted_latest_year_available("2026-10-21"), 2026L)
+  expect_identical(predicted_latest_year_available("2027-10-15"), 2027L)
+  expect_no_warning(early <- predicted_latest_year_available("2022-01-01"))
+  expect_identical(early, NA_integer_)
+  expect_identical(predicted_latest_year_available("2037-01-01"), NA_integer_)
+  dates <- c("2024-11-01", "2023-10-14", "2024-10-14")
+  expect_identical(predicted_latest_year_available("2024-10-14", dates), 2024L)
+  expect_error(predicted_latest_year_available(as.Date(character())), "one non-missing date")
+  expect_error(predicted_latest_year_available(as.Date(NA)), "one non-missing date")
+  expect_error(predicted_latest_year_available("2026-10-21", character()), "non-missing dates")
+  expect_error(predicted_latest_year_available("2026-10-21", c("2026-10-14", NA)), "non-missing dates")
+})
+
+test_that("places default uses the calendar prediction and rejects an unsupported date clearly", {
+  local_mocked_bindings(predicted_latest_year_available=function(...) 2027L, .package="EJAM")
+  expect_identical(shapes_places_default_year(), 2027L)
+  local_mocked_bindings(predicted_latest_year_available=function(...) NA_integer_, .package="EJAM")
+  expect_error(shapes_places_default_year(), "supply an explicit year")
+})
+
+test_that("mixed places and blockgroups keep independent default vintages", {
+  skip_if_not_installed("tigris")
+  place <- fipslist$cityfips[1]
+  bg <- head(blockgroupstats$bgfips[startsWith(blockgroupstats$bgfips, "10")], 1)
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  calls <- list()
+  local_mocked_bindings(
+    places=function(state, year, ...) {
+      calls[[length(calls)+1L]] <<- list(type="place", year=as.integer(year))
+      sf::st_sf(GEOID=place, geometry=sf::st_sfc(polygon, crs=4269))
+    },
+    block_groups=function(state, year, cb, ...) {
+      calls[[length(calls)+1L]] <<- list(type="blockgroup", year=as.integer(year))
+      sf::st_sf(GEOID=bg, geometry=sf::st_sfc(polygon, crs=4269))
+    }, .package="tigris"
+  )
+  local_mocked_bindings(acs_endyear=function(...) "2024",
+                        offline_cat=function(...) FALSE, .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  ids <- c(place, bg, place)
+  shp <- shapes_from_fips(ids, myservice_blockgroup="cartographic")
+  expect_identical(shp$FIPS, ids)
+  expect_false(any(sf::st_is_empty(shp)))
+  expect_identical(calls, list(list(type="blockgroup", year=2024L),
+                               list(type="place", year=shapes_places_default_year())))
+  calls <- list()
+  shapes_from_fips(ids, myservice_blockgroup="tiger", year=2023)
+  expect_identical(calls, list(list(type="blockgroup", year=2023L),
+                               list(type="place", year=2023L)))
+})
+
+test_that("county downloads retain the ACS vintage independently of places", {
+  skip_if_not_installed("tidycensus")
+  requested_year <- NULL
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(get_acs=function(year, ...) {
+    requested_year <<- year
+    sf::st_sf(GEOID="10001", geometry=sf::st_sfc(polygon, crs=4269))
+  }, .package="tidycensus")
+  local_mocked_bindings(acs_endyear=function(...) "2022",
+                        offline_cat=function(...) FALSE, .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  shp <- shapes_from_fips("10001", myservice_county="tiger")
+  expect_identical(shp$FIPS, "10001")
+  expect_false(sf::st_is_empty(shp))
+  expect_equal(requested_year, 2022)
+})
+
+test_that("missing or empty place boundaries warn without losing requested rows", {
+  skip_if_not_installed("tigris")
+  ids <- c("3669441", "3651000", "3611000", "3669441")
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(places=function(state, year, ...) {
+    if (year == 2022) {
+      return(sf::st_sf(GEOID=unique(ids),
+                      geometry=sf::st_sfc(polygon, polygon, polygon, crs=4269)))
+    }
+    sf::st_sf(GEOID=c("3651000", "3611000"),
+              geometry=sf::st_sfc(polygon, sf::st_polygon(), crs=4269))
+  }, county_subdivisions=function(...) {
+    sf::st_sf(STATEFP=character(), COUSUBFP=character(),
+              geometry=sf::st_sfc(crs=4269))
+  }, .package="tigris")
+  local_mocked_bindings(offline_cat=function(...) FALSE,
+                        fips_place_from_placename=function(...) ids,
+                        .package="EJAM")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  warning_text <- paste0("No place boundary found for FIPS 3669441, 3611000 in TIGER/Line ",
+                         shapes_places_default_year())
+  for (run in list(function() shapes_places_from_placefips(ids),
+                   function() shapes_from_fips(ids),
+                   function() shapes_from_fips(ids, allow_multiple_fips_types=FALSE),
+                   function() shapes_places_from_placenames("mock places"))) {
+    expect_warning(shp <- run(), warning_text, fixed=TRUE)
+    expect_identical(shp$FIPS, ids)
+    expect_identical(sf::st_is_empty(shp), c(TRUE, FALSE, TRUE, TRUE))
+  }
+  expect_no_warning(older <- shapes_from_fips(ids, year=2022))
+  expect_identical(older$FIPS, ids)
+  expect_false(any(sf::st_is_empty(older)))
+  expect_warning(missing <- shapes_places_from_placefips(rep(ids[1], 2)),
+                            paste0("FIPS 3669441 in TIGER/Line ", shapes_places_default_year()),
+                            fixed=TRUE)
+  expect_identical(missing$FIPS, rep(ids[1], 2))
+  expect_true(all(sf::st_is_empty(missing)))
+})
+
+test_that("missing place warnings identify explicit years and exclude invalid FIPS", {
+  skip_if_not_installed("tigris")
+  ids <- c("3669441", "3651000", "9999999")
+  polygon <- sf::st_polygon(list(matrix(c(-75,39,-74,39,-74,40,-75,40,-75,39),
+                                        ncol=2, byrow=TRUE)))
+  local_mocked_bindings(places=function(state, year, ...) {
+    expect_equal(year, 2023)
+    sf::st_sf(GEOID="3651000", geometry=sf::st_sfc(polygon, crs=4269))
+  }, county_subdivisions=function(...) {
+    sf::st_sf(STATEFP=character(), COUSUBFP=character(),
+              geometry=sf::st_sfc(crs=4269))
+  }, .package="tigris")
+  withr::local_envvar(CENSUS_API_KEY="mock-key")
+  warnings <- character()
+  shp <- withCallingHandlers(shapes_places_from_placefips(ids, year=2023),
+    warning=function(w) {
+      warnings <<- c(warnings, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    })
+  boundary_warning <- warnings[startsWith(warnings, "No place boundary found")]
+  expect_length(boundary_warning, 1)
+  expect_match(boundary_warning, "FIPS 3669441 in TIGER/Line 2023", fixed=TRUE)
+  expect_false(grepl("9999999", boundary_warning, fixed=TRUE))
+  expect_identical(shp$FIPS, c(ids[1:2], NA_character_))
+  expect_identical(sf::st_is_empty(shp), c(TRUE, FALSE, TRUE))
 })

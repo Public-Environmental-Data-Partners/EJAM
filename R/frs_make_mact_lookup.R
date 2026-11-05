@@ -4,6 +4,8 @@
 #' @param folder optional, where to download ICIS-AIR_downloads.zip to, tempdir() by default
 #'
 #' @return list, of [frs_by_mact] table in [data.table](https://r-datatable.com) format and [mact_table] data.frame
+#' @details Leading, trailing, and repeated whitespace in `title` and
+#'   `dropdown_label` is normalized in both returned tables.
 #'
 frs_make_mact_lookup <- function(frs_by_programid, folder=NULL) {
 
@@ -222,11 +224,10 @@ frs_make_mact_lookup <- function(frs_by_programid, folder=NULL) {
   # Publish frs_by_mact.arrow through the data repository workflow.
   # mact_table is still a small package data object.
 
-  mact_table$title <- gsub(  "^ ", "", mact_table$title)
-  mact_table$dropdown_label <- gsub("  ", " ", mact_table$dropdown_label)
-
-  frs_by_mact$title <- gsub(  "^ ", "", frs_by_mact$title)
-  frs_by_mact$dropdown_label <- gsub("  ", " ", frs_by_mact$dropdown_label)
+  for (field in c("title", "dropdown_label")) {
+    mact_table[[field]] <- stringr::str_squish(mact_table[[field]])
+    frs_by_mact[[field]] <- stringr::str_squish(frs_by_mact[[field]])
+  }
 
   return(
     list(

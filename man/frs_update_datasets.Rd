@@ -18,7 +18,8 @@ frs_update_datasets(
   save_as_data_frs_by_programid = FALSE,
   save_as_data_frs_by_naics = FALSE,
   save_as_data_frs_by_sic = FALSE,
-  save_as_data_frs_by_mact = FALSE
+  save_as_data_frs_by_mact = FALSE,
+  date = Sys.Date()
 )
 }
 \arguments{
@@ -31,22 +32,28 @@ and folder will be specified or can be assumed to be current working directory}
 
 \item{csvname}{optional, passed to frs_get()}
 
-\item{save_as_arrow_frs}{Whether to save as .arrow in getwd()}
+\item{save_as_arrow_frs}{Whether to save \code{frs.arrow} in \code{folder_save_as_arrow}.}
 
-\item{save_as_arrow_frs_by_programid}{Whether to save as .arrow in getwd()}
+\item{save_as_arrow_frs_by_programid}{Whether to save \code{frs_by_programid.arrow} there.}
 
-\item{save_as_arrow_frs_by_naics}{Whether to save as .arrow in getwd()}
+\item{save_as_arrow_frs_by_naics}{Whether to save \code{frs_by_naics.arrow} there.}
 
-\item{save_as_arrow_frs_by_sic}{Whether to save as .arrow in getwd()}
+\item{save_as_arrow_frs_by_sic}{Whether to save \code{frs_by_sic.arrow} there.}
 
-\item{save_as_arrow_frs_by_mact}{Whether to save as .arrow in getwd()}
+\item{save_as_arrow_frs_by_mact}{Whether to save \code{frs_by_mact.arrow} there.}
 
 \item{save_as_data_frs, save_as_data_frs_by_programid, save_as_data_frs_by_naics, save_as_data_frs_by_sic, save_as_data_frs_by_mact}{Obsolete. FRS tables are no longer saved as \code{.rda} files in \verb{./data/}.
 Leave these as \code{FALSE} and publish the \code{.arrow} files instead.}
+
+\item{date}{Retrieval/snapshot date passed to \code{\link[=frs_get]{frs_get()}}. Set it to the
+original retrieval date when reusing a previously downloaded source CSV.}
 }
 \value{
-Creates saved copies of datasets for the R package, overwriting old ones, using
-\code{\link[=frs_get]{frs_get()}} and \code{\link[=frs_inactive_ids]{frs_inactive_ids()}} and other functions, and invisibly returns \link{frs}.
+Writes the requested Arrow IPC files locally, using \code{\link[=frs_get]{frs_get()}}
+and \code{\link[=frs_inactive_ids]{frs_inactive_ids()}} and other functions, and invisibly returns the
+newly built \code{frs} table. The caller must validate and publish the files.
+\code{download_date} and \code{released} describe this FRS retrieval/snapshot;
+the version and release-date attributes come from EJAM's DESCRIPTION.
 }
 \description{
 Main function that updates several FRS datasets for use in EJAM
@@ -60,14 +67,18 @@ This function is only for a package maintainer/updater
 (or an analyst who wants to get the latest information).
 
 These datasets are obtained from EPA servers, reformatted for this package,
-and then stored as \code{.arrow} files in a separate repository - see
+and written as local Arrow IPC files for validation before they are uploaded
+to an \code{ejamdata} release - see
 \href{https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-datasets.html}{updating data for package}.
 The \verb{save_as_data_*} parameters are obsolete and kept only to make old
 maintainer scripts fail clearly. FRS tables are no longer saved as
 lazy-loaded \code{.rda} package data in \verb{EJAM/data/}.
 
-The files later get downloaded for local use during the process
-of installing the EJAM package.
+The five FRS Arrow files are \code{frs}, \code{frs_by_programid}, \code{frs_by_naics},
+\code{frs_by_sic}, and \code{frs_by_mact}. The function also writes \code{mact_table.arrow}
+and \code{mact_table.rda} to the output folder; \code{mact_table} is package data,
+not one of the 11 dynamic Arrow release assets. The Arrow files later get
+downloaded for local use by EJAM.
 }
 \seealso{
 \code{\link[=frs_get]{frs_get()}} \code{\link[=frs_inactive_ids]{frs_inactive_ids()}} \code{\link[=frs_drop_inactive]{frs_drop_inactive()}}

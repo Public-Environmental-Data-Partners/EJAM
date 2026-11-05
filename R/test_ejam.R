@@ -271,7 +271,8 @@ instead of tests/testthat/_logs
         "test-frs_from_programid.R",
         "test-frs_from_regid.R",
         "test-frs_from_sic.R",
-        "test-frs_is_valid.R"
+        "test-frs_is_valid.R",
+        "test-mact_labels.R"
       ),
       test_latlon = c(
         "test-latlon_infer.R",
@@ -287,13 +288,17 @@ instead of tests/testthat/_logs
       ),
       test_maps = c(
         "test-MAP_FUNCTIONS.R",
-        "test-ejam2map.R"
+        "test-ejam2map.R",
+        "test-utils_map_size.R",
+        "test-mapfast-colors.R",
+        "test-map_ejscreen_indicator.R"
       ),
       test_shape = c(
         "test-latlon_from_shapefile.R",
         "test-shapefix.R",
         "test-shapefile_xyz.R",
         "test-shapes_from_fips.R",
+        "test-release-geography.R",
         "test-shapes_from_zip.R",
         "test-ejam2shapefile.R",
         "test-shape2zip.R",
@@ -338,6 +343,7 @@ instead of tests/testthat/_logs
       ),
       test_ejamit = c(
         "test-ejamit.R",
+        "test-ejamit-zip-alias.R",
         "test-ejamit_compare_distances.R",
         "test-ejamit_compare_types_of_places.R",
         "test-ejamit_sitetype_from_input.R",
@@ -382,9 +388,11 @@ instead of tests/testthat/_logs
         # hit the network.
         "test-ejamapi.R",
         "test-url_ejamapi.R",
+        "test-zip-api-wrappers.R",
         "test-URL_FUNCTIONS_part1.R",
         "test-URL_FUNCTIONS_part2.R",
         "test-url_columns_bysite.R",
+        "test-url_description.R",
         "test-url_package.R"
       ),
       test_live_url = c(
@@ -414,8 +422,11 @@ instead of tests/testthat/_logs
         "test-sites_from_input.R",
         "test-is.numericish.R",
         "test-create_filename.R",
+        "test-posthog_script.R",
         "test-grepn.R",
         "test-utils_PACKAGE_DEV.R",
+        "test-utils_offline.R",
+        "test-utils_memory_guard.R",
         "test-pctile_x_is_hit_by_score.R",
         "test-plot_vs_us.R",
         "test-count_sites_with_n_high_scores.R",
@@ -630,7 +641,24 @@ and all filenames listed there actually exist as in that folder called `test`.\n
           row.names = c(NA,
                         -132L), class = "data.frame")
       )
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = c("test-mact_labels.R", "test-utils_offline.R",
+                            "test-ejamit-zip-alias.R", "test-zip-api-wrappers.R",
+                            "test-utils_memory_guard.R", "test-mapfast-colors.R",
+                            "test-map_ejscreen_indicator.R"),
+                   seconds_byfile = c(1, 1, 0, 1, 1, 1, 0))
+      )
 
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = "test-utils_map_size.R", seconds_byfile = 3)
+      )
+
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = "test-url_description.R", seconds_byfile = 1)
+      )
 
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #

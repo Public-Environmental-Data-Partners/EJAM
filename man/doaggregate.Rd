@@ -25,6 +25,7 @@ doaggregate(
   testing = FALSE,
   showdrinkingwater = TRUE,
   showpctowned = TRUE,
+  copy_sites2blocks = TRUE,
   ...
 )
 }
@@ -102,6 +103,12 @@ Set to FALSE to prevent long output showing in console in RStudio when in intera
 \item{showdrinkingwater}{T/F whether to include drinking water indicator values or display as NA. Defaults to TRUE.}
 
 \item{showpctowned}{T/f whether to include percent owner-occupied units indicator values or display as NA. Defaults to TRUE.}
+
+\item{copy_sites2blocks}{Optional, default TRUE, so the sites2blocks table passed here is not
+modified. doaggregate() adds columns to and re-sorts sites2blocks, so by default it first makes
+a copy, which needs as much memory as sites2blocks itself (gigabytes in a very large analysis).
+Set to FALSE to skip that copy when the caller will not reuse sites2blocks,
+as \code{\link[=ejamit]{ejamit()}} does. Columns are only added and rows re-sorted; values are not changed.}
 
 \item{...}{more to pass to another function (may not be implemented yet)}
 }

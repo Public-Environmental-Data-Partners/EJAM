@@ -10,26 +10,8 @@
 #'    This is the format with one row per site-programid pair,
 #'    so multiple rows for one site if it is in multiple programs.
 #'
-#'  ```
-#'  > dim(frs_by_programid)
-#'  [1] 3479560       6   as of 02/2025
-#'
-#' nn=sample(1:nrow(frs_by_programid), 1); frs_by_programid[REGISTRY_ID == frs_by_programid$REGISTRY_ID[nn],]
-#'
-#' Key: <pgm_sys_id, program, REGISTRY_ID>
-#'           lat       lon  REGISTRY_ID  PGM_SYS_ACRNMS program pgm_sys_id
-#'         <num>     <num>       <char>          <char>  <char>     <char>
-#'   1: 42.01282 -78.54799 110010618705 ICIS:1400013175    ICIS 1400013175
-#'   2: 42.01282 -78.54799 110010618705 ICIS:1400013176    ICIS 1400013176
-#'
-#' nn=sample(1:nrow(frs_by_programid), 1); frs_by_programid[REGISTRY_ID == frs_by_programid$REGISTRY_ID[nn],]
-#'
-#' Key: <pgm_sys_id, program, REGISTRY_ID>
-#'         lat       lon  REGISTRY_ID           PGM_SYS_ACRNMS program          pgm_sys_id
-#'       <num>     <num>       <char>                   <char>  <char>              <char>
-#' 1: 34.95563 -81.91435 110011516840  NCDB:C04#TSCAIV-98-LD11    NCDB  C04#TSCAIV-98-LD11
-#' 2: 34.95563 -81.91435 110011516840 NCDB:C04#TSCAIV-98-LD11A    NCDB C04#TSCAIV-98-LD11A
-#' 3: 34.95563 -81.91435 110011516840 NCDB:I04#19980603N4005 2    NCDB I04#19980603N4005 2
-#'  ```
+#'  Counts and example IDs change with each FRS snapshot. After loading the
+#'  current Arrow table, inspect `dim(frs_by_programid)` and a site's rows with
+#'  `frs_by_programid[REGISTRY_ID == testinput_registry_id[1]]`.
 #'
 NULL

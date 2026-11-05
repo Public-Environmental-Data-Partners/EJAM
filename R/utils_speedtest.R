@@ -1230,7 +1230,7 @@ speedtest_runtime_scenarios <- function(
 }
 ######################################################################### #
 
-#' Utility used in app_server to predict ejamit or doaggregate runtime
+#' Utility used in app_server to predict ejamit() runtime or web-app report time
 #'
 #' @param rows number of locations to be analyzed
 #' @param radius buffer radius distance, in miles

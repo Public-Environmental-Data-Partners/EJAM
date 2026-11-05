@@ -13,11 +13,11 @@
 #' @param sortby set to FALSE if you want to have no sorting, or to an increasing vector
 #'   that provides the sort order
 #' @param topn optional, show only the top n sites
-#' @param ... passed to barplot()
+#' @param ... passed to graphics::barplot()
 #'
 #' @inherit ejam2barplot_sites examples
 #'
-#' @return  same as [barplot()]
+#' @return  same as [graphics::barplot()]
 #' @seealso [ejam2barplot_sites()]
 #'
 #' @export
@@ -49,7 +49,7 @@ plot_barplot_sites <- function(results_bysite, varname = "pctlowinc", names.arg 
   h = h[1:topn]
   names.arg = names.arg[1:topn]
 
-  barplot(height = h,
+  graphics::barplot(height = h,
           names.arg = names.arg,
           main = main, xlab = xlab, ylab = ylab,
           ...)
@@ -72,12 +72,12 @@ plot_barplot_sites <- function(results_bysite, varname = "pctlowinc", names.arg 
 #'   that provides the sort order
 #' @param topn optional, show only the top n groups (site types) -- Does not show all
 #'   by default -- only shows top n groups.
-#' @param ... passed to barplot()
+#' @param ... passed to graphics::barplot()
 #' @seealso [ejam2barplot_sitegroups()]
 #'
 #' @inherit ejam2barplot_sitegroups examples
 #'
-#' @return same as [barplot()]
+#' @return same as [graphics::barplot()]
 #'
 #' @export
 #'
@@ -113,9 +113,9 @@ plot_barplot_sitegroups = function(results_bytype, varname = "Demog.Index", name
 #'   that provides the sort order
 #' @param topn optional, show only the top n sites -- Does not show all sites
 #'   by default -- only shows top n sites.
-#' @param ... passed to barplot()
+#' @param ... passed to graphics::barplot()
 #'
-#' @return same as [barplot()]
+#' @return same as [graphics::barplot()]
 #' @seealso [plot_barplot_sites()]
 #' @examples
 #' # Quickly compare top few sites by population count nearby
@@ -172,7 +172,7 @@ ejam2barplot_sites <- function(ejamitout, varname = "pctlowinc", names.arg = NUL
 #'   that provides the sort order
 #' @param topn optional, show only the top n groups (site types) -- Does not show all
 #'   by default -- only shows top n groups.
-#' @param ... passed to barplot()
+#' @param ... passed to graphics::barplot()
 #' @seealso [plot_barplot_sitegroups()]
 #' @details see [ejamit_compare_types_of_places()] for more examples
 #' @examples
@@ -182,7 +182,7 @@ ejam2barplot_sites <- function(ejamitout, varname = "pctlowinc", names.arg = NUL
 #'
 #'  ejam2barplot_sitegroups(out, "sitecount_unique", topn = 3, sortby = FALSE)
 #'
-#' @return same as [barplot()]
+#' @return same as [graphics::barplot()]
 #'
 #' @export
 #'

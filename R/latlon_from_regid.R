@@ -10,10 +10,8 @@
 #'   "lat" "lon" "REGISTRY_ID" "PRIMARY_NAME" "NAICS" "PGM_SYS_ACRNMS"
 #'
 #' @examples
-#'  latlon_from_regid("110070874073")
-#'  latlon_from_regid(110070874073)
-#'  frs_from_regid(110070874073)
-#'  frs_from_regid(testinput_registry_id)
+#'  latlon_from_regid(testinput_registry_id[1])
+#'  frs_from_regid(testinput_registry_id[1:2])
 #'
 #' @export
 #'

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "boundary_year": 2024,
+  "sources": {
+    "states_shapefile": "https://www2.census.gov/geo/tiger/TIGER2024/STATE/tl_2024_us_state.zip",
+    "counties_shapefile": "https://www2.census.gov/geo/tiger/GENZ2024/shp/cb_2024_us_county_500k.zip"
+  },
+  "source_archive_md5": {
+    "states_shapefile": "f2a7988a6c67064e0e3bac1b8211ae1c",
+    "counties_shapefile": "fb463d085f2e5a5ad931a44f0be3f7dc"
+  },
+  "rows": {
+    "states_shapefile": 56,
+    "counties_shapefile": 3235,
+    "stateinfo": 52,
+    "stateinfo2": 58,
+    "countyinfo": 3235
+  },
+  "stateinfo2_updated_fields": ["ST", "statename", "landarea.sqkm", "waterarea.sqkm", "area.sqkm", "landarea.sqmi", "waterarea.sqmi", "area.sqmi", "lat", "lon"],
+  "stateinfo2_retained_fields": ["FIPS.ST", "ftpname", "REGION", "is.usa.plus.pr", "is.usa", "is.state", "is.contiguous.us", "is.island.areas", "inland.sqmi", "inland.sqkm", "coastal.sqmi", "coastal.sqkm", "greatlakes.sqmi", "greatlakes.sqkm", "territorial.sqmi", "territorial.sqkm"],
+  "retained_rows": ["UM", "US"],
+  "notes": ["Stage only. No ACS/package version is claimed for these geography outputs.", "US area totals sum 50 states + DC; US coordinates and UM retain previous values.", "Water subcategories, EPA regions, classifications and ftp names retain their previous provenance.", "countyinfo.csv is an audit table, not a new public dataset.", "Run the complete link check against accepted matching-vintage ACS and Census 2020 block/crosswalk inputs before promotion."],
+  "files_md5": {
+    "counties_shapefile.rda": "5b7d262580f22af8f2c3ccdf04e65225",
+    "countyinfo.csv": "85987dea85ae77163dacf1501732a749",
+    "stateinfo.rda": "316d46009d4618562b1042f63764e791",
+    "stateinfo2.rda": "88e9d759e4dabe5b3b2a513f521b1b81",
+    "states_shapefile.rda": "a07a005885abc800c52acab84cc466b7"
+  }
+}

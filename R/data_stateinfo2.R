@@ -4,10 +4,14 @@
 
 #' @name stateinfo2
 #' @docType data
-#' @title stateinfo2 (DATA) data.frame of state abbreviations and state names (50+DC+PR; not AS, GU, MP, VI, UM)
-#' @description 52 rows and several variables: ST is the 2-letter abbreviation,
+#' @title stateinfo2 (DATA) state and territory reference information
+#' @description 58 rows, including the US total and UM: ST is the 2-letter abbreviation,
 #'   statename is the State name, etc.
 #' @details Created for EJAM by datacreate_stateinfo2.R script
+#' Release geography preparation refreshes names, areas and internal points
+#' where Census supplies them. Updated fields and retained fields/rows are
+#' recorded in geography provenance attributes; water subcategories, EPA
+#' regions, classifications and unsupported rows retain their previous sources.
 #'
 #' Also see [Census info](https://www.census.gov/programs-surveys/decennial-census/decade/2020/planning-management/release/2020-island-areas-data-products.html)
 #'

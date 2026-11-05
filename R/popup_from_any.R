@@ -5,7 +5,7 @@
 #' @details Each popup is made from one row of the data.frame.
 #'   Each popup has one row of text per column of the data.frame
 #' @param x, a table in [data.table](https://r-datatable.com) format table or data frame.
-#'   If `x` is another object type, it is coerced via [as.data.frame()].
+#'   If `x` is another object type, it is coerced via `as.data.frame()`.
 #' @param n Show the first n columns of mypoints, in popup. "all" means all of them.
 #' @param column_names default is all, or a vector of column names from x to use.
 #'   If some of column_names requested are not found in names(x),
@@ -96,6 +96,9 @@ popup_from_any <- function(x, column_names = names(x), labels = column_names, n 
     labels <- column_names
     warning("for map popups, column_names and labels must be same length. Using column_names as labels.")
   }
+
+  # *** see popup_from_df_with_urls() regarding using param column_names_urls and
+  # skipping htmlEscape() for those URLs so they can be clickable links
 
   escaped_labels <- htmltools::htmlEscape(labels)
 

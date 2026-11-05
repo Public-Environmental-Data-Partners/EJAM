@@ -142,7 +142,7 @@ for (func in funcnames) {
 ############## TESTS FOR url_ejscreenmap() DEEP LINKS ############## #
 
 test_that("url_ejscreenmap makes ?fips= deep links for county/tract/blockgroup", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   expect_equal(url_ejscreenmap(fips = "10001"), paste0(base, "?fips=10001"))
   expect_equal(url_ejscreenmap(fips = c("10001", "10003")),
                paste0(base, "?fips=", c("10001", "10003")))
@@ -153,7 +153,7 @@ test_that("url_ejscreenmap makes ?fips= deep links for county/tract/blockgroup",
 })
 
 test_that("url_ejscreenmap combined=TRUE returns one multisite URL", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   expect_equal(url_ejscreenmap(fips = c("10001", "10003"), combined = TRUE),
                paste0(base, "?fips=10001,10003"))
   expect_equal(url_ejscreenmap(lat = c(39, 39.7), lon = c(-75.5, -75.6), combined = TRUE, radius = 2),
@@ -164,7 +164,7 @@ test_that("url_ejscreenmap combined=TRUE returns one multisite URL", {
 })
 
 test_that("url_ejscreenmap state/city fips fall back to ?wherestr= place name", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   u <- url_ejscreenmap(fips = "10") # Delaware
   expect_true(startsWith(u, paste0(base, "?wherestr=")))
   expect_false(grepl("fips=", u, fixed = TRUE))
@@ -173,7 +173,7 @@ test_that("url_ejscreenmap state/city fips fall back to ?wherestr= place name", 
 })
 
 test_that("url_ejscreenmap points: legacy wherestr by default, lat/lon/radius when radius given", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   expect_equal(url_ejscreenmap(lat = 39, lon = -75.5),
                paste0(base, "?wherestr=39,-75.5"))
   expect_equal(url_ejscreenmap(lat = 39, lon = -75.5, radius = 3),
@@ -184,7 +184,7 @@ test_that("url_ejscreenmap points: legacy wherestr by default, lat/lon/radius wh
 })
 
 test_that("url_ejscreenmap wherestr-only calls now produce a wherestr link", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   expect_equal(url_ejscreenmap(wherestr = "10001"), paste0(base, "?wherestr=10001"))
   # a zip code passed as a number works too
   expect_equal(url_ejscreenmap(wherestr = 10001), paste0(base, "?wherestr=10001"))
@@ -197,7 +197,7 @@ test_that("url_ejscreenmap wherestr-only calls now produce a wherestr link", {
 })
 
 test_that("url_ejscreenmap zip= is the explicit way to link zip codes", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   expect_equal(url_ejscreenmap(zip = "10001"), paste0(base, "?zip=10001"))
   # a zip passed as a number gets its leading zeroes restored
   expect_equal(url_ejscreenmap(zip = 1001), paste0(base, "?zip=01001"))
@@ -214,7 +214,7 @@ test_that("url_ejscreenmap zip= is the explicit way to link zip codes", {
 })
 
 test_that("url_ejscreenmap shapefile makes ?polygon= deep links, drawing the outline", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   u <- url_ejscreenmap(shapefile = testinput_shapes_2[1, ])
   expect_true(startsWith(u, paste0(base, "?polygon=")))
   # the polygon= value is lat,lon pairs separated by ;
@@ -228,7 +228,7 @@ test_that("url_ejscreenmap shapefile makes ?polygon= deep links, drawing the out
 })
 
 test_that("url_ejscreenmap combined=TRUE falls back to one URL per site when too long", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   # ~400 five-digit codes is far over the ~1900-character combined-URL cap
   manyfips <- sprintf("%05d", 10001:10400)
   expect_warning({x <- url_ejscreenmap(fips = manyfips, combined = TRUE)}, "one URL per site")
@@ -249,7 +249,7 @@ test_that("url_ejscreenmap combined=TRUE falls back to one URL per site when too
 })
 
 test_that("url_ejscreenmap combined=TRUE for shapefile returns one URL with repeated polygon=", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   u <- url_ejscreenmap(shapefile = testinput_shapes_2, combined = TRUE, radius = 1)
   expect_equal(length(u), 1)
   expect_true(startsWith(u, paste0(base, "?polygon=")))
@@ -261,7 +261,7 @@ test_that("url_ejscreenmap combined=TRUE for shapefile returns one URL with repe
 })
 
 test_that("url_ejscreenmap polygon centroid fallback keeps the radius", {
-  base <- "https://pedp-ejscreen.azurewebsites.net/index.html"
+  base <- url_package("ejscreen")
   # a star polygon with many deep teeth survives simplification with too many
   # vertices to fit in a URL, forcing the centroid fallback
   n <- 400

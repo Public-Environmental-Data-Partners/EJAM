@@ -7,7 +7,7 @@
 plot_barplot_ratios(
   ratio.to.us.d.overall,
   shortlabels = NULL,
-  mycolorsavailable = c("gray", "yellow", "orange", "red"),
+  mycolorsavailable = ejscreen_color_defaults("ratio")$colorfills,
   main = "Residential Populations at the Analyzed Locations Compared to US Overall",
   ylab = "Ratio vs. Average",
   caption =
@@ -21,7 +21,11 @@ for an easier way to specify which indicator to show.}
 
 \item{shortlabels}{optional, names to use for plot - should be same length as named list ratio.to.us.d.overall}
 
-\item{mycolorsavailable}{optional (best to leave as default)}
+\item{mycolorsavailable}{One color per ratio bin. The default bins are
+below 1.05, from 1.05 to below 2, from 2 to below 3, and at least 3.
+The shared defaults are
+gray, yellow, orange, and red. Cutoffs come from the ratio scheme in
+\code{global_defaults_package$default_color_coding}.}
 
 \item{main}{optional, title for plot, like "Analyzed Locations Compared to US Overall",
 or if using state ratios, include the word "State" to have it try to infer what the legend should be}
@@ -60,8 +64,8 @@ plot_barplot_ratios_ez(
 
 out <- testoutput_ejamit_100pts_1miles
 plot_barplot_ratios(
-  unlist(out$results_overall[ ,
-     c(..names_d_ratio_to_avg , ..names_d_subgroups_ratio_to_avg) ])
+  unlist(out$results_overall[,
+    c(names_d_ratio_to_avg, names_d_subgroups_ratio_to_avg), with = FALSE])
 )
 
 }

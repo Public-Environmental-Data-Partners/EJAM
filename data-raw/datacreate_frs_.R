@@ -23,26 +23,21 @@
 # https://echo.epa.gov/resources/echo-data/about-the-data#sources
 ################################################################################## #
 if (!file.exists(file.path(getwd(), "DESCRIPTION")) || desc::desc_get(file = "DESCRIPTION", keys = "Package") != "EJAM") {stop('do this from EJAM source package folder')}
+library(data.table) # sourced datacreate scripts use setDT(), setDF(), and .N
 # if (basename(getwd()) != "EJAM") {stop('do this from EJAM source package folder')} # fails if you put the source in a worktree like one named after a branch
 
-folder_save_as_arrow = "./data-raw/pipeline_outputs/frs" # "./data"  # where to save the new .arrow files of frs-related info
+folder_save_as_arrow <- Sys.getenv(
+  "EJAM_FRS_ARROW_OUTPUT", "./data-raw/pipeline_outputs/frs"
+) # keep the new files separate from installed/cached release assets
 refresh_frs_arrows <- tolower(Sys.getenv("EJAM_REFRESH_FRS_ARROWS", "TRUE")) %in% c("true", "t", "1", "yes", "y")
 
 open_package_datasets_scripts = FALSE # set TRUE to open each datacreate_ script for editing
 
 update_package_datasets = TRUE   # set TRUE to source each datacreate_ script that
 # updates each .rda package dataset that depends on frs/naics/mact/sic,
-# and a couple misc ones too.
+# plus the sample input files.
 
-if (!exists("folder_save_as_arrow") && interactive()) {
-  folder_save_as_arrow <- choose.dir(".", "Select where to save large files being downloaded and modified/prepared")
-  # folder_save_as_arrow <- "~/../Downloads/EJAMbigfiles" #   where you want to save them locally
-}
 if (!dir.exists(folder_save_as_arrow)) {dir.create(folder_save_as_arrow, recursive = TRUE)}
-if (!exists("alreadygot")) {
-  alreadygot <- FALSE
-  mytemp <- tempdir()
-}
 ################################################################################ #
 
 # 1) SAVE .arrow FILES LOCALLY ####
@@ -59,8 +54,8 @@ all related .arrow files are saved too \n")
 
   x = EJAM:::frs_update_datasets(
 
-    folder = mytemp, # default would use a tempdir() but not return its name
-    downloaded_and_unzipped_already = alreadygot,
+    folder = tempdir(),
+    downloaded_and_unzipped_already = FALSE,
     folder_save_as_arrow = folder_save_as_arrow,
 
     save_as_arrow_frs              = TRUE,
@@ -74,7 +69,6 @@ all related .arrow files are saved too \n")
     save_as_data_frs_by_programid = FALSE,
     save_as_data_frs_by_sic       = FALSE
   )
-  alreadygot <- TRUE
   # dir(folder_save_as_arrow)
   message("Finished saving .arrow files locally in", folder_save_as_arrow, "via frs_update_datasets() \n")
 } else {
@@ -86,10 +80,55 @@ all related .arrow files are saved too \n")
 #
 fold <- folder_save_as_arrow
 frs_vars <- c('frs', 'frs_by_programid', 'frs_by_naics', "frs_by_sic", "frs_by_mact")
+metadata_fields <- c(
+  "download_date", "released", "ejam_package_version", "ejscreen_version",
+  "ejscreen_releasedate", "acs_releasedate", "acs_version",
+  "census_version", "date_saved_in_package"
+)
 for (varname in frs_vars) {
   fname <- paste0(varname, ".arrow")
   assign(varname, value = arrow::read_ipc_file(file = file.path(fold, fname)))
+  missing_metadata <- metadata_fields[vapply(
+    metadata_fields, function(field) is.null(attr(get(varname), field)), logical(1)
+  )]
+  if (length(missing_metadata)) {
+    stop(varname, ".arrow is missing metadata: ", paste(missing_metadata, collapse = ", "))
+  }
 }
+for (field in metadata_fields) {
+  values <- lapply(frs_vars, function(varname) attr(get(varname), field))
+  if (!all(vapply(values[-1], identical, logical(1), values[[1]]))) {
+    stop("FRS Arrow files disagree on metadata field: ", field)
+  }
+}
+description_fields <- c(
+  ejam_package_version = "Version",
+  ejscreen_version = "VersionEJSCREEN",
+  ejscreen_releasedate = "ReleaseDateEJSCREEN",
+  acs_releasedate = "ReleaseDateACS",
+  acs_version = "VersionACS",
+  census_version = "VersionCensus"
+)
+for (field in names(description_fields)) {
+  if (!identical(
+    unname(as.character(attr(frs, field))),
+    as.character(desc::desc_get(description_fields[[field]]))
+  )) {
+    stop("FRS Arrow metadata does not match DESCRIPTION: ", field)
+  }
+}
+
+# mact_table is package data, not a dynamic ejamdata release asset.
+load(file.path(folder_save_as_arrow, "mact_table.rda"))
+for (table_name in c("frs_by_mact", "mact_table")) {
+  for (field in c("title", "dropdown_label")) {
+    values <- get(table_name)[[field]]
+    if (any(values != stringr::str_squish(values), na.rm = TRUE)) {
+      stop(table_name, "$", field, " has leading, trailing, or repeated whitespace")
+    }
+  }
+}
+usethis::use_data(mact_table, overwrite = TRUE)
 ################################################################################ #
 ## Move .arrow files to new release on ejamdata repo or elsewhere ####
 
@@ -152,6 +191,8 @@ datacreate_scripts_to_source <- c(
   "data-raw/datacreate_epa_programs.R",  # created from frs_by_programid and # also needs epa_programs_defined
 
   "data-raw/datacreate_testdata_frs.R", #  ## just random samples of frs ids in .csv and .xlsx files for inst/testdata
+  "data-raw/datacreate_testdata_frs_programid.R", # current FRS program-ID upload examples
+  "data-raw/datacreate_testdata_frs_example.R", # drop retired IDs from historical ECHO example
   "data-raw/datacreate_testinput_program_name.R",   # do after any EPA frs update
   "data-raw/datacreate_testinput_program_sys_id.R", # do after any EPA frs update
   "data-raw/datacreate_testinput_registry_id.R",    # do after any EPA frs update. used in tests.
@@ -159,31 +200,17 @@ datacreate_scripts_to_source <- c(
 
   ## do these if updating the frs dataset, or if the naics universe of all codes changes
 
-  "data-raw/datacreate_NAICS.R", # MUST CHECK THE YEAR USED IN THAT FILE SO IT MATCHES EPA FRS NAICS VINTAGE USED  # in 2027, expect changes in naics codes (every 5 years, and one update was 2022). Do this after those code changes.
-  "data-raw/datacreate_naicstable.R",     # after NAICS changes
-  "data-raw/datacreate_testinput_naics.R", # do this when allowable NAICS code universe changes (every 5 years)
   "data-raw/datacreate_naics_counts.R",   # do after any EPA frs update  (OR if NAICS code universe) is updated, and note NAICS codes change every 5 years but NAICS info in EPA frs dataset is not be updated on same schedule!
 
   ## do these if updating the frs dataset, or if SIC universe ever changes (unlikely)
 
-  "data-raw/datacreate_SIC.R",      # unlikely to ever change since transitioning from SIC to NAICS
-  "data-raw/datacreate_sictable.R",  # after SIC is updated (if it ever is)
-  "data-raw/datacreate_sic_counts.R",  ## must do AFTER EPA-based frs_by_sic is updated,  uses SIC and sictable and latest updated frs to update SIC
-  "data-raw/datacreate_testinput_sic.R", # do if/after SIC is updated, in case SIC code universe changes
-
-  ######################### ########################### #
-
-  # NOT related to FRS.  Do optionally but can skip
-
-  "data-raw/datacreate_testpoints_5_50_500.R",    # unlikely to ever change, but could rerun as a way to update metadata
-  "data-raw/datacreate_testinput_address_table.R",# unlikely to ever change, but could rerun as a way to update metadata
-  "data-raw/datacreate_testinput_shapes_2.R",     # unlikely to ever change, but could rerun as a way to update metadata
-  "data-raw/datacreate_ejampackages.R",            # not important, somewhat obsolete, but could rerun as a way to update metadata
-  #### "data-raw/datacreate_1_metadata_update.R",  # not used, not tested
-  ########################## ########################### #
-  "data-raw/datacreate_meters_per_mile.R"  # will not change, but could rerun as a way to update metadata
+  "data-raw/datacreate_sic_counts.R",  ## refreshes FRS counts/labels in SIC using the existing code universe and sictable
+  "data-raw/datacreate_testinput_sic.R" # verify saved SIC example against new FRS
 
 )
+# If the NAICS or SIC *code universe* changed, separately review and run
+# datacreate_NAICS.R -> datacreate_naicstable.R -> datacreate_testinput_naics.R,
+# or datacreate_sictable.R before rebuilding the FRS-derived counts above.
 ###################################################### #
 if (open_package_datasets_scripts) {
   ## open and check the scripts ####
@@ -203,4 +230,3 @@ if (update_package_datasets) {
   }
   ######################################### ########################################## #
 }
-

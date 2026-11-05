@@ -20,10 +20,8 @@ Get latitude, longitude (and NAICS) via EPA Facility Registry ID
 See FRS Facility Registry Service data on EPA-regulated sites
 }
 \examples{
- latlon_from_regid("110070874073")
- latlon_from_regid(110070874073)
- frs_from_regid(110070874073)
- frs_from_regid(testinput_registry_id)
+ latlon_from_regid(testinput_registry_id[1])
+ frs_from_regid(testinput_registry_id[1:2])
 
 }
 \seealso{

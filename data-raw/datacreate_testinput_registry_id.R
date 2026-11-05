@@ -20,10 +20,8 @@ print(x[grepl("id", x$Item), ])
 
 # create the dataset ####
 
-testinput_registry_id <- c(
-  110071293460, 110070874073, 110070538057, 110044340807,
-  110030509215, 110019033810, 110056111559, 110056982323
-)
+set.seed(as.numeric(as.Date("2026-09-28")))
+testinput_registry_id <- as.numeric(sample(frs$REGISTRY_ID, 8L))
 if (anyNA( frs_from_regid(testinput_registry_id)$lat)) {stop("some of the testinput_registry_id are not in the FRS database or lack lat,lon")}
 ## or
 # latlon_from_regid(testinput_registry_id)

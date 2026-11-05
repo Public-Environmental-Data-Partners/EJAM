@@ -1,44 +1,152 @@
-# EJAM 3.2022.3 (unreleased)
+# EJAM 4.2024.0 (in development)
 
-Features from the v4 milestone, shipping on the ACS 2018-2022 vintage.
 
-This is the final ACS 2018-2022 release; it is frozen from here on. The 2020-2024
-vintage ships separately as `4.2024.0`, which is where development continues.
+### New in EJSCREEN and EJAM
+
+_since October 2026_
+
+#### Updated data in the v4.2024.0 release!
+
+  - **Demographics** use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version.
+  - **Environmental** indicators for ozone and PM2.5 are updated.
+  - **EJ indexes and percentiles** are recalculated to use the new data.
+  - The **language shares for limited-English households** (e.g. % speaking Spanish) are shares of limited-English-speaking households, as the report labels them, not of all households as in EPA's EJSCREEN data files (#615).
+
+#### Towns and townships added
+
+  - Towns and townships can now be analyzed and mapped. In New England, New York, New Jersey, Pennsylvania, and the Midwest, most towns and townships previously got no boundary, so an analysis of them found no residents. They now use Census county subdivision boundaries (#672).
+
+#### Analyzing thousands of sites is faster and more efficient
+
+  - **Maps are faster:** Shorter popup text and clustered markers keep maps responsive and make downloaded reports much smaller for large analyses (#651).
+  - **Larger analyses work better:** Analyzing thousands of sites on the web app used to be slow or would crash. Unbuffered county, state, tract, or blockgroup analyses now run about twice as fast and use about 1–1.7 GB less peak memory, with the same results (#649, #652).
+  - **Extremely large requests stop with an explanation** instead of stopping the app for everyone using it (#650).
+
+
+_since 2024 (EPA's last updates, EJAM 2.32.2 and EJSCREEN 2.3)_
+
+#### Reports have more information
+- Counts of schools, Superfund sites, and other features, flood risk, health insurance, and the share of residents in Tribal or other flagged areas, compared with US and State averages.
+
+#### Reports in PDF format
+- PDF reports are available for the Community Report, with page breaks that print well. This was missing from the first post-EPA release.
+
+#### Choose places in EJSCREEN more easily
+- EJSCREEN now lets you pick several places to get reports on directly from the EJSCREEN map. You can select multiple locations by clicking points, choosing areas, or drawing shapes, then get one combined report (via the EJAM-API) or send them all to EJAM for further analysis and detailed results.
+
+#### Choose places in EJAM more easily 
+- EJAM now lets you click on the map to add points, or pick cities, counties, or states by name.
+
+#### Faster results
+- The site-by-site table loads about 4 times faster, PDF reports finish sooner, and repeat report links load from a cache.
+
+#### Bigger, more flexible uploads
+- Up to 10,000 sites (was 5,000), and areas as GeoJSON, KML, or zipped shapefiles.
+
+#### Links to 1-site reports
+- Each site in EJAM's multisite results now links to its own one-site report, and links to EJSCREEN's view of that location.
+
+#### Link to places by URL
+- Use the EJSCREEN or EJAM weblink to specify locations and open EJSCREEN or EJAM with places already selected. You can share or bookmark these URLs.
+- [About custom EJAM links](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html#launch-an-already-running-ejam-app)
+  - e.g., https://ejam.publicenvirodata.org/?lat=41.71059,41.65741&lon=-87.59676,-87.8136&radius=1.5
+- [About custom EJSCREEN links](https://public-environmental-data-partners.github.io/EJAM/articles/dev-app-settings.html#links-from-ejam-to-ejscreen)
+  - e.g., https://pedp-ejscreen.azurewebsites.net/index.html?lat=41.71059,41.65741&lon=-87.59676,-87.8136&radius=1.5
+
+
+### New for R users (not in web app yet)
+
+_since October 2026_
+
+- **Geographies:** 
+
+  - **States and Counties:** State and county boundaries and related functions use an
+  explicit vintage, with checks for boundary years, FIPS codes, lookup metadata,
+  and block/crosswalk consistency.
+  - **Tracts and blockgroups:** Default map services
+  follow the ACS data vintage, including Census TIGERweb support for 2024 (#671).
+  - **Cities / Towns / CDPs:** `shapes_from_fips()` and its place-boundary helpers 
+  now use `year = NULL` to select the calendar-predicted 
+  latest TIGER/Line places vintage (assuming an October 14 release)
+  for cities/towns/CDPs, while tigris blockgroups continue to use `acs_endyear()`.
+  Place boundaries can be newer than the demographic data used to analyze them.
+  City analysis results may therefore differ even before the demographic data change.
+  Requested places without a boundary now warn with their FIPS codes and the
+  boundary year, while retaining empty geometry in the requested row order.
+  Use an explicit year, such as `year = 2024`, to reproduce a particular vintage.
+  This automatic year selection applies only to place boundaries. State and county
+  boundaries follow the ACS data vintage, while block data retain their Census 2020 vintage.
+
+- **ZIP code analysis via the API:**
+  - `ejamit()`, `ejamapi()`, and `url_ejamapi()` now handle `zip` or `zipcode`. Results get zip-specific API report links.
+
+- **Color-coded maps** to see where an indicator is highest:
+
+  - `map_ejscreen_indicator()` now lets you draw a color-coded map of all _blockgroups_ in a county or state, like an EJSCREEN map, as an interactive or static (`maptype = "ggplot"`) map,
+    by specifying the indicator name, e.g.,
+    `map_ejscreen_indicator("pctlowinc", countyfips = "10001")`
+  - `mapfastej_counties()` now lets you draw a color-coded map of all _counties_ in a state, more easily,
+    by specifying the indicator name, e.g.,
+    `mapfastej_counties(ST = "DE", colorvarname = "state.pctile.o3")`
+  - `ejam2map()` and `mapfast()` now let you draw a color-coded map of all _analyzed sites_ nationwide
+    (as circles around points or as polygons)
+    by specifying the indicator name, e.g.,
+    `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
+_since 2024/2025_
+
+- **Datasets**
+  - Each release downloads its own matching version of the large datasets, and county and state boundaries are built in, so they work offline.
+  - `calc_ejscreen_dataset()` and `calc_ejscreen_export()` are a documented annual pipeline that rebuilds the EJAM and EJSCREEN datasets from each new ACS release.
+
+- **API**
+  - `ejamapi()` gets reports or results from the new EJAM API, and `url_ejamapi()` builds a report link for any site.
+
+- **Analysis in R**
+  - `ejam2report()` can save a PDF, report on one site via `sitenumber`, and use a custom title and footer.
+  - `ejam2areafeatures()` and `ejam2barplot_areafeatures()` show the share of residents whose block group has a school or hospital or overlaps a Tribal or other flagged area, compared with US and State averages.
+  - `ejamit(zipcode = 10605)` analyzes zip code areas, using the new `shapes_from_zip()`.
+  - `ejamit()` accepts `lat` and `lon` vectors and a `buffer` around FIPS places, and `buffer` and `shape` work as synonyms for `radius` and `shapefile` across functions.
+
+- **Launching EJAM or EJSCREEN webapps**
+  - `ejamapp()` (formerly `run_app()`) launches the app with your own settings and places pre-loaded, and `url_ejamapp()` makes a link that opens the hosted app the same way.
+  - `url_ejscreenmap()` and related `url_*()` functions link each site to EJSCREEN (with the place selected), EnviroMapper, ECHO, FRS, and county or state health pages.
+
+
+# EJAM 3.2022.3 (October 2026)
+
+This is the final ACS 2018-2022 release; it is frozen from here on.
+The ACS 2020-2024 vintage version will be released as `4.2024.0`,
+which is where development continues.
 
 ## New Features
 
-- Zip code analysis: `ejamit(zipcode = 10605)` now works. Zip codes are converted
+- Zip code analysis: `ejamit(zipcode = 10605)`, for example, works. Zip codes are converted
   to Census ZCTA polygons by the new `shapes_from_zip()` helper and analyzed like
   any other shapefile, and `ejam2report()` describes the places as zip codes and
   maps their boundaries without needing the `shp` parameter. This automates the
   workflow that the Zipcodes article documented as manual steps (#482).
 
+- Updated FRS facility data to the September 2026 EPA snapshot, with refreshed
+  examples and update instructions.
+
+- Web-app completion estimates now reflect measured live performance, and report a
+  lower bound instead of an expected time beyond the measured range (#513).
+
 ## Dataset Fix
 
-- Language-spoken counts (number of people speaking given language) were shown 
+- Language-spoken counts (number of people speaking given language) were shown
   incorrectly and are now fixed. The counts from the tract-only ACS table C16001 (`lan_universe`,
   `lan_spanish`, and the other `lan_*` counts) are now correctly apportioned to block groups
   by population share instead of repeating each tract's total on every block
   group, so sums across block groups (in `ejamit()` results and the pipeline's
   `acs_by_tract`, `acs_by_county`, and `acs_by_state` layers) no longer come out
-  about three times too high. Takes effect when `bg_acsdata` is rebuilt (#596).
+  about three times too high. The packaged `blockgroupstats` data and saved
+  example outputs now carry the corrected counts (#596).
 
 ## Bug Fixes
 
-- The notes tab of the Excel workbook now says how the sites were selected. 
-  A SIC analysis now says "Locations defined by latitude, longitude and radius, 
-  based on EPA-regulated facilities by SIC code (industry type)".
-  The detail is left off when it would only restate the site type.
-
-- SIC and MACT analyses get their descriptions back. `site_method2text()`
-  lowercases its input, but its SIC and MACT branches compared against the
-  uppercase spellings, so neither could ever match and both fell through to an
-  empty string.
-
-- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
-  "fips" rather than "FIPS". The two gates that rebuild those polygons were
-  case-sensitive, so a lowercase spelling silently produced an unmapped report.
-  Matches how the zip code gates added for #482 already behave.
+- Population-share summaries are now correct for small numbers of sites (#137).
 
 - Percentiles no longer depend on which operating system the analysis runs on.
   A raw score is normally a population-weighted average, so it carries a few
@@ -58,13 +166,47 @@ vintage ships separately as `4.2024.0`, which is where development continues.
   the ACS22 `pctdisability` boundary case without needing the `signif_digits`
   argument.
 
-- A GitHub outage no longer looks like missing data. When GitHub API cannot list
-  a release's assets, `download_latest_arrow_data()` now says so and retries,
-  instead of just reporting missing `quaddata.arrow` much later.
+- A custom report title is now kept in the downloaded report, not just in the app (#458).
+
+- The notes tab of the Excel workbook now says how the sites were selected. It
+  had never done so: `buffer_desc_from_sitetype()` only appended that detail when
+  the description so far was empty, which none of its branches can produce, and
+  the test inside was inverted as well. A SIC analysis of latitude/longitude
+  sites now reads "Locations defined by latitude, longitude and radius, based on
+  EPA-regulated facilities by SIC code (industry type)" instead of stopping at
+  the radius. The detail is left off when it would only restate the site type,
+  so plain shapefile analyses do not read "Polygons defined by shapefile, based
+  on shapefile".
+
+- SIC and MACT analyses are now described again in reports and the Excel notes.
+  `site_method2text()` lowercases its input, but its SIC and MACT branches
+  compared against the uppercase spellings.
+
+- Built-in state and county boundaries now work offline (#527).
+
+- County boundaries from `shapes_from_fips()` no longer fail with "missing value
+  where TRUE/FALSE needed" when the sf package was not yet loaded.
+
+- The web app no longer requests about a dozen files it does not serve (a web
+  manifest, extra favicons, and Esri map-widget images and fonts from the report
+  stylesheet), which had shown as 404 errors in the browser console (#588).
+
+- `ejam2report()` now fetches FIPS boundaries when `site_method` is given as
+  "fips" rather than "FIPS". The two gates that rebuild those polygons were
+  case-sensitive, so a lowercase spelling silently produced an unmapped report.
+  Matches how the zip code gates added for #482 already behave.
+
+- The release workflow now refuses to publish a draft Release whose target is not
+  the head of `main`, and its dry run shows that target and fails on a mismatch.
+
+- A GitHub outage no longer looks like missing data. When the API cannot list a
+  release's assets, `download_latest_arrow_data()` now says so and retries,
+  instead of treating the empty answer as an empty release and reporting a
+  missing `quaddata.arrow` much later.
 
 - Docker build and deployed app now verifies PDF report download works (#510).
 
-- Trying to upload a shapefile that is point-based now tells user to use 
+- Trying to upload a shapefile that is point-based now tells user to use
   lat/lon point upload option, and geometry rule is centralized & tested (#550).
 
 - Web-app article text showing URLs now shows them as clickable links (#599).
@@ -72,7 +214,7 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 - Uploaded polygon data stay in `sf` form through the web-app map path, avoiding
   an `st_geometry()` console error (#136).
 
-- Count of sites with N "high" scores was confusing. 
+- Count of sites with N "high" scores was confusing.
   `count_sites_with_n_high_scores()` now starts at 1.05 ratio cutoff (#546).
 
 - R CMD check problems exposed by full CI are now resolved across examples,
@@ -88,8 +230,12 @@ vintage ships separately as `4.2024.0`, which is where development continues.
 
 - The [Basics - Quick Start Guide](https://public-environmental-data-partners.github.io/EJAM/articles/basics.html) article now links to a Community Report example (#600).
 
-- In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html) 
+- In [Using EJAM for Analysis in R](https://public-environmental-data-partners.github.io/EJAM/articles/analyzing.html)
   and other articles, fixed about 20 broken or incomplete links and text (#602).
+
+- Rewrote the developer articles [Releasing a New Version of EJAM](https://public-environmental-data-partners.github.io/EJAM/articles/dev-update-package.html)
+  and [Deploying the Web App to AWS](https://public-environmental-data-partners.github.io/EJAM/articles/dev-deployment.html)
+  to match the current release and deploy process (#631, #632).
 
 
 # EJAM 3.2022.2 (August 2026)
@@ -174,19 +320,6 @@ new information in the community report about where people live.
 
 
 ## Bug Fixes
-
-- **Web-app completion estimates now reflect current live performance** (#513):
-  the app uses a v3.2022.2 click-to-report calibration instead of presenting
-  the local `ejamit()` regression's much wider 95% upper prediction limit as
-  an ETA. Point estimates use measured small-run anchors and remain monotone
-  across site counts. Unbuffered FIPS and shapefile estimates use separate
-  versioned web curves, while local R calls retain a separate `ejamit()`
-  profile. Multi-state live estimates are labeled as provisional lower bounds
-  after repeated service failures, and buffered polygon/FIPS runs require a
-  separate calibration. The point curve is calibrated on live production, and
-  now varies with buffer radius as well as site count. Beyond the measured
-  range -- more than 1,000 points, or a radius over 5 miles -- the app reports a
-  lower bound rather than an expected time.
 
 - **Report's percentages no longer shown as "0" or "1", or with stray decimals**
   in the report, tables, and map popups (#488). The metadata marking which
@@ -467,9 +600,9 @@ Highlights:
 - Web App Improvements: Added PDF-format report downloads. Improved Community
   Report barplot legibility, and added more barplot options in the Details tab.
 
-- Data Updates: Updated EJScreen-style ACS demographic data to ACS 2020-2024.
-  Refreshed the related package datasets and metadata, so that EJScreen community
-  reports and EJAM summary reports will be based on the newer data.
+- Data Updates: Rebuilt the EJScreen-style ACS 2018-2022 demographic data with
+  the new data pipeline, and refreshed the related package datasets and metadata
+  used by EJScreen community reports and EJAM summary reports.
 
 - Data Pipeline: Added a staged annual data pipeline for demographics,
   environmental indicators, extra indicators, geography info, EJ indexes,
@@ -510,7 +643,7 @@ Highlights:
 ## Data Updates
 
 - Updated the key nationwide datasets of demographic blockgroup-resolution data and related
-  metadata for the ACS 2020-2024 EJScreen-style data release.
+  metadata for the ACS 2018-2022 EJScreen-style data release.
 - Updated the FRS-related datasets (covering all EPA-regulated facilities) and
   related tables used for specifying facilities to analyze by industry.
 - Added year-aware metadata handling for R-native pipeline outputs, so pipeline

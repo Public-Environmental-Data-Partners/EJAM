@@ -130,7 +130,7 @@ print(x)
 Histogram showing that most counties have fewer than 25 blockgroups, but a few
 have over 1000 each
 
-```{r histobgcount, eval=TRUE, fig.alt="historgram shows most counties have fewer than 25 blockgroups, but a few have over 1000 each"}
+```{r histobgcount, eval=TRUE, fig.alt="histogram shows most counties have fewer than 25 blockgroups, but a few have over 1000 each"}
 hist(z$bgcount, breaks = c((0:60)*10,10000), xlim=c(0, 600), 
      main = "Most US Counties have fewer than 25 blockgroups 
 but 31 Counties (<1% of all) have 1k-7k each, 

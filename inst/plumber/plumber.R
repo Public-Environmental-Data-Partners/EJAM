@@ -4,9 +4,9 @@
 #
 #  1) ROOT: a verbatim mirror of the deployed EJAM-API (see ejam-api/SYNC.md),
 #     so local paths like /report, /data, /query, /handoff, /__docs__/ behave
-#     exactly like https://api.ejanalysis.com
+#     exactly like EJAM::url_package("api")
 #  2) /draft: draft/experimental endpoints that exist only in this package
-#     (see draft/plumber.R), e.g. /draft/echo, /draft/ejamit, /draft/report2
+#     (see draft/plumber.R), e.g. /draft/echo, /draft/ejamit, /draft/reportnew
 #
 # Run it via  EJAM:::ejamapi_local()  (background process; recommended), or by
 # plumbing this file (e.g. RStudio's "Run API" button, or

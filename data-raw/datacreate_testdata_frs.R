@@ -17,8 +17,9 @@
 ## allow large numbers without scientific notation
 options(scipen = 999)
 
-## load frs data
-dataload_dynamic('frs')
+## The parent datacreate_frs_.R script loaded the newly built local Arrow file.
+## Avoid fetching the previous published release during this refresh.
+if (!exists("frs")) stop("Load the newly built frs.arrow before rebuilding test data")
 
 ## set location to save test files
 test_folder <- 'inst/testdata/registryid'
@@ -39,6 +40,19 @@ for (n in nvec) {
   write.csv(x = frs_out, file = paste0(test_folder, '/frs_testpoints_',n,'.csv'), row.names = FALSE)
   writexl::write_xlsx(x = frs_out, path = paste0(test_folder, '/frs_testpoints_',n,'.xlsx'))
 }
+
+# Keep the duplicate-ID upload example valid while preserving its duplicate
+# first two rows for that specific test case.
+sample_ids <- read.csv(file.path(test_folder, "frs_testpoints_10.csv"))$REGISTRY_ID
+duplicated_example <- data.frame(
+  num = 1:3,
+  REGISTRY_ID = c(sample_ids[1], sample_ids[1], sample_ids[2])
+)
+openxlsx::write.xlsx(
+  duplicated_example,
+  file.path(test_folder, "frs_testpoints_3_duplicated_id.xlsx"),
+  overwrite = TRUE
+)
 
 options(scipen = 0)
 
