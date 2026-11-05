@@ -6,7 +6,7 @@ utils::bibentry(
     title = paste0("Environmental Justice Analysis Multisite tool (EJAM) version ", utils::packageDescription("EJAM", fields = "Version")),
     year = as.character(gsub("^[^ ]* ", "", utils::packageDescription("EJAM", fields = "VersionDate"))),
     address = "Washington, DC",
-    url = "https://public-environmental-data-partners.github.io/EJAM/index.html",
-    note = "Also see https://ejanalysis.com/EJAM"
+    url = paste0(EJAM::url_package("docs"), "/index.html"),
+    note = paste("Also see", EJAM::url_package("code", get_full_url = TRUE))
 )
 # see also CITATION.cff
