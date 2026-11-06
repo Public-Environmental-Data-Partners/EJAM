@@ -1640,4 +1640,4 @@ shinytest2_webapp_functionality_individual <- function(test_category) {
 ##  library(EJAM) loads all needed functions - but note that means the package must be installed for this testing to work
 ## and app.R will use ejamapp() which will read all the needed global defaults
 
-#  shinytest2::load_app_env()
+#  shinytest2::load_app_env()   but note load_app_env() has been superseded by load_app_support().
