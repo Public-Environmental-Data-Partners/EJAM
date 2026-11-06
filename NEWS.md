@@ -93,6 +93,9 @@ _since October 2026_
     by specifying the indicator name, e.g.,
     `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
 
+- **Other**
+  - Requires newer versions of R and several packages (e.g., readxl and curl), which have security fixes and other improvements.
+
 _since 2024/2025_
 
 - **Datasets**
