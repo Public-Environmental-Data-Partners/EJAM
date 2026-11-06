@@ -61,7 +61,7 @@ Authors@R: person("Mark A.", "Corrales", , "ejam@ejanalysis.com", role = c("cre"
 Author: Mark A. Corrales <ejam@ejanalysis.com>
 Maintainer: Mark A. Corrales <ejam@ejanalysis.com>
 Depends:
-    R (>= 4.3.0)
+    R (>= 4.5.3)
 Imports:
     arrow (>= 24.0.0),
     collapse (>= 2.1.0),
