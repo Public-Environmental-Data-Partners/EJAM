@@ -269,8 +269,9 @@ Until then, the current names keep serving v3.2022.3.
 
 Both versions stay in this repository **as releases** (`v3.2022.3` and `v4.2024.0`).
 The published `v3.2022.3` tag and GitHub Release are never moved or replaced.
-For the archive deployments, Mark selected **G12 option B** in
-[#681](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/681):
+The archive deployments are built from a dedicated tag that is never moved
+(option B in
+[#681](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/681)).
 [#691](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/691)
 merged into `docs-fixes-v3.2022.3` as
 `3d20f78f6a4774ece9146e838f2268b8d9f15fb5`. The annotated tag
@@ -329,8 +330,8 @@ API mirror**, `inst/plumber/ejam-api/rest_controller.r`:
 | 16 | `https://public-environmental-data-partners.github.io/EJAM/articles/ejscreen.html` | Current EJSCREEN documentation (v4) |
 | 18 | `https://ejanalysis.org/ejamdocs` | Current EJAM documentation root (v4) |
 
-This is the list for Mark to accept, not evidence of live cutover acceptance.
-Eric checks the corresponding copy in the EJAM-API repository. Apart from these
+These two links are accepted as known exceptions; the list is not evidence that the cutover has been tested.
+The corresponding copy in the EJAM-API repository should be checked the same way. Apart from these
 documented exceptions and intentionally
 shared repository/data links, service and version-specific documentation links
 must stay within the archive stack
