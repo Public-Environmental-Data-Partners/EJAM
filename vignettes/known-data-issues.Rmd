@@ -1,11 +1,11 @@
 ---
-title: "Known Issues"
+title: "Known Data Issues"
 description: "Known data limitations in EJScreen/EJAM v4.2024.0 that affect specific places, and how to recognize them"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Known Issues}
+  %\VignetteIndexEntry{Known Data Issues}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
