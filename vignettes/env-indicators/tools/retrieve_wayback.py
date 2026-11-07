@@ -62,9 +62,13 @@ REMOVAL_OR_ERROR_PHRASES = (
 
 
 class RejectRedirectHandler(HTTPRedirectHandler):
+    """Follow redirects within the Wayback Machine; reject any to another site."""
+
     def redirect_request(
         self, req: Request, fp: object, code: int, msg: str, headers: object, newurl: str
-    ) -> None:
+    ) -> Request | None:
+        if urlsplit(newurl).hostname == "web.archive.org":
+            return super().redirect_request(req, fp, code, msg, headers, newurl)  # type: ignore[arg-type]
         raise HTTPError(
             req.full_url,
             code,

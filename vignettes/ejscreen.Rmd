@@ -1,9 +1,9 @@
 ---
 title: "EJScreen Documentation"
-description: "EJSCREEN Documentation"
+description: "EJScreen Documentation"
 output:
   rmarkdown::html_vignette:
-  toc: true
+    toc: true
 vignette: >
   %\VignetteIndexEntry{EJScreen Documentation}
   %\VignetteEngine{knitr::rmarkdown}
