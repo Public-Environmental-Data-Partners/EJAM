@@ -1,0 +1,18 @@
+# Cloudflare Worker "ejamapp-archive". Read ../README.md before deploying.
+# Deploy only after ejam-archive.publicenvirodata.org answers; until then this
+# name would redirect to an address that does not exist.
+name = "ejamapp-archive"
+main = "src/index.mjs"
+compatibility_date = "2026-06-29"
+workers_dev = false
+preview_urls = false
+# Keep any variables set in the Cloudflare dashboard when deploying from here.
+keep_vars = true
+
+routes = [
+  { pattern = "ejam-archive.ejanalysis.com", custom_domain = true },
+]
+
+[observability]
+enabled = true
+head_sampling_rate = 1

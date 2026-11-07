@@ -14,6 +14,7 @@ account and only with a maintainer's go (see [Deploying](#deploying)).
 |---|---|---|
 | [`ejam-api`](ejam-api) | `api.`, `ejamapi.` | Passes requests to the EJAM-API on Google Cloud Run, and caches `GET /report` answers at the edge for a day. See [its README](ejam-api/README.md). |
 | [`ejamapp`](ejamapp) | `ejam.`, `ejamapp.` | Redirects to the EJAM app at `ejam.publicenvirodata.org`, keeping the query so deep links work. |
+| [`ejamapp-archive`](ejamapp-archive) | `ejam-archive.` | Redirects to the archive EJAM app at `ejam-archive.publicenvirodata.org` (the frozen v3.2022.3 release), keeping the query. **Not deployed yet:** deploy it only once that address answers, so the name never points at a missing server. |
 | [`ejam-dev-redirect`](ejam-dev-redirect) | `dev.`, `ejamdev.`, `ejamappdev.` | Redirects to the development EJAM app, keeping the query. |
 | [`ejscreen-redirect`](ejscreen-redirect) | `ejscreenapp.` (and `ejscreen.`, see below) | Redirects to the EJSCREEN app on Azure, keeping the query. |
 | [`repo-docs-redirect`](repo-docs-redirect) | `docs.`, `ejamdocs.`, `ejscreendocs.`, `apidocs.`, `ejamrepo.`, `ejscreenrepo.`, `apirepo.`, `ejamdata.`, and the `-archive` docs names | Redirects to the GitHub repositories and the docs site. The `-archive` names go to the frozen v3.2022.3 docs. |
