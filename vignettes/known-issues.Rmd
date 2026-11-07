@@ -34,8 +34,11 @@ Brentwood and Wyandanch census-designated places in Suffolk County, New York
 - Results for Suffolk County as a whole also exclude these residents, so they are
   lower than the Census Bureau's own county total.
 
-These blockgroups were included in EJAM v3.2022.3 (ACS 2018-2022), which was
-published before the suppression.
+EJAM v3.2022.3 (ACS 2018-2022) does include these blockgroups, but it is not an
+unaffected alternative. The same Census note explains that the suppression
+results from a data collection error, and it advises caution when using the
+2016-2020, 2017-2021 and 2018-2022 estimates for these places. Those older
+values should not be used to fill in the missing v4.2024.0 values.
 
 ## Connecticut
 
