@@ -94,7 +94,7 @@ and map-facing blockgroup data with demographic fields kept as missing and
 partial EPA environmental fields where available. Point-buffer/radius analysis
 in those Island Areas should return no-data results because EJAM does not add
 Island Area blocks to the Census block helper files. See
-[Island Areas in EJAM v3](island-areas.html) for coverage notes and a
+[Island Areas](island-areas.html) for coverage notes and a
 summary of Island Area layers observed in the live EJSCREEN app in May 2026.
 
 EJAM calculations also take note of which residences are near which sites, to avoid double-counting people in the summary statistics but still allow a user to view results for one site at a time. This is something other tools and analyses often cannot provide - when they aggregate across sites they typically do not retain the statistics on individual sites, and rarely if ever keep track of which communities are near multiple facilities. Keeping track of this would also allow an analyst to explore how many people are near multiple sites, or ask which sites in communities that already have multiple sites nearby.
