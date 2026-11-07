@@ -1,4 +1,4 @@
-# EJAM 4.2024.0 (in development)
+# EJAM 4.2024.0 (November 2026)
 
 
 ### New in EJSCREEN and EJAM
