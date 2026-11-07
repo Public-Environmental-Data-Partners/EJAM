@@ -13,13 +13,27 @@ account and only with a maintainer's go (see [Deploying](#deploying)).
 | Folder (Worker name) | Names it answers | What it does |
 |---|---|---|
 | [`ejam-api`](ejam-api) | `api.`, `ejamapi.` | Passes requests to the EJAM-API on Google Cloud Run, and caches `GET /report` answers at the edge for a day. See [its README](ejam-api/README.md). |
+| [`ejam-api-archive`](ejam-api-archive) | `api-archive.` | The same code as `ejam-api` (re-exported), with `UPSTREAM` set to the archive EJAM-API service on Cloud Run and its own `CACHE_TAG`. |
 | [`ejamapp`](ejamapp) | `ejam.`, `ejamapp.` | Redirects to the EJAM app at `ejam.publicenvirodata.org`, keeping the query so deep links work. |
+| [`ejamapp-archive`](ejamapp-archive) | `ejam-archive.` | Redirects to the archive EJAM app at `ejam-archive.publicenvirodata.org` (the frozen v3.2022.3 release), keeping the query. **Not deployed yet:** deploy it only once that address answers, so the name never points at a missing server. |
 | [`ejam-dev-redirect`](ejam-dev-redirect) | `dev.`, `ejamdev.`, `ejamappdev.` | Redirects to the development EJAM app, keeping the query. |
 | [`ejscreen-redirect`](ejscreen-redirect) | `ejscreenapp.` (and `ejscreen.`, see below) | Redirects to the EJSCREEN app on Azure, keeping the query. |
+| [`ejscreen-archive-redirect`](ejscreen-archive-redirect) | `ejscreen-archive.` | Redirects to the archive EJSCREEN app on Azure (`pedp-ejscreen-archive`), keeping the query. A redirect, not a proxy, so it never shares the main EJSCREEN proxy's cache. |
 | [`repo-docs-redirect`](repo-docs-redirect) | `docs.`, `ejamdocs.`, `ejscreendocs.`, `apidocs.`, `ejamrepo.`, `ejscreenrepo.`, `apirepo.`, `ejamdata.`, and the `-archive` docs names | Redirects to the GitHub repositories and the docs site. The `-archive` names go to the frozen v3.2022.3 docs. |
 | [`securitytxt`](securitytxt) | `security.` | Serves the project's `security.txt` (RFC 9116). |
 
 Each Worker's names are listed under `routes` in its `wrangler.toml`.
+
+**Which version the `-archive` names serve.** The archive EJAM app
+(`ejam-archive.`) only ever runs the frozen v3.2022.3 release. The archive
+EJAM-API and EJSCREEN services (`api-archive.`, `ejscreen-archive.`) run the
+v4.2024.0 test builds until the cutover, while the regular names keep serving
+v3.2022.3; at the cutover the versions switch places, and from then on the
+`-archive` names serve v3.2022.3. The Workers point at fixed services, so they
+need no change at the cutover if the versions move between the services. If the
+cutover instead swaps which service each name points to, change `UPSTREAM` in
+`ejam-api-archive/wrangler.toml` and `TARGET` in
+`ejscreen-archive-redirect/src/index.mjs`.
 
 **Not here:** `ejscreen-origin-proxy`, the reverse proxy for `ejscreen.ejanalysis.com/*`,
 is kept in the EJScreen repository (`cloudflare/ejscreen-proxy`). That proxy is what
