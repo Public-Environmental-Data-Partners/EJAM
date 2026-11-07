@@ -35,7 +35,7 @@ EJScreen/EJAM provide 13 environmental indicators. Click on each environmental i
 | Water | [Wastewater discharge](env-indicators/ejscreen-indicators-overview-wastewater-discharge.html) | RSEI modeled toxic concentrations at stream segments within 500 meters, divided by distance in kilometers (km) | [Calculated from RSEI modeled toxic concentrations to stream reach segments, created 12/27/2023](https://web.archive.org/web/20250123162159/https://www.epa.gov/rsei) | 2021 |
 | Water | [Drinking water non-compliance](env-indicators/ejscreen-indicators-overview-drinking-water-non-compliance.html) | Score based on number of Safe Drinking Water Act violations not returned to compliance that community water systems have received over the past five years; violations are weighted based on age and severity | Calculated from [Safe Drinking Water Information System](https://sdwis.epa.gov/ords/sfdw_pub/r/sfdw/sdwis_fed_reports_public/200)  (2023 quarter 4 data) and [Safe Drinking Water Act Public Water System Supervision Program's Enforcement Response Policy](https://web.archive.org/web/20250123162159/https://www.epa.gov/enforcement/enforcement-response-policy-public-water-system-supervision-pwss-program-under-safe) | 2023 |
 
-`*` Indicators updated in the V4.2024.0 release. For details on the source data used for these calculations, see the [external sources page](env-indicators/indicator-source-data)
+`*` Indicators updated in the V4.2024.0 release. For details on the source data used for these calculations, see the [external sources page](env-indicators/indicator-source-data.html)
 
 **Notes:** 
 
