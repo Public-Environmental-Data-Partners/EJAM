@@ -1,7 +1,0 @@
----
-title: "EJSCREEN Documentation Links"
-description: "EJSCREEN Documentation Links"
-output: html_document
----
-
-See https://ejanalysis.com/docs
