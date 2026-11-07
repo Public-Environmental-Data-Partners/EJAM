@@ -12,7 +12,7 @@ Generated HTML and generated `man/*.Rd` files are intentionally excluded.
 
 | Source file | Lines | Reference / context |
 | --- | ---: | --- |
-| `R/URL_FUNCTIONS_part2.R` | 2048, 2056 | Defines `url_ejscreentechdoc()`, the shared helper returning the PDF from the EJAM GitHub `main` branch. Review this first if changing the canonical PDF destination. |
+| `R/URL_FUNCTIONS_part2.R` | 2052–2067 | Defines `url_ejscreentechdoc()`, the shared helper. As of v4.2024.0 it returns EPA's historical-reference copy of the PDF on epa.gov (no longer the EJAM GitHub copy); if EPA removes it, point the helper at the Wayback Machine copy or EJAM's archived GitHub copy. Review this first if changing the canonical PDF destination. |
 | `vignettes/ejscreen.Rmd` | 95–102, 209–214 | Describes the v2.3 manual as saved for EJAM; links through the helper and to a September 2025 Wayback PDF snapshot. Line 102 is a commented example using the `development` branch. |
 | `vignettes/overview-environmental-indicators-ejscreen.Rmd` | 45, 52 | Links to the PDF on the EJAM `development` branch and to a January 2025 Wayback copy. |
 | `vignettes/env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.Rmd` | 50–51 | Links through the helper and separately to the archived technical-information page and PDF. |
