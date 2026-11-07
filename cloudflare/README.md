@@ -24,6 +24,17 @@ account and only with a maintainer's go (see [Deploying](#deploying)).
 
 Each Worker's names are listed under `routes` in its `wrangler.toml`.
 
+**Which version the `-archive` names serve.** The archive EJAM app
+(`ejam-archive.`) only ever runs the frozen v3.2022.3 release. The archive
+EJAM-API and EJSCREEN services (`api-archive.`, `ejscreen-archive.`) run the
+v4.2024.0 test builds until the cutover, while the regular names keep serving
+v3.2022.3; at the cutover the versions switch places, and from then on the
+`-archive` names serve v3.2022.3. The Workers point at fixed services, so they
+need no change at the cutover if the versions move between the services. If the
+cutover instead swaps which service each name points to, change `UPSTREAM` in
+`ejam-api-archive/wrangler.toml` and `TARGET` in
+`ejscreen-archive-redirect/src/index.mjs`.
+
 **Not here:** `ejscreen-origin-proxy`, the reverse proxy for `ejscreen.ejanalysis.com/*`,
 is kept in the EJScreen repository (`cloudflare/ejscreen-proxy`). That proxy is what
 answers `ejscreen.ejanalysis.com` (checked 2026-10-28: the page itself comes back, not a
