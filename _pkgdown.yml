@@ -51,6 +51,7 @@ articles:
   contents:
   - '`whatis`'
   - '`webapp`'
+  - known-issues
 - title: The EJAM R Package
   desc: For analysts using R
   navbar: For analysts using R
