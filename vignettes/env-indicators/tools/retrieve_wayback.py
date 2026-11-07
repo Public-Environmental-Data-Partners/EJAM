@@ -22,7 +22,7 @@ from urllib.parse import quote, unquote, urlencode, urlsplit, urlunsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 
-EXPECTED_URL_COUNT = 10
+EXPECTED_URL_COUNT = 13
 OUTPUT_DIRECTORY = Path("archived_html")
 MANIFEST_FILENAME = "manifest.csv"
 REQUEST_TIMEOUT_SECONDS = 30
