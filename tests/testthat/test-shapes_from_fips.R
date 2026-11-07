@@ -575,7 +575,7 @@ test_that("blockgroup service URLs and custom outFields keep their existing beha
     sf::st_sf(FIPS=id, CUSTOM=42, geometry=sf::st_sfc(polygon,crs=4326))
   }, .package="sf")
   shp <- shapes_from_fips(id)
-  expect_match(requests[1], "USA_Boundaries_2022", fixed=TRUE)
+  expect_match(requests[1], "tigerWMS_ACS2024/MapServer/10/query", fixed=TRUE) # default service follows the ACS year
   shp <- shapes_blockgroups_from_bgfips(id, outFields=c("FIPS","CUSTOM"),
                                        myservice="https://example.invalid/custom/query")
   expect_equal(shp$CUSTOM,42)

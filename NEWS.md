@@ -1,17 +1,19 @@
-# EJAM 4.2024.0 (in development)
+# EJAM 4.2024.0 (November 2026)
 
 
 ### New in EJSCREEN and EJAM
 
 _since October 2026_
 
-#### Updated data in the v4.2024.0 release!
+#### EJSCREEN and EJAM now have updated data, for the first time since 2024!
 
-  - **Demographics** use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version.
-  - **Environmental** indicators for ozone and PM2.5 are updated.
+  - **Demographics** now are from the 2020-2024 American Community Survey (ACS), not the 2018-2022 data from EPA's last update.
+  - **Environmental** indicators for ozone and PM2.5 are updated as well.
   - **EJ indexes and percentiles** are recalculated to use the new data.
   - A **Data sources** link at the top of the web app says which years of data this version uses (#400).
-  - The **language shares for limited-English households** (e.g. % speaking Spanish) are shares of limited-English-speaking households, as the report labels them, not of all households as in EPA's EJSCREEN data files (#615).
+  - **Some minor data issues** are now documented. For example:
+    - **Brentwood and Wyandanch, NY have no data:** The Census Bureau withheld 2020-2024 ACS data for these places in Suffolk County ([Census errata note 148](https://www.census.gov/programs-surveys/acs/technical-documentation/errata/148.html)). EJScreen/EJAM therefore cannot show demographic data for those 39 block groups, so analyses there would undercount residents. See notes on "Known Data Issues" in [EJAM/EJScreen documentation](https://public-environmental-data-partners.github.io/EJAM/articles).
+    - **% speaking each language** (e.g. % speaking Spanish) -- Reports show these as a % of limited-English-speaking households (as the report labels them), not as a % of all households (as was in EPA's EJSCREEN data files) (#615).
 
 #### Towns and townships added
 
@@ -93,6 +95,9 @@ _since October 2026_
     (as circles around points or as polygons)
     by specifying the indicator name, e.g.,
     `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
+- **Other**
+  - Requires newer versions of R and several packages (e.g., readxl and curl), which have security fixes and other improvements.
 
 _since 2024/2025_
 
