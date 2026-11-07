@@ -2,7 +2,7 @@ Package: EJAM
 Title: Environmental Justice Analysis Multisite tool
 Version: 4.2024.0
 VersionEJSCREEN: 4.2024.0
-ejamdata_required_tag: v3.2022.3
+ejamdata_required_tag: v4.2024.0
 VersionACS: 2020-2024
 ReleaseDateACS: 2026-01-29
 VersionDate: November 2026
@@ -166,4 +166,4 @@ LazyDataCompression: gzip
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1
