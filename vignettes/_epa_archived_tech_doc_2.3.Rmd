@@ -1,5 +1,5 @@
 
-- For an historical overview of methods and description calculations 
+- For an historical overview of methods and descriptions of calculations 
 see the: [EPA's archived version of its Technical Documentation](`r EJAM::url_ejscreentechdoc()`) 
 (still available as of October 2026). 
 If the EPA link is failing, try the 
