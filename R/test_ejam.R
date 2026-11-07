@@ -422,6 +422,7 @@ instead of tests/testthat/_logs
         "test-sites_from_input.R",
         "test-is.numericish.R",
         "test-create_filename.R",
+        "test-posthog_script.R",
         "test-grepn.R",
         "test-utils_PACKAGE_DEV.R",
         "test-utils_offline.R",
