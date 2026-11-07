@@ -45,13 +45,13 @@ articles:
   - overview-environmental-indicators-ejscreen
   - overview-socioeconomic-indicators-ejscreen
   - technical-information-and-data-downloads
+  - known-data-issues
 - title: The EJAM Web App
   desc: Overview for EJAM Users
   navbar: Overview for EJAM Users
   contents:
   - '`whatis`'
   - '`webapp`'
-  - known-issues
 - title: The EJAM R Package
   desc: For analysts using R
   navbar: For analysts using R
