@@ -7,7 +7,7 @@ _since October 2026_
 
 #### EJSCREEN and EJAM now have updated data, for the first time since 2024!
 
-  - **Demographics** now are from the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version.
+  - **Demographics** now are from the 2020-2024 American Community Survey (ACS), not the 2018-2022 data from EPA's last update.
   - **Environmental** indicators for ozone and PM2.5 are updated as well.
   - **EJ indexes and percentiles** are recalculated to use the new data.
   - **Some minor data issues** are now documented. For example:
