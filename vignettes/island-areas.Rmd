@@ -1,11 +1,11 @@
 ---
-title: "Island Areas in EJAM v3"
+title: "Island Areas"
 description: "How EJAM v3 treats American Samoa, Guam, Northern Mariana Islands, and the U.S. Virgin Islands"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Island Areas in EJAM v3}
+  %\VignetteIndexEntry{Island Areas}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
