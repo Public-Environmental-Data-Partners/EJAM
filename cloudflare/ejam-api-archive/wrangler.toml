@@ -1,0 +1,21 @@
+# Cloudflare Worker "ejam-api-archive". Read ../README.md before deploying.
+# Same code as ejam-api (src/index.mjs re-exports it); only these settings differ.
+name = "ejam-api-archive"
+main = "src/index.mjs"
+compatibility_date = "2026-06-29"
+workers_dev = false
+preview_urls = false
+# Keep any variables set in the Cloudflare dashboard (e.g. MAINTENANCE) when deploying from here.
+keep_vars = true
+
+routes = [
+  { pattern = "api-archive.ejanalysis.com", custom_domain = true },
+]
+
+[vars]
+UPSTREAM = "https://ejamapi-archive-84652557241.us-central1.run.app"
+CACHE_TAG = "ejam-api-archive-report"
+
+[observability]
+enabled = true
+head_sampling_rate = 1

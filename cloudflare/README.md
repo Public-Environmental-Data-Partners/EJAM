@@ -13,10 +13,12 @@ account and only with a maintainer's go (see [Deploying](#deploying)).
 | Folder (Worker name) | Names it answers | What it does |
 |---|---|---|
 | [`ejam-api`](ejam-api) | `api.`, `ejamapi.` | Passes requests to the EJAM-API on Google Cloud Run, and caches `GET /report` answers at the edge for a day. See [its README](ejam-api/README.md). |
+| [`ejam-api-archive`](ejam-api-archive) | `api-archive.` | The same code as `ejam-api` (re-exported), with `UPSTREAM` set to the archive EJAM-API service on Cloud Run and its own `CACHE_TAG`. |
 | [`ejamapp`](ejamapp) | `ejam.`, `ejamapp.` | Redirects to the EJAM app at `ejam.publicenvirodata.org`, keeping the query so deep links work. |
 | [`ejamapp-archive`](ejamapp-archive) | `ejam-archive.` | Redirects to the archive EJAM app at `ejam-archive.publicenvirodata.org` (the frozen v3.2022.3 release), keeping the query. **Not deployed yet:** deploy it only once that address answers, so the name never points at a missing server. |
 | [`ejam-dev-redirect`](ejam-dev-redirect) | `dev.`, `ejamdev.`, `ejamappdev.` | Redirects to the development EJAM app, keeping the query. |
 | [`ejscreen-redirect`](ejscreen-redirect) | `ejscreenapp.` (and `ejscreen.`, see below) | Redirects to the EJSCREEN app on Azure, keeping the query. |
+| [`ejscreen-archive-redirect`](ejscreen-archive-redirect) | `ejscreen-archive.` | Redirects to the archive EJSCREEN app on Azure (`pedp-ejscreen-archive`), keeping the query. A redirect, not a proxy, so it never shares the main EJSCREEN proxy's cache. |
 | [`repo-docs-redirect`](repo-docs-redirect) | `docs.`, `ejamdocs.`, `ejscreendocs.`, `apidocs.`, `ejamrepo.`, `ejscreenrepo.`, `apirepo.`, `ejamdata.`, and the `-archive` docs names | Redirects to the GitHub repositories and the docs site. The `-archive` names go to the frozen v3.2022.3 docs. |
 | [`securitytxt`](securitytxt) | `security.` | Serves the project's `security.txt` (RFC 9116). |
 
