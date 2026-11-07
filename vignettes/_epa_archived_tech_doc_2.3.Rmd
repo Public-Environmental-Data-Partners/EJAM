@@ -1,0 +1,6 @@
+
+- For an historical overview of methods and description calculations 
+see the: [EPA's archived version of its Technical Documentation](`r EJAM::url_ejscreentechdoc()`) 
+(still available as of October 2026). 
+If the EPA link is failing, try the 
+[Wayback Machine archived version](https://web.archive.org/web/20250121194640/https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf) (will be very slow to open)
