@@ -14,7 +14,8 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Releasing a New Version of EJAM">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Releasing a New Version of EJAM">
 <meta name="description" content="How to prepare, test, and cut an EJAM package release, and the matching ejamdata, web app, EJAM-API, and EJSCREEN updates">
 <meta property="og:description" content="How to prepare, test, and cut an EJAM package release, and the matching ejamdata, web app, EJAM-API, and EJSCREEN updates">
 <meta property="og:image" content="https://public-environmental-data-partners.github.io/EJAM/logo.svg">
@@ -28,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.3</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">4.2024.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,9 +43,12 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
-    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
-    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJScreen</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJScreen Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/overview-environmental-indicators-ejscreen.html">Overview of Environmental Indicators in EJScreen/EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/overview-socioeconomic-indicators-ejscreen.html">Overview of Socioeconomic Indicators in EJScreen</a></li>
+    <li><a class="dropdown-item" href="../articles/technical-information-and-data-downloads.html">Technical Information and Data Downloads</a></li>
+    <li><a class="dropdown-item" href="../articles/known-data-issues.html">Known Data Issues</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
@@ -59,7 +63,7 @@
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
     <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
-    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
@@ -75,6 +79,8 @@
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Releasing a New Version of EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -111,8 +117,8 @@ out with it in the related repositories and hosted services. It covers
 what has to happen, in what order, and why. For the detailed mechanics
 of deployment and of building datasets, it points to the articles that
 already document them.</p>
-<p>The current development version is <strong>3.2022.3</strong> (ACS
-2018-2022 data, ejamdata release v3.2022.3). The examples below may use
+<p>The current development version is <strong>4.2024.0</strong> (ACS
+2020-2024 data, ejamdata release v4.2024.0). The examples below may use
 an older release.</p>
 <p>Related articles:</p>
 <ul>
@@ -525,7 +531,23 @@ documentation</a>), which also refreshes the version in
 <li>
 <strong>README</strong>: update the “About” section in
 <code>README.Rmd</code> and knit <code>README.md</code> in the same pull
-request.</li>
+request. Edit only <code>README.Rmd</code>: GitHub’s front page and the
+docs site’s home page both show <code>README.md</code>, so an edit that
+is never knit doesn’t appear anywhere, and the next person to knit picks
+it up unexpectedly. Knit with <code>devtools::build_readme()</code> (it
+needs pandoc; from a terminal, set <code>RSTUDIO_PANDOC</code> to
+RStudio’s pandoc folder). It installs a temporary copy of your checkout
+first. That matters because <code>README.Rmd</code> gets its links from
+<code><a href="../reference/url_package.html">EJAM::url_package()</a></code>, which reads the DESCRIPTION of the
+EJAM that is installed. RStudio’s Knit button and
+<code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">rmarkdown::render()</a></code> use whatever EJAM you have installed,
+often the previous release, so if a release changes a link field in
+DESCRIPTION or <code><a href="../reference/url_package.html">url_package()</a></code> itself, they would write the
+old links. Also leave <code>EJAM_DOCS_BASE_URL</code> and
+<code>EJAM_API_BASEURL</code> unset while knitting: they are settings
+for a deployment or a versioned docs build, and they change the docs and
+API links. To check that the two agree, knit again and confirm
+<code>git diff README.md</code> shows nothing.</li>
 <li>
 <strong>Dependencies</strong>: consider raising minimum versions in
 <code>Imports</code> and <code>Suggests</code> if the release relies on
@@ -664,6 +686,9 @@ commit has been read, including its collapsed “Suppressed comments”, and
 every review thread is resolved</label></li>
 <li><label><input type="checkbox">nothing in the pull request is still
 marked as waiting for a decision</label></li>
+<li><label><input type="checkbox"><code>README.md</code> is knit from
+the current <code>README.Rmd</code>: knitting it again changes
+nothing</label></li>
 </ul>
 <p>Then merge, guarding against last-minute pushes:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">gh</span> pr view <span class="op">&lt;</span>PR<span class="op">&gt;</span> --repo Public-Environmental-Data-Partners/EJAM <span class="at">--json</span> headRefOid <span class="at">--jq</span> .headRefOid</span>
@@ -895,6 +920,10 @@ automatically.</li>
 <li>
 <code>--match-head-commit</code> needs the pull request’s current
 full commit SHA.</li>
+<li>Edit <code>README.Rmd</code>, never <code>README.md</code>, and knit
+<code>README.md</code> in the same pull request, with
+<code>devtools::build_readme()</code> rather than the installed
+EJAM.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -1090,11 +1119,11 @@ attached, the name as potentially modified via
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2026</p>
+  <p>November 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.3</p>
+  <p>EJAM Version 4.2024.0</p>
 </div>
 
     </footer>

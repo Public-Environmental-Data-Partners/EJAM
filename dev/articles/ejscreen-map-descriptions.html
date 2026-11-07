@@ -14,7 +14,8 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="EJScreen Indicators and Map Descriptions">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="EJScreen Indicators and Map Descriptions">
 <meta name="description" content="EJScreen Indicators and Map Descriptions">
 <meta property="og:description" content="EJScreen Indicators and Map Descriptions">
 <meta property="og:image" content="https://public-environmental-data-partners.github.io/EJAM/logo.svg">
@@ -28,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">EJAM</a>
 
-    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">3.2022.3</small>
+    <small class="nav-text text-warning me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">4.2024.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,9 +43,12 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>EJSCREEN Indicators &amp; Reports</h6></li>
-    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJSCREEN Documentation</a></li>
-    <li><a class="dropdown-item" href="../articles/ejscreen-map-descriptions.html">EJScreen Indicators and Map Descriptions</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>EJScreen</h6></li>
+    <li><a class="dropdown-item" href="../articles/ejscreen.html">EJScreen Documentation</a></li>
+    <li><a class="dropdown-item" href="../articles/overview-environmental-indicators-ejscreen.html">Overview of Environmental Indicators in EJScreen/EJAM</a></li>
+    <li><a class="dropdown-item" href="../articles/overview-socioeconomic-indicators-ejscreen.html">Overview of Socioeconomic Indicators in EJScreen</a></li>
+    <li><a class="dropdown-item" href="../articles/technical-information-and-data-downloads.html">Technical Information and Data Downloads</a></li>
+    <li><a class="dropdown-item" href="../articles/known-data-issues.html">Known Data Issues</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Overview for EJAM Users</h6></li>
     <li><a class="dropdown-item" href="../articles/whatis.html">What is EJAM?</a></li>
@@ -59,7 +63,7 @@
     <li><a class="dropdown-item" href="../articles/naics.html">NAICS (Industries)</a></li>
     <li><a class="dropdown-item" href="../articles/counties.html">Counties</a></li>
     <li><a class="dropdown-item" href="../articles/zipcodes.html">Zipcodes</a></li>
-    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas in EJAM v3</a></li>
+    <li><a class="dropdown-item" href="../articles/island-areas.html">Island Areas</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>For package/app developers</h6></li>
     <li><a class="dropdown-item" href="../articles/dev-speed.html">Speed of EJAM analysis</a></li>
@@ -75,6 +79,8 @@
     <li><a class="dropdown-item" href="../articles/dev-update-documentation.html">Updating Documentation</a></li>
     <li><a class="dropdown-item" href="../articles/dev-update-package.html">Releasing a New Version of EJAM</a></li>
     <li><a class="dropdown-item" href="../articles/dev-future-plans.html">Future Plans and Ideas for EJAM</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -106,32 +112,29 @@
     
     
 <p>The below provides basic descriptions for the data included in the
-mapping layers available through EJScreen. EJScreen data are updated
+mapping layers available through EJAM/EJScreen. These data are updated
 periodically. To see which years of data are in the current version, see
-the 13 indicators in the archived <a href="https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/data-raw/EJSCREEN_archived_pages/overview-environmental-indicators-ejscreen.html" class="external-link">Overview
-of Environmental Indicators in EJScreen</a> or <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/overview-environmental-indicators-ejscreen" class="external-link">as
-archived</a> or check the metadata.</p>
+the 13 indicators in the <a href="overview-environmental-indicators-ejscreen.html">Overview of
+Environmental Indicators in EJAM/EJScreen</a> or check the metadata.
+<!-- Docs review: is this right? Where does the metadata live? --></p>
 <ul>
-<li><a href="#environmental-burden-indicators">Environmental Burden
-Indicators</a></li>
-<li><a href="#socioeconomic-indicators">Socioeconomic
-Indicators</a></li>
-<li><a href="#environmental-justice-ej-indexes">Environmental Justice
-(EJ) Indexes</a></li>
-<li><a href="#supplemental-indexes">Supplemental Indexes</a></li>
-<li><a href="#climate-change">Climate Change</a></li>
-<li><a href="#health-disparities">Health Disparities</a></li>
-<li><a href="#critical-service-gaps">Critical Service Gaps</a></li>
-<li><a href="#places-layers">Places Layers</a></li>
-<li><a href="#additional-demographics">Additional Demographics</a></li>
-<li><a href="#boundaries">Boundaries</a></li>
-<li><a href="#threshold-maps">Threshold Maps</a></li>
+<li><a href="#poll">Environmental Burden Indicators</a></li>
+<li><a href="#soci">Socioeconomic Indicators</a></li>
+<li><a href="#ejin">Environmental Justice (EJ) Indexes</a></li>
+<li><a href="#supp">Supplemental Indexes</a></li>
+<li><a href="#clim">Climate Change</a></li>
+<li><a href="#heal">Health Disparities</a></li>
+<li><a href="#crit">Critical Service Gaps</a></li>
+<li><a href="#plac">Places Layers</a></li>
+<li><a href="#addi">Additional Demographics</a></li>
+<li><a href="#boun">Boundaries</a></li>
+<li><a href="#thre">Threshold Maps</a></li>
 </ul>
 <div class="section level2">
-<h2 id="environmental-burden-indicators">Environmental Burden Indicators<a class="anchor" aria-label="anchor" href="#environmental-burden-indicators"></a>
+<h2 id="poll">Environmental Burden Indicators<a class="anchor" aria-label="anchor" href="#poll"></a>
 </h2>
 <div class="section level4">
-<h4 id="particulate-matter-2-5-pm2-5">Particulate Matter 2.5 (PM2.5)<a class="anchor" aria-label="anchor" href="#particulate-matter-2-5-pm2-5"></a>
+<h4 id="particulate">Particulate Matter 2.5 (PM2.5)<a class="anchor" aria-label="anchor" href="#particulate"></a>
 </h4>
 <p>The environmental burden indicator for PM2.5 measures the potential
 exposure to inhalable particles 2.5 microns or smaller (about 30 times
@@ -142,7 +145,7 @@ PM2.5 concentrations using percentile rank, ranging from 0 (lowest) to
 national ambient air quality standard for PM2.5. Source: <a href="https://www.epa.gov/aboutepa/about-office-air-and-radiation" class="external-link">EPA’s
 Office of Air and Radiation</a>.</p>
 <p>For more details on the PM2.5 indicator, including why it is
-important and what you can do moving forward, please visit the <a href="https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-particulate-matter-25-pm25.html" class="external-link">EJScreen
+important and what you can do moving forward, please visit the <a href="env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.html">EJScreen
 Indicator Overview for PM2.5</a> or <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-particulate-matter-25-pm25" class="external-link">as
 archived</a>.</p>
 </div>
@@ -159,12 +162,12 @@ indicator does not designate compliance with the national ambient air
 quality standard for ozone. Source: EPA’s <a href="https://www.epa.gov/aboutepa/about-office-air-and-radiation" class="external-link">Office
 of Air and Radiation</a>.</p>
 <p>For more details on the ozone indicator, including why it is
-important and what you can do moving forward, please visit the <a href="https://htmlpreview.github.io/?https://github.com/Public-Environmental-Data-Partners/EJAM/blob/main/data-raw/EJSCREEN_archived_pages/ejscreen-indicators-overview-ozone.html" class="external-link">EJScreen
+important and what you can do moving forward, please visit the <a href="env-indicators/ejscreen-indicators-overview-ozone.html">EJScreen
 Indicator Overview for Ozone</a> or <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-ozone" class="external-link">as
 archived</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="nitrogen-dioxide-no2">Nitrogen Dioxide (NO2)<a class="anchor" aria-label="anchor" href="#nitrogen-dioxide-no2"></a>
+<h4 id="nitrogen">Nitrogen Dioxide (NO2)<a class="anchor" aria-label="anchor" href="#nitrogen"></a>
 </h4>
 <p>The environmental burden indicator for NO2 measures how much surface
 level NO2 people might be exposed to in terms of annual average
@@ -179,7 +182,7 @@ and what you can do moving forward, please visit the <a href="https://web.archiv
 Indicator Overview for NO2</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="diesel-particulate-matter">Diesel Particulate Matter<a class="anchor" aria-label="anchor" href="#diesel-particulate-matter"></a>
+<h4 id="diesel">Diesel Particulate Matter<a class="anchor" aria-label="anchor" href="#diesel"></a>
 </h4>
 <p>The environmental burden indicator for diesel PM measures how much
 diesel PM (a mixture of particles from diesel exhaust) people might be
@@ -193,7 +196,7 @@ Indicator Overview for Diesel PM</a> or <a href="https://web.archive.org/web/202
 archived</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="toxic-releases-to-air">Toxic Releases to Air<a class="anchor" aria-label="anchor" href="#toxic-releases-to-air"></a>
+<h4 id="toxic">Toxic Releases to Air<a class="anchor" aria-label="anchor" href="#toxic"></a>
 </h4>
 <p>The environmental burden indicator for toxic releases to air measures
 the average annual chemical concentrations in air weighted by the
@@ -211,7 +214,7 @@ why it is important and what you can do moving forward, please visit the
 Indicator Overview for Toxic Releases to Air</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="traffic-proximity-and-volume">Traffic Proximity and Volume<a class="anchor" aria-label="anchor" href="#traffic-proximity-and-volume"></a>
+<h4 id="traffic">Traffic Proximity and Volume<a class="anchor" aria-label="anchor" href="#traffic"></a>
 </h4>
 <p>The environmental burden indicator for traffic proximity measures the
 count of vehicles per day (average annual daily traffic- AADT) divided
@@ -224,7 +227,7 @@ is important and what you can do moving forward, please visit the <a href="https
 Indicator Overview for Traffic Proximity</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="lead-paint">Lead Paint<a class="anchor" aria-label="anchor" href="#lead-paint"></a>
+<h4 id="lead">Lead Paint<a class="anchor" aria-label="anchor" href="#lead"></a>
 </h4>
 <p>The environmental burden indicator for lead paint is based on the
 percentage of housing units built before 1960, a proxy for how much lead
@@ -237,7 +240,7 @@ important and what you can do moving forward, please visit the <a href="https://
 Indicator Overview for Lead Paint</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="superfund-proximity">Superfund Proximity<a class="anchor" aria-label="anchor" href="#superfund-proximity"></a>
+<h4 id="superfund">Superfund Proximity<a class="anchor" aria-label="anchor" href="#superfund"></a>
 </h4>
 <p>The environmental burden indicator for Superfund proximity measures
 how close people might live to sites listed on the National Priorities
@@ -251,7 +254,7 @@ it is important and what you can do moving forward, please visit the <a href="ht
 Indicator Overview for Superfund Proximity</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="risk-management-program-rmp-facility-proximity">Risk Management Program (RMP) Facility Proximity<a class="anchor" aria-label="anchor" href="#risk-management-program-rmp-facility-proximity"></a>
+<h4 id="risk">Risk Management Program (RMP) Facility Proximity<a class="anchor" aria-label="anchor" href="#risk"></a>
 </h4>
 <p>The environmental burden indicator for RMP facility proximity
 measures how close people might live to an active facility with a
@@ -268,7 +271,7 @@ why it is important and what you can do moving forward, please visit the
 Indicator Overview for RMP Facility Proximity</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="hazardous-waste-proximity">Hazardous Waste Proximity<a class="anchor" aria-label="anchor" href="#hazardous-waste-proximity"></a>
+<h4 id="hazardous">Hazardous Waste Proximity<a class="anchor" aria-label="anchor" href="#hazardous"></a>
 </h4>
 <p>The environmental burden indicator for hazardous waste proximity
 measures how close people might live to a facility that handles
@@ -282,7 +285,7 @@ is important and what you can do moving forward, please visit the <a href="https
 Indicator Overview for Hazardous Waste Proximity</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="underground-storage-tanks-ust">Underground Storage Tanks (UST)<a class="anchor" aria-label="anchor" href="#underground-storage-tanks-ust"></a>
+<h4 id="underground">Underground Storage Tanks (UST)<a class="anchor" aria-label="anchor" href="#underground"></a>
 </h4>
 <p>The environmental burden indicator for UST measures how many
 underground storage tanks and UST release sites are near where people
@@ -296,7 +299,7 @@ and what you can do moving forward, please visit the <a href="https://web.archiv
 Indicator Overview for UST</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="wastewater-discharge-stream-proximity-and-toxic-concentration">Wastewater Discharge (Stream Proximity and Toxic Concentration)<a class="anchor" aria-label="anchor" href="#wastewater-discharge-stream-proximity-and-toxic-concentration"></a>
+<h4 id="wastewater">Wastewater Discharge (Stream Proximity and Toxic Concentration)<a class="anchor" aria-label="anchor" href="#wastewater"></a>
 </h4>
 <p>The environmental burden indicator for wastewater discharge measures
 how much relative risk there is of being exposed to pollutants from
@@ -311,7 +314,7 @@ it is important and what you can do moving forward, please visit the <a href="ht
 Indicator Overview for Wastewater Discharge</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="drinking-water-non-compliance">Drinking Water Non-Compliance<a class="anchor" aria-label="anchor" href="#drinking-water-non-compliance"></a>
+<h4 id="drinking">Drinking Water Non-Compliance<a class="anchor" aria-label="anchor" href="#drinking"></a>
 </h4>
 <p>The environmental burden indicator for drinking water non-compliance
 highlights populations served by community water systems that have
@@ -331,12 +334,12 @@ Indicator Overview for Drinking Water Non-Compliance</a>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="socioeconomic-indicators">Socioeconomic Indicators<a class="anchor" aria-label="anchor" href="#socioeconomic-indicators"></a>
+<h2 id="soci">Socioeconomic Indicators<a class="anchor" aria-label="anchor" href="#soci"></a>
 </h2>
 <p>The source of all the socioeconomic indicators is the <a href="">Census Bureau’s American Community Survey 5-year summary
 estimates</a>.</p>
 <div class="section level4">
-<h4 id="percent-people-of-color-">Percent people of color.<a class="anchor" aria-label="anchor" href="#percent-people-of-color-"></a>
+<h4 id="poc">Percent people of color.<a class="anchor" aria-label="anchor" href="#poc"></a>
 </h4>
 <p>The percent of individuals in a block group who list their racial
 status as a race other than white alone and/or list their ethnicity as
@@ -345,44 +348,44 @@ white-alone individuals. The word “alone” in this case indicates that
 the person is of a single race, not multiracial.</p>
 </div>
 <div class="section level4">
-<h4 id="percent-low-income-">Percent low-income.<a class="anchor" aria-label="anchor" href="#percent-low-income-"></a>
+<h4 id="lowincome">Percent low-income.<a class="anchor" aria-label="anchor" href="#lowincome"></a>
 </h4>
 <p>Percent of individuals whose ratio of household income to poverty
 level in the past 12 months was less than 2 (as a fraction of
 individuals for whom ratio was determined).</p>
 </div>
 <div class="section level4">
-<h4 id="unemployment-">Unemployment.<a class="anchor" aria-label="anchor" href="#unemployment-"></a>
+<h4 id="unemployment">Unemployment.<a class="anchor" aria-label="anchor" href="#unemployment"></a>
 </h4>
 <p>All those who did not have a job at all during the reporting period,
 made at least one specific active effort to find a job during the prior
 4 weeks, and were available for work (unless temporarily ill).</p>
 </div>
 <div class="section level4">
-<h4 id="percent-in-limited-english-speaking-">Percent in limited English speaking.<a class="anchor" aria-label="anchor" href="#percent-in-limited-english-speaking-"></a>
+<h4 id="les">Percent in limited English speaking.<a class="anchor" aria-label="anchor" href="#les"></a>
 </h4>
 <p>Percent of households in which no one age 14 and over speaks English
 “very well” or speaks English only (as a fraction of households).</p>
 </div>
 <div class="section level4">
-<h4 id="percent-less-than-high-school-education-">Percent less than high school education.<a class="anchor" aria-label="anchor" href="#percent-less-than-high-school-education-"></a>
+<h4 id="hs">Percent less than high school education.<a class="anchor" aria-label="anchor" href="#hs"></a>
 </h4>
 <p>Percent of individuals age 25 and over with less than high school
 degree.</p>
 </div>
 <div class="section level4">
-<h4 id="percent-under-age-5-">Percent under age 5.<a class="anchor" aria-label="anchor" href="#percent-under-age-5-"></a>
+<h4 id="under5">Percent under age 5.<a class="anchor" aria-label="anchor" href="#under5"></a>
 </h4>
 <p>Percent of individuals under age 5 as a fraction of population.</p>
 </div>
 <div class="section level4">
-<h4 id="percent-over-age-64-">Percent over age 64.<a class="anchor" aria-label="anchor" href="#percent-over-age-64-"></a>
+<h4 id="over64">Percent over age 64.<a class="anchor" aria-label="anchor" href="#over64"></a>
 </h4>
 <p>Percent of individuals over age 64 as a fraction of the
 population.</p>
 </div>
 <div class="section level4">
-<h4 id="demographic-index-">Demographic Index.<a class="anchor" aria-label="anchor" href="#demographic-index-"></a>
+<h4 id="demographic">Demographic Index.<a class="anchor" aria-label="anchor" href="#demographic"></a>
 </h4>
 <p>The demographic index in EJScreen is a combination of percent
 low-income and percent minority, the two socioeconomic factors that were
@@ -393,7 +396,7 @@ The formula is as follows:</p>
 2.</strong></p>
 </div>
 <div class="section level4">
-<h4 id="supplemental-demographic-index-">Supplemental Demographic Index.<a class="anchor" aria-label="anchor" href="#supplemental-demographic-index-"></a>
+<h4 id="sdi">Supplemental Demographic Index.<a class="anchor" aria-label="anchor" href="#sdi"></a>
 </h4>
 <p>The supplemental demographic index in EJScreen is a combination of
 five socioeconomic factors averaged together for each Census block
@@ -409,10 +412,10 @@ the formula will average the other four factors.</strong></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="environmental-justice-ej-indexes">Environmental Justice (EJ) Indexes<a class="anchor" aria-label="anchor" href="#environmental-justice-ej-indexes"></a>
+<h2 id="ejin">Environmental Justice (EJ) Indexes<a class="anchor" aria-label="anchor" href="#ejin"></a>
 </h2>
 <div class="section level4">
-<h4 id="ej-index">EJ Index<a class="anchor" aria-label="anchor" href="#ej-index"></a>
+<h4 id="eji">EJ Index<a class="anchor" aria-label="anchor" href="#eji"></a>
 </h4>
 <p>There are thirteen EJ indexes in EJScreen reflecting the 13
 environmental indicators, combined with socioeconomic information. The
@@ -430,10 +433,10 @@ EJ Indexes here</a>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="supplemental-indexes">Supplemental Indexes<a class="anchor" aria-label="anchor" href="#supplemental-indexes"></a>
+<h2 id="supp">Supplemental Indexes<a class="anchor" aria-label="anchor" href="#supp"></a>
 </h2>
 <div class="section level4">
-<h4 id="supplemental-index">Supplemental Index<a class="anchor" aria-label="anchor" href="#supplemental-index"></a>
+<h4 id="supi">Supplemental Index<a class="anchor" aria-label="anchor" href="#supi"></a>
 </h4>
 <p>There are thirteen supplemental indexes in EJScreen reflecting the 13
 environmental indicators, combined with socioeconomic information. The
@@ -453,10 +456,10 @@ descriptions of the 13 Supplemental Indexes here</a>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="climate-change">Climate Change<a class="anchor" aria-label="anchor" href="#climate-change"></a>
+<h2 id="clim">Climate Change<a class="anchor" aria-label="anchor" href="#clim"></a>
 </h2>
 <div class="section level4">
-<h4 id="flood-risk">Flood Risk<a class="anchor" aria-label="anchor" href="#flood-risk"></a>
+<h4 id="flood">Flood Risk<a class="anchor" aria-label="anchor" href="#flood"></a>
 </h4>
 <p>The First Street Foundation Flood Model is a nationwide probabilistic
 flood model that shows the risk of flooding at any location in all 50
@@ -473,7 +476,7 @@ country. Source: <a href="https://firststreet.org/" class="external-link">First 
 Foundation</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="wildfire-risk">Wildfire Risk<a class="anchor" aria-label="anchor" href="#wildfire-risk"></a>
+<h4 id="wildfire">Wildfire Risk<a class="anchor" aria-label="anchor" href="#wildfire"></a>
 </h4>
 <p>The First Street Foundation-Wildfire Model (FSF-WFM) is a 30 meter
 resolution model representing the wildfire exposure for any specific
@@ -492,7 +495,7 @@ Source: <a href="https://firststreet.org/" class="external-link">First Street
 Foundation</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="year-floodplain">100 Year Floodplain<a class="anchor" aria-label="anchor" href="#year-floodplain"></a>
+<h4 id="id_100-year-floodplain">100 Year Floodplain<a class="anchor" aria-label="anchor" href="#id_100-year-floodplain"></a>
 </h4>
 <p>This 100 Year Floodplain map displays areas estimated to be inundated
 by a 100-year flood, also known as the 1% annual chance flood. These
@@ -505,7 +508,7 @@ dataset was developed for EPA’s EnviroAtlas tool. Source: <a href="https://env
 Spatial Metadata: <a href="https://enviroatlas.epa.gov/arcgis/rest/services/Supplemental/Estimated_floodplain_CONUS_WM/ImageServer" class="external-link">EnviroAtlas</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="sea-level-rise-noaa">Sea Level Rise (NOAA)<a class="anchor" aria-label="anchor" href="#sea-level-rise-noaa"></a>
+<h4 id="slr">Sea Level Rise (NOAA)<a class="anchor" aria-label="anchor" href="#slr"></a>
 </h4>
 <p>This dataset depicts land at risk of permanent flooding when sea
 level rises. There are six map layers showing the area inundated at one,
@@ -521,7 +524,7 @@ Metadata: NOAA Office for Coastal Management</a>. <a href="https://web.archive.o
 archived</a></p>
 </div>
 <div class="section level4">
-<h4 id="extreme-heat">Extreme Heat<a class="anchor" aria-label="anchor" href="#extreme-heat"></a>
+<h4 id="exheat">Extreme Heat<a class="anchor" aria-label="anchor" href="#exheat"></a>
 </h4>
 <p>This dataset provides a screening level assessment of extreme heat
 potential by census block group. This dataset describes the average
@@ -534,10 +537,10 @@ EPA</a>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="health-disparities">Health Disparities<a class="anchor" aria-label="anchor" href="#health-disparities"></a>
+<h2 id="heal">Health Disparities<a class="anchor" aria-label="anchor" href="#heal"></a>
 </h2>
 <div class="section level4">
-<h4 id="low-life-expectancy">Low Life Expectancy<a class="anchor" aria-label="anchor" href="#low-life-expectancy"></a>
+<h4 id="lle">Low Life Expectancy<a class="anchor" aria-label="anchor" href="#lle"></a>
 </h4>
 <p>Average life expectancy data developed as a collaboration between
 NCHS, the National Association for Public Health Statistics and
@@ -547,7 +550,7 @@ to all sub block groups. Source: <a href="https://www.cdc.gov/nchs/nvss/usaleep/
 Small-area Life Expectancy Estimates Project (USALEEP)</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="heart-disease">Heart Disease<a class="anchor" aria-label="anchor" href="#heart-disease"></a>
+<h4 id="heart">Heart Disease<a class="anchor" aria-label="anchor" href="#heart"></a>
 </h4>
 <p>Heart disease prevalence among adults aged 18 years or older. The
 term “heart disease” refers to several types of heart conditions. This
@@ -569,7 +572,7 @@ older. This data is available at the Census tract level; the same tract
 value is then assigned to all sub block groups. Source: <a href="https://www.cdc.gov/places/index.html" class="external-link">CDC Places Data</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="persons-with-disabilities">Persons with Disabilities<a class="anchor" aria-label="anchor" href="#persons-with-disabilities"></a>
+<h4 id="disa">Persons with Disabilities<a class="anchor" aria-label="anchor" href="#disa"></a>
 </h4>
 <p>Percent of all persons with disabilities. Considers six disability
 types: hearing difficulty, vision difficulty, cognitive difficulty,
@@ -589,7 +592,7 @@ dataset).</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="critical-service-gaps">Critical Service Gaps<a class="anchor" aria-label="anchor" href="#critical-service-gaps"></a>
+<h2 id="crit">Critical Service Gaps<a class="anchor" aria-label="anchor" href="#crit"></a>
 </h2>
 <div class="section level4">
 <h4 id="broadband-gaps">Broadband Gaps<a class="anchor" aria-label="anchor" href="#broadband-gaps"></a>
@@ -606,7 +609,7 @@ Census Bureau’s <a href="https://www.census.gov/programs-surveys/acs/data/summ
 Community Survey 5-year summary estimates</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="housing-burden">Housing Burden<a class="anchor" aria-label="anchor" href="#housing-burden"></a>
+<h4 id="housingb">Housing Burden<a class="anchor" aria-label="anchor" href="#housingb"></a>
 </h4>
 <p>This dataset contains census tract level percentiles for housing
 cost, which is the share of households that are both earning less than
@@ -616,7 +619,7 @@ cost percentiles were adopted as Housing Burden for EJScreen. Source: <a href="h
 Department of Housing and Urban Development</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="transportation-access">Transportation Access<a class="anchor" aria-label="anchor" href="#transportation-access"></a>
+<h4 id="tranaccess">Transportation Access<a class="anchor" aria-label="anchor" href="#tranaccess"></a>
 </h4>
 <p>The Average of Transportation Indicator uses an average of four
 transportation-related indicator percentiles, including Transportation
@@ -627,7 +630,7 @@ Department of Transportation’s Transportation Disadvantaged Census
 Tracts</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="food-desert">Food Desert<a class="anchor" aria-label="anchor" href="#food-desert"></a>
+<h4 id="fooddesert">Food Desert<a class="anchor" aria-label="anchor" href="#fooddesert"></a>
 </h4>
 <p>Low income and low access tract measured at 1 mile for urban areas
 and 10 miles for rural areas. This data is available at the tract level.
@@ -635,15 +638,15 @@ Source: <a href="https://web.archive.org/web/20250123161322/https://www.ers.usda
 </div>
 </div>
 <div class="section level2">
-<h2 id="places-layers">Places Layers<a class="anchor" aria-label="anchor" href="#places-layers"></a>
+<h2 id="plac">Places Layers<a class="anchor" aria-label="anchor" href="#plac"></a>
 </h2>
 <div class="section level3">
-<h3 id="epa-regulated-facilities">EPA Regulated Facilities<a class="anchor" aria-label="anchor" href="#epa-regulated-facilities"></a>
+<h3 id="sites-reporting-to-epa">EPA Regulated Facilities<a class="anchor" aria-label="anchor" href="#sites-reporting-to-epa"></a>
 </h3>
 <p>The below includes information EPA collects through various databases
 about facilities or sites subject to environmental regulation.</p>
 <div class="section level4">
-<h4 id="superfund">Superfund<a class="anchor" aria-label="anchor" href="#superfund"></a>
+<h4 id="superfundlayer">Superfund<a class="anchor" aria-label="anchor" href="#superfundlayer"></a>
 </h4>
 <p>The Superfund Enterprise Management System (SEMS) provides
 information regarding sites under the <a href="https://www.epa.gov/laws-regulations/summary-comprehensive-environmental-response-compensation-and-liability-act" class="external-link">Comprehensive
@@ -659,7 +662,7 @@ territories. Source: <a href="https://www.epa.gov/enviro/pcs-icis-overview" clas
 (PCS-ICIS)</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="hazardous-waste-tsdf-and-lqgs">Hazardous Waste (TSDF and LQGs)<a class="anchor" aria-label="anchor" href="#hazardous-waste-tsdf-and-lqgs"></a>
+<h4 id="hazwaste">Hazardous Waste (TSDF and LQGs)<a class="anchor" aria-label="anchor" href="#hazwaste"></a>
 </h4>
 <p>Hazardous waste information contained in the Resource Conservation
 and Recovery Act Information (RCRAInfo) includes an inventory on all
@@ -669,7 +672,7 @@ Source: <a href="https://www.epa.gov/enviro/rcrainfo-overview" class="external-l
 Envirofacts (RCRA Info)</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="water-dischargers-npdes">Water Dischargers (NPDES)<a class="anchor" aria-label="anchor" href="#water-dischargers-npdes"></a>
+<h4 id="npdes">Water Dischargers (NPDES)<a class="anchor" aria-label="anchor" href="#npdes"></a>
 </h4>
 <p>As authorized by the Clean Water Act, the <a href="https://www.epa.gov/npdes" class="external-link">National Pollutant Discharge
 Elimination System (NPDES)</a> permit program controls water pollution
@@ -684,7 +687,7 @@ Source: <a href="https://www.epa.gov/enviro/pcs-icis-overview" class="external-l
 Envirofacts (PCS-ICIS)</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="air-pollution-icis-air">Air Pollution (ICIS-AIR)<a class="anchor" aria-label="anchor" href="#air-pollution-icis-air"></a>
+<h4 id="icisair">Air Pollution (ICIS-AIR)<a class="anchor" aria-label="anchor" href="#icisair"></a>
 </h4>
 <p>The air pollution data (<a href="https://www.epa.gov/enviro/pcs-icis-overview" class="external-link">ICIS-AIR</a>)
 contains compliance and permit data for stationary sources of air
@@ -696,7 +699,7 @@ sources with various regulatory programs under Clean Air Act. Source: <a href="h
 (ICIS-AIR)</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="brownfields-acres">Brownfields (ACRES)<a class="anchor" aria-label="anchor" href="#brownfields-acres"></a>
+<h4 id="brown">Brownfields (ACRES)<a class="anchor" aria-label="anchor" href="#brown"></a>
 </h4>
 <p>The <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/brownfields/grant-recipient-reporting" class="external-link">Assessment,
 Cleanup and Redevelopment Exchange System (ACRES)</a> captures grantee
@@ -708,7 +711,7 @@ Source: <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/
 Envirofacts (brownfields/ACRES)</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="toxics-release-inventory">Toxics Release Inventory<a class="anchor" aria-label="anchor" href="#toxics-release-inventory"></a>
+<h4 id="tri">Toxics Release Inventory<a class="anchor" aria-label="anchor" href="#tri"></a>
 </h4>
 <p>As authorized under the <a href="https://www.epa.gov/toxics-release-inventory-tri-program/tri-laws-and-regulatory-activities" class="external-link">Emergency
 Planning and Community Right-to-Know Act</a> (EPCRA) and the <a href="https://www.epa.gov/laws-regulations/summary-pollution-prevention-act" class="external-link">Pollution
@@ -725,7 +728,7 @@ quantities reported as released. Source: <a href="https://www.epa.gov/enviro/tri
 Service (FRS)</a> Spatial metadata: <a href="https://epa.maps.arcgis.com/home/webmap/viewer.html?layers=76e9a521bc4245388c0d734be62bfb51&amp;useExisting=1" class="external-link">TRI</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="chemical-data-reporting-tsca">Chemical Data Reporting (TSCA)<a class="anchor" aria-label="anchor" href="#chemical-data-reporting-tsca"></a>
+<h4 id="tsca">Chemical Data Reporting (TSCA)<a class="anchor" aria-label="anchor" href="#tsca"></a>
 </h4>
 <p>The <a href="https://www.epa.gov/laws-regulations/summary-toxic-substances-control-act" class="external-link">Toxic
 Substances Control Act</a> (TSCA) grants EPA broad authority to issue
@@ -744,7 +747,7 @@ CDR</a> Spatial Metadata: <a href="https://epa.maps.arcgis.com/home/webmap/viewe
 <h3 id="other-environmental-data">Other Environmental Data<a class="anchor" aria-label="anchor" href="#other-environmental-data"></a>
 </h3>
 <div class="section level4">
-<h4 id="facilities-compliance-status">Facilities Compliance Status<a class="anchor" aria-label="anchor" href="#facilities-compliance-status"></a>
+<h4 id="echo">Facilities Compliance Status<a class="anchor" aria-label="anchor" href="#echo"></a>
 </h4>
 <p>The map layer uses the Enforcement and Compliance History Online
 (ECHO) standard facility symbology to illustrate the programs each
@@ -758,7 +761,7 @@ Exporter</a>.</p>
 <p>Air Toxics</p>
 </div>
 <div class="section level4">
-<h4 id="air-toxics-cancer-risk">Air Toxics Cancer Risk<a class="anchor" aria-label="anchor" href="#air-toxics-cancer-risk"></a>
+<h4 id="airtox">Air Toxics Cancer Risk<a class="anchor" aria-label="anchor" href="#airtox"></a>
 </h4>
 <p>The air toxics cancer risk data is the estimated lifetime inhalation
 cancer risk from the analyzed carcinogens in ambient outdoor air, as
@@ -813,7 +816,7 @@ Annual (1997 standard)</a></p>
 8-hr (1997 standard)</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="rsei-score">RSEI Score<a class="anchor" aria-label="anchor" href="#rsei-score"></a>
+<h4 id="rsei">RSEI Score<a class="anchor" aria-label="anchor" href="#rsei"></a>
 </h4>
 <p>A RSEI Score is a unitless value that accounts for the size of the
 chemical release, the fate and transport of the chemical through the
@@ -828,7 +831,7 @@ Scores</em>. Source: EPA’s RSEI</p>
 <h3 id="water-features">Water Features<a class="anchor" aria-label="anchor" href="#water-features"></a>
 </h3>
 <div class="section level4">
-<h4 id="impaired-water-points">Impaired Water Points<a class="anchor" aria-label="anchor" href="#impaired-water-points"></a>
+<h4 id="iwp">Impaired Water Points<a class="anchor" aria-label="anchor" href="#iwp"></a>
 </h4>
 <p>The Impaired Water Points layer includes points that are too polluted
 or otherwise degraded to meet the water quality standards set by states,
@@ -841,7 +844,7 @@ Office of Water ATTAINS Geospatial Data</a> Spatial Metadata: <a href="https://g
 Assessment Areas</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="impaired-streams">Impaired Streams<a class="anchor" aria-label="anchor" href="#impaired-streams"></a>
+<h4 id="istreams">Impaired Streams<a class="anchor" aria-label="anchor" href="#istreams"></a>
 </h4>
 <p>The Impaired Streams layer includes streams that are too polluted or
 otherwise degraded to meet the water quality standards set by states,
@@ -853,7 +856,7 @@ Office of Water ATTAINS Geospatial Data</a> Spatial Metadata: <a href="https://g
 Assessment Lines</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="impaired-water-bodies">Impaired Water Bodies<a class="anchor" aria-label="anchor" href="#impaired-water-bodies"></a>
+<h4 id="iwb">Impaired Water Bodies<a class="anchor" aria-label="anchor" href="#iwb"></a>
 </h4>
 <p>The Impaired Water Bodies layer includes bodies of water that are too
 polluted or otherwise degraded to meet the water quality standards set
@@ -866,7 +869,7 @@ Office of Water ATTAINS Geospatial Data</a> Spatial Metadata: <a href="https://g
 Assessment Areas</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="impaired-catchment">Impaired Catchment<a class="anchor" aria-label="anchor" href="#impaired-catchment"></a>
+<h4 id="icatchment">Impaired Catchment<a class="anchor" aria-label="anchor" href="#icatchment"></a>
 </h4>
 <p>The Impaired Catchment layer includes catchment assessment units that
 are too polluted or otherwise degraded to meet the water quality
@@ -887,7 +890,7 @@ Hydrography Dataset (NHD). Source: <a href="https://www.epa.gov/waterdata/nhdplu
 Office of Water</a> Spatial Metadata: <a href="https://data.usgs.gov/datacatalog/metadata/USGS.ecd2ad5e-faa2-4291-bcdb-441b7113ea41.xml" class="external-link">Streams</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="water-bodies">Water Bodies<a class="anchor" aria-label="anchor" href="#water-bodies"></a>
+<h4 id="waterbodies">Water Bodies<a class="anchor" aria-label="anchor" href="#waterbodies"></a>
 </h4>
 <p>The Water Bodies layer includes area surface features such as ponds,
 lakes and wide rivers. The water bodies layer is from U.S. Census Bureau
@@ -896,7 +899,7 @@ Census Bureau Areal Hydrography</a> Spatial Metadata: <a href="https://nepassist
 Bodies</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="sole-source-aquifers">Sole Source Aquifers<a class="anchor" aria-label="anchor" href="#sole-source-aquifers"></a>
+<h4 id="ssa">Sole Source Aquifers<a class="anchor" aria-label="anchor" href="#ssa"></a>
 </h4>
 <p>The Sole Source Aquifer layer includes information on the sole source
 aquifers (SSA) designated by EPA under section 1424(e) of the Safe
@@ -909,7 +912,7 @@ Locations</a> Spatial Metadata: <a href="https://web.archive.org/web/20250123161
 Source Aquifers</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="private-water-wells">Private Water Wells<a class="anchor" aria-label="anchor" href="#private-water-wells"></a>
+<h4 id="pww">Private Water Wells<a class="anchor" aria-label="anchor" href="#pww"></a>
 </h4>
 <p>Approximately 20% of people in the US get their water from a private
 domestic well. These water sources are exempt from federal regulations
@@ -937,7 +940,7 @@ System Service Area Technical Documentation</a>.</p>
 <p>Source: <a href="https://gispub.epa.gov/serviceareas" class="external-link">US EPA</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="ej-grants">EJ Grants<a class="anchor" aria-label="anchor" href="#ej-grants"></a>
+<h4 id="ejgrants">EJ Grants<a class="anchor" aria-label="anchor" href="#ejgrants"></a>
 </h4>
 <p>This layer maps environmental justice grants and resources provided
 through the EPA’s Office of Environmental Justice and External Civil
@@ -952,7 +955,7 @@ Next Generation Grants System</a>.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="community-landmarks">Community Landmarks<a class="anchor" aria-label="anchor" href="#community-landmarks"></a>
+<h3 id="comland">Community Landmarks<a class="anchor" aria-label="anchor" href="#comland"></a>
 </h3>
 <div class="section level4">
 <h4 id="schools">Schools<a class="anchor" aria-label="anchor" href="#schools"></a>
@@ -1057,7 +1060,7 @@ party in litigation with the United States or third parties. EPA
 reserves the right to change this dataset at any time without public
 notice.</p>
 <div class="section level4">
-<h4 id="tribal-lands">Tribal Lands<a class="anchor" aria-label="anchor" href="#tribal-lands"></a>
+<h4 id="tribal">Tribal Lands<a class="anchor" aria-label="anchor" href="#tribal"></a>
 </h4>
 <p>This layer represents locations of American Indian Tribal lands in
 the lower 48 states and Alaska. The areas include all lands associated
@@ -1070,7 +1073,7 @@ relating to Indian country locations. Source: EPA ArcGIS for
 EMEF/tribal.</p>
 </div>
 <div class="section level4">
-<h4 id="alaska-native-allotments">Alaska Native Allotments<a class="anchor" aria-label="anchor" href="#alaska-native-allotments"></a>
+<h4 id="alaskaallot">Alaska Native Allotments<a class="anchor" aria-label="anchor" href="#alaskaallot"></a>
 </h4>
 <p>Bureau of Land Management-defined locations based on land survey
 records associated with the Public Land Survey System (PLSS) and
@@ -1078,7 +1081,7 @@ associated legislation in Alaska. Source: EPA ArcGIS for Alaska Native
 Allotments.</p>
 </div>
 <div class="section level4">
-<h4 id="alaska-native-villages">Alaska Native Villages<a class="anchor" aria-label="anchor" href="#alaska-native-villages"></a>
+<h4 id="alaska">Alaska Native Villages<a class="anchor" aria-label="anchor" href="#alaska"></a>
 </h4>
 <p>Boundary-centroid locations based on records provided by the Bureau
 of Land Management and administered under the Alaska Native Claims
@@ -1086,7 +1089,7 @@ Settlement Act (ANSCA). Source: EPA ArcGIS for Alaska Native
 Villages.</p>
 </div>
 <div class="section level4">
-<h4 id="american-indian-reservations">American Indian Reservations<a class="anchor" aria-label="anchor" href="#american-indian-reservations"></a>
+<h4 id="reservations">American Indian Reservations<a class="anchor" aria-label="anchor" href="#reservations"></a>
 </h4>
 <p>Census Bureau-defined areas set aside by the federal government for
 use by tribes in accordance with tribal treaties, agreements, executive
@@ -1095,7 +1098,7 @@ determinations relevant to a given entity. Source: EPA ArcGIS for
 American Indian Reservations.</p>
 </div>
 <div class="section level4">
-<h4 id="american-indian-off-reservation-trust-lands">American Indian Off-reservation Trust Lands<a class="anchor" aria-label="anchor" href="#american-indian-off-reservation-trust-lands"></a>
+<h4 id="trust">American Indian Off-reservation Trust Lands<a class="anchor" aria-label="anchor" href="#trust"></a>
 </h4>
 <p>Census Bureau-defined areas for which the United States holds title
 in trust for the benefit of a tribe or for an individual American
@@ -1106,14 +1109,14 @@ reservation and/or tribal government. Source: EPA ArcGIS for American
 Indian Off-reservation Trust Lands.</p>
 </div>
 <div class="section level4">
-<h4 id="oklahoma-tribal-statistical-areas-otsa-joint-use-areas">Oklahoma Tribal Statistical Areas (OTSA) Joint-Use Areas<a class="anchor" aria-label="anchor" href="#oklahoma-tribal-statistical-areas-otsa-joint-use-areas"></a>
+<h4 id="oklahoma">Oklahoma Tribal Statistical Areas (OTSA) Joint-Use Areas<a class="anchor" aria-label="anchor" href="#oklahoma"></a>
 </h4>
 <p>As applied to OTSAs by the Census Bureau, include areas administered
 jointly and/or claimed by two or more American Indian tribes that have a
 delineated OTSA. Source: EPA ArcGIS for Oklahoma Statistical Areas.</p>
 </div>
 <div class="section level4">
-<h4 id="virginia-federally-recognized-tribes">Virginia Federally Recognized Tribes<a class="anchor" aria-label="anchor" href="#virginia-federally-recognized-tribes"></a>
+<h4 id="virginia">Virginia Federally Recognized Tribes<a class="anchor" aria-label="anchor" href="#virginia"></a>
 </h4>
 <p>Contains point data for federally recognized tribes geographically
 located in the state of Virginia, corresponding with the administrative
@@ -1133,7 +1136,7 @@ present-day tribal boundaries. Source: USDA ArcGIS for Indian Land
 Cessions in the United States.</p>
 </div>
 <div class="section level4">
-<h4 id="alaska-native-regional-corporations">Alaska Native Regional Corporations<a class="anchor" aria-label="anchor" href="#alaska-native-regional-corporations"></a>
+<h4 id="alasacorp">Alaska Native Regional Corporations<a class="anchor" aria-label="anchor" href="#alasacorp"></a>
 </h4>
 <p>Census Bureau-defined, corporate entities organized to conduct both
 for-profit and non-profit affairs of Alaska Natives pursuant to the
@@ -1143,14 +1146,14 @@ the area within the Annette Island Reserve). Source: Census ArcGIS for
 Alaska Native Regional Corporations.</p>
 </div>
 <div class="section level4">
-<h4 id="state-recognized-american-indian-reservations">State-recognized American Indian Reservations<a class="anchor" aria-label="anchor" href="#state-recognized-american-indian-reservations"></a>
+<h4 id="staterec">State-recognized American Indian Reservations<a class="anchor" aria-label="anchor" href="#staterec"></a>
 </h4>
 <p>Census Bureau-curated boundaries that depict reservations established
 by certain state governments for tribes recognized by the state. Source:
 Census ArcGIS for State American Indian Reservations.</p>
 </div>
 <div class="section level4">
-<h4 id="hawaiian-native-home-lands">Hawaiian Native Home Lands<a class="anchor" aria-label="anchor" href="#hawaiian-native-home-lands"></a>
+<h4 id="hawaiian">Hawaiian Native Home Lands<a class="anchor" aria-label="anchor" href="#hawaiian"></a>
 </h4>
 <p>Census Bureau-defined areas depicting the 75 Hawaiian homelands in
 the U.S. state of Hawaii in pursuant with the Hawaiian Homes Commission
@@ -1158,7 +1161,7 @@ Act of 1920 (HHCA), as amended. Source: Census ArcGIS for Hawaiian Home
 Lands.</p>
 </div>
 <div class="section level4">
-<h4 id="state-designated-tribal-statistical-areas">State-designated Tribal Statistical Areas<a class="anchor" aria-label="anchor" href="#state-designated-tribal-statistical-areas"></a>
+<h4 id="statisticalareas">State-designated Tribal Statistical Areas<a class="anchor" aria-label="anchor" href="#statisticalareas"></a>
 </h4>
 <p>Statistical geographic areas identified and delineated for state
 recognized tribes by the Census Bureau that are not federally recognized
@@ -1171,7 +1174,7 @@ Areas.</p>
 <h3 id="colonias">Colonias<a class="anchor" aria-label="anchor" href="#colonias"></a>
 </h3>
 <div class="section level4">
-<h4 id="colonias-communities-hud">Colonias Communities (HUD)<a class="anchor" aria-label="anchor" href="#colonias-communities-hud"></a>
+<h4 id="coloniashud">Colonias Communities (HUD)<a class="anchor" aria-label="anchor" href="#coloniashud"></a>
 </h4>
 <p>This service denotes the locations of colonias communities as defined
 in Section 916 of the Cranston-Gonzalez National Affordable Housing Act
@@ -1192,7 +1195,7 @@ Department of Housing and Urban Development’s (HUD) colonias geospatial
 data.</p>
 </div>
 <div class="section level4">
-<h4 id="tx-state-colonias">TX State Colonias<a class="anchor" aria-label="anchor" href="#tx-state-colonias"></a>
+<h4 id="txcolonias">TX State Colonias<a class="anchor" aria-label="anchor" href="#txcolonias"></a>
 </h4>
 <p>Colonias are substandard housing developments, often found along the
 Texas-Mexico border, where residents lack basic services such as
@@ -1203,7 +1206,7 @@ is a Spanish word for neighborhood. Source: Texas Attorney General’s
 (TX-AG) colonias geospatial database</p>
 </div>
 <div class="section level4">
-<h4 id="nm-state-colonias">NM State Colonias<a class="anchor" aria-label="anchor" href="#nm-state-colonias"></a>
+<h4 id="nmcolonias">NM State Colonias<a class="anchor" aria-label="anchor" href="#nmcolonias"></a>
 </h4>
 <p>University of Mexico’s Bureau of Business &amp; Economic Research
 (BBER) has developed an innovative technique for approximating colonia
@@ -1217,10 +1220,10 @@ Research’s (BBER) colonias geospatial database.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="designated-disadvantaged-communities">Designated Disadvantaged Communities<a class="anchor" aria-label="anchor" href="#designated-disadvantaged-communities"></a>
+<h3 id="ddc">Designated Disadvantaged Communities<a class="anchor" aria-label="anchor" href="#ddc"></a>
 </h3>
 <div class="section level4">
-<h4 id="justice-40">Justice 40<a class="anchor" aria-label="anchor" href="#justice-40"></a>
+<h4 id="justice40">Justice 40<a class="anchor" aria-label="anchor" href="#justice40"></a>
 </h4>
 <p>This layer built by Esri assesses and identifies communities that are
 disadvantaged according to <a href="https://web.archive.org/web/20250123161322/https://screeningtool.geoplatform.gov/en/methodology" class="external-link">Justice40
@@ -1232,7 +1235,7 @@ of the <a href="https://web.archive.org/web/20250123161322/https://screeningtool
 data</a> downloaded November 22, 2022.</p>
 </div>
 <div class="section level4">
-<h4 id="epa-ira-disadvantaged-communities">EPA IRA Disadvantaged Communities<a class="anchor" aria-label="anchor" href="#epa-ira-disadvantaged-communities"></a>
+<h4 id="epaira">EPA IRA Disadvantaged Communities<a class="anchor" aria-label="anchor" href="#epaira"></a>
 </h4>
 <p>The EPA <a href="https://web.archive.org/web/20250123161322/https://www.epa.gov/inflation-reduction-act" class="external-link">Inflation
 Reduction Act (IRA)</a> Disadvantaged Communities map combines multiple
@@ -1262,7 +1265,7 @@ Disadvantaged Communities Map</a>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="additional-demographics">Additional Demographics<a class="anchor" aria-label="anchor" href="#additional-demographics"></a>
+<h2 id="addi">Additional Demographics<a class="anchor" aria-label="anchor" href="#addi"></a>
 </h2>
 <p>Demographic information is available to add to the EJScreen map under
 the “Additional Demographics” button. You may click on the associated
@@ -1271,10 +1274,10 @@ website for more explanations regarding the annual American Community
 Survey (ACS) estimates.</p>
 </div>
 <div class="section level2">
-<h2 id="boundaries">Boundaries<a class="anchor" aria-label="anchor" href="#boundaries"></a>
+<h2 id="boun">Boundaries<a class="anchor" aria-label="anchor" href="#boun"></a>
 </h2>
 <div class="section level4">
-<h4 id="zip-codes">Zip Codes<a class="anchor" aria-label="anchor" href="#zip-codes"></a>
+<h4 id="zip">Zip Codes<a class="anchor" aria-label="anchor" href="#zip"></a>
 </h4>
 <p>The Zip Codes layer provides information and identifies each postal
 delivery area in the United States. Source: <a href="https://web.archive.org/web/20250123161322/https://www.arcgis.com/home/group.html?content=all&amp;id=24838c2d95e14dd18c25e9bad55a7f82#overview" class="external-link">Data
@@ -1282,7 +1285,7 @@ and Maps for ArcGIS</a> Spatial Metadata: <a href="https://web.archive.org/web/2
 Codes</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="congressional-districts">Congressional Districts<a class="anchor" aria-label="anchor" href="#congressional-districts"></a>
+<h4 id="cong">Congressional Districts<a class="anchor" aria-label="anchor" href="#cong"></a>
 </h4>
 <p>The Congressional Districts layer includes information on the 118th
 Congressional Districts of the United States, and U.S. Territories.
@@ -1290,7 +1293,7 @@ Source: ArcGIS Map Service Spatial Metadata: Congressional
 Districts.</p>
 </div>
 <div class="section level4">
-<h4 id="city-boundaries">City Boundaries<a class="anchor" aria-label="anchor" href="#city-boundaries"></a>
+<h4 id="cityb">City Boundaries<a class="anchor" aria-label="anchor" href="#cityb"></a>
 </h4>
 <p>The City Boundaries layer includes incorporated cities and Census
 Designated Places from the U.S. Census Bureau TIGER/Line data. Source:
@@ -1299,7 +1302,7 @@ Census Bureau</a> Spatial Metadata: <a href="https://web.archive.org/web/2025012
 Boundaries</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="urbanized-areas">Urbanized Areas<a class="anchor" aria-label="anchor" href="#urbanized-areas"></a>
+<h4 id="urbanized">Urbanized Areas<a class="anchor" aria-label="anchor" href="#urbanized"></a>
 </h4>
 <p>Urbanized Areas are derived from the 2019 U.S. Census Bureau
 TIGER/Line Urban Areas. Urbanized Areas are contiguous areas of
@@ -1308,7 +1311,7 @@ Census Bureau</a> Spatial Metadata: <a href="https://web.archive.org/web/2025012
 Areas</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="federal-lands">Federal Lands<a class="anchor" aria-label="anchor" href="#federal-lands"></a>
+<h4 id="fedlands">Federal Lands<a class="anchor" aria-label="anchor" href="#fedlands"></a>
 </h4>
 <p>The Federal Lands layer includes information on lands owned or
 administered by the Federal government. This layer is downloaded from
@@ -1317,7 +1320,7 @@ National Geospatial Program Small-Scale Data</a> Spatial Metadata: <a href="http
 Lands</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="townships-boundary">Townships Boundary<a class="anchor" aria-label="anchor" href="#townships-boundary"></a>
+<h4 id="township">Townships Boundary<a class="anchor" aria-label="anchor" href="#township"></a>
 </h4>
 <p>The Townships Boundary layer portrays the Public Land Survey System
 (PLSS) boundaries of the United States to the township level. This layer
@@ -1332,13 +1335,13 @@ Townships Boundary.</p>
 States. Source: U.S. Census Bureau Spatial Metadata: Counties.</p>
 </div>
 <div class="section level4">
-<h4 id="states">States<a class="anchor" aria-label="anchor" href="#states"></a>
+<h4 id="states2">States<a class="anchor" aria-label="anchor" href="#states2"></a>
 </h4>
 <p>The State layer provides state boundaries of the United States.
 Source: U.S. Census Bureau Spatial Metadata: States.</p>
 </div>
 <div class="section level4">
-<h4 id="epa-regions">EPA Regions<a class="anchor" aria-label="anchor" href="#epa-regions"></a>
+<h4 id="eparegions">EPA Regions<a class="anchor" aria-label="anchor" href="#eparegions"></a>
 </h4>
 <p>The EPA Regions layer includes EPA Administrative Region boundaries
 derived from State boundaries. Source: EPA Office of Environmental
@@ -1346,7 +1349,7 @@ Information (OEI) Spatial Metadata: EPA Regions.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="threshold-maps">Threshold Maps<a class="anchor" aria-label="anchor" href="#threshold-maps"></a>
+<h2 id="thre">Threshold Maps<a class="anchor" aria-label="anchor" href="#thre"></a>
 </h2>
 <p>The threshold maps are a compilation of the various EJ indexes or the
 various supplemental indexes on a single map. The threshold map widget
@@ -1379,11 +1382,11 @@ load very slowly).</em></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>October 2026</p>
+  <p>November 2026</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>EJAM Version 3.2022.3</p>
+  <p>EJAM Version 4.2024.0</p>
 </div>
 
     </footer>

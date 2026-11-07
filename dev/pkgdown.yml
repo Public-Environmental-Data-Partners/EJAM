@@ -19,16 +19,34 @@ articles:
   dev-update-ejscreen-datasets-yearly: dev-update-ejscreen-datasets-yearly.html
   dev-update-package: dev-update-package.html
   distances: distances.html
+  env-indicators/ejscreen-indicators-overview-diesel-particulate-matter: env-indicators/ejscreen-indicators-overview-diesel-particulate-matter.html
+  env-indicators/ejscreen-indicators-overview-drinking-water-non-compliance: env-indicators/ejscreen-indicators-overview-drinking-water-non-compliance.html
+  env-indicators/ejscreen-indicators-overview-hazardous-waste-proximity: env-indicators/ejscreen-indicators-overview-hazardous-waste-proximity.html
+  env-indicators/ejscreen-indicators-overview-lead-paint: env-indicators/ejscreen-indicators-overview-lead-paint.html
+  env-indicators/ejscreen-indicators-overview-nitrogen-dioxide-no2: env-indicators/ejscreen-indicators-overview-nitrogen-dioxide-no2.html
+  env-indicators/ejscreen-indicators-overview-ozone: env-indicators/ejscreen-indicators-overview-ozone.html
+  env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25: env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.html
+  env-indicators/ejscreen-indicators-overview-risk-management-program-rmp-facility-proximity: env-indicators/ejscreen-indicators-overview-risk-management-program-rmp-facility-proximity.html
+  env-indicators/ejscreen-indicators-overview-superfund-proximity: env-indicators/ejscreen-indicators-overview-superfund-proximity.html
+  env-indicators/ejscreen-indicators-overview-toxic-releases-air: env-indicators/ejscreen-indicators-overview-toxic-releases-air.html
+  env-indicators/ejscreen-indicators-overview-traffic-proximity-and-volume: env-indicators/ejscreen-indicators-overview-traffic-proximity-and-volume.html
+  env-indicators/ejscreen-indicators-overview-underground-storage-tanks-ust: env-indicators/ejscreen-indicators-overview-underground-storage-tanks-ust.html
+  env-indicators/ejscreen-indicators-overview-wastewater-discharge: env-indicators/ejscreen-indicators-overview-wastewater-discharge.html
   ejscreen-map-descriptions: ejscreen-map-descriptions.html
   ejscreen: ejscreen.html
+  env-indicators/indicator-source-data: env-indicators/indicator-source-data.html
   installing: installing.html
   island-areas: island-areas.html
+  known-data-issues: known-data-issues.html
   naics: naics.html
+  overview-environmental-indicators-ejscreen: overview-environmental-indicators-ejscreen.html
+  overview-socioeconomic-indicators-ejscreen: overview-socioeconomic-indicators-ejscreen.html
+  technical-information-and-data-downloads: technical-information-and-data-downloads.html
   testdata: testdata.html
   webapp: webapp.html
   whatis: whatis.html
   zipcodes: zipcodes.html
-last_built: 2026-11-07T04:14Z
+last_built: 2026-11-07T21:27Z
 urls:
   reference: https://public-environmental-data-partners.github.io/EJAM/reference
   article: https://public-environmental-data-partners.github.io/EJAM/articles
