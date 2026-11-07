@@ -1,6 +1,6 @@
 ---
 title: "Known Issues"
-description: "Known data limitations in EJAM v4.2024.0 that affect specific places, and how to recognize them"
+description: "Known data limitations in EJScreen/EJAM v4.2024.0 that affect specific places, and how to recognize them"
 output:
   rmarkdown::html_vignette:
     toc: true
