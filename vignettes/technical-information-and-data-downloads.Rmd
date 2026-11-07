@@ -1,7 +1,13 @@
 ---
 title: "Technical Information and Data Downloads"
 description: "Technical Information and Data Downloads"
-output: html_document
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Technical Information and Data Downloads}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This page contains detailed information about the technical aspects of EJScreen, the most recent updates, and how to download full EJScreen datasets.

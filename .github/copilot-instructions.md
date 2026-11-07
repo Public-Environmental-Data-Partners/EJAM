@@ -92,7 +92,7 @@ library(shinytest2)
 library(EJAM)
 
 # Run all web app tests
-shinytest2::test_app(".", filter = "functionality", check_setup = FALSE)
+shinytest2::test_app(".", filter = "functionality", check_setup = FALSE) # but note test_app(check_setup=) is now deprecated
 #or
 EJAM:::test_ejam(ask=F,run_these="webapp")
 
