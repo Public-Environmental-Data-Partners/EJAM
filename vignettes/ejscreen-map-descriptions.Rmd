@@ -88,7 +88,7 @@ using percentile rank, ranging from 0 (lowest) to 100 (highest). Source: EPA’s
 
 For more details on the diesel PM indicator, including why it is important and
 what you can do moving forward, please visit the 
-[EJScreen Indicator Overview for Diesel PM](`r EJAM::url_github_preview(ver="main", fold="data-raw/EJSCREEN_archived_pages", file="ejscreen-indicators-overview-diesel-particulate-matter.html", launch_browser = FALSE)`) 
+[EJScreen Indicator Overview for Diesel PM](env-indicators/ejscreen-indicators-overview-diesel-particulate-matter.html) 
 or [as archived](https://web.archive.org/web/20250121194841/https://www.epa.gov/ejscreen/ejscreen-indicators-overview-diesel-particulate-matter).
 
 #### Toxic Releases to Air {#toxic}
@@ -1106,4 +1106,3 @@ at the national and state level.
 
 - _This page is a simplified version of the original saved by archive.org. It was adapted from [an archived copy](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ejscreen-map-descriptions) that captured the version that had been last updated on December 19, 2024._
 - _**[Fast-loading simplified versions of key webpages and reference documents](ejscreen.html){target="_blank"}** are available for EJSCREEN users (because [the complete archived EPA EJSCREEN website pages](https://web.archive.org/web/20250121194018/https://www.epa.gov/ejscreen){target="_blank"} load very slowly)._
-
