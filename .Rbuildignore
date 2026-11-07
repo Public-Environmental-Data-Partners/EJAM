@@ -29,3 +29,4 @@
 ^figure$
 ^\.posit/assistant$
 ^cloudflare$
+^vignettes/env-indicators$

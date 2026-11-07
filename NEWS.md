@@ -1,4 +1,4 @@
-# EJAM 4.2024.0 (in development)
+# EJAM 4.2024.0 (November 2026)
 
 
 ### New in EJSCREEN and EJAM
@@ -10,6 +10,8 @@ _since October 2026_
   - **Demographics** use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version.
   - **Environmental** indicators for ozone and PM2.5 are updated.
   - **EJ indexes and percentiles** are recalculated to use the new data.
+  - The **language shares for limited-English households** (e.g. % speaking Spanish) are shares of limited-English-speaking households, as the report labels them, not of all households as in EPA's EJSCREEN data files (#615).
+  - **Brentwood and Wyandanch, NY have no data:** the Census Bureau withheld 2020-2024 ACS data for these places in Suffolk County ([Census errata note 148](https://www.census.gov/programs-surveys/acs/technical-documentation/errata/148.html)). EJAM has no data for those 39 block groups, so analyses there undercount residents.
 
 #### Towns and townships added
 
@@ -91,6 +93,9 @@ _since October 2026_
     (as circles around points or as polygons)
     by specifying the indicator name, e.g.,
     `ejam2map(testoutput_ejamit_fips_counties, color = "pctile.proximity.npl")`
+
+- **Other**
+  - Requires newer versions of R and several packages (e.g., readxl and curl), which have security fixes and other improvements.
 
 _since 2024/2025_
 

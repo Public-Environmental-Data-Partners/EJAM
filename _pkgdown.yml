@@ -25,8 +25,8 @@ footer:
     left: [datefooter]
     right: [package, versionmsg]
   components:
-    datefooter: October 2026
-    versionmsg: Version 3.2022.3
+    datefooter: November 2026
+    versionmsg: Version 4.2024.0
 development:
   mode: release
   destination: dev
@@ -37,12 +37,14 @@ home:
   sidebar:
     structure: [dev, citation, license, community]
 articles:
-- title: EJSCREEN Documentation
-  desc: EJSCREEN Indicators & Reports
-  navbar: EJSCREEN Indicators & Reports
+- title: EJScreen
+  desc: EJScreen indicators, reports and technical information
+  navbar: EJScreen
   contents:
   - ejscreen
-  - ejscreen-map-descriptions
+  - overview-environmental-indicators-ejscreen
+  - overview-socioeconomic-indicators-ejscreen
+  - technical-information-and-data-downloads
 - title: The EJAM Web App
   desc: Overview for EJAM Users
   navbar: Overview for EJAM Users
@@ -79,7 +81,27 @@ articles:
   - dev-update-documentation
   - dev-update-package
   - dev-future-plans
-  - dev-speed
+# Built and linked from the EJScreen pages above, but not listed in the
+# Articles menu or index. "EJScreen Documentation" links to the map
+# descriptions; the environmental indicators overview links to each indicator
+# page and to the source-data page. EJScreen links to these pages directly.
+- title: internal
+  contents:
+  - ejscreen-map-descriptions
+  - env-indicators/ejscreen-indicators-overview-diesel-particulate-matter
+  - env-indicators/ejscreen-indicators-overview-drinking-water-non-compliance
+  - env-indicators/ejscreen-indicators-overview-hazardous-waste-proximity
+  - env-indicators/ejscreen-indicators-overview-lead-paint
+  - env-indicators/ejscreen-indicators-overview-nitrogen-dioxide-no2
+  - env-indicators/ejscreen-indicators-overview-ozone
+  - env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25
+  - env-indicators/ejscreen-indicators-overview-risk-management-program-rmp-facility-proximity
+  - env-indicators/ejscreen-indicators-overview-superfund-proximity
+  - env-indicators/ejscreen-indicators-overview-toxic-releases-air
+  - env-indicators/ejscreen-indicators-overview-traffic-proximity-and-volume
+  - env-indicators/ejscreen-indicators-overview-underground-storage-tanks-ust
+  - env-indicators/ejscreen-indicators-overview-wastewater-discharge
+  - env-indicators/indicator-source-data
 reference:
 - title: "Start an Analysis - Key Functions"
   desc: "Starting the Analysis"

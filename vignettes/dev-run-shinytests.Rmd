@@ -19,7 +19,12 @@ This document covers the UI-related automated tests.
 
 ## NOTE on work in progress / how to run the webapp tests
 
-This package can use `shinytest2::test_app()`.
+This package can use `shinytest2::test_app()`, but 
+**note changes in the shinytest2 package since version 0.5.0 and 0.5.1,
+at https://cran.rstudio.com/web/packages/shinytest2/news/news.html.
+Some content in this article may need to be updated.**
+
+See also https://rstudio.github.io/shinytest2/articles/use-package.html 
 
 `EJAM:::test_ejam()` instead uses an approach that first sources `testthat/setup.R`
 which does setup needed and also sources `testthat/setup-shinytest2.R` which defines `shinytest2_webapp_functionality()`,
