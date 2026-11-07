@@ -1,0 +1,94 @@
+---
+title: "Known Issues"
+description: "Known data limitations in EJAM v4.2024.0 that affect specific places, and how to recognize them"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Known Issues}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+
+This page lists known limitations of the data in EJAM v4.2024.0, which uses the
+2020-2024 American Community Survey (ACS). Each one affects a small number of
+places. They are documented here so that results for those places can be
+interpreted correctly, and most are planned for correction in a later release.
+
+To report a problem not listed here, open an issue in the
+[EJAM repository](https://github.com/Public-Environmental-Data-Partners/EJAM/issues).
+
+## Brentwood and Wyandanch, New York: no ACS 2020-2024 data
+
+The Census Bureau withheld the ACS 2019-2023 and 2020-2024 estimates for the
+Brentwood and Wyandanch census-designated places in Suffolk County, New York
+([Census errata note 148](https://www.census.gov/programs-surveys/acs/technical-documentation/errata/148.html)).
+
+- EJAM therefore has no data for the **39 blockgroups** (in 14 tracts) that make
+  up those places, home to about **75,000 residents**.
+- An analysis that includes any part of those places counts no residents there,
+  so it undercounts residents and shows no indicator values for those areas.
+- Results for Suffolk County as a whole also exclude these residents, so they are
+  lower than the Census Bureau's own county total.
+
+These blockgroups were included in EJAM v3.2022.3 (ACS 2018-2022), which was
+published before the suppression.
+
+## Connecticut
+
+Starting with 2022 geography, the Census Bureau uses Connecticut's nine planning
+regions as county equivalents, in place of its eight former counties. EJAM uses
+the planning regions. Two small issues remain from that change
+([EJAM issue 19](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/19)):
+
+- **About 300 residents are not counted.** Nineteen blockgroup codes in EJAM's
+  Census 2020 block crosswalk use outdated codes. The 21 Census blocks assigned
+  to them, with about 300 residents in total, are left out of analyses. Each of
+  those blocks lies within a blockgroup that EJAM does have, so the effect is a
+  slight undercount near those locations.
+- **Five coastal water blockgroups have no ozone or PM2.5 values.** These
+  blockgroups cover water only and have no residents, so no analysis results
+  change.
+
+## Places with no county code
+
+About 370 entries in EJAM's built-in table of cities, towns and other places
+(`censusplaces`) have no county FIPS code. Most are places in Connecticut, plus a
+few in Alaska, South Dakota, Virginia and Louisiana, whose counties were renamed
+or reorganized after the source list was published. Features that rely on a
+place's county code may not work for those places.
+
+## State averages are blockgroup averages
+
+A report's "state average" for an indicator is the average across the state's
+blockgroups, as in EJSCREEN. It is not the average for the state's residents,
+which would weight each blockgroup by its population. As a result, an analysis
+of an entire state can show a ratio to the state average that is slightly
+different from 1
+([EJAM issue 66](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/66)).
+
+## Small percentile differences from the EJSCREEN map layers
+
+For 98 blockgroups, the percentile EJAM reports for drinking water
+non-compliance (77 blockgroups) or ozone (21 blockgroups) differs from the
+percentile in the EJSCREEN map layers by 1 to 3 percentile points. The indicator
+values themselves are identical. The difference comes from how tied values are
+ranked when they differ only by floating-point rounding. Percentiles of the EJ
+indexes are not affected.
+
+## Very large analyses in the web app
+
+Analyses of many thousands of sites, especially with larger radii, use a lot of
+memory on the server. In the web app they can be slow, and requests that are too
+large stop with an explanation instead of running
+([EJAM issue 504](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/504)).
+For very large analyses, use the EJAM R package on a computer with enough memory.
+
+## Island Areas
+
+The ACS does not cover American Samoa, Guam, the Northern Mariana Islands or the
+U.S. Virgin Islands, so EJAM has limited residential population information for
+them. See [Island Areas](island-areas.html).
