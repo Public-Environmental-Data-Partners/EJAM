@@ -107,7 +107,7 @@ focuses on the other datasets and storage/release mechanics used by EJAM. For EJ
 v3, AS/GU/MP/VI are included at the blockgroup dataset, EJSCREEN export,
 and map-data visibility level with demographic fields kept as `NA` and partial
 EPA environmental fields where available. See
-[Island Areas in EJAM v3](island-areas.html) for the user-facing coverage
+[Island Areas](island-areas.html) for the user-facing coverage
 notes and live EJSCREEN layer inventory observed in May 2026.
 
 -   ***Block Datasets***: The *block* (not blockgroup) tables might be updated
