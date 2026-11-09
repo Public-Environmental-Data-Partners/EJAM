@@ -452,19 +452,27 @@ def fetch_issue_comments(issue_number: int, token: str,
 
 
 def find_ranking_comment(comments: list[dict]) -> dict | None:
-    """Find the marked report comment, adopting the original heading once."""
+    """Find the marked report comment, adopting the original heading once.
+
+    Only a comment that begins with the marker counts. A comment that merely
+    quotes the marker, such as instructions or a code block, is never
+    selected, so it is not overwritten and does not count as a duplicate.
+    """
+    def body_of(comment: dict) -> str:
+        return (comment.get("body") or "").lstrip()
+
     marked = [
         comment for comment in comments
-        if RANKING_COMMENT_MARKER in comment.get("body", "")
+        if body_of(comment).startswith(RANKING_COMMENT_MARKER)
     ]
     if len(marked) > 1:
-        raise RuntimeError("More than one ranking comment contains the marker")
+        raise RuntimeError("More than one ranking comment starts with the marker")
     if marked:
         return marked[0]
 
     legacy = [
         comment for comment in comments
-        if comment.get("body", "").lstrip().startswith(RANKING_REPORT_HEADING)
+        if body_of(comment).startswith(RANKING_REPORT_HEADING)
     ]
     if len(legacy) > 1:
         raise RuntimeError("More than one unmarked ranking comment was found")

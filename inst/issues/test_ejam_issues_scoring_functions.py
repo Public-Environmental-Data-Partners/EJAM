@@ -271,6 +271,53 @@ class IssueRankingTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "More than one ranking comment"):
             scoring.find_ranking_comment(comments)
 
+    def test_publish_ranking_comment_ignores_quoted_marker_and_updates_report(self):
+        calls = []
+        instructions = (
+            "To find the report, look for this line:\n\n"
+            f"```\n{scoring.RANKING_COMMENT_MARKER}\n```"
+        )
+
+        def request(method, path, token, payload=None):
+            calls.append((method, path, token, payload))
+            if method == "GET":
+                return [
+                    {"id": 111, "body": instructions},
+                    {
+                        "id": 222,
+                        "body": f"{scoring.RANKING_COMMENT_MARKER}\n\nOld report",
+                    },
+                ]
+            return {"html_url": "https://github.com/example/issues/715#report"}
+
+        scoring.publish_ranking_comment(
+            "# New report", issue_number=715, token="test-token", request=request
+        )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[1][0], "PATCH")
+        self.assertEqual(calls[1][1], "/issues/comments/222")
+
+    def test_publish_ranking_comment_creates_report_when_only_quoted_marker_exists(self):
+        calls = []
+
+        def request(method, path, token, payload=None):
+            calls.append((method, path, token, payload))
+            if method == "GET":
+                return [{
+                    "id": 111,
+                    "body": f"The report starts with {scoring.RANKING_COMMENT_MARKER}",
+                }]
+            return {"html_url": "https://github.com/example/issues/715#new"}
+
+        scoring.publish_ranking_comment(
+            "# New report", issue_number=715, token="test-token", request=request
+        )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[1][0], "POST")
+        self.assertEqual(calls[1][1], "/issues/715/comments")
+
     def test_default_issue_number_is_715(self):
         self.assertEqual(scoring.DEFAULT_ISSUE_NUMBER, 715)
 
