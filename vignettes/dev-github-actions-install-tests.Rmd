@@ -200,10 +200,11 @@ example, a tag push uses the workflow file in the tagged commit.
 
 Manual runs involve two different choices on the Actions page:
 
-- **Use workflow from** picks the branch whose copy of the workflow file runs.
-  That copy decides which inputs and `test_scope` choices exist. For example,
-  `ubuntu-only` is available only from a branch whose workflow file includes
-  it.
+- **Use workflow from** picks the branch or tag whose copy of the workflow file
+  runs. That copy decides which inputs and `test_scope` choices exist. Current
+  branches share the same workflow file, so leave this on `main`. Older release
+  tags have older copies of the workflow, which may lack some choices, such as
+  `ubuntu-only`.
 - The **`ref`** input picks what is installed and tested. It can be any branch,
   tag, or SHA, and does not need to contain the workflow file.
 
