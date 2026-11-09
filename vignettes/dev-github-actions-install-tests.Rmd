@@ -88,7 +88,9 @@ machine would be prepared:
 - On macOS, it installs system libraries with Homebrew (GDAL, cairo, udunits,
   freetype, and others).
 - On every runner, it installs EJAM's hard R package dependencies from
-  DESCRIPTION, using `r-lib/actions/setup-r-dependencies`.
+  DESCRIPTION (Depends, Imports, LinkingTo, and their own dependencies) using
+  `r-lib/actions/setup-r-dependencies` with `dependencies: '"hard"'`, which
+  uses `pak` internally. Packages listed only under Suggests are not installed.
 
 EJAM itself is then installed with `install.packages()` or `remotes`, not
 `pak`. The workflow uses `remotes` for `github-ref` and `url-tarball` because
@@ -124,15 +126,25 @@ published event, `REF` is that release's tag, for example `v4.2024.0`.
 This job catches problems the prepared-runner matrix cannot see, because those
 problems happen while dependencies are installed:
 
-- `pak` handles dependency resolution differently from `remotes`, including the
-  GitHub-only packages in DESCRIPTION's `Remotes:` field.
+- It installs EJAM itself from GitHub with `pak`, the way users are told to.
+  The prepared-runner matrix uses `pak` only for dependencies and installs
+  EJAM with `install.packages()` or `remotes`.
 - On macOS, every dependency must install without Homebrew libraries. That
-  works when CRAN has ready-built (binary) packages for the current R. A dependency that must be compiled from source, for
-  example right after a new R release, fails here but passes in the
-  prepared-runner matrix.
+  works when CRAN has ready-built (binary) packages for the current R. A
+  dependency that must be compiled from source, for example right after a new
+  R release, fails here but passes in the prepared-runner matrix.
 
 If the prepared-runner matrix passes and this job fails, look first at
 dependencies and `pak`, not at EJAM's own code.
+
+### What neither job tests
+
+Both jobs install only hard dependencies, so neither installs the packages
+listed only under Suggests. These include the GitHub-only packages in
+DESCRIPTION's `Remotes:` field (ACSdownload and AOI), so neither job tests
+installing them. Neither job checks the functions, vignettes, or tests that
+need Suggests packages, and `--install-tests` only copies the tests into the
+installed package without running them. `R CMD check` covers those.
 
 ### What each trigger proves
 
