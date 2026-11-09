@@ -48,12 +48,23 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws
 
 ARG GITHUB_PAT
 
-# EJAM git ref to install: the released tag v3.2022.3 (the same pin as
-# prod-deploy). A workflow dispatch can override EJAM_VERSION for one build with
-# a branch, tag, or commit SHA, e.g. to test a release candidate before it is
-# tagged; the next push to this branch goes back to this pin.
-ARG EJAM_VERSION=v3.2022.3
+# ARCHIVE (frozen v3, ACS 2018-2022) image for ejam-archive.publicenvirodata.org.
+# EJAM git ref to install: the annotated tag v3.2022.3-archive
+# (commit 3d20f78f6a4774ece9146e838f2268b8d9f15fb5). It is v3.2022.3 (same
+# Version, same data and analysis) plus #691's corrected links, so the archive
+# app points at the archive API, archive EJSCREEN and the frozen v3.2022.3 docs
+# instead of the current (v4) sites. Decided as G12 option B on 2026-10-29; see
+# issues #676 (archive deploy settings) and #681 (plan). Never move that tag,
+# and do not use the plain v3.2022.3 tag here: it has the current-site links.
+ARG EJAM_VERSION=v3.2022.3-archive
 ENV EJAM_VERSION=${EJAM_VERSION}
+
+# Safety-net link settings from #676. Their values equal the archive tag's own
+# DESCRIPTION fields (Config/EJAM/url_api and url_ejamdocs), so they change
+# nothing unless something resolves URLs some other way. A task-definition
+# environment variable with the same name overrides these.
+ENV EJAM_API_BASEURL=https://api-archive.ejanalysis.com
+ENV EJAM_DOCS_BASE_URL=https://public-environmental-data-partners.github.io/EJAM/v3.2022.3
 
 WORKDIR /root
 
@@ -163,7 +174,8 @@ RUN R -e "remotes::install_github(paste0('Public-Environmental-Data-Partners/EJA
 # Download ejamdata arrow files from GitHub release
 # Must run AFTER the EJAM package install so the data/ folder is not overwritten by the installer
 # EJAMDATA_VERSION: pinned by default to v3.2022.3 -- the ejamdata release that
-#   EJAM v3.2022.3 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
+#   the v3.2022.3-archive tag requires (its DESCRIPTION `ejamdata_required_tag`
+#   is v3.2022.3; ACS 2018-2022). Do not change it for the archive. Keep this in
 #   sync with EJAM_VERSION when bumping releases; override with
 #   --build-arg EJAMDATA_VERSION=vX.Y.Z. (An explicit empty string falls back to the
 #   latest ejamdata release via the GitHub API below.)
@@ -196,10 +208,9 @@ WORKDIR /root
 # capitals-only font from texlive-fonts-extra), so chart text drawn by R came out
 # as boxes. The same image was fine under plain docker. A fresh cache takes a few
 # seconds and always matches the files actually present.
-CMD ["R", "-e", "system('fc-cache -r'); httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = FALSE, options = list(host = '0.0.0.0', port = 2000))"]
+CMD ["R", "-e", "system('fc-cache -r'); httpuv::startServer('0.0.0.0', 2001, list(call = function(req) { list(status = 200, body = 'OK', headers = list('Content-Type' = 'text/plain')) })); library(EJAM); EJAM::ejamapp(isPublic = TRUE, options = list(host = '0.0.0.0', port = 2000))"]
 
-# NOTE on isPublic: the DEV/staging server runs the FULL (private) app
-# (isPublic = FALSE) so RC testing exercises all features. PRODUCTION
-# (prod-deploy) runs isPublic = TRUE (the streamlined public app most users
-# see). Confirm which mode you want each time you deploy here -- see the
-# reminder in .github/workflows/deploy-dev.yaml.
+# NOTE on isPublic: this ARCHIVE image runs isPublic = TRUE, like PRODUCTION
+# (prod-deploy): the streamlined public app most users see. (The DEV/staging
+# server on dev-deploy runs the full private app, isPublic = FALSE, for RC
+# testing; this branch was originally cut from dev-deploy.)
