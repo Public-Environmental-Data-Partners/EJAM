@@ -1,5 +1,4 @@
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
@@ -7,105 +6,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import ejam_issues_scoring_functions as scoring
-import render_md_to_html as renderer
 
 
-class IssueScorePayloadTest(unittest.TestCase):
-    def test_build_score_payload_includes_rank_label_and_comment_payload(self):
-        scored = [
-            {
-                "num": 101,
-                "title": "Lat/lon uploads over the point cap need a clear error",
-                "labels": ["PRIORITY HIGH", "bug"],
-                "milestone": "v3.2022.2",
-                "cost": 2,
-                "benefit": 17,
-                "quad": "A",
-            }
-        ]
-
-        payload = scoring.build_score_payload(
-            scored,
-            cost_med=3,
-            benefit_med=7,
-            generated_date="2026-05-30",
-            report_path="inst/issues/report.MD",
-            run_changes={
-                "previous_run": None,
-                "opened_count": None,
-                "closed_count": None,
-                "quadrant_changed_count": None,
-                "opened_issue_numbers": [],
-                "closed_issue_numbers": [],
-                "quadrant_changed_issue_numbers": [],
-            },
-        )
-
-        self.assertEqual(
-            payload["metadata"]["rank_labels"],
-            {
-                "A": "rank:A-high-value-low-cost",
-                "B": "rank:B-high-value-high-cost",
-                "C": "rank:C-low-value-low-cost",
-                "D": "rank:D-defer",
-            },
-        )
-        issue = payload["issues"][0]
-        self.assertEqual(issue["rank_label"], "rank:A-high-value-low-cost")
-        self.assertEqual(issue["milestone"], "v3.2022.2")
-        self.assertEqual(
-            issue["rank_comment"],
-            "\n".join(
-                [
-                    "Last ranked: 2026-05-30",
-                    "Cost score: 2",
-                    "Benefit score: 17",
-                    "Quadrant: A",
-                    "Run report: inst/issues/report.MD",
-                ]
-            ),
-        )
-        self.assertNotIn("cost_label", issue)
-        self.assertNotIn("benefit_label", issue)
-
-    def test_summarize_run_changes_compares_against_previous_score_file(self):
-        previous_payload = {
-            "metadata": {"generated": "2026-05-29"},
-            "issues": [
-                {"number": 101, "quadrant": "B"},
-                {"number": 999, "quadrant": "C"},
-            ],
-        }
-        scored = [
-            {
-                "num": 101,
-                "title": "Existing issue moved into A",
-                "labels": [],
-                "milestone": "v3.2022.2",
-                "cost": 2,
-                "benefit": 17,
-                "quad": "A",
-            },
-            {
-                "num": 102,
-                "title": "New issue",
-                "labels": [],
-                "milestone": "NA",
-                "cost": 1,
-                "benefit": 9,
-                "quad": "A",
-            },
-        ]
-
-        changes = scoring.summarize_run_changes(scored, previous_payload)
-
-        self.assertEqual(changes["previous_run"], "2026-05-29")
-        self.assertEqual(changes["opened_count"], 1)
-        self.assertEqual(changes["closed_count"], 1)
-        self.assertEqual(changes["quadrant_changed_count"], 1)
-        self.assertEqual(changes["opened_issue_numbers"], [102])
-        self.assertEqual(changes["closed_issue_numbers"], [999])
-        self.assertEqual(changes["quadrant_changed_issue_numbers"], [101])
+class IssueRankingTest(unittest.TestCase):
 
     def test_markdown_escapes_dollar_signs_that_would_start_pandoc_math(self):
         """A "$" in a title opened an inline-math span that ate later rows.
@@ -151,25 +54,6 @@ class IssueScorePayloadTest(unittest.TestCase):
     def test_md_escape_leaves_ordinary_titles_untouched(self):
         plain = "check/ fix Distance and Site Count summary stats"
         self.assertEqual(scoring.md_escape(plain), plain)
-
-    def test_style_issue_tables_keeps_single_lang_pair(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            html_path = Path(tmpdir) / "report.html"
-            html_path.write_text(
-                """
-                <html lang="en" xml:lang="en"><head></head><body>
-                <table><tr><th>Issue</th><th>Current GitHub labels (key)</th></tr>
-                <tr><td>1</td><td>foo</td></tr></table>
-                </body></html>
-                """.strip(),
-                encoding="utf-8",
-            )
-
-            renderer.style_issue_tables(html_path)
-            rendered = html_path.read_text(encoding="utf-8")
-
-            self.assertEqual(rendered.count(' lang="en"'), 1)
-            self.assertEqual(rendered.count(' xml:lang="en"'), 1)
 
     def test_generate_markdown_keeps_rank_labels_visible_when_list_is_truncated(self):
         scored = [
@@ -239,7 +123,6 @@ class IssueScorePayloadTest(unittest.TestCase):
             generated_date="2026-06-20",
         )
 
-        previous_run_idx = markdown.index("### Previous-run comparison")
         matrix_idx = markdown.index("## 2×2 Priority Matrix")
         full_table_idx = markdown.index("## Full Table")
         milestones_idx = markdown.index("## Issues by Milestone")
@@ -254,7 +137,6 @@ class IssueScorePayloadTest(unittest.TestCase):
         )
         scoring_factors_idx = markdown.index("### Scoring Factors")
 
-        self.assertLess(previous_run_idx, matrix_idx)
         self.assertLess(matrix_idx, full_table_idx)
         self.assertLess(full_table_idx, milestones_idx)
         self.assertLess(milestones_idx, how_ranking_idx)
@@ -298,6 +180,9 @@ class IssueScorePayloadTest(unittest.TestCase):
             "Current GitHub labels (key) |",
             markdown,
         )
+        self.assertNotIn("Previous-run comparison", markdown)
+        self.assertNotIn("Score payload", markdown)
+        self.assertNotIn("JSON payload", markdown)
 
     def test_score_issues_extracts_milestone_title_and_na(self):
         issues = [
@@ -338,83 +223,103 @@ class IssueScorePayloadTest(unittest.TestCase):
         self.assertEqual([issue["num"] for issue in scored if issue["quad"] == "A"], list(range(1, 21)))
         self.assertEqual([issue["num"] for issue in scored if issue["quad"] == "C"], [21, 22])
 
-    def test_renderer_applies_issue_table_column_layout(self):
-        html = """<!doctype html>
-<html><head></head><body>
-<table>
-<colgroup><col style="width: 50%" /><col style="width: 50%" /></colgroup>
-<thead><tr><th>Metric</th><th>Value</th></tr></thead>
-</table>
-<table>
-<colgroup><col style="width: 14%" /><col style="width: 14%" /></colgroup>
-<thead><tr><th>#</th><th>Issue</th><th>Cost</th><th>Benefit</th>
-<th>Milestone</th><th>Priority</th><th>Proposed rank</th>
-<th>Current GitHub labels (key)</th></tr></thead>
-</table>
-</body></html>"""
-        with tempfile.TemporaryDirectory() as tmp:
-            html_path = Path(tmp) / "report.html"
-            html_path.write_text(html, encoding="utf-8")
+    def test_publish_ranking_comment_adopts_and_updates_legacy_comment(self):
+        calls = []
 
-            renderer.style_issue_tables(html_path)
+        def request(method, path, token, payload=None):
+            calls.append((method, path, token, payload))
+            if method == "GET":
+                return [{
+                    "id": 6750491750,
+                    "body": f"{scoring.RANKING_REPORT_HEADING}\n\nOld report",
+                }]
+            return {"html_url": "https://github.com/example/issues/715#comment"}
 
-            styled = html_path.read_text(encoding="utf-8")
+        url = scoring.publish_ranking_comment(
+            "# New report", issue_number=715, token="test-token", request=request
+        )
 
-        self.assertEqual(styled.count('class="issue-details"'), 1)
-        self.assertIn('<col style="width: 5%" />', styled)
-        self.assertIn('<col style="width: 18%" />', styled)
-        self.assertIn('<col style="width: 11%" />', styled)
-        self.assertIn('<col style="width: 8%" />', styled)
-        self.assertIn('<col style="width: 12%" />', styled)
-        self.assertIn('<col style="width: 17%" />', styled)
-        self.assertIn("min-width: 64em", styled)
-        self.assertIn("td:first-child", styled)
-        self.assertIn("white-space: nowrap", styled)
-        self.assertIn('<html lang="en" xml:lang="en">', styled)
-        self.assertIn("<th>Metric</th>", styled)
+        self.assertEqual(url, "https://github.com/example/issues/715#comment")
+        self.assertEqual(calls[1][0], "PATCH")
+        self.assertEqual(calls[1][1], "/issues/comments/6750491750")
+        self.assertTrue(calls[1][3]["body"].startswith(
+            f"{scoring.RANKING_COMMENT_MARKER}\n\n# New report"
+        ))
 
-    def test_renderer_preserves_existing_html_language(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            html_path = Path(tmp) / "report.html"
-            html_path.write_text(
-                '<html lang="fr" xml:lang="fr"><head></head><body></body></html>',
-                encoding="utf-8",
-            )
+    def test_publish_ranking_comment_creates_comment_when_missing(self):
+        calls = []
 
-            renderer.style_issue_tables(html_path)
+        def request(method, path, token, payload=None):
+            calls.append((method, path, token, payload))
+            if method == "GET":
+                return []
+            return {"html_url": "https://github.com/example/issues/715#new"}
 
-            styled = html_path.read_text(encoding="utf-8")
+        scoring.publish_ranking_comment(
+            "# New report", issue_number=715, token="test-token", request=request
+        )
 
-        self.assertEqual(styled.count("lang="), 2)
-        self.assertIn('<html lang="fr" xml:lang="fr">', styled)
+        self.assertEqual(calls[1][0], "POST")
+        self.assertEqual(calls[1][1], "/issues/715/comments")
 
-    def test_renderer_replaces_empty_html_language(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            html_path = Path(tmp) / "report.html"
-            html_path.write_text(
-                '<html lang="" xml:lang=""><head></head><body></body></html>',
-                encoding="utf-8",
-            )
+    def test_find_ranking_comment_rejects_duplicate_markers(self):
+        comments = [
+            {"id": 1, "body": scoring.RANKING_COMMENT_MARKER},
+            {"id": 2, "body": scoring.RANKING_COMMENT_MARKER},
+        ]
 
-            renderer.style_issue_tables(html_path)
+        with self.assertRaisesRegex(RuntimeError, "More than one ranking comment"):
+            scoring.find_ranking_comment(comments)
 
-            styled = html_path.read_text(encoding="utf-8")
+    def test_publish_ranking_comment_ignores_quoted_marker_and_updates_report(self):
+        calls = []
+        instructions = (
+            "To find the report, look for this line:\n\n"
+            f"```\n{scoring.RANKING_COMMENT_MARKER}\n```"
+        )
 
-        self.assertIn('<html lang="en" xml:lang="en">', styled)
+        def request(method, path, token, payload=None):
+            calls.append((method, path, token, payload))
+            if method == "GET":
+                return [
+                    {"id": 111, "body": instructions},
+                    {
+                        "id": 222,
+                        "body": f"{scoring.RANKING_COMMENT_MARKER}\n\nOld report",
+                    },
+                ]
+            return {"html_url": "https://github.com/example/issues/715#report"}
 
-    def test_renderer_fallback_writes_valid_html_structure(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            md_path = Path(tmp) / "report.md"
-            html_path = Path(tmp) / "report.html"
-            md_path.write_text("# Report", encoding="utf-8")
+        scoring.publish_ranking_comment(
+            "# New report", issue_number=715, token="test-token", request=request
+        )
 
-            renderer.render_pre_fallback(md_path, html_path)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[1][0], "PATCH")
+        self.assertEqual(calls[1][1], "/issues/comments/222")
 
-            styled = html_path.read_text(encoding="utf-8")
+    def test_publish_ranking_comment_creates_report_when_only_quoted_marker_exists(self):
+        calls = []
 
-        self.assertIn("<head><meta charset", styled)
-        self.assertIn("</head><body>", styled)
-        self.assertIn("</body></html>", styled)
+        def request(method, path, token, payload=None):
+            calls.append((method, path, token, payload))
+            if method == "GET":
+                return [{
+                    "id": 111,
+                    "body": f"The report starts with {scoring.RANKING_COMMENT_MARKER}",
+                }]
+            return {"html_url": "https://github.com/example/issues/715#new"}
+
+        scoring.publish_ranking_comment(
+            "# New report", issue_number=715, token="test-token", request=request
+        )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[1][0], "POST")
+        self.assertEqual(calls[1][1], "/issues/715/comments")
+
+    def test_default_issue_number_is_715(self):
+        self.assertEqual(scoring.DEFAULT_ISSUE_NUMBER, 715)
 
 
 if __name__ == "__main__":

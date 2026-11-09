@@ -110,3 +110,7 @@ inst/report/community_report/junk.html
 .posit/assistant
 .posit/assistant/settings.json
 .positai/settings.json
+# Generated issue-ranking reports are published to GitHub issue #715.
+inst/issues/ejam_issues_scored_by_risk_and_value.MD
+inst/issues/ejam_issues_scored_by_risk_and_value.html
+inst/issues/ejam_issues_scored_by_risk_and_value.json
