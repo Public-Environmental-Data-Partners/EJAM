@@ -112,38 +112,75 @@
 EJAM can be installed. These workflows are intentionally separate from
 <code>R CMD check</code> because they answer different questions.</p>
 <div class="section level2">
+<h2 id="shared-arrowcurl-check">Shared Arrow/curl check<a class="anchor" aria-label="anchor" href="#shared-arrowcurl-check"></a>
+</h2>
+<p>Every install job described below runs
+<code>.github/scripts/check-arrow-curl-deps.R</code>. That script checks
+that:</p>
+<ul>
+<li>DESCRIPTION declares <code>arrow (&gt;= 24.0.0)</code> and
+<code>curl (&gt;= 7.1.0)</code>
+</li>
+<li>the installed <code>arrow</code> and <code>curl</code> packages meet
+those minimums</li>
+<li>the system libcurl is at least 7.73.0</li>
+<li>
+<code>arrow</code> can write a small Arrow file and read it back
+unchanged</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="quick-install-check">Quick install check<a class="anchor" aria-label="anchor" href="#quick-install-check"></a>
 </h2>
 <p>Workflow file:
 <code>.github/workflows/install-quick-check.yaml</code></p>
-<p>This is the low-cost install check. It runs on Ubuntu with the
-current release of R. It installs only hard package dependencies first,
-then installs EJAM.</p>
-<p>Automatic triggers:</p>
+<p>This is the low-cost install check. It runs one job, on Ubuntu with
+the current release of R. Its steps:</p>
+<ol style="list-style-type: decimal">
+<li>Install a few system libraries with <code>apt-get</code> (cmake,
+libcurl, OpenSSL, pkg-config).</li>
+<li>Install EJAM’s hard R package dependencies (Depends, Imports,
+LinkingTo) with <code>r-lib/actions/setup-r-dependencies</code>, plus
+<code>pak</code> and <code>testthat</code>.</li>
+<li>Run the shared Arrow/curl check.</li>
+<li>Install EJAM with <code>pak</code> (see the install sources
+below).</li>
+<li>Load EJAM with <code><a href="https://public-environmental-data-partners.github.io/EJAM">library(EJAM)</a></code>.</li>
+<li>Run two test files, <code>test-zip-api-wrappers.R</code> and
+<code>test-ejamit-zip-alias.R</code>.</li>
+</ol>
+<p>Automatic triggers, which always use the <code>github-sha</code>
+install source:</p>
 <ul>
-<li>push to <code>development</code>
+<li>push to <code>main</code> or <code>development</code>
 </li>
-<li>pull request to <code>main</code>
+<li>pull request to <code>main</code> or <code>development</code>
 </li>
 </ul>
 <p>Manual trigger:</p>
 <ul>
 <li>
 <code>workflow_dispatch</code>, with <code>install_source</code> set
-to either <code>local</code> or <code>github-sha</code>
+to either <code>local</code> (the default) or
+<code>github-sha</code>
 </li>
+</ul>
+<p>Install sources:</p>
+<ul>
+<li>
+<code>local</code>: installs the checked-out source tree with
+<code>pak::local_install(".", dependencies = FALSE)</code>. It proves
+the source tree installs.</li>
+<li>
+<code>github-sha</code>: installs from GitHub by commit SHA with
+<code>pak::pkg_install("OWNER/REPO@SHA", dependencies = NA)</code>. It
+proves the same commit can be installed from GitHub. For a pull request,
+this is the pull request’s latest commit, from the repository the pull
+request comes from.</li>
 </ul>
 <p>Use the manual trigger when a branch changes package dependencies,
 installation code, or workflow files and you want a quick install check
-without running the full release matrix.</p>
-<p>What it proves:</p>
-<ul>
-<li>
-<code>local</code>: the checked-out source tree installs.</li>
-<li>
-<code>github-sha</code>: the same commit can be installed from
-GitHub by commit SHA.</li>
-</ul>
+without running the release checks below.</p>
 </div>
 <div class="section level2">
 <h2 id="release-and-user-install-checks">Release and user install checks<a class="anchor" aria-label="anchor" href="#release-and-user-install-checks"></a>
@@ -152,84 +189,239 @@ GitHub by commit SHA.</li>
 <code>.github/workflows/install-release-user-check.yaml</code></p>
 <p>This workflow is deliberately more expensive. It is for release
 validation and for testing installation paths that users are likely to
-use.</p>
-<p>Automatic triggers:</p>
-<ul>
-<li>push of a tag matching <code>v*</code>
-</li>
-<li>GitHub Release published</li>
-</ul>
-<p>Manual trigger:</p>
+use. It has two jobs, described below: the prepared-runner matrix and
+the clean-machine <code>pak</code> install.</p>
+<p>What runs depends on how the workflow starts:</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>How it starts</th>
+<th><code>test_scope</code></th>
+<th>What runs</th>
+<th>Jobs</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>push of a tag matching <code>v*</code>
+</td>
+<td>(none)</td>
+<td>the prepared-runner matrix</td>
+<td>18</td>
+</tr>
+<tr class="even">
+<td>GitHub Release published</td>
+<td>(none)</td>
+<td>the clean-machine <code>pak</code> install</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>manual</td>
+<td>
+<code>user-style</code> (default)</td>
+<td>the clean-machine <code>pak</code> install</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>manual</td>
+<td><code>full-matrix</code></td>
+<td>the prepared-runner matrix</td>
+<td>18</td>
+</tr>
+<tr class="odd">
+<td>manual</td>
+<td><code>both</code></td>
+<td>both jobs</td>
+<td>20</td>
+</tr>
+<tr class="even">
+<td>manual</td>
+<td><code>ubuntu-only</code></td>
+<td>the Ubuntu rows of the prepared-runner matrix</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p><code>ubuntu-only</code> runs all three install methods on both R
+versions without using any Windows or macOS runners.</p>
+<p>Manual runs take three inputs:</p>
 <ul>
 <li>
-<code>workflow_dispatch</code>, with a <code>ref</code> such as
-<code>development</code>, <code>v4.2024.0</code>, or a commit SHA</li>
-<li>optional <code>expected_version</code>, matching
-<code>Version</code> in that ref’s <code>DESCRIPTION</code>
+<code>ref</code>: the branch, tag, or commit SHA to install and
+test, such as <code>development</code> or <code>v4.2024.0</code>
 </li>
 <li>
-<code>test_scope</code> set to <code>user-style</code>,
-<code>full-matrix</code>, or <code>both</code>
+<code>expected_version</code> (optional): the version that
+<code>ref</code> should have, matching <code>Version</code> in its
+DESCRIPTION, such as <code>4.2024.0</code>
 </li>
+<li>
+<code>test_scope</code>: one of the four choices in the table
+above</li>
 </ul>
-<p>The <code>full-matrix</code> job tests Linux, Windows, and macOS,
-with <code>oldrel-1</code> and <code>release</code> R, and these install
-methods:</p>
+<p>Both jobs check the version the same way, using the ref being tested
+(the <code>ref</code> input, or the tag for a tag push or a published
+release):</p>
+<ul>
+<li>If <code>expected_version</code> is filled in, the version must
+match it.</li>
+<li>If it is blank and the ref looks like a release tag (<code>v</code>
+followed by a digit, such as <code>v4.2024.0</code>), the version must
+match the tag without its <code>v</code> (<code>4.2024.0</code>).</li>
+<li>Otherwise, for a branch or commit SHA, the version is not
+checked.</li>
+</ul>
+<p>So a manual run on a tag needs no <code>expected_version</code>. Fill
+it in to check the version of a branch or SHA.</p>
+<div class="section level3">
+<h3 id="prepared-runner-matrix-full-matrix">Prepared-runner matrix (<code>full-matrix</code>)<a class="anchor" aria-label="anchor" href="#prepared-runner-matrix-full-matrix"></a>
+</h3>
+<p>This job tests Ubuntu, Windows, and macOS, with <code>oldrel-1</code>
+and <code>release</code> R, and three install methods, for 18
+combinations:</p>
 <ul>
 <li>
 <code>local</code>: install the checked-out source tree with
-<code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">utils::install.packages()</a></code> and
-<code>INSTALL_opts</code>
+<code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">utils::install.packages()</a></code>
 </li>
 <li>
 <code>github-ref</code>: install from GitHub by branch, tag, or SHA
-using <code>remotes::install_github()</code>
+with <code>remotes::install_github()</code>
 </li>
 <li>
-<code>url-tarball</code>: install the GitHub source tarball using
+<code>url-tarball</code>: install GitHub’s source archive
+(<code>.tar.gz</code>) for that ref with
 <code>remotes::install_url()</code>
 </li>
 </ul>
-<p>The workflow uses <code>remotes</code> for <code>github-ref</code>
-and <code>url-tarball</code> because those checks need
-<code>INSTALL_opts = c("--with-keep.source", "--install-tests")</code>.
-<code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code> is preferred for ordinary user installs,
-but it does not accept those <code>R CMD INSTALL</code> options.</p>
-<p>The <code>user-style</code> job tests Windows and macOS with the
-current release of R. It does not use <code>setup-r-dependencies</code>.
-It starts closer to a plain R installation:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"Public-Environmental-Data-Partners/EJAM@*release"</span>,</span>
-<span>                 dependencies <span class="op">=</span> <span class="cn">TRUE</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span></code></pre></div>
-<p>For a manual run, it installs
-<code>Public-Environmental-Data-Partners/EJAM@REF</code>, where
-<code>REF</code> is the workflow input. For a GitHub Release published
-event, it installs <code>@*release</code>.</p>
-<p>What it proves:</p>
+<p>Before installing EJAM, each job prepares the runner the way a
+developer’s machine would be prepared:</p>
 <ul>
-<li>tag pushes prove that a specific tag can be installed by local
-source, GitHub ref, and GitHub source tarball.</li>
-<li>release published events prove that the latest GitHub Release can be
-installed with the public <code>pak</code>-based instructions on Windows
-and macOS.</li>
-<li>manual runs can test a branch, tag, or SHA before deciding whether
+<li>On Ubuntu, it installs system libraries with <code>apt-get</code>
+(GDAL, GEOS, PROJ, udunits, cairo, and others).</li>
+<li>On macOS, it installs system libraries with Homebrew (GDAL, cairo,
+udunits, freetype, and others).</li>
+<li>On Windows, it installs no system libraries.</li>
+<li>On every runner, it installs EJAM’s hard R package dependencies from
+DESCRIPTION (Depends, Imports, LinkingTo, and their own dependencies)
+using <code>r-lib/actions/setup-r-dependencies</code> with
+<code>dependencies: '"hard"'</code>, which uses <code>pak</code>
+internally. It also installs <code>remotes</code>. Packages listed only
+under Suggests are not installed.</li>
+</ul>
+<p>Each job then runs these steps:</p>
+<ol style="list-style-type: decimal">
+<li>The shared Arrow/curl check.</li>
+<li>The version check described above, applied to <code>Version</code>
+in the checked-out DESCRIPTION, before EJAM is installed.</li>
+<li>Install EJAM with <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code> or
+<code>remotes</code>, not <code>pak</code>, using
+<code>INSTALL_opts = c("--with-keep.source", "--install-tests", "--no-test-load")</code>.
+<code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install()</a></code> is preferred for ordinary user installs,
+but it does not accept those <code>R CMD INSTALL</code> options.</li>
+<li>Load EJAM with <code><a href="https://public-environmental-data-partners.github.io/EJAM">library(EJAM)</a></code>.</li>
+</ol>
+<p>A pass here shows that EJAM’s source installs and loads on each
+platform, given its dependencies. It does not show that a new user can
+get those dependencies.</p>
+</div>
+<div class="section level3">
+<h3 id="clean-machine-pak-install-user-style">Clean-machine <code>pak</code> install
+(<code>user-style</code>)<a class="anchor" aria-label="anchor" href="#clean-machine-pak-install-user-style"></a>
+</h3>
+<p>This job tests Windows and macOS with the current release of R. It
+skips every preparation step above: no Homebrew libraries and no
+<code>setup-r-dependencies</code>. It starts from a plain R installation
+and follows the <a href="installing.html">installation
+instructions</a>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout <span class="op">=</span> <span class="fl">600</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"Public-Environmental-Data-Partners/EJAM@REF"</span>,</span>
+<span>                 dependencies <span class="op">=</span> <span class="cn">NA</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://public-environmental-data-partners.github.io/EJAM">EJAM</a></span><span class="op">)</span></span></code></pre></div>
+<p><code>dependencies = NA</code> installs the hard dependencies
+(Depends, Imports, LinkingTo), not Suggests, which matches the
+installation instructions.</p>
+<p>For a manual run, <code>REF</code> is the <code>ref</code> workflow
+input. For a GitHub Release published event, <code>REF</code> is that
+release’s tag, for example <code>v4.2024.0</code>.</p>
+<p>After loading EJAM, the job applies the version check described above
+to the installed version of EJAM. It then runs the shared Arrow/curl
+check.</p>
+<p>This job catches problems the prepared-runner matrix cannot see,
+because those problems happen while dependencies are installed:</p>
+<ul>
+<li>It installs EJAM itself from GitHub with <code>pak</code>, the way
+users are told to. The prepared-runner matrix uses <code>pak</code> only
+for dependencies and installs EJAM with <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code>
+or <code>remotes</code>.</li>
+<li>On macOS, every dependency must install without Homebrew libraries.
+That works when CRAN has ready-built (binary) packages for the current
+R. A dependency that has to be compiled from source, for example right
+after a new R release, can fail here even though it passes in the
+prepared-runner matrix.</li>
+</ul>
+<p>If the prepared-runner matrix passes and this job fails, look first
+at dependencies and <code>pak</code>, not at EJAM’s own code.</p>
+</div>
+<div class="section level3">
+<h3 id="what-neither-job-tests">What neither job tests<a class="anchor" aria-label="anchor" href="#what-neither-job-tests"></a>
+</h3>
+<p>Both jobs install only hard dependencies, so neither installs the
+packages listed only under Suggests. These include the GitHub-only
+packages in DESCRIPTION’s <code>Remotes:</code> field (ACSdownload and
+AOI), so neither job tests installing them. Neither job runs EJAM’s
+tests or checks the functions and vignettes that need Suggests packages.
+<code>--install-tests</code> only copies the tests into the installed
+package without running them. <code>R CMD check</code> covers those.</p>
+</div>
+<div class="section level3">
+<h3 id="what-each-trigger-proves">What each trigger proves<a class="anchor" aria-label="anchor" href="#what-each-trigger-proves"></a>
+</h3>
+<ul>
+<li>A tag push proves that the tag’s DESCRIPTION has the tag’s version,
+and that the tag installs and loads by local source, GitHub ref, and
+GitHub source archive, on all three operating systems and both R
+versions.</li>
+<li>A published release proves that the release’s tag installs with the
+public <code>pak</code>-based instructions on Windows and macOS, and
+that the installed version matches the tag.</li>
+<li>A manual run can test a branch, tag, or SHA before deciding whether
 to create or publish a release.</li>
 </ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="branches-and-workflow-file-versions">Branches and workflow file versions<a class="anchor" aria-label="anchor" href="#branches-and-workflow-file-versions"></a>
 </h2>
-<p>GitHub Actions uses the workflow file from the branch or ref that
-triggers the event, with some event-specific details. In practice, keep
-workflow files as similar as possible in <code>development</code>,
-<code>main</code>, and the active preparation branch unless there is a
-deliberate reason for a branch-specific workflow.</p>
-<p>Manual <code>workflow_dispatch</code> runs are easiest to use once
-the workflow file exists on the repository’s default branch. The Actions
-page can then run the workflow against a selected branch, tag, or SHA,
-depending on the workflow inputs.</p>
+<p>Automatic runs use the workflow file from the commit that triggered
+them. For example, a tag push uses the workflow file in the tagged
+commit.</p>
+<p>Manual runs involve two different choices on the Actions page:</p>
+<ul>
+<li>
+<strong>Use workflow from</strong> picks the branch or tag whose
+copy of the workflow file runs. That copy decides which inputs and
+<code>test_scope</code> choices exist. Current branches share the same
+workflow file, so leave this on <code>main</code>. Older release tags
+have older copies of the workflow, which may lack some choices, such as
+<code>ubuntu-only</code>.</li>
+<li>The <strong><code>ref</code></strong> input picks what is installed
+and tested. It can be any branch, tag, or SHA, and does not need to
+contain the workflow file.</li>
+</ul>
+<p>GitHub shows the <strong>Run workflow</strong> button only for
+workflows that exist on the repository’s default branch
+(<code>main</code>). Once that is true, any branch can be chosen under
+<strong>Use workflow from</strong>. In practice, keep workflow files as
+similar as possible in <code>development</code>, <code>main</code>, and
+the active preparation branch unless there is a deliberate reason for a
+branch-specific workflow.</p>
 <p>Recommended workflow promotion:</p>
 <ul>
 <li>Edit and test workflow changes on the active working branch
