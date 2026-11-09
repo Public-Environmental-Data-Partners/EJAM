@@ -48,11 +48,11 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws
 
 ARG GITHUB_PAT
 
-# EJAM git ref to install: the released tag v3.2022.3 (the same pin as
-# prod-deploy). A workflow dispatch can override EJAM_VERSION for one build with
+# EJAM git ref to install: the released tag v4.2024.0 (prod-deploy stays on
+# v3.2022.3 until the v4 cutover). A workflow dispatch can override EJAM_VERSION for one build with
 # a branch, tag, or commit SHA, e.g. to test a release candidate before it is
 # tagged; the next push to this branch goes back to this pin.
-ARG EJAM_VERSION=v3.2022.3
+ARG EJAM_VERSION=v4.2024.0
 ENV EJAM_VERSION=${EJAM_VERSION}
 
 WORKDIR /root
@@ -162,12 +162,12 @@ RUN R -e "remotes::install_github(paste0('Public-Environmental-Data-Partners/EJA
 
 # Download ejamdata arrow files from GitHub release
 # Must run AFTER the EJAM package install so the data/ folder is not overwritten by the installer
-# EJAMDATA_VERSION: pinned by default to v3.2022.3 -- the ejamdata release that
-#   EJAM v3.2022.3 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
+# EJAMDATA_VERSION: pinned by default to v4.2024.0 -- the ejamdata release that
+#   EJAM v4.2024.0 requires (its DESCRIPTION `ejamdata_required_tag`). Keep this in
 #   sync with EJAM_VERSION when bumping releases; override with
 #   --build-arg EJAMDATA_VERSION=vX.Y.Z. (An explicit empty string falls back to the
 #   latest ejamdata release via the GitHub API below.)
-ARG EJAMDATA_VERSION=v3.2022.3
+ARG EJAMDATA_VERSION=v4.2024.0
 RUN RESOLVED_VERSION="${EJAMDATA_VERSION:-$(curl -fsSL \
       -H "Authorization: token ${GITHUB_PAT}" \
       "https://api.github.com/repos/Public-Environmental-Data-Partners/ejamdata/releases/latest" \
