@@ -17,13 +17,14 @@ on:
         required: false
         default: ''
       test_scope:
-        description: 'Which install checks should run?'
+        description: 'Which install checks? user-style = clean-machine pak install, Windows+macOS (2 jobs); full-matrix = prepared runners, all OS (18); both (20); ubuntu-only = Ubuntu rows of full-matrix (6)'
         required: true
         type: choice
         default: user-style
         options:
           - user-style
           - full-matrix
+          - ubuntu-only
           - both
 
 permissions:
@@ -46,7 +47,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: >-
+          ${{ fromJSON(
+            github.event_name == 'workflow_dispatch' && inputs.test_scope == 'ubuntu-only' &&
+            '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest", "macos-latest"]'
+          ) }}
         r-version: [oldrel-1, release]
         install-method: [local, github-ref, url-tarball]
 
@@ -191,7 +196,8 @@ jobs:
     if: >-
       ${{
         github.event_name == 'release' ||
-        (github.event_name == 'workflow_dispatch' && inputs.test_scope != 'full-matrix')
+        (github.event_name == 'workflow_dispatch' &&
+          (inputs.test_scope == 'user-style' || inputs.test_scope == 'both'))
       }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -208,7 +214,6 @@ jobs:
       EJAM_INSTALL_REPO: ${{ github.repository }}
       EJAM_INSTALL_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.event.release.tag_name }}
       EXPECTED_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_version || '' }}
-      RELEASE_TAG: ${{ github.event.release.tag_name || '' }}
 
     steps:
       - name: Checkout repository
@@ -242,9 +247,11 @@ jobs:
           }
           installed_version <- clean_scalar(utils::packageVersion("EJAM"))
           expected <- clean_scalar(Sys.getenv("EXPECTED_VERSION"))
-          release_tag <- clean_scalar(Sys.getenv("RELEASE_TAG"))
-          if (!nzchar(expected) && grepl("^v[0-9]", release_tag)) {
-            expected <- sub("^v", "", release_tag)
+          # Same rule as the release-matrix job: a blank expected_version
+          # falls back to a tag-like ref (v4.2024.0 -> 4.2024.0).
+          ref <- clean_scalar(ref)
+          if (!nzchar(expected) && grepl("^v[0-9]", ref)) {
+            expected <- sub("^v", "", ref)
           }
           if (nzchar(expected) && !identical(installed_version, expected)) {
             stop("Installed EJAM version is ", installed_version, ", expected ", expected)
