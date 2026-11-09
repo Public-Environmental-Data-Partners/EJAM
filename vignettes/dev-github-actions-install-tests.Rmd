@@ -91,6 +91,18 @@ Manual runs take three inputs:
   `Version` in its DESCRIPTION, such as `4.2024.0`
 - `test_scope`: one of the four choices in the table above
 
+Both jobs check the version the same way, using the ref being tested (the `ref`
+input, or the tag for a tag push or a published release):
+
+- If `expected_version` is filled in, the version must match it.
+- If it is blank and the ref looks like a release tag (`v` followed by a digit,
+  such as `v4.2024.0`), the version must match the tag without its `v`
+  (`4.2024.0`).
+- Otherwise, for a branch or commit SHA, the version is not checked.
+
+So a manual run on a tag needs no `expected_version`. Fill it in to check the
+version of a branch or SHA.
+
 ### Prepared-runner matrix (`full-matrix`)
 
 This job tests Ubuntu, Windows, and macOS, with `oldrel-1` and `release` R, and
@@ -119,10 +131,8 @@ machine would be prepared:
 Each job then runs these steps:
 
 1. The shared Arrow/curl check.
-2. A version check on the checked-out DESCRIPTION, before EJAM is installed. It
-   compares `Version` with `expected_version`. If `expected_version` is blank and
-   the ref looks like a release tag (`v` followed by a digit, such as
-   `v4.2024.0`), it uses the tag without its `v`. Otherwise it skips the check.
+2. The version check described above, applied to `Version` in the checked-out
+   DESCRIPTION, before EJAM is installed.
 3. Install EJAM with `install.packages()` or `remotes`, not `pak`, using
    `INSTALL_opts = c("--with-keep.source", "--install-tests", "--no-test-load")`.
    `pak::pkg_install()` is preferred for ordinary user installs, but it does not
@@ -153,11 +163,8 @@ LinkingTo), not Suggests, which matches the installation instructions.
 For a manual run, `REF` is the `ref` workflow input. For a GitHub Release
 published event, `REF` is that release's tag, for example `v4.2024.0`.
 
-After loading EJAM, the job checks the installed version. It compares the
-installed version with `expected_version`. If `expected_version` is blank, it
-uses the published release's tag without its `v`. A manual run has no release
-tag, so it checks the version only if `expected_version` is filled in, even when
-`ref` is a tag. The job then runs the shared Arrow/curl check.
+After loading EJAM, the job applies the version check described above to the
+installed version of EJAM. It then runs the shared Arrow/curl check.
 
 This job catches problems the prepared-runner matrix cannot see, because those
 problems happen while dependencies are installed:
