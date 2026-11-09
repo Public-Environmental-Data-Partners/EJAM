@@ -7,7 +7,9 @@ The files in this folder are byte-for-byte copies from
 - `query_pagination.R`   — /query pagination helpers, `source()`d by rest_controller.r
 - `assets/`              — static files served at `/assets`
 
-**Synced from commit:** `13f73398215da401bfea7b02042a4a17f446d85e` (2026-08-26)
+**Synced from commit:** `118b2e8d080495806cf050d40bd96bda8af68a67` (2026-10-14)
+
+**Upstream ZIP support:** [EJAM-API#61](https://github.com/Public-Environmental-Data-Partners/EJAM-API/pull/61) merged into `main`; the four mirrored files above were re-exported from that merge commit and verified byte-for-byte.
 
 NOTE: `rest_controller.r` does `source("query_pagination.R")` and `@assets ./assets`
 with paths relative to its own directory (the Docker WORKDIR in production), so callers

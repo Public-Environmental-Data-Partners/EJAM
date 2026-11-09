@@ -7,11 +7,10 @@
 shapes_blockgroups_from_bgfips(
   bgfips = "010890029222",
   outFields = c("FIPS", "STATE_ABBR", "SQMI"),
-  myservice =
-    c(paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
-    "USA_Boundaries_2022/FeatureServer/5/query"),
+  myservice = c(shapes_acs_boundary_service("blockgroup"),
     paste0("https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/",
-    "USA_Block_Groups/FeatureServer/0/query"), "cartographic", "tiger")[1]
+    "USA_Block_Groups/FeatureServer/0/query"), "cartographic", "tiger")[1],
+  year = NULL
 )
 }
 \arguments{
@@ -26,16 +25,24 @@ just a vector of variables that particular service provides, like FIPS, SQMI, PO
 EJScreen_2_21_US_Percentiles_Block_Groups/FeatureServer/0/query"
 
 for example provides EJSCREEN indicator values, NPL_CNT, TSDF_CNT, EXCEED_COUNT_90, etc.}
+
+\item{year}{Boundary year for the tigris options; NULL uses \code{\link[=acs_endyear]{acs_endyear()}}.
+Ignored for service URLs, whose vintage is controlled by the service.}
 }
 \value{
-spatial object via \code{\link[sf:st_read]{sf::st_read()}} # sf-data.frame, not sf-tibble like \code{\link[sf:read_sf]{sf::read_sf()}}
+An sf data.frame with standard EJAM metadata and input FIPS ordering.
+With a tigris source, outFields supports the standard EJAM fields, or "*"
+for all standard fields. ArcGIS-specific fields require a service URL.
 }
 \description{
 Get blockgroups boundaries, via API, to map them
 }
 \details{
-This is useful mostly for small numbers of blockgroups.
-The EJSCREEN map services provide other ways to map blockgroups and see EJSCREEN data.
+Service URLs query only requested blockgroups. For large selections,
+"cartographic" and "tiger" use cached state boundary files through tigris.
+Cartographic boundaries are generalized for fast overview maps; full
+TIGER/Line boundaries retain detail for spatial work. The existing URL
+default follows the active ACS vintage; explicit URLs retain their source.
 }
 \seealso{
 \code{\link[=shapes_from_fips]{shapes_from_fips()}}

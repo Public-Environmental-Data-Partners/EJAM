@@ -25,6 +25,7 @@ doaggregate(
   testing = FALSE,
   showdrinkingwater = TRUE,
   showpctowned = TRUE,
+  copy_sites2blocks = TRUE,
   ...
 )
 }
@@ -103,6 +104,12 @@ Set to FALSE to prevent long output showing in console in RStudio when in intera
 
 \item{showpctowned}{T/f whether to include percent owner-occupied units indicator values or display as NA. Defaults to TRUE.}
 
+\item{copy_sites2blocks}{Optional, default TRUE, so the sites2blocks table passed here is not
+modified. doaggregate() adds columns to and re-sorts sites2blocks, so by default it first makes
+a copy, which needs as much memory as sites2blocks itself (gigabytes in a very large analysis).
+Set to FALSE to skip that copy when the caller will not reuse sites2blocks,
+as \code{\link[=ejamit]{ejamit()}} does. Columns are only added and rows re-sorted; values are not changed.}
+
 \item{...}{more to pass to another function (may not be implemented yet)}
 }
 \value{
@@ -163,7 +170,7 @@ This function requires the following datasets:
 \section{\strong{Identification of nearby residents -- methodology:}}{
 EJAM uses the same approach as EJSCREEN does to identify the count and residential population of nearby residents,
 so EJSCREEN technical documentation should be consulted on the approach,
-at \href{http://htmlpreview.github.io/?https://github.com/ejanalysis/EJAM/blob/development/data-raw/EJSCREEN_archived_pages/technical-information-and-data-downloads.html}{EJSCREEN Technical Info}
+at \Sexpr[stage=render,results=rd]{paste0("\\\\href{", EJAM::url_package("docs"), "/articles/technical-information-and-data-downloads.html}{EJSCREEN Technical Info}")}
 or \href{https://web.archive.org/web/20250118072723/https://www.epa.gov/ejscreen/technical-information-and-data-downloads}{as archived}.
 EJAM implements that approach using faster code and data formats, but it
 still uses the same high-resolution approach as described in EJSCREEN documentation

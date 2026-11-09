@@ -28,13 +28,18 @@ notably if FIPS codes were being analyzed.}
 
 \item{main}{title of plot - must change to note it vs. State if not comparing to US avg.}
 
-\item{...}{passed to \code{\link[=plot_barplot_ratios_ez]{plot_barplot_ratios_ez()}}, to change color scheme, etc.}
+\item{...}{passed to \code{\link[=plot_barplot_ratios_ez]{plot_barplot_ratios_ez()}}, then \code{\link[=plot_barplot_ratios]{plot_barplot_ratios()}}.}
 }
 \value{
 ggplot plot
 }
 \description{
 Barplot of ratios of residential population (or other) scores to averages - simpler syntax
+}
+\details{
+Default bar colors are gray for ratios below 1.05, yellow from
+1.05 to below 2, orange from 2 to below 3, and red at 3 or above.
+These come from the internal \code{\link[=ejscreen_color_defaults]{ejscreen_color_defaults()}} helper.
 }
 \examples{
 
@@ -44,7 +49,7 @@ out <- testoutput_ejamit_100pts_1miles
 
 ejam2barplot(out,
   varnames = names_these_ratio_to_avg,
-  main = "Envt & Demog Indicators at Selected Sites Compared to State Averages")
+  main = "Envt & Demog Indicators at Selected Sites Compared to US Averages")
 
 ejam2barplot(out,
   varnames = names_these_ratio_to_state_avg,

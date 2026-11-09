@@ -15,6 +15,12 @@ leaflet map widget
 \description{
 Overlay blockgroups near 1 site, after plot_blocks_nearby(returnmap = TRUE)
 }
+\details{
+Uses cached full-detail TIGER/Line blockgroup boundaries for the
+package's ACS vintage. Generalized cartographic boundaries are faster to
+draw but can move edges relative to the displayed block points, so this
+overlay explicitly retains detail.
+}
 \examples{
  y <- plot_blocks_nearby(testpoints_10[5,],
         radius = 3,

@@ -213,7 +213,7 @@ or
   in communities living
 `r params$within_x_miles_of` selected sites.
 
-The analysis used the [`r params$app_title`](https://ejanalysis.org/ejamdocs) version
+The analysis used the [`r params$app_title`](`r EJAM::url_package("docs")`) version
 `r params$app_version` with demographic data based on the Census
 Bureau's `r params$acs_version` American Community Survey (ACS).
 
@@ -425,7 +425,7 @@ if (params$testmode) {
 ## Estimating locations and residential population counts
 
 The `r EJAM:::global_or_param("app_title")` was used to develop this analysis.
-The [multisite tool](https://ejanalysis.org/ejamdocs)
+The [multisite tool](`r EJAM::url_package("docs")`)
 is a user-friendly web app that can summarize residential population and
 environmental conditions for any list of places in the nation.
 

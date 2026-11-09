@@ -4,20 +4,32 @@
 \alias{shapes_places_from_placefips}
 \title{Get shapefiles/ boundaries of census places like cities}
 \usage{
-shapes_places_from_placefips(fips, myservice = "tiger", year = 2024)
+shapes_places_from_placefips(fips, myservice = "tiger", year = NULL)
 }
 \arguments{
 \item{fips}{vector of 7-digit City/town/CDP codes as in the fips column of the \link{censusplaces} dataset}
 
 \item{myservice}{only 'tiger' is implemented as source of boundaries, using the tigris package}
 
-\item{year}{for \code{\link[tigris:places]{tigris::places()}}}
+\item{year}{Boundary year for \code{\link[tigris:places]{tigris::places()}}; NULL (the default) uses
+the calendar-predicted latest TIGER/Line places vintage, assuming an
+October 14 annual release without checking publication,
+independently of \code{\link[=acs_endyear]{acs_endyear()}} and the installed tigris default.
+Set an explicit year to reproduce a particular vintage.}
 }
 \value{
 spatial data.frame for mapping
 }
 \description{
 Get shapefiles/ boundaries of census places like cities
+}
+\details{
+Codes not found in the Census places file are looked up in the
+county subdivisions file for the same year. Many towns and townships,
+especially in New England, NY, NJ, PA, and the Midwest, are county
+subdivisions rather than Census places. A warning names any valid code
+that still has no boundary, with its year. Its row retains empty geometry;
+no older vintage is substituted.
 }
 \seealso{
 \code{\link[=shapes_from_fips]{shapes_from_fips()}}

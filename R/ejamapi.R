@@ -48,6 +48,10 @@
 #'   The area of interest, as either an `sf` polygon object (auto-converted to GeoJSON) or a
 #'   ready-made GeoJSON string, like the shapefile param in [url_ejamapi()].
 #' @param shp alias (synonym) for shapefile/shape
+#' @param zip,zipcode One or more ZIP codes (ZCTA boundaries), as a vector or
+#'   comma-separated string. These are aliases; provide only one. ZIPs cannot be
+#'   combined with coordinates, sites, shapefiles, or FIPS. The default ZIP buffer
+#'   is zero. Leading zeroes are restored and ZIP+4 is reduced to five digits.
 #' @param fips A FIPS code for a specific US Census geography, like "050014801001",
 #'   and must be consistent with the scale parameter
 #'
@@ -207,10 +211,18 @@ ejamapi <- function(
     dry_run = FALSE,
     version = NULL,
     ...,
+    zip = NULL, zipcode = NULL,
     shp = NULL   # name-only alias (synonym for shape/shapefile), after ... so it can't bind positionally
 ) {
   # shp is an alias (synonym) for shape/shapefile
   if (is.null(shape) && is.null(shapefile) && !is.null(shp)) {shape <- shp}
+  zipcode <- zipcodes_from_input(zip, zipcode)
+  if (!is.null(zipcode) && any(vapply(
+      list(lat, lon, sites, sitepoints, shape, shapefile, fips),
+      function(x) !is.null(x), logical(1)))) {
+    stop("zip/zipcode cannot be combined with coordinates, sites, shape, or fips.")
+  }
+
   # API repo at https://github.com/Public-Environmental-Data-Partners/EJAM-API/blob/main/rest_controller.r
 
   ############################################################## #
@@ -224,6 +236,9 @@ ejamapi <- function(
     endpoint <- "data"
   }
   endpoint <- match.arg(endpoint)
+  if (!is.null(zipcode) && endpoint == "query") {
+    stop("zip/zipcode is supported for data and report, not query.")
+  }
   if (is.null(scale) || (length(scale) == 1 && scale %in% "")) {
     scale <- "blockgroup"
   }
@@ -312,9 +327,10 @@ ejamapi <- function(
     if (is.null(sites) && !is.null(lat) && !is.null(lon)) {
       sites <- data.frame(lat=lat,lon=lon)
     }
-    if (sum(!is.null(shape), !is.null(fips), !is.null(sites)) != 1) {
-      stop("Exactly one of shape, fips, or sites (lat/lon) must be provided, and others must be missing or NULL")
+    if (sum(!is.null(shape), !is.null(fips), !is.null(sites), !is.null(zipcode)) != 1) {
+      stop("Exactly one of shape, fips, sites (lat/lon), or zip/zipcode must be provided, and others must be missing or NULL")
     }
+    if (!is.null(zipcode)) {sitetype <- "shp"}
     if (!is.null(shape)) {sitetype <- "shp"}
     if (!is.null(fips))  {sitetype <- "fips"}
     if (!is.null(sites)) {sitetype <- "latlon"}
@@ -343,6 +359,7 @@ ejamapi <- function(
 
       shape = shape,
       fips = fips,
+      zipcode = zipcode,
       buffer = buffer
     )
     params <- c(params, ...)
@@ -385,6 +402,10 @@ ejamapi <- function(
       ejamitout <- list(results_bysite = data.table::data.table(dframe),
                         results_overall = data.table::data.table(dframe)[1, ],
                         sitetype = sitetype)
+      if (!is.null(zipcode)) {
+        ejamitout$site_method <- "ZIP"
+        ejamitout$zipcode <- dframe$zipcode
+      }
       return(ejamitout)
     } else {
       return(dframe)
@@ -396,6 +417,7 @@ ejamapi <- function(
     # > report endpoint ####
 
     if (endpoint == "report") {
+      if (!is.null(zipcode) && is.null(buffer)) buffer <- 0
 
       ## . lat, lon ####
       # for the report endpoint
@@ -403,8 +425,8 @@ ejamapi <- function(
       if (is.null(lat) && is.null(lon) && !is.null(sites)) {
         lat <- sites$lat; lon <- sites$lon
       }
-      if (sum(!is.null(shape), !is.null(fips), (!is.null(lat) && !is.null(lon))) != 1) {
-        stop("Exactly one of shape, fips, or sites (lat/lon) must be provided, and others must be missing or NULL")
+      if (sum(!is.null(shape), !is.null(fips), (!is.null(lat) && !is.null(lon)), !is.null(zipcode)) != 1) {
+        stop("Exactly one of shape, fips, sites (lat/lon), or zip/zipcode must be provided, and others must be missing or NULL")
       }
       ################################## #
       ### to create the URL for a report without using  EJAM::url_ejamapi() :
@@ -443,7 +465,10 @@ ejamapi <- function(
           lat = lat, lon = lon,
           shape = shape, # ok now as geojson string
           fips = fips,
+          zip = if (!is.null(zipcode)) paste(zipcode, collapse = ",") else NULL,
           buffer = buffer,  # standalone version differed here
+          fileextension = fileextension,
+          sitenumber = dotz$sitenumber,
           version = version  # EJAM version tag so API can serve the matching data vintage
         )
         urlx <- url_from_keylist(baseurl = paste0( baseurl, "?"),  # standalone version differed here!
@@ -475,6 +500,7 @@ ejamapi <- function(
                             lat = lat, lon = lon,
                             shapefile = shape, # EJAM::url_ejamapi() handles shape itself
                             fips = fips,
+                            zipcode = zipcode,
                             radius = buffer, # default was 3 miles for points
                             fileextension = fileextension,
                             version = version,

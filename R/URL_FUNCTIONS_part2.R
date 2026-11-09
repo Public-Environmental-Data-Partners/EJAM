@@ -639,8 +639,10 @@ url_efpoints <- function(sitecategory = c("npl", "tri", "water", "air", "tsdf", 
 #'   site, with a warning.
 #' @param as_html Whether to return as just the urls or as html hyperlinks to use in a DT::datatable() for example
 #' @param linktext used as text for hyperlinks, if supplied and as_html=TRUE
-#' @param ifna URL shown for missing, NA, NULL, bad input values
-#' @param baseurl do not change unless endpoint actually changed
+#' @param ifna URL shown for missing, NA, NULL, bad input values. NULL uses
+#'   `url_package("ejscreenapp")` from DESCRIPTION; NA keeps missing URLs as NA.
+#' @param baseurl EJScreen app base URL. NULL uses
+#'   `url_package("ejscreenapp")` from DESCRIPTION.
 #' @param ... regid can be provided (used to look up lat,lon as a last resort if no sites provided); other arguments ignored
 #'
 #' @return URL(s), or a single URL if combined = TRUE
@@ -666,8 +668,8 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
                             fips = NULL, wherestr = NULL,
                             as_html = FALSE,
                             linktext = "EJSCREEN",
-                            ifna = "https://pedp-ejscreen.azurewebsites.net/index.html",
-                            baseurl = "https://pedp-ejscreen.azurewebsites.net/index.html",
+                            ifna    = NULL,
+                            baseurl = NULL,
                             ...,
                             # new params are after ... so they must be passed by name -
                             # this keeps the original positional order (as_html, linktext,
@@ -680,6 +682,8 @@ url_ejscreenmap <- function(sitepoints = NULL, lat = NULL, lon = NULL,
   if (is.null(shapefile) && !is.null(shape)) {shapefile <- shape}
   if (is.null(shapefile) && !is.null(shp))   {shapefile <- shp}
 
+  if (is.null(baseurl)) {baseurl <- url_package("ejscreenapp")} # resolve the app URL from the loaded package DESCRIPTION
+  if (is.null(ifna))    {ifna    <- url_package("ejscreenapp")}
   if (is.null(linktext)) {linktext <- paste0("EJSCREEN")}
 
   ##   linktext could also} be numbered:
@@ -2046,14 +2050,19 @@ url_github_preview = function(ghurl = NULL,
 ######################################################################### #
 
 #' utility to get URL of .pdf of EJSCREEN Technical Documentation
+#' As of v4.2024.0, we've moved away from pointing users to our
+#'   github version of this document and back to the one EPA has persisted
+#'   as an "historical reference". Given that EPA could remove that file
+#'   at any time, I'm updating this central function to reflect the current
+#'   location. If EPA's copy goes away, we'll have to change this to point
+#'   to the Wayback Machine's copy or our own github archived one.
 #'
 #' @return URL string
-#'
 #' @export
 #'
 url_ejscreentechdoc = function() {
 
-  paste0(url_package("code", get_full_url = TRUE), "/blob/main/data-raw/EJSCREEN_archived_pages/ejscreen-tech-doc-version-2-3.pdf")
+  "https://www.epa.gov/system/files/documents/2024-07/ejscreen-tech-doc-version-2-3.pdf"
 
   # could relocate it at some point to serve as normal pdf doc from a web server
 }

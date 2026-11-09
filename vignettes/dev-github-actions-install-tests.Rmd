@@ -51,9 +51,8 @@ Automatic triggers:
 
 Manual trigger:
 
-- `workflow_dispatch`, with a `ref` such as `development`, `ACS2024`,
-  `v3.2024.0`, or a commit SHA
-- optional `expected_version`, such as `3.2024.0`
+- `workflow_dispatch`, with a `ref` such as `development`, `v4.2024.0`, or a commit SHA
+- optional `expected_version`, matching `Version` in that ref's `DESCRIPTION`
 - `test_scope` set to `user-style`, `full-matrix`, or `both`
 
 The `full-matrix` job tests Linux, Windows, and macOS, with `oldrel-1` and
@@ -97,7 +96,7 @@ What it proves:
 
 GitHub Actions uses the workflow file from the branch or ref that triggers the
 event, with some event-specific details. In practice, keep workflow files as
-similar as possible in `development`, `main`, and active release branches unless
+similar as possible in `development`, `main`, and the active preparation branch unless
 there is a deliberate reason for a branch-specific workflow.
 
 Manual `workflow_dispatch` runs are easiest to use once the workflow file exists
@@ -107,11 +106,14 @@ against a selected branch, tag, or SHA, depending on the workflow inputs.
 Recommended workflow promotion:
 
 - Edit and test workflow changes on the active working branch first.
-- Push them to `development` once they are ready for routine development use.
-- Merge them to `main` before relying on them for release validation.
-- For a release branch such as `ACS2024`, bring the same workflow changes into
-  that branch before testing or tagging a release from that branch.
+- Integrate vX workflow changes into `vX.20YY.0-prep` first. Keep `development`
+  on the current version line until team authorizes the version change/transition.
+- At that transition, bring the approved changes into `development`, then
+  `main` through the release process before relying on them for release validation.
+- For historical install checks, select an existing release tag rather than
+  maintaining a separate branch per data vintage.
 
-If a branch says `Version: 3.2024.0` in `DESCRIPTION`, the branch workflow can prove
-that the branch or commit installs as version 3.2024.0. It does not prove that the
-tag `v3.2024.0` installs until the tag exists and the tag-triggered workflow passes.
+The branch workflow proves only that its branch or commit installs as the version
+in `DESCRIPTION`. It does not prove that a release tag installs until that tag
+exists and its tag-triggered workflow passes. In particular, the preparation
+branch name does not activate v4 data or change its package version.

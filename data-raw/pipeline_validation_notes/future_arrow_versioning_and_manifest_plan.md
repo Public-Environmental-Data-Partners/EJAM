@@ -1,10 +1,12 @@
 # Future Arrow Versioning and Manifest Refactor Plan
 
-This is a durable planning note for post-v2.5.0 cleanup. It records the intended direction for how EJAM should name, version, cache, validate, and document large Arrow-format datasets such as `bgej.arrow`, `blockwts.arrow`, `blockpoints.arrow`, and FRS-related files.
+This was a durable planning note for post-v2.5.0 cleanup. It recorded the intended direction for how EJAM should name, version, cache, validate, and document large Arrow-format datasets such as `bgej.arrow`, `blockwts.arrow`, `blockpoints.arrow`, and FRS-related files.
 
-## Current v2.5.0 Bridge
+**Some information here may be moot or obsolete as of late 2026, but this contains some useful historical context and some useful guidance and caveats for reference.**
 
-For v2.5.0, EJAM still obtains large Arrow files from release assets in the `ejamdata` repository. The important change is that current EJAM code should not use the latest `ejamdata` release implicitly. Instead, EJAM should read the package-level required release tag from `DESCRIPTION` via `ejamdata_required_tag` and use that tag for Arrow downloads and local cache checks.
+## The v2.5.0 Bridge
+
+For v2.5.0, EJAM still obtained large Arrow files from release assets in the `ejamdata` repository. The important change is that current EJAM code should not use the latest `ejamdata` release implicitly. Instead, EJAM should read the package-level required release tag from `DESCRIPTION` via `ejamdata_required_tag` and use that tag for Arrow downloads and local cache checks.
 
 This bridge deliberately keeps the existing `data/ejamdata_version.txt` marker for now. The name is imperfect because it actually records the local Arrow release tag, but keeping it avoids a larger migration immediately before v2.5.0.
 
@@ -16,7 +18,7 @@ This bridge deliberately keeps the existing `data/ejamdata_version.txt` marker f
 - Move dynamic Arrow files and other runtime cache files out of the installed package `data/` folder after the v2.5.0 bridge is stable.
 - Consider using Arrow-backed access through `dataload_dynamic(..., return_data_table = FALSE)` in more places, but only where profiling shows meaningful speed, memory, or startup benefits.
 - Support future storage in either `ejamdata` release assets or a public S3 bucket without changing the conceptual model.
-- Make developer testing of release branches such as `ACS2024`, possible `ACS2023`, and a future `v2.32.9` maintenance release predictable.
+- Make developer testing of historical release tags and any current `vX.20YY.0-prep` candidate predictable, without maintaining a branch per data vintage.
 - Reduce confusion from old names such as `download_latest_arrow_data()` and `ejamdata_version.txt`.
 
 ## Dataset Categories
@@ -367,7 +369,8 @@ The documentation should explicitly tell maintainers to check:
 Do not make the full manifest/cache/S3 refactor a blocker for v2.5.0 unless the v2.5.0 bridge fails. The safer path is:
 
 1. Finish and release v2.5.0 with package-pinned Arrow tags.
-2. Create a separate branch from `ACS2024` or `development`, for example `arrow-manifest-refactor`.
+2. Create a separate branch from any current vX integration branch (`vX.20YY.0-prep`), for example `arrow-manifest-refactor`; 
+   This meant targetting prep rather than the frozen v3 line while v4 preparation continued.
 3. Add manifest creation and validation without changing storage location.
 4. Add marker rename compatibility.
 5. Add cache helper functions and support reading from a versioned user cache before the legacy package `data/` folder.

@@ -12,7 +12,10 @@
 #'   but could be c(names_d_ratio_to_state_avg , names_d_subgroups_ratio_to_state_avg).
 #'   Should not be a mix of State and US ratios, however.
 #' @param main title of plot - must change to note it vs. State if not comparing to US avg.
-#' @param ... passed to [plot_barplot_ratios_ez()], to change color scheme, etc.
+#' @param ... passed to [plot_barplot_ratios_ez()], then [plot_barplot_ratios()].
+#' @details Default bar colors are gray for ratios below 1.05, yellow from
+#'   1.05 to below 2, orange from 2 to below 3, and red at 3 or above.
+#'   These come from the internal [ejscreen_color_defaults()] helper.
 #' @examples
 #'
 #' # Check a long list of indicators for any that are elevated
@@ -21,7 +24,7 @@
 #'
 #' ejam2barplot(out,
 #'   varnames = names_these_ratio_to_avg,
-#'   main = "Envt & Demog Indicators at Selected Sites Compared to State Averages")
+#'   main = "Envt & Demog Indicators at Selected Sites Compared to US Averages")
 #'
 #' ejam2barplot(out,
 #'   varnames = names_these_ratio_to_state_avg,

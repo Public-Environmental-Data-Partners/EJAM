@@ -204,7 +204,10 @@ pctile_from_raw_lookup <- function(myvector,
   }
   # drop mean & std rows (not used in this func) ####
   # Remove non-percentile summary rows before using cutoffs.
-  lookup <- lookup[!(lookup$PCTILE %in% c("mean", "std")), ]
+  pctile_rows <- !(lookup$PCTILE %in% c("mean", "std"))
+  if (!all(pctile_rows)) {
+    lookup <- lookup[pctile_rows, ] # this copies the table, so callers looking up many indicators can drop these rows once beforehand
+  }
 
   # CHECK FOR WARNINGS overall ####
 

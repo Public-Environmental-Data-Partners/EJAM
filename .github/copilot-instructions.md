@@ -92,7 +92,7 @@ library(shinytest2)
 library(EJAM)
 
 # Run all web app tests
-shinytest2::test_app(".", filter = "functionality", check_setup = FALSE)
+shinytest2::test_app(".", filter = "functionality", check_setup = FALSE) # but note test_app(check_setup=) is now deprecated
 #or
 EJAM:::test_ejam(ask=F,run_these="webapp")
 
@@ -182,7 +182,7 @@ ejamapp(isPublic=TRUE)
 
 **EJScreen web app integration**
 - Since the v3.2022.1 patch release, EJScreen can hand off multiple selected places to EJAM (deep-link/launch-URL parameters, plus a token-based `POST /handoff` on the API) so EJAM opens pre-loaded with those sites, or the API can return one combined "multisite" report directly. See `vignettes/dev-app-settings.Rmd` for the launch-URL parameters, and `NEWS.md` (top entry) for the full feature description.
-- The EJScreen app/repo is separate from EJAM; treat it (like EJAM-API) as a stricter-approval repo -- see "Cross-Tool Working Conventions" below.
+- The EJScreen app/repo is related to but separate from EJAM; treat it (like EJAM-API) as a stricter-approval repo -- see "Cross-Tool Working Conventions" below.
 
 ## GitHub Actions / CI Workflows
 
@@ -260,6 +260,7 @@ These conventions are used consistently across the maintainer's AI tooling (Clau
 - **Test file bookkeeping:** Any time a `tests/testthat/test-*.R` file is added, removed, or renamed, also update `R/test_ejam.R` (the `testlist` group membership and `timebyfile` timing metadata) in the same change -- it is not auto-discovered.
 - **Cross-repo issue/PR references:** In commit messages, PR descriptions, comments, and docs, write cross-repo issue/PR references as `owner/repo#NN` (e.g. `Public-Environmental-Data-Partners/EJAM-API#43`), not bare `#NN`. A bare `#NN` auto-links to whichever repo the text lives in, which is wrong when referring to one of the sibling repos.
 - **No local machine paths in commits:** Never commit code, comments, or docs containing a local-machine path (e.g. a personal home-directory path, a personal folder name). Check staged content before committing; this repo has at least one pre-existing offender (a hardcoded local path in a `data-raw/` script) that should eventually be cleaned up.
+- **Sign GitHub posts as the tool, not as the account owner:** comments, reviews, replies, issues and PR bodies that an AI tool posts from a shared GitHub account (called `XYZ` here) must end with a line naming the tool and the account, e.g. `— Claude (AI assistant), posting from XYZ account` or `— Codex (AI assistant), posting from XYZ account`, followed by that tool's usual footer if it has one. Never sign with the account owner's name. Commits are exempt; they use a `Co-Authored-By:` trailer.
 - **Resolve addressed PR review threads:** When a PR review comment/thread has been fully addressed (fixed or confirmed obsolete), resolve the conversation rather than leaving it open.
 - **Don't hardcode live-service URLs in docs or code:** The Shiny app URL, the API base URL, and related repo URLs can change (proxies, domain moves, etc.). They are stored in the `Config/EJAM/url_*` namespace in `DESCRIPTION`; prefer reading them via `url_package()`/`url_ejamapp()`/`url_ejamapi()` rather than hardcoding a URL string, per the "Live EJAM web app" / "API" sections above (which also have the current, verified specifics on AWS ECS Fargate vs. Cloud Run hosting).
 - **Obsolete worktree or branch cleanup:** If it is clear that a worktree or local or remote branch is obsolete since it has already been used for a PR that is merged or issue that it closed, then it should be deleted, but if it is somewhat unclear or not easy to confirm then make a note of it asking for confirmation before deleting it.
@@ -286,7 +287,8 @@ Two ACS vintages are supported at once: a **frozen** one and a **live** one (the
 
 - **A vintage is a data property, not a code property.** Comparing two vintages shows no differences under `R/`. Only a handful of bundled `data/*.rda` files carry real content differences (`blockgroupstats`, `usastats`, `statestats`, `avg.in.us`); the rest differ only by stamped metadata attributes. Changing vintage means swapping those datasets and restamping metadata -- not migrating code.
 - Those bundled `.rda` datasets are **not** in `ejamdata` releases. The git tag for a vintage is their source. `ejamdata` releases hold the `.arrow` files, of which only `bgej` is vintage-specific (geography and FRS files are shared).
-- **Do not backport code into the `ACS2022`/`ACS2023`/`ACS2024` branches.** They are stale historical branches, not active release lines; `development`/`main` carry the currently-shipping vintage. A new vintage is produced by swapping data onto the main line.
+- Use release tags (`v3.2022.3` and `v4.2024.0`, and possibly `v3.2023.0`  ) for historical vintages; do not recreate or backport into retired vintage-named branches. During october 2026, integrating v4 work into `v4.2024.0-prep`, moving some of it into `development`, and 
+  keeping  `main` on the v3 line until team approves the transition. Fresh pipeline outputs, package versions, and asset pins must be activated together in an approved data/version-swap PR; branch cleanup is not authorization to run or activate that swap.
 - `data/testoutput_*.rda` fixtures are vintage-sensitive and must be regenerated when the vintage changes -- several tests assert exact equality against them. Do not reuse fixtures from an older vintage branch.
 - The annual pipeline runbook is `vignettes/dev-update-ejscreen-datasets-yearly.Rmd`; dataset/release identifier rules are in `vignettes/dev-update-datasets.Rmd`.
 

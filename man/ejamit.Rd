@@ -46,6 +46,7 @@ ejamit(
   buffer = NULL,
   shape = NULL,
   shp = NULL,
+  zip = NULL,
   zipcode = NULL,
   lat = NULL,
   lon = NULL
@@ -159,6 +160,8 @@ If in RStudio you want it to interactively prompt you to pick a file,
 use shapefile=1 (otherwise it assumes you want to pick a latlon file).}
 
 \item{shp}{alias (synonym) for shapefile}
+
+\item{zip}{alias for \code{zipcode}. Provide only one of these two aliases.}
 
 \item{zipcode}{optional vector of one or more 5-digit zip codes to analyze
 (instead of sitepoints, fips, or shapefile). Zip codes are converted to

@@ -17,7 +17,9 @@ url_columns_bysite(
   sitetype = NULL,
   as_html = TRUE,
   validate_regids = FALSE,
-  ...
+  ...,
+  zip = NULL,
+  zipcode = NULL
 )
 }
 \arguments{
@@ -59,6 +61,10 @@ currently being used by this package (which might not be the very latest from EP
 If set FALSE, faster since avoids checking but some links might not work and not warn about bad regid values.}
 
 \item{...}{passed to each function, and can be any parameter that any of them uses}
+
+\item{zip, zipcode}{ZIP aliases for the API report links. Can accompany their
+ZCTA shapefile from an analysis; other report providers keep their existing
+geometry inputs.}
 }
 \value{
 list of data.frames to append to the list of data.frames created by
