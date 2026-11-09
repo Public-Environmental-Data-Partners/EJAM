@@ -53,10 +53,26 @@ Manual trigger:
 
 - `workflow_dispatch`, with a `ref` such as `development`, `v4.2024.0`, or a commit SHA
 - optional `expected_version`, matching `Version` in that ref's `DESCRIPTION`
-- `test_scope` set to `user-style`, `full-matrix`, or `both`
+- `test_scope` set to one of:
 
-The `full-matrix` job tests Linux, Windows, and macOS, with `oldrel-1` and
-`release` R, and these install methods:
+| `test_scope` | What runs | Jobs |
+|---|---|---|
+| `user-style` (default) | the clean-machine `pak` install only | 2 |
+| `full-matrix` | the prepared-runner matrix only | 18 |
+| `both` | the prepared-runner matrix and the clean-machine `pak` install | 20 |
+| `ubuntu-only` | the Ubuntu rows of the prepared-runner matrix only | 6 |
+
+`ubuntu-only` is the cheapest way to check that a branch, tag, or SHA installs
+and loads. It skips Windows and macOS.
+
+The two kinds of job answer different questions. Both end by loading EJAM with
+`library(EJAM)` and checking its version, so neither tests EJAM's code beyond
+loading it.
+
+### Prepared-runner matrix (`full-matrix`)
+
+This job tests Linux, Windows, and macOS, with `oldrel-1` and `release` R, and
+three install methods, for 18 combinations:
 
 - `local`: install the checked-out source tree with `utils::install.packages()`
   and `INSTALL_opts`
@@ -64,26 +80,61 @@ The `full-matrix` job tests Linux, Windows, and macOS, with `oldrel-1` and
   `remotes::install_github()`
 - `url-tarball`: install the GitHub source tarball using `remotes::install_url()`
 
-The workflow uses `remotes` for `github-ref` and `url-tarball` because those
-checks need `INSTALL_opts = c("--with-keep.source", "--install-tests")`.
+Before installing EJAM, each job prepares the runner the way a developer's
+machine would be prepared:
+
+- On Ubuntu, it installs system libraries with `apt-get` (GDAL, GEOS, PROJ,
+  udunits, cairo, and others).
+- On macOS, it installs system libraries with Homebrew (GDAL, cairo, udunits,
+  freetype, and others).
+- On every runner, it installs EJAM's hard R package dependencies from
+  DESCRIPTION, using `r-lib/actions/setup-r-dependencies`.
+
+EJAM itself is then installed with `install.packages()` or `remotes`, not
+`pak`. The workflow uses `remotes` for `github-ref` and `url-tarball` because
+those checks need
+`INSTALL_opts = c("--with-keep.source", "--install-tests", "--no-test-load")`.
 `pak::pkg_install()` is preferred for ordinary user installs, but it does not
 accept those `R CMD INSTALL` options.
 
-The `user-style` job tests Windows and macOS with the current release of R. It
-does not use `setup-r-dependencies`. It starts closer to a plain R installation:
+A pass here shows that EJAM's source installs and loads on each platform, given
+its dependencies. It does not show that a new user can get those dependencies.
+
+### Clean-machine `pak` install (`user-style`)
+
+This job tests Windows and macOS with the current release of R. It skips every
+preparation step above: no Homebrew libraries, no `apt-get`, and no
+`setup-r-dependencies`. It starts from a plain R installation and follows the
+[installation instructions](installing.html):
 
 ```r
+options(timeout = 600)
 install.packages("pak")
-pak::pkg_install("Public-Environmental-Data-Partners/EJAM@*release",
-                 dependencies = TRUE, upgrade = FALSE)
+pak::pkg_install("Public-Environmental-Data-Partners/EJAM@REF",
+                 dependencies = NA, upgrade = FALSE)
 library(EJAM)
 ```
 
-For a manual run, it installs `Public-Environmental-Data-Partners/EJAM@REF`,
-where `REF` is the workflow input. For a GitHub Release published event, it
-installs `@*release`.
+`dependencies = NA` installs the hard dependencies (Depends, Imports,
+LinkingTo), not Suggests, which matches the installation instructions.
 
-What it proves:
+For a manual run, `REF` is the `ref` workflow input. For a GitHub Release
+published event, `REF` is that release's tag, for example `v4.2024.0`.
+
+This job catches problems the prepared-runner matrix cannot see, because those
+problems happen while dependencies are installed:
+
+- `pak` handles dependency resolution differently from `remotes`, including the
+  GitHub-only packages in DESCRIPTION's `Remotes:` field.
+- On macOS, every dependency must install without Homebrew libraries. That
+  works when CRAN has ready-built (binary) packages for the current R. A dependency that must be compiled from source, for
+  example right after a new R release, fails here but passes in the
+  prepared-runner matrix.
+
+If the prepared-runner matrix passes and this job fails, look first at
+dependencies and `pak`, not at EJAM's own code.
+
+### What each trigger proves
 
 - tag pushes prove that a specific tag can be installed by local source,
   GitHub ref, and GitHub source tarball.
