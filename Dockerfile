@@ -55,6 +55,14 @@ ARG GITHUB_PAT
 ARG EJAM_VERSION=v4.2024.0
 ENV EJAM_VERSION=${EJAM_VERSION}
 
+# TEMPORARY (plan step 20 / C2 in #681): send the dev app's API-backed links
+# (per-site Report links, url_ejamapi(), ejamapi()) to the v4 TEST API, which
+# runs on the archive Cloud Run service until the cutover. Without this, the v4
+# dev app would build links to the current production API, which still serves
+# v3.2022.3, and mix data vintages. REMOVE this line after the cutover swap
+# (plan step 31), when the archive service goes back to v3.2022.3.
+ENV EJAM_API_BASEURL=https://ejamapi-archive-84652557241.us-central1.run.app
+
 WORKDIR /root
 
 # Install R packages — sourced from DESCRIPTION Imports + runtime-relevant Suggests
