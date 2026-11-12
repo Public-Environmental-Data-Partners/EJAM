@@ -118,8 +118,9 @@ for the declared minimum R version: 21 combinations in total:
 Before installing EJAM, each job prepares the runner the way a developer's
 machine would be prepared:
 
-- On Ubuntu, it installs system libraries with `apt-get` (GDAL, GEOS, PROJ,
-  udunits, cairo, and others).
+- On Ubuntu, it explicitly installs cmake, libcurl, OpenSSL, and pkg-config.
+  `setup-r-dependencies` uses `pak` to install known package-specific system
+  requirements, including the spatial libraries needed by the selected packages.
 - On macOS, it installs system libraries with Homebrew (GDAL, cairo, udunits,
   freetype, and others).
 - On Windows, it installs no system libraries.

@@ -113,8 +113,6 @@ jobs:
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          # Temporarily disabled for the uncached Ubuntu dependency comparison.
-          cache: false
           dependencies: '"hard"'
           extra-packages: |
             any::remotes
