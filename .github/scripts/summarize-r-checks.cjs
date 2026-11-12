@@ -19,7 +19,8 @@ function summarizeRChecks(jobs) {
   }
   const checks = expectedChecks.map(name => latest.get(name) || {name});
   const passed = job => job.status === "completed" && job.conclusion === "success";
-  const failed = job => job.status === "completed" && job.conclusion === "failure";
+  const failed = job => job.status === "completed" &&
+    ["failure", "timed_out", "startup_failure", "action_required"].includes(job.conclusion);
   const released = checks.slice(0, releasedChecks.length);
   const devel = checks[releasedChecks.length];
   const unexpected = [...latest.keys()].some(name =>
