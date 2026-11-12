@@ -73,15 +73,15 @@ What runs depends on how the workflow starts:
 
 | How it starts | `test_scope` | What runs | Jobs |
 |---|---|---|---|
-| push of a tag matching `v*` | (none) | the prepared-runner matrix | 18 |
+| push of a tag matching `v*` | (none) | the prepared-runner matrix | 21 |
 | GitHub Release published | (none) | the clean-machine `pak` install | 2 |
 | manual | `user-style` (default) | the clean-machine `pak` install | 2 |
-| manual | `full-matrix` | the prepared-runner matrix | 18 |
-| manual | `both` | both jobs | 20 |
-| manual | `ubuntu-only` | the Ubuntu rows of the prepared-runner matrix | 6 |
+| manual | `full-matrix` | the prepared-runner matrix | 21 |
+| manual | `both` | both jobs | 23 |
+| manual | `ubuntu-only` | the Ubuntu rows of the prepared-runner matrix | 9 |
 
-`ubuntu-only` runs all three install methods on both R versions without using
-any Windows or macOS runners.
+`ubuntu-only` runs all three install methods on `oldrel-1`, `release`, and
+R 4.5.3 without using any Windows or macOS runners.
 
 Manual runs take three inputs:
 
@@ -106,7 +106,8 @@ version of a branch or SHA.
 ### Prepared-runner matrix (`full-matrix`)
 
 This job tests Ubuntu, Windows, and macOS, with `oldrel-1` and `release` R, and
-three install methods, for 18 combinations:
+three install methods, plus Ubuntu-only R 4.5.3 coverage of all three methods
+for the declared minimum R version: 21 combinations in total:
 
 - `local`: install the checked-out source tree with `utils::install.packages()`
 - `github-ref`: install from GitHub by branch, tag, or SHA with
@@ -126,7 +127,9 @@ machine would be prepared:
   DESCRIPTION (Depends, Imports, LinkingTo, and their own dependencies) using
   `r-lib/actions/setup-r-dependencies` with `dependencies: '"hard"'`, which
   uses `pak` internally. It also installs `remotes`. Packages listed only under
-  Suggests are not installed.
+  Suggests are not installed, except that Ubuntu also installs `terra` explicitly.
+  The Ubuntu jobs check its version and native GDAL/PROJ libraries with a
+  coordinate projection and a GeoTIFF write/read round trip.
 
 Each job then runs these steps:
 

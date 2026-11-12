@@ -7,7 +7,7 @@ on:
   # --admin (which bypasses PR checks) or pushed directly as hotfixes, so the
   # post-merge run is the only thing that catches what a bypass skipped.
   #
-  # Deliberately NOT run on PRs into development: this is a 5-platform matrix
+  # Deliberately NOT run on PRs into development: this is a 6-configuration matrix
   # (macOS bills at 10x, Windows at 2x) on a package whose check takes ~12
   # minutes. development PRs get the cheap ubuntu gates (lintr, quick install)
   # instead. Revisit if breakage keeps reaching main.
@@ -37,6 +37,7 @@ jobs:
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
           - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: ubuntu-latest,   r: '4.5.3'} # DESCRIPTION's minimum
 
     env:
       GITHUB_PAT: ${{ github.token }}

@@ -17,7 +17,7 @@ on:
         required: false
         default: ''
       test_scope:
-        description: 'Which install checks? user-style = clean-machine pak install, Windows+macOS (2 jobs); full-matrix = prepared runners, all OS (18); both (20); ubuntu-only = Ubuntu rows of full-matrix (6)'
+        description: 'Which install checks? user-style = clean-machine pak install, Windows+macOS (2 jobs); full-matrix = prepared runners, all OS (21); both (23); ubuntu-only = Ubuntu rows of full-matrix (9)'
         required: true
         type: choice
         default: user-style
@@ -54,6 +54,11 @@ jobs:
           ) }}
         r-version: [oldrel-1, release]
         install-method: [local, github-ref, url-tarball]
+        # Keep testing DESCRIPTION's minimum even as oldrel-1 advances.
+        include:
+          - {os: ubuntu-latest, r-version: '4.5.3', install-method: local}
+          - {os: ubuntu-latest, r-version: '4.5.3', install-method: github-ref}
+          - {os: ubuntu-latest, r-version: '4.5.3', install-method: url-tarball}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -122,8 +127,17 @@ jobs:
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          # Temporarily disabled for the uncached Ubuntu dependency comparison.
+          cache: false
           dependencies: '"hard"'
-          extra-packages: any::remotes
+          extra-packages: |
+            any::remotes
+            ${{ runner.os == 'Linux' && 'any::terra' || '' }}
+
+      - name: Verify terra dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: source(".github/scripts/check-terra-deps.R")
+        shell: Rscript {0}
 
       - name: Verify Arrow/curl dependencies
         run: source(".github/scripts/check-arrow-curl-deps.R")
