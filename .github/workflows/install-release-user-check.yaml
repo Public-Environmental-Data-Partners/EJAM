@@ -80,31 +80,17 @@ jobs:
           r-version: ${{ matrix.r-version }}
           use-public-rspm: true
 
-      - name: System libraries (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
+      - name: System libraries for Arrow/curl (Ubuntu)
+        if: runner.os == 'Linux'
+        # setup-r-dependencies installs known package-specific system requirements.
+        # Keep the same explicit Arrow/curl prerequisites as the quick check.
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             cmake \
-            libfontconfig1-dev \
-            libudunits2-dev \
-            libcairo2-dev \
             libcurl4-openssl-dev \
             libssl-dev \
-            libharfbuzz-dev \
-            libfribidi-dev \
-            libfreetype6-dev \
-            libpng-dev \
-            libtiff5-dev \
-            libjpeg-dev \
-            libgdal-dev \
-            libgeos-dev \
-            libproj-dev \
-            libjq-dev \
-            pkg-config \
-            libprotobuf-dev \
-            libuv1-dev \
-            protobuf-compiler
+            pkg-config
 
       - name: System libraries (macOS)
         if: matrix.os == 'macos-latest'
