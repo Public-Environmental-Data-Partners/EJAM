@@ -26,7 +26,7 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: ${{ matrix.config.os }} (${{ matrix.config.r == 'devel' && 'R-devel - development version of R' || matrix.config.r }})
 
     strategy:
       fail-fast: false
@@ -90,3 +90,26 @@ jobs:
           # Tighten this back to "warning" once those 12 warnings are dealt
           # with, so warnings cannot creep back in unnoticed.
           error-on: '"error"'
+
+      - name: Explain R-devel failure
+        if: ${{ failure() && matrix.config.r == 'devel' }}
+        run: |
+          echo "::warning title=R-devel check failed::This job uses the development version of R. See the R version results summary to find out whether released-R checks also failed."
+          echo "### R-devel check failed" >> "$GITHUB_STEP_SUMMARY"
+          echo "This job tests the development version of R. See the **R version results** summary for the released-R results." >> "$GITHUB_STEP_SUMMARY"
+
+  R-version-results:
+    name: R version results
+    needs: R-CMD-check
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+      - name: Summarize released-R and R-devel results
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await require('./.github/scripts/summarize-r-checks.cjs').writeSummary({github, context, core});

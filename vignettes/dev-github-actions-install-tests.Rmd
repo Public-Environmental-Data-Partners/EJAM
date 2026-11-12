@@ -239,3 +239,20 @@ The branch workflow proves only that its branch or commit installs as the versio
 in `DESCRIPTION`. It does not prove that a release tag installs until that tag
 exists and its tag-triggered workflow passes. In particular, the preparation
 branch name does not activate v4 data or change its package version.
+
+## Interpreting R-devel failures in R CMD check
+
+The separate `.github/workflows/check-standard.yaml` workflow retains R-devel
+as an early check for compatibility with the development version of R. Its
+job name explicitly identifies that version as R-devel.
+
+After the matrix finishes, the **R version results** job writes a summary table.
+If R-devel is the only failed job and every released-R check passed, the heading
+says **Only R-devel failed; all released-R checks passed**. A warning annotation
+explains that this is a future compatibility signal. If a released-R job failed,
+the summary says so instead. Missing, skipped, or cancelled checks do not qualify
+for the reassuring R-devel-only message. Failed-job reruns use each matrix job's
+latest result, including successful jobs from earlier attempts.
+
+These messages do not change pass/fail policy: the workflow still fails when
+R-devel fails. The summary explains which R versions are affected.
