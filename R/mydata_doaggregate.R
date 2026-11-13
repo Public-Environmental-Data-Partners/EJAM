@@ -47,13 +47,24 @@
 #'   `ejam_uniq_id` listing every site, in the order wanted for the results, so
 #'   that sites with no blocks still get a row. As in [doaggregate()].
 #' @param radius optional, the radius in miles that was used, to record in the results
-#' @param mydata_usastats,mydata_statestats reserved for reference tables of
-#'   averages and percentiles. Not used yet.
+#' @param mydata_usastats,mydata_statestats optional reference tables of
+#'   averages and percentiles for the US and for States, from
+#'   [mydata_calc_stats()] or in the same layout as [usastats] and
+#'   [statestats]. The whole result of [mydata_calc_stats()] can be given as
+#'   `mydata_usastats`. If provided, each indicator that gets comparisons also
+#'   gets its US and State average, its US and State percentile, and its ratio
+#'   to each average, in columns named like those of [ejamit()] results
+#'   (`avg.`, `state.avg.`, `pctile.`, `state.pctile.`, `ratio.to.avg.`,
+#'   `ratio.to.state.avg.`). A value that cannot be provided is NA. Overall
+#'   State averages and State percentiles are population-weighted means of the
+#'   sites' values, as in [doaggregate()].
 #' @param quiet FALSE (default) to print a short summary
 #'
 #' @return a list, with element names like those of [ejamit()] results where they apply:
 #'
-#'   - `results_bysite`: data.table with one row per site: `ejam_uniq_id`, `pop`
+#'   - `results_bysite`: data.table with one row per site: `ejam_uniq_id`, `ST`
+#'     (the State of the site, as given in `sites2states_or_latlon`, or else
+#'     the State where most of the site's population lives), `pop`
 #'     (EJAM's population estimate at the site), and one column per indicator
 #'   - `results_overall`: the same, as one row for all sites combined
 #'   - `coverage_bysite`, `coverage_overall`: share (0 to 1) of the population at
@@ -63,8 +74,9 @@
 #'   - `longnames`: full label of each column of `results_bysite`
 #'   - `sitetype`: NA here; set by [mydata_ejamit()]
 #'   - `settings`: the radius, the site ids, and the version of the EJAM data used
+#'   - `notes`: what to keep in mind when reading the results
 #'
-#' @seealso [mydata_ejamit()] [mydata_validate()] [mydata_metadata()] [doaggregate()]
+#' @seealso [mydata_ejamit()] [mydata_calc_stats()] [mydata_validate()] [mydata_metadata()] [doaggregate()]
 #'
 #' @examples
 #' \dontrun{
@@ -96,8 +108,15 @@ mydata_doaggregate <- function(sites2blocks,
   if (!data.table::is.data.table(sites2blocks)) {
     sites2blocks <- data.table::as.data.table(sites2blocks) # a copy, only when it was not already a data.table
   }
-  if (!is.null(mydata_usastats) || !is.null(mydata_statestats)) {
-    message("mydata_usastats and mydata_statestats are not used yet, so averages, percentiles and ratios are not included.")
+  if (is.list(mydata_usastats) && !is.data.frame(mydata_usastats) && "mydata_usastats" %in% names(mydata_usastats)) {
+    # the whole result of mydata_calc_stats() was provided
+    if (is.null(mydata_statestats)) {mydata_statestats <- mydata_usastats$mydata_statestats}
+    mydata_usastats <- mydata_usastats$mydata_usastats
+  }
+  for (ref in list(mydata_usastats, mydata_statestats)) {
+    if (!is.null(ref) && (!is.data.frame(ref) || !all(c("REGION", "PCTILE") %in% names(ref)))) {
+      stop("mydata_usastats and mydata_statestats must be tables with columns REGION and PCTILE, like usastats and statestats, such as the output of mydata_calc_stats()")
+    }
   }
   already_checked <- is.list(mydata) && !is.data.frame(mydata) &&
     all(c("mydata", "mydata_map_headernames", "columns_needed", "formulas_needed", "ok") %in% names(mydata))
@@ -216,6 +235,44 @@ mydata_doaggregate <- function(sites2blocks,
     data.table::set(results_bysite, i = which(nosuchsite), j = "pop", value = NA_real_)
   }
 
+  # State of each site: as given, or else the State where most of the site's population lives ####
+  ST <- rep(NA_character_, length(ids))
+  if (!is.null(sites2states_or_latlon) && all(c("ejam_uniq_id", "ST") %in% names(sites2states_or_latlon))) {
+    ST <- as.character(sites2states_or_latlon$ST[match(as.character(ids), as.character(sites2states_or_latlon$ejam_uniq_id))])
+  }
+  if (anyNA(ST)) {
+    row <- match(bgwts_bysite$bgid, bgids)
+    bystate <- rowsum(bgwts_bysite$bgwt * bgpop[row],
+                      paste(match(bgwts_bysite$ejam_uniq_id, ids), blockgroupstats$ST[from_ejam][row]), reorder = FALSE)
+    bystate <- data.frame(site = as.integer(sub(" .*$", "", rownames(bystate))), ST = sub("^.* ", "", rownames(bystate)), pop = bystate[, 1])
+    bystate <- bystate[order(bystate$site, -bystate$pop), ]
+    bystate <- bystate[!duplicated(bystate$site) & bystate$ST != "NA", ]
+    main_state <- rep(NA_character_, length(ids))
+    main_state[bystate$site] <- bystate$ST
+    ST[is.na(ST)] <- main_state[is.na(ST)]
+  }
+  data.table::set(results_bysite, j = "ST", value = ST)
+  data.table::setcolorder(results_bysite, c("ejam_uniq_id", "ST"))
+
+  # averages, percentiles and ratios, where reference tables were provided ####
+  notes <- character(0)
+  if (!is.null(mydata_usastats) || !is.null(mydata_statestats)) {
+    for (ref in list(mydata_usastats, mydata_statestats)) {
+      if (!is.null(ref) && is.null(attr(ref, "mydata_stats_info"))) {
+        warning("A reference table does not say what area, data year and weighting it is based on, ",
+                "so check that it is comparable to these results. Tables from mydata_calc_stats() record that.", call. = FALSE)
+        break
+      }
+    }
+    compared <- mydata_doaggregate_comparisons(results_bysite, results_overall,
+                                               vars = ind$rname[ind$comparisons %in% TRUE],
+                                               mydata_usastats = mydata_usastats,
+                                               mydata_statestats = mydata_statestats)
+    results_bysite <- compared$results_bysite
+    results_overall <- compared$results_overall
+    notes <- c(notes, compared$notes)
+  }
+
   # tell the user what happened ####
   counts <- ind$rname[ind$calculation_type == "sum of counts"]
   undercounted <- counts[vapply(counts, function(nm) {
@@ -250,8 +307,97 @@ mydata_doaggregate <- function(sites2blocks,
     settings = list(radius = radius,
                     ejam_uniq_id = ids,
                     ejam_package_version = attr(blockgroupstats, "ejam_package_version"),
-                    acs_version = attr(blockgroupstats, "acs_version"))
+                    acs_version = attr(blockgroupstats, "acs_version")),
+    notes = c(notes,
+              if (length(counts) > 0) {paste0("Totals (", paste0(counts, collapse = ", "), ") are estimates where a site includes only part of a blockgroup: they are split in proportion to population.")},
+              if (any(ind$source_geography %in% "tract")) {"Some values came from tract data, with each tract's value used for all of its blockgroups."})
   ))
+}
+############################################################################## #
+
+
+# Add averages, percentiles and ratios to the results of mydata_doaggregate(),
+# using the same helpers that work for the indicators built into EJAM.
+# Returns new tables. The tables passed in are not changed.
+
+mydata_doaggregate_comparisons <- function(results_bysite, results_overall, vars,
+                                           mydata_usastats = NULL, mydata_statestats = NULL) {
+
+  bysite <- data.table::copy(results_bysite)
+  overall <- data.table::copy(results_overall)
+  notes <- "Percentiles are among blockgroups, and each blockgroup counts equally in a US or State average."
+  vars <- intersect(vars, names(bysite))
+  vars_us <- if (is.null(mydata_usastats)) {character(0)} else {intersect(vars, names(mydata_usastats))}
+  vars_st <- if (is.null(mydata_statestats)) {character(0)} else {intersect(vars, names(mydata_statestats))}
+  vars <- union(vars_us, vars_st)
+  if (length(vars) == 0) {
+    return(list(results_bysite = bysite, results_overall = overall, notes = notes))
+  }
+  n <- nrow(bysite)
+  pop <- bysite$pop
+  popwtd <- function(x) {
+    ok <- !is.na(x) & !is.na(pop) & pop > 0
+    if (any(ok)) {sum(x[ok] * pop[ok]) / sum(pop[ok])} else {NA_real_}
+  }
+  newcols <- c(paste0("avg.", vars), paste0("state.avg.", vars), paste0("pctile.", vars), paste0("state.pctile.", vars))
+  bysite[, (newcols) := NA_real_]
+  overall[, (newcols) := NA_real_]
+
+  # US averages and percentiles ####
+  if (length(vars_us) > 0) {
+    avg <- calc_avg_columns(vars_us, zones = "USA", lookup = mydata_usastats)
+    for (nm in vars_us) {
+      thisavg <- as.numeric(avg[[paste0("avg.", nm)]])[1]
+      data.table::set(bysite, j = paste0("avg.", nm), value = rep(thisavg, n))
+      data.table::set(overall, j = paste0("avg.", nm), value = thisavg)
+    }
+    suppressMessages({
+      pct_bysite <- calc_pctile_columns(bysite[, vars_us, with = FALSE], varnames = vars_us, zones = "USA", lookup = mydata_usastats, quiet = TRUE)
+      pct_overall <- calc_pctile_columns(overall[, vars_us, with = FALSE], varnames = vars_us, zones = "USA", lookup = mydata_usastats, quiet = TRUE)
+    })
+    for (nm in vars_us) {
+      data.table::set(bysite, j = paste0("pctile.", nm), value = as.numeric(pct_bysite[[paste0("pctile.", nm)]]))
+      data.table::set(overall, j = paste0("pctile.", nm), value = as.numeric(pct_overall[[paste0("pctile.", nm)]]))
+    }
+    notavailable <- vars_us[vapply(vars_us, function(nm) {all(is.na(mydata_usastats[[nm]]))}, logical(1))]
+    if (length(notavailable) > 0) {
+      notes <- c(notes, paste0("US averages, percentiles and ratios are not available for: ", paste0(notavailable, collapse = ", "),
+                               ", because the data do not cover enough of the US."))
+    }
+  }
+
+  # State averages and percentiles, for each site whose State is in the reference table ####
+  if (length(vars_st) > 0) {
+    known <- !is.na(bysite$ST) & bysite$ST %in% mydata_statestats$REGION
+    if (any(known)) {
+      avg <- calc_avg_columns(vars_st, zones = bysite$ST[known], lookup = mydata_statestats)
+      suppressMessages(suppressWarnings({
+        pct <- calc_pctile_columns(bysite[known, vars_st, with = FALSE], varnames = vars_st, zones = bysite$ST[known], lookup = mydata_statestats, quiet = TRUE)
+      }))
+      for (nm in vars_st) {
+        data.table::set(bysite, i = which(known), j = paste0("state.avg.", nm), value = as.numeric(unlist(avg[[paste0("state.avg.", nm)]])))
+        data.table::set(bysite, i = which(known), j = paste0("state.pctile.", nm), value = as.numeric(pct[[paste0("state.pctile.", nm)]]))
+      }
+    }
+    if (any(!known)) {
+      notes <- c(notes, paste0("State averages, percentiles and ratios are not available for ", sum(!known), " of ", n,
+                               " sites, because the reference table has nothing for the State of the site."))
+    }
+    # overall: population-weighted mean of the sites' State values, as in doaggregate()
+    for (nm in vars_st) {
+      data.table::set(overall, j = paste0("state.avg.", nm), value = popwtd(bysite[[paste0("state.avg.", nm)]]))
+      data.table::set(overall, j = paste0("state.pctile.", nm), value = popwtd(bysite[[paste0("state.pctile.", nm)]]))
+    }
+  }
+
+  # ratios to the averages ####
+  ratios_bysite <- calc_ratio_columns(bysite, varnames = vars)
+  ratios_overall <- calc_ratio_columns(overall, varnames = vars)
+  for (nm in names(ratios_bysite)) {
+    data.table::set(bysite, j = nm, value = as.numeric(ratios_bysite[[nm]]))
+    data.table::set(overall, j = nm, value = as.numeric(ratios_overall[[nm]]))
+  }
+  list(results_bysite = bysite, results_overall = overall, notes = notes)
 }
 ############################################################################## #
 
@@ -274,6 +420,9 @@ mydata_doaggregate <- function(sites2blocks,
 #'   or the result of [mydata_validate()]
 #' @param mydata_map_headernames metadata from [mydata_metadata()]. Not needed
 #'   if `mydata` is the result of [mydata_validate()].
+#' @param mydata_usastats,mydata_statestats optional reference tables of
+#'   averages and percentiles from [mydata_calc_stats()], passed to
+#'   [mydata_doaggregate()], which then also reports averages, percentiles and ratios
 #' @param quiet TRUE to print less
 #' @param ... passed to [getblocksnearby()] when sites are points
 #'
@@ -299,6 +448,8 @@ mydata_ejamit <- function(sitepoints = NULL,
                           shapefile = NULL,
                           mydata,
                           mydata_map_headernames = NULL,
+                          mydata_usastats = NULL,
+                          mydata_statestats = NULL,
                           quiet = FALSE,
                           ...) {
 
@@ -331,7 +482,7 @@ mydata_ejamit <- function(sitepoints = NULL,
     # As in ejamit(), the FIPS code is used as the site id. This table was just created by
     # getblocksnearby_from_fips() and nothing else refers to it, so it is changed in place, with no copy.
     data.table::set(sites2blocks, j = "ejam_uniq_id", value = as.character(sites2blocks$fips))
-    allsites <- data.table::data.table(ejam_uniq_id = as.character(fips))
+    allsites <- data.table::data.table(ejam_uniq_id = as.character(fips), ST = fips2stateabbrev(fips))
 
   } else if (sitetype == "shp") {
 
@@ -354,6 +505,8 @@ mydata_ejamit <- function(sitepoints = NULL,
                             mydata = checked,
                             sites2states_or_latlon = allsites,
                             radius = radius,
+                            mydata_usastats = mydata_usastats,
+                            mydata_statestats = mydata_statestats,
                             quiet = quiet)
   out$sitetype <- sitetype
   return(out)

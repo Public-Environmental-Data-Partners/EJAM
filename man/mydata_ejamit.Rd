@@ -11,6 +11,8 @@ mydata_ejamit(
   shapefile = NULL,
   mydata,
   mydata_map_headernames = NULL,
+  mydata_usastats = NULL,
+  mydata_statestats = NULL,
   quiet = FALSE,
   ...
 )
@@ -30,6 +32,10 @@ or the result of \code{\link[=mydata_validate]{mydata_validate()}}}
 
 \item{mydata_map_headernames}{metadata from \code{\link[=mydata_metadata]{mydata_metadata()}}. Not needed
 if \code{mydata} is the result of \code{\link[=mydata_validate]{mydata_validate()}}.}
+
+\item{mydata_usastats, mydata_statestats}{optional reference tables of
+averages and percentiles from \code{\link[=mydata_calc_stats]{mydata_calc_stats()}}, passed to
+\code{\link[=mydata_doaggregate]{mydata_doaggregate()}}, which then also reports averages, percentiles and ratios}
 
 \item{quiet}{TRUE to print less}
 

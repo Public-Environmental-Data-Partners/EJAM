@@ -33,15 +33,26 @@ that sites with no blocks still get a row. As in \code{\link[=doaggregate]{doagg
 
 \item{radius}{optional, the radius in miles that was used, to record in the results}
 
-\item{mydata_usastats, mydata_statestats}{reserved for reference tables of
-averages and percentiles. Not used yet.}
+\item{mydata_usastats, mydata_statestats}{optional reference tables of
+averages and percentiles for the US and for States, from
+\code{\link[=mydata_calc_stats]{mydata_calc_stats()}} or in the same layout as \link{usastats} and
+\link{statestats}. The whole result of \code{\link[=mydata_calc_stats]{mydata_calc_stats()}} can be given as
+\code{mydata_usastats}. If provided, each indicator that gets comparisons also
+gets its US and State average, its US and State percentile, and its ratio
+to each average, in columns named like those of \code{\link[=ejamit]{ejamit()}} results
+(\code{avg.}, \code{state.avg.}, \code{pctile.}, \code{state.pctile.}, \code{ratio.to.avg.},
+\code{ratio.to.state.avg.}). A value that cannot be provided is NA. Overall
+State averages and State percentiles are population-weighted means of the
+sites' values, as in \code{\link[=doaggregate]{doaggregate()}}.}
 
 \item{quiet}{FALSE (default) to print a short summary}
 }
 \value{
 a list, with element names like those of \code{\link[=ejamit]{ejamit()}} results where they apply:
 \itemize{
-\item \code{results_bysite}: data.table with one row per site: \code{ejam_uniq_id}, \code{pop}
+\item \code{results_bysite}: data.table with one row per site: \code{ejam_uniq_id}, \code{ST}
+(the State of the site, as given in \code{sites2states_or_latlon}, or else
+the State where most of the site's population lives), \code{pop}
 (EJAM's population estimate at the site), and one column per indicator
 \item \code{results_overall}: the same, as one row for all sites combined
 \item \code{coverage_bysite}, \code{coverage_overall}: share (0 to 1) of the population at
@@ -51,6 +62,7 @@ the site, or overall, in blockgroups that had usable data, per indicator
 \item \code{longnames}: full label of each column of \code{results_bysite}
 \item \code{sitetype}: NA here; set by \code{\link[=mydata_ejamit]{mydata_ejamit()}}
 \item \code{settings}: the radius, the site ids, and the version of the EJAM data used
+\item \code{notes}: what to keep in mind when reading the results
 }
 }
 \description{
@@ -102,5 +114,5 @@ out$coverage_bysite
 
 }
 \seealso{
-\code{\link[=mydata_ejamit]{mydata_ejamit()}} \code{\link[=mydata_validate]{mydata_validate()}} \code{\link[=mydata_metadata]{mydata_metadata()}} \code{\link[=doaggregate]{doaggregate()}}
+\code{\link[=mydata_ejamit]{mydata_ejamit()}} \code{\link[=mydata_calc_stats]{mydata_calc_stats()}} \code{\link[=mydata_validate]{mydata_validate()}} \code{\link[=mydata_metadata]{mydata_metadata()}} \code{\link[=doaggregate]{doaggregate()}}
 }

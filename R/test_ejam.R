@@ -329,7 +329,8 @@ instead of tests/testthat/_logs
         "test-utils_metadata_add.R",
         "test-mydata_metadata.R",
         "test-mydata_validate.R",
-        "test-mydata_doaggregate.R"
+        "test-mydata_doaggregate.R",
+        "test-mydata_calc_stats.R"
       ),
       test_doag = c(
         "test-doaggregate.R",
@@ -665,7 +666,7 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
       timebyfile <- rbind(
         timebyfile,
-        data.table(file = c("test-mydata_metadata.R", "test-mydata_validate.R", "test-mydata_doaggregate.R"), seconds_byfile = c(1, 1, 4))
+        data.table(file = c("test-mydata_metadata.R", "test-mydata_validate.R", "test-mydata_doaggregate.R", "test-mydata_calc_stats.R"), seconds_byfile = c(1, 1, 4, 3))
       )
 
       ############################ #      ############################ #      ############################ #
