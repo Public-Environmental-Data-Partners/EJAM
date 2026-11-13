@@ -53,6 +53,4 @@ test_that("draft radius counts match independent distances", {
   to <- data.frame(lat = c(40, 40.01, 40.08), lon = c(-75, -75, -75))
   expected <- vapply(seq_len(nrow(from)), function(i) sum(point_test_miles(from[i, ], to) <= 1), integer(1))
   expect_equal(countpoints_nearby(from, to, radius = 1)$N, expected)
-  expect_error(countpoints_in_shape(NULL, to), "not implemented yet")
-  expect_error(countpoints_in_fips("10", to), "not implemented yet")
 })

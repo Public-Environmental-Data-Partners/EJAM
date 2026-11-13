@@ -284,6 +284,9 @@ reference:
   - getblocks_diagnostics
   - get_ejscreen_facilities_nearby
   - getpointsnearby
+  - countpoints_nearby
+  - countpoints_in_shape
+  - countpoints_in_fips
   - getfrsnearby
   - proxistat
   - indexblocks
