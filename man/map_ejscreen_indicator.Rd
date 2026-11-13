@@ -21,7 +21,12 @@ map_ejscreen_indicator(
   fillOpacity = 0.7,
   maptype = c("leaflet", "ggplot"),
   year = NULL,
-  cb = TRUE
+  cb = TRUE,
+  label = NULL,
+  units = NULL,
+  mydata_map_headernames = NULL,
+  source = NULL,
+  colorby = c("auto", "percentile", "raw")
 )
 }
 \arguments{
@@ -80,10 +85,25 @@ FALSE for detailed TIGER/Line boundaries. Generalized boundaries are much
 faster to download and draw, but simplified and clipped along shorelines;
 use them for overview maps, not precise spatial analysis. Both choices
 reuse cached state files. Ignored when shp is supplied.}
+
+\item{label, units}{Optional display label and units for a custom indicator.
+Explicit values override the metadata.}
+
+\item{mydata_map_headernames}{Optional custom metadata table with rname,
+longname, and units columns; an optional source column supplies popup notes.}
+
+\item{source}{Optional source note for popups, overriding metadata.}
+
+\item{colorby}{Color by percentiles, raw values, or automatically use raw
+values when the reference lacks the indicator or region (the default).
+In raw mode colorbins are raw-value boundaries covering all finite values;
+omitted bins are generated from the data range. Missing values keep the
+No data style. A raw map never labels its colors as percentiles.}
 }
 \value{
 A Leaflet htmlwidget or a ggplot object. The ggplot object's data
-contains the selected raw indicator values and a .map_percentile column.
+contains the selected raw indicator values, .map_value (the values used
+for coloring), and .map_percentile (NA when coloring raw values).
 }
 \description{
 Draw a Leaflet or ggplot choropleth for one county or state using raw
@@ -113,6 +133,15 @@ map_ejscreen_indicator("pctile.proximity.npl", countyfips = "10001", zoom = 10)
 map_ejscreen_indicator("state.pctile.pctlowinc", ST = "DE")
 map_ejscreen_indicator("pctlowinc", ST = "IL")
 map_ejscreen_indicator("pctlowinc", ST = "IL", maptype = "ggplot")
+# A custom one-county table needs no national reference.
+custom <- data.frame(bgfips = c("100010401001", "100010401002"),
+                     myscore = c(12, 28))
+map_ejscreen_indicator("myscore", countyfips = "10001", blockgroup_data = custom,
+                       label = "My indicator", units = "ppb", source = "Local study")
+# For site results, use existing helpers, for example:
+site_results <- data.frame(lat = c(39.1, 39.2), lon = c(-75.5, -75.6),
+                           myscore = c(12, 28))
+mapfast(site_results, column_names = "myscore", labels = "My indicator")
 # Reuse boundaries instead of downloading them again.
 bg <- blockgroupstats[substr(bgfips, 1, 5) == "10001", ]
 polygons <- shapes_from_fips(bg$bgfips)

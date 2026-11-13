@@ -209,3 +209,79 @@ test_that("boundary helper validates inputs and restores cache options on failur
   expect_error(shapes_blockgroups_from_tigris_bgfips("100010401001", year = 2024), "download failed")
   expect_false(getOption("tigris_use_cache"))
 })
+
+test_that("custom raw maps share bins, labels, missing styles, and source notes", {
+  f <- indicator_map_fixture()
+  f$bg$mycustom <- c(-2, NA_real_, 8, 15)
+  metadata <- data.frame(rname = "mycustom", longname = "Custom score", units = "ppb", source = "Local study")
+  testthat::local_mocked_bindings(shapes_from_fips = function(...) stop("Unexpected download"), .package = "EJAM")
+  args <- list(indicator = "mycustom", ST = "DE", blockgroup_data = f$bg, shp = f$shp,
+               mydata_map_headernames = metadata, colorbins = c(-2, 0, 8), colorfills = c("blue", "red"))
+  expect_message(map <- do.call(map_ejscreen_indicator, args), "raw values")
+  expect_message(plot <- do.call(map_ejscreen_indicator, c(args, list(maptype = "ggplot"))), "raw values")
+  expect_s3_class(map, "leaflet")
+  expect_s3_class(plot, "ggplot")
+  expect_equal(plot$data$.map_value, c(-2, NA_real_, 8))
+  expect_true(all(is.na(plot$data$.map_percentile)))
+  expect_identical(indicator_map_layer(map)[[4]]$fillColor, c("#0000FF", "#D3D3D3", "#FF0000"))
+  expect_equal(ggplot2::ggplot_build(plot)$data[[1]]$fill, indicator_map_layer(map)[[4]]$fillColor)
+  expect_match(indicator_map_legend(map)$title, "Custom score (ppb) (Raw value)", fixed = TRUE)
+  expect_match(indicator_map_layer(map)[[5]][1], "Local study", fixed = TRUE)
+  expect_false(grepl("percentile", indicator_map_legend(map)$title))
+  expect_match(indicator_map_legend(do.call(map_ejscreen_indicator,
+      c(args, list(label = "Override", units = "ppm", colorby = "raw"))))$title, "Override (ppm)", fixed = TRUE)
+})
+
+test_that("custom references retain percentile coloring and missing regions fall back", {
+  f <- indicator_map_fixture()
+  f$bg$mycustom <- f$bg$pctlowinc * 1000
+  lookup <- data.frame(REGION = "USA", PCTILE = 0:100, mycustom = (0:100) * 10)
+  p <- map_ejscreen_indicator("mycustom", countyfips = "10001", blockgroup_data = f$bg,
+                               shp = f$shp, lookup = lookup, maptype = "ggplot", label = "Custom")
+  expect_equal(p$data$.map_percentile, c(79, 95))
+  expect_message(raw <- map_ejscreen_indicator("mycustom", ST = "DE", scope = "state",
+                                               blockgroup_data = f$bg, shp = f$shp, lookup = lookup,
+                                               maptype = "ggplot"), "raw values")
+  expect_equal(raw$data$.map_value, c(790, 950, 900))
+  expect_true(all(is.na(raw$data$.map_percentile)))
+  expect_error(map_ejscreen_indicator("mycustom", ST = "DE", scope = "state",
+                                      blockgroup_data = f$bg, shp = f$shp, lookup = lookup,
+                                      colorby = "percentile"), "requested percentile region")
+})
+
+test_that("automatic raw bins handle constant and entirely missing custom data", {
+  f <- indicator_map_fixture()
+  for (v in list(rep(5, nrow(f$bg)), rep(NA_real_, nrow(f$bg)))) {
+    f$bg$mycustom <- v
+    p <- map_ejscreen_indicator("mycustom", ST = "DE", blockgroup_data = f$bg,
+                                 shp = f$shp, colorby = "raw", maptype = "ggplot")
+    expect_s3_class(ggplot2::ggplot_build(p), "ggplot_built")
+    expect_equal(p$data$.map_value, head(v, 3))
+  }
+})
+
+test_that("existing site map helpers display custom by-site values", {
+  site_results <- data.frame(lat = c(39.1, 39.2), lon = c(-75.5, -75.6), myscore = c(12, 28))
+  map <- mapfast(site_results, column_names = "myscore", labels = "My indicator")
+  expect_s3_class(map, "leaflet")
+  expect_match(paste(unlist(map$x$calls), collapse = " "), "My indicator", fixed = TRUE)
+})
+
+
+test_that("unavailable percentile cutoffs fall back to raw values", {
+  f <- indicator_map_fixture()
+  f$bg$mycustom <- f$bg$pctlowinc * 1000
+  # mydata_calc_stats() represents insufficient coverage with NA cutoffs.
+  unavailable <- data.frame(REGION = "USA", PCTILE = c(as.character(0:100), "mean"),
+                             mycustom = NA_real_)
+  mean_only <- data.frame(REGION = "USA", PCTILE = "mean", mycustom = 500)
+  for (lookup in list(unavailable, mean_only)) {
+    args <- list(indicator = "mycustom", countyfips = "10001", blockgroup_data = f$bg,
+                 shp = f$shp, lookup = lookup, maptype = "ggplot")
+    expect_message(p <- do.call(map_ejscreen_indicator, args), "raw values")
+    expect_equal(p$data$.map_value, c(790, 950))
+    expect_true(all(is.na(p$data$.map_percentile)))
+    expect_error(do.call(map_ejscreen_indicator, c(args, list(colorby = "percentile"))),
+                 "usable percentile cutoffs")
+  }
+})
