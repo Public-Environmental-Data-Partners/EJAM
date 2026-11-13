@@ -67,6 +67,9 @@
 #'     and the reason
 #'   - `builtin_columns`: names of columns that will be taken from
 #'     [blockgroupstats] because they are not in `mydata`
+#'   - `columns_needed`: for each indicator, the columns that must all have a
+#'     value in a blockgroup for it to be usable there
+#'   - `formulas_needed`: for each indicator, the formulas used to calculate it
 #'   - `ok`: TRUE if nothing prevents analysis
 #'
 #' @seealso [mydata_metadata()]
@@ -119,7 +122,8 @@ mydata_validate <- function(mydata,
     return(result)
   }
   empty_result <- list(mydata = NULL, mydata_map_headernames = mydata_map_headernames, coverage = NULL,
-                       problems = NULL, unmatched = NULL, builtin_columns = character(0), ok = FALSE)
+                       problems = NULL, unmatched = NULL, builtin_columns = character(0),
+                       columns_needed = list(), formulas_needed = list(), ok = FALSE)
 
   # the table ####
   if (!is.data.frame(mydata) || nrow(mydata) == 0) {
@@ -341,8 +345,26 @@ mydata_validate <- function(mydata,
   coverage$coverage <- ifelse(coverage$pop_zone > 0, coverage$pop_covered / coverage$pop_zone, NA_real_)
   coverage$comparisons_possible <- !is.na(coverage$coverage) & coverage$coverage >= coverage_needed
 
+  # the formulas to run, in addition to its own, for an indicator whose formula uses other calculated columns
+  own_formula <- stats::setNames(ind$formula, ind$rname)
+  formulas_needed <- lapply(ind$rname, function(nm) {
+    todo <- nm
+    found <- character(0)
+    while (length(todo) > 0) {
+      this <- todo[1]
+      todo <- todo[-1]
+      if (this %in% found || !nzchar(own_formula[[this]])) {next}
+      found <- c(found, this)
+      inputs <- intersect(formula_inputs[[this]], ind$rname[nzchar(ind$formula)])
+      todo <- c(todo, setdiff(inputs, c(found, datacols)))
+    }
+    unname(own_formula[found])
+  })
+  names(formulas_needed) <- ind$rname
+
   result <- list(mydata = mydata, mydata_map_headernames = md, coverage = coverage, problems = NULL,
-                 unmatched = unmatched, builtin_columns = builtin_columns, ok = FALSE)
+                 unmatched = unmatched, builtin_columns = builtin_columns,
+                 columns_needed = needs, formulas_needed = formulas_needed, ok = FALSE)
   result <- finish(result)
 
   if (!quiet) {

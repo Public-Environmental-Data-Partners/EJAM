@@ -1223,9 +1223,14 @@ calc_bgwts_bysite <- function(sites2blocks) {
 
 #' aggregate blockwt values by blockgroup
 #'
+#' @details A block that is near more than one site appears more than once in
+#'   sites2blocks. It is counted only once here, so that residents near two or
+#'   more sites are not double-counted in overall results. sites2blocks is not
+#'   changed.
+#'
 #' @param sites2blocks like output of [getblocksnearby()]
-#'   or input to [doaggregate()] or [custom_doaggregate()]
-#' @seealso [custom_doaggregate()]
+#'   or input to [doaggregate()] or [mydata_doaggregate()]
+#' @seealso [mydata_doaggregate()] [calc_bgwts_bysite()]
 #' @return [data.table](https://r-datatable.com), 1 row per blockgroup (even if bg is near 2+ sites),
 #'   so it is a table of all the unique blockgroups in the overall
 #'   analysis (merged across all sites), with a weight that indicates
@@ -1237,7 +1242,7 @@ calc_bgwts_bysite <- function(sites2blocks) {
 #' @keywords internal
 #'
 calc_bgwts_overall <- function(sites2blocks) {
-  sites2blocks[, .(bgwt = sum(blockwt)), keyby = "bgid"]
+  sites2blocks[!duplicated(blockid), .(bgwt = sum(blockwt)), keyby = "bgid"]
   # maybe add bgfips for convenience
 }
 ############################################### #
