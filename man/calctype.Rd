@@ -4,10 +4,13 @@
 \alias{calctype}
 \title{utility - what type of formula is used to aggregate this variable?}
 \usage{
-calctype(varnames)
+calctype(varnames, mydata_map_headernames = NULL)
 }
 \arguments{
 \item{varnames}{vector like names_d}
+
+\item{mydata_map_headernames}{optional table describing user-defined indicators,
+as created by \code{\link[=mydata_metadata]{mydata_metadata()}}, so varnames can include those too}
 }
 \value{
 vector same length as varnames, like c("sum of counts", "wtdmean")

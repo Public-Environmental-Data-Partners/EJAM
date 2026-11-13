@@ -1245,6 +1245,8 @@ calc_bgwts_overall <- function(sites2blocks) {
 #' utility - what type of formula is used to aggregate this variable?
 #'
 #' @param varnames vector like names_d
+#' @param mydata_map_headernames optional table describing user-defined indicators,
+#'   as created by [mydata_metadata()], so varnames can include those too
 #'
 #' @return vector same length as varnames, like c("sum of counts", "wtdmean")
 #' @examples
@@ -1260,8 +1262,8 @@ calc_bgwts_overall <- function(sites2blocks) {
 #' @export
 #' @keywords internal
 #'
-calctype <- function(varnames) {
-  varinfo(varnames, "calculation_type")[, "calculation_type"]
+calctype <- function(varnames, mydata_map_headernames = NULL) {
+  varinfo(varnames, "calculation_type", mydata_map_headernames = mydata_map_headernames)[, "calculation_type"]
   # map_headernames$calculation_type[match(varnames, map_headernames$rname)]
 }
 ############################################### #
@@ -1269,6 +1271,8 @@ calctype <- function(varnames) {
 #' utility - what variable is the weight used to aggregate this variable as a weighted mean?
 #'
 #' @param varnames vector like names_d
+#' @param mydata_map_headernames optional table describing user-defined indicators,
+#'   as created by [mydata_metadata()], so varnames can include those too
 #'
 #' @return vector same length as varnames, like c("pop", "povknownratio", "hhlds")
 #' @examples
@@ -1278,8 +1282,8 @@ calctype <- function(varnames) {
 #' @export
 #' @keywords internal
 #'
-calcweight <- function(varnames) {
-  varinfo(varnames, "denominator")[, "denominator"]
+calcweight <- function(varnames, mydata_map_headernames = NULL) {
+  varinfo(varnames, "denominator", mydata_map_headernames = mydata_map_headernames)[, "denominator"]
   # map_headernames$denominator[match(varnames, map_headernames$rname)]
 }
 #######################################################################  #

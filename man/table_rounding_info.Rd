@@ -4,12 +4,15 @@
 \alias{table_rounding_info}
 \title{How many decimal places to round to for given variable(s)}
 \usage{
-table_rounding_info(var, varnametype = "rname")
+table_rounding_info(var, varnametype = "rname", mydata_map_headernames = NULL)
 }
 \arguments{
 \item{var}{vector of variable names such as c("pctlowinc", "pm") or c(names_d, names_d_subgroups)}
 
 \item{varnametype}{which column of \link{map_headernames} to use when looking for var, like "rname" or "api" or "long"}
+
+\item{mydata_map_headernames}{optional table describing user-defined indicators,
+as created by \code{\link[=mydata_metadata]{mydata_metadata()}}, so var can include those too}
 }
 \value{
 named vector same size as var, with var as names.
