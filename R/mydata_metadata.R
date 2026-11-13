@@ -21,7 +21,8 @@
 #' - no formula: `"wtdmean"` (a weighted mean, weighted by `denominator`,
 #'   which defaults to `"pop"`)
 #' - a formula that only adds or subtracts columns, or multiplies or divides
-#'   them by a number, such as `"x = a + b"` or `"x = a / 2"`:
+#'   them by a number, such as `"x = a + b"` or `"x = a / 2"` (but not
+#'   `"x = a + 1"`, which adds a number):
 #'   `"sum of counts"`, because the sum of such a result across blockgroups is
 #'   the same as the result calculated from the summed columns
 #' - any other formula, such as
@@ -359,7 +360,7 @@ mydata_metadata_rows <- function(vals, n) {
 
 # For each formula string, report
 #  - additive: TRUE only if the right side just adds or subtracts variables, or
-#    multiplies or divides them by numbers, so that summing the result across
+#    multiplies or divides them by numbers (a number added on, as in x + 1, is not additive), so that summing the result across
 #    blockgroups equals the result calculated from summed inputs
 #  - has_division: whether there is any division in it
 #  - denominator: the one variable it divides by, if there is exactly one
@@ -371,7 +372,9 @@ mydata_metadata_parse_formula <- function(formula) {
   additive <- rep(FALSE, length(formula))
   denominator <- rep(NA_character_, length(formula))
   is_additive <- function(x) {
-    if (is.numeric(x) || is.name(x)) {return(TRUE)}
+    if (is.name(x)) {return(TRUE)}
+    # a number added on, like the 1 in x + 1, would be added once per blockgroup, so only zero is allowed as a term
+    if (is.numeric(x)) {return(isTRUE(x == 0))}
     if (!is.call(x)) {return(FALSE)}
     op <- as.character(x[[1]])[1]
     parts <- as.list(x)[-1]
