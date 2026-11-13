@@ -133,6 +133,12 @@ test_that("a ready-made reference table is accepted, with a warning if it does n
   )
   expect_equal(out$results_bysite$state.avg.myscore, 0.3)
   expect_false(is.na(out$results_bysite$state.pctile.myscore))
+  # the same reference table as a data.table gives the same results, and is not changed
+  mine_dt <- data.table::as.data.table(mine)
+  before <- data.table::copy(mine_dt)
+  out_dt <- quietly(mydata_doaggregate(s2b, de, md, mydata_statestats = mine_dt, quiet = TRUE))
+  expect_equal(out_dt$results_bysite, out$results_bysite)
+  expect_identical(mine_dt, before)
   expect_error(mydata_doaggregate(s2b, de, md, mydata_usastats = data.frame(a = 1), quiet = TRUE), "REGION and PCTILE")
   expect_error(mydata_calc_stats(de, mydata_metadata("myscore", calculation_type = "sum of counts"), quiet = TRUE), "None of the indicators")
 })

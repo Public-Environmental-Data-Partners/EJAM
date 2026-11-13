@@ -276,6 +276,9 @@ mydata_doaggregate <- function(sites2blocks,
         break
       }
     }
+    # The lookup helpers expect a data.frame. A data.table is converted to a copy, so the table provided is not changed.
+    if (data.table::is.data.table(mydata_usastats)) {mydata_usastats <- as.data.frame(mydata_usastats)}
+    if (data.table::is.data.table(mydata_statestats)) {mydata_statestats <- as.data.frame(mydata_statestats)}
     compared <- mydata_doaggregate_comparisons(results_bysite, results_overall,
                                                vars = ind$rname[ind$comparisons %in% TRUE],
                                                mydata_usastats = mydata_usastats,
