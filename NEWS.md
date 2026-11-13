@@ -1,6 +1,6 @@
 # EJAM (development version)
 
-- Improved automated checks of ability to install EJAM package: Simplified the vignette dev-github-actions-install-tests.Rmd. Added an option to test on Ubuntu only, and added consistent version verification when testing release tags (#714). Added minimum-R compatibility coverage, simplified Ubuntu dependency setup, and added a message to distinguish when installation failed only on the development version of R (#723).
+- Improved GitHub actions that test if EJAM can be installed: Simplified vignette, simplified Ubuntu setup & checks. Explain what failed, check the R version EJAM specifies as minimum, etc. (#714 & #723).
 - Moved open-issue-ranking reports out of the package, into GitHub issue #715 (#716).
 
 # EJAM 4.2024.0 (November 2026)
