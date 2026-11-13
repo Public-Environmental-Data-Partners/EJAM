@@ -1,5 +1,45 @@
 #!/usr/bin/env python3
-"""Download the latest successful Wayback captures of EPA EJSCREEN indicator pages."""
+"""retrieve_wayback.py
+
+Purpose:
+	Download the latest successful Wayback Machine captures of EPA EJSCREEN
+	indicator pages given a list of Wayback URLs.
+	Tracks all download attempts, captures, and any failures in a manifest CSV.
+
+Process summary:
+	- Read the list of Wayback URLs from the input file.
+	- Extract the original EPA URL from each Wayback URL.
+	- Query the Wayback Machine API to find the latest successful capture of each original EPA URL.
+	- Download the captured HTML files with proper retry logic and timeouts.
+	- Validate downloaded content to verify it is actual HTML (not an error page).
+	- Generate a manifest CSV tracking original URLs, capture timestamps, download
+	  results, and any warnings or errors.
+	- Print a summary report of successes, failures, skipped files, and warnings.
+
+Runtime arguments (current defaults shown):
+	- input_file: required path to the local file containing Wayback URLs (one per line).
+
+Constants and defaults:
+	- OUTPUT_DIRECTORY: archived_html
+	- MANIFEST_FILENAME: manifest.csv
+	- REQUEST_TIMEOUT_SECONDS: 120
+	- REQUEST_INTERVAL_SECONDS: 2 (rate limiting between requests)
+	- MAX_ATTEMPTS: 5 (retry attempts per request)
+	- RETRY_BASE_SECONDS: 2 (exponential backoff base)
+	- USER_AGENT: EJAM-Wayback-HTML-Retriever/1.0
+
+Outputs:
+	- archived_html/{capture_timestamp}_{safe_filename}.html for each downloaded capture.
+	- archived_html/manifest.csv with columns: Original EPA URL, Selected capture timestamp,
+	  Requested download URL, Final download URL, Local filename, Result, Warning or error message.
+
+Examples (run from the tools directory):
+
+    - Download from a specific file with the full or relative path:
+        python retrieve_wayback.py /path/to/urls.txt
+        python retrieve_wayback.py ./urls.txt
+
+"""
 
 from __future__ import annotations
 
@@ -21,14 +61,12 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote, unquote, urlencode, urlsplit, urlunsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
-
-EXPECTED_URL_COUNT = 10
 OUTPUT_DIRECTORY = Path("archived_html")
 MANIFEST_FILENAME = "manifest.csv"
-REQUEST_TIMEOUT_SECONDS = 30
-REQUEST_INTERVAL_SECONDS = 1
-MAX_ATTEMPTS = 3
-RETRY_BASE_SECONDS = 1
+REQUEST_TIMEOUT_SECONDS = 120
+REQUEST_INTERVAL_SECONDS = 2
+MAX_ATTEMPTS = 5
+RETRY_BASE_SECONDS = 2
 USER_AGENT = "EJAM-Wayback-HTML-Retriever/1.0"
 MANIFEST_FIELDS = [
     "Original EPA URL",
@@ -40,10 +78,6 @@ MANIFEST_FIELDS = [
     "Warning or error message",
 ]
 WAYBACK_PATH = re.compile(r"^/web/(\d{1,14})(?:id_)?/(https?://.+)$")
-MARKDOWN_LINK_DESTINATION = re.compile(
-    r"\]\(\s*(?:<([^>\r\n]+)>|([^\s)]+))"
-    r"(?:\s+(?:\"[^\"]*\"|'[^']*'))?\s*\)"
-)
 SAFE_FILENAME = re.compile(r"^[A-Za-z0-9._-]+$")
 HTML_SIGNATURE = re.compile(
     rb"^\s*(?:\xef\xbb\xbf)?(?:<!doctype\s+html\b|<html\b|<head\b|<body\b)",
@@ -149,11 +183,13 @@ class RequestClient:
 
 
 def extract_original_urls(input_path: Path) -> list[str]:
-    markdown = input_path.read_text(encoding="utf-8")
     originals: OrderedDict[str, None] = OrderedDict()
-    for link in MARKDOWN_LINK_DESTINATION.finditer(markdown):
-        href = link.group(1) or link.group(2)
-        wayback = urlsplit(href)
+    content = input_path.read_text(encoding="utf-8")
+    for line in content.splitlines():
+        url = line.strip()
+        if not url or url.startswith("#"):
+            continue
+        wayback = urlsplit(url)
         if wayback.hostname != "web.archive.org":
             continue
         match = WAYBACK_PATH.match(wayback.path)
@@ -161,13 +197,13 @@ def extract_original_urls(input_path: Path) -> list[str]:
             continue
         original = unquote(match.group(2))
         original_parts = urlsplit(original)
-        if (
-            original_parts.hostname != "www.epa.gov"
-            or not original_parts.path.startswith(
-                "/ejscreen/ejscreen-indicators-overview-"
-            )
-        ):
+        if (original_parts.hostname != "www.epa.gov" 
+            or not original_parts.path.startswith("/ejscreen/")): 
+            print(f"Skipping non-EJScreen URL: {original}")
             continue
+        else:
+            print(f"Will attempt to retrieve wayback content for EJScreen URL: {original}")
+            
         original = urlunsplit(
             (
                 original_parts.scheme,
@@ -224,7 +260,7 @@ def find_latest_capture(client: RequestClient, original_url: str) -> tuple[str, 
             if (
                 capture_parts.hostname == "www.epa.gov"
                 and capture_parts.path.startswith(
-                    "/ejscreen/ejscreen-indicators-overview-"
+                    "/ejscreen/"
                 )
             ):
                 captures.append((row[0], row[1]))
@@ -330,23 +366,14 @@ def write_manifest(path: Path, records: Iterable[dict[str, str]]) -> None:
 
 def run(input_path: Path) -> int:
     if not input_path.is_file():
-        raise ValueError(f"Input Markdown file not found: {input_path}")
+        raise ValueError(f"Input file not found: {input_path}")
 
     originals = extract_original_urls(input_path)
     print(f"Extracted {len(originals)} distinct EPA EJSCREEN indicator URLs:")
     for original in originals:
         print(f"  {original}")
 
-    count_warning = ""
     warning_count = 0
-    if len(originals) != EXPECTED_URL_COUNT:
-        count_warning = (
-            f"Expected {EXPECTED_URL_COUNT} URLs, found {len(originals)}; "
-            "processing the URLs found."
-        )
-        print(f"WARNING: {count_warning}", file=sys.stderr)
-        warning_count += 1
-
     output_directory = Path.cwd() / OUTPUT_DIRECTORY
     manifest_path = output_directory / MANIFEST_FILENAME
     output_directory.mkdir(parents=True, exist_ok=True)
@@ -356,6 +383,7 @@ def run(input_path: Path) -> int:
     downloaded = skipped = missing = failed = 0
 
     for original_url in originals:
+        print(f"Processing {original_url}")
         try:
             filename = local_filename(original_url)
         except ValueError as error:
@@ -463,13 +491,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Download the latest successful Wayback captures of EPA EJSCREEN "
-            "indicator overview pages linked from a local Markdown file."
+            "indicator pages given a list of original EPA URLs."
         )
     )
-    parser.add_argument("input_markdown", type=Path, help="Path to the local Markdown file")
+    parser.add_argument("input_file", type=Path, help="Path to the file containing EPA URLs")
     args = parser.parse_args()
     try:
-        return run(args.input_markdown)
+        return run(args.input_file)
     except (OSError, ValueError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
