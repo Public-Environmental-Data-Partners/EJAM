@@ -8,7 +8,7 @@ calc_bgwts_overall(sites2blocks)
 }
 \arguments{
 \item{sites2blocks}{like output of \code{\link[=getblocksnearby]{getblocksnearby()}}
-or input to \code{\link[=doaggregate]{doaggregate()}} or \code{\link[=custom_doaggregate]{custom_doaggregate()}}}
+or input to \code{\link[=doaggregate]{doaggregate()}} or \code{\link[=mydata_doaggregate]{mydata_doaggregate()}}}
 }
 \value{
 \href{https://r-datatable.com}{data.table}, 1 row per blockgroup (even if bg is near 2+ sites),
@@ -22,7 +22,13 @@ to aggregate each indicator over all blockgroups using the weights.
 \description{
 aggregate blockwt values by blockgroup
 }
+\details{
+A block that is near more than one site appears more than once in
+sites2blocks. It is counted only once here, so that residents near two or
+more sites are not double-counted in overall results. sites2blocks is not
+changed.
+}
 \seealso{
-\code{\link[=custom_doaggregate]{custom_doaggregate()}}
+\code{\link[=mydata_doaggregate]{mydata_doaggregate()}} \code{\link[=calc_bgwts_bysite]{calc_bgwts_bysite()}}
 }
 \keyword{internal}

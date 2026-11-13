@@ -52,6 +52,9 @@ covered, population of the zone, \code{coverage} (0 to 1), and
 and the reason
 \item \code{builtin_columns}: names of columns that will be taken from
 \link{blockgroupstats} because they are not in \code{mydata}
+\item \code{columns_needed}: for each indicator, the columns that must all have a
+value in a blockgroup for it to be usable there
+\item \code{formulas_needed}: for each indicator, the formulas used to calculate it
 \item \code{ok}: TRUE if nothing prevents analysis
 }
 }
