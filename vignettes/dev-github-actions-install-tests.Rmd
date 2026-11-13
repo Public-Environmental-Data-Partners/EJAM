@@ -28,12 +28,19 @@ For the supported user installation procedure, see the
 An installation check and a package check answer different questions. A package
 can install and load successfully while still having failing tests, examples,
 or other package checks. Read the selected workflow to see what a successful
-run actually covers.
+run actually covers. The `--install-tests` installation option only copies tests
+into the installed package; it does not execute them.
+
+Required dependencies and optional packages listed under `Suggests` also have
+different coverage. A successful basic installation does not establish that
+optional packages or the features using them work.
 
 It also matters how dependencies were obtained. A runner with dependencies
 prepared in advance can demonstrate that EJAM installs with those dependencies.
 Following the user installation procedure can reveal problems obtaining them.
-These are complementary forms of validation.
+A binary dependency can install without compilation, while installing it from
+source may require compilers and system libraries. A user-style check can
+therefore fail even when a prepared-runner check passes.
 
 If a run fails, identify the affected R version and platform, then inspect the
 failed step. A dependency installation failure may need a different response
@@ -51,6 +58,10 @@ For a manual run, distinguish the branch or tag containing the workflow
 **definition** from the package revision being **tested**. Read the inputs in
 the selected workflow file to see how that revision is chosen. Different
 branches or older tags may contain different workflow definitions.
+
+For example, choose a working branch for the workflow definition and a specific
+commit as the package revision. This keeps the package source fixed while you
+try workflow changes. Confirm both selections before starting the run.
 
 Test workflow changes on their working branch before promoting them through
 the project's integration and release process. A successful run against a branch
