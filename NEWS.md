@@ -1,5 +1,6 @@
 # EJAM (development version)
 
+- The ACS block-group calculation can retain custom intermediate counts and denominators through `dropcols`, and identifies requested tract-only tables without changing the default annual output (#737).
 - Improved GitHub Actions that test if EJAM can be installed: Simplified vignette, simplified Ubuntu setup & checks. Explain what failed, check the R version EJAM specifies as minimum. (#714 & #723).
 - Moved open-issue-ranking reports out of the package, into GitHub issue #715 (#716).
 

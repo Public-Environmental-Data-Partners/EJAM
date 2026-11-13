@@ -9,7 +9,17 @@ calc_blockgroupstats_acs(
   formulas = EJAM::formulas_ejscreen_acs$formula,
   tables = as.vector(EJAM::tables_ejscreen_acs),
   dropMOE = TRUE,
-  acs_raw = NULL
+  acs_raw = NULL,
+  dropcols = c("ageunder5m", "age5to9m", "age10to14m", "age15to17m", "age65to66m",
+    "age6769m", "age7074m", "age7579m", "age8084m", "age85upm", "ageunder5f", "age5to9f",
+    "age10to14f", "age15to17f", "age65to66f", "age6769f", "age7074f", "age7579f",
+    "age8084f", "age85upf", "pop3002", "nonhisp", "pov50", "pov99", "pov124", "pov149",
+    "pov184", "pov199", "pov2plus", "m0", "m4", "m6", "m8", "m9", "m10", "m11", "m12",
+    "f0", "f4", "f6", "f8", "f9", "f10", "f11", "f12", "built1950to1959",
+    "built1940to1949", "builtpre1940",
+     "num1pov", "num15pov", "num2pov",
+    "num2pov.alt", "pct1pov", "pct15pov", "pct2pov", "pct2pov.alt", "nobroadband",
+    "nohealthinsurance", "lan_other_ie.1")
 )
 }
 \arguments{
@@ -27,6 +37,11 @@ A vector of ACS table numbers, such as c("B01001", "B03002")}
 \item{acs_raw}{optional raw ACS table list or \code{bg_acs_raw} pipeline object
 previously created by \code{\link[=download_bg_acs_raw]{download_bg_acs_raw()}}. If supplied, no ACS download
 is performed for blockgroup-resolution tables.}
+
+\item{dropcols}{character vector of calculated columns to omit. The default
+preserves the annual pipeline output. Use NULL or character(0) to retain all
+calculated counts and denominators for custom indicators. Formulas are trusted
+R code evaluated on the caller's machine, not untrusted web input.}
 }
 \value{
 data.table, one row per blockgroup, columns bgfips, etc.
