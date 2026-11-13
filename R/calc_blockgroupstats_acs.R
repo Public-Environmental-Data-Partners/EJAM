@@ -58,6 +58,11 @@ acs_table_info <- function(yr, tables_acs, dataset = 'acs5') {
 #'   previously created by [download_bg_acs_raw()]. If supplied, no ACS download
 #'   is performed for blockgroup-resolution tables.
 #'
+#' @param dropcols character vector of calculated columns to omit. The default
+#'   preserves the annual pipeline output. Use NULL or character(0) to retain all
+#'   calculated counts and denominators for custom indicators. Formulas are trusted
+#'   R code evaluated on the caller's machine, not untrusted web input.
+#'
 #' @return data.table, one row per blockgroup, columns bgfips, etc.
 #' @seealso [calc_bg_acsdata()] [calc_blockgroupstats_from_tract_data()]
 #'   [calc_bgej()] [formulas_ejscreen_acs]
@@ -69,8 +74,24 @@ calc_blockgroupstats_acs <- function(yr,
                                      formulas = EJAM::formulas_ejscreen_acs$formula,
                                      tables = as.vector(EJAM::tables_ejscreen_acs),
                                      dropMOE = TRUE,
-                                     acs_raw = NULL) {
+                                     acs_raw = NULL,
+                                     dropcols = c("ageunder5m", "age5to9m", "age10to14m", "age15to17m", "age65to66m", "age6769m", "age7074m", "age7579m", "age8084m", "age85upm",
+      "ageunder5f", "age5to9f", "age10to14f", "age15to17f", "age65to66f", "age6769f", "age7074f", "age7579f", "age8084f", "age85upf",
+      "pop3002",
+      "nonhisp",
+      "pov50", "pov99", "pov124", "pov149", "pov184", "pov199", "pov2plus",
+      "m0", "m4", "m6", "m8", "m9", "m10", "m11", "m12",
+      "f0", "f4", "f6", "f8", "f9", "f10", "f11", "f12",
+      "built1950to1959", "built1940to1949", "builtpre1940",
+      "num1pov", "num15pov", "num2pov", "num2pov.alt",
+      "pct1pov", "pct15pov", "pct2pov", "pct2pov.alt",
+      "nobroadband", "nohealthinsurance",
+      "lan_other_ie.1"
+    )) {
 
+  if (!is.null(dropcols) && (!is.character(dropcols) || anyNA(dropcols))) {
+    stop("dropcols must be a character vector of column names or NULL")
+  }
   if (!requireNamespace("ACSdownload", quietly = TRUE)) {
     stop("requires installed package ACSdownload from https://github.com/ejanalysis/ACSdownload and documented at https://ejanalysis.github.io/ACSdownload/")
   }
@@ -132,6 +153,15 @@ calc_blockgroupstats_acs <- function(yr,
     tables_resolution = x$geography[ match(tables, x$table)] # geo res of first hit in x info, per table
     tables_bg    = tables[tables_resolution %in% "block group" ]
     tables_tract = tables[tables_resolution %in% "tract" ]
+    if (length(tables_tract)) {
+      message("Requested tables available only at tract resolution: ",
+              paste(tables_tract, collapse = ", "),
+              ". These are not included in the block-group calculation; use ",
+              "calc_blockgroupstats_from_tract_data() (custom tract workflow: issue #738).")
+    }
+    if (!length(tables_bg)) {
+      stop("No requested tables are available at block-group resolution; use the tract route")
+    }
     ################################################### #
     # - get new ACS data for most indicators using downloads (not Census API)
     suppressWarnings({
@@ -143,6 +173,13 @@ calc_blockgroupstats_acs <- function(yr,
       )
     })
   } else {
+    tract_tables <- intersect(tables, unique(c(acs_raw$tract_tables, names(acs_raw$tract))))
+    if (length(tract_tables)) {
+      message("Requested tables available only at tract resolution in acs_raw: ",
+              paste(tract_tables, collapse = ", "),
+              ". These are not included in the block-group calculation; use ",
+              "calc_blockgroupstats_from_tract_data() (custom tract workflow: issue #738).")
+    }
     bg <- merge_acs_raw_tables(acs_raw_component(acs_raw, "blockgroup"))
   }
   bg$bgfips = bg$fips
@@ -159,27 +196,10 @@ calc_blockgroupstats_acs <- function(yr,
                                    keep.old = c("bgfips", "bgid"),
   )
 
-  ## hard coded for now - columns to drop that are intermediary values in calculations
-  todrop =
-    c("ageunder5m", "age5to9m", "age10to14m", "age15to17m", "age65to66m", "age6769m", "age7074m", "age7579m", "age8084m", "age85upm",
-      "ageunder5f", "age5to9f", "age10to14f", "age15to17f", "age65to66f", "age6769f", "age7074f", "age7579f", "age8084f", "age85upf",
-      "pop3002",
-      "nonhisp",
-      "pov50", "pov99", "pov124", "pov149", "pov184", "pov199", "pov2plus",
-      "m0", "m4", "m6", "m8", "m9", "m10", "m11", "m12",
-      "f0", "f4", "f6", "f8", "f9", "f10", "f11", "f12",
-      # "lingisospanish", "lingisoeuro", "lingisoasian", "lingisoother",
-      "built1950to1959", "built1940to1949", "builtpre1940",
-      "num1pov", "num15pov", "num2pov", "num2pov.alt",
-      "pct1pov", "pct15pov", "pct2pov", "pct2pov.alt",
-      # "bgid",
-      "nobroadband", "nohealthinsurance",
-      # "lan_other_ie",
-      "lan_other_ie.1"
-    )
+
   # dim(blockgroupstats_acs)
   # [1] 242104    125
-  blockgroupstats_acs <- blockgroupstats_acs[ , !names(blockgroupstats_acs) %in% todrop, with = FALSE]
+  blockgroupstats_acs <- blockgroupstats_acs[ , !names(blockgroupstats_acs) %in% dropcols, with = FALSE]
   # dim(blockgroupstats_acs)
   # [1] 242104     68
   ################################################### #
