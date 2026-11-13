@@ -20,10 +20,14 @@
 #'
 #' - no formula: `"wtdmean"` (a weighted mean, weighted by `denominator`,
 #'   which defaults to `"pop"`)
-#' - a formula with a division in it, such as
-#'   `"pct_x = ifelse(universe_x == 0, 0, count_x / universe_x)"`: `"formula"`,
-#'   meaning the formula is applied to counts that were summed first
-#' - a formula with no division, such as `"x = a + b"`: `"sum of counts"`
+#' - a formula that only adds or subtracts columns, or multiplies or divides
+#'   them by a number, such as `"x = a + b"` or `"x = a / 2"`:
+#'   `"sum of counts"`, because the sum of such a result across blockgroups is
+#'   the same as the result calculated from the summed columns
+#' - any other formula, such as
+#'   `"pct_x = ifelse(universe_x == 0, 0, count_x / universe_x)"` or
+#'   `"x = log(a)"`: `"formula"`, meaning the formula is applied to columns
+#'   that were summed first
 #'
 #' When an indicator has a formula, the formula is the source of truth. The
 #' `denominator` is read from the formula where it can be (a formula that
@@ -39,8 +43,10 @@
 #' every indicator) or a vector as long as `rname`.
 #'
 #' @param rname names of the indicators, as used for column names in R.
-#'   Required unless `formulas` is provided. Each must be a valid R name and
-#'   must not be the name of an indicator already in [map_headernames].
+#'   Required unless `formulas` is provided. Each must be a valid R name,
+#'   must not be the name of an indicator already in [map_headernames], and
+#'   must not start with `avg.`, `state.avg.`, `pctile.`, `state.pctile.`, or
+#'   `ratio.to.`, which are used for the average, percentile and ratio columns.
 #' @param longname full label for each indicator. Default is `rname`.
 #' @param shortlabel short label for each indicator. Default is `longname`.
 #' @param units units, such as `"(ppb)"`. Default is none.
@@ -152,6 +158,12 @@ mydata_metadata <- function(rname = NULL,
     stop("these names are already used by indicators built into EJAM, so a different rname is needed: ",
          paste0(used, collapse = ", "))
   }
+  reserved <- grepl("^(avg|state[.]avg|pctile|state[.]pctile|ratio[.]to)[.]", rname)
+  if (any(reserved)) {
+    stop("an rname cannot start with avg., state.avg., pctile., state.pctile., or ratio.to., ",
+         "because those are the names given to the average, percentile and ratio columns of an indicator: ",
+         paste0(rname[reserved], collapse = ", "))
+  }
 
   ## recycle each parameter to one value per indicator ####
   per_indicator <- function(x, argname) {
@@ -186,8 +198,9 @@ mydata_metadata <- function(rname = NULL,
 
   ## how to aggregate ####
   calctypes_ok <- c("sum of counts", "wtdmean", "formula")
+  # a formula is treated as a count only if it is known to be additive across blockgroups
   calctype_default <- ifelse(!has_formula, "wtdmean",
-                             ifelse(parsed$has_division, "formula", "sum of counts"))
+                             ifelse(parsed$additive, "sum of counts", "formula"))
   if (is.null(calculation_type)) {
     calculation_type <- calctype_default
   } else {
@@ -344,13 +357,41 @@ mydata_metadata_rows <- function(vals, n) {
 ############################################################################## #
 
 
-# For each formula string, report whether it has a division in it, and the one
-# variable it divides by if there is exactly one. Empty strings give FALSE and NA.
+# For each formula string, report
+#  - additive: TRUE only if the right side just adds or subtracts variables, or
+#    multiplies or divides them by numbers, so that summing the result across
+#    blockgroups equals the result calculated from summed inputs
+#  - has_division: whether there is any division in it
+#  - denominator: the one variable it divides by, if there is exactly one
+# Empty strings give FALSE, FALSE and NA.
 
 mydata_metadata_parse_formula <- function(formula) {
 
   has_division <- rep(FALSE, length(formula))
+  additive <- rep(FALSE, length(formula))
   denominator <- rep(NA_character_, length(formula))
+  is_additive <- function(x) {
+    if (is.numeric(x) || is.name(x)) {return(TRUE)}
+    if (!is.call(x)) {return(FALSE)}
+    op <- as.character(x[[1]])[1]
+    parts <- as.list(x)[-1]
+    has_vars <- vapply(parts, function(z) {length(all.vars(z)) > 0}, logical(1))
+    if (op %in% c("+", "-", "(")) {
+      return(all(vapply(parts, is_additive, logical(1))))
+    }
+    if (op == "*" && length(parts) == 2 && sum(has_vars) <= 1) {
+      return(all(vapply(parts[has_vars], is_additive, logical(1))) && all(vapply(parts[!has_vars], is_constant, logical(1))))
+    }
+    if (op == "/" && length(parts) == 2 && !has_vars[2]) {
+      return(is_additive(parts[[1]]) && is_constant(parts[[2]]))
+    }
+    FALSE
+  }
+  is_constant <- function(x) {
+    if (is.numeric(x)) {return(TRUE)}
+    if (!is.call(x)) {return(FALSE)}
+    as.character(x[[1]])[1] %in% c("+", "-", "*", "/", "(", "^") && all(vapply(as.list(x)[-1], is_constant, logical(1)))
+  }
   for (i in seq_along(formula)) {
     if (is.na(formula[i]) || !nzchar(formula[i])) {next}
     rhs <- sub("^[^<=]*(<-|=)", "", formula[i])
@@ -369,13 +410,14 @@ mydata_metadata_parse_formula <- function(formula) {
       invisible(NULL)
     }
     walk(e)
+    additive[i] <- is_additive(e)
     has_division[i] <- found
     divisors <- unique(divisors[nzchar(divisors)])
     if (length(divisors) == 1 && !grepl(",", divisors)) {
       denominator[i] <- divisors
     }
   }
-  list(has_division = has_division, denominator = denominator)
+  list(additive = additive, has_division = has_division, denominator = denominator)
 }
 ############################################################################## #
 
