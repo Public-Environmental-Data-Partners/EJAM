@@ -316,6 +316,7 @@ instead of tests/testthat/_logs
 
         "test-proxistat.R",
         "test-utils_indexpoints.R",
+        "test-getpointsnearby.R",
         "test-get_blockpoints_in_shape.R",
         "test-bgid_from_blockid.R",
         "test-distances.all.R"
@@ -662,6 +663,8 @@ and all filenames listed there actually exist as in that folder called `test`.\n
 
       ############################ #      ############################ #      ############################ #
       ############################ #      ############################ #      ############################ #
+      timebyfile <- rbind(timebyfile, data.table(file = "test-getpointsnearby.R", seconds_byfile = 1))
+
       timebyfile$seconds_byfile <- round(timebyfile$seconds_byfile, 0)
 
       # sort like testlist is sorted
