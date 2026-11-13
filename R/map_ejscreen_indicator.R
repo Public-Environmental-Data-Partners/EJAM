@@ -219,9 +219,16 @@ map_ejscreen_indicator <- function(indicator = "pctlowinc", countyfips = NULL,
   zone <- if (scope == "national") "USA" else ST
   has_lookup <- is.data.frame(lookup) && all(c("REGION", "PCTILE", lookup_indicator) %in% names(lookup)) &&
     zone %in% lookup$REGION
+  if (has_lookup) {
+    # Coverage-gated reference tables retain the region/column but contain NA.
+    # A mean without percentile cutoffs is not a percentile reference either.
+    pctile_rows <- suppressWarnings(as.numeric(as.character(lookup$PCTILE)))
+    valid_rows <- lookup$REGION %in% zone & !is.na(pctile_rows) & pctile_rows >= 0 & pctile_rows <= 100
+    has_lookup <- is.numeric(lookup[[lookup_indicator]]) && any(is.finite(lookup[[lookup_indicator]][valid_rows]))
+  }
   use_percentiles <- colorby != "raw" && has_lookup
   if (colorby == "percentile" && !has_lookup) {
-    stop("The lookup table must contain the indicator and requested percentile region", call. = FALSE)
+    stop("The lookup table must contain the indicator and requested percentile region with usable percentile cutoffs", call. = FALSE)
   }
   if (!use_percentiles && colorby == "auto") {
     message("No reference for this indicator and region; coloring by raw values")

@@ -266,3 +266,22 @@ test_that("existing site map helpers display custom by-site values", {
   expect_s3_class(map, "leaflet")
   expect_match(paste(unlist(map$x$calls), collapse = " "), "My indicator", fixed = TRUE)
 })
+
+
+test_that("unavailable percentile cutoffs fall back to raw values", {
+  f <- indicator_map_fixture()
+  f$bg$mycustom <- f$bg$pctlowinc * 1000
+  # mydata_calc_stats() represents insufficient coverage with NA cutoffs.
+  unavailable <- data.frame(REGION = "USA", PCTILE = c(as.character(0:100), "mean"),
+                             mycustom = NA_real_)
+  mean_only <- data.frame(REGION = "USA", PCTILE = "mean", mycustom = 500)
+  for (lookup in list(unavailable, mean_only)) {
+    args <- list(indicator = "mycustom", countyfips = "10001", blockgroup_data = f$bg,
+                 shp = f$shp, lookup = lookup, maptype = "ggplot")
+    expect_message(p <- do.call(map_ejscreen_indicator, args), "raw values")
+    expect_equal(p$data$.map_value, c(790, 950))
+    expect_true(all(is.na(p$data$.map_percentile)))
+    expect_error(do.call(map_ejscreen_indicator, c(args, list(colorby = "percentile"))),
+                 "usable percentile cutoffs")
+  }
+})
