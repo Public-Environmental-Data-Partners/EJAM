@@ -118,7 +118,7 @@ manually disabled in the Actions settings through mid-2026 and have since been r
 Enablement is a repo setting, not something visible in the YAML, so re-check the Actions tab
 (or `gh api repos/OWNER/REPO/actions/workflows`) rather than trusting this paragraph.
 
-Note what each one actually gates: `check-standard.yaml` runs the 5-platform matrix on PRs into
+Note what each one actually gates: `check-standard.yaml` runs the 6-configuration matrix on PRs into
 `main` and pushes to `main` only -- **development PRs deliberately get only the cheap gates**
 (lintr, quick install), because the full matrix is expensive. And `lintr.yaml`'s `Run lintr`
 step has `continue-on-error: true`, so lint findings alone do not fail the workflow or block a
