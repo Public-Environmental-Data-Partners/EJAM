@@ -134,11 +134,11 @@ pctiles_lookup_create <- function(x, zone.vector = NULL, zoneOverallName = 'USA'
 
         # ZONES BUT NO WEIGHTS ####
 
-        r[[i]] <- data.frame(sapply(mydf[zone.vector == z,  ], function(x) pctiles.exact(x, usecollapse = usecollapse, type = type)))
+        r[[i]] <- data.frame(sapply(mydf[zone.vector == z, , drop = FALSE], function(x) pctiles.exact(x, usecollapse = usecollapse, type = type)))
         if (usecollapse) {
-          r[[i]] <- rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z,  ], function(x) collapse::fmean(x, na.rm = TRUE)))))
+          r[[i]] <- rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z, , drop = FALSE], function(x) collapse::fmean(x, na.rm = TRUE)))))
         } else {
-          r[[i]] <- rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z,  ], function(x) mean(x, na.rm = TRUE)))))
+          r[[i]] <- rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z, , drop = FALSE], function(x) mean(x, na.rm = TRUE)))))
         }
         r[[i]]$REGION <- z
         r[[i]]$PCTILE <- pctile_labels # 0:100,'mean'
@@ -146,11 +146,11 @@ pctiles_lookup_create <- function(x, zone.vector = NULL, zoneOverallName = 'USA'
 
         # ZONES AND WEIGHTS ####
 
-        r[[i]] = data.frame(sapply(mydf[zone.vector == z, ], function(x) wtd.pctiles.exact(x, wts[zone.vector == z], usecollapse = usecollapse, type = type) ) )
+        r[[i]] = data.frame(sapply(mydf[zone.vector == z, , drop = FALSE], function(x) wtd.pctiles.exact(x, wts[zone.vector == z], usecollapse = usecollapse, type = type) ) )
         if (usecollapse) {
-          r[[i]] = rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z,  ], function(x) collapse::fmean(x, w =  wts[zone.vector == z], na.rm = TRUE) ) ) ))
+          r[[i]] = rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z, , drop = FALSE], function(x) collapse::fmean(x, w =  wts[zone.vector == z], na.rm = TRUE) ) ) ))
         } else {
-          r[[i]] = rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z,  ], function(x) stats::weighted.mean(x, w = wts[zone.vector == z], na.rm = TRUE) ) ) ))
+          r[[i]] = rbind(r[[i]], t(data.frame(mean = sapply(mydf[zone.vector == z, , drop = FALSE], function(x) stats::weighted.mean(x, w = wts[zone.vector == z], na.rm = TRUE) ) ) ))
         }
         r[[i]]$REGION <- z
         r[[i]]$PCTILE <- pctile_labels # 0:100, 'mean'

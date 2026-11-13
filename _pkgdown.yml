@@ -318,6 +318,7 @@ reference:
   - mydata_validate
   - mydata_doaggregate
   - mydata_ejamit
+  - mydata_calc_stats
 - title: "Calculating and Aggregating"
   desc: >
     Tools that Create or Aggregate Indicators

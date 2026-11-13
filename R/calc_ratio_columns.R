@@ -16,6 +16,8 @@
 #' @param varnames_state_special handles special case of ratio to state avg for Demog.Index and Demog.Index.Supp needing
 #'  special numerator that is state-specific version of the index
 #' @return data.frame with 1 row per row of mytable and set of columns for US ratios and set of columns for State ratios
+#'   The demographic index columns named in varnames_state_special are used only if mytable has them,
+#'   so this also works for a table of other indicators. mytable is not changed.
 #' @details
 #' For examples, see [calc_pctile_columns()]
 #'
@@ -41,16 +43,16 @@ calc_ratio_columns = function(mytable,
                             ) {
 
   ## use names in original doaggregate() code
-  results_bysite <- setDT(mytable)
+  # mytable is not changed: a data.frame is copied, a data.table is only read
+  results_bysite <- data.table::as.data.table(mytable)
   names_these           <- varnames
   names_these_avg       <- varnames_avg
   names_these_state_avg <- varnames_state_avg
   names_these_ratio_to_avg       <- varnames_ratio_to_avg
   names_these_ratio_to_state_avg <- varnames_ratio_to_state_avg
 
-  if (!all(varnames_state_special %in% names(mytable))) {
-    stop("mytable must have columns ", paste0(varnames_state_special, collapse = ", "))
-  }
+  # the special case for the demographic indexes applies only when those columns are present
+  has_special <- all(c(varnames_state_special, "state.avg.Demog.Index.Supp", "state.avg.Demog.Index") %in% names(results_bysite))
 
   ## RATIOS TO US AVG ###
   ratios_to_avg_bysite  <-
@@ -82,23 +84,21 @@ calc_ratio_columns = function(mytable,
   #  i.e., use c("Demog.Index.State", "Demog.Index.Supp.State")
   # instead of c("Demog.Index",       "Demog.Index.Supp")
 
-  ratios_to_state_avg_bysite$ratio.to.state.avg.Demog.Index.Supp <-
-    results_bysite$Demog.Index.Supp.State /
-    results_bysite$state.avg.Demog.Index.Supp
+  if (has_special) {
+    ratios_to_state_avg_bysite$ratio.to.state.avg.Demog.Index.Supp <-
+      results_bysite$Demog.Index.Supp.State /
+      results_bysite$state.avg.Demog.Index.Supp
 
-  # ratios_to_state_avg_overall$ratio.to.state.avg.Demog.Index.Supp <-
-  #   results_overall$Demog.Index.Supp.State /
-  #   results_overall$state.avg.Demog.Index.Supp
 
-  ratios_to_state_avg_bysite$ratio.to.state.avg.Demog.Index <-
-    results_bysite$Demog.Index.State /
-    results_bysite$state.avg.Demog.Index
+    ratios_to_state_avg_bysite$ratio.to.state.avg.Demog.Index <-
+      results_bysite$Demog.Index.State /
+      results_bysite$state.avg.Demog.Index
+  }
 
   # ratios_to_state_avg_overall$ratio.to.state.avg.Demog.Index <-
   #   results_overall$Demog.Index.State /
   #   results_overall$state.avg.Demog.Index
 
-  results_bysite  <- cbind(results_bysite,  ratios_to_avg_bysite,  ratios_to_state_avg_bysite)   # collapse:: has a faster way than cbind here!
   # results_overall <- cbind(results_overall, ratios_to_avg_overall, ratios_to_state_avg_overall)
   ratios_columns <- cbind(ratios_to_avg_bysite,  ratios_to_state_avg_bysite)
   return(as.data.frame(ratios_columns))

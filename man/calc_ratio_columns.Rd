@@ -32,6 +32,8 @@ special numerator that is state-specific version of the index}
 }
 \value{
 data.frame with 1 row per row of mytable and set of columns for US ratios and set of columns for State ratios
+The demographic index columns named in varnames_state_special are used only if mytable has them,
+so this also works for a table of other indicators. mytable is not changed.
 }
 \description{
 Calculate ratios to US and State average for each indicator in each place
