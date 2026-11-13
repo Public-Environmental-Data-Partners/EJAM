@@ -5,7 +5,7 @@ const releasedChecks = [
   "windows-latest (release)",
   "ubuntu-latest (release)",
   "ubuntu-latest (oldrel-1)",
-  "ubuntu-latest (4.5.3)",
+  "ubuntu-latest (minimum)",
 ];
 const develCheck = "ubuntu-latest (R-devel - development version of R)";
 const expectedChecks = [...releasedChecks, develCheck];

@@ -54,11 +54,12 @@ jobs:
           ) }}
         r-version: [oldrel-1, release]
         install-method: [local, github-ref, url-tarball]
-        # Keep testing DESCRIPTION's minimum even as oldrel-1 advances.
+        # 'minimum' stays a stable label. Its version comes from the tested
+        # package's DESCRIPTION below, so raising the minimum needs no YAML edit.
         include:
-          - {os: ubuntu-latest, r-version: '4.5.3', install-method: local}
-          - {os: ubuntu-latest, r-version: '4.5.3', install-method: github-ref}
-          - {os: ubuntu-latest, r-version: '4.5.3', install-method: url-tarball}
+          - {os: ubuntu-latest, r-version: 'minimum', install-method: local}
+          - {os: ubuntu-latest, r-version: 'minimum', install-method: github-ref}
+          - {os: ubuntu-latest, r-version: 'minimum', install-method: url-tarball}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -74,10 +75,29 @@ jobs:
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
 
+      # Helpers follow the workflow revision, while DESCRIPTION follows the
+      # package ref selected above (which can be an older tag without these helpers).
+      # .github is excluded from the package build by .Rbuildignore.
+      - name: Checkout workflow helpers (Ubuntu)
+        if: runner.os == 'Linux'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .github/workflow-helpers
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+
+      # Python reads Depends: R (>= ...) before R is installed. DESCRIPTION is
+      # the only place to change the minimum; other rows keep their R aliases.
+      - name: Read minimum R version from DESCRIPTION
+        if: matrix.r-version == 'minimum'
+        id: minimum-r
+        run: python3 .github/workflow-helpers/.github/scripts/minimum-r-version.py >> "$GITHUB_OUTPUT"
+
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.r-version }}
+          r-version: ${{ steps.minimum-r.outputs.version || matrix.r-version }}
           use-public-rspm: true
 
       - name: System libraries for Arrow/curl (Ubuntu)
@@ -120,11 +140,13 @@ jobs:
 
       - name: Verify terra dependencies (Ubuntu)
         if: runner.os == 'Linux'
-        run: source(".github/scripts/check-terra-deps.R")
+        run: source(".github/workflow-helpers/.github/scripts/check-terra-deps.R")
         shell: Rscript {0}
 
       - name: Verify Arrow/curl dependencies
-        run: source(".github/scripts/check-arrow-curl-deps.R")
+        run: |
+          helpers <- if (Sys.info()[["sysname"]] == "Linux") ".github/workflow-helpers/.github/scripts" else ".github/scripts"
+          source(file.path(helpers, "check-arrow-curl-deps.R"))
         shell: Rscript {0}
 
       - name: Check DESCRIPTION version
