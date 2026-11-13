@@ -41,7 +41,11 @@
 #' @param varnametype optional. colname of map_headernames to use when looking for var,
 #'   like "rname" or "api" or "long"
 #'
-#' @seealso [fixcolnames()] [table_rounding_info()]
+#' @param mydata_map_headernames optional table describing user-defined indicators,
+#'   as created by [mydata_metadata()]. If provided, var can include those indicators
+#'   as well as the ones in map_headernames. The default, NULL, looks only in map_headernames.
+#'
+#' @seealso [fixcolnames()] [table_rounding_info()] [mydata_metadata()]
 #' @return data.frame of 1 or more rows, 1 or more columns, where
 #'
 #'  rowsnames are var (indicators like "pctmin")
@@ -89,14 +93,20 @@
 #' @export
 #' @keywords internal
 #'
-varinfo <- function(var = map_headernames$rname, info=colnames(map_headernames), varnametype="rname") {
+varinfo <- function(var = map_headernames$rname, info=colnames(map_headernames), varnametype="rname",
+                    mydata_map_headernames = NULL) {
 
   # rows    are var  (indicators like "pctmin")
   # columns are info (metadata   like "decimals")
 
   info_or_alias <- info
   info_true_name <- fixmapheadernamescolname(info_or_alias)
-  x <- map_headernames[match(var, map_headernames[ , varnametype]), info_true_name, drop = FALSE]
+  if (is.null(mydata_map_headernames)) {
+    mh <- map_headernames # the usual case, and no copy is made
+  } else {
+    mh <- mydata_metadata_combine(mydata_map_headernames) # built-in rows first, then user-defined rows
+  }
+  x <- mh[match(var, mh[ , varnametype]), info_true_name, drop = FALSE]
   rownames(x) <- make.unique(var) # BUT NOTE if a variable appears twice+ in map_headernames, info returned only for the 1st row of those
   colnames(x) <- info_or_alias
 

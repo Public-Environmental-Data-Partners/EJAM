@@ -7,7 +7,8 @@
 varinfo(
   var = map_headernames$rname,
   info = colnames(map_headernames),
-  varnametype = "rname"
+  varnametype = "rname",
+  mydata_map_headernames = NULL
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ or alias like "long" as allowed by \code{\link[=fixcolnames]{fixcolnames()}}}
 
 \item{varnametype}{optional. colname of map_headernames to use when looking for var,
 like "rname" or "api" or "long"}
+
+\item{mydata_map_headernames}{optional table describing user-defined indicators,
+as created by \code{\link[=mydata_metadata]{mydata_metadata()}}. If provided, var can include those indicators
+as well as the ones in map_headernames. The default, NULL, looks only in map_headernames.}
 }
 \value{
 data.frame of 1 or more rows, 1 or more columns, where
@@ -99,6 +104,6 @@ t(varinfo(names_d[1]))
 
 }
 \seealso{
-\code{\link[=fixcolnames]{fixcolnames()}} \code{\link[=table_rounding_info]{table_rounding_info()}}
+\code{\link[=fixcolnames]{fixcolnames()}} \code{\link[=table_rounding_info]{table_rounding_info()}} \code{\link[=mydata_metadata]{mydata_metadata()}}
 }
 \keyword{internal}
