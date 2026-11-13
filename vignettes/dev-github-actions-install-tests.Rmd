@@ -23,6 +23,21 @@ Consult the file on the branch or tag you intend to run.
 For the supported user installation procedure, see the
 [installation instructions](installing.html).
 
+## Release install-check triggers and scopes
+
+For `.github/workflows/install-release-user-check.yaml`:
+
+| Trigger | Manual `test_scope` | Checks selected |
+|---|---|---|
+| Release-tag push | Not applicable | Prepared-runner installation checks |
+| GitHub Release published | Not applicable | User-style installation checks |
+| Manual | `user-style` | User-style installation checks |
+| Manual | `full-matrix` | Prepared-runner installation checks |
+| Manual | `ubuntu-only` | Prepared-runner installation checks on Ubuntu |
+| Manual | `both` | Prepared-runner and user-style installation checks |
+
+Consult the workflow file for the available platforms and R versions.
+
 ## What the checks tell you
 
 An installation check and a package check answer different questions. A package
@@ -54,14 +69,19 @@ checks they perform.
 
 ## Choosing the workflow and package revision
 
-For a manual run, distinguish the branch or tag containing the workflow
-**definition** from the package revision being **tested**. Read the inputs in
-the selected workflow file to see how that revision is chosen. Different
-branches or older tags may contain different workflow definitions.
+For a manual release install check, two choices serve different purposes:
 
-For example, choose a working branch for the workflow definition and a specific
-commit as the package revision. This keeps the package source fixed while you
-try workflow changes. Confirm both selections before starting the run.
+- **Use workflow from** selects the branch or tag containing the workflow
+  definition. It determines which steps, inputs, and scope choices are available.
+- **`ref`** selects the package branch, tag, or commit to install and test.
+
+For example, use a working branch's workflow to test a specific package commit.
+This keeps the package source fixed while you try workflow changes. Older tags
+may contain older workflow definitions, so confirm both selections before running.
+
+The **Run workflow** button appears only when the workflow exists on the
+repository's default branch (`main` for EJAM). Once available, **Use workflow
+from** lets you select another branch or tag's definition.
 
 Test workflow changes on their working branch before promoting them through
 the project's integration and release process. A successful run against a branch
