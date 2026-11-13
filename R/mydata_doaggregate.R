@@ -218,12 +218,14 @@ mydata_doaggregate <- function(sites2blocks,
 
   # tell the user what happened ####
   counts <- ind$rname[ind$calculation_type == "sum of counts"]
+  partial <- function(cov) {any(cov < 1 & cov > 0, na.rm = TRUE)}
   undercounted <- counts[vapply(counts, function(nm) {
-    any(bysite$coverage[[nm]] < 1 & bysite$coverage[[nm]] > 0, na.rm = TRUE)
+    # a site can be partly covered, or the overall total can be when some sites have data and others have none
+    partial(bysite$coverage[[nm]]) || partial(overall$coverage[[nm]])
   }, logical(1))]
   if (length(undercounted) > 0) {
-    warning("Some totals are undercounts, because data were missing for part of the population at some sites: ",
-            paste0(undercounted, collapse = ", "), ". See coverage_bysite in the results.", call. = FALSE)
+    warning("Some totals are undercounts, because data were missing for part of the population, at some sites or overall: ",
+            paste0(undercounted, collapse = ", "), ". See coverage_bysite and coverage_overall in the results.", call. = FALSE)
   }
   if (!quiet) {
     for (nm in ind$rname) {
@@ -325,6 +327,9 @@ mydata_ejamit <- function(sitepoints = NULL,
 
     if (is.null(radius)) {radius <- 0}
     has_buffer <- isTRUE(radius > 0)
+    # use the same form of each code (leading zeroes restored) to find blocks and to list the sites
+    fips_fixed <- suppressWarnings(fips_lead_zero(fips, quiet = TRUE))
+    fips <- ifelse(is.na(fips_fixed), as.character(fips), fips_fixed)
     sites2blocks <- getblocksnearby_from_fips(fips = fips, need_blockwt = TRUE, return_shp = has_buffer,
                                               radius = radius, compact = TRUE)
     if (has_buffer) {sites2blocks <- sites2blocks$pts}
