@@ -126,20 +126,35 @@ mydata_calc_stats <- function(mydata,
   area$REGION <- "area"
 
   # keep US and State values only where enough of the population is covered ####
-  cov <- checked$coverage[checked$coverage$indicator %in% vars, , drop = FALSE]
+  # Coverage is counted from the values just calculated, so a blockgroup where a formula
+  # gave no valid result (such as 0 / 0) does not count as covered.
+  pop <- blockgroupstats$pop[here]
+  pop[is.na(pop)] <- 0
+  zone_pop <- tapply(blockgroupstats$pop, blockgroupstats$ST, sum, na.rm = TRUE)
+  us_pop <- sum(blockgroupstats$pop, na.rm = TRUE)
+  cov <- do.call(rbind, lapply(vars, function(nm) {
+    ok <- !is.na(bgvalues[[nm]]) & !is.na(ST)
+    covered <- tapply(pop[ok], ST[ok], sum)
+    counted <- tapply(pop[ok], ST[ok], length)
+    zones <- sort(names(covered))
+    data.frame(indicator = nm, zone = c("USA", zones),
+               n_blockgroups = c(sum(ok), as.numeric(counted[zones])),
+               pop_covered = c(sum(pop[ok]), as.numeric(covered[zones])),
+               pop_zone = c(us_pop, as.numeric(zone_pop[zones])))
+  }))
+  cov$coverage <- ifelse(cov$pop_zone > 0, cov$pop_covered / cov$pop_zone, NA_real_)
   cov$provided <- !is.na(cov$coverage) & cov$coverage >= coverage_needed
   cov$reason <- ifelse(cov$provided, "",
                        paste0("data cover ", format(round(100 * cov$coverage, 1), nsmall = 1, trim = TRUE), "% of ",
                               ifelse(cov$zone == "USA", "US", cov$zone), " population, less than the ",
                               100 * coverage_needed, "% needed"))
-  for (i in which(!cov$provided)) {
-    if (cov$zone[i] == "USA") {
-      us[[cov$indicator[i]]] <- NA_real_
-    } else {
-      st[st$REGION == cov$zone[i], cov$indicator[i]] <- NA_real_
+  for (nm in vars) {
+    this <- cov[cov$indicator == nm, ]
+    if (!isTRUE(this$provided[this$zone == "USA"])) {
+      us[[nm]] <- NA_real_
     }
+    st[!(st$REGION %in% this$zone[this$zone != "USA" & this$provided]), nm] <- NA_real_
   }
-  cov$comparisons_possible <- NULL
   rownames(cov) <- NULL
 
   info <- function(what) {

@@ -29,7 +29,8 @@ if \code{mydata} is the result of \code{\link[=mydata_validate]{mydata_validate(
 
 \item{sites2states_or_latlon}{optional data.frame with a column
 \code{ejam_uniq_id} listing every site, in the order wanted for the results, so
-that sites with no blocks still get a row. As in \code{\link[=doaggregate]{doaggregate()}}.}
+that sites with no blocks still get a row. As in \code{\link[=doaggregate]{doaggregate()}}, it can
+also have \code{ST}, or \code{lat} and \code{lon}, which are used to find each site's State.}
 
 \item{radius}{optional, the radius in miles that was used, to record in the results}
 
@@ -51,8 +52,9 @@ sites' values, as in \code{\link[=doaggregate]{doaggregate()}}.}
 a list, with element names like those of \code{\link[=ejamit]{ejamit()}} results where they apply:
 \itemize{
 \item \code{results_bysite}: data.table with one row per site: \code{ejam_uniq_id}, \code{ST}
-(the State of the site, as given in \code{sites2states_or_latlon}, or else
-the State where most of the site's population lives), \code{pop}
+(the State of the site, found as \code{\link[=doaggregate]{doaggregate()}} finds it from the ST,
+FIPS, or lat and lon in \code{sites2states_or_latlon}, or else the State
+where most of the site's population lives), \code{pop}
 (EJAM's population estimate at the site), and one column per indicator
 \item \code{results_overall}: the same, as one row for all sites combined
 \item \code{coverage_bysite}, \code{coverage_overall}: share (0 to 1) of the population at

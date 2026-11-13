@@ -45,7 +45,8 @@
 #'   if `mydata` is the result of [mydata_validate()].
 #' @param sites2states_or_latlon optional data.frame with a column
 #'   `ejam_uniq_id` listing every site, in the order wanted for the results, so
-#'   that sites with no blocks still get a row. As in [doaggregate()].
+#'   that sites with no blocks still get a row. As in [doaggregate()], it can
+#'   also have `ST`, or `lat` and `lon`, which are used to find each site's State.
 #' @param radius optional, the radius in miles that was used, to record in the results
 #' @param mydata_usastats,mydata_statestats optional reference tables of
 #'   averages and percentiles for the US and for States, from
@@ -63,8 +64,9 @@
 #' @return a list, with element names like those of [ejamit()] results where they apply:
 #'
 #'   - `results_bysite`: data.table with one row per site: `ejam_uniq_id`, `ST`
-#'     (the State of the site, as given in `sites2states_or_latlon`, or else
-#'     the State where most of the site's population lives), `pop`
+#'     (the State of the site, found as [doaggregate()] finds it from the ST,
+#'     FIPS, or lat and lon in `sites2states_or_latlon`, or else the State
+#'     where most of the site's population lives), `pop`
 #'     (EJAM's population estimate at the site), and one column per indicator
 #'   - `results_overall`: the same, as one row for all sites combined
 #'   - `coverage_bysite`, `coverage_overall`: share (0 to 1) of the population at
@@ -235,10 +237,20 @@ mydata_doaggregate <- function(sites2blocks,
     data.table::set(results_bysite, i = which(nosuchsite), j = "pop", value = NA_real_)
   }
 
-  # State of each site: as given, or else the State where most of the site's population lives ####
+  # State of each site ####
+  # Found the way doaggregate() finds it, from the ST, FIPS, or lat and lon in sites2states_or_latlon,
+  # so that a point near a State line is assigned the State the point is in. Otherwise, or where that
+  # gives no answer, it is the State where most of the site's population lives.
   ST <- rep(NA_character_, length(ids))
-  if (!is.null(sites2states_or_latlon) && all(c("ejam_uniq_id", "ST") %in% names(sites2states_or_latlon))) {
-    ST <- as.character(sites2states_or_latlon$ST[match(as.character(ids), as.character(sites2states_or_latlon$ejam_uniq_id))])
+  if (!is.null(sites2states_or_latlon) && "ejam_uniq_id" %in% names(sites2states_or_latlon) && NCOL(sites2states_or_latlon) > 1) {
+    found <- tryCatch(
+      # a copy is passed because that helper sets a key on the table it is given
+      state_per_site_for_doaggregate(s2b = sites2blocks, s2st = data.table::copy(data.table::as.data.table(sites2states_or_latlon))),
+      error = function(e) {NULL}
+    )
+    if (!is.null(found) && all(c("ejam_uniq_id", "ST") %in% names(found))) {
+      ST <- as.character(found$ST[match(as.character(ids), as.character(found$ejam_uniq_id))])
+    }
   }
   if (anyNA(ST)) {
     row <- match(bgwts_bysite$bgid, bgids)
@@ -467,7 +479,7 @@ mydata_ejamit <- function(sitepoints = NULL,
   if (sitetype == "latlon") {
 
     sitepoints <- sitepoints_from_anything(anything = sitepoints, invalid_msg_table = TRUE, set_invalid_to_na = FALSE)
-    allsites <- data.table::data.table(ejam_uniq_id = sitepoints$ejam_uniq_id)
+    allsites <- data.table::data.table(ejam_uniq_id = sitepoints$ejam_uniq_id, lat = sitepoints$lat, lon = sitepoints$lon)
     if (is.null(radius)) {
       radius <- 3
       warning("Using default radius of 3 miles because not provided as parameter.")

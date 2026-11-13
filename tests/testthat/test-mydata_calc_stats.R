@@ -96,6 +96,30 @@ test_that("a nationwide table that is mostly empty for one indicator gets no US 
   expect_false(anyNA(stats$mydata_usastats$full))
 })
 
+test_that("a blockgroup where the formula gives no valid result does not count as covered", {
+  de <- data.frame(bgfips = blockgroupstats$bgfips[blockgroupstats$ST == "DE" & blockgroupstats$pop > 0], num = 0, den = 0)
+  de$num[1] <- 1
+  de$den[1] <- 2
+  stats <- quietly(mydata_calc_stats(de, mydata_metadata("rate", formula = "rate = num / den"), quiet = TRUE))
+  cov <- stats$coverage
+  expect_false(cov$provided[cov$zone == "DE"])
+  expect_lt(cov$coverage[cov$zone == "DE"], 0.05)
+  expect_equal(cov$n_blockgroups[cov$zone == "DE"], 1)
+  expect_true(all(is.na(stats$mydata_statestats$rate)))
+})
+
+test_that("a point near a State line gets the State the point is in, as in ejamit()", {
+  x <- data.frame(bgfips = blockgroupstats$bgfips, myscore = blockgroupstats$pctlowinc)
+  chk <- quietly(mydata_validate(x, mydata_metadata("myscore", denominator = "povknownratio"), quiet = TRUE))
+  stats <- mydata_calc_stats(chk, quiet = TRUE)
+  pts <- data.frame(lat = 41.255, lon = -95.91) # in Iowa, with most nearby residents in Nebraska
+  out <- quietly(mydata_ejamit(pts, radius = 3, mydata = chk, mydata_usastats = stats, quiet = TRUE))
+  ej <- quietly(ejamit(pts, radius = 3, quiet = TRUE, silentinteractive = TRUE))
+  expect_equal(out$results_bysite$ST, ej$results_bysite$ST)
+  expect_equal(out$results_bysite$state.pctile.myscore, ej$results_bysite$state.pctile.pctlowinc)
+  expect_equal(out$results_bysite$state.avg.myscore, ej$results_bysite$state.avg.pctlowinc)
+})
+
 test_that("a ready-made reference table is accepted, with a warning if it does not describe itself", {
   de <- data.frame(bgfips = blockgroupstats$bgfips[blockgroupstats$ST == "DE"])
   de$myscore <- blockgroupstats$pctlowinc[blockgroupstats$ST == "DE"]
