@@ -29,8 +29,10 @@ mydata_metadata(
 }
 \arguments{
 \item{rname}{names of the indicators, as used for column names in R.
-Required unless \code{formulas} is provided. Each must be a valid R name and
-must not be the name of an indicator already in \link{map_headernames}.}
+Required unless \code{formulas} is provided. Each must be a valid R name,
+must not be the name of an indicator already in \link{map_headernames}, and
+must not start with \code{avg.}, \code{state.avg.}, \code{pctile.}, \code{state.pctile.}, or
+\code{ratio.to.}, which are used for the average, percentile and ratio columns.}
 
 \item{longname}{full label for each indicator. Default is \code{rname}.}
 
@@ -110,10 +112,14 @@ How the aggregation method is chosen when \code{calculation_type} is not given:
 \itemize{
 \item no formula: \code{"wtdmean"} (a weighted mean, weighted by \code{denominator},
 which defaults to \code{"pop"})
-\item a formula with a division in it, such as
-\code{"pct_x = ifelse(universe_x == 0, 0, count_x / universe_x)"}: \code{"formula"},
-meaning the formula is applied to counts that were summed first
-\item a formula with no division, such as \code{"x = a + b"}: \code{"sum of counts"}
+\item a formula that only adds or subtracts columns, or multiplies or divides
+them by a number, such as \code{"x = a + b"} or \code{"x = a / 2"}:
+\code{"sum of counts"}, because the sum of such a result across blockgroups is
+the same as the result calculated from the summed columns
+\item any other formula, such as
+\code{"pct_x = ifelse(universe_x == 0, 0, count_x / universe_x)"} or
+\code{"x = log(a)"}: \code{"formula"}, meaning the formula is applied to columns
+that were summed first
 }
 
 When an indicator has a formula, the formula is the source of truth. The

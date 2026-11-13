@@ -76,6 +76,22 @@ test_that("the aggregation method and denominator are read from the formula", {
   expect_equal(md3$calculation_type, c("sum of counts", "formula"))
 })
 
+test_that("only a formula known to be additive is treated as a count", {
+  f <- c("a1 = x + y", "a2 = (x - y) / 2", "a3 = 3 * x", "a4 = x",
+         "n1 = log(x)", "n2 = x * y", "n3 = x / y", "n4 = pmax(x, y)", "n5 = ifelse(y == 0, 0, x / y)", "n6 = 2 / x", "n7 = x^2")
+  md <- mydata_metadata(formulas = f, derived = FALSE)
+  expect_equal(md$calculation_type, c(rep("sum of counts", 4), rep("formula", 7)))
+  expect_equal(md$denominator[md$rname %in% c("n3", "n5", "n6")], c("y", "y", "x"))
+})
+
+test_that("names used for average, percentile and ratio columns are refused", {
+  expect_error(mydata_metadata(c("myscore", "avg.myscore")), "cannot start with")
+  expect_error(mydata_metadata("state.pctile.myscore", derived = FALSE), "cannot start with")
+  expect_error(mydata_metadata("ratio.to.avg.x"), "cannot start with")
+  md <- mydata_metadata(c("myscore", "average_score"))
+  expect_false(anyDuplicated(md$rname) > 0)
+})
+
 test_that("bad names and settings are refused with a clear message", {
   expect_error(mydata_metadata("pctlowinc"), "already used")
   expect_error(mydata_metadata(c("a1", "a1")), "unique")
