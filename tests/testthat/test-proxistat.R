@@ -3,7 +3,7 @@
 
 testthat::test_that("proxistat works at all", {
 
-  skip("proxistat() NOT YET WORKING AND CAN CRASH R SO WILL NOT TEST YET")
+  skip("Deferred to Public-Environmental-Data-Partners/EJAM#740; draft may crash R")
 
 
 
@@ -49,7 +49,7 @@ testthat::test_that("proxistat works at all", {
 
 testthat::test_that("proxistat_via_getblocks() works at all", {
 
-  skip("skipping proxistat_via_getblocks testing until ready")
+  skip("Deferred to Public-Environmental-Data-Partners/EJAM#740")
 
   expect_no_error({
     y = proxistat_via_getblocks(pts = testpoints_10[1:2, ])

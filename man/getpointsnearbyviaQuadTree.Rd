@@ -30,7 +30,8 @@ sites or facilities or blocks around which are circular buffers defined by radiu
 
 \item{maxradius}{miles distance (max distance to check if not even 1 topoint is within radius)}
 
-\item{avoidorphans}{logical If TRUE, then where not even 1 topoint
+\item{avoidorphans}{logical. TRUE is not implemented and gives an error.
+The intended future behavior is: where not even 1 topoint
 is within radius of a frompoint,
 it keeps looking past radius, up to maxradius, to find nearest 1 topoint
 

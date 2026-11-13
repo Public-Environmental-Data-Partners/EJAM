@@ -577,8 +577,6 @@ reference:
   - getblocks_predict_blocks_per_site
   - getblocks_summarize_blocks_per_site
   - table_order_variables
-  - custom_ejamit
-  - custom_doaggregate
   - custom
   - calc_varname_from_formula
   - batch.clean

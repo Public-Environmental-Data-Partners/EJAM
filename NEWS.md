@@ -1,5 +1,6 @@
 # EJAM (development version)
 
+- Fixed nearby-point searches and withdrew the broken `custom_ejamit()` export pending its replacement. Unfinished polygon and FIPS point counters now give explicit errors (#725).
 - Improved GitHub Actions that test if EJAM can be installed: Simplified vignette, simplified Ubuntu setup & checks. Explain what failed, check the R version EJAM specifies as minimum. (#714 & #723).
 - Moved open-issue-ranking reports out of the package, into GitHub issue #715 (#716).
 

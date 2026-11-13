@@ -142,7 +142,6 @@
 #'
 #' @return returns the output of [custom_doaggregate()]
 #'
-#' @export
 #' @keywords internal
 #'
 custom_ejamit <- function(sitepoints, radius = 3, fips = NULL, shapefile = NULL,
@@ -455,16 +454,14 @@ getpointsnearby <- function(frompoints, topoints,
   }
 
   if (missing(quadtree) || is.null(quadtree)) {
-    indexpoints(pts = topoints, indexname = "custom_index") # which 1st uses create_quaddata(topoints)
-    # xyzcolnames = c("BLOCK_X", "BLOCK_Z", "BLOCK_Y") # c("x2", "z2", "y2") ??
-    quadtree <- custom_index
+    quadtree <- SearchTrees::createTree(quaddatatable, treeType = "quad", dataType = "point")
   } else {
     message("topoints and quadtree were both provided - they must be (and we just assume they are) based on the same points")
   }
 
   b2s <- getpointsnearbyviaQuadTree(frompoints = frompoints,
                                     radius = radius, maxradius = maxradius, avoidorphans = avoidorphans,
-                                    # min_distance = 100/1760, retain_unadjusted_distance = TRUE,
+                                    retain_unadjusted_distance = retain_unadjusted_distance,
                                     quadtree = quadtree,
                                     quaddatatable = quaddatatable,
                                     quiet = quiet,
@@ -687,7 +684,7 @@ countpoints_nearby <- function(frompoints, topoints, radius = 3) {
 #' @keywords internal
 countpoints_in_shape <- function(shp, topoints) {
 
-  return('to be done')
+  stop("countpoints_in_shape() is not implemented yet; see issue #734")
 
 
 }
@@ -696,7 +693,7 @@ countpoints_in_shape <- function(shp, topoints) {
 #' @keywords internal
 countpoints_in_fips <- function(fips, topoints) {
 
-  return('to be done')
+  stop("countpoints_in_fips() is not implemented yet; see issue #734")
 
 
 }
