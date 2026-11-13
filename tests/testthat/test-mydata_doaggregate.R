@@ -124,6 +124,26 @@ test_that("data for one county gives results there and NA elsewhere, with a summ
   expect_lt(out$coverage_overall$myscore, 1)
 })
 
+test_that("an overall total is reported as an undercount when some sites have data and others have none", {
+  s2b <- byhand_s2b[ejam_uniq_id %in% c(1, 4)] # site 1 has data for all its blockgroups, site 4 for none
+  x <- byhand_data[1:2, ]
+  expect_warning(
+    out <- mydata_doaggregate(s2b, x, mydata_metadata("mycount", calculation_type = "sum of counts"), quiet = TRUE),
+    "undercount"
+  )
+  expect_equal(out$coverage_bysite$mycount, c(1, 0))
+  expect_gt(out$coverage_overall$mycount, 0)
+  expect_lt(out$coverage_overall$mycount, 1)
+})
+
+test_that("a FIPS code that lost its leading zero is one site, not two", {
+  x <- data.frame(bgfips = blockgroupstats$bgfips[substr(blockgroupstats$bgfips, 1, 5) == "01001"])
+  x$myscore <- 3
+  out <- quietly(mydata_ejamit(fips = "1001", mydata = x, mydata_map_headernames = mydata_metadata("myscore"), quiet = TRUE))
+  expect_equal(out$results_bysite$ejam_uniq_id, "01001")
+  expect_equal(out$results_bysite$myscore, 3)
+})
+
 test_that("inputs are not changed, and a site with no blocks still gets a row", {
   s2b <- data.table::copy(byhand_s2b)
   dat <- byhand_data
