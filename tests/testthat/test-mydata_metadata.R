@@ -77,10 +77,11 @@ test_that("the aggregation method and denominator are read from the formula", {
 })
 
 test_that("only a formula known to be additive is treated as a count", {
-  f <- c("a1 = x + y", "a2 = (x - y) / 2", "a3 = 3 * x", "a4 = x",
-         "n1 = log(x)", "n2 = x * y", "n3 = x / y", "n4 = pmax(x, y)", "n5 = ifelse(y == 0, 0, x / y)", "n6 = 2 / x", "n7 = x^2")
+  f <- c("a1 = x + y", "a2 = (x - y) / 2", "a3 = 3 * x", "a4 = x", "a5 = -x + y", "a6 = 0.5 * (x + y)",
+         "n1 = log(x)", "n2 = x * y", "n3 = x / y", "n4 = pmax(x, y)", "n5 = ifelse(y == 0, 0, x / y)", "n6 = 2 / x", "n7 = x^2",
+         "n8 = x + 1", "n9 = 2 * (x - 3)", "n10 = 5")
   md <- mydata_metadata(formulas = f, derived = FALSE)
-  expect_equal(md$calculation_type, c(rep("sum of counts", 4), rep("formula", 7)))
+  expect_equal(md$calculation_type, c(rep("sum of counts", 6), rep("formula", 10)))
   expect_equal(md$denominator[md$rname %in% c("n3", "n5", "n6")], c("y", "y", "x"))
 })
 

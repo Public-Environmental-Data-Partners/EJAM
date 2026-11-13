@@ -113,7 +113,8 @@ How the aggregation method is chosen when \code{calculation_type} is not given:
 \item no formula: \code{"wtdmean"} (a weighted mean, weighted by \code{denominator},
 which defaults to \code{"pop"})
 \item a formula that only adds or subtracts columns, or multiplies or divides
-them by a number, such as \code{"x = a + b"} or \code{"x = a / 2"}:
+them by a number, such as \code{"x = a + b"} or \code{"x = a / 2"} (but not
+\code{"x = a + 1"}, which adds a number):
 \code{"sum of counts"}, because the sum of such a result across blockgroups is
 the same as the result calculated from the summed columns
 \item any other formula, such as
