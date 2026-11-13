@@ -1,6 +1,7 @@
 # EJAM (development version)
 
 - Added `mydata_metadata()` to describe user-defined indicators (names, labels, units, rounding, how to aggregate) in the same layout as `map_headernames`. `varinfo()`, `calctype()`, and `calcweight()` can now read that information (#727).
+- Added `mydata_validate()` to check a table of user-defined blockgroup indicators (FIPS codes, columns, values) and report how much of the US and of each State it covers (#728).
 - Improved GitHub Actions that test if EJAM can be installed: Simplified vignette, simplified Ubuntu setup & checks. Explain what failed, check the R version EJAM specifies as minimum. (#714 & #723).
 - Moved open-issue-ranking reports out of the package, into GitHub issue #715 (#716).
 
