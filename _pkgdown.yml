@@ -47,6 +47,9 @@ articles:
   - overview-environmental-indicators-ejscreen
   - overview-socioeconomic-indicators-ejscreen
   - technical-information-and-data-downloads
+  - ej-index-descriptions
+  - supplemental-index-descriptions
+  - frequent-questions-about-ejscreen
   - env-indicators/ejscreen-indicators-overview-diesel-particulate-matter
   - env-indicators/ejscreen-indicators-overview-drinking-water-non-compliance
   - env-indicators/ejscreen-indicators-overview-hazardous-waste-proximity
@@ -743,4 +746,3 @@ reference:
   - formulas_ejscreen_acs_disability
   - formulas_ejscreen_demog_index
   - modelEjamitByAnalysisType
-
