@@ -30,3 +30,4 @@
 ^\.posit/assistant$
 ^cloudflare$
 ^vignettes/env-indicators$
+^\.devcontainer$

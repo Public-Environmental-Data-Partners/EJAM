@@ -1,0 +1,31 @@
+{
+  "name": "EJAM (R and RStudio)",
+  "image": "ghcr.io/rocker-org/devcontainer/geospatial:4.6",
+  "features": {
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+      "packages": "jq,cmake,libjq-dev,libprotobuf-dev,protobuf-compiler,libnode-dev"
+    },
+    "ghcr.io/rocker-org/devcontainer-features/rstudio-server:0": {}
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "updateContentCommand": "bash .devcontainer/setup.sh",
+  "postAttachCommand": {
+    "rstudio-start": "(pgrep -x rserver > /dev/null 2>&1 || rserver) || true"
+  },
+  "forwardPorts": [8787],
+  "portsAttributes": {
+    "8787": {
+      "label": "RStudio",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["REditorSupport.r"]
+    }
+  }
+}
