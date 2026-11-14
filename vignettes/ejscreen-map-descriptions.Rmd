@@ -295,7 +295,7 @@ formula for the index:
 
 **EJ Index = (Environmental Indicator Percentile for Block Group) X (Demographic Index for Block Group)**
 
-View descriptions of the [13 EJ Indexes here](https://web.archive.org/web/20250124011630/https://www.epa.gov/ejscreen/ej-index-descriptions).
+View descriptions of the [13 EJ Indexes here](ej-index-descriptions.html).
 
 ## Supplemental Indexes {#supp}
 
@@ -315,7 +315,7 @@ the supplemental demographic index). This is the formula for the index:
 
 **(Supplemental Demographic Index for Block Group)**
 
-[View descriptions of the 13 Supplemental Indexes here](https://web.archive.org/web/20250123161322/https://www.epa.gov/ejscreen/ej-index-descriptions).
+[View descriptions of the 13 Supplemental Indexes here](supplemental-index-descriptions.html).
 
 ## Climate Change {#clim}
 

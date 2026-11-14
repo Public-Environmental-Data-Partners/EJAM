@@ -1,0 +1,319 @@
+---
+title: "Supplemental Index Descriptions"
+description: "Supplemental Index Descriptions"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Supplemental Index Descriptions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+## The Supplemental Indexes
+
+The Supplemental Indexes are a combination of environmental and
+socioeconomic information. There are thirteen Supplemental Indexes in
+EJScreen reflecting the 13 environmental indicators. The 13 Supplemental
+Indexes are:
+
+- **Supplemental Index - Particulate Matter 2.5 (level in air)**
+
+  The Particulate Matter (PM)2.5 Supplemental Index combines the
+  environmental burden indicator for PM2.5 with the supplemental
+  demographic index (an average of five factors: % low-income, % persons
+  with disabilities, % limited English speaking, % less than high school
+  education, and low life expectancy) for each census block group.
+
+  The environmental burden indicator for PM2.5 measures the potential
+  exposure to inhalable particles 2.5 microns or smaller (about 30 times
+  smaller than the width of human hair) in terms of annual average
+  concentration in micrograms per cubic meter (µg/m^3^). EJScreen
+  presents PM2.5 concentrations using percentile rank, ranging from 0
+  (lowest) to 100 (highest). This indicator does not designate
+  compliance with the national ambient air quality standard for PM2.5.
+  *Source:* EPA's [Office of Air and
+  Radiation](/aboutepa/about-office-air-and-radiation).
+
+  For more details on the PM2.5 indicator, including why it is important
+  and what you can do moving forward, please visit the [EJScreen
+  Indicator Overview for
+  PM2.5](env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.html).
+
+- **Supplemental Index - Ozone (level in air)**
+
+  The Ozone Supplemental Index combines the environmental burden
+  indicator for ozone with the supplemental demographic index (an
+  average of five factors: % low-income, % persons with disabilities, %
+  limited English speaking, % less than high school education, and low
+  life expectancy) for each census block group.
+
+  The environmental burden indicator for ozone measures how much
+  ground-level ozone people might be exposed to by looking at the
+  highest levels of ozone recorded at the ground-level and averaging the
+  top ten days of the year. Ozone concentrations were measured as daily
+  maximum eight-hour averages. EJScreen presents ground-level ozone
+  concentrations using percentile rank, ranging from 0 (lowest) to 100
+  (highest). This indicator does not designate compliance with the
+  national ambient air quality standard for ozone. *Source*: EPA's
+  [Office of Air and
+  Radiation](/aboutepa/about-office-air-and-radiation).
+
+  For more details on the ozone indicator, including why it is important
+  and what you can do moving forward, please visit the [EJScreen
+  Indicator Overview for
+  Ozone](env-indicators/ejscreen-indicators-overview-ozone.html).
+
+- **Supplemental Index - Nitrogen Dioxide (NO~2~) (level in air)**
+
+  The NO~2~ Supplemental Index combines the environmental burden
+  indicator for NO~2~ with the supplemental demographic index (an
+  average of five factors: % low-income, % persons with disabilities, %
+  limited English speaking, % less than high school education, and low
+  life expectancy) for each census block group.
+
+  The environmental burden indicator for NO~2~ measures how much surface
+  level NO~2~ people might be exposed to in terms of annual average
+  concentration in parts per billion. EJScreen presents surface level
+  NO~2~ concentrations using percentile rank, ranging from 0 (lowest) to
+  100 (highest). This indicator does not designate compliance with the
+  national ambient air quality standard for NO~2~. *Source:* [Goddard
+  Earth Sciences Data and Information Services
+  Center](https://disc.gsfc.nasa.gov/datasets/SFC_NITROGEN_DIOXIDE_CONC_1/summary?keywords=TROPOMI%20NO2).
+
+  For more details on the NO~2~ indicator, including why it is important
+  and what you can do moving forward, please visit the [EJScreen
+  Indicator Overview for
+  NO~2~](env-indicators/ejscreen-indicators-overview-nitrogen-dioxide-no2.html).
+
+- **Supplemental Index - Diesel Particulate Matter (level in air)**
+
+  The Diesel Particulate Matter (PM) Supplemental Index combines the
+  environmental burden indicator for diesel PM with the supplemental
+  demographic index (an average of five factors: % low-income, % persons
+  with disabilities, % limited English speaking, % less than high school
+  education, and low life expectancy) for each census block group.
+
+  The environmental burden indicator for diesel PM measures how much
+  diesel PM (a mixture of particles from diesel exhaust) people might be
+  exposed to in terms of micrograms per cubic meter (µg/m^3^). EJScreen
+  presents diesel PM concentrations using percentile rank, ranging from
+  0 (lowest) to 100 (highest). *Source:* EPA's [Air Toxics Screening
+  Assessment](/AirToxScreen).
+
+  For more details on the diesel PM indicator, including why it is
+  important and what you can do moving forward, please visit the
+  [EJScreen Indicator Overview for Diesel
+  PM](env-indicators/ejscreen-indicators-overview-diesel-particulate-matter.html).
+
+- **Supplemental Index - Toxic Releases to Air**
+
+  The Toxic Releases to Air Supplemental Index combines the
+  environmental burden indicator for toxic releases to air with the
+  supplemental demographic index (an average of five factors: %
+  low-income, % persons with disabilities, % limited English speaking, %
+  less than high school education, and low life expectancy) for each
+  census block group.
+
+  The environmental burden indicator for toxic releases to air measures
+  the average annual chemical concentrations in air weighted by the
+  toxicity of each chemical. This indicator includes chemicals covered
+  by [EPA's Toxics Release Inventory (TRI)
+  Program](/toxics-release-inventory-tri-program) which can cause
+  cancer, other significant human health effects, are reactive,
+  ignitable, or cause significant adverse environmental effects.
+  EJScreen presents these toxic releases using percentile rank, ranging
+  from 0 (lowest) to 100 (highest). *Source:* EPA's [RSEI Geographic
+  Microdata](/rsei/rsei-geographic-microdata-rsei-gm).
+
+  For more details on the toxic releases to air indicator, including why
+  it is important and what you can do moving forward, please visit the
+  [EJScreen Indicator Overview for Toxic Releases to
+  Air](env-indicators/ejscreen-indicators-overview-toxic-releases-air.html).
+
+- **Supplemental Index - Traffic Proximity and Volume**
+
+  The Traffic Proximity Supplemental Index combines the environmental
+  burden indicator for traffic proximity with the supplemental
+  demographic index (an average of five factors: % low-income, % persons
+  with disabilities, % limited English speaking, % less than high school
+  education, and low life expectancy) for each census block group.
+
+  The environmental burden indicator for traffic proximity measures the
+  count of vehicles per day (average annual daily traffic- AADT) divided
+  by distance. EJScreen presents traffic proximity using percentile
+  rank, ranging from 0 (lowest) to 100 (highest). *Source*: U.S.
+  Department of Transportation National Transportation Atlas Database,
+  [Highway Performance Monitoring
+  System](https://catalog.data.gov/dataset/highway-performance-monitoring-system-hpms-b7a2f).
+
+  For more details on the traffic proximity indicator, including why it
+  is important and what you can do moving forward, please visit the
+  [EJScreen Indicator Overview for Traffic
+  Proximity](env-indicators/ejscreen-indicators-overview-traffic-proximity-and-volume.html).
+
+- **Supplemental Index - Lead Paint (% pre-1960 housing)**
+
+  The Lead Paint Supplemental Index combines the environmental burden
+  indicator for lead paint with the supplemental demographic index (an
+  average of five factors: % low-income, % persons with disabilities, %
+  limited English speaking, % less than high school education, and low
+  life expectancy) for each census block group.
+
+  The environmental burden indicator for lead paint is based on the
+  percentage of housing units built before 1960, a proxy for how much
+  lead paint people might be exposed to. EJScreen presents this
+  potential exposure to lead paint using percentile rank, ranging from 0
+  (lowest) to 100 (highest). *Source*: [Census Bureau\'s American
+  Community
+  Survey](https://www.census.gov/programs-surveys/acs/news/data-releases.html)
+  5-year summary estimates.
+
+  For more details on the lead paint indicator, including why it is
+  important and what you can do moving forward, please visit the
+  [EJScreen Indicator Overview for Lead
+  Paint](env-indicators/ejscreen-indicators-overview-lead-paint.html).
+
+- **Supplemental Index - Superfund Proximity**
+
+  The Superfund Proximity Supplemental Index combines the environmental
+  burden indicator for Superfund proximity with the supplemental
+  demographic index (an average of five factors: % low-income, % persons
+  with disabilities, % limited English speaking, % less than high school
+  education, and low life expectancy) for each census block group.
+
+  The environmental burden indicator for Superfund proximity measures
+  how close people might live to sites listed on the National Priorities
+  List (NPL). This indicator calculates the total count of sites
+  proposed and listed on the NPL within 5 km (or nearest within 10 km),
+  divided by distance. EJScreen presents Superfund proximity using
+  percentile rank, ranging from 0 (lowest) to 100 (highest). *Source*:
+  EPA's [CERCLIS
+  database](https://cumulis.epa.gov/supercpad/CurSites/srchsites.cfm).
+
+  For more details on the Superfund proximity indicator, including why
+  it is important and what you can do moving forward, please visit the
+  [EJScreen Indicator Overview for Superfund
+  Proximity](env-indicators/ejscreen-indicators-overview-superfund-proximity.html).
+
+- **Supplemental Index - Risk Management Program (RMP) Facility
+  Proximity**
+
+  The RMP Facility Proximity Supplemental Index combines the
+  environmental burden indicator for RMP facility proximity with the
+  supplemental demographic index (an average of five factors: %
+  low-income, % persons with disabilities, % limited English speaking, %
+  less than high school education, and low life expectancy) for each
+  census block group.
+
+  The environmental burden indicator for RMP facility proximity measures
+  how close people might live to an active facility with a required Risk
+  Management Plan (potential chemical accident management plan). This
+  indicator calculates the total count of RMP facilities within 5 km (or
+  nearest within 10 km), divided by distance. EJScreen presents RMP
+  facility proximity using percentile rank, ranging from 0 (lowest) to
+  100 (highest). *Source*: EPA's [RMP
+  database](/rmp/risk-management-program-rmp-rule-overview).
+
+  For more details on the RMP facility proximity indicator, including
+  why it is important and what you can do moving forward, please visit
+  the [EJScreen Indicator Overview for RMP Facility
+  Proximity](env-indicators/ejscreen-indicators-overview-risk-management-program-rmp-facility-proximity.html).
+
+- **Supplemental Index - Hazardous Waste Proximity**
+
+  The Hazardous Waste Proximity Supplemental Index combines the
+  environmental burden indicator for hazardous waste proximity with the
+  supplemental demographic index (an average of five factors: %
+  low-income, % persons with disabilities, % limited English speaking, %
+  less than high school education, and low life expectancy) for each
+  census block group.
+
+  The environmental burden indicator for hazardous waste proximity
+  measures how close people might live to a facility that handles
+  hazardous waste. This indicator calculates the total count of
+  hazardous waste facilities (TSDFs and LQGs) within 5 km (or nearest
+  within 10 km), divided by distance. EJScreen presents hazardous waste
+  proximity using percentile rank, ranging from 0 (lowest) to 100
+  (highest). *Source*: EPA's [RCRAInfo
+  database](https://enviro.epa.gov/envirofacts/rcrainfo/search).
+
+  For more details on the hazardous waste indicator, including why it is
+  important and what you can do moving forward, please visit the
+  [EJScreen Indicator Overview for Hazardous Waste
+  Proximity](env-indicators/ejscreen-indicators-overview-hazardous-waste-proximity.html).
+
+- **Supplemental Index - Underground Storage Tanks (UST)**
+
+  The UST Supplemental Index combines the environmental burden indicator
+  for UST with the supplemental demographic index (an average of five
+  factors: % low-income, % persons with disabilities, % limited English
+  speaking, % less than high school education, and low life expectancy)
+  for each census block group.
+
+  The environmental burden indicator for UST measures how many
+  underground storage tanks and UST release sites are near where people
+  live. This indicator is based on the sum of LUSTs and USTs within a
+  1,500-foot buffered block group. EJScreen presents this relative
+  density of USTs using percentile rank, ranging from 0 (lowest) to 100
+  (highest). *Source*: EPA's [UST Finder](/ust/ust-finder) tool.
+
+  For more details on the UST indicator, including why it is important
+  and what you can do moving forward, please visit the [EJScreen
+  Indicator Overview for
+  UST](env-indicators/ejscreen-indicators-overview-underground-storage-tanks-ust.html).
+
+- **Supplemental Index - Wastewater Discharge (Stream Proximity and
+  Toxic Concentration)**
+
+  The Wastewater Discharge Supplemental Index combines the environmental
+  burden indicator for wastewater discharge with the supplemental
+  demographic index (an average of five factors: % low-income, % persons
+  with disabilities, % limited English speaking, % less than high school
+  education, and low life expectancy) for each census block group.
+
+  The environmental burden indicator for wastewater discharge measures
+  how much relative risk there is of being exposed to pollutants from
+  wastewater that flows into rivers or other bodies of water downstream.
+  This relative risk is based on estimated concentrations of pollutants
+  in downstream water bodies within 500 meters, divided by distance in
+  km. EJScreen presents wastewater discharge proximity using percentile
+  rank, ranging from 0 (lowest) to 100 (highest). *Source*: EPA's [RSEI
+  modeled toxic concentrations to stream reach segments](/rsei).
+
+  For more details on the wastewater discharge indicator, including why
+  it is important and what you can do moving forward, please visit the
+  [EJScreen Indicator Overview for Wastewater
+  Discharge](env-indicators/ejscreen-indicators-overview-wastewater-discharge.html).
+
+- **Supplemental Index - Drinking Water Non-Compliance**
+
+  The Drinking Water Non-Compliance Supplemental Index combines the
+  environmental burden indicator for drinking water non-compliance with
+  the supplemental demographic index (an average of five factors: %
+  low-income, % persons with disabilities, % limited English speaking, %
+  less than high school education, and low life expectancy) for each
+  census block group.
+
+  The environmental burden indicator for drinking water non-compliance
+  highlights populations served by community water systems that have
+  challenges complying with [Safe Drinking Water
+  Act](/ground-water-and-drinking-water/safe-drinking-water-information-system-sdwis-federal-reporting)
+  requirements. Points are calculated using a modified version of EPA's
+  [Enforcement Targeting
+  Tool](/tribaldrinkingwater/drinking-water-enforcement-response-policy-and-enforcement-targeting-tool)
+  criteria, which accounts for violation severity and age. EJScreen
+  presents drinking water non-compliance using percentile rank, ranging
+  from 0 (lowest) to 100 (highest). *Source*: EPA's [Safe Drinking Water
+  Information
+  System](https://sdwis.epa.gov/ords/sfdw_pub/r/sfdw/sdwis_fed_reports_public/200)
+  & [Drinking Water Enforcement Response Policy and Enforcement
+  Targeting
+  Tool](/tribaldrinkingwater/drinking-water-enforcement-response-policy-and-enforcement-targeting-tool).
+
+  For more details on the drinking water non-compliance indicator,
+  including why it is important and what you can do moving forward,
+  please visit the [EJScreen Indicator Overview for Drinking Water
+  Non-Compliance](env-indicators/ejscreen-indicators-overview-drinking-water-non-compliance.html).
