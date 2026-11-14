@@ -15,9 +15,9 @@ import re
 import sys
 from pathlib import Path
 
-UTILITIES_DIRECTORY = Path(__file__).resolve().parent
-INPUT_DIRECTORY = UTILITIES_DIRECTORY / "archived_html" / "pandocMarkdown"
-OUTPUT_DIRECTORY = UTILITIES_DIRECTORY.parent
+TOOLS_DIR = Path(__file__).resolve().parent
+INPUT_DIRECTORY = TOOLS_DIR / "archived_html" / "pandocMarkdown"
+OUTPUT_DIRECTORY = TOOLS_DIR / "archived_html" / "Rmd"
 EXAMPLE_SUFFIX = "_chatgpt_example"
 
 HEADER = """---
@@ -34,8 +34,6 @@ editor_options:
   markdown:
     wrap: 80
 ---
-[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
-
 """
 
 
@@ -49,13 +47,17 @@ def get_title(markdown: str, name: str) -> str:
 
 
 def main() -> int:
+    OUTPUT_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    
     sources = [p for p in sorted(INPUT_DIRECTORY.glob("*.md")) if not p.stem.endswith(EXAMPLE_SUFFIX)]
+    print(f"Found {len(sources)} files to convert")
     if not sources:
         print(f"ERROR: no .md files in {INPUT_DIRECTORY}", file=sys.stderr)
         return 2
 
     failed = 0
     for source in sources:
+        print(f"PROCESSING: {source.name}")
         destination = OUTPUT_DIRECTORY / f"{source.stem}.Rmd"
         if destination.exists():
             print(f"SKIPPED: {destination.name} already exists")

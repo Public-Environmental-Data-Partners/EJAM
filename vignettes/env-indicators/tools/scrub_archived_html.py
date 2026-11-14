@@ -3,7 +3,14 @@
 
 Reads every .html file in archived_html/asDownloaded and writes a minimal HTML
 document containing only the page's <article> to archived_html/htmlScrubbed.
-Requires beautifulsoup4. Existing output files are overwritten.
+Existing output files are overwritten.
+
+Requires beautifulsoup4 which is likely not to be installed by default.
+I've chosen not to add it to this project's dependencies because these tools are
+likely to be ephemeral. If you are running code from a (WSL ubuntu) terminal window, 
+you can install it with. If your terminal is powershell or mac, you'll have to
+figure out the exact syntax.
+`pip install beautifulsoup4`
 
 Usage:
     python scrub_archived_html.py
