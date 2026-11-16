@@ -2,6 +2,7 @@
 
 - Improved GitHub Actions that test if EJAM can be installed: Simplified vignette, simplified Ubuntu setup & checks. Explain what failed, check the R version EJAM specifies as minimum. (#714 & #723).
 - Moved open-issue-ranking reports out of the package, into GitHub issue #715 (#716).
+- Web app: polygons, cities and counties sent from another app (such as EJSCREEN) no longer get an unrequested buffer; they use the distance that was sent, or no buffer (#766).
 
 # EJAM 4.2024.0 (November 2026)
 

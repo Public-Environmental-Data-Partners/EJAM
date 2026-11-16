@@ -493,6 +493,10 @@ app_server <- function(input, output, session) {
   url_shapefile  <- reactiveVal(NULL)
   url_fips       <- reactiveVal(NULL)
   url_radius     <- reactiveVal(NULL)  # launch-URL ?radius=/?buffer=; read at radius_now slider render time (below)
+  # upload method the launch URL switched to, until the app has actually switched to it (see the
+  # RADIUS SLIDER section): the slider is sized for this method meanwhile, not the default one
+  url_upload_method <- reactiveVal(NULL)
+  radius_slider_method <- reactive({url_upload_method() %||% current_upload_method()})
 
   # Launch-URL precedence helper (single home for layer-2 precedence). url_param(name) maps a
   # parameter name to its launch-URL reactiveVal -- the only URL-provided params are these three
@@ -615,6 +619,7 @@ app_server <- function(input, output, session) {
       if (!is.null(pts) && nrow(pts) > 0 && !anyNA(pts[, c("lat", "lon")])) {
         url_sitepoints(pts)
         set_site_method("upload", "latlon", source = "launch-URL")  # layer 1 (highest), init only
+        url_upload_method("latlon")
         loaded <- TRUE
       }
     }
@@ -622,6 +627,7 @@ app_server <- function(input, output, session) {
     if (!loaded && !is.null(spec$fips) && length(spec$fips) > 0) {
       url_fips(as.character(spec$fips))
       set_site_method("upload", "FIPS", source = "launch-URL")  # layer 1 (highest), init only
+      url_upload_method("FIPS")
       loaded <- TRUE
     }
     ## POLYGONS -- only inline GeoJSON text (the documented ?shape= contract).
@@ -643,6 +649,7 @@ app_server <- function(input, output, session) {
         # shapefile_from_any() fast-returns an sf object as-is, so data_up_shp() stays cheap.
         url_shapefile(shp)
         set_site_method("upload", "SHP", source = "launch-URL")  # layer 1 (highest), init only
+        url_upload_method("SHP")
         loaded <- TRUE
       }
     }
@@ -1847,7 +1854,11 @@ app_server <- function(input, output, session) {
     valid_max_miles <- is.numeric(input$max_miles) && input$max_miles > 0
 
     if (valid_radius_default && valid_max_miles) {
-      slider_min <- current_slider_min[[current_upload_method()]]
+      # Size the slider for the launch-URL method until the app has switched to it. Otherwise
+      # the first render uses the default point method, so a launch radius of 0 for a polygon
+      # is clamped up to the point minimum (0.5) and that value then sticks (issue 766).
+      slider_method <- radius_slider_method()
+      slider_min <- current_slider_min[[slider_method]]
       # launch-URL ?radius=/?buffer= wins until the user moves the slider (see the
       # releasing observer below). The URL value is unvalidated, so clamp it to the
       # slider's current [min, max] -- a malformed or stale deep link (e.g.
@@ -1861,7 +1872,13 @@ app_server <- function(input, output, session) {
         label = "",
         min = slider_min,
         max = input$max_miles,
-        value = launch_radius %||% input$radius_default,
+        # FIPS/polygon methods start at their own remembered value (no buffer by default),
+        # not the point-method default radius
+        value = launch_radius %||% if (slider_method %in% c("FIPS", "FIPS_PLACE", "SHP")) {
+          isolate(current_slider_val[[slider_method]])
+        } else {
+          input$radius_default
+        },
         step = global_or_param("stepradius"),
         post = ' miles'
       )
@@ -1892,7 +1909,7 @@ app_server <- function(input, output, session) {
       # deep link like ?radius=999 the slider legitimately shows max_miles, and
       # that programmatic clamp must not be mistaken for a user change (which
       # would unpin the launch radius on the very first render).
-      slider_min <- current_slider_min[[current_upload_method()]]
+      slider_min <- current_slider_min[[radius_slider_method()]]
       launch_clamped <- if (is.numeric(input$max_miles) && is.numeric(slider_min)) {
         min(max(launch_val, slider_min), input$max_miles)
       } else {
@@ -1903,6 +1920,12 @@ app_server <- function(input, output, session) {
       }
     }
   }, ignoreInit = TRUE)
+
+  ## The launch-URL method is in effect now, so size the slider by the current method again.
+  ## Runs before the slider re-renders (priority), so the slider renders once for that method.
+  observe({
+    if (identical(current_upload_method(), url_upload_method())) {url_upload_method(NULL)}
+  }, priority = 10)
 
   ## disable radius slider when FIPS is selected
   observe({
@@ -1991,13 +2014,15 @@ app_server <- function(input, output, session) {
   ## current_upload_method(), so reading url_radius() here adds no reactive edge.)
   observe({
     updateSliderInput(session = session, inputId = 'radius_now',
-                      value = url_radius() %||% current_slider_val[[current_upload_method()]])
+                      value = url_radius() %||% current_slider_val[[radius_slider_method()]])
   }) %>% bindEvent(current_upload_method())
 
   ## update stored radius when slider changes
   # except this would initially save the one current radius (default) as the current value for all methods including shapefiles which we dont want to do
   observe({
-    current_slider_val[[current_upload_method()]] <- sanitized_radius_now()
+    # until the app has switched to the launch-URL method, the slider is sized for that method,
+    # so its value belongs to that method, not the one still current
+    current_slider_val[[radius_slider_method()]] <- sanitized_radius_now()
   }) %>% bindEvent(sanitized_radius_now())
 
   ## Create separate radius label to allow line break
