@@ -611,7 +611,7 @@ test_that("launch: FIPS handoff with no radius uses no buffer", {
     handoff_json = '{"method":["FIPS"],"sites":{},"fips":["1077580"],"shape":{},"radius":{}}',
     expr = testServer(app = app_server, expr = {
       launch_inputs(session)
-      expect_null(url_radius())
+      expect_identical(url_radius(), 0)  # a FIPS handoff without a radius means no buffer (issue 763)
       first_value <- radius_slider_attr(output$radius_slider_ui, "from")
       expect_equal(first_value, 0)
       suppressWarnings(session$setInputs(ss_choose_method_upload = "FIPS", radius_now = first_value))  # warns that the skipped map has too many shapes
