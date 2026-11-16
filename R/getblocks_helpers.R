@@ -70,14 +70,29 @@ if (FALSE) {
 ########################## #
 
 bboxdf_latlon2yxmatrix = function(bb) {
-  # bb can be a matrix or data.frame
-  m = cbind(
-    latlon2yx(lat = bb[,"ymin"], lon = bb[,"xmin"]),
-    latlon2yx(lat = bb[,"ymax"], lon = bb[,"xmax"])
-  )
-  m = m[, c(2,1,4,3), drop=FALSE]
-  colnames(m) <- c("xmin", "ymin", "xmax", "ymax")
-  return(m)
+  # The index uses x = R*cos(lat)*cos(lon), y = R*sin(lat). Two
+  # opposite corners do not bound x. Include all corners and the stationary
+  # points along the edges (equator and 0/180-degree meridians), so even
+  # boxes spanning hemispheres or the antimeridian have conservative bounds.
+  out <- matrix(NA_real_, nrow = NROW(bb), ncol = 4,
+                dimnames = list(NULL, c("xmin", "ymin", "xmax", "ymax")))
+  for (i in seq_len(NROW(bb))) {
+    a <- as.numeric(bb[i, c("xmin", "ymin", "xmax", "ymax")])
+    if (any(!is.finite(a)) || a[1] > a[3] || a[2] > a[4]) next
+    lat <- c(a[2], a[4])
+    if (a[2] <= 0 && a[4] >= 0) lat <- c(lat, 0)
+    meridians <- c(-180, 0, 180)
+    lon <- c(a[1], a[3], meridians[meridians >= a[1] & meridians <= a[3]])
+    corners <- expand.grid(lat = lat, lon = lon)
+    latrad <- corners$lat * pi / 180
+    x <- 3959 * cos(latrad) * cos(corners$lon * pi / 180)
+    y <- 3959 * sin(latrad)
+    # Round outward to keep points on box edges despite floating-point error.
+    margin <- 3959 * .Machine$double.eps * 16
+    out[i, ] <- c(min(x) - margin, min(y) - margin,
+                 max(x) + margin, max(y) + margin)
+  }
+  out
 }
 ########################## #
 bboxdf_latlon2yxlist = function(bb) {
@@ -110,32 +125,18 @@ if (FALSE) {
 
 getblocksrowsinbox = function(bb) {
 
-  bb_yx_list = bboxdf_latlon2yxlist(bb)
+  bb_yx <- bboxdf_latlon2yxmatrix(bb)
   quadtree <- localtree_get()
-  blks <- lapply(bb_yx_list, FUN = function(bb1)  {
+  blks <- lapply(seq_len(NROW(bb_yx)), function(i) {
+    bb1 <- bb_yx[i, ]
+    if (anyNA(bb1)) return(integer(0))
     SearchTrees::rectLookup(
       quadtree,
-      xlims = c(bb1[,"xmin"], bb1[,"xmax"]),
-      ylims = c(bb1[,"ymin"], bb1[,"ymax"])
+      xlims = bb1[c("xmin", "xmax")],
+      ylims = bb1[c("ymin", "ymax")]
     )
-  }) %>% unlist(use.names = FALSE) %>% unique
-  return(blks)
-
-  ###### #
-  # radians_per_degree <- 0.01745329 # pi/180
-  # yminrad = bb$ymin * radians_per_degree
-  # ymaxrad = bb$ymax * radians_per_degree
-  #
-  # SearchTrees::rectLookup(
-  #   localtree,
-  #
-  #   xlims = c(earthRadius_miles * cos(yminrad) * cos(bb$xmin * radians_per_degree),
-  #             earthRadius_miles * cos(ymaxrad) * cos(bb$xmax * radians_per_degree)
-  #   ),
-  #   ylims = c(earthRadius_miles * sin(yminrad),
-  #             earthRadius_miles * sin(ymaxrad)
-  #   )
-  # )
+  })
+  unique(unlist(blks, use.names = FALSE))
 }
 ######################################################### #
 ########################## ########################### #

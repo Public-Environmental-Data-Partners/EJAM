@@ -420,7 +420,7 @@ test_that("handoff: FIPS basket (radius {}) loads FIPS and does not crash the se
     expr = testServer(app = app_server, expr = {
       session$setInputs(testing = FALSE)
       expect_identical(url_fips(), c("10001", "10003"))
-      expect_null(url_radius())      # radius:{} means absent, not 0 and not an error
+      expect_identical(url_radius(), 0) # absent FIPS buffer defaults to no buffer
       expect_null(url_sitepoints())  # one place-type per launch
       expect_null(url_shapefile())
       expect_identical(site_method_last_set(), "upload")  # method was switched for the handoff
@@ -479,6 +479,19 @@ test_that("handoff: point basket WITH a buffer still applies the radius (working
 })
 ################################################# #
 
+test_that("FIPS handoff preserves an explicitly requested positive buffer", {
+  testserver_with_launch_query(
+    query = list(handoff = "TESTTOKEN"),
+    handoff_json = '{"fips":["10003"],"radius":[0.5]}',
+    expr = testServer(app = app_server, expr = {
+      session$setInputs(testing = FALSE)
+      expect_identical(url_fips(), "10003")
+      expect_identical(url_radius(), 0.5)
+    })
+  )
+})
+################################################# #
+
 test_that("handoff: explicit radius 0 is accepted (valid no-buffer value for FIPS/polygon)", {
   ## Public-Environmental-Data-Partners/EJScreen#73 and
   ## Public-Environmental-Data-Partners/EJAM-API#49 make FIPS/shape handoffs carry an explicit radius 0;
@@ -523,14 +536,14 @@ test_that("direct deep-link ?fips=&radius= still loads both (radius-guard refact
 })
 ################################################# #
 
-test_that("direct deep-link ?fips= with no radius leaves url_radius NULL and does not crash", {
+test_that("direct deep-link ?fips= with no radius defaults to zero buffer", {
   ## as.numeric(NULL) is numeric(0); the length()==1 guard must skip it silently.
   testserver_with_launch_query(
     query = list(fips = "10001"),
     expr = testServer(app = app_server, expr = {
       session$setInputs(testing = FALSE)
       expect_identical(url_fips(), "10001")
-      expect_null(url_radius())
+      expect_identical(url_radius(), 0)
     })
   )
 })

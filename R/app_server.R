@@ -626,6 +626,9 @@ app_server <- function(input, output, session) {
     ## FIPS (each code is a separate site)
     if (!loaded && !is.null(spec$fips) && length(spec$fips) > 0) {
       url_fips(as.character(spec$fips))
+      # A FIPS handoff without a buffer means the selected areas themselves,
+      # not the point-method default distance. An explicit buffer still wins.
+      url_radius(0)
       set_site_method("upload", "FIPS", source = "launch-URL")  # layer 1 (highest), init only
       url_upload_method("FIPS")
       loaded <- TRUE

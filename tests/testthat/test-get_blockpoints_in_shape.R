@@ -76,3 +76,48 @@ test_that("all polygons EMPTY GEOMETRY/INVALID", {
     0
   )
 })
+
+test_that("bounding-box candidates include corners and curved-edge extrema", {
+  # Include east/west/southern hemispheres and a box spanning the equator and
+  # prime meridian, where four corners alone still miss the maximum x.
+  boxes <- rbind(c(-76, 39, -75, 40), c(-123, 37, -122, 38),
+                 c(144, 13, 146, 15), c(-171, -15, -168, -10),
+                 c(-20, -10, 20, 10), c(-180, 50, 180, 70))
+  colnames(boxes) <- c("xmin", "ymin", "xmax", "ymax")
+  for (i in seq_len(nrow(boxes))) {
+    bb <- boxes[i, , drop = FALSE]
+    pts <- expand.grid(lon = seq(bb[1], bb[3], length.out = 21),
+                       lat = seq(bb[2], bb[4], length.out = 21))
+    # Use the actual index builder, independently of the bbox transformation.
+    quaddata <- create_quaddata(pts, xyzcolnames = c("BLOCK_X", "BLOCK_Y", "BLOCK_Z"))
+    data.table::setcolorder(quaddata, c("BLOCK_X", "BLOCK_Z", "BLOCK_Y", "pointid"))
+    tree <- SearchTrees::createTree(quaddata, treeType = "quad", dataType = "point")
+    testthat::local_mocked_bindings(localtree_get = function() tree, .package = "EJAM")
+    expect_setequal(getblocksrowsinbox(bb), seq_len(nrow(pts)))
+    expect_setequal(getblocksrowsinbox(rbind(bb, bb, rep(NA_real_, 4))),
+                    seq_len(nrow(pts)))
+  }
+})
+
+test_that("New Castle County polygon matches a direct point-in-polygon check", {
+  shp <- shapes_from_fips("10003")
+  blocks <- ejam_cached_data_get("blockpoints")
+  # A deliberately wide region selected directly in lat/lon, independently
+  # of the quadtree or the county's bounding-box conversion.
+  nearby <- blocks[lat >= 38 & lat <= 41 & lon >= -77 & lon <= -74]
+  points <- sf::st_as_sf(nearby, coords = c("lon", "lat"), crs = 4269)
+  for (radius in c(0, 0.01, 0.5)) {
+    polygon <- if (radius == 0) shp else shape_buffered_from_shapefile(shp, radius.miles = radius)
+    expected <- nearby$blockid[lengths(sf::st_intersects(points, polygon)) > 0]
+    for (oldway in c(TRUE, FALSE)) {
+      actual <- get_blockpoints_in_shape(polygon, oldway = oldway)$pts
+      expect_setequal(actual$blockid, expected)
+    }
+    # The optional buffer must be applied before choosing candidate blocks.
+    actual <- get_blockpoints_in_shape(shp, addedbuffermiles = radius)$pts
+    expect_setequal(actual$blockid, expected)
+    # Projected input polygons must use a geographic bbox for the index.
+    actual <- get_blockpoints_in_shape(sf::st_transform(polygon, 5070))$pts
+    expect_setequal(actual$blockid, expected)
+  }
+})
