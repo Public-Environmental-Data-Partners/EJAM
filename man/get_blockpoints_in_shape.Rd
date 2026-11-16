@@ -31,11 +31,11 @@ or polygons}
 \item{safety_margin_ratio}{multiplied by addedbuffermiles, how far to search for
 blocks nearby using \code{\link[=getblocksnearby]{getblocksnearby()}}, before using those found to do the intersection via sf::}
 
-\item{crs}{used in \code{\link[sf:st_as_sf]{sf::st_as_sf()}} and \code{\link[sf:st_transform]{sf::st_transform()}} and \code{\link[=shape_buffered_from_shapefile_points]{shape_buffered_from_shapefile_points()}}, crs = 4269 or Geodetic CRS NAD83}
+\item{crs}{used in \code{\link[sf:st_as_sf]{sf::st_as_sf()}} and \code{\link[sf:st_transform]{sf::st_transform()}} and \code{\link[=shape_buffered_from_shapefile]{shape_buffered_from_shapefile()}}, crs = 4269 or Geodetic CRS NAD83}
 
 \item{updateProgress}{optional Shiny progress bar to update}
 
-\item{oldway}{whether to use older method that works but may be slower vs newer/draft}
+\item{oldway}{retained for compatibility; both values use the same bounding-box lookup}
 }
 \value{
 Block points table for those blocks whose internal point is inside the buffer
