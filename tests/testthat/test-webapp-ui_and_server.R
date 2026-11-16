@@ -560,7 +560,10 @@ test_that("direct deep-link ?fips= with no radius defaults to zero buffer", {
 
 radius_slider_attr <- function(slider_ui, attr) {
   html <- as.character(slider_ui$html)
-  as.numeric(sub(paste0('.*data-', attr, '="([^"]+)".*'), "\\1", html))
+  pattern <- paste0('data-', attr, '="([^"]+)"')
+  found <- regmatches(html, regexec(pattern, html))[[1]]  # first match only
+  if (length(found) < 2) stop("radius slider HTML has no data-", attr, " attribute")
+  as.numeric(found[2])
 }
 ## Settings the running app gets from global_defaults_*.R (via golem options). Without them
 ## some observers that run once the upload method is known stop the test session.
