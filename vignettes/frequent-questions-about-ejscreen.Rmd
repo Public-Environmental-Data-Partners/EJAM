@@ -77,7 +77,7 @@ been updated by PEDP, as indicated by the filter icons.
 ### How do the updated data compare to the last version in EJScreen? {#q3}
 
 PEDP carefully reconstructed the EPA's methods using open-source tools. 
-However, there are known artifacts with this updated version (see here - NEED LINK?). 
+However, there are known artifacts with this updated version (see [here](known-data-issues.html)). 
 We are working to resolve these artifacts in future versions. 
 
 To check our methods, we wrote validation scripts that compare our updated 
