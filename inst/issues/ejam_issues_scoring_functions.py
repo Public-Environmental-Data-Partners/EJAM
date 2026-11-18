@@ -858,20 +858,27 @@ def main() -> None:
         "--date", default=date.today().isoformat(),
         help="Generated-date string to embed in the header"
     )
+    parser.add_argument('--audit-only', action='store_true',
+                        help='Check open issue metadata without ranking or publishing')
     args = parser.parse_args()
-    if not args.publish and not args.output:
-        parser.error("specify --publish and/or --output")
+    if args.audit_only and (args.publish or args.output):
+        parser.error('--audit-only cannot be combined with --publish or --output')
+    if not args.publish and not args.output and not args.audit_only:
+        parser.error("specify --audit-only, --publish, and/or --output")
 
-    token = resolve_github_token(args.token) if args.publish else args.token
+    token = resolve_github_token(args.token)
     if args.publish and not token:
         parser.error(
             "--publish requires --token, GH_TOKEN, GITHUB_TOKEN, or gh auth login"
         )
 
     print("Fetching open issues from GitHub …")
-    issues = fetch_all_open_issues(
-        token=token, exclude_issue_number=args.issue_number
-    )
+    from issue_metadata_validation import audit_issues
+    all_issues = fetch_all_open_issues(token=token)
+    audit_issues(all_issues)
+    if args.audit_only:
+        return
+    issues = [issue for issue in all_issues if issue['number'] != args.issue_number]
     print(
         f"  {len(issues)} open issues fetched and ranked "
         f"(excluding report issue #{args.issue_number})."
