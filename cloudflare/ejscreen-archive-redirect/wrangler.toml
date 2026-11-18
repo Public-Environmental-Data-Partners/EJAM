@@ -1,0 +1,12 @@
+# Cloudflare Worker "ejscreen-archive-redirect". Read ../README.md before deploying.
+name = "ejscreen-archive-redirect"
+main = "src/index.mjs"
+compatibility_date = "2026-07-06"
+workers_dev = false
+preview_urls = false
+# Keep any variables set in the Cloudflare dashboard when deploying from here.
+keep_vars = true
+
+routes = [
+  { pattern = "ejscreen-archive.ejanalysis.com", custom_domain = true },
+]

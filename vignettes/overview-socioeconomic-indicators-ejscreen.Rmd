@@ -1,7 +1,13 @@
 ---
 title: "Overview of Socioeconomic Indicators in EJScreen"
 description: "Overview of Socioeconomic Indicators in EJScreen"
-output: html_document
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Overview of Socioeconomic Indicators in EJScreen}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 There are seven socioeconomic indicators featured in EJScreen. These indicators form the basis for both the demographic index and the supplemental demographic index:

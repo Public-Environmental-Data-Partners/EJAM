@@ -1,7 +1,13 @@
 ---
 title: "EJScreen Indicators: Diesel Particulate Matter"
 description: "EJScreen Indicators: Diesel Particulate Matter"
-output: html_document
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{EJScreen Indicators: Diesel Particulate Matter}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r developernote, eval=FALSE, echo= FALSE, include = FALSE}

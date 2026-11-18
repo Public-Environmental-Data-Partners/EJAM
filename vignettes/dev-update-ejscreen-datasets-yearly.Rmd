@@ -224,7 +224,7 @@ these update groups to decide what must be rebuilt, validated, or only checked.
    check the built-in `counties_shapefile` and `states_shapefile` and update
    them if necessary to match the release's ACS geographic vintage.
    For the v3 Island Area decision and live EJSCREEN layer availability
-   notes, see [Island Areas in EJAM v3](island-areas.html).
+   notes, see [Island Areas](island-areas.html).
 
 4. **Block Geography Updates** include block-level geometry/index files such as
    `blockpoints`, `quaddata`, and `blockid2fips`. These change only when block

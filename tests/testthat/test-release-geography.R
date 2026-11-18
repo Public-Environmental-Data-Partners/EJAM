@@ -24,7 +24,7 @@ test_that("release years and verified runtime services follow ACS geography", {
   expect_match(shapes_acs_boundary_service("blockgroup"),"/10/query",fixed=TRUE)
   expect_match(shapes_acs_boundary_service("tract"),"/8/query",fixed=TRUE)
   expect_match(shapes_acs_boundary_service("county"),"/82/query",fixed=TRUE)
-  expect_null(shapes_counties_from_countyfips_local("10001")) # bundled data are 2022
+  expect_s3_class(shapes_counties_from_countyfips_local("10001"),"sf") # bundled data are 2024, matching ACS 2020-2024
 })
 
 test_that("Census requests use GEOID and normalize output through both dispatch paths", {
@@ -88,8 +88,8 @@ test_that("geography validation detects physical vintage, coverage and stale loo
   expect_error(release_geography_validate(bad),"coverage")
   bad <- bundle; bad$states_shapefile$AWATER[1] <- NA_real_
   expect_error(release_geography_validate(bad),"geometry/area")
-  expect_identical(release_geography_boundary_year(counties_shapefile),2022L)
-  bad <- counties_shapefile; attr(bad,"boundary_year") <- 2024L
+  expect_identical(release_geography_boundary_year(counties_shapefile),2024L)
+  bad <- counties_shapefile; attr(bad,"boundary_year") <- 2022L
   expect_error(release_geography_boundary_year(bad),"disagrees")
 })
 

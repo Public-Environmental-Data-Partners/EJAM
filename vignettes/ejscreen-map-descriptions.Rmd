@@ -17,7 +17,8 @@ The below provides basic descriptions for the data included in the mapping
 layers available through EJAM/EJScreen. These data are updated periodically. To
 see which years of data are in the current version, see the 13 indicators in the
 [Overview of Environmental Indicators in EJAM/EJScreen](overview-environmental-indicators-ejscreen.html)
-or check the metadata. ** <= is this right? where's the metadata live? **
+or check the metadata.
+<!-- Docs review: is this right? Where does the metadata live? -->
 
 -   [Environmental Burden Indicators](#poll)
 -   [Socioeconomic Indicators](#soci)

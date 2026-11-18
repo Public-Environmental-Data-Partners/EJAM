@@ -263,7 +263,8 @@ test_that("ejam2excel shapefile analyses use EJAM app links in excel", {
   notes_tab <- readxl::read_excel(fname, sheet = "notes", col_names = FALSE) %>% as.data.frame()
   note_row <- which(notes_tab[[1]] %in% "Note on shapefile-based site links")
   expect_true(length(note_row) == 1)
-  expect_match(as.character(notes_tab[note_row, 2]), "https://ejanalysis\\.com/ejamapp")
+  app_url <- url_package("ejam", desc_or_alias = "alias")
+  expect_true(grepl(app_url, as.character(notes_tab[note_row, 2]), fixed = TRUE))
 
   unzip_dir <- tempfile("xlsx_unzip_")
   dir.create(unzip_dir)
@@ -272,6 +273,6 @@ test_that("ejam2excel shapefile analyses use EJAM app links in excel", {
   unzip(fname, files = xml_entries, exdir = unzip_dir)
   xml_text <- unlist(lapply(file.path(unzip_dir, xml_entries), function(p) paste(readLines(p, warn = FALSE), collapse = "\n")))
 
-  expect_true(any(grepl("https://ejanalysis\\.com/ejamapp", xml_text)))
+  expect_true(any(grepl(app_url, xml_text, fixed = TRUE)))
   expect_false(any(grepl("ejamapi-84652557241\\.us-central1\\.run\\.app/report", xml_text)))
 })

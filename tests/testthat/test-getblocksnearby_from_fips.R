@@ -637,3 +637,16 @@ test_that("getblocksnearby_from_fips(compact = TRUE) keeps one row per block if 
   expect_false("blockcount" %in% names(s2b))
 })
 ################# #  ################# #  ################# #
+
+
+test_that("small county buffers do not lose New Castle County residents", {
+  unbuffered <- getblocksnearby_from_fips("10003")
+  baseline <- doaggregate(unbuffered, radius = 999, silentinteractive = TRUE)$results_bysite$pop
+  expect_gt(baseline, 0)
+  for (radius in c(0.01, 0.5, 2)) {
+    buffered <- getblocksnearby_from_fips("10003", radius = radius)
+    population <- doaggregate(buffered, radius = radius, silentinteractive = TRUE)$results_bysite$pop
+    expect_gte(nrow(buffered), nrow(unbuffered))
+    expect_gte(population, baseline)
+  }
+})
