@@ -25,6 +25,13 @@ tests/testthat/_snaps/**/*.png
 # Generated pkgdown HTML belongs on the gh-pages branch, not on source
 # branches. Local docs builds and previews can still write to /docs/.
 
+
+/vignettes/env-indicators/tools/archived_html/
+# This folder will contain various versions of Wayback archived pages
+# as they go through the stages required to re-adopt them as .Rmd files.
+/vignettes/env-indicators/tools/*.txt
+/vignettes/env-indicators/tools/*.csv
+# Various temp files generated or updated in the re-adoption process
 ################################################################################### #
 # Standard or obvious items to ignore
 
