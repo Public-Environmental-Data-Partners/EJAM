@@ -16,31 +16,32 @@ editor_options:
 - [What happened to EJScreen?](#q2)
 - [How do the updated data compare to the last version in EJScreen?](#q3)
 - [Can I vote on which datasets the team should prioritize for future updates?](#q4)
-- [Why did EPA create an EJ screening tool?](#q5)
-- [What is an EJ or supplemental index?](#q6)
-- [How did EPA use EJScreen?](#q7)
-- [Does EJScreen identify \"EJ Communities?\"](#q8)
+- [What is EJAM, and how is it connected to EJScreen?](#q5)
+- [Why did EPA create an EJ screening tool?](#q6)
+- [What is an EJ or supplemental index?](#q7)
+- [How did EPA use EJScreen?](#q8)
+- [Does EJScreen identify "EJ Communities?"](#q9)
 - [Did EPA use any filters, benchmarks, or thresholds, as a part of
   interpreting indicators or indexes found in reports, as part of the
-  screening process?](#q9)
+  screening process?](#q10)
 - [What were the criteria for including these environmental
-  indicators?](#q10)
-- [Why are some datasets older than others?](#q11)
-- [Why do you only consider proximity to some facilities and not
-  emissions or risk from those facilities?](#q12)
+  indicators?](#q11)
+- [Why are some datasets older than others?](#q12)
+- [Why did the EPA only consider proximity to some facilities and not
+  emissions or risk from those facilities?](#q13)
 - [Why do only certain types of facilities or regulated sites have a
-  proximity measure?](#q13)
+  proximity measure?](#q14)
 - [Can I add my own data into EJScreen? Can I add my own boundaries /
-  locations?](#q14)
-- [How do I cite EJScreen?](#q15)
-- [Can EJScreen be used to look at changes over time?](#q16)
+  locations?](#q15)
+- [How do I cite EJScreen?](#q16)
+- [Can EJScreen be used to look at changes over time?](#q17)
 - [What amount of sea level rise should I look at in EJScreen and what
-  does it represent?](#q17)
-- [What data is available for the U.S. Territories?](#q18)
-- [What are threshold maps?](#q19)
-- [What are the supplemental indexes?](#q20)
-- [Why did EPA create supplemental indexes?](#q21)
-- [What is the difference in EJScreen and CEJST?](#q22)
+  does it represent?](#q18)
+- [What data is available for the U.S. Territories?](#q19)
+- [What are threshold maps?](#q20)
+- [What are the supplemental indexes?](#q21)
+- [Why did EPA create supplemental indexes?](#q22)
+- [What is the difference in EJScreen and CEJST?](#q23)
 
 ------------------------------------------------------------------------
 
@@ -61,8 +62,8 @@ indicators to create EJ and supplemental indexes.
 
 ### What happened to EJscreen? {#q2}
 
-EJScreen, EJAM, and associated web pages were removed from EPA websites on Feb 
-5th, 2025. Within days, the [Public Environmental Data Partners (PEDP)](https://www.publicenvirodata.org/) 
+EJScreen, EJAM, and associated web pages were removed from EPA websites on 
+February 5th, 2025. Within days, the [Public Environmental Data Partners (PEDP)](https://www.publicenvirodata.org/) 
 reconstructed EJScreen, and the archived tool
 is available [here](https://pedp-ejscreen-archive.azurewebsites.net/).  
 
@@ -73,9 +74,9 @@ been updated by PEDP, as indicated by the filter icons.
 
 ------------------------------------------------------------------------
 
-### How do the updated data compare to the last version in EJScreen? {#q3} 
+### How do the updated data compare to the last version in EJScreen? {#q3}
 
-PEDP carefully reconstructed the EPA's methods using open-source methods. 
+PEDP carefully reconstructed the EPA's methods using open-source tools. 
 However, there are known artifacts with this updated version (see here - NEED LINK?). 
 We are working to resolve these artifacts in future versions. 
 
@@ -94,14 +95,34 @@ Please use this [form](https://docs.google.com/forms/d/e/1FAIpQLSdFlvUX5VK3yQ9He
 
 ------------------------------------------------------------------------
 
-### Can I vote on which datasets the team should prioritize for future updates? {#q4} 
+### Can I vote on which datasets the team should prioritize for future updates? {#q4}
 
 Yes, you can! We would love your input on our [public roadmap](https://ejscreen.fider.io/), 
 where you can vote on which datasets we should prioritize for future releases. 
 
 ------------------------------------------------------------------------
 
-### Why did EPA create an EJ screening tool? {#q5}
+### What is EJAM, and how is it connected to EJScreen? {#q5}
+
+In 2024, a tool called EJAM added new capabilities. The Environmental Justice 
+Analysis Multisite tool (EJAM) lets you easily and quickly see residential 
+population and environmental information aggregated within and across hundreds
+or thousands of places, all at the same time.
+
+EJSCREEN and EJAM are highly interconnected tools using the same data, while
+offering complementary strengths. EJSCREEN is widely recognized, excels in 
+mapping, and offered many data layers. EJAM, on the other hand, was optimized 
+to analyze lists of locations. EJAM can identify residential areas near certain 
+kinds of EPA-regulated facilities (by industry type, facility ID, etc.) and 
+excels at efficient number-crunching to analyze many locations all at once, 
+as a whole and site-by-site. Each tool links to the other and they both use the
+same exact datasets. The reports generated in EJScreen come from EJAM. 
+
+See [here](https://ejanalysis.com/ejam-code) for more information on EJAM.
+
+------------------------------------------------------------------------
+
+### Why did EPA create an EJ screening tool? {#q6}
 
 EJScreen helped EPA meet the intent of Executive Order 12898, \"Federal
 Actions to Address Environmental Justice in Minority Populations and
@@ -118,7 +139,7 @@ pollution.
 
 ------------------------------------------------------------------------
 
-### What is an EJ or supplemental index? {#q6}
+### What is an EJ or supplemental index? {#q7}
 
 The EJ and supplemental indexes are methods of combining demographic
 information with a single environmental indicator – such as proximity
@@ -127,10 +148,10 @@ combination of environmental burdens and vulnerable populations.
 
 ------------------------------------------------------------------------
 
-### How did EPA use EJScreen? {#q7}
+### How did EPA use EJScreen? {#q8}
 
 EPA used EJScreen to identify areas that may have higher environmental
-burdens and vulnerable populations as the Agency develops programs,
+burdens and vulnerable populations as the Agency developed programs,
 policies and activities that may affect communities. A few examples of
 what EJScreen supported across the Agency include:
 
@@ -149,31 +170,31 @@ EJScreen was not used by EPA staff for any of the following:
 
 ------------------------------------------------------------------------
 
-### Does EJScreen identify \"EJ Communities?\" {#q8} 
+### Does EJScreen identify "EJ Communities?" {#q9}
 
 EJScreen provides screening level indicators, not a determination of the
-existence of absence of EJ concerns. In terms of identification and
+existence or absence of EJ concerns. In terms of identification and
 designation, EPA believed in the importance of communities speaking for
 themselves. EPA's strong belief in providing meaningful community
-involvement includes not identifying a community as EJ or not. EJScreen
+involvement included not identifying a community as EJ or not. EJScreen
 enables users to identify communities based on various socioeconomic and
-environmental factors. 
+environmental factors.
 
 ------------------------------------------------------------------------
 
-### Did EPA use any filters, benchmarks, or thresholds, as a part of interpreting indicators or indexes found in reports, as part of the screening process? {#q9}
+### Did EPA use any filters, benchmarks, or thresholds, as a part of interpreting indicators or indexes found in reports, as part of the screening process? {#q10}
 
 In past screening experience, EPA found it helpful to establish a
 suggested Agency starting point for the purpose of identifying
 geographic areas that may warrant further consideration, analysis or
-outreach. The use of an initial filter promotes consistency and provided
+outreach. The use of an initial filter promoted consistency and provided
 a pragmatic first step for EPA programs and regions when interpreting
 screening results. For early applications of EJScreen, EPA identified
 the 80th percentile filter for one or more of the EJ or supplemental
-indexes when compared to the nation and/or state as that initial
+indexes when compared to the nation and/or state as that initial
 starting point. As EPA gained further experience and insight into the
 applicability of the tool for different uses, program offices and
-regions may opt to designate starting points that are more inclusive or
+regions could opt to designate starting points that are more inclusive or
 specifically tailored to meet programmatic needs more effectively. For
 example, EPA\'s Office of Enforcement and Compliance Assurance used at
 least one supplemental index above the 90th percentile for the US or
@@ -184,10 +205,10 @@ information on this topic.
 
 ------------------------------------------------------------------------
 
-### What were the criteria for including these environmental indicators? {#q10}
+### What were the criteria for including these environmental indicators? {#q11}
 
 The environmental indicators included are those for which there are
-national, publically-available data at a sufficient geographic
+national, publicly-available data at a sufficient geographic
 resolution. Other types of information, either not available at the
 appropriate spatial resolution (e.g., radon), or not available
 nationwide (e.g., local health data) could be overlaid on top of
@@ -195,17 +216,17 @@ EJScreen maps by adding the relevant geospatial data layers.
 
 ------------------------------------------------------------------------
 
-### Why are some datasets older than others? {#q11}
+### Why are some datasets older than others? {#q12}
 
 The process for collecting data from across the country, modelling it,
 and inserting it into EJScreen varies across the different indicators.
 Some datasets, such as the air data, are also updated less frequently
 than others, resulting in varying years of vintages. EPA was committed to
-updating EJScreen annually as new datasets become available.
+updating EJScreen annually as new datasets became available.
 
 ------------------------------------------------------------------------
 
-### Why do you only consider proximity to some facilities and not emissions or risk from those facilities? {#q12}
+### Why did the EPA only consider proximity to some facilities and not emissions or risk from those facilities? {#q13}
 
 EJScreen does include some risk estimates, for example, the Air Toxics
 cancer risk, but these are aggregated risks from many sources that do
@@ -214,12 +235,12 @@ includes some environmental indicators highlighting potential exposure
 (e.g., ambient concentrations of PM2.5 and ozone (O3)). EJScreen uses
 distance weighted proximity as a proxy for the potential impact of
 specific types of facilities. Site-specific risk estimates would require
-much more data and analysis, beyond what could be reasonably be included
+much more data and analysis, beyond what could reasonably be included
 in a national screening tool.
 
 ------------------------------------------------------------------------
 
-### Why do only certain types of facilities or regulated sites have a proximity measure? {#q13}
+### Why do only certain types of facilities or regulated sites have a proximity measure? {#q14}
 
 The intent of the proximity measures is to include facilities that are
 important and not covered in another environmental indicator.
@@ -235,7 +256,7 @@ important and not covered in another environmental indicator.
 
 ------------------------------------------------------------------------
 
-### Can I add my own data into EJScreen, such as other boundaries or locations? {#q14}
+### Can I add my own data into EJScreen, such as other boundaries or locations? {#q15}
 
 There are a variety of ways to add your own data into EJScreen. Data can
 be added as a shapefile, mapservice or through EPA's GeoPlatform. Please
@@ -247,57 +268,57 @@ will not provide quantitative information about the layer you added.
 
 ------------------------------------------------------------------------
 
-### How do I cite EJScreen? {#q15}
+### How do I cite EJScreen? {#q16}
 
 If you use information from EJScreen, please cite the information as
-follows: United States Environmental Protection Agency. 20xx version
-\[cite the year of the version used\]. EJScreen. Retrieved: \[Enter
-Month, Day, Year, from url (the url cited should be the exact url you
-accessed)\] To cite
-specific data content, please also use the citation contained within the
-relevant metadata.
+follows:
+
+> Public Environmental Data Partners. 20xx version [cite the year of the 
+> version used]. EJScreen. Retrieved: [Month, Day, Year], from 
+> [url].
+
+To cite specific data content, please also use the citation contained within 
+the relevant metadata.
 
 To cite specific EJScreen publications (e.g., journal articles), please
 use the appropriate citation. For the EJScreen Technical Documentation,
 please cite as follows (using the relevant year to specify which version
 of documentation is being cited):
 
-U.S. Environmental Protection Agency (EPA), 2017\[or use the latest year
-of documentation available\]. EJScreen Technical Documentation.
+> Public Environmental Data Partners, [use the latest year
+> of documentation available]. EJScreen Technical Documentation.
 
 ------------------------------------------------------------------------
 
-### Can EJScreen be used to look at changes over time? {#q16}
+### Can EJScreen be used to look at changes over time? {#q17}
 
-EJScreen is updated regularly to ensure that the environmental and
-socioeconomic data are as up to date as possible. These updates occur
-annually (and sometimes more often) as new datasets become available.
-EPA also uses these opportunities to make other improvements to the
-useability and methodology of the tool based on community and user
-feedback, Science Advisory Board review, programmatic need, and other
-considerations. 
+The team at PEDP is working on a pipeline so EJScreen can be updated regularly 
+to ensure that the environmental and socioeconomic data are as up to date as 
+possible. Where possible, we aim to complete updates annually (and sometimes 
+more often) as new datasets become available. Previously, EPA used these 
+opportunities to make other improvements to the usability and methodology of 
+the tool based on community and user feedback, Science Advisory Board review, 
+programmatic need, and other considerations.
 
 While these continuous improvements to the methodology help to make sure
 that the results users receive in EJScreen are as useful and accurate as
 possible, they make it difficult to conduct year to year comparisons.
 While there is no way to compare across time in the EJScreen tool, past
 years data are available for download on the [Download EJScreen
-Data](/ejscreen/download-ejscreen-data) page. If users are interested in
+Data](technical-information-and-data-downloads.html) page. If users are interested in
 looking at changes in socioeconomic or environmental factors featured in
 EJScreen over time, they may search the data sources for those layers to
-access past years data. 
+access past years data.
 
 ------------------------------------------------------------------------
 
-### What amount of sea level rise should I look at in EJScreen and what does it represent? {#q17}
+### What amount of sea level rise should I look at in EJScreen and what does it represent? {#q18}
 
 Over the next 30 years, scientists expect most of the US coastline will
 see an increase of one to three feet in mean sea level (see the [CO-OPS
 Technical Report
 (pdf)](https://tidesandcurrents.noaa.gov/publications/techrpt83_Global_and_Regional_SLR_Scenarios_for_the_US_final.pdf)
-(75 pp, 6.7 MB, [About
-PDF](/web-policies-and-procedures/pdfs-free-viewers-and-readers-read-and-print-epa-information#pdf))
-for more information). EJScreen enables you to explore the risks an
+(75 pp, 6.7 MB)). EJScreen enables you to explore the risks an
 increase of up to six feet in mean sea level poses to coastal areas. The
 map depicts the land that could be permanently flooded if action isn't
 taken to protect the coastline.
@@ -315,7 +336,7 @@ website](https://coast.noaa.gov/slr/).
 
 ------------------------------------------------------------------------
 
-### What data is available for the US territories? {#q18}
+### What data is available for the US territories? {#q19}
 
 EJScreen features the addition of select environmental indicators (and
 associated indexes) as well as socioeconomic data for the US Virgin
@@ -328,7 +349,7 @@ in all places within the country.
 
 ------------------------------------------------------------------------
 
-### What are threshold maps? {#q19}
+### What are threshold maps? {#q20}
 
 The threshold map widget allows EJScreen users to look across all twelve
 indexes at once, providing a cumulative outlook on vulnerable
@@ -343,12 +364,12 @@ and state level.
 
 ------------------------------------------------------------------------
 
-### What are the supplemental indexes? {#q20}
+### What are the supplemental indexes? {#q21}
 
 The supplemental indexes are combinations of the twelve single
 environmental indicators with five socioeconomic factors. The
 supplemental indexes use the same [EJScreen
-methodology](/ejscreen/environmental-justice-indexes-ejscreen) and
+methodology](ej-index-descriptions.html) and
 calculation as the EJ indexes but are based on a new five-factor
 supplemental demographic index, rather than the two-factor demographic
 index. The five demographic indicators that are considered in the
@@ -358,7 +379,7 @@ percent unemployed, and low life expectancy.
 
 ------------------------------------------------------------------------
 
-### Why did EPA create supplemental indexes in EJScreen? {#q21}
+### Why did EPA create supplemental indexes in EJScreen? {#q22}
 
 The supplemental indexes offer a different perspective on
 community-level vulnerability across the country. The supplemental
@@ -368,7 +389,7 @@ allocation of government resources when awarding grants.
 
 ------------------------------------------------------------------------
 
-### What is the difference in EJScreen and CEJST? {#q22}
+### What is the difference in EJScreen and CEJST? {#q23}
 
 The [Climate and Economic Justice Screen Tool
 (CEJST)](https://screeningtool.geoplatform.gov/en/#3/33.47/-97.5) was
@@ -376,7 +397,11 @@ purpose-built by the [Council on Environmental Quality
 (CEQ)](https://www.whitehouse.gov/ceq/) to identify \"disadvantaged
 communities\" that have been historically marginalized, underserved, and
 overburdened by pollution for purposes of
-[Justice40](https://www.whitehouse.gov/environmentaljustice/justice40/). \
+[Justice40](https://www.whitehouse.gov/environmentaljustice/justice40/).\
 EJScreen, on the other hand, was created by EPA and does not identify
 areas as disadvantaged or \"EJ communities\" but rather enables users to
-identify communities based on socioeconomic and environmental factors. 
+identify communities based on socioeconomic and environmental factors.
+
+EJScreen & EJAM includes CEJST summaries in their reports. This includes 
+whether the block group(s) overlap with a community defined as disadvantaged 
+in CEJST, and the percentage of overlap. 
