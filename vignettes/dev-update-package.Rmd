@@ -547,6 +547,11 @@ EJSCREEN), plus Cloudflare configuration for the addresses. Plan it before the
 new vintage replaces what the current addresses serve. The new vintage's
 *package* release does not depend on it.
 
+The addresses, the archive deployment's settings, the links that no setting can
+change, and the frozen documentation folder are described in
+[Two data vintages](dev-deployment.html#two-data-vintages-the-current-and-archive-apps)
+in the deployment article.
+
 ## After the release
 
 - **Back-merge `main` into `development`** (pull request, merge commit), so any
