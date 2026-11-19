@@ -242,7 +242,11 @@ testthat::test_that("option(ejam.api.baseurl) overrides the api base URL, beatin
 testthat::test_that("EJAM_EJSCREEN_BASEURL and option(ejam.ejscreen.baseurl) override the EJScreen app URL (and only it)", {
   test_ejscreen <- "https://ejscreen-test.example.test/index.html"
   withr::local_options(list(ejam.ejscreen.baseurl = NULL))
-  from_description <- as.character(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("Config/EJAM/url_ejscreenapp"))
+  # An installed DESCRIPTION can put the value on its own line ("\n    https://..."),
+  # so normalize it the way url_package() does: trim, and drop a trailing slash.
+  from_description <- sub("/+$", "", trimws(as.character(
+    desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("Config/EJAM/url_ejscreenapp")
+  )))
   withr::with_envvar(c(EJAM_EJSCREEN_BASEURL = NA), {
     expect_identical(url_package("ejscreenapp"), from_description)
   })
