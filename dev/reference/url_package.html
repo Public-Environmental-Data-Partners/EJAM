@@ -119,7 +119,14 @@ documentation website.</p></li>
 <li><p>"apidocs" (<code>Config/EJAM/url_apidocs</code>) is for the EJAM API documentation website.</p></li>
 </ul><p>APP OR API SERVERS:</p><ul><li><p>"ejam" or "ejamapp" or "app" (<code>Config/EJAM/url_ejamapp</code>) is for the EJAM Shiny app.</p></li>
 <li><p>"ejamdev" or "ejamappdev" (<code>Config/EJAM/url_ejamapp_dev</code>) is for the EJAM Shiny app development server.</p></li>
-<li><p>"ejscreen" or "ejscreenapp" (<code>Config/EJAM/url_ejscreenapp</code>) is for the live EJScreen app.</p></li>
+<li><p>"ejscreen" or "ejscreenapp" (<code>Config/EJAM/url_ejscreenapp</code>) is for the live EJScreen app.
+A test deployment of the EJAM app can send its EJScreen links (the app's
+header link and the EJScreen map links from <code><a href="url_ejscreenmap.html">url_ejscreenmap()</a></code>) to a test
+EJScreen site instead: <code>options(ejam.ejscreen.baseurl = ...)</code> takes highest
+precedence, then the environment variable <code>EJAM_EJSCREEN_BASEURL</code>, then
+DESCRIPTION as usual. Give the full app address, as in DESCRIPTION. Like the
+API override below, it applies only to the canonical lookup
+(<code>desc_or_alias = "desc"</code>).</p></li>
 <li><p>"api" (<code>Config/EJAM/url_api</code>) is for the EJAM REST API base URL.
 Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
 endpoint can be changed in one place (by editing <code>Config/EJAM/url_api</code>).

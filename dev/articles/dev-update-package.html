@@ -543,10 +543,11 @@ EJAM that is installed. RStudio’s Knit button and
 <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">rmarkdown::render()</a></code> use whatever EJAM you have installed,
 often the previous release, so if a release changes a link field in
 DESCRIPTION or <code><a href="../reference/url_package.html">url_package()</a></code> itself, they would write the
-old links. Also leave <code>EJAM_DOCS_BASE_URL</code> and
-<code>EJAM_API_BASEURL</code> unset while knitting: they are settings
-for a deployment or a versioned docs build, and they change the docs and
-API links. To check that the two agree, knit again and confirm
+old links. Also leave <code>EJAM_DOCS_BASE_URL</code>,
+<code>EJAM_API_BASEURL</code> and <code>EJAM_EJSCREEN_BASEURL</code>
+unset while knitting: they are settings for a deployment or a versioned
+docs build, and they change the docs, API and EJScreen links. To check
+that the two agree, knit again and confirm
 <code>git diff README.md</code> shows nothing.</li>
 <li>
 <strong>Dependencies</strong>: consider raising minimum versions in
