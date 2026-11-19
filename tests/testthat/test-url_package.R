@@ -239,6 +239,29 @@ testthat::test_that("option(ejam.api.baseurl) overrides the api base URL, beatin
   expect_match(url_package("api"), "^https://")
 })
 
+testthat::test_that("EJAM_EJSCREEN_BASEURL and option(ejam.ejscreen.baseurl) override the EJScreen app URL (and only it)", {
+  test_ejscreen <- "https://ejscreen-test.example.test/index.html"
+  withr::local_options(list(ejam.ejscreen.baseurl = NULL))
+  from_description <- as.character(desc::desc(file = system.file("DESCRIPTION", package = "EJAM"))$get("Config/EJAM/url_ejscreenapp"))
+  withr::with_envvar(c(EJAM_EJSCREEN_BASEURL = NA), {
+    expect_identical(url_package("ejscreenapp"), from_description)
+  })
+  withr::with_envvar(c(EJAM_EJSCREEN_BASEURL = paste0(" ", test_ejscreen, " ")), {
+    expect_identical(url_package("ejscreenapp"), test_ejscreen)
+    expect_identical(url_package("ejscreen"), test_ejscreen)
+    # alias/redirect lookups and other types are unaffected
+    expect_false(identical(url_package("ejscreen", desc_or_alias = "alias"), test_ejscreen))
+    expect_false(identical(url_package("ejamapp"), test_ejscreen))
+    expect_false(identical(url_package("api"), test_ejscreen))
+    # flows through to the EJScreen map links
+    expect_match(url_ejscreenmap(lat = 34.05, lon = -118.24), "^https://ejscreen-test\\.example\\.test/index\\.html")
+    # the option beats the env var
+    withr::with_options(list(ejam.ejscreen.baseurl = "https://other.example.test/"), {
+      expect_identical(url_package("ejscreenapp"), "https://other.example.test/")
+    })
+  })
+})
+
 testthat::test_that("EJAM_API_BASEURL override flows through url_ejamapi() report links", {
   withr::with_envvar(c(EJAM_API_BASEURL = "http://127.0.0.1:3035"), {
     urlx <- url_ejamapi(lat = 34.05, lon = -118.24, radius = 3)

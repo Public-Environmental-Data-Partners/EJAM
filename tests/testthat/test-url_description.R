@@ -11,8 +11,8 @@ url_description_fixture <- function(fields) {
 }
 
 test_that("DESCRIPTION archive settings flow through URL builders", {
-  withr::local_envvar(c(EJAM_API_BASEURL = NA, EJAM_DOCS_BASE_URL = NA))
-  withr::local_options(list(ejam.api.baseurl = NULL))
+  withr::local_envvar(c(EJAM_API_BASEURL = NA, EJAM_DOCS_BASE_URL = NA, EJAM_EJSCREEN_BASEURL = NA))
+  withr::local_options(list(ejam.api.baseurl = NULL, ejam.ejscreen.baseurl = NULL))
   fields <- c(
     "Config/EJAM/url_api" = "https://api-archive.example.test/",
     "Config/EJAM/url_ejamapp" = "https://ejam-archive.example.test/",
