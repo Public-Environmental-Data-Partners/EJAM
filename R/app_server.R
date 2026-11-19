@@ -2266,7 +2266,19 @@ app_server <- function(input, output, session) {
     })
   }
 
+  # Wake the EJAM API on this session's first Start click (EJAM#772), so that a
+  # one-site report link clicked after the analysis does not wait for the API to
+  # start. The browser sends the request; R does not wait for it. Not on app
+  # launch: someone only browsing should not start an API container.
+  ejamapi_wake_sent <- FALSE
+
   observeEvent(input$bt_get_results, {  # (button is pressed)
+
+    if (!ejamapi_wake_sent) {
+      ejamapi_wake_sent <<- TRUE
+      wake_js <- tryCatch(ejamapi_wake_js(), error = function(e) NULL)
+      if (!is.null(wake_js)) {try(shinyjs::runjs(wake_js), silent = TRUE)}
+    }
 
     analysis_complete(FALSE)
     # Release the previous analysis's results now, so this analysis can reuse that memory.
