@@ -63,6 +63,15 @@ ENV EJAM_VERSION=${EJAM_VERSION}
 # (plan step 31), when the archive service goes back to v3.2022.3.
 ENV EJAM_API_BASEURL=https://ejamapi-archive-84652557241.us-central1.run.app
 
+# Send the dev app's documentation links (the "EJSCREEN/EJAM Help" link in the
+# header and "What is EJAM?" on the About page) to the /dev/ docs, which are
+# rebuilt on every push to `development` and so describe the version being
+# tested here. Without this, the dev app links to the docs root, which shows
+# the current Latest release (v3.2022.3 until the v4 cutover). Unlike the API
+# setting above, this one need not be removed at the cutover: the dev server
+# runs the next version, and /dev/ documents the next version.
+ENV EJAM_DOCS_BASE_URL=https://public-environmental-data-partners.github.io/EJAM/dev
+
 WORKDIR /root
 
 # Install R packages — sourced from DESCRIPTION Imports + runtime-relevant Suggests
