@@ -7,6 +7,7 @@
 - A test deployment of the web app can link to a test EJScreen site: set the environment variable `EJAM_EJSCREEN_BASEURL` (or `options(ejam.ejscreen.baseurl = ...)`).
 - Web app: polygons, cities and counties sent from another app (such as EJScreen) no longer get an unrequested buffer; they use the distance that was sent, or no buffer (#766).
 - Web app: clicking Start also wakes the EJAM API, so one-site report links open faster after an analysis (#772).
+- Analyses of many FIPS codes are much faster: for example, finding the blockgroups in all of California's tracts now takes under a second instead of about 85 seconds (#791).
 
 # EJAM 4.2024.0 (November 2026)
 

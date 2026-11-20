@@ -629,6 +629,24 @@ test_that("getblocksnearby_from_fips(compact = TRUE) has one row per blockgroup,
   expect_gt(out_compact$count_of_blocks_near_multiple_sites, 0)
 })
 
+test_that("getblocksnearby_from_fips() finds every blockgroup whose code starts with each FIPS, for a mix of types", {
+  bgs <- blockgroupstats$bgfips
+  tracts <- unique(substr(bgs[startsWith(bgs, "10001")], 1, 11))[1:5]
+  block <- paste0(bgs[startsWith(bgs, "24005")][1], "001")
+  fips_input <- c("44", "24005", tracts, bgs[startsWith(bgs, "10003")][1:3], block)
+  suppressMessages(suppressWarnings({
+    s2b <- getblocksnearby_from_fips(fips_input, compact = TRUE)
+  }))
+  expect_equal(sort(unique(s2b$ejam_uniq_id)), seq_along(fips_input))
+  expect_false(is.unsorted(s2b$ejam_uniq_id))
+  for (i in seq_along(fips_input)) {
+    expected <- bgs[startsWith(bgs, substr(fips_input[i], 1, 12))]
+    found <- blockgroupstats$bgfips[match(s2b$bgid[s2b$ejam_uniq_id == i], blockgroupstats$bgid)]
+    expect_setequal(found, expected)
+    expect_equal(unique(s2b$fips[s2b$ejam_uniq_id == i]), fips_input[i])
+  }
+})
+
 test_that("getblocksnearby_from_fips(compact = TRUE) keeps one row per block if any FIPS is a city", {
   suppressMessages(suppressWarnings({
     s2b <- getblocksnearby_from_fips(c("10001", testinput_fips_cities[1]), compact = TRUE)

@@ -361,43 +361,26 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
   ######################################## #
   ### Get bgfips:
 
-  suppressWarnings({
-    ######################################## #
-    ## create two-column dataframe with bgs (values. bgfips or just bgid) and original fips (ind)
-
-    # notes:
-    #   fips_bgs_in_fips1() returns all blockgroup fips codes contained within each fips provided
-    #   fips_bgs_in_fips() replaces fips_bgs_in_fips1() ? which is faster?
-    #   all_bgs <- stack(sapply(fips_vec, fips_bgs_in_fips)) # newer - fast alone but slow in sapply?
-    ######################################## #
-    # SLOW -- e.g. 1.4 seconds for all counties in region 6
-    # *** It would be more efficient to avoid fips_bgs_in_fips1()
-    #     to use a new func to provide bgid_from_anyfips()
-    #     instead of 1st getting bgfips and then needing to look up bgid by bgfips.
-    # We should switch to doing it all this way:
-    #      use fips_bgs_in_fips() to get all bgfips values in each of the bg/tract/county/state fips codes analyzed (which does fips_lead_zero() and fipstype() and uses blockgroupstats)
-    #      use join to blockgroupstats on bgfips, to get all bgid values
-    #  OR use a variation on
-    #      use join to blockwts on bgid, to get all the blockid values.
-    ######################################## #
-
-    all_bgs <- lapply(fips_vec, fips_bgs_in_fips1)  ## we could replace this with a new
-    oknow <- !sapply(all_bgs, is.null)
-    all_bgs   <- all_bgs[oknow]   # drop input fips that had no bgs found
-    fips_vec <- fips_vec[oknow] # ditto
-    if (all(sapply(all_bgs, is.null))) {
-      # every element of named list is NULL meaning no bgs found for any input fips, so cannot do stack()
-      all_bgs <- data.frame(bgfips = character(0), fips = character(0), stringsAsFactors = FALSE)
-    } else {
-      names(all_bgs) <- fips_vec
-      all_bgs <- stack(all_bgs)      # *** Note stack() drops all NA fips.  stack() seems slow here
-    }
+  ## A table with one row per blockgroup in each fips (columns bgfips, fips), giving the same
+  ## rows that calling fips_bgs_in_fips1() on each fips would give, but much faster:
+  ## a blockgroup is in a state, county or tract when its 12-digit code starts with that code,
+  ## so all codes of the same length are matched in one join on the first characters of every
+  ## blockgroup code, not by scanning every blockgroup code once per fips
+  ## (that took about 85 seconds for the 9,129 tracts in California).
+  ## A 12-digit code is used as is, and a longer one (a block) is shortened to its blockgroup.
+  fips12 <- substr(fips_vec, 1, 12)
+  wanted <- data.table(fips12 = fips12, fips = unname(fips_vec), n_input = seq_along(fips_vec))[!is.na(fips12)]
+  wanted[, len := nchar(fips12)]
+  all_us_bgfips <- blockgroupstats$bgfips
+  all_bgs <- lapply(sort(unique(wanted$len[wanted$len < 12])), function(len_now) {
+    prefixes <- data.table(fips12 = substr(all_us_bgfips, 1, len_now), bgfips = all_us_bgfips)
+    prefixes[wanted[len == len_now], on = "fips12", nomatch = NULL, .(bgfips, fips = i.fips, n_input = i.n_input)]
   })
-  names(all_bgs) <- c('bgfips', 'fips')
+  all_bgs <- rbindlist(c(all_bgs, list(wanted[len == 12, .(bgfips = fips12, fips, n_input)])))
+  setorder(all_bgs, n_input) # same order as the fips provided (a stable sort, so blockgroups stay in blockgroupstats order)
+  all_bgs[, n_input := NULL]
   ##### get ejam_uniq_id taking into account any invalid fips removed
-  setDT(all_bgs)
   all_bgs[original_order, ejam_uniq_id := n, on = "fips"]
-  all_bgs$fips <- as.character(all_bgs$fips) # because stack() always creates a factor column. data.table might have a faster reshaping approach? ***
 
   ######################################## #
   ### Get bgid:
