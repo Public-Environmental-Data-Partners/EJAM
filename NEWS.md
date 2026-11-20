@@ -8,6 +8,7 @@
 - Web app: polygons, cities and counties sent from another app (such as EJScreen) no longer get an unrequested buffer; they use the distance that was sent, or no buffer (#766).
 - Web app: clicking Start also wakes the EJAM API, so one-site report links open faster after an analysis (#772).
 - Analyses of many FIPS codes are much faster: for example, finding the blockgroups in all of California's tracts now takes under a second instead of about 85 seconds (#791).
+- A FIPS code listed more than once no longer gets double the population and other counts: each copy now gets the same results as the code listed once, in input order (#793).
 
 # EJAM 4.2024.0 (November 2026)
 

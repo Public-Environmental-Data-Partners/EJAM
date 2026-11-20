@@ -647,6 +647,20 @@ test_that("getblocksnearby_from_fips() finds every blockgroup whose code starts 
   }
 })
 
+test_that("getblocksnearby_from_fips() gives each copy of a repeated FIPS code its own blockgroups", {
+  for (compact in c(TRUE, FALSE)) {
+    suppressMessages(suppressWarnings({
+      s2b   <- getblocksnearby_from_fips(c("10001", "10003", "10001"), compact = compact)
+      alone <- getblocksnearby_from_fips("10001", compact = compact)
+    }))
+    expect_equal(sort(unique(s2b$ejam_uniq_id)), 1:3)
+    for (i in c(1, 3)) {
+      expect_equal(s2b$blockid[s2b$ejam_uniq_id == i], alone$blockid)
+      expect_equal(s2b$blockwt[s2b$ejam_uniq_id == i], alone$blockwt)
+    }
+  }
+})
+
 test_that("getblocksnearby_from_fips(compact = TRUE) keeps one row per block if any FIPS is a city", {
   suppressMessages(suppressWarnings({
     s2b <- getblocksnearby_from_fips(c("10001", testinput_fips_cities[1]), compact = TRUE)

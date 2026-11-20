@@ -368,8 +368,10 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
   ## blockgroup code, not by scanning every blockgroup code once per fips
   ## (that took about 85 seconds for the 9,129 tracts in California).
   ## A 12-digit code is used as is, and a longer one (a block) is shortened to its blockgroup.
+  ## n_input is each code's position in the input (counting invalid codes) and becomes its ejam_uniq_id,
+  ## so a code listed twice gives two sites, each with its own blockgroups.
   fips12 <- substr(fips_vec, 1, 12)
-  wanted <- data.table(fips12 = fips12, fips = unname(fips_vec), n_input = seq_along(fips_vec))[!is.na(fips12)]
+  wanted <- data.table(fips12 = fips12, fips = unname(fips_vec), n_input = original_order$n[ok])[!is.na(fips12)]
   wanted[, len := nchar(fips12)]
   all_us_bgfips <- blockgroupstats$bgfips
   all_bgs <- lapply(sort(unique(wanted$len[wanted$len < 12])), function(len_now) {
@@ -378,9 +380,7 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
   })
   all_bgs <- rbindlist(c(all_bgs, list(wanted[len == 12, .(bgfips = fips12, fips, n_input)])))
   setorder(all_bgs, n_input) # same order as the fips provided (a stable sort, so blockgroups stay in blockgroupstats order)
-  all_bgs[, n_input := NULL]
-  ##### get ejam_uniq_id taking into account any invalid fips removed
-  all_bgs[original_order, ejam_uniq_id := n, on = "fips"]
+  setnames(all_bgs, "n_input", "ejam_uniq_id")
 
   ######################################## #
   ### Get bgid:

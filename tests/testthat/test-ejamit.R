@@ -530,6 +530,24 @@ testthat::test_that("ejamit output (states) sorted like input fips", {
 })
 ########################################################## #
 
+testthat::test_that("ejamit() gives each copy of a repeated FIPS code the same results as the code listed once, in input order", {
+  junk = capture_output({
+    suppressMessages(suppressWarnings({
+      out  <- ejamit(fips = c("10001", "10003", "10001"))
+      once <- ejamit(fips = c("10001", "10003"))
+    }))
+  })
+  expect_equal(out$results_bysite$ejam_uniq_id, c("10001", "10003", "10001"))
+  expect_equal(out$results_bysite[c(1, 2), ], once$results_bysite, ignore_attr = TRUE)
+  # the third row is the same as the first, except that its report link is for site number 3
+  cols <- setdiff(names(once$results_bysite), "EJAM Report")
+  expect_equal(out$results_bysite[3, ..cols], once$results_bysite[1, ..cols], ignore_attr = TRUE)
+  expect_true(grepl("fips=10001&", out$results_bysite[["EJAM Report"]][3]) &&
+                grepl("sitenumber=3&", out$results_bysite[["EJAM Report"]][3]))
+  expect_equal(out$results_overall$pop, once$results_overall$pop)
+})
+########################################################## #
+
 testthat::test_that("ejamit can use fips=fips_counties_from_statename()", {
   oldwidth = options("width")
   testthat::expect_no_error({

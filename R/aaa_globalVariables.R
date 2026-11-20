@@ -195,7 +195,7 @@ from_datasets_add = sort(setdiff(from_datasets, from_varlist_add))
     "distance_min_avgperson", "distance_unadjusted", "drinking",
     "ejam_uniq_id", "ejscreen_indicator", "ejscreen_version_global", "eparegion", "estimate",
     "extratable_stuff", "failed", "failed_byfile", "failed_bygroup",
-    "fips", "fips12", "i.fips", "i.n_input", "len", "n_input",
+    "fips", "fips12", "i.fips", "i.n_input", "len", "n_input", "copy_n", "i.n",
     "flagged", "flagged_byfile", "flagged_bygroup", "frs",
     "frs_arrow", "frs_by_mact", "frs_by_mact_arrow", "frs_by_naics",
     "frs_by_programid", "frs_by_programid_arrow", "frs_by_sic",
