@@ -34,10 +34,11 @@ codes, or clicking on a map to specify one or more points – and it
 returns a summary report comparing residents and environmental
 conditions at those places to the rest of the country.
 
-## About v4.2024.0 (November 2026)
+## About v4.2024.1 (December 2026)
 
-**This release uses the 2020-2024 American Community Survey (ACS) data,
-and updated ozone and PM2.5 data.** The previous release,
+**This release fixes problems found in v4.2024.0 and uses the same data:
+the 2020-2024 American Community Survey (ACS) data, and updated ozone
+and PM2.5 data.** The last release on the older data,
 [v3.2022.3](https://github.com/Public-Environmental-Data-Partners/EJAM/releases/tag/v3.2022.3),
 used the ACS 2018-2022 data and is frozen. It stays available as that
 release, with its documentation at
