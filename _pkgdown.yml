@@ -1,4 +1,4 @@
-﻿url: https://public-environmental-data-partners.github.io/EJAM/
+url: https://public-environmental-data-partners.github.io/EJAM/
 repo:
   # Pin the branch used in "Source: R/..." (blob) links. Without this, pkgdown
   # falls back to GITHUB_REF_NAME (the ref the workflow run was triggered on), so
