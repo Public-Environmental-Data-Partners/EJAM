@@ -124,8 +124,10 @@ sitetype_from_dt <- function(dt) {
   ## length() > 0 as well as all(), because all() on zero elements is vacuously TRUE -
   ## so a 0-row table with an ejam_uniq_id column was reported as "fips" on the strength
   ## of no values at all. An empty result should be undetermined, not FIPS.
+  ## NA ids are left out: ejamit(fips = ...) gives an invalid or repeated FIPS code ejam_uniq_id NA.
   if ('ejam_uniq_id' %in% names(dt)) {
-    if (length(dt$ejam_uniq_id) > 0 && all(fips_valid(dt$ejam_uniq_id))) {
+    ids_not_na <- dt$ejam_uniq_id[!is.na(dt$ejam_uniq_id)]
+    if (length(ids_not_na) > 0 && all(fips_valid(ids_not_na))) {
       return("fips")
     }
   }

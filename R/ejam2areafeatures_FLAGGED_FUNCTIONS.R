@@ -240,9 +240,12 @@ flagged_pct_sites <- function(bysite = testoutput_ejamit_1000pts_1miles$results_
   }
   stopifnot(all(flagvarnames %in% colnames(bysite)))
   x <- flagged_count_sites(bysite = bysite, flagvarnames = flagvarnames)
-  x <- round(100 * x / NROW(bysite), digits = digits)
+  # The percent is of the sites that were analyzed: a row with no value in any of these columns
+  # (an invalid site, like an invalid or repeated FIPS code) is not counted. Sites with zero residents still count.
+  nsites_analyzed <- sum(rowSums(!is.na(as.data.frame(bysite)[, flagvarnames, drop = FALSE])) > 0)
+  x <- round(100 * x / nsites_analyzed, digits = digits)
   if (interactive()) {
-    cat("Site count total: ", prettyNum(NROW(bysite), big.mark = ","), "\n")
+    cat("Site count total: ", prettyNum(nsites_analyzed, big.mark = ","), "\n")
   }
   if (wasnt) {
     setDF(bysite)

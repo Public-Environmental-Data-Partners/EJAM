@@ -315,7 +315,9 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
 
   if (sitetype == 'fips') {
 
-    if ('ejam_uniq_id' %in% colnames(mydf) && all(fips_valid(mydf$ejam_uniq_id))) {
+    # NA ids (invalid or repeated FIPS codes in ejamit() output) are left out of this check
+    if ('ejam_uniq_id' %in% colnames(mydf) && any(!is.na(mydf$ejam_uniq_id)) &&
+        all(fips_valid(mydf$ejam_uniq_id[!is.na(mydf$ejam_uniq_id)]))) {
       fips <- mydf$ejam_uniq_id
     } else {
       fips <- data.frame(mydf)[, which(fixnames_aliases(names(mydf)) %in% 'fips')[1]]
@@ -323,7 +325,7 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
       #   # should already be true since checked type earlier using aliases etc.
       # }
     }
-    ftype <- fipstype(fips)
+    ftype <- fipstype(fips[!is.na(fips)]) # NA ids are invalid sites; shapes_from_fips() gives them empty rows, so popups stay aligned
 
     ######################### #
     # _States  ####
