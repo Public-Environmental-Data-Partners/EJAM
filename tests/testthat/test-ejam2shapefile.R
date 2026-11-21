@@ -220,6 +220,48 @@ test_that("ejam2shapefile FIPS analysis uses a fips column if there is one", {
 })
 ################################# #
 
+test_that("ejam2shapefile FIPS analysis with a buffer exports the buffered footprint", {
+  out0 <- testoutput_ejamit_fips_counties # radius.miles is NA, no buffer
+  out1 <- data.table::copy(testoutput_ejamit_fips_counties)
+  out1$results_bysite$radius.miles <- 1 # as from ejamit(fips = ..., radius = 1)
+  suppressWarnings({
+    suppressMessages({
+      junk <- capture_output({
+        shp0 <- ejam2shapefile(out0, save = FALSE)
+        shp1 <- ejam2shapefile(out1, save = FALSE)
+        expected0 <- shapes_from_fips(out0$results_bysite$ejam_uniq_id)
+        expected1 <- shape_buffered_from_shapefile(expected0, radius.miles = 1)
+      })
+    })
+  })
+  area0 <- as.numeric(sf::st_area(shp0))
+  area1 <- as.numeric(sf::st_area(shp1))
+  expect_equal(area0, as.numeric(sf::st_area(expected0)))
+  expect_equal(area1, as.numeric(sf::st_area(expected1)))
+  expect_true(all(area1 > area0))
+  expect_equal(shp1$FIPS, out1$results_bysite$ejam_uniq_id) # same order as results_bysite
+})
+################################# #
+
+test_that("ejam2shapefile FIPS results table alone, with an NA ejam_uniq_id row", {
+  bysite <- data.table::copy(testoutput_ejamit_fips_counties$results_bysite)
+  bysite$ejam_uniq_id[2] <- NA # as for an invalid FIPS input
+  # without the list from ejamit(), the FIPS site type must be inferred from the table
+  skip_if(is.na(suppressWarnings(sitetype_from_dt(bysite))),
+          "needs sitetype_from_dt() to ignore NA ids, as in Public-Environmental-Data-Partners/EJAM#795")
+  suppressWarnings({
+    suppressMessages({
+      junk <- capture_output({
+        shp <- ejam2shapefile(bysite, save = FALSE)
+      })
+    })
+  })
+  expect_equal(NROW(shp), 3)
+  expect_equal(as.vector(sf::st_is_empty(shp)), c(FALSE, TRUE, FALSE))
+  expect_equal(shp$ejam_uniq_id, c("10001", NA, "10005"))
+})
+################################# #
+
 test_that("ejam2shapefile FIPS analysis can save a file", {
   expect_no_error({
     suppressWarnings({

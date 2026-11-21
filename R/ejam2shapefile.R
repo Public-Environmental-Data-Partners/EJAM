@@ -78,6 +78,12 @@ ejam2shapefile <- function(ejamitout,
       # 1 row per row of df, same order, with empty geometry where fips is NA or invalid
       shp <- shapes_from_fips(as.character(df[[fipscol]]))
       if (!is.null(shp)) {
+        # buffered FIPS analysis: export the buffered area that was analyzed, as ejam2map() maps it
+        rad <- suppressWarnings(as.numeric(df[["radius.miles"]]))
+        rad <- rad[!is.na(rad)][1]
+        if (!is.na(rad) && rad > 0 && rad != 999) {
+          shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
+        }
         # where both have a column (e.g., pop), keep the value from the results, not from the boundaries
         dupcols <- setdiff(intersect(names(shp), names(df)), attr(shp, "sf_column"))
         if (length(dupcols) > 0) {shp <- shp[ , setdiff(names(shp), dupcols)]}
