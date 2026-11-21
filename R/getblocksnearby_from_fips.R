@@ -376,7 +376,9 @@ getblocksnearby_from_fips_noncity <- function(fips, return_shp = FALSE, in_shiny
   all_us_bgfips <- blockgroupstats$bgfips
   all_bgs <- lapply(sort(unique(wanted$len[wanted$len < 12])), function(len_now) {
     prefixes <- data.table(fips12 = substr(all_us_bgfips, 1, len_now), bgfips = all_us_bgfips)
-    prefixes[wanted[len == len_now], on = "fips12", nomatch = NULL, .(bgfips, fips = i.fips, n_input = i.n_input)]
+    # allow.cartesian: a code listed many times (like rep("06", 12)) can return more rows than data.table allows by default
+    prefixes[wanted[len == len_now], on = "fips12", nomatch = NULL, allow.cartesian = TRUE,
+             .(bgfips, fips = i.fips, n_input = i.n_input)]
   })
   all_bgs <- rbindlist(c(all_bgs, list(wanted[len == 12, .(bgfips = fips12, fips, n_input)])))
   setorder(all_bgs, n_input) # same order as the fips provided (a stable sort, so blockgroups stay in blockgroupstats order)

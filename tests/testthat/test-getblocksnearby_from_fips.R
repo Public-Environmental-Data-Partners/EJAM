@@ -661,6 +661,20 @@ test_that("getblocksnearby_from_fips() gives each copy of a repeated FIPS code i
   }
 })
 
+test_that("getblocksnearby_from_fips() handles a large code repeated so often that the join returns more rows than there are blockgroups", {
+  suppressMessages(suppressWarnings({
+    s2b   <- getblocksnearby_from_fips(rep("06", 12), compact = TRUE)
+    alone <- getblocksnearby_from_fips("06", compact = TRUE)
+  }))
+  # more rows than nrow(blockgroupstats) + 12, the most a data.table join returns unless allow.cartesian = TRUE
+  expect_gt(NROW(s2b), NROW(blockgroupstats) + 12)
+  expect_equal(sort(unique(s2b$ejam_uniq_id)), 1:12)
+  for (i in 1:12) {
+    expect_equal(s2b$bgid[s2b$ejam_uniq_id == i], alone$bgid)
+    expect_equal(s2b$blockwt[s2b$ejam_uniq_id == i], alone$blockwt)
+  }
+})
+
 test_that("getblocksnearby_from_fips(compact = TRUE) keeps one row per block if any FIPS is a city", {
   suppressMessages(suppressWarnings({
     s2b <- getblocksnearby_from_fips(c("10001", testinput_fips_cities[1]), compact = TRUE)
