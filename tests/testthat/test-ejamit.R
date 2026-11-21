@@ -530,6 +530,50 @@ testthat::test_that("ejamit output (states) sorted like input fips", {
 })
 ########################################################## #
 
+testthat::test_that("ejamit() marks later copies of a repeated FIPS code invalid, keeping one row per input", {
+  junk = capture_output({
+    suppressMessages({
+      # "1001" is the same code as "01001" once its leading zero is added
+      expect_warning(
+        out <- ejamit(fips = c("10001", "10003", "10001", "01001", "1001")),
+        "listed more than once")
+      once <- suppressWarnings(ejamit(fips = c("10001", "10003", "01001")))
+    })
+  })
+  bysite <- out$results_bysite
+  expect_equal(NROW(bysite), 5)
+  expect_equal(bysite$ejam_uniq_id, c("10001", "10003", NA, "01001", NA))
+  expect_equal(bysite$valid, c(TRUE, TRUE, FALSE, TRUE, FALSE))
+  expect_equal(bysite$invalid_msg[c(3, 5)], c("repeat of FIPS 10001 (row 1)", "repeat of FIPS 01001 (row 4)"))
+  expect_equal(bysite$pop[c(1, 2, 4)], once$results_bysite$pop)
+  expect_equal(out$results_overall$pop, once$results_overall$pop)
+})
+########################################################## #
+
+testthat::test_that("ejamit() keeps input order when several FIPS codes are invalid, with each report link on its own row", {
+  junk = capture_output({
+    suppressMessages(suppressWarnings({
+      out <- ejamit(fips = c("99999", "10001", "10003", NA, "10005"))
+      valid_only <- ejamit(fips = c("10001", "10003", "10005"))
+    }))
+  })
+  bysite <- out$results_bysite
+  expect_equal(bysite$ejam_uniq_id, c(NA, "10001", "10003", NA, "10005"))
+  expect_equal(bysite$valid, c(FALSE, TRUE, TRUE, FALSE, TRUE))
+  link_cols <- names(bysite)[sapply(bysite, function(z) any(grepl("fips=", z, fixed = TRUE)))]
+  expect_gt(length(link_cols), 0)
+  for (col in link_cols) {
+    for (i in c(2, 3, 5)) {
+      expect_true(grepl(paste0("fips=", bysite$ejam_uniq_id[i], "([^0-9]|$)"), bysite[[col]][i]))
+    }
+  }
+  expect_equal(sitetype_from_dt(bysite), "fips")
+  # the percent of sites near schools and other features counts only the sites analyzed
+  expect_equal(out$results_summarized$flagged_areas$Percent_of_these_Sites,
+               valid_only$results_summarized$flagged_areas$Percent_of_these_Sites)
+})
+########################################################## #
+
 testthat::test_that("ejamit can use fips=fips_counties_from_statename()", {
   oldwidth = options("width")
   testthat::expect_no_error({

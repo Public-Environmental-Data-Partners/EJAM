@@ -422,6 +422,67 @@ test_that("map_shapes_leaflet_proxy() keeps popup alignment after dropping empty
                                  popup = c("already filtered first", "already filtered third"))
   expect_equal(map2popups_polygon(x3), c("already filtered first", "already filtered third"))
 })
+
+test_that("map_shapes_leaflet() and map_shapes_leaflet_proxy() keep per-row colors aligned after dropping empty geometries", {
+  # One color per row: the empty middle shape's color must be dropped with it,
+  # or the third shape is drawn in the second row's color (#793).
+  shp <- sf::st_sf(
+    FIPS = c("0000001", "0000002", "0000003"),
+    geometry = sf::st_sfc(
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE))),
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(2, 2, 2, 3, 3, 3, 3, 2, 2, 2), ncol = 2, byrow = TRUE)))
+    )
+  )
+  cols <- c("#ff0000", "#808080", "#0000ff")
+  polygons_call <- function(mymap) {
+    Filter(function(z) identical(z$method, "addPolygons"), mymap$x$calls)[[1]]
+  }
+  # addPolygons args: 1 polygons, 2 layerId, 3 group, 4 options (which hold color)
+  k <- polygons_call(map_shapes_leaflet(shp, color = cols, popup_style = "none"))
+  expect_equal(k$args[[2]], c(1L, 3L))
+  expect_equal(k$args[[4]]$color, c("#ff0000", "#0000ff"))
+
+  kp <- polygons_call(map_shapes_leaflet_proxy(leaflet::leaflet(), shapes = shp, color = cols, popup = NULL))
+  expect_equal(kp$args[[4]]$color, c("#ff0000", "#0000ff"))
+
+  # a single color is kept as is
+  k1 <- polygons_call(map_shapes_leaflet(shp, color = "green", popup_style = "none"))
+  expect_equal(k1$args[[4]]$color, "green")
+
+  # mapfast() with an NA id, as ejamit() gives an invalid or repeated FIPS code
+  m <- suppressWarnings(mapfast(data.frame(ejam_uniq_id = c("10001", NA, "10003"), pop = c(10, 0, 30)),
+                                color = cols, popup_style = "none"))
+  km <- polygons_call(m)
+  expect_equal(km$args[[2]], c(1L, 3L))
+  expect_equal(km$args[[4]]$color, c("#ff0000", "#0000ff"))
+
+  # mapfast() with an invalid code that keeps its id, as ejamit() gives "10999"
+  # (a real state, no such county) with valid FALSE
+  m2 <- suppressWarnings(mapfast(data.frame(ejam_uniq_id = c("10001", "10999", "10003"),
+                                            valid = c(TRUE, FALSE, TRUE), pop = c(10, 0, 30)),
+                                 color = cols, popup_style = "none"))
+  expect_true(inherits(m2, "leaflet"))
+  km2 <- polygons_call(m2)
+  expect_equal(km2$args[[2]], c(1L, 3L))
+  expect_equal(km2$args[[4]]$color, c("#ff0000", "#0000ff"))
+})
+
+test_that("mapfast() maps ejamit() FIPS results that include invalid and repeated codes (#793)", {
+  x <- suppressWarnings(ejamit(fips = c("10001", "10999", "10003", "10001"),
+                               quiet = TRUE, silentinteractive = TRUE))
+  # "10999" keeps its id but is invalid; the repeated "10001" is invalid with id NA
+  expect_equal(x$results_bysite$ejam_uniq_id, c("10001", "10999", "10003", NA))
+  expect_equal(x$results_bysite$valid, c(TRUE, FALSE, TRUE, FALSE))
+  polygons_call <- function(mymap) {
+    Filter(function(z) identical(z$method, "addPolygons"), mymap$x$calls)[[1]]
+  }
+  for (input in list(x, x$results_bysite)) {
+    m <- suppressWarnings(mapfast(input, popup_style = "none"))
+    expect_true(inherits(m, "leaflet"))
+    expect_equal(polygons_call(m)$args[[2]], c(1L, 3L))
+  }
+})
 ############################################## #
 
 test_that("shapefile upload map path logs no console error (issue #136)", {

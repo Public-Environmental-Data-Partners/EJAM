@@ -46,7 +46,6 @@ guide to those files; edit the files themselves on the deploy branches.
 | `.dockerignore` | Files excluded from the Docker build context |
 | `.github/workflows/deploy.yaml` | GitHub Actions — build + deploy to **prod** (on push to `prod-deploy`, or run manually) |
 | `.github/workflows/deploy-dev.yaml` | GitHub Actions — build + deploy to **dev** (on push to `dev-deploy`, or run manually with an optional `ejam_version` input) |
-| `.github/workflows/diag-ecs-dev.yaml` | GitHub Actions — read-only diagnostics for the dev ECS service (run manually) |
 
 Apart from these, the deploy branches hold only a short `README.md`, the licenses,
 and git config files. They do not hold the EJAM package source: the `Dockerfile`
