@@ -1,0 +1,85 @@
+{
+  "indicators": {
+    "o3": {
+      "display_name_short": "O3",
+      "display_name_long": "Ozone (O3)",
+      "provider": "EPA",
+      "description": "Ozone (O3) concentration data provided by the EPA.",
+      "version": "1.2022",
+      "data_period": "2022",
+      "external_sources": [
+        {
+          "name": "raw_o3",
+          "file_name": "2022_ozone_daily_8hour_maximum.txt.gz",
+          "source_url": "https://ofmpub.epa.gov/rsig/rsigserver?data/FAQSD/outputs/2022_ozone_daily_8hour_maximum.txt.gz"
+        }
+      ]
+    },
+    "pm25": {
+      "display_name_short": "PM2.5",
+      "display_name_long": "Particulate Matter (PM2.5)",
+      "provider": "EPA",
+      "description": "Particulate Matter (PM2.5) concentration data provided by the EPA.",
+      "version": "1.2022",
+      "data_period": "2022",
+      "external_sources": [
+        {
+          "name": "raw_pm25",
+          "file_name": "2022_pm25_daily_average.txt.gz",
+          "source_url": "https://ofmpub.epa.gov/rsig/rsigserver?data/FAQSD/outputs/2022_pm25_daily_average.txt.gz"
+        }
+      ]
+    }
+  },
+  "shared": {
+    "census_block_weights": {
+      "display_name_short": "Census Block Weights",
+      "display_name_long": "Census Block Population Weights",
+      "provider": "US Census Bureau",
+      "description": "Census block population weights calculated using 2020 Census tabulation blocks and 2022 ACS block-group population data.",
+      "version": "1.0",
+      "data_period": "2020, 2022",
+      "required_by": [
+        "o3",
+        "pm25"
+      ],
+      "external_sources": [
+        {
+          "name": "census_block_tabulations_2020",
+          "file_name": "tl_2020_{fips}_tabblock20.zip",
+          "source_url": "https://www2.census.gov/geo/tiger/TIGER2020/TABBLOCK20/tl_2020_{fips}_tabblock20.zip",
+          "scope": "state"
+        },
+        {
+          "name": "acs_block_group_population_2022",
+          "file_name": "block_group_population_{fips}.json",
+          "source_url": "https://api.census.gov/data/2022/acs/acs5?get=NAME%2CB01003_001&for=block%20group%3A%2A&in=state%3A{fips}%20county%3A%2A",
+          "scope": "state"
+        },
+        {
+          "name": "block_crosswalk_2022",
+          "file_name": "2022blockcrosswalk.csv",
+          "source_url": "https://raw.githubusercontent.com/CT-Data-Collaborative/2022-block-crosswalk/main/2022blockcrosswalk.csv",
+          "scope": "single"
+        }
+      ]
+    },
+    "tiger_block": {
+      "display_name_short": "TIGER Block",
+      "display_name_long": "TIGER Block-level geographic data",
+      "provider": "US Census Bureau",
+      "description": "TIGER Block-level geographic data provided by the US Census Bureau.",
+      "version": "2022",
+      "data_period": "2022",
+      "required_by": [],
+      "external_sources": [
+        {
+          "name": "tiger_block_2022",
+          "file_name": "tl_2022_{fips}_tabblock20.zip",
+          "source_url": "https://www2.census.gov/geo/tiger/TIGER2022/TABBLOCK20/tl_2022_{fips}_tabblock20.zip",
+          "scope": "state"
+        }
+      ]
+    }
+  }
+}

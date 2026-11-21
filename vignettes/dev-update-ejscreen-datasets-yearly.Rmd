@@ -224,7 +224,7 @@ these update groups to decide what must be rebuilt, validated, or only checked.
    check the built-in `counties_shapefile` and `states_shapefile` and update
    them if necessary to match the release's ACS geographic vintage.
    For the v3 Island Area decision and live EJSCREEN layer availability
-   notes, see [Island Areas in EJAM v3](island-areas.html).
+   notes, see [Island Areas](island-areas.html).
 
 4. **Block Geography Updates** include block-level geometry/index files such as
    `blockpoints`, `quaddata`, and `blockid2fips`. These change only when block
@@ -1154,13 +1154,13 @@ Only three Arrow files carry `bgid`: `bgej` (string from the stage), `blockwts`
 # bgej from the accepted stage file, bgid -> double
 e <- new.env(); load(file.path(pipeline_dir, "bgej.rda"), envir = e)
 bgej <- e$bgej; setDT(bgej)[, bgid := as.numeric(bgid)]
-arrow::write_feather(bgej, "data/bgej.arrow")
+arrow::write_ipc_file(bgej, "data/bgej.arrow")
 
 # geography Arrow files
-bw <- as.data.table(arrow::read_feather("data/blockwts.arrow")); bw[, bgid := as.numeric(bgid)]
-arrow::write_feather(bw, "data/blockwts.arrow")
-bf <- as.data.table(arrow::read_feather("data/bgid2fips.arrow")); bf[, bgid := as.numeric(bgid)]
-arrow::write_feather(bf, "data/bgid2fips.arrow")
+bw <- as.data.table(arrow::read_ipc_file("data/blockwts.arrow")); bw[, bgid := as.numeric(bgid)]
+arrow::write_ipc_file(bw, "data/blockwts.arrow")
+bf <- as.data.table(arrow::read_ipc_file("data/bgid2fips.arrow")); bf[, bgid := as.numeric(bgid)]
+arrow::write_ipc_file(bf, "data/bgid2fips.arrow")
 ```
 
 `data/*.arrow` files are gitignored build artifacts (published to `ejamdata`, not

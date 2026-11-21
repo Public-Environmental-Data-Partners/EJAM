@@ -275,9 +275,10 @@ into `development` through a pull request, so CI and review run on it.
   installed. RStudio's Knit button and `rmarkdown::render()` use whatever EJAM
   you have installed, often the previous release, so if a release changes a
   link field in DESCRIPTION or `url_package()` itself, they would write the old
-  links. Also leave `EJAM_DOCS_BASE_URL` and `EJAM_API_BASEURL` unset while
-  knitting: they are settings for a deployment or a versioned docs build, and
-  they change the docs and API links. To check that the two agree, knit again
+  links. Also leave `EJAM_DOCS_BASE_URL`, `EJAM_API_BASEURL` and
+  `EJAM_EJSCREEN_BASEURL` unset while knitting: they are settings for a
+  deployment or a versioned docs build, and they change the docs, API and
+  EJScreen links. To check that the two agree, knit again
   and confirm `git diff README.md` shows nothing.
 - **Dependencies**: consider raising minimum versions in `Imports` and
   `Suggests` if the release relies on newer package behavior.

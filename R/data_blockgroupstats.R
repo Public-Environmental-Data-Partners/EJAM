@@ -43,6 +43,13 @@
 #'     from the ACS 5-year vintage of each release; see
 #'     `attributes(blockgroupstats)$acs_version` (e.g. 2018-2022, 2019-2023, or 2020-2024).
 #'
+#'     - EJAM v4.2024.0 (November 2026) uses ACS 2020-2024 demographic data,
+#'     2024 state and county geography, updated ozone and PM2.5, and 242,983
+#'     blockgroups. Census suppressed ACS 2020-2024 data for 39 blockgroups in
+#'     Brentwood and Wyandanch, New York, so those are not included.
+#'
+#'     - EJAM v3.2022.3 (October 2026) was the last release using ACS 2018-2022.
+#'
 #'     - EJAM v2.32.x starting in August 2024 and through 2025 to early 2026, used demographic indicators derived from 2018-2022 ACS data.
 #'
 #'     - Also see [ejanalysis.com/status](https://ejanalysis.com/status)

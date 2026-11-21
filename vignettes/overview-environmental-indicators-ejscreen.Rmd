@@ -1,0 +1,53 @@
+---
+title: "Overview of Environmental Indicators in EJScreen/EJAM"
+description: "Overview of Environmental Indicators in EJScreen/EJAM"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Overview of Environmental Indicators in EJScreen/EJAM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 120
+---
+
+# Overview of Environmental Indicators in EJScreen/EJAM
+
+EJScreen/EJAM provide 13 environmental indicators. Click on each environmental indicator to learn why they are important, details on how they are calculated, and to get more information about these issues.
+
+**Summary Table of Environmental Indicators and Data Sources**
+
+| Key Medium | Indicator | Details | Source | Data Year |
+| --- | --- | --- | --- | --- |
+| Air | [Particulate matter 2.5 (PM 2.5)](env-indicators/ejscreen-indicators-overview-particulate-matter-25-pm25.html) | Annual average PM2.5 levels in air | EPA's Office of Air and Radiation: fusion of modeled and monitored data | 2022`*` |
+| Air | [Ozone](env-indicators/ejscreen-indicators-overview-ozone.html) | Average of the annual top ten daily maximum 8-hour ozone concentrations in air | EPA's Office of Air and Radiation: fusion of modeled and monitored data | 2022`*` |
+| Air | [Nitrogen Dioxide (NO2)](env-indicators/ejscreen-indicators-overview-nitrogen-dioxide-no2.html) | Average annual nitrogen dioxide (NO2) levels expressed as part per billion (by volume). | NASA's Health and Air Quality Applied Sciences Team (HAQAST) | 2020 |
+| Air | [Diesel particulate matter](env-indicators/ejscreen-indicators-overview-diesel-particulate-matter.html) | Diesel particulate matter level in air | [EPA Hazardous Air Pollutants](https://www.epa.gov/AirToxScreen) | 2020 |
+| Air | [Toxic Releases to Air](env-indicators/ejscreen-indicators-overview-toxic-releases-air.html) | RSEI modeled toxicity-weighted concentrations in air of TRI listed chemicals. | Calculated from 2021 Risk-Screening Environmental Indicators (RSEI) Geographic Microdata results for the air pathway, retrieved 5/16/2023 | 2021 |
+| Air/other | [Traffic proximity and volume](env-indicators/ejscreen-indicators-overview-traffic-proximity-and-volume.html) | Count of vehicles (AADT, avg. annual daily traffic) at major roads within 500 meters, divided by distance in meters (not km) | Calculated from 2020 U.S. Department of Transportation traffic data, retrieved 1/19/2023 | 2020 |
+| Dust/ lead paint | [Lead paint](env-indicators/ejscreen-indicators-overview-lead-paint.html) | Percent of housing units built pre-1960, as indicator of potential lead paint exposure | [Calculated based on Census/American Community Survey (ACS) data, retrieved 12/16/2023](https://www.census.gov/programs-surveys/acs/news/data-releases.html) | 2018-2022 |
+| Waste/ air/ water | [Superfund proximity](env-indicators/ejscreen-indicators-overview-superfund-proximity.html) | Count of proposed or listed NPL - also known as superfund - sites within 5 km (or nearest one within 10 km), each divided by distance in kilometers | Calculated from EPA Superfund NPL boundaries and site (Final and Proposed) plus Superfund Alternative Approach (SAA) boundaries and sites 2/26/2024 | 2024 |
+| Waste/ air/ water | [Risk management plan (RMP) facility proximity](env-indicators/ejscreen-indicators-overview-risk-management-program-rmp-facility-proximity.html) | Count of RMP (potential chemical accident management plan) facilities within 5 km (or nearest one within 10 km), each divided by distance in kilometers | Calculated from EPA RMP database, retrieved 2/26/2024 | 2024 |
+| Waste/ air/ water | [Hazardous waste proximity](env-indicators/ejscreen-indicators-overview-hazardous-waste-proximity.html) | Count of hazardous waste facilities (TSDFs and LQGs) within 5 km (or nearest within 10 km), each divided by distance in kilometers | [TSDF data calculated from EPA RCRAInfo database, retrieved 1/31/2024](https://enviro.epa.gov/envirofacts/rcrainfo/search) | 2024 |
+| Waste/ air/ water | [Underground storage tanks (UST) and leaking UST (LUST)](env-indicators/ejscreen-indicators-overview-underground-storage-tanks-ust.html) | Count of LUSTs (multiplied by a factor of 7.7) and the number of USTs within a 1,500-foot buffered block group | [Calculated from EPA UST Finder, retrieved 2/2/2023](https://web.archive.org/web/20250123162159/https://www.epa.gov/ust/ust-finder) | 2023 |
+| Water | [Wastewater discharge](env-indicators/ejscreen-indicators-overview-wastewater-discharge.html) | RSEI modeled toxic concentrations at stream segments within 500 meters, divided by distance in kilometers (km) | [Calculated from RSEI modeled toxic concentrations to stream reach segments, created 12/27/2023](https://web.archive.org/web/20250123162159/https://www.epa.gov/rsei) | 2021 |
+| Water | [Drinking water non-compliance](env-indicators/ejscreen-indicators-overview-drinking-water-non-compliance.html) | Score based on number of Safe Drinking Water Act violations not returned to compliance that community water systems have received over the past five years; violations are weighted based on age and severity | Calculated from [Safe Drinking Water Information System](https://sdwis.epa.gov/ords/sfdw_pub/r/sfdw/sdwis_fed_reports_public/200)  (2023 quarter 4 data) and [Safe Drinking Water Act Public Water System Supervision Program's Enforcement Response Policy](https://web.archive.org/web/20250123162159/https://www.epa.gov/enforcement/enforcement-response-policy-public-water-system-supervision-pwss-program-under-safe) | 2023 |
+
+<!-- Docs review: for the PM2.5 and ozone rows, verify whether the Source should be simply "monitored data" rather than "fusion of modeled and monitored data". -->
+
+`*` Indicators updated in the V4.2024.0 release. For details on the source data used for these calculations, see the [external sources page](env-indicators/indicator-source-data.html)
+
+**Notes:** 
+
+- EJScreen/EJAM EJ Indexes also include demographic information that is obtained from the U.S. Census Bureau’s American Community Survey (ACS). The current version used the 2020–2024 ACS 5-year summary file data released in January, 2026.
+
+- It is important to understand what each of the above indicators is measuring or indicating, in order to use the data appropriately. There are important caveats and limitations to these screening-level indicators and anyone relying on them is encouraged to read the documentation carefully.
+
+- Some of these environmental indicators quantify proximity to and the numbers of certain types of potential sources of exposure to environmental pollutants, such as nearby hazardous waste sites or traffic. The lead paint indicator indicates the presence of older housing, which often, but not always, indicates the presence of lead paint, and therefore the possibility of exposure. In some cases, the term "exposure" is used very broadly here to refer to the potential for exposure. Other indicators in EJScreen are estimates of ambient levels of air pollutants, such as PM2.5, ozone and diesel particulate matter. In other words, these environmental indicators vary widely in what they indicate.
+
+- For more information about Environmental Indicators, including documentation of data sources, click through the indicator's name in the table above. The resulting pages will be updated with new information as the indicators scores and indexes are updated.
+
+```{r child='_epa_archived_tech_doc_2.3.Rmd'}
+```

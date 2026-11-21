@@ -36,6 +36,11 @@ source had no valid drinking-water score for that blockgroup, while
 \item EJAM v3 (the v3.YYYY.0 annual-vintage line) uses indicators derived
 from the ACS 5-year vintage of each release; see
 \code{attributes(blockgroupstats)$acs_version} (e.g. 2018-2022, 2019-2023, or 2020-2024).
+\item EJAM v4.2024.0 (November 2026) uses ACS 2020-2024 demographic data,
+2024 state and county geography, updated ozone and PM2.5, and 242,983
+blockgroups. Census suppressed ACS 2020-2024 data for 39 blockgroups in
+Brentwood and Wyandanch, New York, so those are not included.
+\item EJAM v3.2022.3 (October 2026) was the last release using ACS 2018-2022.
 \item EJAM v2.32.x starting in August 2024 and through 2025 to early 2026, used demographic indicators derived from 2018-2022 ACS data.
 \item Also see \href{https://ejanalysis.com/status}{ejanalysis.com/status}
 }

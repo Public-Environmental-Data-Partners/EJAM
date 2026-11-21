@@ -62,7 +62,7 @@ dynamic_geography_arrow_report <- function(
 
     if (file_exists) {
       x <- tryCatch(
-        suppressWarnings(arrow::read_feather(fpath)),
+        suppressWarnings(arrow::read_ipc_file(fpath)),
         error = function(e) {
           read_error <<- conditionMessage(e)
           NULL

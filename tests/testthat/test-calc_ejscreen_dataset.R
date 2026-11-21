@@ -645,23 +645,23 @@ test_that("dynamic geography arrow report validates matching blockgroup and bloc
   td <- tempfile("ejam-geo-arrow-")
   dir.create(td)
   bgstats <- data.frame(bgfips = c("100010001001", "100010001002"))
-  arrow::write_feather(
+  arrow::write_ipc_file(
     data.frame(bgid = c("1", "2"), bgfips = bgstats$bgfips),
     file.path(td, "bgid2fips.arrow")
   )
-  arrow::write_feather(
+  arrow::write_ipc_file(
     data.frame(blockid = c("11", "12"), bgid = c("1", "2"), blockwt = c(1, 1), block_radius_miles = c(0, 0)),
     file.path(td, "blockwts.arrow")
   )
-  arrow::write_feather(
+  arrow::write_ipc_file(
     data.frame(blockid = c("11", "12"), lat = c(39, 40), lon = c(-75, -76)),
     file.path(td, "blockpoints.arrow")
   )
-  arrow::write_feather(
+  arrow::write_ipc_file(
     data.frame(BLOCK_X = c(1, 2), BLOCK_Z = c(1, 1), BLOCK_Y = c(1, 2), blockid = c("11", "12")),
     file.path(td, "quaddata.arrow")
   )
-  arrow::write_feather(
+  arrow::write_ipc_file(
     data.frame(blockid = c("11", "12"), blockfips = c("100010001001001", "100010001002001")),
     file.path(td, "blockid2fips.arrow")
   )
@@ -688,7 +688,7 @@ test_that("dynamic geography arrow report flags missing blockgroup coverage", {
   td <- tempfile("ejam-geo-arrow-")
   dir.create(td)
   bgstats <- data.frame(bgfips = c("100010001001", "100010001002"))
-  arrow::write_feather(
+  arrow::write_ipc_file(
     data.frame(bgid = "1", bgfips = "100010001001"),
     file.path(td, "bgid2fips.arrow")
   )

@@ -7,113 +7,83 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This note explains the GitHub Actions workflows that check whether EJAM can be
-installed. These workflows are intentionally separate from `R CMD check` because
-they answer different questions.
+This note explains the purpose of EJAM's installation checks and how to interpret
+their results. The workflow files are the source of truth for triggers, inputs,
+R versions, operating systems, installation methods, and individual steps.
+Consult the file on the branch or tag you intend to run.
 
-## Quick install check
+## Choosing a workflow
 
-Workflow file: `.github/workflows/install-quick-check.yaml`
+| Workflow file | Purpose |
+|---|---|
+| `.github/workflows/install-quick-check.yaml` | Quick feedback on whether EJAM can be installed and loaded during development. |
+| `.github/workflows/install-release-user-check.yaml` | Broader installation checks for release validation and user installation paths. |
+| `.github/workflows/check-standard.yaml` | R CMD check, which examines package behavior and requirements beyond installation alone. |
 
-This is the low-cost install check. It runs on Ubuntu with the current release
-of R. It installs only hard package dependencies first, then installs EJAM.
+For the supported user installation procedure, see the
+[installation instructions](installing.html).
 
-Automatic triggers:
+## Release install-check triggers and scopes
 
-- push to `development`
-- pull request to `main`
+For `.github/workflows/install-release-user-check.yaml`:
 
-Manual trigger:
+| Trigger | Manual `test_scope` | Checks selected |
+|---|---|---|
+| Release-tag push | Not applicable | Prepared-runner installation checks |
+| GitHub Release published | Not applicable | User-style installation checks |
+| Manual | `user-style` | User-style installation checks |
+| Manual | `full-matrix` | Prepared-runner installation checks |
+| Manual | `ubuntu-only` | Prepared-runner installation checks on Ubuntu |
+| Manual | `both` | Prepared-runner and user-style installation checks |
 
-- `workflow_dispatch`, with `install_source` set to either `local` or
-  `github-sha`
+Consult the workflow file for the available platforms and R versions.
 
-Use the manual trigger when a branch changes package dependencies, installation
-code, or workflow files and you want a quick install check without running the
-full release matrix.
+## What the checks tell you
 
-What it proves:
+An installation check and a package check answer different questions. A package
+can install and load successfully while still having failing tests, examples,
+or other package checks. Read the selected workflow to see what a successful
+run actually covers. The `--install-tests` installation option only copies tests
+into the installed package; it does not execute them.
 
-- `local`: the checked-out source tree installs.
-- `github-sha`: the same commit can be installed from GitHub by commit SHA.
+Required dependencies and optional packages listed under `Suggests` also have
+different coverage. A successful basic installation does not establish that
+optional packages or the features using them work.
 
-## Release and user install checks
+It also matters how dependencies were obtained. A runner with dependencies
+prepared in advance can demonstrate that EJAM installs with those dependencies.
+Following the user installation procedure can reveal problems obtaining them.
+A binary dependency can install without compilation, while installing it from
+source may require compilers and system libraries. A user-style check can
+therefore fail even when a prepared-runner check passes.
 
-Workflow file: `.github/workflows/install-release-user-check.yaml`
+If a run fails, identify the affected R version and platform, then inspect the
+failed step. A dependency installation failure may need a different response
+from a failure installing, loading, or testing EJAM itself. R-devel checks give
+early warning about compatibility with a future R release; compare their results
+with the checks on released R versions.
 
-This workflow is deliberately more expensive. It is for release validation and
-for testing installation paths that users are likely to use.
+Dependency declarations are in `DESCRIPTION`. Verification helpers used by the
+workflows are in `.github/scripts/`; consult the referenced scripts for the
+checks they perform.
 
-Automatic triggers:
+## Choosing the workflow and package revision
 
-- push of a tag matching `v*`
-- GitHub Release published
+For a manual release install check, two choices serve different purposes:
 
-Manual trigger:
+- **Use workflow from** selects the branch or tag containing the workflow
+  definition. It determines which steps, inputs, and scope choices are available.
+- **`ref`** selects the package branch, tag, or commit to install and test.
 
-- `workflow_dispatch`, with a `ref` such as `development`, `v4.2024.0`, or a commit SHA
-- optional `expected_version`, matching `Version` in that ref's `DESCRIPTION`
-- `test_scope` set to `user-style`, `full-matrix`, or `both`
+For example, use a working branch's workflow to test a specific package commit.
+This keeps the package source fixed while you try workflow changes. Older tags
+may contain older workflow definitions, so confirm both selections before running.
 
-The `full-matrix` job tests Linux, Windows, and macOS, with `oldrel-1` and
-`release` R, and these install methods:
+The **Run workflow** button appears only when the workflow exists on the
+repository's default branch (`main` for EJAM). Once available, **Use workflow
+from** lets you select another branch or tag's definition.
 
-- `local`: install the checked-out source tree with `utils::install.packages()`
-  and `INSTALL_opts`
-- `github-ref`: install from GitHub by branch, tag, or SHA using
-  `remotes::install_github()`
-- `url-tarball`: install the GitHub source tarball using `remotes::install_url()`
-
-The workflow uses `remotes` for `github-ref` and `url-tarball` because those
-checks need `INSTALL_opts = c("--with-keep.source", "--install-tests")`.
-`pak::pkg_install()` is preferred for ordinary user installs, but it does not
-accept those `R CMD INSTALL` options.
-
-The `user-style` job tests Windows and macOS with the current release of R. It
-does not use `setup-r-dependencies`. It starts closer to a plain R installation:
-
-```r
-install.packages("pak")
-pak::pkg_install("Public-Environmental-Data-Partners/EJAM@*release",
-                 dependencies = TRUE, upgrade = FALSE)
-library(EJAM)
-```
-
-For a manual run, it installs `Public-Environmental-Data-Partners/EJAM@REF`,
-where `REF` is the workflow input. For a GitHub Release published event, it
-installs `@*release`.
-
-What it proves:
-
-- tag pushes prove that a specific tag can be installed by local source,
-  GitHub ref, and GitHub source tarball.
-- release published events prove that the latest GitHub Release can be installed
-  with the public `pak`-based instructions on Windows and macOS.
-- manual runs can test a branch, tag, or SHA before deciding whether to create
-  or publish a release.
-
-## Branches and workflow file versions
-
-GitHub Actions uses the workflow file from the branch or ref that triggers the
-event, with some event-specific details. In practice, keep workflow files as
-similar as possible in `development`, `main`, and the active preparation branch unless
-there is a deliberate reason for a branch-specific workflow.
-
-Manual `workflow_dispatch` runs are easiest to use once the workflow file exists
-on the repository's default branch. The Actions page can then run the workflow
-against a selected branch, tag, or SHA, depending on the workflow inputs.
-
-Recommended workflow promotion:
-
-- Edit and test workflow changes on the active working branch first.
-- Integrate vX workflow changes into `vX.20YY.0-prep` first. Keep `development`
-  on the current version line until team authorizes the version change/transition.
-- At that transition, bring the approved changes into `development`, then
-  `main` through the release process before relying on them for release validation.
-- For historical install checks, select an existing release tag rather than
-  maintaining a separate branch per data vintage.
-
-The branch workflow proves only that its branch or commit installs as the version
-in `DESCRIPTION`. It does not prove that a release tag installs until that tag
-exists and its tag-triggered workflow passes. In particular, the preparation
-branch name does not activate v4 data or change its package version.
+Test workflow changes on their working branch before promoting them through
+the project's integration and release process. A successful run against a branch
+does not by itself establish that a release tag installs successfully; validate
+the release revision as well.

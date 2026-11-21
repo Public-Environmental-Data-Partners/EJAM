@@ -420,7 +420,7 @@ test_that("handoff: FIPS basket (radius {}) loads FIPS and does not crash the se
     expr = testServer(app = app_server, expr = {
       session$setInputs(testing = FALSE)
       expect_identical(url_fips(), c("10001", "10003"))
-      expect_null(url_radius())      # radius:{} means absent, not 0 and not an error
+      expect_identical(url_radius(), 0) # absent FIPS buffer defaults to no buffer
       expect_null(url_sitepoints())  # one place-type per launch
       expect_null(url_shapefile())
       expect_identical(site_method_last_set(), "upload")  # method was switched for the handoff
@@ -479,6 +479,19 @@ test_that("handoff: point basket WITH a buffer still applies the radius (working
 })
 ################################################# #
 
+test_that("FIPS handoff preserves an explicitly requested positive buffer", {
+  testserver_with_launch_query(
+    query = list(handoff = "TESTTOKEN"),
+    handoff_json = '{"fips":["10003"],"radius":[0.5]}',
+    expr = testServer(app = app_server, expr = {
+      session$setInputs(testing = FALSE)
+      expect_identical(url_fips(), "10003")
+      expect_identical(url_radius(), 0.5)
+    })
+  )
+})
+################################################# #
+
 test_that("handoff: explicit radius 0 is accepted (valid no-buffer value for FIPS/polygon)", {
   ## Public-Environmental-Data-Partners/EJScreen#73 and
   ## Public-Environmental-Data-Partners/EJAM-API#49 make FIPS/shape handoffs carry an explicit radius 0;
@@ -523,16 +536,124 @@ test_that("direct deep-link ?fips=&radius= still loads both (radius-guard refact
 })
 ################################################# #
 
-test_that("direct deep-link ?fips= with no radius leaves url_radius NULL and does not crash", {
+test_that("direct deep-link ?fips= with no radius defaults to zero buffer", {
   ## as.numeric(NULL) is numeric(0); the length()==1 guard must skip it silently.
   testserver_with_launch_query(
     query = list(fips = "10001"),
     expr = testServer(app = app_server, expr = {
       session$setInputs(testing = FALSE)
       expect_identical(url_fips(), "10001")
-      expect_null(url_radius())
+      expect_identical(url_radius(), 0)
     })
   )
+})
+################################################# #
+
+## Launch radius vs. the radius slider (issue Public-Environmental-Data-Partners/EJAM#766).
+## At launch the app still has the default point method selected, and the switch to the
+## launch method (polygon/FIPS) reaches the server in the same client message as the
+## slider's first value. These tests render the slider, then send back exactly the value
+## that rendered slider holds, together with the method switch -- what the browser does.
+## Before the fix the slider was sized for the point method (minimum 0.5), so a polygon
+## launch radius of 0 came back as 0.5, and a FIPS launch with no radius came back as
+## the point default (1); either value then stuck as the radius for the analysis.
+
+radius_slider_attr <- function(slider_ui, attr) {
+  html <- as.character(slider_ui$html)
+  pattern <- paste0('data-', attr, '="([^"]+)"')
+  found <- regmatches(html, regexec(pattern, html))[[1]]  # first match only
+  if (length(found) < 2) stop("radius slider HTML has no data-", attr, " attribute")
+  as.numeric(found[2])
+}
+## Settings the running app gets from global_defaults_*.R (via golem options). Without them
+## some observers that run once the upload method is known stop the test session.
+with_app_defaults <- function(expr) {
+  app_defaults <- EJAM:::get_global_defaults_or_user_options()
+  orig_global_or_param <- EJAM:::global_or_param
+  testthat::with_mocked_bindings(
+    global_or_param = function(vname) orig_global_or_param(vname) %||% app_defaults[[vname]],
+    .package = "EJAM",
+    expr
+  )
+}
+launch_inputs <- function(session) {
+  # testing is a radio button, so the browser sends "FALSE" (current_upload_method() does req(input$testing))
+  # max_shapes_map = 0 skips the polygon/FIPS preview map (which would download boundaries),
+  # with a warning that there are too many shapes to map
+  session$setInputs(testing = "FALSE", ss_choose_method = "upload", ss_choose_method_upload = "latlon",
+                    radius_default = 1, radius_default_shapefile = 0, max_miles = 10,
+                    max_pts_run = 1000, max_pts_upload = 1000, max_pts_map = 1000, max_shapes_map = 0)
+}
+
+test_that("launch: polygon handoff with radius 0 keeps a radius of 0", {
+  skip_if_not_installed("sf")
+  geojson_txt <- '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-77.05,38.90],[-77.00,38.90],[-77.00,38.95],[-77.05,38.95],[-77.05,38.90]]]}}]}'
+  with_app_defaults(testserver_with_launch_query(
+    query = list(handoff = "TESTTOKEN"),
+    handoff_json = sprintf('{"method":["shape"],"sites":{},"fips":{},"shape":%s,"radius":[0]}',
+                           jsonlite::toJSON(geojson_txt, auto_unbox = TRUE)),
+    expr = testServer(app = app_server, expr = {
+      launch_inputs(session)
+      expect_identical(url_radius(), 0)
+      first_value <- radius_slider_attr(output$radius_slider_ui, "from")
+      expect_equal(radius_slider_attr(output$radius_slider_ui, "min"), 0)  # sized for polygons, not points
+      expect_equal(first_value, 0)
+      suppressWarnings(session$setInputs(ss_choose_method_upload = "SHP", radius_now = first_value))  # warns that the skipped map has too many shapes
+      expect_identical(current_upload_method(), "SHP")
+      expect_identical(url_radius(), 0)                # launch radius not released
+      expect_equal(sanitized_radius_now(), 0)
+      expect_equal(current_slider_val[["SHP"]], 0)     # the radius the analysis will use
+      expect_equal(radius_slider_attr(output$radius_slider_ui, "from"), 0)
+    })
+  ))
+})
+
+test_that("launch: FIPS handoff with no radius uses no buffer", {
+  with_app_defaults(testserver_with_launch_query(
+    query = list(handoff = "TESTTOKEN"),
+    handoff_json = '{"method":["FIPS"],"sites":{},"fips":["1077580"],"shape":{},"radius":{}}',
+    expr = testServer(app = app_server, expr = {
+      launch_inputs(session)
+      expect_identical(url_radius(), 0)  # a FIPS handoff without a radius means no buffer (issue 763)
+      first_value <- radius_slider_attr(output$radius_slider_ui, "from")
+      expect_equal(first_value, 0)
+      suppressWarnings(session$setInputs(ss_choose_method_upload = "FIPS", radius_now = first_value))  # warns that the skipped map has too many shapes
+      expect_identical(current_upload_method(), "FIPS")
+      expect_equal(sanitized_radius_now(), 0)
+      expect_equal(current_slider_val[["FIPS"]], 0)
+      expect_equal(current_slider_val[["latlon"]], 1)  # point default untouched
+    })
+  ))
+})
+
+test_that("launch: FIPS deep link with an explicit radius 0 stays 0", {
+  with_app_defaults(testserver_with_launch_query(
+    query = list(fips = "10001", radius = "0"),
+    expr = testServer(app = app_server, expr = {
+      launch_inputs(session)
+      first_value <- radius_slider_attr(output$radius_slider_ui, "from")
+      expect_equal(first_value, 0)
+      suppressWarnings(session$setInputs(ss_choose_method_upload = "FIPS", radius_now = first_value))  # warns that the skipped map has too many shapes
+      expect_identical(url_radius(), 0)
+      expect_equal(current_slider_val[["FIPS"]], 0)
+    })
+  ))
+})
+
+test_that("launch: point handoff with a radius still applies it (working path preserved)", {
+  with_app_defaults(testserver_with_launch_query(
+    query = list(handoff = "TESTTOKEN"),
+    handoff_json = '{"method":["latlon"],"sites":[{"lat":38.9072,"lon":-77.0369}],"fips":{},"shape":{},"radius":[3]}',
+    expr = testServer(app = app_server, expr = {
+      launch_inputs(session)
+      first_value <- radius_slider_attr(output$radius_slider_ui, "from")
+      expect_equal(radius_slider_attr(output$radius_slider_ui, "min"), 0.5)
+      expect_equal(first_value, 3)
+      session$setInputs(radius_now = first_value)
+      expect_identical(url_radius(), 3)
+      expect_equal(current_slider_val[["latlon"]], 3)
+    })
+  ))
 })
 ################################################# #
 

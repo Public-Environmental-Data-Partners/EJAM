@@ -422,10 +422,12 @@ instead of tests/testthat/_logs
         "test-sites_from_input.R",
         "test-is.numericish.R",
         "test-create_filename.R",
+        "test-posthog_script.R",
         "test-grepn.R",
         "test-utils_PACKAGE_DEV.R",
         "test-utils_offline.R",
         "test-utils_memory_guard.R",
+        "test-utils_ejamapi_wake.R",
         "test-pctile_x_is_hit_by_score.R",
         "test-plot_vs_us.R",
         "test-count_sites_with_n_high_scores.R",
@@ -652,6 +654,11 @@ and all filenames listed there actually exist as in that folder called `test`.\n
       timebyfile <- rbind(
         timebyfile,
         data.table(file = "test-utils_map_size.R", seconds_byfile = 3)
+      )
+
+      timebyfile <- rbind(
+        timebyfile,
+        data.table(file = "test-utils_ejamapi_wake.R", seconds_byfile = 0)
       )
 
       timebyfile <- rbind(
