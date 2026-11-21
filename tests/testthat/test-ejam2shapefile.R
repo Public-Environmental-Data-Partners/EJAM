@@ -184,9 +184,19 @@ test_that("ejam2shapefile gets polygons for a FIPS analysis, from ejam_uniq_id",
 })
 ################################# #
 
-test_that("ejam2shapefile FIPS analysis gives empty geometry for NA ejam_uniq_id, keeping row order", {
+# Like ejamit(fips = c("10001", "10999", "10003", "10001"))$results_bysite:
+# "10999" is not a county, so that row is invalid but keeps its ID, and (as of
+# Public-Environmental-Data-Partners/EJAM#795) the repeat of 10001 is invalid with ID NA.
+fips_bysite_with_invalid_rows <- function() {
+  bysite <- data.table::copy(testoutput_ejamit_fips_counties$results_bysite)[c(1, 2, 2, 3), ]
+  bysite$ejam_uniq_id <- c("10001", "10999", "10003", NA)
+  bysite$valid <- c(TRUE, FALSE, TRUE, FALSE)
+  bysite
+}
+
+test_that("ejam2shapefile FIPS analysis gives empty geometry for invalid rows, keeping row order", {
   out <- data.table::copy(testoutput_ejamit_fips_counties)
-  out$results_bysite$ejam_uniq_id[2] <- NA # as for an invalid FIPS input
+  out$results_bysite <- fips_bysite_with_invalid_rows()
   expect_no_error({
     suppressWarnings({
       suppressMessages({
@@ -196,10 +206,10 @@ test_that("ejam2shapefile FIPS analysis gives empty geometry for NA ejam_uniq_id
       })
     })
   })
-  expect_equal(NROW(shp), 3)
-  expect_equal(as.vector(sf::st_is_empty(shp)), c(FALSE, TRUE, FALSE))
-  expect_equal(shp$ejam_uniq_id, c("10001", NA, "10005"))
-  expect_equal(shp$FIPS[c(1, 3)], c("10001", "10005"))
+  expect_equal(NROW(shp), 4)
+  expect_equal(as.vector(sf::st_is_empty(shp)), c(FALSE, TRUE, FALSE, TRUE))
+  expect_equal(shp$ejam_uniq_id, c("10001", "10999", "10003", NA))
+  expect_equal(shp$FIPS[c(1, 3)], c("10001", "10003"))
 })
 ################################# #
 
@@ -259,6 +269,24 @@ test_that("ejam2shapefile FIPS results table alone, with an NA ejam_uniq_id row"
   expect_equal(NROW(shp), 3)
   expect_equal(as.vector(sf::st_is_empty(shp)), c(FALSE, TRUE, FALSE))
   expect_equal(shp$ejam_uniq_id, c("10001", NA, "10005"))
+})
+################################# #
+
+test_that("ejam2shapefile FIPS results table alone, with invalid rows that keep or lose their ID", {
+  bysite <- fips_bysite_with_invalid_rows()
+  # without the list from ejamit(), the FIPS site type must be inferred from the table
+  skip_if(is.na(suppressWarnings(sitetype_from_dt(bysite))),
+          "needs sitetype_from_dt() to ignore invalid rows, as planned in Public-Environmental-Data-Partners/EJAM#795")
+  suppressWarnings({
+    suppressMessages({
+      junk <- capture_output({
+        shp <- ejam2shapefile(bysite, save = FALSE)
+      })
+    })
+  })
+  expect_equal(NROW(shp), 4)
+  expect_equal(as.vector(sf::st_is_empty(shp)), c(FALSE, TRUE, FALSE, TRUE))
+  expect_equal(shp$ejam_uniq_id, c("10001", "10999", "10003", NA))
 })
 ################################# #
 
