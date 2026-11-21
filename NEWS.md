@@ -7,6 +7,7 @@
 - A test deployment of the web app can link to a test EJScreen site: set the environment variable `EJAM_EJSCREEN_BASEURL` (or `options(ejam.ejscreen.baseurl = ...)`).
 - Web app: polygons, cities and counties sent from another app (such as EJScreen) no longer get an unrequested buffer; they use the distance that was sent, or no buffer (#766).
 - Web app: clicking Start also wakes the EJAM API, so one-site report links open faster after an analysis (#772).
+- `ejam2shapefile()` now works for FIPS analyses (invalid FIPS get empty geometry), and no longer converts the input data.table to a data.frame.
 
 # EJAM 4.2024.0 (November 2026)
 

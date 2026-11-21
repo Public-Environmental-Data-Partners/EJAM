@@ -161,6 +161,114 @@ test_that("ejam2shapefile ok if folder and .kml specified", {
 })
 ########################################################################## #
 
+# FIPS analysis ####
+# County bounds come from the built-in counties_shapefile dataset, so no download is needed.
+
+test_that("ejam2shapefile gets polygons for a FIPS analysis, from ejam_uniq_id", {
+  out <- testoutput_ejamit_fips_counties # results_bysite has the FIPS in ejam_uniq_id, no fips column
+  expect_false("fips" %in% names(out$results_bysite))
+  expect_no_error({
+    suppressWarnings({
+      suppressMessages({
+        junk <- capture_output({
+          shp <- ejam2shapefile(out, save = FALSE)
+        })
+      })
+    })
+  })
+  expect_true("sf" %in% class(shp))
+  expect_equal(NROW(shp), NROW(out$results_bysite))
+  expect_false(any(sf::st_is_empty(shp)))
+  expect_equal(shp$FIPS, out$results_bysite$ejam_uniq_id) # same order as results_bysite
+  expect_equal(shp$pop, out$results_bysite$pop) # pop from the results, not from the boundaries
+})
+################################# #
+
+test_that("ejam2shapefile FIPS analysis gives empty geometry for NA ejam_uniq_id, keeping row order", {
+  out <- data.table::copy(testoutput_ejamit_fips_counties)
+  out$results_bysite$ejam_uniq_id[2] <- NA # as for an invalid FIPS input
+  expect_no_error({
+    suppressWarnings({
+      suppressMessages({
+        junk <- capture_output({
+          shp <- ejam2shapefile(out, save = FALSE)
+        })
+      })
+    })
+  })
+  expect_equal(NROW(shp), 3)
+  expect_equal(as.vector(sf::st_is_empty(shp)), c(FALSE, TRUE, FALSE))
+  expect_equal(shp$ejam_uniq_id, c("10001", NA, "10005"))
+  expect_equal(shp$FIPS[c(1, 3)], c("10001", "10005"))
+})
+################################# #
+
+test_that("ejam2shapefile FIPS analysis uses a fips column if there is one", {
+  bysite <- data.table::copy(testoutput_ejamit_fips_counties$results_bysite)
+  bysite$FIPS <- bysite$ejam_uniq_id
+  bysite$ejam_uniq_id <- 1:3
+  suppressWarnings({
+    suppressMessages({
+      junk <- capture_output({
+        shp <- ejam2shapefile(list(results_bysite = bysite, sitetype = "fips"), save = FALSE)
+      })
+    })
+  })
+  expect_equal(NROW(shp), 3)
+  expect_false(any(sf::st_is_empty(shp)))
+  expect_equal(shp$FIPS, c("10001", "10003", "10005"))
+})
+################################# #
+
+test_that("ejam2shapefile FIPS analysis can save a file", {
+  expect_no_error({
+    suppressWarnings({
+      suppressMessages({
+        junk <- capture_output({
+          x <- ejam2shapefile(testoutput_ejamit_fips_counties, file = "test_fips.geojson", folder = tempdir())
+          shp <- shapefile_from_any(x)
+        })
+      })
+    })
+  })
+  expect_true(file.exists(x))
+  expect_equal(NROW(shp), 3)
+})
+########################################################################## #
+
+# input is not modified ####
+
+test_that("ejam2shapefile does not convert the input data.table to a data.frame (latlon)", {
+  tout <- list(results_bysite = data.table::copy(testoutput_ejamit_10pts_1miles$results_bysite[1:2, ]))
+  before <- data.table::copy(tout)
+  suppressWarnings({
+    suppressMessages({
+      junk <- capture_output({
+        shp <- ejam2shapefile(tout, save = FALSE) # list like output of ejamit()
+        shp <- ejam2shapefile(tout$results_bysite, save = FALSE) # just the table
+      })
+    })
+  })
+  expect_true(data.table::is.data.table(tout$results_bysite))
+  expect_equal(tout, before)
+})
+################################# #
+
+test_that("ejam2shapefile does not convert the input data.table to a data.frame (FIPS)", {
+  out <- data.table::copy(testoutput_ejamit_fips_counties)
+  before <- data.table::copy(out)
+  suppressWarnings({
+    suppressMessages({
+      junk <- capture_output({
+        shp <- ejam2shapefile(out, save = FALSE)
+      })
+    })
+  })
+  expect_true(data.table::is.data.table(out$results_bysite))
+  expect_equal(out, before)
+})
+########################################################################## #
+
 
 # *** if interactive it normally tries to prompt for shapefile folder in some cases  ####
 
