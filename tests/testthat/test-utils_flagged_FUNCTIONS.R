@@ -56,16 +56,18 @@ test_that("flagged_pct_sites ok", {
   bybg_us = blockgroupstats
   ### bybg_st = ???
   mycols <- c(names_featuresinarea, names_flag, names_criticalservice)
+  # the percent is of the sites analyzed: rows with no value in any of these columns (invalid sites) are not counted
+  n_analyzed <- sum(rowSums(!is.na(as.data.frame(bysite)[, mycols])) > 0)
 
   t1 = round(100 * bysite[, lapply(.SD, function(z) {sum(z, na.rm = TRUE) }),
-                          .SDcols = mycols] / NROW(bysite), 1)
+                          .SDcols = mycols] / n_analyzed, 1)
   x = flagged_pct_sites(bysite)
   expect_equal(
     data.frame(x)[, setdiff(names(x), names_featuresinarea)],
     data.frame(t1)[, setdiff(colnames(t1), names_featuresinarea)] # school/hosp/chu are counts we now count sum(x>0) not sum(x)
   )
   t1b = round(100 * bysite[, lapply(.SD, function(z) {sum(z > 0, na.rm = TRUE) }),
-                          .SDcols = mycols] / NROW(bysite), 1)
+                          .SDcols = mycols] / n_analyzed, 1)
   expect_equal(
     data.frame(x)[, names_featuresinarea],
     data.frame(t1b)[, names_featuresinarea]

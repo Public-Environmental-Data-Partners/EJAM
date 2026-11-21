@@ -6,6 +6,8 @@
 - Moved open-issue-ranking reports out of the package, into GitHub issue #715 (#716).
 - A test deployment of the web app can link to a test EJScreen site: set the environment variable `EJAM_EJSCREEN_BASEURL` (or `options(ejam.ejscreen.baseurl = ...)`).
 - Web app: polygons, cities and counties sent from another app (such as EJScreen) no longer get an unrequested buffer; they use the distance that was sent, or no buffer (#766).
+- `ejamit()` analyzes a FIPS code listed more than once only once: each later copy keeps its row but is marked invalid, with a warning, instead of every copy reporting double the population (#793).
+- When some FIPS codes are invalid, `ejamit()` results stay in input order, so each site's report link is on its own row, and the percent of sites near schools and other features counts only the sites analyzed. `mapfast()` now maps these results, and a shape with no boundary no longer shifts the colors of the shapes after it (#793).
 - Web app: clicking Start also wakes the EJAM API, so one-site report links open faster after an analysis (#772).
 - Analyses of many FIPS codes are much faster: for example, finding the blockgroups in all of California's tracts now takes under a second instead of about 85 seconds (#791).
 - `getblocksnearby_from_fips()` gives each copy of a repeated FIPS code its own blockgroups, instead of none for the first copy and double for the last (#793).
