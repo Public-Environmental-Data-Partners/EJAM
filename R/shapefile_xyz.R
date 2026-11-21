@@ -871,10 +871,10 @@ shape_buffered_from_shapefile_points <- function(shapefile_points, radius.miles 
     if (all(is.na(df$lat)) || all(is.na(df$lon))) {
       # *** probably it was analysis of FIPS or Shapefile, not latlon
       cat(
-        'Shapefile of results gets mapped in the shiny app, but
-this save function does not work for ejamit analysis of polygons from Shapefile or analysis of FIPS unless
-shapefile provided as shp to join it to table of results.
-Except, if Counties were analyzed, see  mapfastej_counties() \n')
+        'No lat,lon at any site, so cannot draw circles around points.
+For results of ejamit(shapefile = ...), provide those polygons as shp in ejam2shapefile().
+For results of ejamit(fips = ...), ejam2shapefile() gets the boundaries itself, or if it cannot,
+provide them as shp, e.g., shp = shapes_from_fips(out$results_bysite$ejam_uniq_id) \n')
       # warning(   "latlon at all sites are NA values")
       return(NA)
     }
