@@ -530,23 +530,6 @@ testthat::test_that("ejamit output (states) sorted like input fips", {
 })
 ########################################################## #
 
-testthat::test_that("ejamit() analyzes a FIPS code listed more than once only once, with a warning", {
-  junk = capture_output({
-    suppressMessages({
-      # "1001" is the same code as "01001" once its leading zero is added
-      expect_warning(
-        out <- ejamit(fips = c("10001", "01001", "10003", "10001", "1001")),
-        "listed more than once are analyzed only once: 10001, 01001")
-      once <- suppressWarnings(ejamit(fips = c("10001", "01001", "10003")))
-    })
-  })
-  expect_equal(anyDuplicated(out$results_bysite$ejam_uniq_id), 0)
-  expect_equal(out$results_bysite$ejam_uniq_id, c("10001", "01001", "10003"))
-  expect_equal(out$results_bysite, once$results_bysite)
-  expect_equal(out$results_overall, once$results_overall)
-})
-########################################################## #
-
 testthat::test_that("ejamit can use fips=fips_counties_from_statename()", {
   oldwidth = options("width")
   testthat::expect_no_error({

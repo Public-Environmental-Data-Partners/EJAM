@@ -525,17 +525,6 @@ ejamit <- function(sitepoints = NULL,
     # getblocksnearby_from_fips() should include doing something like fips_lead_zero() ?
     fips <- fips_lead_zero(fips) # essential so a later line can compare input fips to fips in output of getblocks, where they got leading zeroes added as needed
 
-    # A FIPS code listed more than once is analyzed only once, since the code is the ejam_uniq_id,
-    # and each ejam_uniq_id must be only one row of results_bysite.
-    repeated <- duplicated(fips) & !is.na(fips)
-    if (any(repeated)) {
-      repeated_codes <- unique(fips[repeated])
-      warning("FIPS codes listed more than once are analyzed only once: ",
-              paste(head(repeated_codes, 10), collapse = ", "),
-              if (length(repeated_codes) > 10) paste0(", and ", length(repeated_codes) - 10, " more") else "")
-      fips <- fips[!repeated]
-    }
-
     # RETAIN ORIGINAL SORT ORDER OF SITES (though doaggregate does handle that)
     original_order <- data.table(n = 1:length(fips), ejam_uniq_id = as.character(fips))
 
