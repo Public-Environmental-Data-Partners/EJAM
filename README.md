@@ -10,7 +10,6 @@ installs EJAM from GitHub at the ref in `ARG EJAM_VERSION`, and downloads the
 | `Dockerfile` | Builds the app image; pins `EJAM_VERSION` and `EJAMDATA_VERSION` |
 | `.github/workflows/deploy-dev.yaml` | Builds and deploys to **dev** (on push to `dev-deploy`, or run manually with an optional `ejam_version`) |
 | `.github/workflows/deploy.yaml` | Builds and deploys to **prod** (on push to `prod-deploy`, or run manually) |
-| `.github/workflows/diag-ecs-dev.yaml` | Read-only diagnostics for the dev ECS service (run manually) |
 | `ejam-infra/` | Terraform for the AWS infrastructure |
 
 **Merging a pull request into `dev-deploy` or `prod-deploy` deploys immediately.**
