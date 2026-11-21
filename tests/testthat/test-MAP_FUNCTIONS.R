@@ -456,6 +456,32 @@ test_that("map_shapes_leaflet() and map_shapes_leaflet_proxy() keep per-row colo
   km <- polygons_call(m)
   expect_equal(km$args[[2]], c(1L, 3L))
   expect_equal(km$args[[4]]$color, c("#ff0000", "#0000ff"))
+
+  # mapfast() with an invalid code that keeps its id, as ejamit() gives "10999"
+  # (a real state, no such county) with valid FALSE
+  m2 <- suppressWarnings(mapfast(data.frame(ejam_uniq_id = c("10001", "10999", "10003"),
+                                            valid = c(TRUE, FALSE, TRUE), pop = c(10, 0, 30)),
+                                 color = cols, popup_style = "none"))
+  expect_true(inherits(m2, "leaflet"))
+  km2 <- polygons_call(m2)
+  expect_equal(km2$args[[2]], c(1L, 3L))
+  expect_equal(km2$args[[4]]$color, c("#ff0000", "#0000ff"))
+})
+
+test_that("mapfast() maps ejamit() FIPS results that include invalid and repeated codes (#793)", {
+  x <- suppressWarnings(ejamit(fips = c("10001", "10999", "10003", "10001"),
+                               quiet = TRUE, silentinteractive = TRUE))
+  # "10999" keeps its id but is invalid; the repeated "10001" is invalid with id NA
+  expect_equal(x$results_bysite$ejam_uniq_id, c("10001", "10999", "10003", NA))
+  expect_equal(x$results_bysite$valid, c(TRUE, FALSE, TRUE, FALSE))
+  polygons_call <- function(mymap) {
+    Filter(function(z) identical(z$method, "addPolygons"), mymap$x$calls)[[1]]
+  }
+  for (input in list(x, x$results_bysite)) {
+    m <- suppressWarnings(mapfast(input, popup_style = "none"))
+    expect_true(inherits(m, "leaflet"))
+    expect_equal(polygons_call(m)$args[[2]], c(1L, 3L))
+  }
 })
 ############################################## #
 
