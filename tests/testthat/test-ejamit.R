@@ -530,21 +530,20 @@ testthat::test_that("ejamit output (states) sorted like input fips", {
 })
 ########################################################## #
 
-testthat::test_that("ejamit() gives each copy of a repeated FIPS code the same results as the code listed once, in input order", {
+testthat::test_that("ejamit() analyzes a FIPS code listed more than once only once, with a warning", {
   junk = capture_output({
-    suppressMessages(suppressWarnings({
-      out  <- ejamit(fips = c("10001", "10003", "10001"))
-      once <- ejamit(fips = c("10001", "10003"))
-    }))
+    suppressMessages({
+      # "1001" is the same code as "01001" once its leading zero is added
+      expect_warning(
+        out <- ejamit(fips = c("10001", "01001", "10003", "10001", "1001")),
+        "listed more than once are analyzed only once: 10001, 01001")
+      once <- suppressWarnings(ejamit(fips = c("10001", "01001", "10003")))
+    })
   })
-  expect_equal(out$results_bysite$ejam_uniq_id, c("10001", "10003", "10001"))
-  expect_equal(out$results_bysite[c(1, 2), ], once$results_bysite, ignore_attr = TRUE)
-  # the third row is the same as the first, except that its report link is for site number 3
-  cols <- setdiff(names(once$results_bysite), "EJAM Report")
-  expect_equal(out$results_bysite[3, ..cols], once$results_bysite[1, ..cols], ignore_attr = TRUE)
-  expect_true(grepl("fips=10001&", out$results_bysite[["EJAM Report"]][3]) &&
-                grepl("sitenumber=3&", out$results_bysite[["EJAM Report"]][3]))
-  expect_equal(out$results_overall$pop, once$results_overall$pop)
+  expect_equal(anyDuplicated(out$results_bysite$ejam_uniq_id), 0)
+  expect_equal(out$results_bysite$ejam_uniq_id, c("10001", "01001", "10003"))
+  expect_equal(out$results_bysite, once$results_bysite)
+  expect_equal(out$results_overall, once$results_overall)
 })
 ########################################################## #
 

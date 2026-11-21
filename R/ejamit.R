@@ -525,6 +525,17 @@ ejamit <- function(sitepoints = NULL,
     # getblocksnearby_from_fips() should include doing something like fips_lead_zero() ?
     fips <- fips_lead_zero(fips) # essential so a later line can compare input fips to fips in output of getblocks, where they got leading zeroes added as needed
 
+    # A FIPS code listed more than once is analyzed only once, since the code is the ejam_uniq_id,
+    # and each ejam_uniq_id must be only one row of results_bysite.
+    repeated <- duplicated(fips) & !is.na(fips)
+    if (any(repeated)) {
+      repeated_codes <- unique(fips[repeated])
+      warning("FIPS codes listed more than once are analyzed only once: ",
+              paste(head(repeated_codes, 10), collapse = ", "),
+              if (length(repeated_codes) > 10) paste0(", and ", length(repeated_codes) - 10, " more") else "")
+      fips <- fips[!repeated]
+    }
+
     # RETAIN ORIGINAL SORT ORDER OF SITES (though doaggregate does handle that)
     original_order <- data.table(n = 1:length(fips), ejam_uniq_id = as.character(fips))
 
@@ -586,12 +597,6 @@ ejamit <- function(sitepoints = NULL,
     mysites2blocks[, n := ejam_uniq_id]
     mysites2blocks[, ejam_uniq_id := fips]
     mysites2blocks[, fips := NULL] # not needed since we keep track of 1:N and of ejam_uniq_id
-    # A code listed more than once is now one ejam_uniq_id, so keep only the blocks of its first copy,
-    # or doaggregate() would count them once per copy. Each copy still gets its own row in results_bysite.
-    repeated_n <- which(duplicated(fips))
-    if (length(repeated_n) > 0) {
-      mysites2blocks <- mysites2blocks[!(n %in% repeated_n)]
-    }
     #see: # cbind( (mysites2blocks[,.(ejam_uniq_id, n = min(n), has_nas_in_distance = any(is.na(distance)), all_nas_in_distance = all(is.na(distance)) ), by = "ejam_uniq_id"]))
 
     sites2states_or_latlon <- data.table(n = seq_along(fips),
@@ -922,13 +927,9 @@ ejamit <- function(sitepoints = NULL,
 
   ## * restore sort (results_bysite) like input was sorted ####
 
-  # A FIPS code listed more than once has a row for each copy, all with the same ejam_uniq_id,
-  # so the copies are numbered (copy_n) to give each copy its own position in the input.
-  original_order[, copy_n := rowid(ejam_uniq_id)]
-  out$results_bysite[, copy_n := rowid(ejam_uniq_id)]
-  out$results_bysite[original_order, n := i.n, on = c("ejam_uniq_id", "copy_n")]
+  out$results_bysite[original_order, n := n, on = "ejam_uniq_id"]
   setorder(out$results_bysite, n)
-  out$results_bysite[, c("n", "copy_n") := NULL]
+  out$results_bysite[, n := NULL]
 
   out$results_overall$valid <- TRUE # needs to be TRUE for some functions like ejam2report() ? or  sum(out$results_bysite$valid, na.rm = T)
   out$results_overall$invalid_msg <- ""
@@ -1006,10 +1007,9 @@ ejamit <- function(sitepoints = NULL,
 
   ## * sort output (results_bysite) like input was sorted ####
 
-  out$results_bysite[, copy_n := rowid(ejam_uniq_id)]
-  out$results_bysite[original_order, n := i.n, on = c("ejam_uniq_id", "copy_n")]
+  out$results_bysite[original_order, n := n, on = "ejam_uniq_id"]
   setorder(out$results_bysite, n)
-  out$results_bysite[, c("n", "copy_n") := NULL]
+  out$results_bysite[, n := NULL]
   ################################################################ #
 
   ## * batch.summarize()   ####
