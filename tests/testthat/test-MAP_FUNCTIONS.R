@@ -422,6 +422,41 @@ test_that("map_shapes_leaflet_proxy() keeps popup alignment after dropping empty
                                  popup = c("already filtered first", "already filtered third"))
   expect_equal(map2popups_polygon(x3), c("already filtered first", "already filtered third"))
 })
+
+test_that("map_shapes_leaflet() and map_shapes_leaflet_proxy() keep per-row colors aligned after dropping empty geometries", {
+  # One color per row: the empty middle shape's color must be dropped with it,
+  # or the third shape is drawn in the second row's color (#793).
+  shp <- sf::st_sf(
+    FIPS = c("0000001", "0000002", "0000003"),
+    geometry = sf::st_sfc(
+      sf::st_polygon(list(matrix(c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0), ncol = 2, byrow = TRUE))),
+      sf::st_as_sfc("POLYGON EMPTY")[[1]],
+      sf::st_polygon(list(matrix(c(2, 2, 2, 3, 3, 3, 3, 2, 2, 2), ncol = 2, byrow = TRUE)))
+    )
+  )
+  cols <- c("#ff0000", "#808080", "#0000ff")
+  polygons_call <- function(mymap) {
+    Filter(function(z) identical(z$method, "addPolygons"), mymap$x$calls)[[1]]
+  }
+  # addPolygons args: 1 polygons, 2 layerId, 3 group, 4 options (which hold color)
+  k <- polygons_call(map_shapes_leaflet(shp, color = cols, popup_style = "none"))
+  expect_equal(k$args[[2]], c(1L, 3L))
+  expect_equal(k$args[[4]]$color, c("#ff0000", "#0000ff"))
+
+  kp <- polygons_call(map_shapes_leaflet_proxy(leaflet::leaflet(), shapes = shp, color = cols, popup = NULL))
+  expect_equal(kp$args[[4]]$color, c("#ff0000", "#0000ff"))
+
+  # a single color is kept as is
+  k1 <- polygons_call(map_shapes_leaflet(shp, color = "green", popup_style = "none"))
+  expect_equal(k1$args[[4]]$color, "green")
+
+  # mapfast() with an NA id, as ejamit() gives an invalid or repeated FIPS code
+  m <- suppressWarnings(mapfast(data.frame(ejam_uniq_id = c("10001", NA, "10003"), pop = c(10, 0, 30)),
+                                color = cols, popup_style = "none"))
+  km <- polygons_call(m)
+  expect_equal(km$args[[2]], c(1L, 3L))
+  expect_equal(km$args[[4]]$color, c("#ff0000", "#0000ff"))
+})
 ############################################## #
 
 test_that("shapefile upload map path logs no console error (issue #136)", {
