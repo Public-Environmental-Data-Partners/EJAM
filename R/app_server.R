@@ -1432,7 +1432,7 @@ app_server <- function(input, output, session) {
       # now let ejamit() do the rest for the FIPS case
     }
 
-    fips_vec <- fips_lead_zero(fips_vec)
+    fips_vec <- unname(fips_lead_zero(fips_vec)) # unname: an invalid FIPS is NA with NA as its name, which data.frame() cannot use as a row name
     fips_is_valid <- fips_valid(fips_vec)
 
     if (sum(fips_is_valid) > 0) {
@@ -1525,7 +1525,7 @@ app_server <- function(input, output, session) {
         # fips_vec # ??? this line was here but should have no effect?
       }
 
-      fips_vec <- fips_lead_zero(fips_vec)
+      fips_vec <- unname(fips_lead_zero(fips_vec)) # unname: an invalid FIPS is NA with NA as its name, which data.frame() cannot use as a row name
       fips_is_valid <- fips_valid(fips_vec)
 
       if (sum(fips_is_valid) > 0) {
@@ -1795,7 +1795,7 @@ app_server <- function(input, output, session) {
       dt <- data_uploaded() %>%
         sf::st_drop_geometry()
     } else if (current_upload_method() %in% c('FIPS', 'FIPS_PLACE')) {
-      dt <- data.frame(FIPS = data_uploaded()) %>%
+      dt <- data.frame(FIPS = unname(data_uploaded())) %>%
         dplyr::mutate(type = fipstype(FIPS), name = fips2name(FIPS))
     } else {
       dt <- data_uploaded()
