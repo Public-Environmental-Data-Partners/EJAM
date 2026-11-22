@@ -45,6 +45,13 @@ APP OR API SERVERS:
 \item "ejam" or "ejamapp" or "app" (\code{Config/EJAM/url_ejamapp}) is for the EJAM Shiny app.
 \item "ejamdev" or "ejamappdev" (\code{Config/EJAM/url_ejamapp_dev}) is for the EJAM Shiny app development server.
 \item "ejscreen" or "ejscreenapp" (\code{Config/EJAM/url_ejscreenapp}) is for the live EJScreen app.
+A test deployment of the EJAM app can send its EJScreen links (the app's
+header link and the EJScreen map links from \code{\link[=url_ejscreenmap]{url_ejscreenmap()}}) to a test
+EJScreen site instead: \code{options(ejam.ejscreen.baseurl = ...)} takes highest
+precedence, then the environment variable \code{EJAM_EJSCREEN_BASEURL}, then
+DESCRIPTION as usual. Give the full app address, as in DESCRIPTION. Like the
+API override below, it applies only to the canonical lookup
+(\code{desc_or_alias = "desc"}).
 \item "api" (\code{Config/EJAM/url_api}) is for the EJAM REST API base URL.
 Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
 endpoint can be changed in one place (by editing \code{Config/EJAM/url_api}).

@@ -42,6 +42,13 @@
 #'   - "ejamdev" or "ejamappdev" (`Config/EJAM/url_ejamapp_dev`) is for the EJAM Shiny app development server.
 #'
 #'   - "ejscreen" or "ejscreenapp" (`Config/EJAM/url_ejscreenapp`) is for the live EJScreen app.
+#'     A test deployment of the EJAM app can send its EJScreen links (the app's
+#'     header link and the EJScreen map links from [url_ejscreenmap()]) to a test
+#'     EJScreen site instead: `options(ejam.ejscreen.baseurl = ...)` takes highest
+#'     precedence, then the environment variable `EJAM_EJSCREEN_BASEURL`, then
+#'     DESCRIPTION as usual. Give the full app address, as in DESCRIPTION. Like the
+#'     API override below, it applies only to the canonical lookup
+#'     (`desc_or_alias = "desc"`).
 #'
 #'   - "api" (`Config/EJAM/url_api`) is for the EJAM REST API base URL.
 #'     Always a full URL. All functions that call or build EJAM API URLs read it from here, so the
@@ -241,6 +248,17 @@ url_package <- function(
     override <- getOption("ejam.api.baseurl", default = Sys.getenv("EJAM_API_BASEURL"))
     if (length(override) == 1 && !is.na(override) && nzchar(trimws(override))) {
       return(sub("/+$", "", trimws(override)))
+    }
+  }
+
+  # Same kind of override for the EJScreen app: lets a test deployment of the
+  # EJAM app (such as the dev server before a cutover) link to a test EJScreen
+  # site. Precedence: option(ejam.ejscreen.baseurl) > env var
+  # EJAM_EJSCREEN_BASEURL > DESCRIPTION. Canonical lookup only, as for the API.
+  if (type %in% c("ejscreen", "ejscreenapp") && desc_or_alias == "desc") {
+    override <- getOption("ejam.ejscreen.baseurl", default = Sys.getenv("EJAM_EJSCREEN_BASEURL"))
+    if (length(override) == 1 && !is.na(override) && nzchar(trimws(override))) {
+      return(trimws(override))
     }
   }
 

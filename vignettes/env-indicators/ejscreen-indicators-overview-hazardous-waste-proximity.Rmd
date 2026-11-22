@@ -12,6 +12,7 @@ editor_options:
   markdown:
     wrap: 80
 ---
+[Return to overview](../overview-environmental-indicators-ejscreen.html){.return-link}
 
 ## What is the hazardous waste proximity?
 

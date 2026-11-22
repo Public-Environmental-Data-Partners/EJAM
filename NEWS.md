@@ -1,17 +1,34 @@
-# EJAM 4.2024.0 (in development)
+# EJAM (development version)
+
+- Fixed polygon and buffered-FIPS analyses missing Census blocks because their bounding-box lookup was too small. FIPS handoffs without an explicit buffer now start at 0 miles (#763).
+
+- Improved GitHub Actions that test if EJAM can be installed: Simplified vignette, simplified Ubuntu setup & checks. Explain what failed, check the R version EJAM specifies as minimum. (#714 & #723).
+- Moved open-issue-ranking reports out of the package, into GitHub issue #715 (#716).
+- A test deployment of the web app can link to a test EJScreen site: set the environment variable `EJAM_EJSCREEN_BASEURL` (or `options(ejam.ejscreen.baseurl = ...)`).
+- Web app: polygons, cities and counties sent from another app (such as EJScreen) no longer get an unrequested buffer; they use the distance that was sent, or no buffer (#766).
+- `ejamit()` analyzes a FIPS code listed more than once only once: each later copy keeps its row but is marked invalid, with a warning, instead of every copy reporting double the population (#793).
+- When some FIPS codes are invalid, `ejamit()` results stay in input order, so each site's report link is on its own row, and the percent of sites near schools and other features counts only the sites analyzed. `mapfast()` now maps these results, and a shape with no boundary no longer shifts the colors of the shapes after it (#793).
+- Web app: clicking Start also wakes the EJAM API, so one-site report links open faster after an analysis (#772).
+- `ejam2shapefile()` now works for FIPS analyses (buffered if the analysis used a buffer; invalid FIPS get empty geometry), and no longer converts the input data.table to a data.frame.
+- Analyses of many FIPS codes are much faster: for example, finding the blockgroups in all of California's tracts now takes under a second instead of about 85 seconds (#791).
+- `getblocksnearby_from_fips()` gives each copy of a repeated FIPS code its own blockgroups, instead of none for the first copy and double for the last (#793).
+
+# EJAM 4.2024.0 (November 2026)
 
 
 ### New in EJSCREEN and EJAM
 
 _since October 2026_
 
-#### Updated data in the v4.2024.0 release!
+#### EJSCREEN and EJAM now have updated data, for the first time since EPA's last update (2024)!
 
-  - **Demographics** use the 2020-2024 American Community Survey (ACS), not the ACS 2018-2022 data in EPA's last version.
-  - **Environmental** indicators for ozone and PM2.5 are updated.
+  - **Demographics** now are from the 2020-2024 American Community Survey (ACS), not the 2018-2022 data from EPA's last update.
+  - **Environmental** indicators for ozone and PM2.5 are updated as well.
   - **EJ indexes and percentiles** are recalculated to use the new data.
-  - The **language shares for limited-English households** (e.g. % speaking Spanish) are shares of limited-English-speaking households, as the report labels them, not of all households as in EPA's EJSCREEN data files (#615).
-  - **Brentwood and Wyandanch, NY have no data:** the Census Bureau withheld 2020-2024 ACS data for these places in Suffolk County ([Census errata note 148](https://www.census.gov/programs-surveys/acs/technical-documentation/errata/148.html)). EJAM has no data for those 39 block groups, so analyses there undercount residents.
+  - **The previous version**, 3.2022.3 (ACS 2018-2022 data), will remain available.
+  - **Some minor data issues** are now documented. For example:
+    - **Brentwood and Wyandanch, NY have no data:** The Census Bureau withheld 2020-2024 ACS data for these places in Suffolk County ([Census errata note 148](https://www.census.gov/programs-surveys/acs/technical-documentation/errata/148.html)). EJScreen/EJAM therefore cannot show demographic data for those 39 block groups, so analyses there would undercount residents. See notes on "Known Data Issues" in [EJAM/EJScreen documentation](https://public-environmental-data-partners.github.io/EJAM/articles).
+    - **% speaking each language** (e.g. % speaking Spanish) -- Reports show these as a % of limited-English-speaking households (as the report labels them), not as a % of all households (as was in EPA's EJSCREEN data files) (#615).
 
 #### Towns and townships added
 
@@ -22,6 +39,10 @@ _since October 2026_
   - **Maps are faster:** Shorter popup text and clustered markers keep maps responsive and make downloaded reports much smaller for large analyses (#651).
   - **Larger analyses work better:** Analyzing thousands of sites on the web app used to be slow or would crash. Unbuffered county, state, tract, or blockgroup analyses now run about twice as fast and use about 1–1.7 GB less peak memory, with the same results (#649, #652).
   - **Extremely large requests stop with an explanation** instead of stopping the app for everyone using it (#650).
+
+#### New EJSCREEN documentation
+
+  - New EJSCREEN documentation has been added, on what each indicator means and where data come from.
 
 
 _since 2024 (EPA's last updates, EJAM 2.32.2 and EJSCREEN 2.3)_

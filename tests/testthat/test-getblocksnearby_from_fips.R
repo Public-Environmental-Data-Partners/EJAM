@@ -629,6 +629,52 @@ test_that("getblocksnearby_from_fips(compact = TRUE) has one row per blockgroup,
   expect_gt(out_compact$count_of_blocks_near_multiple_sites, 0)
 })
 
+test_that("getblocksnearby_from_fips() finds every blockgroup whose code starts with each FIPS, for a mix of types", {
+  bgs <- blockgroupstats$bgfips
+  tracts <- unique(substr(bgs[startsWith(bgs, "10001")], 1, 11))[1:5]
+  block <- paste0(bgs[startsWith(bgs, "24005")][1], "001")
+  fips_input <- c("44", "24005", tracts, bgs[startsWith(bgs, "10003")][1:3], block)
+  suppressMessages(suppressWarnings({
+    s2b <- getblocksnearby_from_fips(fips_input, compact = TRUE)
+  }))
+  expect_equal(sort(unique(s2b$ejam_uniq_id)), seq_along(fips_input))
+  expect_false(is.unsorted(s2b$ejam_uniq_id))
+  for (i in seq_along(fips_input)) {
+    expected <- bgs[startsWith(bgs, substr(fips_input[i], 1, 12))]
+    found <- blockgroupstats$bgfips[match(s2b$bgid[s2b$ejam_uniq_id == i], blockgroupstats$bgid)]
+    expect_setequal(found, expected)
+    expect_equal(unique(s2b$fips[s2b$ejam_uniq_id == i]), fips_input[i])
+  }
+})
+
+test_that("getblocksnearby_from_fips() gives each copy of a repeated FIPS code its own blockgroups", {
+  for (compact in c(TRUE, FALSE)) {
+    suppressMessages(suppressWarnings({
+      s2b   <- getblocksnearby_from_fips(c("10001", "10003", "10001"), compact = compact)
+      alone <- getblocksnearby_from_fips("10001", compact = compact)
+    }))
+    expect_equal(sort(unique(s2b$ejam_uniq_id)), 1:3)
+    for (i in c(1, 3)) {
+      expect_equal(s2b$blockid[s2b$ejam_uniq_id == i], alone$blockid)
+      expect_equal(s2b$blockwt[s2b$ejam_uniq_id == i], alone$blockwt)
+    }
+  }
+})
+
+test_that("getblocksnearby_from_fips() handles a large code repeated so often that the join returns more rows than there are blockgroups", {
+  suppressMessages(suppressWarnings({
+    s2b   <- getblocksnearby_from_fips(rep("06", 12), compact = TRUE)
+    alone <- getblocksnearby_from_fips("06", compact = TRUE)
+  }))
+  # more rows than nrow(blockgroupstats) + 12, the most a data.table join returns unless allow.cartesian = TRUE
+  expect_gt(NROW(s2b), NROW(blockgroupstats) + 12)
+  expect_equal(sort(unique(s2b$ejam_uniq_id)), 1:12)
+  for (i in 1:12) {
+    expect_equal(s2b$bgid[s2b$ejam_uniq_id == i], alone$bgid)
+    expect_equal(s2b$blockwt[s2b$ejam_uniq_id == i], alone$blockwt)
+  }
+})
+
 test_that("getblocksnearby_from_fips(compact = TRUE) keeps one row per block if any FIPS is a city", {
   suppressMessages(suppressWarnings({
     s2b <- getblocksnearby_from_fips(c("10001", testinput_fips_cities[1]), compact = TRUE)
@@ -637,3 +683,16 @@ test_that("getblocksnearby_from_fips(compact = TRUE) keeps one row per block if 
   expect_false("blockcount" %in% names(s2b))
 })
 ################# #  ################# #  ################# #
+
+
+test_that("small county buffers do not lose New Castle County residents", {
+  unbuffered <- getblocksnearby_from_fips("10003")
+  baseline <- doaggregate(unbuffered, radius = 999, silentinteractive = TRUE)$results_bysite$pop
+  expect_gt(baseline, 0)
+  for (radius in c(0.01, 0.5, 2)) {
+    buffered <- getblocksnearby_from_fips("10003", radius = radius)
+    population <- doaggregate(buffered, radius = radius, silentinteractive = TRUE)$results_bysite$pop
+    expect_gte(nrow(buffered), nrow(unbuffered))
+    expect_gte(population, baseline)
+  }
+})

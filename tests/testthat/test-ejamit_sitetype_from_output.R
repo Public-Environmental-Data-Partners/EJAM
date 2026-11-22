@@ -100,3 +100,20 @@ testthat::test_that("a zero-row latlon result is not misreported as fips", {
   ## the same table with its rows still present is still latlon
   expect_equal(EJAM:::sitetype_from_dt(testoutput_ejamit_10pts_1miles$results_bysite), "latlon")
 })
+
+testthat::test_that("FIPS results with invalid sites are still recognized as fips (#793)", {
+  ## ejamit(fips = ...) gives a repeated or unreadable code ejam_uniq_id NA, and keeps a
+  ## code like "10999" (a real state, no such county) as its id with valid FALSE.
+  expect_equal(EJAM:::sitetype_from_dt(
+    data.table::data.table(ejam_uniq_id = c("10001", NA, "10003"), valid = c(TRUE, FALSE, TRUE))), "fips")
+  expect_equal(EJAM:::sitetype_from_dt(
+    data.table::data.table(ejam_uniq_id = c("10001", "10999", "10003"), valid = c(TRUE, FALSE, TRUE))), "fips")
+  ## without a valid column, every non-NA id must still be a valid FIPS code
+  expect_warning(res <- EJAM:::sitetype_from_dt(
+    data.table::data.table(ejam_uniq_id = c("10001", "10999", "10003"))), "cannot determine valid sitetype")
+  expect_true(is.na(res))
+  ## no valid sites at all is undetermined
+  expect_warning(res2 <- EJAM:::sitetype_from_dt(
+    data.table::data.table(ejam_uniq_id = c(NA, "10999"), valid = c(FALSE, FALSE))), "cannot determine valid sitetype")
+  expect_true(is.na(res2))
+})
