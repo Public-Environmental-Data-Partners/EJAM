@@ -1609,9 +1609,14 @@ report_residents_within_xyz_from_ejamit = function(ejamitout, sitenumber = NULL,
   if (sitetype %in% 'fips') {
     if (is.null(ejam_uniq_id)) {
       # results_overall being reported on, not 1 site
-      # an invalid site has ejam_uniq_id NA (or a code of no known type), which must not make
-      # the valid sites look like a mix of types (issue #801)
-      ft <- fipstype(out$results_bysite$ejam_uniq_id, quiet = TRUE)
+      # An invalid site must not make the valid sites look like a mix of types (issue #801).
+      # Its ejam_uniq_id can be NA, or a code that looks like some other type of place but does
+      # not exist, so only the valid sites are checked, if any are valid.
+      ids <- out$results_bysite$ejam_uniq_id
+      if ("valid" %in% names(out$results_bysite) && any(out$results_bysite$valid %in% TRUE)) {
+        ids <- ids[out$results_bysite$valid %in% TRUE]
+      }
+      ft <- fipstype(ids, quiet = TRUE)
       ft <- unique(ft[!is.na(ft)])
       if (length(ft) == 1) {
         # ft is ok

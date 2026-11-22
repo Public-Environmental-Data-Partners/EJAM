@@ -575,6 +575,15 @@ testthat::test_that("ejamit() keeps input order when several FIPS codes are inva
   header <- report_residents_within_xyz_from_ejamit(out)
   expect_match(header, "3 specified counties", fixed = TRUE)
   expect_equal(header, report_residents_within_xyz_from_ejamit(valid_only))
+  # ... and with an invalid code that looks like another type of place (a blockgroup that does not exist)
+  junk = capture_output({
+    suppressMessages(suppressWarnings({
+      out_bg <- ejamit(fips = c("100019999999", "10001", "10003", "10005"))
+    }))
+  })
+  expect_equal(out_bg$results_bysite$valid, c(FALSE, TRUE, TRUE, TRUE))
+  expect_equal(fipstype(out_bg$results_bysite$ejam_uniq_id[1], quiet = TRUE), "blockgroup")
+  expect_equal(report_residents_within_xyz_from_ejamit(out_bg), header)
 })
 ########################################################## #
 
