@@ -48,7 +48,8 @@ class IssueRankingTest(unittest.TestCase):
     def test_no_proposed_rank_or_old_headers(self):
         self.assertNotIn('Proposed rank', scoring.ISSUE_TABLE_HEADER)
         self.assertNotIn('Affects Web App', scoring.ISSUE_TABLE_HEADER)
-        self.assertIn('| Quad | Cost | Benefit | Priority | App |', scoring.ISSUE_TABLE_HEADER)
+        self.assertIn('| PR | Cost | Benefit | Priority | App |', scoring.ISSUE_TABLE_HEADER)
+        self.assertNotIn('| Quad |', scoring.ISSUE_TABLE_HEADER)
 
     def test_compact_score_tiers_preserve_thresholds(self):
         self.assertEqual([scoring.cost_tier(n).split()[-1]
@@ -66,7 +67,7 @@ class IssueRankingTest(unittest.TestCase):
                           'PRIORITY HIGH-ish but not a bug',
                           'rank:A-high-value-low-cost', 'rank:custom', 'API']}
         cells = scoring.issue_table_row(row).split(' | ')
-        self.assertEqual(cells[2:10], ['v4', '', 'A', '⛔<br>12&nbsp;H+',
+        self.assertEqual(cells[2:9], ['v4', '', '⛔<br>12&nbsp;H+',
                          '🟩🟩<br>15&nbsp;H+', 'HIGH-ish', '✓', '✓'])
         self.assertEqual(cells[-1], scoring.table_key_labels(['API']) + ' |')
         self.assertNotIn('(', cells[4] + cells[5])
@@ -75,12 +76,12 @@ class IssueRankingTest(unittest.TestCase):
         self.assertEqual(markdown.count(scoring.issue_table_row(row)), 1)
         self.assertNotIn('## Full Table', markdown)
 
-    def test_missing_or_ambiguous_live_quad_is_not_inferred_from_score(self):
+    def test_live_rank_labels_do_not_add_a_quad_column(self):
         row = {'num': 1, 'title': 'Example', 'milestone': 'NA',
                'cost': 1, 'benefit': 1, 'quad': 'A', 'labels': []}
-        self.assertEqual(scoring.issue_table_row(row).split(' | ')[4], '—')
+        original = scoring.issue_table_row(row)
         row['labels'] = [scoring.RANK_LABELS['A'], scoring.RANK_LABELS['B']]
-        self.assertEqual(scoring.issue_table_row(row).split(' | ')[4], '—')
+        self.assertEqual(scoring.issue_table_row(row), original)
 
     def test_markdown_escapes_dollar_signs_that_would_start_pandoc_math(self):
         """A "$" in a title opened an inline-math span that ate later rows.
@@ -158,7 +159,7 @@ class IssueRankingTest(unittest.TestCase):
         self.assertNotIn("rank:C-low-value-low-cost", scoring.issue_table_row(scored[0]))
         self.assertIn(
             "| [595](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595) | "
-            + scoring.table_title(scored[0]['title']) + " | NA |  | C | 🟢<br>0&nbsp;L- | 🟦<br>7&nbsp;M | "
+            + scoring.table_title(scored[0]['title']) + " | NA |  | 🟢<br>0&nbsp;L- | 🟦<br>7&nbsp;M | "
             "— |  |  | "
             + scoring.table_key_labels(['Affects API']) + ' |',
             markdown,

@@ -543,10 +543,10 @@ def md_escape(text: str) -> str:
 
 
 ISSUE_TABLE_HEADER = (
-    "| # | Issue Title | Milestone | PR | Quad | Cost | Benefit | Priority | "
+    "| # | Issue Title | Milestone | PR | Cost | Benefit | Priority | "
     "App | BUG | other key<br>labels |"
 )
-ISSUE_TABLE_SEPARATOR = "|---|---|---|---|:---:|---:|---:|---|:---:|:---:|---|"
+ISSUE_TABLE_SEPARATOR = "|---|---|---|---|---:|---:|---|:---:|:---:|---|"
 TITLE_WIDTH = len('create a way to share an interactive map') + 4
 KEY_LABEL_WIDTH = 12
 
@@ -583,8 +583,6 @@ def table_key_labels(labels: list[str]) -> str:
 def issue_table_row(r: dict) -> str:
     """Use identical columns and compact cells in every issue table."""
     labels = r['labels']
-    live_quads = [q for q, label in RANK_LABELS.items() if label in labels]
-    quad = live_quads[0] if len(live_quads) == 1 else '—'
     other = [label for label in labels if not label.startswith(('rank:', 'PRIORITY'))]
     short = table_title(r['title'])
     priority = get_priority_label(labels).removeprefix('PRIORITY ').replace(
@@ -595,7 +593,7 @@ def issue_table_row(r: dict) -> str:
         f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
         f"{md_escape(r['milestone'])} | "
         + ', '.join(f"[#{n}](https://github.com/{OWNER}/{REPO}/pull/{n})" for n in r.get('prs', []))
-        + f" | {quad} | "
+        + " | "
         f"{table_score(r['cost'], cost_tier(r['cost']))} | "
         f"{table_score(r['benefit'], benefit_tier(r['benefit']))} | {md_escape(priority)} | {web} | {bug} | "
         f"{table_key_labels(other)} |"
@@ -655,8 +653,6 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
     lines.append("Score tiers: **L-** = Very Low, **L** = Low, **M** = Medium, "
                  "**H** = High, **H+** = Very High. Checkmarks indicate labels present on GitHub.")
-    lines.append("**Quad** reflects the current GitHub rank label. "
-                 "A missing or ambiguous current rank is shown as —.")
     lines.append("")
     costs    = sorted(r["cost"]    for r in scored_issues)
     benefits = sorted(r["benefit"] for r in scored_issues)
