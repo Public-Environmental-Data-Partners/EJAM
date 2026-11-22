@@ -10,8 +10,20 @@ import ejam_issues_scoring_functions as scoring
 
 class IssueRankingTest(unittest.TestCase):
 
+    def test_all_quadrants_share_one_unbroken_table(self):
+        rows = [dict(num=i, title='Example', milestone='NA', cost=2,
+                     benefit=8, quad=q, labels=[]) for i, q in enumerate('ABCD', 1)]
+        md = scoring.generate_markdown(rows, 3, 6)
+        table = md.split(scoring.ISSUE_TABLE_HEADER, 1)[1].split('\n\n', 1)[0]
+        self.assertEqual(md.count(scoring.ISSUE_TABLE_HEADER), 1)
+        self.assertTrue(all(line.startswith('|') for line in table.splitlines() if line))
+        for q in 'ABCD':
+            self.assertIn('| **' + q + '** |', table)
+        for row in rows:
+            self.assertEqual(md.count(scoring.issue_table_row(row)), 1)
+
     def test_increased_exact_bug_and_app_weights(self):
-        self.assertEqual(scoring.benefit_score('', ['BUG'], ''), 5)
+        self.assertEqual(scoring.benefit_score('', ['BUG'], ''), 7)
         self.assertEqual(scoring.benefit_score('', ['Affects Web App'], ''), 4)
         self.assertEqual(scoring.benefit_score('', ['Affects R users only - NOT web app users'], ''), 0)
         self.assertEqual(scoring.benefit_score('', ['PRIORITY HIGH-ish but not a bug'], ''), 6)
@@ -72,7 +84,7 @@ class IssueRankingTest(unittest.TestCase):
         self.assertEqual(cells[-1], scoring.table_key_labels(['API']) + ' |')
         self.assertNotIn('(', cells[4] + cells[5])
         markdown = scoring.generate_markdown([row], 4, 6)
-        self.assertEqual(markdown.count(scoring.ISSUE_TABLE_HEADER), 4)
+        self.assertEqual(markdown.count(scoring.ISSUE_TABLE_HEADER), 1)
         self.assertEqual(markdown.count(scoring.issue_table_row(row)), 1)
         self.assertNotIn('## Full Table', markdown)
 

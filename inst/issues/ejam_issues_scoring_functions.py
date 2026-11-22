@@ -299,7 +299,7 @@ def benefit_score(issue_title: str, issue_labels: list[str], issue_body: str) ->
 
     # ── BUG label ─────────────────────────────────────────────────────────────
     if "bug" in {label.casefold() for label in issue_labels}:
-        s += 5
+        s += 7
         if "priority high" in labs:
             s += 2  # extra urgency for high-priority bugs
 
@@ -602,18 +602,13 @@ def issue_table_row(r: dict) -> str:
 
 def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
                 issues: list[dict]) -> None:
-    lines.append(f"## Quadrant {letter} — {heading}")
-    lines.append(f"*{desc}*")
-    lines.append("")
-    lines.append(f"**{len(issues)} issues**")
-    lines.append("")
-    lines.append(ISSUE_TABLE_HEADER)
-    lines.append(ISSUE_TABLE_SEPARATOR)
+    # Group headings must remain table rows, without blank lines, so GitHub
+    # sizes one table rather than four independently sized tables.
+    cells = [f'**{letter}**', table_title(f'Quadrant {letter} — {heading}'),
+             f'**{issue_count_text(len(issues))}**'] + [''] * 7
+    lines.append('| ' + ' | '.join(cells) + ' |')
     for r in issues:
         lines.append(issue_table_row(r))
-    lines.append("")
-    lines.append("---")
-    lines.append("")
 
 
 def generate_markdown(scored_issues: list[dict],
@@ -678,6 +673,10 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("---")
     lines.append("")
 
+    lines.append('## Ranked Issues')
+    lines.append('')
+    lines.append(ISSUE_TABLE_HEADER)
+    lines.append(ISSUE_TABLE_SEPARATOR)
     _write_quad(lines, "A",
                 "FOCUS SHORTLIST — Low Cost, High Benefit",
                 f"The top {MAX_QUADRANT_A_ISSUES} low-cost, high-benefit candidates at most, "
@@ -697,6 +696,7 @@ def generate_markdown(scored_issues: list[dict],
                 "Expensive to fix, limited payoff. Defer or deprioritize unless circumstances change.",
                 quads["D"])
 
+    lines.append('')
     lines.append("## Issues by Milestone")
     lines.append("")
     lines.append("| Milestone | Issue count |")
@@ -792,7 +792,7 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("| PRIORITY HIGH-ish label | +6 |")
     lines.append("| PRIORITY MEDIUM label | +4 |")
     lines.append("| PRIORITY LOW label | +1 |")
-    lines.append("| BUG label | +5 (+2 extra if also PRIORITY HIGH) |")
+    lines.append("| BUG label | +7 (+2 extra if also PRIORITY HIGH) |")
     lines.append("| web app / shiny label | +4 |")
     lines.append("| API label | +2 |")
     lines.append("| Title: web app / shiny / in app | +2 |")
