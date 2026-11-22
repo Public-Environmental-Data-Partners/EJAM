@@ -10,6 +10,19 @@ import ejam_issues_scoring_functions as scoring
 
 class IssueRankingTest(unittest.TestCase):
 
+    def test_increased_exact_bug_and_app_weights(self):
+        self.assertEqual(scoring.benefit_score('', ['BUG'], ''), 5)
+        self.assertEqual(scoring.benefit_score('', ['Affects Web App'], ''), 4)
+        self.assertEqual(scoring.benefit_score('', ['Affects R users only - NOT web app users'], ''), 0)
+        self.assertEqual(scoring.benefit_score('', ['PRIORITY HIGH-ish but not a bug'], ''), 6)
+
+    def test_open_pr_explicit_references_only(self):
+        pr = {'number': 9, 'body': 'Closes #11. Related #12.\nPart of Public-Environmental-Data-Partners/EJAM#13'}
+        self.assertEqual(scoring.open_pr_issue_references(pr), {11, 13})
+        row = {'num': 11, 'title': 'Example', 'labels': [], 'milestone': 'NA',
+               'cost': 1, 'benefit': 1, 'quad': 'C', 'prs': [9, 10]}
+        self.assertIn('[#9](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/9)', scoring.issue_table_row(row))
+
     def test_key_labels_filter_and_twelve_character_lines(self):
         rendered = scoring.table_key_labels(['documentation', 'speed / performance',
                                             'custom indicators', 'Affects API'])
@@ -53,7 +66,7 @@ class IssueRankingTest(unittest.TestCase):
                           'PRIORITY HIGH-ish but not a bug',
                           'rank:A-high-value-low-cost', 'rank:custom', 'API']}
         cells = scoring.issue_table_row(row).split(' | ')
-        self.assertEqual(cells[2:9], ['v4', 'A', '⛔<br>12&nbsp;H+',
+        self.assertEqual(cells[2:10], ['v4', '', 'A', '⛔<br>12&nbsp;H+',
                          '🟩🟩<br>15&nbsp;H+', 'HIGH-ish', '✓', '✓'])
         self.assertEqual(cells[-1], scoring.table_key_labels(['API']) + ' |')
         self.assertNotIn('(', cells[4] + cells[5])
@@ -65,9 +78,9 @@ class IssueRankingTest(unittest.TestCase):
     def test_missing_or_ambiguous_live_quad_is_not_inferred_from_score(self):
         row = {'num': 1, 'title': 'Example', 'milestone': 'NA',
                'cost': 1, 'benefit': 1, 'quad': 'A', 'labels': []}
-        self.assertEqual(scoring.issue_table_row(row).split(' | ')[3], '—')
+        self.assertEqual(scoring.issue_table_row(row).split(' | ')[4], '—')
         row['labels'] = [scoring.RANK_LABELS['A'], scoring.RANK_LABELS['B']]
-        self.assertEqual(scoring.issue_table_row(row).split(' | ')[3], '—')
+        self.assertEqual(scoring.issue_table_row(row).split(' | ')[4], '—')
 
     def test_markdown_escapes_dollar_signs_that_would_start_pandoc_math(self):
         """A "$" in a title opened an inline-math span that ate later rows.
@@ -145,7 +158,7 @@ class IssueRankingTest(unittest.TestCase):
         self.assertNotIn("rank:C-low-value-low-cost", scoring.issue_table_row(scored[0]))
         self.assertIn(
             "| [595](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595) | "
-            + scoring.table_title(scored[0]['title']) + " | NA | C | 🟢<br>0&nbsp;L- | 🟦<br>7&nbsp;M | "
+            + scoring.table_title(scored[0]['title']) + " | NA |  | C | 🟢<br>0&nbsp;L- | 🟦<br>7&nbsp;M | "
             "— |  |  | "
             + scoring.table_key_labels(['Affects API']) + ' |',
             markdown,

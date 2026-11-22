@@ -298,14 +298,15 @@ def benefit_score(issue_title: str, issue_labels: list[str], issue_body: str) ->
         s += 1
 
     # ── BUG label ─────────────────────────────────────────────────────────────
-    if "bug" in labs:
-        s += 4
+    if "bug" in {label.casefold() for label in issue_labels}:
+        s += 5
         if "priority high" in labs:
             s += 2  # extra urgency for high-priority bugs
 
     # ── Web app / API impact (broader user audience) ──────────────────────────
-    if any(x in labs for x in ("web app", "webapp", "shiny")):
-        s += 3
+    if any(label.casefold() in {'affects web app', 'web app', 'webapp', 'shiny'}
+           for label in issue_labels):
+        s += 4
     if "api" in labs:
         s += 2
 
@@ -542,10 +543,10 @@ def md_escape(text: str) -> str:
 
 
 ISSUE_TABLE_HEADER = (
-    "| # | Issue Title | Milestone | Quad | Cost | Benefit | Priority | "
+    "| # | Issue Title | Milestone | PR | Quad | Cost | Benefit | Priority | "
     "App | BUG | other key<br>labels |"
 )
-ISSUE_TABLE_SEPARATOR = "|---|---|---|:---:|---:|---:|---|:---:|:---:|---|"
+ISSUE_TABLE_SEPARATOR = "|---|---|---|---|:---:|---:|---:|---|:---:|:---:|---|"
 TITLE_WIDTH = len('create a way to share an interactive map') + 4
 KEY_LABEL_WIDTH = 12
 
@@ -592,7 +593,9 @@ def issue_table_row(r: dict) -> str:
     bug = '✓' if 'BUG' in labels else ''
     return (
         f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
-        f"{md_escape(r['milestone'])} | {quad} | "
+        f"{md_escape(r['milestone'])} | "
+        + ', '.join(f"[#{n}](https://github.com/{OWNER}/{REPO}/pull/{n})" for n in r.get('prs', []))
+        + f" | {quad} | "
         f"{table_score(r['cost'], cost_tier(r['cost']))} | "
         f"{table_score(r['benefit'], benefit_tier(r['benefit']))} | {md_escape(priority)} | {web} | {bug} | "
         f"{table_key_labels(other)} |"
@@ -793,8 +796,8 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("| PRIORITY HIGH-ish label | +6 |")
     lines.append("| PRIORITY MEDIUM label | +4 |")
     lines.append("| PRIORITY LOW label | +1 |")
-    lines.append("| BUG label | +4 (+2 extra if also PRIORITY HIGH) |")
-    lines.append("| web app / shiny label | +3 |")
+    lines.append("| BUG label | +5 (+2 extra if also PRIORITY HIGH) |")
+    lines.append("| web app / shiny label | +4 |")
     lines.append("| API label | +2 |")
     lines.append("| Title: web app / shiny / in app | +2 |")
     lines.append("| Title: API | +2 |")
@@ -812,6 +815,55 @@ def generate_markdown(scored_issues: list[dict],
 
 
 # ── MAIN ENTRY POINT ──────────────────────────────────────────────────────────
+
+def open_pr_issue_references(pr: dict) -> set[int]:
+    """Recognize explicit work/closure intent, not arbitrary related mentions."""
+    references = set()
+    pattern = re.compile(
+        r'\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|address(?:e[sd])?|'
+        r'part of|plan in)\s+(?:issue\s+)?'
+        r'(?:\[)?(?:Public-Environmental-Data-Partners/EJAM)?#(\d+)', re.I)
+    for text in (pr.get('title') or '', pr.get('body') or ''):
+        references.update(int(n) for n in pattern.findall(text))
+    for issue in pr.get('closingIssuesReferences', {}).get('nodes', []):
+        if issue.get('repository', {}).get('nameWithOwner') == f'{OWNER}/{REPO}':
+            references.add(issue['number'])
+    return references
+
+
+def fetch_open_pr_links(token: str | None = None) -> dict[int, list[int]]:
+    """Fetch open PRs (including drafts) and their explicitly targeted issues."""
+    import urllib.request
+    links = {}
+    page = 1
+    while True:
+        req = urllib.request.Request(
+            f'https://api.github.com/repos/{OWNER}/{REPO}/pulls?state=open&per_page=100&page={page}',
+            headers={'Accept': 'application/vnd.github+json',
+                     **({'Authorization': f'Bearer {token}'} if token else {})})
+        with urllib.request.urlopen(req) as response:
+            batch = json.loads(response.read().decode())
+        for pr in batch:
+            query = ('{repository(owner:"' + OWNER + '",name:"' + REPO + '"){'
+                     'pullRequest(number:' + str(pr['number']) + '){'
+                     'closingIssuesReferences(first:100){pageInfo{hasNextPage}'
+                     'nodes{number repository{nameWithOwner}}}}}}')
+            result = subprocess.run(['gh', 'api', 'graphql', '-f', 'query=' + query],
+                                    check=True, capture_output=True, text=True,
+                                    env={**os.environ, **({'GH_TOKEN': token} if token else {})})
+            payload = json.loads(result.stdout)
+            if payload.get('errors'):
+                raise RuntimeError('Unable to fetch open PR closing references')
+            closing = payload['data']['repository']['pullRequest']['closingIssuesReferences']
+            if closing['pageInfo']['hasNextPage']:
+                raise RuntimeError('PR has more than 100 closing references; cannot report completely')
+            pr['closingIssuesReferences'] = closing
+            for number in open_pr_issue_references(pr):
+                links.setdefault(number, []).append(pr['number'])
+        if len(batch) < 100:
+            return {n: sorted(set(prs)) for n, prs in links.items()}
+        page += 1
+
 
 def score_issues(issues: list[dict]) -> tuple[list[dict], int, int]:
     """
@@ -901,6 +953,9 @@ def main() -> None:
     )
 
     scored, cost_med, benefit_med = score_issues(issues)
+    pr_links = fetch_open_pr_links(token)
+    for row in scored:
+        row['prs'] = pr_links.get(row['num'], [])
     print(
         f"  Cost range  {min(r['cost']    for r in scored)}–"
         f"{max(r['cost']    for r in scored)}, median={cost_med}"
