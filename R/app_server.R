@@ -1432,7 +1432,7 @@ app_server <- function(input, output, session) {
       # now let ejamit() do the rest for the FIPS case
     }
 
-    fips_vec <- unname(fips_lead_zero(fips_vec)) # unname: an invalid FIPS is NA with NA as its name, which data.frame() cannot use as a row name
+    fips_vec <- fips_lead_zero(fips_vec)
     fips_is_valid <- fips_valid(fips_vec)
 
     if (sum(fips_is_valid) > 0) {
@@ -1525,7 +1525,7 @@ app_server <- function(input, output, session) {
         # fips_vec # ??? this line was here but should have no effect?
       }
 
-      fips_vec <- unname(fips_lead_zero(fips_vec)) # unname: an invalid FIPS is NA with NA as its name, which data.frame() cannot use as a row name
+      fips_vec <- fips_lead_zero(fips_vec)
       fips_is_valid <- fips_valid(fips_vec)
 
       if (sum(fips_is_valid) > 0) {
@@ -1795,7 +1795,7 @@ app_server <- function(input, output, session) {
       dt <- data_uploaded() %>%
         sf::st_drop_geometry()
     } else if (current_upload_method() %in% c('FIPS', 'FIPS_PLACE')) {
-      dt <- data.frame(FIPS = unname(data_uploaded())) %>%
+      dt <- data.frame(FIPS = data_uploaded()) %>%
         dplyr::mutate(type = fipstype(FIPS), name = fips2name(FIPS))
     } else {
       dt <- data_uploaded()
@@ -2114,7 +2114,7 @@ app_server <- function(input, output, session) {
         ### **Download FIPS Boundaries via API ---------------------------- ####
 
         ## map only the valid FIPS, so one invalid code does not stop the map of the others
-        fips_to_map <- unname(data_uploaded())
+        fips_to_map <- data_uploaded()
         fips_to_map <- fips_to_map[fips_valid(fips_to_map)]
         FTYPES <- fipstype(fips_to_map)
         # make sure all FTYPES are in one of the 5 categories

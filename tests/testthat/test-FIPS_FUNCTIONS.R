@@ -717,6 +717,12 @@ test_that("fips_from_table() works", {
 
     expect_identical(x, y)
 
+    # no names, so an invalid code (NA) cannot become an NA row name in a data.frame (issue #801)
+    expect_null(names(x))
+    expect_no_error(data.frame(fips = fips_from_table(data.frame(fips = c(10001, 99999, 10003)))))
+    # addleadzeroes = FALSE returns the codes as given
+    expect_equal(fips_from_table(data.frame(fips = c("10001", "1")), addleadzeroes = FALSE), c("10001", "1"))
+
     # uses acceptable names in order or preference picking best one
     # uses statefips as first choice here and ignores countyfips
     mydat_z <- data.frame(

@@ -536,8 +536,7 @@ ejamit <- function(sitepoints = NULL,
     ## . check fips ####
 
     # getblocksnearby_from_fips() should include doing something like fips_lead_zero() ?
-    # unname() because the web app can pass a named vector where an invalid FIPS has NA as its name, and data.frame() cannot use NA as a row name
-    fips <- unname(fips_lead_zero(fips)) # essential so a later line can compare input fips to fips in output of getblocks, where they got leading zeroes added as needed
+    fips <- fips_lead_zero(fips) # essential so a later line can compare input fips to fips in output of getblocks, where they got leading zeroes added as needed
 
     # A FIPS code listed more than once is analyzed for its first copy only, because the code is the
     # ejam_uniq_id and each ejam_uniq_id must be only one row of results_bysite. Each later copy keeps
