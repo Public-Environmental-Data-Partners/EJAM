@@ -478,14 +478,28 @@ table_xls_format <- function(overall,
       radius_or_buffer_in_miles <- "Not Specified"
     }
   }
+  # Count only the sites that have results. An invalid site is still a row of eachsite
+  # (with pop 0 or NA) but was not analyzed, so it is not one of the places compared (issue #801).
+  if ("valid" %in% names(eachsite)) {
+    site_has_results <- eachsite$valid %in% TRUE
+  } else {
+    site_has_results <- rep(TRUE, NROW(eachsite))
+  }
+  n_sites_analyzed <- sum(site_has_results)
+  n_sites_invalid  <- NROW(eachsite) - n_sites_analyzed
+  pop_analyzed <- eachsite$pop[site_has_results]
   notes_df <- data.frame(
     'Analysis Title' = analysis_title,
-    'Number of Locations Analyzed' = NROW(eachsite),
+    'Number of Locations Analyzed' = if (n_sites_invalid > 0) {
+      paste0(n_sites_analyzed, " valid (of ", NROW(eachsite), " provided; ", n_sites_invalid, " could not be analyzed)")
+    } else {
+      n_sites_analyzed
+    },
     'Locations analyzed' = buffer_desc,
     "Distance in miles" = radius_or_buffer_in_miles,
     "Distance type" = radius_or_buffer_description, ## or more info, as from report_residents_within_xyz_from_ejamit()
-    "Population at x% of sites" =  popshare_p_lives_at_what_pct(eachsite$pop, p = 0.50, astext = TRUE),
-    "Population at N sites" = popshare_at_top_n(eachsite$pop, c(1, 5, 10), astext = TRUE),
+    "Population at x% of sites" =  popshare_p_lives_at_what_pct(pop_analyzed, p = 0.50, astext = TRUE),
+    "Population at N sites" = popshare_at_top_n(pop_analyzed, c(1, 5, 10), astext = TRUE),
     "Note on site-specific estimates" = ejscreen_ejam_caveat,
     "Note on shapefile-based site links" = if ("shp" %in% sitetype) shp_ejam_report_note else "",
     "Color Legend for highlighted cells" = color_legend,

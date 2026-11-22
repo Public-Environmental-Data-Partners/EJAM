@@ -530,6 +530,102 @@ testthat::test_that("ejamit output (states) sorted like input fips", {
 })
 ########################################################## #
 
+testthat::test_that("ejamit() marks later copies of a repeated FIPS code invalid, keeping one row per input", {
+  junk = capture_output({
+    suppressMessages({
+      # "1001" is the same code as "01001" once its leading zero is added
+      expect_warning(
+        out <- ejamit(fips = c("10001", "10003", "10001", "01001", "1001")),
+        "listed more than once")
+      once <- suppressWarnings(ejamit(fips = c("10001", "10003", "01001")))
+    })
+  })
+  bysite <- out$results_bysite
+  expect_equal(NROW(bysite), 5)
+  expect_equal(bysite$ejam_uniq_id, c("10001", "10003", NA, "01001", NA))
+  expect_equal(bysite$valid, c(TRUE, TRUE, FALSE, TRUE, FALSE))
+  expect_equal(bysite$invalid_msg[c(3, 5)], c("repeat of FIPS 10001 (row 1)", "repeat of FIPS 01001 (row 4)"))
+  expect_equal(bysite$pop[c(1, 2, 4)], once$results_bysite$pop)
+  expect_equal(out$results_overall$pop, once$results_overall$pop)
+})
+########################################################## #
+
+testthat::test_that("ejamit() keeps input order when several FIPS codes are invalid, with each report link on its own row", {
+  junk = capture_output({
+    suppressMessages(suppressWarnings({
+      out <- ejamit(fips = c("99999", "10001", "10003", NA, "10005"))
+      valid_only <- ejamit(fips = c("10001", "10003", "10005"))
+    }))
+  })
+  bysite <- out$results_bysite
+  expect_equal(bysite$ejam_uniq_id, c(NA, "10001", "10003", NA, "10005"))
+  expect_equal(bysite$valid, c(FALSE, TRUE, TRUE, FALSE, TRUE))
+  link_cols <- names(bysite)[sapply(bysite, function(z) any(grepl("fips=", z, fixed = TRUE)))]
+  expect_gt(length(link_cols), 0)
+  for (col in link_cols) {
+    for (i in c(2, 3, 5)) {
+      expect_true(grepl(paste0("fips=", bysite$ejam_uniq_id[i], "([^0-9]|$)"), bysite[[col]][i]))
+    }
+  }
+  expect_equal(sitetype_from_dt(bysite), "fips")
+  # the percent of sites near schools and other features counts only the sites analyzed
+  expect_equal(out$results_summarized$flagged_areas$Percent_of_these_Sites,
+               valid_only$results_summarized$flagged_areas$Percent_of_these_Sites)
+  # the multisite report header names the type of place even with an invalid site listed first (issue #801)
+  header <- report_residents_within_xyz_from_ejamit(out)
+  expect_match(header, "3 specified counties", fixed = TRUE)
+  expect_equal(header, report_residents_within_xyz_from_ejamit(valid_only))
+  # ... and with an invalid code that looks like another type of place (a blockgroup that does not exist)
+  junk = capture_output({
+    suppressMessages(suppressWarnings({
+      out_bg <- ejamit(fips = c("100019999999", "10001", "10003", "10005"))
+    }))
+  })
+  expect_equal(out_bg$results_bysite$valid, c(FALSE, TRUE, TRUE, TRUE))
+  expect_equal(fipstype(out_bg$results_bysite$ejam_uniq_id[1], quiet = TRUE), "blockgroup")
+  expect_equal(report_residents_within_xyz_from_ejamit(out_bg), header)
+  # ... and with the codes read from a table by fips_from_table(), as the web app does after a file upload
+  fips_as_uploaded <- fips_from_table(data.frame(fips = c(10001, 99999, 10003, 10005)))
+  junk = capture_output({
+    suppressMessages(suppressWarnings({
+      out_named <- ejamit(fips = fips_as_uploaded)
+    }))
+  })
+  expect_equal(out_named$results_bysite$valid, c(TRUE, FALSE, TRUE, TRUE))
+  expect_equal(report_residents_within_xyz_from_ejamit(out_named), header)
+})
+########################################################## #
+
+testthat::test_that("ejamit() keeps a bad polygon as an invalid row, listed before valid ones", {
+  # issue #801: a polygon whose edges cross was dropped, and an empty polygon made ejamit() stop
+  good <- sf::st_geometry(testinput_shapes_2)
+  crossed <- sf::st_sfc(sf::st_polygon(list(rbind(
+    c(-75.6, 39.7), c(-75.5, 39.8), c(-75.5, 39.7), c(-75.6, 39.8), c(-75.6, 39.7)
+  ))), crs = sf::st_crs(good))
+  empty <- sf::st_sfc(sf::st_polygon(), crs = sf::st_crs(good))
+  junk = capture_output({
+    suppressMessages(suppressWarnings({
+      valid_only <- ejamit(shapefile = testinput_shapes_2, silentinteractive = TRUE, quiet = TRUE)
+    }))
+  })
+  for (bad in list(crossed, empty)) {
+    shp <- sf::st_sf(sitename = c("bad", "a", "b"), geometry = c(bad, good[1:2]))
+    junk = capture_output({
+      suppressMessages(suppressWarnings({
+        out <- ejamit(shapefile = shp, silentinteractive = TRUE, quiet = TRUE)
+      }))
+    })
+    bysite <- out$results_bysite
+    expect_equal(bysite$ejam_uniq_id, 1:3)
+    expect_equal(bysite$valid, c(FALSE, TRUE, TRUE))
+    expect_true(nchar(bysite$invalid_msg[1]) > 0)
+    expect_equal(bysite$pop[2:3], valid_only$results_bysite$pop)
+    expect_equal(out$results_overall$pop, valid_only$results_overall$pop)
+    expect_match(report_residents_within_xyz_from_ejamit(out), "2 specified polygons", fixed = TRUE)
+  }
+})
+########################################################## #
+
 testthat::test_that("ejamit can use fips=fips_counties_from_statename()", {
   oldwidth = options("width")
   testthat::expect_no_error({

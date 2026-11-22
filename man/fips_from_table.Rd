@@ -19,7 +19,7 @@ Aliases are: c("FIPS", "fips", "fips_code", "fipscode", "Fips", "statefips",
 \item{in_shiny}{used by server during shiny app}
 }
 \value{
-vector of fips codes
+vector of fips codes, with no names, and NA for any code that is not valid-looking
 }
 \description{
 Just read the codes in one column of a table obtained from something like read.csv, or excel, etc.

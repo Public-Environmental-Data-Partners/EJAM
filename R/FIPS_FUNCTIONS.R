@@ -773,7 +773,7 @@ fips_from_name = function(...) {
 #' @param addleadzeroes whether to add leading zeroes where needed as for a State whose FIPS starts with "01"
 #' @param in_shiny used by server during shiny app
 #'
-#' @return vector of fips codes
+#' @return vector of fips codes, with no names, and NA for any code that is not valid-looking
 #' @seealso [fips_bgs_in_fips()] [fips_lead_zero()] [getblocksnearby_from_fips()] [fips_from_table()]
 #' @examples
 #'  fips_from_table( data.frame(countyfips=0, FIPS=1, bgfips=2, other=3, fips=4))
@@ -783,7 +783,7 @@ fips_from_name = function(...) {
 fips_from_table <- function(fips_table, addleadzeroes=TRUE, in_shiny=FALSE) {
 
   # fips_table can be data.frame or data.table, as long as colnames has one valid fips alias
-  ## create named vector of FIPS codes (names used as location id)
+  ## create vector of FIPS codes
   # *** see also fixnames_aliases() and fixcolnames_infer()
   fips_alias <- c('fips', 'FIPS', 'Fips', 'fips_code', 'fipscode',
                   'statefips', 'ST_FIPS','st_fips','ST_FIPS','st_fips', 'FIPS.ST',
@@ -797,10 +797,14 @@ fips_from_table <- function(fips_table, addleadzeroes=TRUE, in_shiny=FALSE) {
     firstmatch <-  intersect(fips_alias, colnames(fips_table))[1] # uses preferred order but must keep it case sensitive
     # fails to use preferred order: # colnames(fips_table)[match(TRUE, tolower(colnames(fips_table)) %in% tolower(fips_alias))]
 
+    fips_vec <- as.character(fips_table[[firstmatch]])
     if (addleadzeroes) {
-      fips_vec <- fips_lead_zero(as.character(fips_table[[firstmatch]]))
+      fips_vec <- fips_lead_zero(fips_vec)
     }
-    names(fips_vec) <- as.character(fips_vec)
+    ## Return a plain vector with no names. This used to name each element by its own value,
+    ## so an invalid code (NA) got NA as its name, and any data.frame() made from the vector
+    ## then stopped with "row names contain missing values" (in ejamit() and in the web app).
+    fips_vec <- unname(fips_vec)
 
   } else {
     if (in_shiny) {  # IF IN A SHINY REACTIVE:
@@ -813,6 +817,30 @@ fips_from_table <- function(fips_table, addleadzeroes=TRUE, in_shiny=FALSE) {
     }
   }
   return(fips_vec)
+}
+####################################################### #
+
+#' FIPS - which types of Census unit are among the valid codes
+#'
+#' Used to check whether a set of FIPS codes is a mix of types (e.g., counties and blockgroups).
+#' Codes that are not valid are ignored, because a code that does not exist can still look
+#' like some type based on its length (e.g., a 12-digit code that is not a real blockgroup).
+#'
+#' @param fips vector of FIPS codes, which can include invalid codes or NA
+#' @return character vector of the unique types found among the valid codes,
+#'   such as "county" or c("county", "blockgroup"), or character(0) if none are valid
+#' @seealso [fipstype()] [fips_valid()]
+#'
+#' @keywords internal
+#'
+fipstype_of_valid_fips <- function(fips) {
+
+  if (is.null(fips)) {return(character(0))}
+  fips <- fips_lead_zero(fips)
+  fips <- fips[fips_valid(fips)]
+  if (length(fips) == 0) {return(character(0))}
+  ftypes <- fipstype(fips, quiet = TRUE)
+  unique(ftypes[!is.na(ftypes)])
 }
 ####################################################### #
 
