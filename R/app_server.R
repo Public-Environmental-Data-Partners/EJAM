@@ -1408,7 +1408,7 @@ app_server <- function(input, output, session) {
 
     cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n"); cat("colnames:", paste0(names(fips_dt), collapse = ","), "\n")
     fips_vec <- fips_from_table(fips_table = fips_dt, addleadzeroes = TRUE, in_shiny = TRUE)
-    ftypeUpload <- fipstype(fips_vec)
+    ftypeUpload <- fipstype_of_valid_fips(fips_vec) # types of the valid codes only, so a code that does not exist cannot make the upload look like a mix of types
     typesUpload <- c('blockgroup', 'tract', 'city', 'county', 'state')
 
     if (is.null(fips_vec)) {
@@ -1501,7 +1501,7 @@ app_server <- function(input, output, session) {
 
       cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n")
       fips_vec <- fips_from_table(fips_table = fips_dt, addleadzeroes = TRUE, in_shiny = TRUE)
-      ftypeUpload <- fipstype(fips_vec)
+      ftypeUpload <- fipstype_of_valid_fips(fips_vec) # types of the valid codes only, so a code that does not exist cannot make the upload look like a mix of types
       typesUpload <- c('blockgroup', 'tract', 'city', 'county', 'state')
 
       if (is.null(fips_vec)) {

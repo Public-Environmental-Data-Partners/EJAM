@@ -820,6 +820,30 @@ fips_from_table <- function(fips_table, addleadzeroes=TRUE, in_shiny=FALSE) {
 }
 ####################################################### #
 
+#' FIPS - which types of Census unit are among the valid codes
+#'
+#' Used to check whether a set of FIPS codes is a mix of types (e.g., counties and blockgroups).
+#' Codes that are not valid are ignored, because a code that does not exist can still look
+#' like some type based on its length (e.g., a 12-digit code that is not a real blockgroup).
+#'
+#' @param fips vector of FIPS codes, which can include invalid codes or NA
+#' @return character vector of the unique types found among the valid codes,
+#'   such as "county" or c("county", "blockgroup"), or character(0) if none are valid
+#' @seealso [fipstype()] [fips_valid()]
+#'
+#' @keywords internal
+#'
+fipstype_of_valid_fips <- function(fips) {
+
+  if (is.null(fips)) {return(character(0))}
+  fips <- fips_lead_zero(fips)
+  fips <- fips[fips_valid(fips)]
+  if (length(fips) == 0) {return(character(0))}
+  ftypes <- fipstype(fips, quiet = TRUE)
+  unique(ftypes[!is.na(ftypes)])
+}
+####################################################### #
+
 # helper used by fips2name()
 
 fips_place2placename = function(fips, append_st = TRUE) {

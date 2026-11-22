@@ -1863,3 +1863,21 @@ options(scipen = 0)
 
 ################################################################### #
 ################################################################### #
+
+################################################################## #
+# fipstype_of_valid_fips()
+
+test_that("fipstype_of_valid_fips() ignores invalid codes when checking for a mix of types", {
+  # issue #801: a file of counties plus a code that does not exist should not be seen as a mix of types
+  expect_equal(fipstype_of_valid_fips(c("10001", "99999", "10003", "10005")), "county")
+  # a nonexistent code that looks like a blockgroup (12 digits) is ignored too
+  expect_equal(fipstype(c("100019999999"), quiet = TRUE), "blockgroup")
+  expect_equal(fipstype_of_valid_fips(c("10001", "100019999999", "10003", "10005")), "county")
+  # as read from an uploaded table by fips_from_table()
+  expect_equal(fipstype_of_valid_fips(fips_from_table(data.frame(fips = c("10001", "100019999999", "10003")))), "county")
+  # a real blockgroup with counties is still a mix
+  expect_setequal(fipstype_of_valid_fips(c("10001", "100010401001", "10003")), c("county", "blockgroup"))
+  # nothing valid, or nothing at all
+  expect_equal(fipstype_of_valid_fips(c("99999", NA)), character(0))
+  expect_equal(fipstype_of_valid_fips(NULL), character(0))
+})
