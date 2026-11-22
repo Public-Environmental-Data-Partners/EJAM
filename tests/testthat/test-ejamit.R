@@ -584,6 +584,16 @@ testthat::test_that("ejamit() keeps input order when several FIPS codes are inva
   expect_equal(out_bg$results_bysite$valid, c(FALSE, TRUE, TRUE, TRUE))
   expect_equal(fipstype(out_bg$results_bysite$ejam_uniq_id[1], quiet = TRUE), "blockgroup")
   expect_equal(report_residents_within_xyz_from_ejamit(out_bg), header)
+  # ... and with a named vector where the invalid one is NA with NA as its name, as the web app passes after a file upload
+  fips_as_uploaded <- c("10001" = "10001", NA, "10003" = "10003", "10005" = "10005")
+  names(fips_as_uploaded)[2] <- NA
+  junk = capture_output({
+    suppressMessages(suppressWarnings({
+      out_named <- ejamit(fips = fips_as_uploaded)
+    }))
+  })
+  expect_equal(out_named$results_bysite$valid, c(TRUE, FALSE, TRUE, TRUE))
+  expect_equal(report_residents_within_xyz_from_ejamit(out_named), header)
 })
 ########################################################## #
 

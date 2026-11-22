@@ -2113,11 +2113,14 @@ app_server <- function(input, output, session) {
 
         ### **Download FIPS Boundaries via API ---------------------------- ####
 
-        FTYPES <- fipstype(data_uploaded())
+        ## map only the valid FIPS, so one invalid code does not stop the map of the others
+        fips_to_map <- unname(data_uploaded())
+        fips_to_map <- fips_to_map[fips_valid(fips_to_map)]
+        FTYPES <- fipstype(fips_to_map)
         # make sure all FTYPES are in one of the 5 categories
-        if (all(FTYPES %in% c("state", "county", "city", "tract", "blockgroup"))) {
+        if (length(fips_to_map) > 0 && all(FTYPES %in% c("state", "county", "city", "tract", "blockgroup"))) {
           shps <- tryCatch({
-            shapes_from_fips(data_uploaded()) # download boundaries
+            shapes_from_fips(fips_to_map) # download boundaries
           }, error = function(e) {
             canmap <- FALSE
             warning(e$message)
