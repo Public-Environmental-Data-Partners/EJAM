@@ -247,6 +247,24 @@ test_that("ejam2excel saves key tables, tabs, saved numbers match original", {
 
 })
 
+test_that("ejam2excel notes sheet counts only the sites that have results", {
+  # issue #801: an invalid site, listed first, was counted as a place with zero residents
+  out <- testoutput_ejamit_10pts_1miles
+  out$results_bysite <- data.table::copy(out$results_bysite)
+  out$results_bysite$valid[1] <- FALSE
+  out$results_bysite$pop[1] <- 0
+  fname <- tempfile(fileext = ".xlsx")
+  expect_no_error({
+    ejam2excel(out, interactive_console = FALSE, fname = fname, community_reportadd = FALSE, ok2plot = FALSE)
+  })
+  notes_tab <- readxl::read_excel(fname, sheet = "notes", col_names = FALSE) %>% as.data.frame()
+  note <- function(label) as.character(notes_tab[which(notes_tab[[1]] %in% label), 2])
+  expect_match(note("Number of Locations Analyzed"), "^9 valid \\(of 10 provided; 1 could not be analyzed\\)$")
+  expect_match(note("Population at x% of sites"), "of the 9 places", fixed = TRUE)
+  expect_identical(note("Population at N sites"),
+                   popshare_at_top_n(out$results_bysite$pop[-1], c(1, 5, 10), astext = TRUE))
+})
+
 test_that("ejam2excel shapefile analyses use EJAM app links in excel", {
   fname <- tempfile(fileext = ".xlsx")
 

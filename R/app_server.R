@@ -1408,7 +1408,7 @@ app_server <- function(input, output, session) {
 
     cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n"); cat("colnames:", paste0(names(fips_dt), collapse = ","), "\n")
     fips_vec <- fips_from_table(fips_table = fips_dt, addleadzeroes = TRUE, in_shiny = TRUE)
-    ftypeUpload <- fipstype(fips_vec)
+    ftypeUpload <- fipstype_of_valid_fips(fips_vec) # types of the valid codes only, so a code that does not exist cannot make the upload look like a mix of types
     typesUpload <- c('blockgroup', 'tract', 'city', 'county', 'state')
 
     if (is.null(fips_vec)) {
@@ -1501,7 +1501,7 @@ app_server <- function(input, output, session) {
 
       cat("COUNT OF ROWS IN FIPS FILE: ", NROW(fips_dt),"\n")
       fips_vec <- fips_from_table(fips_table = fips_dt, addleadzeroes = TRUE, in_shiny = TRUE)
-      ftypeUpload <- fipstype(fips_vec)
+      ftypeUpload <- fipstype_of_valid_fips(fips_vec) # types of the valid codes only, so a code that does not exist cannot make the upload look like a mix of types
       typesUpload <- c('blockgroup', 'tract', 'city', 'county', 'state')
 
       if (is.null(fips_vec)) {
@@ -2113,11 +2113,14 @@ app_server <- function(input, output, session) {
 
         ### **Download FIPS Boundaries via API ---------------------------- ####
 
-        FTYPES <- fipstype(data_uploaded())
+        ## map only the valid FIPS, so one invalid code does not stop the map of the others
+        fips_to_map <- data_uploaded()
+        fips_to_map <- fips_to_map[fips_valid(fips_to_map)]
+        FTYPES <- fipstype(fips_to_map)
         # make sure all FTYPES are in one of the 5 categories
-        if (all(FTYPES %in% c("state", "county", "city", "tract", "blockgroup"))) {
+        if (length(fips_to_map) > 0 && all(FTYPES %in% c("state", "county", "city", "tract", "blockgroup"))) {
           shps <- tryCatch({
-            shapes_from_fips(data_uploaded()) # download boundaries
+            shapes_from_fips(fips_to_map) # download boundaries
           }, error = function(e) {
             canmap <- FALSE
             warning(e$message)
@@ -3853,7 +3856,7 @@ app_server <- function(input, output, session) {
             in_areas_where = paste0(input$in_areas_where, ' ', input$in_areas_where_enter),
             risks_are_x = input$risks_are_x,
             source_of_latlons = input$source_of_latlons,
-            sitecount = nrow(data_processed()$results_bysite),
+            sitecount = sum(data_processed()$results_bysite$valid %in% TRUE), # only sites with results (issue #801)
 
             #------- RESULTS (tables and map and plots)
 
