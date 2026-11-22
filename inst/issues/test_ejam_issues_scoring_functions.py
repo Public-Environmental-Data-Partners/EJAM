@@ -10,6 +10,37 @@ import ejam_issues_scoring_functions as scoring
 
 class IssueRankingTest(unittest.TestCase):
 
+    def test_compact_score_tiers_preserve_thresholds(self):
+        self.assertEqual([scoring.cost_tier(n).split()[-1]
+                          for n in [0, 1, 2, 3, 4, 6, 7, 10, 11]],
+                         ['L-', 'L-', 'L', 'L', 'M', 'M', 'H', 'H', 'H+'])
+        self.assertEqual([scoring.benefit_tier(n).split()[-1]
+                          for n in [0, 1, 2, 4, 5, 8, 9, 12, 13]],
+                         ['L-', 'L-', 'L', 'L', 'M', 'M', 'H', 'H', 'H+'])
+
+    def test_compact_table_columns_and_label_filters(self):
+        row = {'num': 1, 'title': 'Example', 'milestone': 'v4',
+               'cost': 12, 'benefit': 15, 'quad': 'B',
+               'labels': ['BUG', 'enhancement', 'Affects Web App',
+                          'Affects R users only - NOT web app users',
+                          'PRIORITY HIGH-ish but not a bug',
+                          'rank:A-high-value-low-cost', 'rank:custom', 'API']}
+        cells = scoring.issue_table_row(row).split(' | ')
+        self.assertEqual(cells[2:9], ['v4', '12 ⛔ H+', '15 🟩🟩 H+',
+                         'HIGH-ish but not a bug', 'A', '✓', '✓'])
+        self.assertEqual(cells[-1], 'API |')
+        self.assertNotIn('(', cells[3] + cells[4])
+        markdown = scoring.generate_markdown([row], 4, 6)
+        self.assertEqual(markdown.count(scoring.ISSUE_TABLE_HEADER), 5)
+        self.assertEqual(markdown.count(scoring.issue_table_row(row)), 2)
+
+    def test_missing_or_ambiguous_live_quad_is_not_inferred_from_score(self):
+        row = {'num': 1, 'title': 'Example', 'milestone': 'NA',
+               'cost': 1, 'benefit': 1, 'quad': 'A', 'labels': []}
+        self.assertEqual(scoring.issue_table_row(row).split(' | ')[6], '—')
+        row['labels'] = [scoring.RANK_LABELS['A'], scoring.RANK_LABELS['B']]
+        self.assertEqual(scoring.issue_table_row(row).split(' | ')[6], '—')
+
     def test_markdown_escapes_dollar_signs_that_would_start_pandoc_math(self):
         """A "$" in a title opened an inline-math span that ate later rows.
 
@@ -55,7 +86,7 @@ class IssueRankingTest(unittest.TestCase):
         plain = "check/ fix Distance and Site Count summary stats"
         self.assertEqual(scoring.md_escape(plain), plain)
 
-    def test_generate_markdown_keeps_rank_labels_visible_when_list_is_truncated(self):
+    def test_generate_markdown_separates_live_quad_from_proposed_rank(self):
         scored = [
             {
                 "num": 595,
@@ -83,16 +114,15 @@ class IssueRankingTest(unittest.TestCase):
             generated_date="2026-06-20",
         )
 
-        self.assertIn("rank:C-low-value-low-cost", markdown)
+        self.assertNotIn("rank:C-low-value-low-cost", scoring.issue_table_row(scored[0]))
         self.assertIn(
             "| [595](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595) | "
-            "Improve API documentation vignette | 0 (🟢 Very Low) | 7 (🟦 Medium) | "
-            "NA | — | `rank:A-high-value-low-cost` | "
-            "rank:C-low-value-low-cost, Affects R users only - NOT web app users, "
-            "documentation, Affects API |",
+            "Improve API documentation vignette | NA | 0 🟢 L- | 7 🟦 M | "
+            "— | C |  |  | `rank:A-high-value-low-cost` | "
+            "documentation, Affects API, something else, another label |",
             markdown,
         )
-        self.assertNotIn("another label", markdown)
+        self.assertNotIn("yet another label", markdown)
 
     def test_generate_markdown_puts_methodology_at_end(self):
         scored = [
@@ -176,8 +206,7 @@ class IssueRankingTest(unittest.TestCase):
         self.assertIn("| v3.2022.2 | 1 |", markdown)
         self.assertIn("| NA | 1 |", markdown)
         self.assertIn(
-            "| # | Issue | Cost | Benefit | Milestone | Priority | Proposed rank | "
-            "Current GitHub labels (key) |",
+            scoring.ISSUE_TABLE_HEADER,
             markdown,
         )
         self.assertNotIn("Previous-run comparison", markdown)

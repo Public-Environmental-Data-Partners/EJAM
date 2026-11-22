@@ -499,19 +499,19 @@ def publish_ranking_comment(markdown: str, issue_number: int,
 
 
 def cost_tier(c: int) -> str:
-    if c <= 1:    return "🟢 Very Low"
-    elif c <= 3:  return "🔵 Low"
-    elif c <= 6:  return "🟡 Medium"
-    elif c <= 10: return "🟠 High"
-    return "⛔ Very High"
+    if c <= 1:    return "🟢 L-"
+    elif c <= 3:  return "🔵 L"
+    elif c <= 6:  return "🟡 M"
+    elif c <= 10: return "🟠 H"
+    return "⛔ H+"
 
 
 def benefit_tier(b: int) -> str:
-    if b <= 1:    return "⬜ Very Low"
-    elif b <= 4:  return "⬜ Low"
-    elif b <= 8:  return "🟦 Medium"
-    elif b <= 12: return "🟩🟦 High"
-    return "🟩🟩 Very High"
+    if b <= 1:    return "⬜ L-"
+    elif b <= 4:  return "⬜ L"
+    elif b <= 8:  return "🟦 M"
+    elif b <= 12: return "🟩🟦 H"
+    return "🟩🟩 H+"
 
 
 def issue_count_text(count: int) -> str:
@@ -540,6 +540,36 @@ def md_escape(text: str) -> str:
     )
 
 
+ISSUE_TABLE_HEADER = (
+    "| # | Issue Title | Milestone | Cost | Benefit | Priority | Quad | "
+    "Affects Web App | BUG | Proposed rank | other key labels |"
+)
+ISSUE_TABLE_SEPARATOR = "|---|---|---|---:|---:|---|:---:|:---:|:---:|---|---|"
+
+
+def issue_table_row(r: dict) -> str:
+    """Keep live rank metadata distinct from the calculated proposed rank."""
+    labels = r['labels']
+    live_quads = [q for q, label in RANK_LABELS.items() if label in labels]
+    quad = live_quads[0] if len(live_quads) == 1 else '—'
+    excluded = {'BUG', 'enhancement', 'Affects Web App',
+                'Affects R users only - NOT web app users',
+                'retain-0325', 'from archive'}
+    other = [label for label in labels if label not in excluded
+             and not label.startswith(('rank:', 'PRIORITY'))]
+    short = md_escape(r['title'][:70] + ('…' if len(r['title']) > 70 else ''))
+    priority = get_priority_label(labels).removeprefix('PRIORITY ')
+    web = '✓' if 'Affects Web App' in labels else ''
+    bug = '✓' if 'BUG' in labels else ''
+    return (
+        f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
+        f"{md_escape(r['milestone'])} | {r['cost']} {cost_tier(r['cost'])} | "
+        f"{r['benefit']} {benefit_tier(r['benefit'])} | {md_escape(priority)} | "
+        f"{quad} | {web} | {bug} | `{RANK_LABELS[r['quad']]}` | "
+        f"{md_escape(', '.join(other[:4]))} |"
+    )
+
+
 def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
                 issues: list[dict]) -> None:
     lines.append(f"## Quadrant {letter} — {heading}")
@@ -552,34 +582,10 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
             f"- [#{r['num']}]({URL_BASE}{r['num']}) — {md_escape(r['title'])}"
         )
     lines.append("")
-    lines.append(
-        "| # | Issue | Cost | Benefit | Milestone | Priority | Proposed rank | Current GitHub labels (key) |"
-    )
-    lines.append(
-        "|---|-------|------|---------|-----------|----------|---------------|-----------------------------|"
-    )
+    lines.append(ISSUE_TABLE_HEADER)
+    lines.append(ISSUE_TABLE_SEPARATOR)
     for r in issues:
-        plbl     = get_priority_label(r["labels"])
-        key_labs = [
-            l for l in r["labels"]
-            if l not in ("enhancement", "retain-0325", "from archive")
-            and "PRIORITY" not in l
-        ]
-        ## Show the score separately from the live metadata. A rank label can be
-        ## stale until a later, explicit GitHub-label update task applies it.
-        rank_lbl = RANK_LABELS.get(r["quad"])
-        current_rank_labs = [l for l in key_labs if l.startswith("rank:")]
-        key_labs = current_rank_labs + [l for l in key_labs if l not in current_rank_labs]
-        lab_str  = ", ".join(key_labs[:4])
-        ## truncate first, then escape - escaping first would let backslashes
-        ## count toward the limit and could cut a "\$" in half
-        short    = md_escape(r["title"][:70] + ("…" if len(r["title"]) > 70 else ""))
-        lines.append(
-            f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
-            f"{r['cost']} ({cost_tier(r['cost'])}) | "
-            f"{r['benefit']} ({benefit_tier(r['benefit'])}) | "
-            f"{r['milestone']} | {plbl} | `{rank_lbl}` | {lab_str} |"
-        )
+        lines.append(issue_table_row(r))
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -619,6 +625,11 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("---")
     lines.append("")
     lines.append("## Overview")
+    lines.append("")
+    lines.append("Score tiers: **L-** = Very Low, **L** = Low, **M** = Medium, "
+                 "**H** = High, **H+** = Very High. Checkmarks indicate labels present on GitHub.")
+    lines.append("**Quad** reflects the current GitHub rank label; **Proposed rank** "
+                 "reflects this scoring run. A missing or ambiguous current rank is shown as —.")
     lines.append("")
     costs    = sorted(r["cost"]    for r in scored_issues)
     benefits = sorted(r["benefit"] for r in scored_issues)
@@ -667,17 +678,11 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
     lines.append("Sorted: A first (best), then B, C, D; within each group by benefit DESC.")
     lines.append("")
-    lines.append("| Quad | Issue # | Cost | Benefit | Milestone | Priority | Title |")
-    lines.append("|------|---------|------|---------|-----------|----------|-------|")
+    lines.append(ISSUE_TABLE_HEADER)
+    lines.append(ISSUE_TABLE_SEPARATOR)
     for letter in ("A", "B", "C", "D"):
         for r in quads[letter]:
-            plbl  = get_priority_label(r["labels"])
-            short = md_escape(r["title"][:72] + ("…" if len(r["title"]) > 72 else ""))
-            lines.append(
-                f"| {letter} | [{r['num']}]({URL_BASE}{r['num']}) | "
-                f"{r['cost']} | {r['benefit']} | {r['milestone']} | "
-                f"{plbl} | {short} |"
-            )
+            lines.append(issue_table_row(r))
 
     lines.append("")
     lines.append("---")
