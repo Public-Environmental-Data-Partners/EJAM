@@ -10,6 +10,20 @@ import ejam_issues_scoring_functions as scoring
 
 class IssueRankingTest(unittest.TestCase):
 
+    def test_key_labels_filter_and_twelve_character_lines(self):
+        rendered = scoring.table_key_labels(['documentation', 'speed / performance',
+                                            'custom indicators', 'Affects API'])
+        lines = rendered.replace('&nbsp;', ' ').split('<br>')
+        self.assertEqual(lines[0].strip(), 'speed...')
+        self.assertTrue(all(len(line) == 12 for line in lines))
+        self.assertNotIn('documentation', rendered)
+        self.assertIn('custom', rendered)
+        self.assertIn('API', rendered)
+
+    def test_score_symbol_above_text(self):
+        self.assertEqual(scoring.table_score(9, scoring.benefit_tier(9)),
+                         '🟩🟦<br>9&nbsp;H')
+
     def test_title_has_two_bounded_lines_and_ellipsis(self):
         title = scoring.table_title('create a way to share an interactive map ' * 5)
         lines = title.replace('&nbsp;', ' ').split('<br>')
@@ -39,13 +53,14 @@ class IssueRankingTest(unittest.TestCase):
                           'PRIORITY HIGH-ish but not a bug',
                           'rank:A-high-value-low-cost', 'rank:custom', 'API']}
         cells = scoring.issue_table_row(row).split(' | ')
-        self.assertEqual(cells[2:9], ['v4', 'A', '⛔&nbsp;12&nbsp;H+',
-                         '🟩🟩&nbsp;15&nbsp;H+', 'HIGH-ish', '✓', '✓'])
-        self.assertEqual(cells[-1], 'API |')
+        self.assertEqual(cells[2:9], ['v4', 'A', '⛔<br>12&nbsp;H+',
+                         '🟩🟩<br>15&nbsp;H+', 'HIGH-ish', '✓', '✓'])
+        self.assertEqual(cells[-1], scoring.table_key_labels(['API']) + ' |')
         self.assertNotIn('(', cells[4] + cells[5])
         markdown = scoring.generate_markdown([row], 4, 6)
-        self.assertEqual(markdown.count(scoring.ISSUE_TABLE_HEADER), 5)
-        self.assertEqual(markdown.count(scoring.issue_table_row(row)), 2)
+        self.assertEqual(markdown.count(scoring.ISSUE_TABLE_HEADER), 4)
+        self.assertEqual(markdown.count(scoring.issue_table_row(row)), 1)
+        self.assertNotIn('## Full Table', markdown)
 
     def test_missing_or_ambiguous_live_quad_is_not_inferred_from_score(self):
         row = {'num': 1, 'title': 'Example', 'milestone': 'NA',
@@ -89,11 +104,11 @@ class IssueRankingTest(unittest.TestCase):
         # no bare "$" or in-title "|" survives into the Markdown
         self.assertNotIn("doaggregate()$results", markdown)
         self.assertIn(r"doaggregate()\$results\_bybg\_people", markdown)
-        self.assertIn(r"a title with a \| pipe", markdown)
+        self.assertIn(r"a title with a \| pipe", markdown.replace('&nbsp;', ' '))
 
         # and the escaping is applied everywhere a title is written:
         # the bullet list, the quadrant table, and the full table
-        self.assertEqual(markdown.count(scoring.table_title(scored[0]['title'])), 2)
+        self.assertEqual(markdown.count(scoring.table_title(scored[0]['title'])), 1)
 
     def test_md_escape_leaves_ordinary_titles_untouched(self):
         plain = "check/ fix Distance and Site Count summary stats"
@@ -130,9 +145,9 @@ class IssueRankingTest(unittest.TestCase):
         self.assertNotIn("rank:C-low-value-low-cost", scoring.issue_table_row(scored[0]))
         self.assertIn(
             "| [595](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595) | "
-            + scoring.table_title(scored[0]['title']) + " | NA | C | 🟢&nbsp;0&nbsp;L- | 🟦&nbsp;7&nbsp;M | "
+            + scoring.table_title(scored[0]['title']) + " | NA | C | 🟢<br>0&nbsp;L- | 🟦<br>7&nbsp;M | "
             "— |  |  | "
-            "documentation, Affects API, something else, another label |",
+            + scoring.table_key_labels(['Affects API']) + ' |',
             markdown,
         )
         self.assertNotIn("yet another label", markdown)
@@ -167,7 +182,6 @@ class IssueRankingTest(unittest.TestCase):
         )
 
         matrix_idx = markdown.index("## 2×2 Priority Matrix")
-        full_table_idx = markdown.index("## Full Table")
         milestones_idx = markdown.index("## Issues by Milestone")
         how_ranking_idx = markdown.index("## How Ranking was Done")
         dimensions_idx = markdown.index(
@@ -180,8 +194,7 @@ class IssueRankingTest(unittest.TestCase):
         )
         scoring_factors_idx = markdown.index("### Scoring Factors")
 
-        self.assertLess(matrix_idx, full_table_idx)
-        self.assertLess(full_table_idx, milestones_idx)
+        self.assertLess(matrix_idx, milestones_idx)
         self.assertLess(milestones_idx, how_ranking_idx)
         self.assertLess(how_ranking_idx, dimensions_idx)
         self.assertLess(dimensions_idx, score_ranges_idx)
@@ -199,12 +212,7 @@ class IssueRankingTest(unittest.TestCase):
         ]
         self.assertEqual(
             issue_bullets,
-            [
-                "- [#101](https://github.com/Public-Environmental-Data-Partners/"
-                "EJAM/issues/101) — Low-cost high-benefit fix",
-                "- [#202](https://github.com/Public-Environmental-Data-Partners/"
-                "EJAM/issues/202) — High-cost low-benefit refactor",
-            ],
+            [],
         )
         self.assertTrue(all("Cost " not in line for line in issue_bullets))
         self.assertTrue(all("milestone" not in line for line in issue_bullets))

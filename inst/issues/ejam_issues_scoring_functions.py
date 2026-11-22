@@ -543,10 +543,11 @@ def md_escape(text: str) -> str:
 
 ISSUE_TABLE_HEADER = (
     "| # | Issue Title | Milestone | Quad | Cost | Benefit | Priority | "
-    "App | BUG | other key labels |"
+    "App | BUG | other key<br>labels |"
 )
 ISSUE_TABLE_SEPARATOR = "|---|---|---|:---:|---:|---:|---|:---:|:---:|---|"
-TITLE_WIDTH = len('create a way to share an interactive map')
+TITLE_WIDTH = len('create a way to share an interactive map') + 4
+KEY_LABEL_WIDTH = 12
 
 
 def table_title(title: str) -> str:
@@ -563,7 +564,19 @@ def table_title(title: str) -> str:
 
 def table_score(number: int, tier: str) -> str:
     symbol, text = tier.rsplit(' ', 1)
-    return f'{symbol}&nbsp;{number}&nbsp;{text}'
+    return f'{symbol}<br>{number}&nbsp;{text}'
+
+
+def table_key_labels(labels: list[str]) -> str:
+    lines = []
+    for label in labels:
+        if not any(word in label.casefold() for word in ('speed', 'custom', 'api')):
+            continue
+        display = 'speed...' if 'speed' in label.casefold() else label
+        lines.extend(textwrap.wrap(display, width=KEY_LABEL_WIDTH,
+                                   break_long_words=True, break_on_hyphens=False))
+    return '<br>'.join(md_escape(line.ljust(KEY_LABEL_WIDTH)).replace(' ', '&nbsp;')
+                       for line in (lines or ['']))
 
 
 def issue_table_row(r: dict) -> str:
@@ -571,11 +584,7 @@ def issue_table_row(r: dict) -> str:
     labels = r['labels']
     live_quads = [q for q, label in RANK_LABELS.items() if label in labels]
     quad = live_quads[0] if len(live_quads) == 1 else '—'
-    excluded = {'BUG', 'enhancement', 'Affects Web App',
-                'Affects R users only - NOT web app users',
-                'retain-0325', 'from archive'}
-    other = [label for label in labels if label not in excluded
-             and not label.startswith(('rank:', 'PRIORITY'))]
+    other = [label for label in labels if not label.startswith(('rank:', 'PRIORITY'))]
     short = table_title(r['title'])
     priority = get_priority_label(labels).removeprefix('PRIORITY ').replace(
         'HIGH-ish but not a bug', 'HIGH-ish')
@@ -586,7 +595,7 @@ def issue_table_row(r: dict) -> str:
         f"{md_escape(r['milestone'])} | {quad} | "
         f"{table_score(r['cost'], cost_tier(r['cost']))} | "
         f"{table_score(r['benefit'], benefit_tier(r['benefit']))} | {md_escape(priority)} | {web} | {bug} | "
-        f"{md_escape(', '.join(other[:4]))} |"
+        f"{table_key_labels(other)} |"
     )
 
 
@@ -596,11 +605,6 @@ def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
     lines.append(f"*{desc}*")
     lines.append("")
     lines.append(f"**{len(issues)} issues**")
-    lines.append("")
-    for r in issues:
-        lines.append(
-            f"- [#{r['num']}]({URL_BASE}{r['num']}) — {md_escape(r['title'])}"
-        )
     lines.append("")
     lines.append(ISSUE_TABLE_HEADER)
     lines.append(ISSUE_TABLE_SEPARATOR)
@@ -694,19 +698,6 @@ def generate_markdown(scored_issues: list[dict],
                 "Expensive to fix, limited payoff. Defer or deprioritize unless circumstances change.",
                 quads["D"])
 
-    lines.append(f"## Full Table — All {n} Issues")
-    lines.append("")
-    lines.append("Sorted: A first (best), then B, C, D; within each group by benefit DESC.")
-    lines.append("")
-    lines.append(ISSUE_TABLE_HEADER)
-    lines.append(ISSUE_TABLE_SEPARATOR)
-    for letter in ("A", "B", "C", "D"):
-        for r in quads[letter]:
-            lines.append(issue_table_row(r))
-
-    lines.append("")
-    lines.append("---")
-    lines.append("")
     lines.append("## Issues by Milestone")
     lines.append("")
     lines.append("| Milestone | Issue count |")
