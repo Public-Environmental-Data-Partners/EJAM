@@ -124,6 +124,12 @@ if (is.na(params$sitecount)) {
     NROW(params$results_bysite)
   }
 }
+# population at each site that has results, for the "top x% of sites" sentences and table
+pop_analyzed <- if ("valid" %in% names(params$results_bysite)) {
+  params$results_bysite$pop[params$results_bysite$valid %in% TRUE]
+} else {
+  params$results_bysite$pop
+}
 if (is.na(params$total_pop)) {params$total_pop <- params$results_overall$pop}
 # map: NA
 if (is.na(params$acs_version)) {
@@ -361,19 +367,19 @@ if(params$testmode) {
   
 } else { 
   
-  summary4$sent1 <- popshare_at_top_x_pct(params$results_bysite$pop, 
+  summary4$sent1 <- popshare_at_top_x_pct(pop_analyzed, 
                                           x = 0.01,
                                           astext = TRUE)
   
   summary4$sent1_num_fac <- round(params$sitecount * 0.01, 0)
   
-  summary4$sent2 <- popshare_at_top_x_pct(params$results_bysite$pop,
+  summary4$sent2 <- popshare_at_top_x_pct(pop_analyzed,
                                           x = 0.05,
                                           astext = TRUE)
   
   summary4$sent2_num_fac <- round(params$sitecount * 0.05, 0)
   
-  summary4$sent3 <- popshare_at_top_x_pct(params$results_bysite$pop,
+  summary4$sent3 <- popshare_at_top_x_pct(pop_analyzed,
                                           x = 0.10,
                                           astext = TRUE)
   
@@ -558,7 +564,7 @@ if (params$testmode) {
               n_distinct(unique(params$results_bysite$ST)),
               sum(is.na(params$results_bysite$pop)),
               format(round(params$total_pop,0), big.mark = ",", scientific = FALSE),
-              round((popshare_at_top_x_pct(params$results_bysite$pop, x = 0.1))*100, 2),
+              round((popshare_at_top_x_pct(pop_analyzed, x = 0.1))*100, 2),
               sum(params$results_bysite$pop) - params$total_pop))
   
 }
