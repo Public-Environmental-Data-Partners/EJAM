@@ -10,6 +10,19 @@ import ejam_issues_scoring_functions as scoring
 
 class IssueRankingTest(unittest.TestCase):
 
+    def test_title_has_two_bounded_lines_and_ellipsis(self):
+        title = scoring.table_title('create a way to share an interactive map ' * 5)
+        lines = title.replace('&nbsp;', ' ').split('<br>')
+        self.assertEqual(len(lines), 2)
+        self.assertTrue(all(len(line) == scoring.TITLE_WIDTH for line in lines))
+        self.assertTrue(lines[1].rstrip().endswith('...'))
+        self.assertEqual(len(scoring.table_title('Short').split('<br>')), 2)
+
+    def test_no_proposed_rank_or_old_headers(self):
+        self.assertNotIn('Proposed rank', scoring.ISSUE_TABLE_HEADER)
+        self.assertNotIn('Affects Web App', scoring.ISSUE_TABLE_HEADER)
+        self.assertIn('| Quad | Cost | Benefit | Priority | App |', scoring.ISSUE_TABLE_HEADER)
+
     def test_compact_score_tiers_preserve_thresholds(self):
         self.assertEqual([scoring.cost_tier(n).split()[-1]
                           for n in [0, 1, 2, 3, 4, 6, 7, 10, 11]],
@@ -26,10 +39,10 @@ class IssueRankingTest(unittest.TestCase):
                           'PRIORITY HIGH-ish but not a bug',
                           'rank:A-high-value-low-cost', 'rank:custom', 'API']}
         cells = scoring.issue_table_row(row).split(' | ')
-        self.assertEqual(cells[2:9], ['v4', '12 ⛔ H+', '15 🟩🟩 H+',
-                         'HIGH-ish but not a bug', 'A', '✓', '✓'])
+        self.assertEqual(cells[2:9], ['v4', 'A', '⛔&nbsp;12&nbsp;H+',
+                         '🟩🟩&nbsp;15&nbsp;H+', 'HIGH-ish', '✓', '✓'])
         self.assertEqual(cells[-1], 'API |')
-        self.assertNotIn('(', cells[3] + cells[4])
+        self.assertNotIn('(', cells[4] + cells[5])
         markdown = scoring.generate_markdown([row], 4, 6)
         self.assertEqual(markdown.count(scoring.ISSUE_TABLE_HEADER), 5)
         self.assertEqual(markdown.count(scoring.issue_table_row(row)), 2)
@@ -37,9 +50,9 @@ class IssueRankingTest(unittest.TestCase):
     def test_missing_or_ambiguous_live_quad_is_not_inferred_from_score(self):
         row = {'num': 1, 'title': 'Example', 'milestone': 'NA',
                'cost': 1, 'benefit': 1, 'quad': 'A', 'labels': []}
-        self.assertEqual(scoring.issue_table_row(row).split(' | ')[6], '—')
+        self.assertEqual(scoring.issue_table_row(row).split(' | ')[3], '—')
         row['labels'] = [scoring.RANK_LABELS['A'], scoring.RANK_LABELS['B']]
-        self.assertEqual(scoring.issue_table_row(row).split(' | ')[6], '—')
+        self.assertEqual(scoring.issue_table_row(row).split(' | ')[3], '—')
 
     def test_markdown_escapes_dollar_signs_that_would_start_pandoc_math(self):
         """A "$" in a title opened an inline-math span that ate later rows.
@@ -80,7 +93,7 @@ class IssueRankingTest(unittest.TestCase):
 
         # and the escaping is applied everywhere a title is written:
         # the bullet list, the quadrant table, and the full table
-        self.assertEqual(markdown.count(r"doaggregate()\$results\_bybg\_people"), 3)
+        self.assertEqual(markdown.count(scoring.table_title(scored[0]['title'])), 2)
 
     def test_md_escape_leaves_ordinary_titles_untouched(self):
         plain = "check/ fix Distance and Site Count summary stats"
@@ -117,8 +130,8 @@ class IssueRankingTest(unittest.TestCase):
         self.assertNotIn("rank:C-low-value-low-cost", scoring.issue_table_row(scored[0]))
         self.assertIn(
             "| [595](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595) | "
-            "Improve API documentation vignette | NA | 0 🟢 L- | 7 🟦 M | "
-            "— | C |  |  | `rank:A-high-value-low-cost` | "
+            + scoring.table_title(scored[0]['title']) + " | NA | C | 🟢&nbsp;0&nbsp;L- | 🟦&nbsp;7&nbsp;M | "
+            "— |  |  | "
             "documentation, Affects API, something else, another label |",
             markdown,
         )

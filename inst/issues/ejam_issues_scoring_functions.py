@@ -97,6 +97,7 @@ import json
 import os
 import re
 import subprocess
+import textwrap
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -541,14 +542,32 @@ def md_escape(text: str) -> str:
 
 
 ISSUE_TABLE_HEADER = (
-    "| # | Issue Title | Milestone | Cost | Benefit | Priority | Quad | "
-    "Affects Web App | BUG | Proposed rank | other key labels |"
+    "| # | Issue Title | Milestone | Quad | Cost | Benefit | Priority | "
+    "App | BUG | other key labels |"
 )
-ISSUE_TABLE_SEPARATOR = "|---|---|---|---:|---:|---|:---:|:---:|:---:|---|---|"
+ISSUE_TABLE_SEPARATOR = "|---|---|---|:---:|---:|---:|---|:---:|:---:|---|"
+TITLE_WIDTH = len('create a way to share an interactive map')
+
+
+def table_title(title: str) -> str:
+    """Two character-bounded lines; GitHub does not allow fixed CSS widths."""
+    wrapped = textwrap.wrap(title, width=TITLE_WIDTH, break_long_words=True,
+                            break_on_hyphens=False) or ['']
+    first = wrapped[0]
+    remaining = ' '.join(wrapped[1:])
+    second = (remaining[:TITLE_WIDTH - 3].rstrip() + '...'
+              if len(remaining) > TITLE_WIDTH else remaining)
+    return '<br>'.join(md_escape(line.ljust(TITLE_WIDTH)).replace(' ', '&nbsp;')
+                       for line in (first, second))
+
+
+def table_score(number: int, tier: str) -> str:
+    symbol, text = tier.rsplit(' ', 1)
+    return f'{symbol}&nbsp;{number}&nbsp;{text}'
 
 
 def issue_table_row(r: dict) -> str:
-    """Keep live rank metadata distinct from the calculated proposed rank."""
+    """Use identical columns and compact cells in every issue table."""
     labels = r['labels']
     live_quads = [q for q, label in RANK_LABELS.items() if label in labels]
     quad = live_quads[0] if len(live_quads) == 1 else '—'
@@ -557,15 +576,16 @@ def issue_table_row(r: dict) -> str:
                 'retain-0325', 'from archive'}
     other = [label for label in labels if label not in excluded
              and not label.startswith(('rank:', 'PRIORITY'))]
-    short = md_escape(r['title'][:70] + ('…' if len(r['title']) > 70 else ''))
-    priority = get_priority_label(labels).removeprefix('PRIORITY ')
+    short = table_title(r['title'])
+    priority = get_priority_label(labels).removeprefix('PRIORITY ').replace(
+        'HIGH-ish but not a bug', 'HIGH-ish')
     web = '✓' if 'Affects Web App' in labels else ''
     bug = '✓' if 'BUG' in labels else ''
     return (
         f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
-        f"{md_escape(r['milestone'])} | {r['cost']} {cost_tier(r['cost'])} | "
-        f"{r['benefit']} {benefit_tier(r['benefit'])} | {md_escape(priority)} | "
-        f"{quad} | {web} | {bug} | `{RANK_LABELS[r['quad']]}` | "
+        f"{md_escape(r['milestone'])} | {quad} | "
+        f"{table_score(r['cost'], cost_tier(r['cost']))} | "
+        f"{table_score(r['benefit'], benefit_tier(r['benefit']))} | {md_escape(priority)} | {web} | {bug} | "
         f"{md_escape(', '.join(other[:4]))} |"
     )
 
@@ -628,8 +648,8 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
     lines.append("Score tiers: **L-** = Very Low, **L** = Low, **M** = Medium, "
                  "**H** = High, **H+** = Very High. Checkmarks indicate labels present on GitHub.")
-    lines.append("**Quad** reflects the current GitHub rank label; **Proposed rank** "
-                 "reflects this scoring run. A missing or ambiguous current rank is shown as —.")
+    lines.append("**Quad** reflects the current GitHub rank label. "
+                 "A missing or ambiguous current rank is shown as —.")
     lines.append("")
     costs    = sorted(r["cost"]    for r in scored_issues)
     benefits = sorted(r["benefit"] for r in scored_issues)
