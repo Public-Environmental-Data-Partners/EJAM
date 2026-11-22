@@ -8,6 +8,7 @@
 - Web app: polygons, cities and counties sent from another app (such as EJScreen) no longer get an unrequested buffer; they use the distance that was sent, or no buffer (#766).
 - `ejamit()` analyzes a FIPS code listed more than once only once: each later copy keeps its row but is marked invalid, with a warning, instead of every copy reporting double the population (#793).
 - When some FIPS codes are invalid, `ejamit()` results stay in input order, so each site's report link is on its own row, and the percent of sites near schools and other features counts only the sites analyzed. `mapfast()` now maps these results, and a shape with no boundary no longer shifts the colors of the shapes after it (#793).
+- Results with invalid sites (#801): the multisite report header names the type of place ("3 specified counties") even if a FIPS code is invalid; site counts in the Excel notes and the long report count only the sites analyzed; and a polygon that is empty or has an invalid shape stays in `ejamit()` results as an invalid row, instead of being dropped or stopping the analysis.
 - Web app: clicking Start also wakes the EJAM API, so one-site report links open faster after an analysis (#772).
 - `ejam2shapefile()` now works for FIPS analyses (buffered if the analysis used a buffer; invalid FIPS get empty geometry), and no longer converts the input data.table to a data.frame.
 - Analyses of many FIPS codes are much faster: for example, finding the blockgroups in all of California's tracts now takes under a second instead of about 85 seconds (#791).

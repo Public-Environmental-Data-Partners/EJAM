@@ -400,10 +400,23 @@ ejamit <- function(sitepoints = NULL,
     # RETAIN ORIGINAL SORT ORDER OF SITES
     original_order <- data.table(n = 1:NROW(shp), ejam_uniq_id = 1:NROW(shp))
 
-    shp  <- shapefile_clean(shp) # reassigns ejam_uniq_id to all, then drops invalid but not empty!! uses default crs = 4269;  drops invalid rows or return NULL if none valid  # shp <- sf::st_transform(shp, crs = 4269) # done by shapefile_clean()
-    shp$valid <- !(!sf::st_is_valid(shp) | sf::st_is_empty(shp) ) # but clean dropped invalid ones already
-    # ***  retain  empty but not invalid rows for analysis? ***
-    if (is.null(shp)) {stop('No valid shapes found in shapefile')}
+    if (is.null(shp) || NROW(shp) == 0) {stop('No valid shapes found in shapefile')}
+    # Keep every row, so results_bysite has one row per input row, as for points and FIPS.
+    # A polygon that is empty or whose shape is invalid (such as edges that cross) stays as a row
+    # with valid FALSE and a reason in invalid_msg, and only the valid rows are analyzed (issue #801).
+    # shapefile_clean() is not used here because it drops the rows whose shape is invalid.
+    shp$ejam_uniq_id <- seq_len(NROW(shp)) # number ALL rows, including empty or invalid ones
+    shp_empty <- sf::st_is_empty(shp)
+    shp_shape_ok <- sf::st_is_valid(shp)
+    shp_shape_ok[is.na(shp_shape_ok)] <- FALSE # NA means the geometry could not even be checked
+    shp$valid <- shp_shape_ok & !shp_empty
+    # shapefix(), via shapefile_from_any(), already gave a reason for most invalid rows
+    if (!("invalid_msg" %in% names(shp))) {shp$invalid_msg <- NA_character_}
+    shp$invalid_msg <- as.character(shp$invalid_msg)
+    needs_msg <- !shp$valid & (is.na(shp$invalid_msg) | shp$invalid_msg %in% "")
+    shp$invalid_msg[needs_msg] <- ifelse(shp_empty[needs_msg], "empty geometry", "invalid geometry")
+    shp$invalid_msg[shp$valid] <- NA_character_
+    if (!any(shp$valid)) {stop('No valid shapes found in shapefile')}
     class(shp) <- c(class(shp), 'data.table')
 
     # Here we retain all rows, columns include ejam_uniq_id, valid, invalid_msg
@@ -981,7 +994,7 @@ ejamit <- function(sitepoints = NULL,
   links <- url_columns_bysite(
     sitepoints = {if ("latlon" %in% sitetype) {out$results_bysite[, .(lat = lat, lon = lon, ejam_uniq_id = ejam_uniq_id)]} else {NULL} },
     fips       = {if ("fips"   %in% sitetype) {fips} else {NULL}}, # or use out$results_bysite$ejam_uniq_id if that sitetype ?
-    shapefile  = {if ("shp"    %in% sitetype) {shp}  else {NULL}}, # has only valids but also has ejam_uniq_id
+    shapefile  = {if ("shp"    %in% sitetype) {shp}  else {NULL}}, # all rows, including invalid ones, and has ejam_uniq_id
     zipcode = zipcode,
     radius = buffer_for_links,
     regid = regid,

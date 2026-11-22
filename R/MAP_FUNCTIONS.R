@@ -141,6 +141,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, color = '#000080',
       pops <- popup_from_ejscreen(
         shpout %>% sf::st_drop_geometry(),
         sitenumber_label = sitenumber_label,
+        sitenumbers = layer_ids, # the site's row in results_bysite, not 1,2,3 of the valid ones (issue #801)
         detailed = (popup_style == "full")
       )
     }

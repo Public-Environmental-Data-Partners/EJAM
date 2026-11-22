@@ -597,3 +597,25 @@ test_that("mapfast_gg() works", {
   expect_true('ggplot' %in% class(x))
 })
 ############################################## # ############################################## #
+
+test_that("map_ejam_plus_shp() popups use each site's row number when an invalid site is listed first", {
+  # issue #801: with site 1 invalid, the popups of sites 2 and 3 said "Site 1" and "Site 2"
+  out <- testoutput_ejamit_shapes_2
+  bysite <- data.table::copy(out$results_bysite)
+  bysite <- rbind(bysite[1, ], bysite)
+  bysite$ejam_uniq_id <- 1:3
+  bysite$valid <- c(FALSE, TRUE, TRUE)
+  out$results_bysite <- bysite
+  good <- sf::st_geometry(testinput_shapes_2)
+  shp <- sf::st_sf(ejam_uniq_id = 1:3, geometry = c(good[1], good[1:2]))
+  junk <- capture_output({
+    suppressMessages(suppressWarnings({
+      x <- map_ejam_plus_shp(shp = shp, out = out, radius_buffer = 0, launch_browser = FALSE, popup_style = "full")
+    }))
+  })
+  maptext <- paste(unlist(x$x$calls), collapse = " ")
+  expect_true(grepl("Site 2", maptext, fixed = TRUE))
+  expect_true(grepl("Site 3", maptext, fixed = TRUE))
+  expect_false(grepl("Site 1", maptext, fixed = TRUE))
+})
+############################################## #

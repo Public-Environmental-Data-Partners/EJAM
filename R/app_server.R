@@ -3853,7 +3853,7 @@ app_server <- function(input, output, session) {
             in_areas_where = paste0(input$in_areas_where, ' ', input$in_areas_where_enter),
             risks_are_x = input$risks_are_x,
             source_of_latlons = input$source_of_latlons,
-            sitecount = nrow(data_processed()$results_bysite),
+            sitecount = sum(data_processed()$results_bysite$valid %in% TRUE), # only sites with results (issue #801)
 
             #------- RESULTS (tables and map and plots)
 

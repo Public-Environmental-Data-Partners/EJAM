@@ -116,7 +116,14 @@ library(data.table)
 # results_bysite: testoutput_ejamit_10pts_1miles$results_bysite
 # results_longnames: testoutput_ejamit_10pts_1miles$longnames
 # results_formatted: testoutput_ejamit_10pts_1miles$formatted
-if (is.na(params$sitecount)) {params$sitecount <- NROW(params$results_bysite)}
+if (is.na(params$sitecount)) {
+  # count only the sites that have results, not invalid sites
+  params$sitecount <- if ("valid" %in% names(params$results_bysite)) {
+    sum(params$results_bysite$valid %in% TRUE)
+  } else {
+    NROW(params$results_bysite)
+  }
+}
 if (is.na(params$total_pop)) {params$total_pop <- params$results_overall$pop}
 # map: NA
 if (is.na(params$acs_version)) {
