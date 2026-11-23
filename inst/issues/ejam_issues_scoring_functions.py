@@ -827,30 +827,34 @@ def open_pr_issue_references(pr: dict) -> set[int]:
     return references
 
 
-def fetch_open_pr_links(token: str | None = None) -> dict[int, list[int]]:
-    """Fetch open PRs (including drafts) and their explicitly targeted issues."""
+def fetch_pr_links(token: str | None = None) -> dict[int, list[int]]:
+    """Link open and merged PRs; exclude PRs closed without merging."""
     import urllib.request
     links = {}
     page = 1
     while True:
         req = urllib.request.Request(
-            f'https://api.github.com/repos/{OWNER}/{REPO}/pulls?state=open&per_page=100&page={page}',
+            f'https://api.github.com/repos/{OWNER}/{REPO}/pulls?state=all&per_page=100&page={page}',
             headers={'Accept': 'application/vnd.github+json',
                      **({'Authorization': f'Bearer {token}'} if token else {})})
         with urllib.request.urlopen(req) as response:
             batch = json.loads(response.read().decode())
-        for pr in batch:
-            query = ('{repository(owner:"' + OWNER + '",name:"' + REPO + '"){'
-                     'pullRequest(number:' + str(pr['number']) + '){'
-                     'closingIssuesReferences(first:100){pageInfo{hasNextPage}'
-                     'nodes{number repository{nameWithOwner}}}}}}')
+        eligible = [pr for pr in batch if pr['state'] == 'open' or pr.get('merged_at')]
+        if eligible:
+            # Batch closing-reference lookups to avoid a separate request per PR.
+            fields = ''.join(
+                'p' + str(pr['number']) + ':pullRequest(number:' + str(pr['number']) + '){'
+                'closingIssuesReferences(first:100){pageInfo{hasNextPage}'
+                'nodes{number repository{nameWithOwner}}}}' for pr in eligible)
+            query = '{repository(owner:"' + OWNER + '",name:"' + REPO + '"){' + fields + '}}'
             result = subprocess.run(['gh', 'api', 'graphql', '-f', 'query=' + query],
                                     check=True, capture_output=True, text=True,
                                     env={**os.environ, **({'GH_TOKEN': token} if token else {})})
             payload = json.loads(result.stdout)
             if payload.get('errors'):
-                raise RuntimeError('Unable to fetch open PR closing references')
-            closing = payload['data']['repository']['pullRequest']['closingIssuesReferences']
+                raise RuntimeError('Unable to fetch PR closing references')
+        for pr in eligible:
+            closing = payload['data']['repository']['p' + str(pr['number'])]['closingIssuesReferences']
             if closing['pageInfo']['hasNextPage']:
                 raise RuntimeError('PR has more than 100 closing references; cannot report completely')
             pr['closingIssuesReferences'] = closing
@@ -949,7 +953,7 @@ def main() -> None:
     )
 
     scored, cost_med, benefit_med = score_issues(issues)
-    pr_links = fetch_open_pr_links(token)
+    pr_links = fetch_pr_links(token)
     for row in scored:
         row['prs'] = pr_links.get(row['num'], [])
     print(

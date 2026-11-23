@@ -1,5 +1,9 @@
 import sys
 import unittest
+from unittest.mock import patch
+from io import BytesIO
+from types import SimpleNamespace
+import json
 from pathlib import Path
 
 
@@ -9,6 +13,30 @@ import ejam_issues_scoring_functions as scoring
 
 
 class IssueRankingTest(unittest.TestCase):
+
+    def test_pr_links_exclude_unmerged_closed_prs(self):
+        batch = [dict(number=792, state='closed', merged_at='2026-11-21', body='Closes #791'),
+                 dict(number=9, state='open', body='Fixes #791'),
+                 dict(number=10, state='closed', merged_at=None, body='Closes #791')]
+        closing = {'pageInfo': {'hasNextPage': False}, 'nodes': []}
+        response = SimpleNamespace(stdout=json.dumps({'data': {'repository': {
+            'p792': {'closingIssuesReferences': closing},
+            'p9': {'closingIssuesReferences': closing}}}}))
+        with patch('urllib.request.urlopen', return_value=BytesIO(json.dumps(batch).encode())), \
+             patch.object(scoring.subprocess, 'run', return_value=response) as run:
+            self.assertEqual(scoring.fetch_pr_links('token'), {791: [9, 792]})
+        self.assertNotIn('p10:', run.call_args.args[0][-1])
+
+    def test_merged_pr_closure_reference(self):
+        pr = {'number': 792, 'state': 'closed', 'merged_at': '2026-11-21',
+              'body': 'Closes #791'}
+        self.assertEqual(scoring.open_pr_issue_references(pr), {791})
+
+    def test_github_linked_closures_include_merged_pr_targets(self):
+        pr = {'closingIssuesReferences': {'nodes': [
+            {'number': 791, 'repository': {'nameWithOwner': 'Public-Environmental-Data-Partners/EJAM'}},
+            {'number': 22, 'repository': {'nameWithOwner': 'another/repo'}}]}}
+        self.assertEqual(scoring.open_pr_issue_references(pr), {791})
 
     def test_all_quadrants_share_one_unbroken_table(self):
         rows = [dict(num=i, title='Example', milestone='NA', cost=2,
