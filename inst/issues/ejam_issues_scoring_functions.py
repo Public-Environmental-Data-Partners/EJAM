@@ -580,6 +580,18 @@ def table_key_labels(labels: list[str]) -> str:
                        for line in (lines or ['']))
 
 
+def pr_link(reference: int | str) -> str:
+    """Keep sibling PR numbers unambiguous in the displayed link text."""
+    if isinstance(reference, int):
+        repo, number, text = REPO, reference, f'#{reference}'
+    else:
+        repo, number = reference.split('#')
+        if repo not in ('EJAM-API', 'EJScreen') or not number.isdigit():
+            raise ValueError(f'Invalid PR reference: {reference}')
+        text = reference
+    return f'[{text}](https://github.com/{OWNER}/{repo}/pull/{number})'
+
+
 def issue_table_row(r: dict) -> str:
     """Use identical columns and compact cells in every issue table."""
     labels = r['labels']
@@ -592,7 +604,7 @@ def issue_table_row(r: dict) -> str:
     return (
         f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
         f"{md_escape(r['milestone'])} | "
-        + ', '.join(f"[#{n}](https://github.com/{OWNER}/{REPO}/pull/{n})" for n in r.get('prs', []))
+        + ', '.join(pr_link(pr) for pr in r.get('prs', []))
         + " | "
         f"{table_score(r['cost'], cost_tier(r['cost']))} | "
         f"{table_score(r['benefit'], benefit_tier(r['benefit']))} | {md_escape(priority)} | {web} | {bug} | "
@@ -812,13 +824,17 @@ def generate_markdown(scored_issues: list[dict],
 
 # ── MAIN ENTRY POINT ──────────────────────────────────────────────────────────
 
-def open_pr_issue_references(pr: dict) -> set[int]:
+def open_pr_issue_references(pr: dict, source_repo: str = REPO) -> set[int]:
     """Recognize explicit work/closure intent, not arbitrary related mentions."""
     references = set()
+    target = (r'(?:Public-Environmental-Data-Partners/EJAM#|'
+              r'https://github\.com/Public-Environmental-Data-Partners/EJAM/issues/)')
+    if source_repo == REPO:
+        target = r'(?:' + target + r'|#)'
     pattern = re.compile(
         r'\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|address(?:e[sd])?|'
         r'part of|plan in)\s+(?:issue\s+)?'
-        r'(?:\[)?(?:Public-Environmental-Data-Partners/EJAM)?#(\d+)', re.I)
+        r'(?:\[)?' + target + r'(\d+)', re.I)
     for text in (pr.get('title') or '', pr.get('body') or ''):
         references.update(int(n) for n in pattern.findall(text))
     for issue in pr.get('closingIssuesReferences', {}).get('nodes', []):
@@ -827,14 +843,14 @@ def open_pr_issue_references(pr: dict) -> set[int]:
     return references
 
 
-def fetch_pr_links(token: str | None = None) -> dict[int, list[int]]:
+def _fetch_repository_pr_links(source_repo: str, token: str | None = None) -> dict[int, list[int]]:
     """Link open and merged PRs; exclude PRs closed without merging."""
     import urllib.request
     links = {}
     page = 1
     while True:
         req = urllib.request.Request(
-            f'https://api.github.com/repos/{OWNER}/{REPO}/pulls?state=all&per_page=100&page={page}',
+            f'https://api.github.com/repos/{OWNER}/{source_repo}/pulls?state=all&per_page=100&page={page}',
             headers={'Accept': 'application/vnd.github+json',
                      **({'Authorization': f'Bearer {token}'} if token else {})})
         with urllib.request.urlopen(req) as response:
@@ -846,7 +862,7 @@ def fetch_pr_links(token: str | None = None) -> dict[int, list[int]]:
                 'p' + str(pr['number']) + ':pullRequest(number:' + str(pr['number']) + '){'
                 'closingIssuesReferences(first:100){pageInfo{hasNextPage}'
                 'nodes{number repository{nameWithOwner}}}}' for pr in eligible)
-            query = '{repository(owner:"' + OWNER + '",name:"' + REPO + '"){' + fields + '}}'
+            query = '{repository(owner:"' + OWNER + '",name:"' + source_repo + '"){' + fields + '}}'
             result = subprocess.run(['gh', 'api', 'graphql', '-f', 'query=' + query],
                                     check=True, capture_output=True, text=True,
                                     env={**os.environ, **({'GH_TOKEN': token} if token else {})})
@@ -858,11 +874,21 @@ def fetch_pr_links(token: str | None = None) -> dict[int, list[int]]:
             if closing['pageInfo']['hasNextPage']:
                 raise RuntimeError('PR has more than 100 closing references; cannot report completely')
             pr['closingIssuesReferences'] = closing
-            for number in open_pr_issue_references(pr):
+            for number in open_pr_issue_references(pr, source_repo):
                 links.setdefault(number, []).append(pr['number'])
         if len(batch) < 100:
             return {n: sorted(set(prs)) for n, prs in links.items()}
         page += 1
+
+
+def fetch_pr_links(token: str | None = None) -> dict[int, list[int | str]]:
+    """Read PRs in all three repos, but target EJAM issues exclusively."""
+    links = {}
+    for repo in (REPO, 'EJAM-API', 'EJScreen'):
+        for issue, numbers in _fetch_repository_pr_links(repo, token).items():
+            links.setdefault(issue, []).extend(
+                n if repo == REPO else f'{repo}#{n}' for n in numbers)
+    return links
 
 
 def score_issues(issues: list[dict]) -> tuple[list[dict], int, int]:

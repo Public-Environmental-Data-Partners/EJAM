@@ -14,6 +14,22 @@ import ejam_issues_scoring_functions as scoring
 
 class IssueRankingTest(unittest.TestCase):
 
+    def test_cross_repo_prs_require_explicit_ejam_target(self):
+        self.assertEqual(scoring.open_pr_issue_references({'body': 'Fixes #791'}, 'EJAM-API'), set())
+        for repo in ('EJAM-API', 'EJScreen'):
+            self.assertEqual(scoring.open_pr_issue_references(
+                {'body': 'Closes Public-Environmental-Data-Partners/EJAM#791'}, repo), {791})
+            self.assertEqual(scoring.open_pr_issue_references(
+                {'body': 'Fixes https://github.com/Public-Environmental-Data-Partners/EJAM/issues/791'}, repo), {791})
+            self.assertEqual(scoring.pr_link(repo + '#12'),
+                f'[{repo}#12](https://github.com/Public-Environmental-Data-Partners/{repo}/pull/12)')
+
+    def test_collects_and_distinguishes_pr_numbers_across_repos(self):
+        with patch.object(scoring, '_fetch_repository_pr_links',
+                          side_effect=[{791: [12]}, {791: [12]}, {791: [12]}]):
+            self.assertEqual(scoring.fetch_pr_links('token'),
+                             {791: [12, 'EJAM-API#12', 'EJScreen#12']})
+
     def test_pr_links_exclude_unmerged_closed_prs(self):
         batch = [dict(number=792, state='closed', merged_at='2026-11-21', body='Closes #791'),
                  dict(number=9, state='open', body='Fixes #791'),
@@ -24,7 +40,7 @@ class IssueRankingTest(unittest.TestCase):
             'p9': {'closingIssuesReferences': closing}}}}))
         with patch('urllib.request.urlopen', return_value=BytesIO(json.dumps(batch).encode())), \
              patch.object(scoring.subprocess, 'run', return_value=response) as run:
-            self.assertEqual(scoring.fetch_pr_links('token'), {791: [9, 792]})
+            self.assertEqual(scoring._fetch_repository_pr_links('EJAM', 'token'), {791: [9, 792]})
         self.assertNotIn('p10:', run.call_args.args[0][-1])
 
     def test_merged_pr_closure_reference(self):
