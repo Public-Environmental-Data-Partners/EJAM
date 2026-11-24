@@ -891,6 +891,21 @@ def fetch_pr_links(token: str | None = None) -> dict[int, list[int | str]]:
     return links
 
 
+def prepare_ranking(token: str | None = None,
+                    issue_number: int = DEFAULT_ISSUE_NUMBER) -> tuple[list[dict], int, int]:
+    """Refresh issue metadata after slow PR lookups; never reuse report milestones.
+
+    Milestone assignments remain read-only on GitHub. Both the table and the
+    milestone summary are derived from this fresh open-issue snapshot.
+    """
+    pr_links = fetch_pr_links(token)
+    issues = fetch_all_open_issues(token=token, exclude_issue_number=issue_number)
+    scored, cost_med, benefit_med = score_issues(issues)
+    for row in scored:
+        row['prs'] = pr_links.get(row['num'], [])
+    return scored, cost_med, benefit_med
+
+
 def score_issues(issues: list[dict]) -> tuple[list[dict], int, int]:
     """
     Score a list of GitHub issue dicts and return (scored_list, cost_med, benefit_med).
@@ -978,10 +993,7 @@ def main() -> None:
         f"(excluding report issue #{args.issue_number})."
     )
 
-    scored, cost_med, benefit_med = score_issues(issues)
-    pr_links = fetch_pr_links(token)
-    for row in scored:
-        row['prs'] = pr_links.get(row['num'], [])
+    scored, cost_med, benefit_med = prepare_ranking(token, args.issue_number)
     print(
         f"  Cost range  {min(r['cost']    for r in scored)}–"
         f"{max(r['cost']    for r in scored)}, median={cost_med}"

@@ -14,6 +14,23 @@ import ejam_issues_scoring_functions as scoring
 
 class IssueRankingTest(unittest.TestCase):
 
+    def test_prepare_ranking_refreshes_changed_and_removed_milestones(self):
+        issue = dict(number=1, title='Example', labels=[], body='',
+                     milestone={'title': 'Old'})
+        for milestone, expected in [({'title': 'New'}, 'New'), (None, 'NA')]:
+            def pr_lookup(token):
+                issue['milestone'] = milestone
+                return {1: [9]}
+            with patch.object(scoring, 'fetch_pr_links', side_effect=pr_lookup), \
+                 patch.object(scoring, 'fetch_all_open_issues', return_value=[issue]) as fetch:
+                rows, c, b = scoring.prepare_ranking('token', 715)
+            fetch.assert_called_once_with(token='token', exclude_issue_number=715)
+            self.assertEqual(rows[0]['milestone'], expected)
+            self.assertEqual(rows[0]['prs'], [9])
+            markdown = scoring.generate_markdown(rows, c, b)
+            self.assertNotIn('Old', markdown)
+            self.assertIn('| ' + expected + ' | 1 |', markdown)
+
     def test_cross_repo_prs_require_explicit_ejam_target(self):
         self.assertEqual(scoring.open_pr_issue_references({'body': 'Fixes #791'}, 'EJAM-API'), set())
         for repo in ('EJAM-API', 'EJScreen'):
