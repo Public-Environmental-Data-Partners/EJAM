@@ -1034,10 +1034,10 @@ AIR,	IL000031012ACJ<br>
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
              </svg>
         <div class="pedp-alert__content">
-            <h2 class="pedp-alert__heading">New Release on November 2026 - Updated Datasets</h2>
+            <h2 class="pedp-alert__heading">New Release on January 2027 - Partially Updated Datasets</h2>
                  <p class="pedp-alert__text">
-                     This new version of EJAM (<span id="banner-version-number">v', EJAM:::global_or_param("app_version"), '</span>) uses the 2020-2024 American Community Survey (ACS) data and updated ozone and PM2.5 data. To view
-                     and use the previous version, which used the ACS 2018-2022 data, visit our
+                     This new version of EJAM (<span id="banner-version-number">v', EJAM:::global_or_param("app_version"), '</span>) makes all updated demographic and some environmental data available. To view
+                     and use the version removed by the Environmental Protection Agency (EPA) in January 2025, visit our 
                      <a id="banner-frozen-url" href="https://ejam-archive.publicenvirodata.org" target="_blank" rel="noopener" title="This link opens a new webpage.">archive</a> (v3.2022.3).
                  </p>
              </div>
