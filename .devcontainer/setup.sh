@@ -31,3 +31,10 @@ Rscript -e '
   EJAM::download_latest_arrow_data(varnames = "all")
   cat("EJAM", as.character(utils::packageVersion("EJAM")), "is ready.\n")
 '
+
+echo "==> Removing downloaded package files that are no longer needed"
+# The copies pak keeps of what it downloaded take over 1 GB of a small disk.
+Rscript -e '
+  try(pak::cache_clean(), silent = TRUE)
+  try(pak::meta_clean(force = TRUE), silent = TRUE)
+' || true

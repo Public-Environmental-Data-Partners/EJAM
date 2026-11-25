@@ -39,6 +39,9 @@ optional.
 
 ## What is not set up
 
+- **R code completion in VS Code.** The helper that provides it is switched
+  off, because it used about 3 GB of memory and left too little for an EJAM
+  analysis on the default machine. RStudio has its own code completion.
 - **PDF reports.** A headless Chrome browser is not installed, so functions
   that print a report to PDF or take a snapshot of a map will not work. HTML
   reports, tables, plots and interactive maps do not need it.
