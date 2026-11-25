@@ -130,10 +130,29 @@ The spreadsheet is saved in your home folder. Made this way, it does not include
 report, and the console shows an "Error converting HTML to PNG" message that you can ignore (see
 "Limits").
 
-To analyze your own sites, use the **Upload** button in RStudio's **Files** pane to add a
-spreadsheet of latitudes and longitudes, then give its name to `ejamit()`. To keep a result, tick
-the file in the **Files** pane and choose **More \> Export**. Files left in a codespace are lost
-when the codespace is deleted.
+## Finding the files you saved
+
+The examples above save files in your home folder, `/home/rstudio`. RStudio's **Files** pane starts
+in a different folder, `/workspaces/EJAM`, which holds the EJAM source code, so the saved files are
+not in view at first. To show the home folder in the **Files** pane, run:
+
+```{r}
+rstudioapi::filesPaneNavigate("~")
+```
+
+Or click the **...** button at the right end of the path shown at the top of the **Files** pane and
+enter `~`.
+
+Once you can see a file there:
+
+-   Click an `.html` file and choose **View in Web Browser** to open it in a new tab.
+-   To download any file to your own computer, tick its box and choose **More \> Export**.
+
+## Using your own sites
+
+Use the **Upload** button in the **Files** pane to add a spreadsheet of latitudes and longitudes,
+then give its name to `ejamit()`. Files left in a codespace are lost when the codespace is deleted,
+so download the results you want to keep.
 
 For more to try, see [Basics - Quick Start Guide](basics.html).
 
