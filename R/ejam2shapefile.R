@@ -55,19 +55,40 @@ ejam2shapefile <- function(ejamitout,
   intype <- NULL
   if ('results_bysite' %in% names(ejamitout)) {
     if ("sitetype" %in% names(ejamitout)) {intype <- ejamitout$sitetype}
-    df <- data.table::setDF(ejamitout$results_bysite)
+    df <- ejamitout$results_bysite
     if (is.null(intype)) {intype <- sitetype_from_dt(df)}
   } else {
     # in case just 1 table was passed to this function
     if (is.data.frame(ejamitout)) {
-      df <- data.table::setDF(ejamitout)
+      df <- ejamitout
       intype <- sitetype_from_dt(df)
     } else {
       stop('ejamitout must be a data.table or at least a data.frame')
     }
   }
+  # as.data.frame() makes a copy -- data.table::setDF() would convert the caller's data.table by reference
+  if (data.table::is.data.table(df)) {df <- as.data.frame(df)}
+
   if ("fips" %in% intype && is.null(shp)) {
-    shp <- shapes_from_fips(df$fips)
+    # ejamit(fips = ...)$results_bysite has no fips column -- the FIPS codes are in ejam_uniq_id.
+    # Use a fips column (or alias of one) if there is one, else ejam_uniq_id.
+    fipscol <- names(df)[fixnames_aliases(names(df)) %in% "fips"][1]
+    if (is.na(fipscol) && "ejam_uniq_id" %in% names(df)) {fipscol <- "ejam_uniq_id"}
+    if (!is.na(fipscol)) {
+      # 1 row per row of df, same order, with empty geometry where fips is NA or invalid
+      shp <- shapes_from_fips(as.character(df[[fipscol]]))
+      if (!is.null(shp)) {
+        # buffered FIPS analysis: export the buffered area that was analyzed, as ejam2map() maps it
+        rad <- suppressWarnings(as.numeric(df[["radius.miles"]]))
+        rad <- rad[!is.na(rad)][1]
+        if (!is.na(rad) && rad > 0 && rad != 999) {
+          shp <- shape_buffered_from_shapefile(shp, radius.miles = rad)
+        }
+        # where both have a column (e.g., pop), keep the value from the results, not from the boundaries
+        dupcols <- setdiff(intersect(names(shp), names(df)), attr(shp, "sf_column"))
+        if (length(dupcols) > 0) {shp <- shp[ , setdiff(names(shp), dupcols)]}
+      }
+    }
   }
   if (!is.null(shp)) {shpnames <- names(shp)} else {shpnames <- NULL}
   # WHICH COLUMNS? ####

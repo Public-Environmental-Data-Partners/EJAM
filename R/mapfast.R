@@ -315,15 +315,25 @@ mapfast <- function(mydf, radius = 3, column_names='all', labels = column_names,
 
   if (sitetype == 'fips') {
 
-    if ('ejam_uniq_id' %in% colnames(mydf) && all(fips_valid(mydf$ejam_uniq_id))) {
+    # Invalid sites in ejamit() output are left out of this check and get no shape:
+    # NA ids (repeated or unreadable codes) and rows with valid FALSE, such as "10999".
+    # Their rows stay, as empty shapes, so colors and popups stay with the right places.
+    rejected <- rep(FALSE, NROW(mydf))
+    if ('ejam_uniq_id' %in% colnames(mydf)) {
+      rejected <- is.na(mydf$ejam_uniq_id)
+      if ('valid' %in% colnames(mydf)) {rejected <- rejected | !(mydf$valid %in% TRUE)}
+    }
+    if ('ejam_uniq_id' %in% colnames(mydf) && any(!rejected) &&
+        all(fips_valid(mydf$ejam_uniq_id[!rejected]))) {
       fips <- mydf$ejam_uniq_id
+      fips[rejected] <- NA
     } else {
       fips <- data.frame(mydf)[, which(fixnames_aliases(names(mydf)) %in% 'fips')[1]]
       # if (all(fips_valid(fipsvalues))) {
       #   # should already be true since checked type earlier using aliases etc.
       # }
     }
-    ftype <- fipstype(fips)
+    ftype <- fipstype(fips[!is.na(fips)]) # NA ids are invalid sites; shapes_from_fips() gives them empty rows, so popups stay aligned
 
     ######################### #
     # _States  ####

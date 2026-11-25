@@ -114,3 +114,16 @@ testthat::test_that("  works with SHAPEFILE with geometry NOT INTPTLAT INTPTLON"
   expect_true(all(sapply(x[,c("lat","lon")], is.numeric)))
   expect_true(all(latlon_is.valid(lat=x$lat,lon = x$lon)))
 })
+
+testthat::test_that("latlon_from_shapefile_centroids() gives NA for an empty polygon, listed first", {
+  # issue #801: sf::st_centroid() stops with an error if given an empty polygon in a spatial data.frame
+  good <- sf::st_geometry(testinput_shapes_2)
+  shp <- sf::st_sf(sitename = c("empty", "a", "b"),
+                   geometry = c(sf::st_sfc(sf::st_polygon(), crs = sf::st_crs(good)), good[1:2]))
+  expect_no_error({x <- latlon_from_shapefile_centroids(shp)})
+  expect_equal(NROW(x), 3)
+  expect_true(is.na(x$lat[1]) && is.na(x$lon[1]))
+  expect_equal(x[2:3, c("lat", "lon")], latlon_from_shapefile_centroids(testinput_shapes_2)[, c("lat", "lon")],
+               ignore_attr = TRUE)
+})
+################################################################ #

@@ -39,9 +39,9 @@ shapefile2blockpoints <- function(polys, addedbuffermiles = 0, blocksnearby = NU
 #' @param dissolved If TRUE, use [sf::st_union()] to find unique blocks inside any one or more of polys
 #' @param safety_margin_ratio multiplied by addedbuffermiles, how far to search for
 #'   blocks nearby using [getblocksnearby()], before using those found to do the intersection via sf::
-#' @param crs used in [sf::st_as_sf()] and [sf::st_transform()] and [shape_buffered_from_shapefile_points()], crs = 4269 or Geodetic CRS NAD83
+#' @param crs used in [sf::st_as_sf()] and [sf::st_transform()] and [shape_buffered_from_shapefile()], crs = 4269 or Geodetic CRS NAD83
 #' @param updateProgress optional Shiny progress bar to update
-#' @param oldway whether to use older method that works but may be slower vs newer/draft
+#' @param oldway retained for compatibility; both values use the same bounding-box lookup
 #' @return Block points table for those blocks whose internal point is inside the buffer
 #'   which is just a circular buffer of specified radius if polys are just points.
 #'   This is like the output of  [getblocksnearby()], or [getblocksnearby_from_fips()] if return_shp = FALSE.
@@ -75,17 +75,26 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
 
   ############################ ############################ ########################### #
 
+  ## add buffer around each polygon if needed ####
+
+  if (addedbuffermiles > 0) {
+    if (is.function(updateProgress)) {
+      boldtext <- 'Adding buffers around polygons'
+      updateProgress(message_main = boldtext, value = 0.05)
+    }
+    polys <- shape_buffered_from_shapefile(polys, radius.miles = addedbuffermiles, crs = crs)
+  }
+  ############################################### #
+
   ## define bounding box around each polygon ####
 
   if (is.function(updateProgress)) {
     boldtext <- 'Defining bounding box around each polygon'
     updateProgress(message_main = boldtext, value = 0.1)
   }
-  if (oldway) {
-  bbox_polys <- lapply(polys$geometry, sf::st_bbox)
-  } else {
-  bbox_polys <- shapefile2bboxdf(polys) # newer way
-  }
+  # Both values of oldway use the same conservative candidate lookup.
+  # Keep the argument for compatibility with existing callers.
+  bbox_polys <- shapefile2bboxdf(sf::st_transform(polys, crs = crs))
   ############################ ############################ ########################### #
 
   ## filter to just blockpoints in each polygon's bbox, via SearchTrees::rectLookup() using quadtree index ####
@@ -95,23 +104,7 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
     updateProgress(message_main = boldtext, value = 0.2)
   }
 
-  ## filter blockpoints using lat/lon, NOT polar coordinates/radians?
-
-  if (!oldway) {
-  blockpoints_filt <- getblocksrowsinbox(bb = bbox_polys) # newer way
-} else {
-  earthRadius_miles <- 3959
-  radians_per_degree <- pi / 180
-  quadtree <- localtree_get()
-
-  blockpoints_filt <- lapply(bbox_polys, function(a) {
-    SearchTrees::rectLookup(quadtree,
-                            xlims = c(earthRadius_miles * cos(a$ymin * radians_per_degree) * cos(a$xmin * radians_per_degree),
-                                      earthRadius_miles * cos(a$ymax * radians_per_degree) * cos(a$xmax * radians_per_degree)),
-                            ylims = c(earthRadius_miles * sin(a$ymin * radians_per_degree), earthRadius_miles * sin(a$ymax * radians_per_degree)))
-
-  }) %>% unlist(use.names = FALSE) %>% unique
-  }
+  blockpoints_filt <- getblocksrowsinbox(bb = bbox_polys)
   ############################ ############################ ########################### #
 
   ## transform as a spatial data.frame ####
@@ -132,19 +125,6 @@ get_blockpoints_in_shape <- function(polys, addedbuffermiles = 0, blocksnearby =
     polys <-  shapefile_from_sitepoints(polys, crs = crs)
   }
   ARE_POINTS <- "POINT" == names(which.max(table(sf::st_geometry_type(polys))))
-  ############################################### #
-
-  ## add buffer around each polygon if needed ####
-
-  if (addedbuffermiles > 0) {
-    if (is.function(updateProgress)) {
-      boldtext <- 'Adding buffers around polygons'
-      updateProgress(message_main = boldtext, value = 0.4)
-    }
-    addedbuffermiles_withunits <- units::set_units(addedbuffermiles, "miles")
-    polys <- shape_buffered_from_shapefile_points(polys,  addedbuffermiles_withunits, crs = crs)
-    # addedbuffermiles_withunits  name used since below getblocksnearby( , radius=addedbuffermiles etc ) warns units not expected
-  }
   ############################################### #
 
   ## use getblocksnearby() only if shapefile was actually POINTS NOT POLYGONS ####

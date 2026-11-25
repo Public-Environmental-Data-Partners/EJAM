@@ -141,6 +141,7 @@ map_ejam_plus_shp <- function(shp, out, radius_buffer = NULL, color = '#000080',
       pops <- popup_from_ejscreen(
         shpout %>% sf::st_drop_geometry(),
         sitenumber_label = sitenumber_label,
+        sitenumbers = layer_ids, # the site's row in results_bysite, not 1,2,3 of the valid ones (issue #801)
         detailed = (popup_style == "full")
       )
     }
@@ -619,6 +620,10 @@ map_shapes_leaflet <- function(shapes, color = "green", popup = NULL, fillOpacit
         popup <- popup_keep
       }
     }
+    # one color per row must lose the same rows, or later shapes get the wrong colors
+    if (length(color) > 1 && length(color) == length(keep)) {
+      color <- color[keep]
+    }
     shapes = shapes[keep, ]
     layer_ids <- layer_ids[keep]
   }
@@ -693,6 +698,10 @@ map_shapes_leaflet_proxy <- function(mymap, shapes, color = "green", popup = sha
       if (!inherits(popup_keep, "try-error")) {
         popup <- popup_keep
       }
+    }
+    # one color per row must lose the same rows, or later shapes get the wrong colors
+    if (length(color) > 1 && length(color) == length(keep)) {
+      color <- color[keep]
     }
     shapes = shapes[keep, ]
   }

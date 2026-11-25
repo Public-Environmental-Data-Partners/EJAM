@@ -97,6 +97,7 @@ import json
 import os
 import re
 import subprocess
+import textwrap
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -297,14 +298,15 @@ def benefit_score(issue_title: str, issue_labels: list[str], issue_body: str) ->
         s += 1
 
     # ── BUG label ─────────────────────────────────────────────────────────────
-    if "bug" in labs:
-        s += 4
+    if "bug" in {label.casefold() for label in issue_labels}:
+        s += 7
         if "priority high" in labs:
             s += 2  # extra urgency for high-priority bugs
 
     # ── Web app / API impact (broader user audience) ──────────────────────────
-    if any(x in labs for x in ("web app", "webapp", "shiny")):
-        s += 3
+    if any(label.casefold() in {'affects web app', 'web app', 'webapp', 'shiny'}
+           for label in issue_labels):
+        s += 4
     if "api" in labs:
         s += 2
 
@@ -499,19 +501,19 @@ def publish_ranking_comment(markdown: str, issue_number: int,
 
 
 def cost_tier(c: int) -> str:
-    if c <= 1:    return "🟢 Very Low"
-    elif c <= 3:  return "🔵 Low"
-    elif c <= 6:  return "🟡 Medium"
-    elif c <= 10: return "🟠 High"
-    return "⛔ Very High"
+    if c <= 1:    return "🟢 L-"
+    elif c <= 3:  return "🔵 L"
+    elif c <= 6:  return "🟡 M"
+    elif c <= 10: return "🟠 H"
+    return "⛔ H+"
 
 
 def benefit_tier(b: int) -> str:
-    if b <= 1:    return "⬜ Very Low"
-    elif b <= 4:  return "⬜ Low"
-    elif b <= 8:  return "🟦 Medium"
-    elif b <= 12: return "🟩🟦 High"
-    return "🟩🟩 Very High"
+    if b <= 1:    return "⬜ L-"
+    elif b <= 4:  return "⬜ L"
+    elif b <= 8:  return "🟦 M"
+    elif b <= 12: return "🟩🟦 H"
+    return "🟩🟩 H+"
 
 
 def issue_count_text(count: int) -> str:
@@ -540,49 +542,85 @@ def md_escape(text: str) -> str:
     )
 
 
+ISSUE_TABLE_HEADER = (
+    "| # | Issue Title | Milestone | PR | Cost | Benefit | Priority | "
+    "App | BUG | other key<br>labels |"
+)
+ISSUE_TABLE_SEPARATOR = "|---|---|---|---|---:|---:|---|:---:|:---:|---|"
+TITLE_WIDTH = len('create a way to share an interactive map') + 4
+KEY_LABEL_WIDTH = 12
+
+
+def table_title(title: str) -> str:
+    """Two character-bounded lines; GitHub does not allow fixed CSS widths."""
+    wrapped = textwrap.wrap(title, width=TITLE_WIDTH, break_long_words=True,
+                            break_on_hyphens=False) or ['']
+    first = wrapped[0]
+    remaining = ' '.join(wrapped[1:])
+    second = (remaining[:TITLE_WIDTH - 3].rstrip() + '...'
+              if len(remaining) > TITLE_WIDTH else remaining)
+    return '<br>'.join(md_escape(line.ljust(TITLE_WIDTH)).replace(' ', '&nbsp;')
+                       for line in (first, second))
+
+
+def table_score(number: int, tier: str) -> str:
+    symbol, text = tier.rsplit(' ', 1)
+    return f'{symbol}<br>{number}&nbsp;{text}'
+
+
+def table_key_labels(labels: list[str]) -> str:
+    lines = []
+    for label in labels:
+        if not any(word in label.casefold() for word in ('speed', 'custom', 'api')):
+            continue
+        display = 'speed...' if 'speed' in label.casefold() else label
+        lines.extend(textwrap.wrap(display, width=KEY_LABEL_WIDTH,
+                                   break_long_words=True, break_on_hyphens=False))
+    return '<br>'.join(md_escape(line.ljust(KEY_LABEL_WIDTH)).replace(' ', '&nbsp;')
+                       for line in (lines or ['']))
+
+
+def pr_link(reference: int | str) -> str:
+    """Keep sibling PR numbers unambiguous in the displayed link text."""
+    if isinstance(reference, int):
+        repo, number, text = REPO, reference, f'#{reference}'
+    else:
+        repo, number = reference.split('#')
+        if repo not in ('EJAM-API', 'EJScreen') or not number.isdigit():
+            raise ValueError(f'Invalid PR reference: {reference}')
+        text = reference
+    return f'[{text}](https://github.com/{OWNER}/{repo}/pull/{number})'
+
+
+def issue_table_row(r: dict) -> str:
+    """Use identical columns and compact cells in every issue table."""
+    labels = r['labels']
+    other = [label for label in labels if not label.startswith(('rank:', 'PRIORITY'))]
+    short = table_title(r['title'])
+    priority = get_priority_label(labels).removeprefix('PRIORITY ').replace(
+        'HIGH-ish but not a bug', 'HIGH-ish')
+    web = '✓' if 'Affects Web App' in labels else ''
+    bug = '✓' if 'BUG' in labels else ''
+    return (
+        f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
+        f"{md_escape(r['milestone'])} | "
+        + ', '.join(pr_link(pr) for pr in r.get('prs', []))
+        + " | "
+        f"{table_score(r['cost'], cost_tier(r['cost']))} | "
+        f"{table_score(r['benefit'], benefit_tier(r['benefit']))} | {md_escape(priority)} | {web} | {bug} | "
+        f"{table_key_labels(other)} |"
+    )
+
+
 def _write_quad(lines: list[str], letter: str, heading: str, desc: str,
                 issues: list[dict]) -> None:
-    lines.append(f"## Quadrant {letter} — {heading}")
-    lines.append(f"*{desc}*")
-    lines.append("")
-    lines.append(f"**{len(issues)} issues**")
-    lines.append("")
+    # Group headings must remain table rows, without blank lines, so GitHub
+    # sizes one table rather than four independently sized tables.
+    cells = [f'**{letter}**', table_title(f'Quadrant {letter} — {heading}'),
+             f'**{issue_count_text(len(issues))}**'] + [''] * 7
+    lines.append('| ' + ' | '.join(cells) + ' |')
     for r in issues:
-        lines.append(
-            f"- [#{r['num']}]({URL_BASE}{r['num']}) — {md_escape(r['title'])}"
-        )
-    lines.append("")
-    lines.append(
-        "| # | Issue | Cost | Benefit | Milestone | Priority | Proposed rank | Current GitHub labels (key) |"
-    )
-    lines.append(
-        "|---|-------|------|---------|-----------|----------|---------------|-----------------------------|"
-    )
-    for r in issues:
-        plbl     = get_priority_label(r["labels"])
-        key_labs = [
-            l for l in r["labels"]
-            if l not in ("enhancement", "retain-0325", "from archive")
-            and "PRIORITY" not in l
-        ]
-        ## Show the score separately from the live metadata. A rank label can be
-        ## stale until a later, explicit GitHub-label update task applies it.
-        rank_lbl = RANK_LABELS.get(r["quad"])
-        current_rank_labs = [l for l in key_labs if l.startswith("rank:")]
-        key_labs = current_rank_labs + [l for l in key_labs if l not in current_rank_labs]
-        lab_str  = ", ".join(key_labs[:4])
-        ## truncate first, then escape - escaping first would let backslashes
-        ## count toward the limit and could cut a "\$" in half
-        short    = md_escape(r["title"][:70] + ("…" if len(r["title"]) > 70 else ""))
-        lines.append(
-            f"| [{r['num']}]({URL_BASE}{r['num']}) | {short} | "
-            f"{r['cost']} ({cost_tier(r['cost'])}) | "
-            f"{r['benefit']} ({benefit_tier(r['benefit'])}) | "
-            f"{r['milestone']} | {plbl} | `{rank_lbl}` | {lab_str} |"
-        )
-    lines.append("")
-    lines.append("---")
-    lines.append("")
+        lines.append(issue_table_row(r))
 
 
 def generate_markdown(scored_issues: list[dict],
@@ -620,6 +658,9 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("")
     lines.append("## Overview")
     lines.append("")
+    lines.append("Score tiers: **L-** = Very Low, **L** = Low, **M** = Medium, "
+                 "**H** = High, **H+** = Very High. Checkmarks indicate labels present on GitHub.")
+    lines.append("")
     costs    = sorted(r["cost"]    for r in scored_issues)
     benefits = sorted(r["benefit"] for r in scored_issues)
     lines.append("## 2×2 Priority Matrix")
@@ -644,6 +685,10 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("---")
     lines.append("")
 
+    lines.append('## Ranked Issues')
+    lines.append('')
+    lines.append(ISSUE_TABLE_HEADER)
+    lines.append(ISSUE_TABLE_SEPARATOR)
     _write_quad(lines, "A",
                 "FOCUS SHORTLIST — Low Cost, High Benefit",
                 f"The top {MAX_QUADRANT_A_ISSUES} low-cost, high-benefit candidates at most, "
@@ -663,25 +708,7 @@ def generate_markdown(scored_issues: list[dict],
                 "Expensive to fix, limited payoff. Defer or deprioritize unless circumstances change.",
                 quads["D"])
 
-    lines.append(f"## Full Table — All {n} Issues")
-    lines.append("")
-    lines.append("Sorted: A first (best), then B, C, D; within each group by benefit DESC.")
-    lines.append("")
-    lines.append("| Quad | Issue # | Cost | Benefit | Milestone | Priority | Title |")
-    lines.append("|------|---------|------|---------|-----------|----------|-------|")
-    for letter in ("A", "B", "C", "D"):
-        for r in quads[letter]:
-            plbl  = get_priority_label(r["labels"])
-            short = md_escape(r["title"][:72] + ("…" if len(r["title"]) > 72 else ""))
-            lines.append(
-                f"| {letter} | [{r['num']}]({URL_BASE}{r['num']}) | "
-                f"{r['cost']} | {r['benefit']} | {r['milestone']} | "
-                f"{plbl} | {short} |"
-            )
-
-    lines.append("")
-    lines.append("---")
-    lines.append("")
+    lines.append('')
     lines.append("## Issues by Milestone")
     lines.append("")
     lines.append("| Milestone | Issue count |")
@@ -777,8 +804,8 @@ def generate_markdown(scored_issues: list[dict],
     lines.append("| PRIORITY HIGH-ish label | +6 |")
     lines.append("| PRIORITY MEDIUM label | +4 |")
     lines.append("| PRIORITY LOW label | +1 |")
-    lines.append("| BUG label | +4 (+2 extra if also PRIORITY HIGH) |")
-    lines.append("| web app / shiny label | +3 |")
+    lines.append("| BUG label | +7 (+2 extra if also PRIORITY HIGH) |")
+    lines.append("| web app / shiny label | +4 |")
     lines.append("| API label | +2 |")
     lines.append("| Title: web app / shiny / in app | +2 |")
     lines.append("| Title: API | +2 |")
@@ -796,6 +823,88 @@ def generate_markdown(scored_issues: list[dict],
 
 
 # ── MAIN ENTRY POINT ──────────────────────────────────────────────────────────
+
+def open_pr_issue_references(pr: dict, source_repo: str = REPO) -> set[int]:
+    """Recognize explicit work/closure intent, not arbitrary related mentions."""
+    references = set()
+    target = (r'(?:Public-Environmental-Data-Partners/EJAM#|'
+              r'https://github\.com/Public-Environmental-Data-Partners/EJAM/issues/)')
+    if source_repo == REPO:
+        target = r'(?:' + target + r'|#)'
+    pattern = re.compile(
+        r'\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|address(?:e[sd])?|'
+        r'part of|plan in)\s+(?:issue\s+)?'
+        r'(?:\[)?' + target + r'(\d+)', re.I)
+    for text in (pr.get('title') or '', pr.get('body') or ''):
+        references.update(int(n) for n in pattern.findall(text))
+    for issue in pr.get('closingIssuesReferences', {}).get('nodes', []):
+        if issue.get('repository', {}).get('nameWithOwner') == f'{OWNER}/{REPO}':
+            references.add(issue['number'])
+    return references
+
+
+def _fetch_repository_pr_links(source_repo: str, token: str | None = None) -> dict[int, list[int]]:
+    """Link open and merged PRs; exclude PRs closed without merging."""
+    import urllib.request
+    links = {}
+    page = 1
+    while True:
+        req = urllib.request.Request(
+            f'https://api.github.com/repos/{OWNER}/{source_repo}/pulls?state=all&per_page=100&page={page}',
+            headers={'Accept': 'application/vnd.github+json',
+                     **({'Authorization': f'Bearer {token}'} if token else {})})
+        with urllib.request.urlopen(req) as response:
+            batch = json.loads(response.read().decode())
+        eligible = [pr for pr in batch if pr['state'] == 'open' or pr.get('merged_at')]
+        if eligible:
+            # Batch closing-reference lookups to avoid a separate request per PR.
+            fields = ''.join(
+                'p' + str(pr['number']) + ':pullRequest(number:' + str(pr['number']) + '){'
+                'closingIssuesReferences(first:100){pageInfo{hasNextPage}'
+                'nodes{number repository{nameWithOwner}}}}' for pr in eligible)
+            query = '{repository(owner:"' + OWNER + '",name:"' + source_repo + '"){' + fields + '}}'
+            result = subprocess.run(['gh', 'api', 'graphql', '-f', 'query=' + query],
+                                    check=True, capture_output=True, text=True,
+                                    env={**os.environ, **({'GH_TOKEN': token} if token else {})})
+            payload = json.loads(result.stdout)
+            if payload.get('errors'):
+                raise RuntimeError('Unable to fetch PR closing references')
+        for pr in eligible:
+            closing = payload['data']['repository']['p' + str(pr['number'])]['closingIssuesReferences']
+            if closing['pageInfo']['hasNextPage']:
+                raise RuntimeError('PR has more than 100 closing references; cannot report completely')
+            pr['closingIssuesReferences'] = closing
+            for number in open_pr_issue_references(pr, source_repo):
+                links.setdefault(number, []).append(pr['number'])
+        if len(batch) < 100:
+            return {n: sorted(set(prs)) for n, prs in links.items()}
+        page += 1
+
+
+def fetch_pr_links(token: str | None = None) -> dict[int, list[int | str]]:
+    """Read PRs in all three repos, but target EJAM issues exclusively."""
+    links = {}
+    for repo in (REPO, 'EJAM-API', 'EJScreen'):
+        for issue, numbers in _fetch_repository_pr_links(repo, token).items():
+            links.setdefault(issue, []).extend(
+                n if repo == REPO else f'{repo}#{n}' for n in numbers)
+    return links
+
+
+def prepare_ranking(token: str | None = None,
+                    issue_number: int = DEFAULT_ISSUE_NUMBER) -> tuple[list[dict], int, int]:
+    """Refresh issue metadata after slow PR lookups; never reuse report milestones.
+
+    Milestone assignments remain read-only on GitHub. Both the table and the
+    milestone summary are derived from this fresh open-issue snapshot.
+    """
+    pr_links = fetch_pr_links(token)
+    issues = fetch_all_open_issues(token=token, exclude_issue_number=issue_number)
+    scored, cost_med, benefit_med = score_issues(issues)
+    for row in scored:
+        row['prs'] = pr_links.get(row['num'], [])
+    return scored, cost_med, benefit_med
+
 
 def score_issues(issues: list[dict]) -> tuple[list[dict], int, int]:
     """
@@ -858,26 +967,33 @@ def main() -> None:
         "--date", default=date.today().isoformat(),
         help="Generated-date string to embed in the header"
     )
+    parser.add_argument('--audit-only', action='store_true',
+                        help='Check open issue metadata without ranking or publishing')
     args = parser.parse_args()
-    if not args.publish and not args.output:
-        parser.error("specify --publish and/or --output")
+    if args.audit_only and (args.publish or args.output):
+        parser.error('--audit-only cannot be combined with --publish or --output')
+    if not args.publish and not args.output and not args.audit_only:
+        parser.error("specify --audit-only, --publish, and/or --output")
 
-    token = resolve_github_token(args.token) if args.publish else args.token
+    token = resolve_github_token(args.token)
     if args.publish and not token:
         parser.error(
             "--publish requires --token, GH_TOKEN, GITHUB_TOKEN, or gh auth login"
         )
 
     print("Fetching open issues from GitHub …")
-    issues = fetch_all_open_issues(
-        token=token, exclude_issue_number=args.issue_number
-    )
+    from issue_metadata_validation import audit_issues
+    all_issues = fetch_all_open_issues(token=token)
+    audit_issues(all_issues)
+    if args.audit_only:
+        return
+    issues = [issue for issue in all_issues if issue['number'] != args.issue_number]
     print(
         f"  {len(issues)} open issues fetched and ranked "
         f"(excluding report issue #{args.issue_number})."
     )
 
-    scored, cost_med, benefit_med = score_issues(issues)
+    scored, cost_med, benefit_med = prepare_ranking(token, args.issue_number)
     print(
         f"  Cost range  {min(r['cost']    for r in scored)}–"
         f"{max(r['cost']    for r in scored)}, median={cost_med}"

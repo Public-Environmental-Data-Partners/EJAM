@@ -400,10 +400,23 @@ ejamit <- function(sitepoints = NULL,
     # RETAIN ORIGINAL SORT ORDER OF SITES
     original_order <- data.table(n = 1:NROW(shp), ejam_uniq_id = 1:NROW(shp))
 
-    shp  <- shapefile_clean(shp) # reassigns ejam_uniq_id to all, then drops invalid but not empty!! uses default crs = 4269;  drops invalid rows or return NULL if none valid  # shp <- sf::st_transform(shp, crs = 4269) # done by shapefile_clean()
-    shp$valid <- !(!sf::st_is_valid(shp) | sf::st_is_empty(shp) ) # but clean dropped invalid ones already
-    # ***  retain  empty but not invalid rows for analysis? ***
-    if (is.null(shp)) {stop('No valid shapes found in shapefile')}
+    if (is.null(shp) || NROW(shp) == 0) {stop('No valid shapes found in shapefile')}
+    # Keep every row, so results_bysite has one row per input row, as for points and FIPS.
+    # A polygon that is empty or whose shape is invalid (such as edges that cross) stays as a row
+    # with valid FALSE and a reason in invalid_msg, and only the valid rows are analyzed (issue #801).
+    # shapefile_clean() is not used here because it drops the rows whose shape is invalid.
+    shp$ejam_uniq_id <- seq_len(NROW(shp)) # number ALL rows, including empty or invalid ones
+    shp_empty <- sf::st_is_empty(shp)
+    shp_shape_ok <- sf::st_is_valid(shp)
+    shp_shape_ok[is.na(shp_shape_ok)] <- FALSE # NA means the geometry could not even be checked
+    shp$valid <- shp_shape_ok & !shp_empty
+    # shapefix(), via shapefile_from_any(), already gave a reason for most invalid rows
+    if (!("invalid_msg" %in% names(shp))) {shp$invalid_msg <- NA_character_}
+    shp$invalid_msg <- as.character(shp$invalid_msg)
+    needs_msg <- !shp$valid & (is.na(shp$invalid_msg) | shp$invalid_msg %in% "")
+    shp$invalid_msg[needs_msg] <- ifelse(shp_empty[needs_msg], "empty geometry", "invalid geometry")
+    shp$invalid_msg[shp$valid] <- NA_character_
+    if (!any(shp$valid)) {stop('No valid shapes found in shapefile')}
     class(shp) <- c(class(shp), 'data.table')
 
     # Here we retain all rows, columns include ejam_uniq_id, valid, invalid_msg
@@ -525,12 +538,27 @@ ejamit <- function(sitepoints = NULL,
     # getblocksnearby_from_fips() should include doing something like fips_lead_zero() ?
     fips <- fips_lead_zero(fips) # essential so a later line can compare input fips to fips in output of getblocks, where they got leading zeroes added as needed
 
+    # A FIPS code listed more than once is analyzed for its first copy only, because the code is the
+    # ejam_uniq_id and each ejam_uniq_id must be only one row of results_bysite. Each later copy keeps
+    # its row (one row per input row) but is treated like an invalid code: ejam_uniq_id NA, valid FALSE.
+    repeated <- duplicated(fips) & !is.na(fips)
+    repeat_msg <- rep("", length(fips))
+    if (any(repeated)) {
+      repeat_msg[repeated] <- paste0("repeat of FIPS ", fips[repeated], " (row ", match(fips[repeated], fips), ")")
+      repeated_codes <- unique(fips[repeated])
+      warning("FIPS codes listed more than once are analyzed only once, and each later copy is marked invalid: ",
+              paste(head(repeated_codes, 10), collapse = ", "),
+              if (length(repeated_codes) > 10) paste0(", and ", length(repeated_codes) - 10, " more") else "")
+      fips[repeated] <- NA
+    }
+
     # RETAIN ORIGINAL SORT ORDER OF SITES (though doaggregate does handle that)
     original_order <- data.table(n = 1:length(fips), ejam_uniq_id = as.character(fips))
 
     # Here we retain all rows, columns include ejam_uniq_id, valid, invalid_msg
     data_uploaded = data.frame(fips = fips, ejam_uniq_id = fips, n = 1:length(fips), valid = fips_valid(fips))
     data_uploaded$invalid_msg = ifelse(data_uploaded$valid, "",  "invalid FIPS")
+    data_uploaded$invalid_msg[repeated] <- repeat_msg[repeated]
     data_uploaded$ejam_uniq_id = as.character(data_uploaded$ejam_uniq_id) # for merge or join below to work, must match class (integer vs character) of output of doaggregate() and before that output of getblocksnearby_from_fips(fips_counties_from_state_abbrev('DE'))  #  1:length(fips))
 
     # . radius for fips ####
@@ -884,7 +912,7 @@ ejamit <- function(sitepoints = NULL,
   dropped_before_getblocks <- !data_uploaded$valid
   site_in_blocksfound  <- data_uploaded$ejam_uniq_id %in% mysites2blocks$ejam_uniq_id
   site_in_results      <- data_uploaded$ejam_uniq_id %in% out$results_bysite$ejam_uniq_id
-  site_in_results_pop0 <- data_uploaded$ejam_uniq_id %in% out$results_bysite$ejam_uniq_id[out$results_bysite$pop == 0]
+  site_in_results_pop0 <- data_uploaded$ejam_uniq_id %in% out$results_bysite$ejam_uniq_id[out$results_bysite$pop %in% 0]
 
   if (sitetype == "latlon") {
     dup <- data.frame(sitepoints) # latlon. already has ejam_uniq_id
@@ -916,9 +944,14 @@ ejamit <- function(sitepoints = NULL,
 
   ## * restore sort (results_bysite) like input was sorted ####
 
-  out$results_bysite[original_order, n := n, on = "ejam_uniq_id"]
+  # Several rows can have ejam_uniq_id NA (invalid FIPS codes and repeated copies of a code), and NA matches NA
+  # in a join, so a join on ejam_uniq_id alone would give every NA row the position of the last one.
+  # Rows with the same ejam_uniq_id are therefore matched in the order they appear (copy_n).
+  original_order[, copy_n := rowid(ejam_uniq_id)]
+  out$results_bysite[, copy_n := rowid(ejam_uniq_id)]
+  out$results_bysite[original_order, n := i.n, on = c("ejam_uniq_id", "copy_n")]
   setorder(out$results_bysite, n)
-  out$results_bysite[, n := NULL]
+  out$results_bysite[, c("n", "copy_n") := NULL]
 
   out$results_overall$valid <- TRUE # needs to be TRUE for some functions like ejam2report() ? or  sum(out$results_bysite$valid, na.rm = T)
   out$results_overall$invalid_msg <- ""
@@ -961,7 +994,7 @@ ejamit <- function(sitepoints = NULL,
   links <- url_columns_bysite(
     sitepoints = {if ("latlon" %in% sitetype) {out$results_bysite[, .(lat = lat, lon = lon, ejam_uniq_id = ejam_uniq_id)]} else {NULL} },
     fips       = {if ("fips"   %in% sitetype) {fips} else {NULL}}, # or use out$results_bysite$ejam_uniq_id if that sitetype ?
-    shapefile  = {if ("shp"    %in% sitetype) {shp}  else {NULL}}, # has only valids but also has ejam_uniq_id
+    shapefile  = {if ("shp"    %in% sitetype) {shp}  else {NULL}}, # all rows, including invalid ones, and has ejam_uniq_id
     zipcode = zipcode,
     radius = buffer_for_links,
     regid = regid,
@@ -996,9 +1029,14 @@ ejamit <- function(sitepoints = NULL,
 
   ## * sort output (results_bysite) like input was sorted ####
 
-  out$results_bysite[original_order, n := n, on = "ejam_uniq_id"]
+  # Several rows can have ejam_uniq_id NA (invalid FIPS codes and repeated copies of a code), and NA matches NA
+  # in a join, so a join on ejam_uniq_id alone would give every NA row the position of the last one.
+  # Rows with the same ejam_uniq_id are therefore matched in the order they appear (copy_n).
+  original_order[, copy_n := rowid(ejam_uniq_id)]
+  out$results_bysite[, copy_n := rowid(ejam_uniq_id)]
+  out$results_bysite[original_order, n := i.n, on = c("ejam_uniq_id", "copy_n")]
   setorder(out$results_bysite, n)
-  out$results_bysite[, n := NULL]
+  out$results_bysite[, c("n", "copy_n") := NULL]
   ################################################################ #
 
   ## * batch.summarize()   ####
