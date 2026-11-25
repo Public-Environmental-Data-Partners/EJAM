@@ -118,6 +118,18 @@ fourth opens it in a new browser tab.
 Plain `ejam2report(out)` makes the report but cannot display it in a codespace, and the "To open
 that folder from R" hint that it prints does not work there either.
 
+These also work in a codespace:
+
+```{r}
+ejam2barplot(out)   # bar plot, shown in the Plots pane
+ejam2map(out)       # interactive map, shown in the Viewer pane
+ejam2excel(out, save_now = TRUE, fname = path.expand("~/ejam_results.xlsx"))
+```
+
+The spreadsheet is saved in your home folder. Made this way, it does not include the picture of the
+report, and the console shows an "Error converting HTML to PNG" message that you can ignore (see
+"Limits").
+
 To analyze your own sites, use the **Upload** button in RStudio's **Files** pane to add a
 spreadsheet of latitudes and longitudes, then give its name to `ejamit()`. To keep a result, tick
 the file in the **Files** pane and choose **More \> Export**. Files left in a codespace are lost
@@ -199,6 +211,7 @@ spending limit above zero.
 | No **RStudio (8787)** row in **Ports** | In the VS Code **Terminal**, run `rserver`, then look at **Ports** again. |
 | A function asks for a Census API key | Functions that download American Community Survey data need a free key. Set it with `Sys.setenv(CENSUS_API_KEY = "your key")`. |
 | A report will not save as PDF | Not available. The Chrome browser that EJAM uses to make PDFs is not installed in the codespace. Use the HTML report or the Excel file. |
+| `ejam2excel()` prints "Error converting HTML to PNG" | The spreadsheet is still saved, without the picture of the report. Making that picture needs the Chrome browser, which is not set up. |
 | No R code completion in VS Code | It is switched off to leave enough memory for EJAM. RStudio has its own code completion. |
 
 On a tablet, VS Code's keyboard shortcuts are missing, so use the menu button at the top left of
