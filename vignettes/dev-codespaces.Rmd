@@ -22,6 +22,19 @@ automatically, and it may stop working when R, RStudio or EJAM's dependencies ch
 replacement for the public web app or for installing the package (see
 [Installing the EJAM R package](installing.html)).
 
+Before you start, know that:
+
+-   **Some things do not work in a codespace.** PDF reports cannot be made, in the app or from R.
+    Some functions that open a file or folder for you, such as plain `ejam2report(out)`, make the
+    file but cannot display it. See "Limits".
+-   **The first start is slow.** Setup takes about 15 minutes, and the page shows only "Setting up
+    remote connection" during that time.
+-   **You choose how much memory the machine has, and it must be enough for your analysis.** The
+    2-core machine (8 GB) is enough to try EJAM on a small number of sites. Choose the 4-core
+    machine (16 GB) or larger to analyze thousands of sites. With too little memory, R stops in the
+    middle of an analysis.
+-   **A codespace stops by itself when it is not being used.** See "If the codespace stops".
+
 # What this is
 
 A GitHub codespace is a private Linux computer in the cloud that you use through a web browser. The
@@ -127,11 +140,26 @@ running. Click the red stop button in the RStudio console to end it.
 In the app, the report shown on screen, the HTML report download and the Excel download have been
 tested and work. Downloading a report as a PDF does not work (see "Limits").
 
+# If the codespace stops
+
+A codespace shuts itself down after a period without activity. This is normal. The period is 30
+minutes unless you have changed it in your GitHub settings (**Settings \> Codespaces \> Default
+idle timeout**, from 5 to 240 minutes). Work done only in the RStudio tab may not count as activity,
+so a codespace can stop while RStudio is open.
+
+When it stops, the RStudio tab stops responding or shows an error. Files you saved are kept, and
+EJAM stays installed, but the R session ends, so objects such as `out` are gone and the app is no
+longer running. To continue:
+
+1.  Go to [your codespaces list](https://github.com/codespaces), click **...** next to the
+    codespace, then **Open in Browser**. It starts in about a minute.
+2.  Open RStudio again as in Step 2.
+3.  Run `library(EJAM)` and repeat your analysis.
+
 # When you are done
 
 -   **Stop it.** Click the blue **Codespaces** box at the bottom-left corner of the VS Code tab and
-    choose **Stop Current Codespace**. A codespace also stops by itself after 30 minutes without
-    use. A stopped codespace uses none of your time allowance.
+    choose **Stop Current Codespace**. A stopped codespace uses none of your time allowance.
 -   **Come back later.** Go to [your codespaces list](https://github.com/codespaces), click **...**
     next to the codespace, then **Open in Browser**. It starts in about a minute and EJAM is still
     installed. Repeat Step 2 to open RStudio.
