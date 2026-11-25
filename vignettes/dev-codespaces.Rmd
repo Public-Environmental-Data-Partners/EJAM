@@ -29,7 +29,9 @@ EJAM repository has a setup folder, `.devcontainer`, that makes a new codespace 
 RStudio and the EJAM package already installed.
 
 It is meant as a way to try the **development version** of EJAM if you do not have R on your own
-computer. You can run EJAM functions in RStudio, or run your own private copy of the EJAM web app.
+computer. It is also a workaround: a way to use EJAM functions in RStudio if you do not have access
+to R locally. You can run EJAM functions in RStudio, or run your own private copy of the EJAM web
+app.
 
 # What you need
 
