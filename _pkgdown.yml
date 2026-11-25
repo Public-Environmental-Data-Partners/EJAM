@@ -74,6 +74,7 @@ articles:
   - dev-api
   - dev-deploy-app
   - dev-deployment
+  - dev-codespaces
   - dev-run-shinytests
   - dev-run-unit-tests
   - dev-github-actions-install-tests

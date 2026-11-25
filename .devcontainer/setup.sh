@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install EJAM and its data inside a dev container (for example a GitHub Codespace).
 # devcontainer.json runs this when the container is created and again when the
-# checked-out branch changes. See .devcontainer/README.md.
+# checked-out branch changes. See the article vignettes/dev-codespaces.Rmd.
 set -euo pipefail
 
 # Run from the repository root, wherever this script was called from.

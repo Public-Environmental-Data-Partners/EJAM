@@ -1,0 +1,189 @@
+---
+title: "Trying EJAM in a Browser with GitHub Codespaces (Experimental)"
+description: "An experimental, unsupported way to try the development version of EJAM in RStudio in a web browser, without installing R"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Trying EJAM in a Browser with GitHub Codespaces (Experimental)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+**This is experimental and unsupported.** It has had only limited testing, nothing checks it
+automatically, and it may stop working when R, RStudio or EJAM's dependencies change. It is not a
+replacement for the public web app or for installing the package (see
+[Installing the EJAM R package](installing.html)).
+
+# What this is
+
+A GitHub codespace is a private Linux computer in the cloud that you use through a web browser. The
+EJAM repository has a setup folder, `.devcontainer`, that makes a new codespace arrive with R,
+RStudio and the EJAM package already installed.
+
+It is meant as a way to try the **development version** of EJAM if you do not have R on your own
+computer. You can run EJAM functions in RStudio, or run your own private copy of the EJAM web app.
+
+# What you need
+
+-   A free GitHub account. You do not need to be a member of the project.
+-   A web browser. A laptop or desktop is easiest. A tablet works, with the differences noted below.
+-   About 15 minutes for the first start. Later starts of the same codespace take about a minute.
+
+Light use costs nothing. GitHub counts the time against the account of the person who creates the
+codespace, not against the EJAM project, and gives each personal account a free monthly allowance.
+See "What it costs" below.
+
+# Which version of EJAM you get
+
+A codespace installs EJAM from the branch it was created from. You choose the branch when you create
+the codespace, and nothing in the setup changes it afterwards.
+
+-   The link in Step 1 creates the codespace from the `development` branch, so you get the
+    development version. This is the intended use.
+-   If you instead use the green **Code** button on the repository's main page, GitHub uses the
+    repository's default branch, `main`, which holds the latest release.
+-   On the page where you confirm the new codespace, the **Branch** box shows which branch will be
+    used, and you can change it there.
+
+The large datasets are the data release that the chosen branch asks for.
+
+# Step 1: Start a codespace
+
+1.  Sign in to GitHub.
+2.  Open this link:
+    [create a codespace on the development branch of EJAM](https://codespaces.new/Public-Environmental-Data-Partners/EJAM/tree/development).
+3.  Check that **Branch** says `development`.
+4.  Leave **Machine type** on **2-core** to try things out. Choose **4-core** (16 GB of memory) to
+    analyze thousands of sites.
+5.  Click **Create codespace**.
+6.  Wait, and leave the tab open. The page says "Setting up remote connection" for the whole setup,
+    about 15 minutes, because EJAM is installed and about 1 GB of data is downloaded before anything
+    else appears. Then an editor called VS Code opens in the tab.
+7.  If a grey bar at the top says **Restricted Mode**, click **Manage** and then **Trust**. RStudio
+    does not start until you do. The folder is the EJAM repository itself.
+
+# Step 2: Open RStudio
+
+1.  In the bottom panel of VS Code, click the **Ports** tab (next to **Terminal**).
+2.  Find the row named **RStudio (8787)**.
+3.  Click the globe icon in that row, just right of the web address. RStudio opens in a new browser
+    tab with no password to enter. If the browser blocks the pop-up, allow it. If the new tab stays
+    on "getting your codespace ready" or shows a `localhost` error, close it and click the globe icon
+    again.
+
+Leave the port set to **Private**. Do not click **Make Public**: RStudio here has no password, so a
+public port would let anyone with the link run code in your codespace.
+
+You can ignore the other rows in the Ports list, and any `[rserver] WARNING` lines in the terminal.
+
+# Step 3: Try EJAM functions
+
+In the RStudio console:
+
+```{r}
+library(EJAM)
+out <- ejamit(testpoints_10, radius = 1)
+ejam2report(out, filename = path.expand("~/ejam_report.html"), launch_browser = FALSE)
+browseURL(path.expand("~/ejam_report.html"))
+```
+
+The first line loads EJAM's block data and builds a search index, which takes a minute or two. The
+second analyzes ten example sites. The third saves a summary report in your home folder, and the
+fourth opens it in a new browser tab.
+
+Plain `ejam2report(out)` makes the report but cannot display it in a codespace, and the "To open
+that folder from R" hint that it prints does not work there either.
+
+To analyze your own sites, use the **Upload** button in RStudio's **Files** pane to add a
+spreadsheet of latitudes and longitudes, then give its name to `ejamit()`. To keep a result, tick
+the file in the **Files** pane and choose **More \> Export**. Files left in a codespace are lost
+when the codespace is deleted.
+
+For more to try, see [Basics - Quick Start Guide](basics.html).
+
+# Step 4: Run the EJAM web app
+
+In the RStudio console:
+
+```{r}
+library(EJAM)
+ejamapp()
+```
+
+The app opens in a new window or tab. If the browser blocks the pop-up, allow it and run
+`ejamapp()` again. This copy of the app is private to you and runs only while your codespace is
+running. Click the red stop button in the RStudio console to end it.
+
+In the app, the report shown on screen, the HTML report download and the Excel download have been
+tested and work. Downloading a report as a PDF does not work (see "Limits").
+
+# When you are done
+
+-   **Stop it.** Click the blue **Codespaces** box at the bottom-left corner of the VS Code tab and
+    choose **Stop Current Codespace**. A codespace also stops by itself after 30 minutes without
+    use. A stopped codespace uses none of your time allowance.
+-   **Come back later.** Go to [your codespaces list](https://github.com/codespaces), click **...**
+    next to the codespace, then **Open in Browser**. It starts in about a minute and EJAM is still
+    installed. Repeat Step 2 to open RStudio.
+-   **Delete it.** In the same **...** menu, choose **Delete** when you no longer need it, because a
+    stored codespace counts against your storage allowance. GitHub deletes a codespace by itself
+    after 30 days without use.
+
+A codespace keeps the version of EJAM it installed when it was created. To get newer development
+code, delete it and create a new one.
+
+# What it costs
+
+GitHub counts usage against the account of the person who creates the codespace. These figures are
+from late 2026; check
+[GitHub's Codespaces billing page](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces)
+for current ones. A free personal account includes 120 core-hours and 15 GB-months of storage each
+month.
+
+| Machine | Memory | Running time the free allowance covers | Price beyond the allowance |
+|---------|--------|----------------------------------------|----------------------------|
+| 2-core  | 8 GB   | 60 hours a month                       | \$0.18 an hour             |
+| 4-core  | 16 GB  | 30 hours a month                       | \$0.36 an hour             |
+
+Storage is the part to watch. This codespace fills most of its 32 GB disk, so keeping one for about
+two weeks uses the month's free storage. By default GitHub blocks further use when the free
+allowance runs out and does not charge you, unless you have added a payment method and set a
+spending limit above zero.
+
+# Limits
+
+| What you see | What to do |
+|------------------------------------|------------------------------------|
+| R stops, or RStudio says the session crashed during an analysis | The machine ran out of memory. In [your codespaces list](https://github.com/codespaces), choose **... \> Change machine type**, pick 4-core, then stop and reopen the codespace. Nothing is reinstalled. |
+| A "Low disk space" warning | Expected. The disk is nearly full after setup. Download the results you want and avoid storing large files. |
+| `library(EJAM)` says there is no package called EJAM | Setup did not finish. In the VS Code **Terminal**, run `bash .devcontainer/setup.sh` and wait for `EJAM ... is ready.` |
+| No **RStudio (8787)** row in **Ports** | In the VS Code **Terminal**, run `rserver`, then look at **Ports** again. |
+| A function asks for a Census API key | Functions that download American Community Survey data need a free key. Set it with `Sys.setenv(CENSUS_API_KEY = "your key")`. |
+| A report will not save as PDF | Not available. The Chrome browser that EJAM uses to make PDFs is not installed in the codespace. Use the HTML report or the Excel file. |
+| No R code completion in VS Code | It is switched off to leave enough memory for EJAM. RStudio has its own code completion. |
+
+On a tablet, VS Code's keyboard shortcuts are missing, so use the menu button at the top left of
+the VS Code tab. The report shown inside the app works on a tablet, interactive map included. A
+report file downloaded to a tablet and reopened there may lose the map, because some tablets show
+saved HTML files in a simplified preview. The Excel download opens normally, with a static picture
+of the report and map.
+
+# How it is set up
+
+Two files in the `.devcontainer` folder of the repository define the codespace:
+
+-   `devcontainer.json` names the base image (R with the system libraries that mapping packages
+    need), adds RStudio Server, and says what to run at startup.
+-   `setup.sh` installs EJAM from the checked-out branch, downloads its large datasets, and clears
+    the download cache.
+
+Codespaces that are built ahead of time ("prebuilds") are not turned on, so every new codespace runs
+the whole setup.
