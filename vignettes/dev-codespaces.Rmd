@@ -39,7 +39,8 @@ Before you start, know that:
 
 A GitHub codespace is a private Linux computer in the cloud that you use through a web browser. The
 EJAM repository has a setup folder, `.devcontainer`, that makes a new codespace arrive with R,
-RStudio and the EJAM package already installed.
+RStudio and the EJAM package already installed. For how codespaces work in general, see
+[GitHub's documentation on Codespaces](https://docs.github.com/en/codespaces).
 
 It is meant as a way to try the **development version** of EJAM if you do not have R on your own
 computer. It is also a workaround: a way to use EJAM functions in RStudio if you do not have access
