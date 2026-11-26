@@ -27,8 +27,8 @@ scenarios:
 1.  [Running EJAM functions in RStudio](analyzing.html) gives you access to analysis features not
     available in the web app, such as
     [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.html).
-2.  Running your own private copy of the EJAM web app lets you access the advanced tab and more
-    options than are in the public hosted app.
+2.  Running your own private copy of the EJAM web app using `ejamapp(isPublic = FALSE)` lets you
+    access the advanced tab and more options than are in the public hosted app.
 3.  It also lets you test an app feature you have drafted but not yet deployed.
 
 A GitHub codespace is a private Linux computer in the cloud that you use through a web browser. The
@@ -46,7 +46,7 @@ RStudio and the EJAM package already installed. For how codespaces work in gener
     Some functions that open a file or folder for you, such as plain `ejam2report(out)`, make the
     file but cannot display it. See "Limits".
 -   **The first start is slow.** Setup takes about 15 minutes, and the page shows only "Setting up
-    remote connection" during that time.
+    remote connection" during that time. Later starts of the same codespace take about a minute.
 -   **You choose how much memory the machine has, and it must be enough for your analysis.** The
     2-core machine (8 GB) is enough to try EJAM on a small number of sites. Choose the 4-core
     machine (16 GB) or larger to analyze thousands of sites. With too little memory, R stops in the
@@ -57,7 +57,6 @@ RStudio and the EJAM package already installed. For how codespaces work in gener
 
 -   A free GitHub account. You do not need to be a member of the project.
 -   A web browser. A laptop or desktop is easiest. A tablet works, with the differences noted below.
--   About 15 minutes for the first start. Later starts of the same codespace take about a minute.
 
 Light use costs nothing. GitHub counts the time against the account of the person who creates the
 codespace, not against the EJAM project, and gives each personal account a free monthly allowance.
