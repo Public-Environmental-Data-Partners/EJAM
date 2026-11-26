@@ -50,10 +50,10 @@ RStudio and the EJAM package already installed. For how codespaces work in gener
     to do.
 -   **The first start is slow.** Setup takes about 15 minutes, and the page shows only "Setting up
     remote connection" during that time. Later starts of the same codespace take about a minute.
--   **You choose how much memory the machine has, and it must be enough for your analysis.** The
-    2-core machine (8 GB) is enough to try EJAM on a small number of sites. Choose the 4-core
-    machine (16 GB) or larger to analyze thousands of sites. With too little memory, R stops in the
-    middle of an analysis.
+-   **You choose how much memory the machine has, and it must be enough for your analysis.** The 2-core machine (8 GB) is enough to try EJAM functions on a small number of sites, but memory
+    fills up over a long session or while running the web app. Choose the 4-core machine (16 GB) or
+    larger to analyze thousands of sites or to use the app for more than a quick look. With too
+    little memory, R is interrupted in the middle of an analysis (see "Limits").
 -   **A codespace stops by itself when it is not being used.** See "If the codespace stops".
 
 ## What you need
@@ -88,7 +88,7 @@ The large datasets are the data release that the chosen branch asks for.
     <span style="font-size: 1.2em;">**[create a codespace on the development branch of EJAM](https://codespaces.new/Public-Environmental-Data-Partners/EJAM/tree/development)**</span>.
 3.  Check that Branch says `development`.
 4.  Leave Machine type on 2-core to try things out. Choose 4-core (16 GB of memory) to
-    analyze thousands of sites.
+    analyze thousands of sites or to spend much time in the web app.
 5.  Click **Create codespace**.
 6.  Wait, and leave the tab open. The page says "Setting up remote connection" for the whole setup,
     about 15 minutes, because EJAM is installed and about 1 GB of data is downloaded before anything
@@ -272,6 +272,7 @@ spending limit above zero.
 
 | What you see | What to do |
 |------------------------------------|------------------------------------|
+| The console keeps saying "Session forced to suspend due to system upgrade, restart, maintenance, or other issue", and your analysis or the app is cut off | The machine is running short of memory, which builds up over a long session. Choose **Session \> Restart R** in RStudio, wait for EJAM to load again, and repeat your analysis. If it keeps happening, change to the 4-core machine as described in the next row. |
 | R stops, or RStudio says the session crashed during an analysis | The machine ran out of memory. In [your codespaces list](https://github.com/codespaces), choose **... \> Change machine type**, pick 4-core, then stop and reopen the codespace. Nothing is reinstalled. |
 | A "Low disk space" warning | Expected. The disk is nearly full after setup. Download the results you want and avoid storing large files. |
 | The RStudio console says there is no package called EJAM | Setup did not finish. In the VS Code **Terminal**, run `bash .devcontainer/setup.sh` and wait for `EJAM ... is ready.` |
