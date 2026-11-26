@@ -81,26 +81,26 @@ The large datasets are the data release that the chosen branch asks for.
 1.  Sign in to GitHub.
 2.  Open this link:
     [create a codespace on the development branch of EJAM](https://codespaces.new/Public-Environmental-Data-Partners/EJAM/tree/development).
-3.  Check that **Branch** says `development`.
-4.  Leave **Machine type** on **2-core** to try things out. Choose **4-core** (16 GB of memory) to
+3.  Check that Branch says `development`.
+4.  Leave Machine type on 2-core to try things out. Choose 4-core (16 GB of memory) to
     analyze thousands of sites.
 5.  Click **Create codespace**.
 6.  Wait, and leave the tab open. The page says "Setting up remote connection" for the whole setup,
     about 15 minutes, because EJAM is installed and about 1 GB of data is downloaded before anything
     else appears. Then an editor called VS Code opens in the tab.
-7.  If a grey bar at the top says **Restricted Mode**, click **Manage** and then **Trust**. RStudio
+7.  If a grey bar at the top says Restricted Mode, click Manage and then Trust. RStudio
     does not start until you do. The folder is the EJAM repository itself.
 
 ## Step 2: Open RStudio
 
 1.  In the bottom panel of VS Code, click the **Ports** tab (next to **Terminal**).
 2.  Find the row named **RStudio (8787)**.
-3.  Click the globe icon in that row, just right of the web address. RStudio opens in a new browser
-    tab with no password to enter. If the browser blocks the pop-up, allow it. If the new tab stays
+3.  **Click the globe icon** in that row, just right of the web address. RStudio opens in a new browser
+    tab with no password to enter. *If the browser blocks the pop-up, allow it.* If the new tab stays
     on "getting your codespace ready" or shows a `localhost` error, close it and click the globe icon
     again.
 
-Leave the port set to **Private**. Do not click **Make Public**: RStudio here has no password, so a
+Leave the port set to **Private**. *Do not click Make Public*: RStudio here has no password, so a
 public port would let anyone with the link run code in your codespace.
 
 You can ignore the other rows in the Ports list, and any `[rserver] WARNING` lines in the terminal.
