@@ -27,7 +27,8 @@
     "vscode": {
       "extensions": ["REditorSupport.r"],
       "settings": {
-        "r.lsp.enabled": false
+        "r.lsp.enabled": false,
+        "workbench.startupEditor": "none"
       }
     }
   }
