@@ -159,7 +159,11 @@ Use the **Upload** button in the **Files** pane to add a spreadsheet of latitude
 then give its name to `ejamit()`. Files left in a codespace are lost when the codespace is deleted,
 so download the results you want to keep.
 
-For more to try, see [Basics - Quick Start Guide](basics.html).
+### More to try
+
+For a first tour, see [Basics - Quick Start Guide](basics.html). For the analysis features that are
+available only from R and not in the web app, see
+[Running EJAM functions in RStudio](analyzing.html).
 
 ## Step 4: Run the EJAM web app
 
