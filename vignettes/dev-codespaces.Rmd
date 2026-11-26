@@ -269,7 +269,7 @@ spending limit above zero.
 | RStudio or the app does not open, and there is no error message | The browser's pop-up blocker stopped the new tab. Allow pop-ups in your browser, then click the globe icon again (Step 2) or run `ejamapp(isPublic = FALSE)` again. |
 | No **RStudio (8787)** row in **Ports** | In the VS Code **Terminal**, run `rserver`, then look at **Ports** again. |
 | A function asks for a Census API key | Functions that download American Community Survey data need a free key. Set it with `Sys.setenv(CENSUS_API_KEY = "your key")`. |
-| A report will not save as PDF | Not available. The Chrome browser that EJAM uses to make PDFs is not installed in the codespace. Use the HTML report or the Excel file. |
+| A report will not save as PDF | Not working yet. The step that turns a report into a PDF fails in the codespace with a "Cannot find headless Chrome" error. Use the HTML report or the Excel file. |
 | `ejam2excel()` prints "Error converting HTML to PNG" | The spreadsheet is still saved, without the picture of the report. Making that picture does not always work in a codespace. Run the line again, or use the Excel download in the app. |
 | No R code completion in VS Code | It is switched off to leave enough memory for EJAM. RStudio has its own code completion. |
 
