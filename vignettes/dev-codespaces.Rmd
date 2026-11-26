@@ -80,7 +80,7 @@ The large datasets are the data release that the chosen branch asks for.
 
 1.  Sign in to GitHub.
 2.  Open this link:
-    [create a codespace on the development branch of EJAM](https://codespaces.new/Public-Environmental-Data-Partners/EJAM/tree/development).
+    <span style="font-size: 1.2em;">**[create a codespace on the development branch of EJAM](https://codespaces.new/Public-Environmental-Data-Partners/EJAM/tree/development)**</span>.
 3.  Check that Branch says `development`.
 4.  Leave Machine type on 2-core to try things out. Choose 4-core (16 GB of memory) to
     analyze thousands of sites.
