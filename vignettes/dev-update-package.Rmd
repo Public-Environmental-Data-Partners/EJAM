@@ -548,6 +548,12 @@ EJSCREEN), plus Cloudflare configuration for the addresses. Plan it before the
 new vintage replaces what the current addresses serve. The new vintage's
 *package* release does not depend on it.
 
+The addresses, which version each one serves before and after the cutover, the
+archive app's build and settings, the frozen documentation folder, and what the
+cutover changes are described in
+[Two data vintages](dev-deployment.html#two-data-vintages-the-current-and-archive-apps)
+in the deployment article.
+
 ## After the release
 
 - **Back-merge `main` into `development`** (pull request, merge commit), so any
