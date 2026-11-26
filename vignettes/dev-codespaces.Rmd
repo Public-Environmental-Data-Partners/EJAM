@@ -195,9 +195,14 @@ In the RStudio console:
 ejamapp(isPublic = FALSE)
 ```
 
-The app opens in a new window or tab, with the advanced tab and the other options that the public
-hosted app leaves out. **If no new tab appears, the browser's pop-up blocker has probably stopped
-it without telling you** (see Step 2). Allow pop-ups, then run the same line again. This copy of the app is private to you and runs only while your codespace is
+The app opens in a new window or tab, with more ways to choose sites than the public hosted app
+offers. The **Advanced Settings** tab is not shown at first. To show it, use the option for it on
+the **About** tab.
+
+**If no new tab appears, the browser's pop-up blocker has probably stopped
+it without telling you** (see Step 2). Allow pop-ups, then run the same line again.
+
+This copy of the app is private to you and runs only while your codespace is
 running. Click the red stop button in the RStudio console to end it.
 
 In the app, the report shown on screen, the HTML report download and the Excel download have been
