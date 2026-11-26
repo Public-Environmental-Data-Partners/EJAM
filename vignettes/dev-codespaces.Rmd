@@ -1,11 +1,11 @@
 ---
-title: "Trying EJAM in a Browser with GitHub Codespaces (Experimental)"
+title: "Using EJAM R functions in a browser via GitHub Codespaces"
 description: "An experimental, unsupported way to try the development version of EJAM in RStudio in a web browser, without installing R"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Trying EJAM in a Browser with GitHub Codespaces (Experimental)}
+  %\VignetteIndexEntry{Using EJAM R functions in a browser via GitHub Codespaces}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -17,13 +17,31 @@ editor_options:
 knitr::opts_chunk$set(eval = FALSE)
 ```
 
-**This is experimental and unsupported.** It has had only limited testing, nothing checks it
-automatically, and it may stop working when R, RStudio or EJAM's dependencies change. It is not a
-replacement for the public web app or for installing the package (see
-[Installing the EJAM R package](installing.html)).
+## What this is
 
-Before you start, know that:
+This article explains a way to use EJAM in R even if you do not have access to R on your own
+computer. Codespaces provide a way to use EJAM functions in R when a) you do not want to install R,
+or b) you temporarily only have access to a web browser. Using EJAM in R is useful in a few
+scenarios:
 
+1.  [Running EJAM functions in RStudio](analyzing.html) gives you access to analysis features not
+    available in the web app, such as
+    [`ejamit_compare_distances()`](https://public-environmental-data-partners.github.io/EJAM/reference/ejamit_compare_distances.html).
+2.  Running your own private copy of the EJAM web app lets you access the advanced tab and more
+    options than are in the public hosted app.
+3.  It also lets you test an app feature you have drafted but not yet deployed.
+
+A GitHub codespace is a private Linux computer in the cloud that you use through a web browser. The
+EJAM repository has a setup folder, `.devcontainer`, that makes a new codespace arrive with R,
+RStudio and the EJAM package already installed. For how codespaces work in general, see
+[GitHub's documentation on Codespaces](https://docs.github.com/en/codespaces).
+
+## Caveats
+
+-   **This is experimental and unsupported.** It has had only limited testing, nothing checks it
+    automatically, and it may stop working when R, RStudio or EJAM's dependencies change. It is not
+    a replacement for the public web app or for installing the package (see
+    [Installing the EJAM R package](installing.html)).
 -   **Some things do not work in a codespace.** PDF reports cannot be made, in the app or from R.
     Some functions that open a file or folder for you, such as plain `ejam2report(out)`, make the
     file but cannot display it. See "Limits".
@@ -35,19 +53,7 @@ Before you start, know that:
     middle of an analysis.
 -   **A codespace stops by itself when it is not being used.** See "If the codespace stops".
 
-# What this is
-
-A GitHub codespace is a private Linux computer in the cloud that you use through a web browser. The
-EJAM repository has a setup folder, `.devcontainer`, that makes a new codespace arrive with R,
-RStudio and the EJAM package already installed. For how codespaces work in general, see
-[GitHub's documentation on Codespaces](https://docs.github.com/en/codespaces).
-
-It is meant as a way to try the **development version** of EJAM if you do not have R on your own
-computer. It is also a workaround: a way to use EJAM functions in RStudio if you do not have access
-to R locally. You can run EJAM functions in RStudio, or run your own private copy of the EJAM web
-app.
-
-# What you need
+## What you need
 
 -   A free GitHub account. You do not need to be a member of the project.
 -   A web browser. A laptop or desktop is easiest. A tablet works, with the differences noted below.
@@ -57,7 +63,7 @@ Light use costs nothing. GitHub counts the time against the account of the perso
 codespace, not against the EJAM project, and gives each personal account a free monthly allowance.
 See "What it costs" below.
 
-# Which version of EJAM you get
+## Which version of EJAM you get
 
 A codespace installs EJAM from the branch it was created from. You choose the branch when you create
 the codespace, and nothing in the setup changes it afterwards.
@@ -71,7 +77,7 @@ the codespace, and nothing in the setup changes it afterwards.
 
 The large datasets are the data release that the chosen branch asks for.
 
-# Step 1: Start a codespace
+## Step 1: Start a codespace
 
 1.  Sign in to GitHub.
 2.  Open this link:
@@ -86,7 +92,7 @@ The large datasets are the data release that the chosen branch asks for.
 7.  If a grey bar at the top says **Restricted Mode**, click **Manage** and then **Trust**. RStudio
     does not start until you do. The folder is the EJAM repository itself.
 
-# Step 2: Open RStudio
+## Step 2: Open RStudio
 
 1.  In the bottom panel of VS Code, click the **Ports** tab (next to **Terminal**).
 2.  Find the row named **RStudio (8787)**.
@@ -100,7 +106,7 @@ public port would let anyone with the link run code in your codespace.
 
 You can ignore the other rows in the Ports list, and any `[rserver] WARNING` lines in the terminal.
 
-# Step 3: Try EJAM functions
+## Step 3: Try EJAM functions
 
 In the RStudio console:
 
@@ -130,7 +136,7 @@ The spreadsheet is saved in your home folder. Made this way, it does not include
 report, and the console shows an "Error converting HTML to PNG" message that you can ignore (see
 "Limits").
 
-## Finding the files you saved
+### Finding the files you saved
 
 The examples above save files in your home folder, `/home/rstudio`. RStudio's **Files** pane starts
 in a different folder, `/workspaces/EJAM`, which holds the EJAM source code, so the saved files are
@@ -148,7 +154,7 @@ Once you can see a file there:
 -   Click an `.html` file and choose **View in Web Browser** to open it in a new tab.
 -   To download any file to your own computer, tick its box and choose **More \> Export**.
 
-## Using your own sites
+### Using your own sites
 
 Use the **Upload** button in the **Files** pane to add a spreadsheet of latitudes and longitudes,
 then give its name to `ejamit()`. Files left in a codespace are lost when the codespace is deleted,
@@ -156,23 +162,23 @@ so download the results you want to keep.
 
 For more to try, see [Basics - Quick Start Guide](basics.html).
 
-# Step 4: Run the EJAM web app
+## Step 4: Run the EJAM web app
 
 In the RStudio console:
 
 ```{r}
 library(EJAM)
-ejamapp()
+ejamapp(isPublic = FALSE)
 ```
 
-The app opens in a new window or tab. If the browser blocks the pop-up, allow it and run
-`ejamapp()` again. This copy of the app is private to you and runs only while your codespace is
+The app opens in a new window or tab, with the advanced tab and the other options that the public
+hosted app leaves out. If the browser blocks the pop-up, allow it and run the same line again. This copy of the app is private to you and runs only while your codespace is
 running. Click the red stop button in the RStudio console to end it.
 
 In the app, the report shown on screen, the HTML report download and the Excel download have been
 tested and work. Downloading a report as a PDF does not work (see "Limits").
 
-# If the codespace stops
+## If the codespace stops
 
 A codespace shuts itself down after a period without activity. This is normal. The period is 30
 minutes unless you have changed it in your GitHub settings (**Settings \> Codespaces \> Default
@@ -188,7 +194,7 @@ longer running. To continue:
 2.  Open RStudio again as in Step 2.
 3.  Run `library(EJAM)` and repeat your analysis.
 
-# When you are done
+## When you are done
 
 -   **Stop it.** Click the blue **Codespaces** box at the bottom-left corner of the VS Code tab and
     choose **Stop Current Codespace**. A stopped codespace uses none of your time allowance.
@@ -202,7 +208,7 @@ longer running. To continue:
 A codespace keeps the version of EJAM it installed when it was created. To get newer development
 code, delete it and create a new one.
 
-# What it costs
+## What it costs
 
 GitHub counts usage against the account of the person who creates the codespace. These figures are
 from late 2026; check
@@ -220,7 +226,7 @@ two weeks uses the month's free storage. By default GitHub blocks further use wh
 allowance runs out and does not charge you, unless you have added a payment method and set a
 spending limit above zero.
 
-# Limits
+## Limits
 
 | What you see | What to do |
 |------------------------------------|------------------------------------|
@@ -239,7 +245,7 @@ report file downloaded to a tablet and reopened there may lose the map, because 
 saved HTML files in a simplified preview. The Excel download opens normally, with a static picture
 of the report and map.
 
-# How it is set up
+## How it is set up
 
 Two files in the `.devcontainer` folder of the repository define the codespace:
 

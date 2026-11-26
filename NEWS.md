@@ -13,7 +13,7 @@
 - `ejam2shapefile()` now works for FIPS analyses (buffered if the analysis used a buffer; invalid FIPS get empty geometry), and no longer converts the input data.table to a data.frame.
 - Analyses of many FIPS codes are much faster: for example, finding the blockgroups in all of California's tracts now takes under a second instead of about 85 seconds (#791).
 - `getblocksnearby_from_fips()` gives each copy of a repeated FIPS code its own blockgroups, instead of none for the first copy and double for the last (#793).
-- Experimental and unsupported: a GitHub Codespaces setup (the `.devcontainer` folder) lets you try the development version of EJAM in RStudio in a web browser, without installing R. See the article "Trying EJAM in a Browser with GitHub Codespaces".
+- Experimental and unsupported: a GitHub Codespaces setup (the `.devcontainer` folder) lets you try the development version of EJAM in RStudio in a web browser, without installing R. See the article "Using EJAM R functions in a browser via GitHub Codespaces".
 
 # EJAM 4.2024.0 (November 2026)
 
