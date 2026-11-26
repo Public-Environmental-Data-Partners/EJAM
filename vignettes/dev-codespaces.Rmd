@@ -46,8 +46,9 @@ RStudio and the EJAM package already installed. For how codespaces work in gener
     Some functions that open a file or folder for you, such as plain `ejam2report(out)`, make the
     file but cannot display it. See "Limits".
 -   **Your browser may silently block the new tabs.** RStudio and the EJAM web app each open in a
-    new browser tab. A pop-up blocker can stop that with no message at all, so it looks as if
-    nothing happened. See Step 2 for what to do.
+    new browser tab. A pop-up blocker can stop that with no message at all, or with a question
+    that is hidden behind another window, so it looks as if nothing happened. See Step 2 for what
+    to do.
 -   **The first start is slow.** Setup takes about 15 minutes, and the page shows only "Setting up
     remote connection" during that time. Later starts of the same codespace take about a minute.
 -   **You choose how much memory the machine has, and it must be enough for your analysis.** The
@@ -103,8 +104,9 @@ clicked Trust. There is no password to enter.
 
 **Your browser may block that tab without telling you.** RStudio and the EJAM web app each open in a
 new tab, and a browser's pop-up blocker can stop a new tab silently: nothing appears, and there is
-no message. Tablets and phones do this most often. *If the browser does ask whether to allow a
-pop-up, allow it.* How to stop the blocking depends on your browser and device, so look in its
+no message. Tablets and phones do this most often. The browser may instead ask whether to allow the
+pop-up, but that question can be hidden behind another window or panel, so look for it. *If the
+browser does ask whether to allow a pop-up, allow it.* How to stop the blocking depends on your browser and device, so look in its
 settings or help pages for pop-ups. For example, in Safari on an iPad, tap the page menu button at
 the left end of the address bar and choose **Turn Off Content Blockers**.
 
