@@ -47,6 +47,7 @@
     <li><a class="dropdown-item" href="../articles/dev-api.html">Using the EJAM API</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deploy-app.html">Deploying the Web App</a></li>
     <li><a class="dropdown-item" href="../articles/dev-deployment.html">Deploying the Web App to AWS (Infrastructure &amp; Procedure)</a></li>
+    <li><a class="dropdown-item" href="../articles/dev-codespaces.html">Using EJAM R functions in a browser via GitHub Codespaces</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-shinytests.html">Testing EJAM App with shinytest2</a></li>
     <li><a class="dropdown-item" href="../articles/dev-run-unit-tests.html">Testing EJAM Functions with Unit Tests</a></li>
     <li><a class="dropdown-item" href="../articles/dev-github-actions-install-tests.html">GitHub Actions install tests</a></li>
@@ -87,6 +88,7 @@
 <li><p><code><a href="../reference/ejam2shapefile.html">ejam2shapefile()</a></code> now works for FIPS analyses (buffered if the analysis used a buffer; invalid FIPS get empty geometry), and no longer converts the input data.table to a data.frame.</p></li>
 <li><p>Analyses of many FIPS codes are much faster: for example, finding the blockgroups in all of California’s tracts now takes under a second instead of about 85 seconds (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/791" class="external-link">#791</a>).</p></li>
 <li><p><code><a href="../reference/getblocksnearby_from_fips.html">getblocksnearby_from_fips()</a></code> gives each copy of a repeated FIPS code its own blockgroups, instead of none for the first copy and double for the last (<a href="https://github.com/Public-Environmental-Data-Partners/EJAM/issues/793" class="external-link">#793</a>).</p></li>
+<li><p>Experimental and unsupported: a GitHub Codespaces setup (the <code>.devcontainer</code> folder) lets you try the development version of EJAM in RStudio in a web browser, without installing R. See the article “Using EJAM R functions in a browser via GitHub Codespaces”.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="4.2024.0" id="ejam-420240-november-2026">EJAM 4.2024.0 (November 2026)<a class="anchor" aria-label="anchor" href="#ejam-420240-november-2026"></a></h2>
