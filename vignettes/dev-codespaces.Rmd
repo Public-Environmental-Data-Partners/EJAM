@@ -42,9 +42,8 @@ RStudio and the EJAM package already installed. For how codespaces work in gener
     automatically, and it may stop working when R, RStudio or EJAM's dependencies change. It is not
     a replacement for the public web app or for installing the package (see
     [Installing the EJAM R package](installing.html)).
--   **Some things do not work in a codespace.** PDF reports cannot be made, in the app or from R.
-    Some functions that open a file or folder for you, such as plain `ejam2report(out)`, make the
-    file but cannot display it. See "Limits".
+-   **Some things do not work in a codespace.** Some functions that open a file or folder for you,
+    such as plain `ejam2report(out)`, make the file but cannot display it. See "Limits".
 -   **Your browser may silently block the new tabs.** RStudio and the EJAM web app each open in a
     new browser tab. A pop-up blocker can stop that with no message at all, or with a question
     that is hidden behind another window, so it looks as if nothing happened. See Step 2 for what
@@ -150,6 +149,8 @@ These also work in a codespace:
 ejam2barplot(out)   # bar plot, shown in the Plots pane
 ejam2map(out)       # interactive map, opened in a new browser tab
 ejam2excel(out, save_now = TRUE, fname = path.expand("~/ejam_results.xlsx"))
+ejam2report(out, fileextension = "pdf", filename = path.expand("~/ejam_report.pdf"),
+            launch_browser = FALSE)   # the report as a PDF file
 ```
 
 The spreadsheet is saved in your home folder. If the console shows an "Error converting HTML to PNG"
@@ -169,6 +170,9 @@ Then click the **Files** tab, because RStudio may still be showing the **Plots**
 
 Or click the **...** button at the right end of the path shown at the top of the **Files** pane and
 enter `~`.
+
+If a file you just saved is not listed, click the refresh icon at the top right of the **Files**
+pane.
 
 Once you can see a file there:
 
@@ -206,7 +210,7 @@ This copy of the app is private to you and runs only while your codespace is
 running. Click the red stop button in the RStudio console to end it.
 
 In the app, the report shown on screen, the HTML report download and the Excel download have been
-tested and work. Downloading a report as a PDF does not work (see "Limits").
+tested and work. Downloading a report as a PDF from the app has not been tried in a codespace.
 
 ## If the codespace stops
 
@@ -216,8 +220,8 @@ idle timeout**, from 5 to 240 minutes). Work done only in the RStudio tab may no
 so a codespace can stop while RStudio is open.
 
 When it stops, the RStudio tab stops responding or shows an error. Files you saved are kept, and
-EJAM stays installed, but the R session ends, so objects such as `out` are gone and the app is no
-longer running. To continue:
+EJAM stays installed, but the R session is interrupted: anything that was running is cut off, the
+app is no longer running, and objects such as `out` may be gone. To continue:
 
 1.  Go to [your codespaces list](https://github.com/codespaces), click **...** next to the
     codespace, then **Open in Browser**. It starts in about a minute.
@@ -274,7 +278,7 @@ spending limit above zero.
 | RStudio or the app does not open, and there is no error message | The browser's pop-up blocker stopped the new tab. Allow pop-ups in your browser, then click the globe icon again (Step 2) or run `ejamapp(isPublic = FALSE)` again. |
 | No **RStudio (8787)** row in **Ports** | In the VS Code **Terminal**, run `rserver`, then look at **Ports** again. |
 | A function asks for a Census API key | Functions that download American Community Survey data need a free key. Set it with `Sys.setenv(CENSUS_API_KEY = "your key")`. |
-| A report will not save as PDF | Not working yet. The step that turns a report into a PDF fails in the codespace with a "Cannot find headless Chrome" error. Use the HTML report or the Excel file. |
+| A PDF report fails with "Cannot find headless Chrome" | The setup adds a setting that PDF reports need, and it is missing. In the VS Code **Terminal**, run `bash .devcontainer/setup.sh`, then in RStudio choose **Session \> Restart R**. Or use the HTML report or the Excel file. |
 | `ejam2excel()` prints "Error converting HTML to PNG" | The spreadsheet is still saved, without the picture of the report. Making that picture does not always work in a codespace. Run the line again, or use the Excel download in the app. |
 | No R code completion in VS Code | It is switched off to leave enough memory for EJAM. RStudio has its own code completion. |
 
@@ -292,7 +296,7 @@ Two files in the `.devcontainer` folder of the repository define the codespace:
     need), adds RStudio Server, and says what to run at startup.
 -   `setup.sh` installs EJAM from the checked-out branch, downloads its large datasets, clears the
     download cache, and adds a few lines to an R startup file so that RStudio runs `library(EJAM)`
-    when it starts.
+    when it starts and so that PDF reports can start the Chromium browser.
 
 Codespaces that are built ahead of time ("prebuilds") are not turned on, so every new codespace runs
 the whole setup.

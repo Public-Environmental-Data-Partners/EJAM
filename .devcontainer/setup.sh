@@ -39,26 +39,62 @@ Rscript -e '
   try(pak::meta_clean(force = TRUE), silent = TRUE)
 ' || true
 
-echo "==> Making RStudio attach EJAM when it starts"
-# Adds a few lines to an R startup file so that each new RStudio session runs
-# library(EJAM). R started any other way (the terminal, Rscript) is unaffected.
-MARK="# EJAM dev container: attach EJAM when RStudio starts"
-SNIPPET="
-${MARK}
-if (interactive() && Sys.getenv(\"RSTUDIO\") == \"1\") {
-  setHook(\"rstudio.sessionInit\", function(newSession) {
-    if (newSession) try(library(EJAM))
-  }, action = \"append\")
+# Append a few lines of R to a startup file that every R session reads, unless
+# they are already there. $1 is a comment line that marks the lines, $2 the R code.
+add_r_startup() {
+  local mark="$1" snippet
+  snippet="$(printf '\n%s\n%s\n' "$1" "$2")"
+  local site_profile
+  site_profile="$(R RHOME)/etc/Rprofile.site"
+  if grep -qsF "${mark}" "${site_profile}" "${HOME}/.Rprofile"; then
+    echo "    already set up"
+  elif printf '%s\n' "${snippet}" >> "${site_profile}" 2>/dev/null; then
+    echo "    added to ${site_profile}"
+  elif printf '%s\n' "${snippet}" | sudo -n tee -a "${site_profile}" > /dev/null 2>&1; then
+    echo "    added to ${site_profile}"
+  else
+    printf '%s\n' "${snippet}" >> "${HOME}/.Rprofile"
+    echo "    added to ${HOME}/.Rprofile"
+  fi
 }
-"
-SITE_PROFILE="$(R RHOME)/etc/Rprofile.site"
-if grep -qsF "${MARK}" "${SITE_PROFILE}" "${HOME}/.Rprofile"; then
-  echo "    already set up"
-elif printf '%s' "${SNIPPET}" >> "${SITE_PROFILE}" 2>/dev/null; then
-  echo "    added to ${SITE_PROFILE}"
-elif printf '%s' "${SNIPPET}" | sudo -n tee -a "${SITE_PROFILE}" > /dev/null 2>&1; then
-  echo "    added to ${SITE_PROFILE}"
+
+echo "==> Making RStudio attach EJAM when it starts"
+# Each new RStudio session runs library(EJAM). R started any other way (the
+# terminal, Rscript) is unaffected.
+add_r_startup "# EJAM dev container: attach EJAM when RStudio starts" \
+'if (interactive() && Sys.getenv("RSTUDIO") == "1") {
+  setHook("rstudio.sessionInit", function(newSession) {
+    if (newSession) try(library(EJAM))
+  }, action = "append")
+}'
+
+echo "==> Letting PDF reports start the Chromium browser"
+# pagedown::chrome_print(), which turns a report into a PDF, starts Chromium
+# without the options it needs inside a container and then fails with "Cannot
+# find headless Chrome". A small launcher adds those options, and the
+# PAGEDOWN_CHROME variable points pagedown at it. A problem here must not stop
+# the rest of the setup, so nothing in this part is allowed to fail the script.
+CHROMIUM="$(command -v chromium || command -v chromium-browser || true)"
+if [ -z "${CHROMIUM}" ]; then
+  echo "    no Chromium found, so PDF reports will not work"
 else
-  printf '%s' "${SNIPPET}" >> "${HOME}/.Rprofile"
-  echo "    added to ${HOME}/.Rprofile"
+  LAUNCHER_TEXT="$(printf '#!/bin/bash\nexec %s --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage "$@"\n' "${CHROMIUM}")"
+  LAUNCHER=""
+  for candidate in /usr/local/bin/ejam-chrome-wrapper "${HOME}/ejam-chrome-wrapper"; do
+    if { printf '%s\n' "${LAUNCHER_TEXT}" > "${candidate}" && chmod 755 "${candidate}"; } 2>/dev/null; then
+      LAUNCHER="${candidate}"; break
+    elif printf '%s\n' "${LAUNCHER_TEXT}" | sudo -n tee "${candidate}" > /dev/null 2>&1 \
+        && sudo -n chmod 755 "${candidate}" 2>/dev/null; then
+      LAUNCHER="${candidate}"; break
+    fi
+  done
+  if [ -z "${LAUNCHER}" ]; then
+    echo "    could not write the launcher, so PDF reports will not work"
+  else
+    echo "    launcher written to ${LAUNCHER}"
+    add_r_startup "# EJAM dev container: Chromium launcher for PDF reports" \
+"if (!nzchar(Sys.getenv(\"PAGEDOWN_CHROME\")) && file.exists(\"${LAUNCHER}\")) {
+  Sys.setenv(PAGEDOWN_CHROME = \"${LAUNCHER}\")
+}" || echo "    could not add the R startup lines, so PDF reports will not work"
+  fi
 fi
