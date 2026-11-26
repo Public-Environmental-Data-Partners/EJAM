@@ -61,9 +61,9 @@ RStudio and the EJAM package already installed. For how codespaces work in gener
 -   A free GitHub account. You do not need to be a member of the project.
 -   A web browser. A laptop or desktop is easiest. A tablet works, with the differences noted below.
 
-Light use costs nothing. GitHub counts the time against the account of the person who creates the
-codespace, not against the EJAM project, and gives each personal account a free monthly allowance.
-See "What it costs" below.
+Light use normally costs nothing. GitHub normally counts the time against the account of the person
+who creates the codespace, and gives each personal account a free monthly allowance. See "What it
+costs" below, including the case where an organization pays instead.
 
 ## Which version of EJAM you get
 
@@ -72,8 +72,10 @@ the codespace, and nothing in the setup changes it afterwards.
 
 -   The link in Step 1 creates the codespace from the `development` branch, so you get the
     development version. This is the intended use.
--   If you instead use the green **Code** button on the repository's main page, GitHub uses the
-    repository's default branch, `main`, which holds the latest release.
+-   The setup works only on a branch that contains the `.devcontainer` folder. For now that is
+    `development`. The repository's default branch, `main`, holds the latest release and does not
+    have the folder yet, so a codespace made with the green **Code** button on the repository's main
+    page is a plain one, with no R, RStudio or EJAM.
 -   On the page where you confirm the new codespace, the **Branch** box shows which branch will be
     used, and you can change it there.
 
@@ -222,16 +224,24 @@ longer running. To continue:
     next to the codespace, then **Open in Browser**. It starts in about a minute and EJAM is still
     installed. Repeat Step 2 to open RStudio.
 -   **Delete it.** In the same **...** menu, choose **Delete** when you no longer need it, because a
-    stored codespace counts against your storage allowance. GitHub deletes a codespace by itself
-    after 30 days without use.
+    stored codespace counts against your storage allowance. By default GitHub deletes a codespace by
+    itself after 30 days without use. The period can be shorter, because you can change it in your
+    GitHub settings (**Settings \> Codespaces \> Default retention period**) and an organization
+    can limit it, so check that setting and do not rely on files staying there.
 
 A codespace keeps the version of EJAM it installed when it was created. To get newer development
 code, delete it and create a new one.
 
 ## What it costs
 
-GitHub counts usage against the account of the person who creates the codespace. These figures are
-from late 2026; check
+GitHub normally counts usage against the personal account of the person who creates the codespace.
+The exception is an organization that has chosen to pay for codespaces its members or collaborators
+create from its repositories. Then the organization is billed, and the personal allowance and
+spending limit described here do not apply; see
+[GitHub's page on who owns and pays for codespaces](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/choosing-who-owns-and-pays-for-codespaces-in-your-organization).
+The page where you confirm a new codespace says who will be billed.
+
+For a codespace billed to your personal account, these figures are from late 2026; check
 [GitHub's Codespaces billing page](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces)
 for current ones. A free personal account includes 120 core-hours and 15 GB-months of storage each
 month.
@@ -242,8 +252,8 @@ month.
 | 4-core  | 16 GB  | 30 hours a month                       | \$0.36 an hour             |
 
 Storage is the part to watch. This codespace fills most of its 32 GB disk, so keeping one for about
-two weeks uses the month's free storage. By default GitHub blocks further use when the free
-allowance runs out and does not charge you, unless you have added a payment method and set a
+two weeks uses the month's free storage. For personal accounts, by default GitHub blocks further use
+when the free allowance runs out and does not charge you, unless you have added a payment method and set a
 spending limit above zero.
 
 ## Limits
