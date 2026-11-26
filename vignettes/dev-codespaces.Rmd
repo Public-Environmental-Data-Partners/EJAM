@@ -103,7 +103,8 @@ clicked Trust. There is no password to enter.
 new tab, and a browser's pop-up blocker can stop a new tab silently: nothing appears, and there is
 no message. Tablets and phones do this most often. *If the browser does ask whether to allow a
 pop-up, allow it.* How to stop the blocking depends on your browser and device, so look in its
-settings or help pages for pop-ups.
+settings or help pages for pop-ups. For example, in Safari on an iPad, tap the page menu button at
+the left end of the address bar and choose **Turn Off Content Blockers**.
 
 If RStudio does not appear within a minute, assume it was blocked and open it by hand:
 
