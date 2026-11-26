@@ -138,7 +138,8 @@ browseURL(path.expand("~/ejam_report.html"))
 ```
 
 The first line analyzes ten example sites. The second saves a summary report in your home folder,
-and the third opens it in a new browser tab.
+and the third opens it in a new browser tab. Each time R opens a new tab, the browser may ask again
+whether to allow the pop-up (see Step 2).
 
 Plain `ejam2report(out)` makes the report but cannot display it in a codespace, and the "To open
 that folder from R" hint that it prints does not work there either.
@@ -147,13 +148,12 @@ These also work in a codespace:
 
 ```{r}
 ejam2barplot(out)   # bar plot, shown in the Plots pane
-ejam2map(out)       # interactive map, shown in the Viewer pane
+ejam2map(out)       # interactive map, opened in a new browser tab
 ejam2excel(out, save_now = TRUE, fname = path.expand("~/ejam_results.xlsx"))
 ```
 
-The spreadsheet is saved in your home folder. Made this way, it does not include the picture of the
-report, and the console shows an "Error converting HTML to PNG" message that you can ignore (see
-"Limits").
+The spreadsheet is saved in your home folder. If the console shows an "Error converting HTML to PNG"
+message, the spreadsheet is still saved, but without the picture of the report (see "Limits").
 
 ### Finding the files you saved
 
@@ -164,6 +164,8 @@ not in view at first. To show the home folder in the **Files** pane, run:
 ```{r}
 rstudioapi::filesPaneNavigate("~")
 ```
+
+Then click the **Files** tab, because RStudio may still be showing the **Plots** or **Viewer** tab.
 
 Or click the **...** button at the right end of the path shown at the top of the **Files** pane and
 enter `~`.
@@ -268,7 +270,7 @@ spending limit above zero.
 | No **RStudio (8787)** row in **Ports** | In the VS Code **Terminal**, run `rserver`, then look at **Ports** again. |
 | A function asks for a Census API key | Functions that download American Community Survey data need a free key. Set it with `Sys.setenv(CENSUS_API_KEY = "your key")`. |
 | A report will not save as PDF | Not available. The Chrome browser that EJAM uses to make PDFs is not installed in the codespace. Use the HTML report or the Excel file. |
-| `ejam2excel()` prints "Error converting HTML to PNG" | The spreadsheet is still saved, without the picture of the report. Making that picture needs the Chrome browser, which is not set up. |
+| `ejam2excel()` prints "Error converting HTML to PNG" | The spreadsheet is still saved, without the picture of the report. Making that picture does not always work in a codespace. Run the line again, or use the Excel download in the app. |
 | No R code completion in VS Code | It is switched off to leave enough memory for EJAM. RStudio has its own code completion. |
 
 On a tablet, VS Code's keyboard shortcuts are missing, so use the menu button at the top left of
