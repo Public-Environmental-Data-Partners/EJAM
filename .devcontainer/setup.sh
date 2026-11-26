@@ -38,3 +38,27 @@ Rscript -e '
   try(pak::cache_clean(), silent = TRUE)
   try(pak::meta_clean(force = TRUE), silent = TRUE)
 ' || true
+
+echo "==> Making RStudio attach EJAM when it starts"
+# Adds a few lines to an R startup file so that each new RStudio session runs
+# library(EJAM). R started any other way (the terminal, Rscript) is unaffected.
+MARK="# EJAM dev container: attach EJAM when RStudio starts"
+SNIPPET="
+${MARK}
+if (interactive() && Sys.getenv(\"RSTUDIO\") == \"1\") {
+  setHook(\"rstudio.sessionInit\", function(newSession) {
+    if (newSession) try(library(EJAM))
+  }, action = \"append\")
+}
+"
+SITE_PROFILE="$(R RHOME)/etc/Rprofile.site"
+if grep -qsF "${MARK}" "${SITE_PROFILE}" "${HOME}/.Rprofile"; then
+  echo "    already set up"
+elif printf '%s' "${SNIPPET}" >> "${SITE_PROFILE}" 2>/dev/null; then
+  echo "    added to ${SITE_PROFILE}"
+elif printf '%s' "${SNIPPET}" | sudo -n tee -a "${SITE_PROFILE}" > /dev/null 2>&1; then
+  echo "    added to ${SITE_PROFILE}"
+else
+  printf '%s' "${SNIPPET}" >> "${HOME}/.Rprofile"
+  echo "    added to ${HOME}/.Rprofile"
+fi

@@ -20,7 +20,7 @@
   "portsAttributes": {
     "8787": {
       "label": "RStudio",
-      "onAutoForward": "notify"
+      "onAutoForward": "openBrowser"
     }
   },
   "customizations": {

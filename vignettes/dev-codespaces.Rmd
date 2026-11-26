@@ -93,6 +93,13 @@ The large datasets are the data release that the chosen branch asks for.
 
 ## Step 2: Open RStudio
 
+RStudio should open by itself in a new browser tab, shortly after the editor appears and you have
+clicked Trust. There is no password to enter. *If the browser asks whether to allow a pop-up, allow
+it.*
+
+Some browsers block a tab that opens by itself, tablets especially. If RStudio does not appear
+within a minute, open it by hand:
+
 1.  In the bottom panel of VS Code, click the **Ports** tab (next to **Terminal**).
 2.  Find the row named **RStudio (8787)**.
 3.  **Click the globe icon** in that row, just right of the web address. RStudio opens in a new browser
@@ -107,18 +114,20 @@ You can ignore the other rows in the Ports list, and any `[rserver] WARNING` lin
 
 ## Step 3: Try EJAM functions
 
-In the RStudio console:
+When RStudio opens, it runs `library(EJAM)` for you. That loads EJAM's block data and builds a
+search index, which takes a minute or two. Wait until the messages stop and the console shows the
+`>` prompt. The same happens each time R restarts.
+
+Then, in the RStudio console:
 
 ```{r}
-library(EJAM)
 out <- ejamit(testpoints_10, radius = 1)
 ejam2report(out, filename = path.expand("~/ejam_report.html"), launch_browser = FALSE)
 browseURL(path.expand("~/ejam_report.html"))
 ```
 
-The first line loads EJAM's block data and builds a search index, which takes a minute or two. The
-second analyzes ten example sites. The third saves a summary report in your home folder, and the
-fourth opens it in a new browser tab.
+The first line analyzes ten example sites. The second saves a summary report in your home folder,
+and the third opens it in a new browser tab.
 
 Plain `ejam2report(out)` makes the report but cannot display it in a codespace, and the "To open
 that folder from R" hint that it prints does not work there either.
@@ -170,7 +179,6 @@ available only from R and not in the web app, see
 In the RStudio console:
 
 ```{r}
-library(EJAM)
 ejamapp(isPublic = FALSE)
 ```
 
@@ -195,7 +203,7 @@ longer running. To continue:
 1.  Go to [your codespaces list](https://github.com/codespaces), click **...** next to the
     codespace, then **Open in Browser**. It starts in about a minute.
 2.  Open RStudio again as in Step 2.
-3.  Run `library(EJAM)` and repeat your analysis.
+3.  Wait for EJAM to load again, then repeat your analysis.
 
 ## When you are done
 
@@ -235,7 +243,7 @@ spending limit above zero.
 |------------------------------------|------------------------------------|
 | R stops, or RStudio says the session crashed during an analysis | The machine ran out of memory. In [your codespaces list](https://github.com/codespaces), choose **... \> Change machine type**, pick 4-core, then stop and reopen the codespace. Nothing is reinstalled. |
 | A "Low disk space" warning | Expected. The disk is nearly full after setup. Download the results you want and avoid storing large files. |
-| `library(EJAM)` says there is no package called EJAM | Setup did not finish. In the VS Code **Terminal**, run `bash .devcontainer/setup.sh` and wait for `EJAM ... is ready.` |
+| The RStudio console says there is no package called EJAM | Setup did not finish. In the VS Code **Terminal**, run `bash .devcontainer/setup.sh` and wait for `EJAM ... is ready.` |
 | No **RStudio (8787)** row in **Ports** | In the VS Code **Terminal**, run `rserver`, then look at **Ports** again. |
 | A function asks for a Census API key | Functions that download American Community Survey data need a free key. Set it with `Sys.setenv(CENSUS_API_KEY = "your key")`. |
 | A report will not save as PDF | Not available. The Chrome browser that EJAM uses to make PDFs is not installed in the codespace. Use the HTML report or the Excel file. |
@@ -254,8 +262,9 @@ Two files in the `.devcontainer` folder of the repository define the codespace:
 
 -   `devcontainer.json` names the base image (R with the system libraries that mapping packages
     need), adds RStudio Server, and says what to run at startup.
--   `setup.sh` installs EJAM from the checked-out branch, downloads its large datasets, and clears
-    the download cache.
+-   `setup.sh` installs EJAM from the checked-out branch, downloads its large datasets, clears the
+    download cache, and adds a few lines to an R startup file so that RStudio runs `library(EJAM)`
+    when it starts.
 
 Codespaces that are built ahead of time ("prebuilds") are not turned on, so every new codespace runs
 the whole setup.
