@@ -1,19 +1,35 @@
 # EJAM 4.2024.1 (December 2026)
 
-- Fixed polygon and buffered-FIPS analyses missing Census blocks because their bounding-box lookup was too small. FIPS handoffs without an explicit buffer now start at 0 miles (#763).
+A code-only update to 4.2024.0. The data are unchanged (ACS 2020-2024, ejamdata v4.2024.0). It fixes results for some area analyses and makes analyses of many places faster.
 
-- Improved GitHub Actions that test if EJAM can be installed: Simplified vignette, simplified Ubuntu setup & checks. Explain what failed, check the R version EJAM specifies as minimum. (#714 & #723).
-- Moved open-issue-ranking reports out of the package, into GitHub issue #715 (#716).
-- A test deployment of the web app can link to a test EJScreen site: set the environment variable `EJAM_EJSCREEN_BASEURL` (or `options(ejam.ejscreen.baseurl = ...)`) (#784).
-- Web app: polygons, cities and counties sent from another app (such as EJScreen) no longer get an unrequested buffer; they use the distance that was sent, or no buffer (#766).
-- `ejamit()` analyzes a FIPS code listed more than once only once: each later copy keeps its row but is marked invalid, with a warning, instead of every copy reporting double the population (#793).
-- When some FIPS codes are invalid, `ejamit()` results stay in input order, so each site's report link is on its own row, and the percent of sites near schools and other features counts only the sites analyzed. `mapfast()` now maps these results, and a shape with no boundary no longer shifts the colors of the shapes after it (#793).
-- Results with invalid sites (#801): the multisite report header names the type of place ("3 specified counties") even if a FIPS code is invalid; site counts in the Excel notes and the long report count only the sites analyzed; and a polygon that is empty or has an invalid shape stays in `ejamit()` results as an invalid row, instead of being dropped or stopping the analysis.
-- Web app: clicking Start also wakes the EJAM API, so one-site report links open faster after an analysis (#772).
-- `ejam2shapefile()` now works for FIPS analyses (buffered if the analysis used a buffer; invalid FIPS get empty geometry), and no longer converts the input data.table to a data.frame.
-- Analyses of many FIPS codes are much faster: for example, finding the blockgroups in all of California's tracts now takes under a second instead of about 85 seconds (#791).
+### Fixes that can change results
+
+- **Polygon and buffered-FIPS analyses** no longer miss some Census blocks, and so some residents, inside the area (#763).
+- **A FIPS code listed twice** is analyzed once. Later copies stay in the results as invalid rows, with a warning, instead of each copy reporting double the population (#793).
+- **Places sent from another app** (such as EJSCREEN) to the EJAM web app no longer get a buffer that wasn't asked for. They use the distance that was sent, or none (#763, #766).
+- **When some sites are invalid,** results stay in input order, so each site's report link is on its own row. Site counts and percentages (such as the percent of sites near schools) count only the sites analyzed, and the multisite report still names the type of place (#793, #801).
+- **An empty or invalid polygon** stays in the results as an invalid row, instead of being dropped or stopping the analysis (#801).
+
+### Faster
+
+- **Analyses of many FIPS codes** are much faster. For example, finding the blockgroups in all of California's tracts takes under a second instead of about 85 seconds (#791).
+- **One-site report links open faster** after an analysis in the web app, because clicking Start also wakes the EJAM API (#772).
+
+### Documentation
+
+- **Experimental:** try EJAM's R functions in a web browser through GitHub Codespaces, without installing R. See the article "Using EJAM R functions in a browser via GitHub Codespaces" (#806).
+
+### R functions
+
+- `ejam2shapefile()` works for FIPS analyses (buffered if the analysis used a buffer; invalid FIPS codes get empty shapes) and no longer turns the input data.table into a data.frame (#797).
+- `mapfast()` maps results that include invalid FIPS codes, and a shape with no boundary no longer shifts the colors of the shapes after it (#793).
 - `getblocksnearby_from_fips()` gives each copy of a repeated FIPS code its own blockgroups, instead of none for the first copy and double for the last (#793).
-- Experimental and unsupported: a GitHub Codespaces setup (the `.devcontainer` folder) lets you try the development version of EJAM in RStudio in a web browser, without installing R. See the article "Using EJAM R functions in a browser via GitHub Codespaces".
+
+### For developers
+
+- A test deployment of the web app can link to a test EJSCREEN site, with the setting `EJAM_EJSCREEN_BASEURL` or `options(ejam.ejscreen.baseurl = ...)` (#784).
+- The GitHub Actions that check whether EJAM installs now say what failed and test the minimum R version EJAM requires (#714, #723).
+- The open-issue ranking reports moved out of the package, into issue #715 (#716).
 
 # EJAM 4.2024.0 (November 2026)
 
