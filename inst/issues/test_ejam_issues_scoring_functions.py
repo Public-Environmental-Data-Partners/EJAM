@@ -1,5 +1,9 @@
 import sys
 import unittest
+from unittest.mock import patch
+from io import BytesIO
+from types import SimpleNamespace
+import json
 from pathlib import Path
 
 
@@ -9,6 +13,148 @@ import ejam_issues_scoring_functions as scoring
 
 
 class IssueRankingTest(unittest.TestCase):
+
+    def test_prepare_ranking_refreshes_changed_and_removed_milestones(self):
+        issue = dict(number=1, title='Example', labels=[], body='',
+                     milestone={'title': 'Old'})
+        for milestone, expected in [({'title': 'New'}, 'New'), (None, 'NA')]:
+            def pr_lookup(token):
+                issue['milestone'] = milestone
+                return {1: [9]}
+            with patch.object(scoring, 'fetch_pr_links', side_effect=pr_lookup), \
+                 patch.object(scoring, 'fetch_all_open_issues', return_value=[issue]) as fetch:
+                rows, c, b = scoring.prepare_ranking('token', 715)
+            fetch.assert_called_once_with(token='token', exclude_issue_number=715)
+            self.assertEqual(rows[0]['milestone'], expected)
+            self.assertEqual(rows[0]['prs'], [9])
+            markdown = scoring.generate_markdown(rows, c, b)
+            self.assertNotIn('Old', markdown)
+            self.assertIn('| ' + expected + ' | 1 |', markdown)
+
+    def test_cross_repo_prs_require_explicit_ejam_target(self):
+        self.assertEqual(scoring.open_pr_issue_references({'body': 'Fixes #791'}, 'EJAM-API'), set())
+        for repo in ('EJAM-API', 'EJScreen'):
+            self.assertEqual(scoring.open_pr_issue_references(
+                {'body': 'Closes Public-Environmental-Data-Partners/EJAM#791'}, repo), {791})
+            self.assertEqual(scoring.open_pr_issue_references(
+                {'body': 'Fixes https://github.com/Public-Environmental-Data-Partners/EJAM/issues/791'}, repo), {791})
+            self.assertEqual(scoring.pr_link(repo + '#12'),
+                f'[{repo}#12](https://github.com/Public-Environmental-Data-Partners/{repo}/pull/12)')
+
+    def test_collects_and_distinguishes_pr_numbers_across_repos(self):
+        with patch.object(scoring, '_fetch_repository_pr_links',
+                          side_effect=[{791: [12]}, {791: [12]}, {791: [12]}]):
+            self.assertEqual(scoring.fetch_pr_links('token'),
+                             {791: [12, 'EJAM-API#12', 'EJScreen#12']})
+
+    def test_pr_links_exclude_unmerged_closed_prs(self):
+        batch = [dict(number=792, state='closed', merged_at='2026-11-21', body='Closes #791'),
+                 dict(number=9, state='open', body='Fixes #791'),
+                 dict(number=10, state='closed', merged_at=None, body='Closes #791')]
+        closing = {'pageInfo': {'hasNextPage': False}, 'nodes': []}
+        response = SimpleNamespace(stdout=json.dumps({'data': {'repository': {
+            'p792': {'closingIssuesReferences': closing},
+            'p9': {'closingIssuesReferences': closing}}}}))
+        with patch('urllib.request.urlopen', return_value=BytesIO(json.dumps(batch).encode())), \
+             patch.object(scoring.subprocess, 'run', return_value=response) as run:
+            self.assertEqual(scoring._fetch_repository_pr_links('EJAM', 'token'), {791: [9, 792]})
+        self.assertNotIn('p10:', run.call_args.args[0][-1])
+
+    def test_merged_pr_closure_reference(self):
+        pr = {'number': 792, 'state': 'closed', 'merged_at': '2026-11-21',
+              'body': 'Closes #791'}
+        self.assertEqual(scoring.open_pr_issue_references(pr), {791})
+
+    def test_github_linked_closures_include_merged_pr_targets(self):
+        pr = {'closingIssuesReferences': {'nodes': [
+            {'number': 791, 'repository': {'nameWithOwner': 'Public-Environmental-Data-Partners/EJAM'}},
+            {'number': 22, 'repository': {'nameWithOwner': 'another/repo'}}]}}
+        self.assertEqual(scoring.open_pr_issue_references(pr), {791})
+
+    def test_all_quadrants_share_one_unbroken_table(self):
+        rows = [dict(num=i, title='Example', milestone='NA', cost=2,
+                     benefit=8, quad=q, labels=[]) for i, q in enumerate('ABCD', 1)]
+        md = scoring.generate_markdown(rows, 3, 6)
+        table = md.split(scoring.ISSUE_TABLE_HEADER, 1)[1].split('\n\n', 1)[0]
+        self.assertEqual(md.count(scoring.ISSUE_TABLE_HEADER), 1)
+        self.assertTrue(all(line.startswith('|') for line in table.splitlines() if line))
+        for q in 'ABCD':
+            self.assertIn('| **' + q + '** |', table)
+        for row in rows:
+            self.assertEqual(md.count(scoring.issue_table_row(row)), 1)
+
+    def test_increased_exact_bug_and_app_weights(self):
+        self.assertEqual(scoring.benefit_score('', ['BUG'], ''), 7)
+        self.assertEqual(scoring.benefit_score('', ['Affects Web App'], ''), 4)
+        self.assertEqual(scoring.benefit_score('', ['Affects R users only - NOT web app users'], ''), 0)
+        self.assertEqual(scoring.benefit_score('', ['PRIORITY HIGH-ish but not a bug'], ''), 6)
+
+    def test_open_pr_explicit_references_only(self):
+        pr = {'number': 9, 'body': 'Closes #11. Related #12.\nPart of Public-Environmental-Data-Partners/EJAM#13'}
+        self.assertEqual(scoring.open_pr_issue_references(pr), {11, 13})
+        row = {'num': 11, 'title': 'Example', 'labels': [], 'milestone': 'NA',
+               'cost': 1, 'benefit': 1, 'quad': 'C', 'prs': [9, 10]}
+        self.assertIn('[#9](https://github.com/Public-Environmental-Data-Partners/EJAM/pull/9)', scoring.issue_table_row(row))
+
+    def test_key_labels_filter_and_twelve_character_lines(self):
+        rendered = scoring.table_key_labels(['documentation', 'speed / performance',
+                                            'custom indicators', 'Affects API'])
+        lines = rendered.replace('&nbsp;', ' ').split('<br>')
+        self.assertEqual(lines[0].strip(), 'speed...')
+        self.assertTrue(all(len(line) == 12 for line in lines))
+        self.assertNotIn('documentation', rendered)
+        self.assertIn('custom', rendered)
+        self.assertIn('API', rendered)
+
+    def test_score_symbol_above_text(self):
+        self.assertEqual(scoring.table_score(9, scoring.benefit_tier(9)),
+                         '🟩🟦<br>9&nbsp;H')
+
+    def test_title_has_two_bounded_lines_and_ellipsis(self):
+        title = scoring.table_title('create a way to share an interactive map ' * 5)
+        lines = title.replace('&nbsp;', ' ').split('<br>')
+        self.assertEqual(len(lines), 2)
+        self.assertTrue(all(len(line) == scoring.TITLE_WIDTH for line in lines))
+        self.assertTrue(lines[1].rstrip().endswith('...'))
+        self.assertEqual(len(scoring.table_title('Short').split('<br>')), 2)
+
+    def test_no_proposed_rank_or_old_headers(self):
+        self.assertNotIn('Proposed rank', scoring.ISSUE_TABLE_HEADER)
+        self.assertNotIn('Affects Web App', scoring.ISSUE_TABLE_HEADER)
+        self.assertIn('| PR | Cost | Benefit | Priority | App |', scoring.ISSUE_TABLE_HEADER)
+        self.assertNotIn('| Quad |', scoring.ISSUE_TABLE_HEADER)
+
+    def test_compact_score_tiers_preserve_thresholds(self):
+        self.assertEqual([scoring.cost_tier(n).split()[-1]
+                          for n in [0, 1, 2, 3, 4, 6, 7, 10, 11]],
+                         ['L-', 'L-', 'L', 'L', 'M', 'M', 'H', 'H', 'H+'])
+        self.assertEqual([scoring.benefit_tier(n).split()[-1]
+                          for n in [0, 1, 2, 4, 5, 8, 9, 12, 13]],
+                         ['L-', 'L-', 'L', 'L', 'M', 'M', 'H', 'H', 'H+'])
+
+    def test_compact_table_columns_and_label_filters(self):
+        row = {'num': 1, 'title': 'Example', 'milestone': 'v4',
+               'cost': 12, 'benefit': 15, 'quad': 'B',
+               'labels': ['BUG', 'enhancement', 'Affects Web App',
+                          'Affects R users only - NOT web app users',
+                          'PRIORITY HIGH-ish but not a bug',
+                          'rank:A-high-value-low-cost', 'rank:custom', 'API']}
+        cells = scoring.issue_table_row(row).split(' | ')
+        self.assertEqual(cells[2:9], ['v4', '', '⛔<br>12&nbsp;H+',
+                         '🟩🟩<br>15&nbsp;H+', 'HIGH-ish', '✓', '✓'])
+        self.assertEqual(cells[-1], scoring.table_key_labels(['API']) + ' |')
+        self.assertNotIn('(', cells[4] + cells[5])
+        markdown = scoring.generate_markdown([row], 4, 6)
+        self.assertEqual(markdown.count(scoring.ISSUE_TABLE_HEADER), 1)
+        self.assertEqual(markdown.count(scoring.issue_table_row(row)), 1)
+        self.assertNotIn('## Full Table', markdown)
+
+    def test_live_rank_labels_do_not_add_a_quad_column(self):
+        row = {'num': 1, 'title': 'Example', 'milestone': 'NA',
+               'cost': 1, 'benefit': 1, 'quad': 'A', 'labels': []}
+        original = scoring.issue_table_row(row)
+        row['labels'] = [scoring.RANK_LABELS['A'], scoring.RANK_LABELS['B']]
+        self.assertEqual(scoring.issue_table_row(row), original)
 
     def test_markdown_escapes_dollar_signs_that_would_start_pandoc_math(self):
         """A "$" in a title opened an inline-math span that ate later rows.
@@ -45,17 +191,17 @@ class IssueRankingTest(unittest.TestCase):
         # no bare "$" or in-title "|" survives into the Markdown
         self.assertNotIn("doaggregate()$results", markdown)
         self.assertIn(r"doaggregate()\$results\_bybg\_people", markdown)
-        self.assertIn(r"a title with a \| pipe", markdown)
+        self.assertIn(r"a title with a \| pipe", markdown.replace('&nbsp;', ' '))
 
         # and the escaping is applied everywhere a title is written:
         # the bullet list, the quadrant table, and the full table
-        self.assertEqual(markdown.count(r"doaggregate()\$results\_bybg\_people"), 3)
+        self.assertEqual(markdown.count(scoring.table_title(scored[0]['title'])), 1)
 
     def test_md_escape_leaves_ordinary_titles_untouched(self):
         plain = "check/ fix Distance and Site Count summary stats"
         self.assertEqual(scoring.md_escape(plain), plain)
 
-    def test_generate_markdown_keeps_rank_labels_visible_when_list_is_truncated(self):
+    def test_generate_markdown_separates_live_quad_from_proposed_rank(self):
         scored = [
             {
                 "num": 595,
@@ -83,16 +229,15 @@ class IssueRankingTest(unittest.TestCase):
             generated_date="2026-06-20",
         )
 
-        self.assertIn("rank:C-low-value-low-cost", markdown)
+        self.assertNotIn("rank:C-low-value-low-cost", scoring.issue_table_row(scored[0]))
         self.assertIn(
             "| [595](https://github.com/Public-Environmental-Data-Partners/EJAM/issues/595) | "
-            "Improve API documentation vignette | 0 (🟢 Very Low) | 7 (🟦 Medium) | "
-            "NA | — | `rank:A-high-value-low-cost` | "
-            "rank:C-low-value-low-cost, Affects R users only - NOT web app users, "
-            "documentation, Affects API |",
+            + scoring.table_title(scored[0]['title']) + " | NA |  | 🟢<br>0&nbsp;L- | 🟦<br>7&nbsp;M | "
+            "— |  |  | "
+            + scoring.table_key_labels(['Affects API']) + ' |',
             markdown,
         )
-        self.assertNotIn("another label", markdown)
+        self.assertNotIn("yet another label", markdown)
 
     def test_generate_markdown_puts_methodology_at_end(self):
         scored = [
@@ -124,7 +269,6 @@ class IssueRankingTest(unittest.TestCase):
         )
 
         matrix_idx = markdown.index("## 2×2 Priority Matrix")
-        full_table_idx = markdown.index("## Full Table")
         milestones_idx = markdown.index("## Issues by Milestone")
         how_ranking_idx = markdown.index("## How Ranking was Done")
         dimensions_idx = markdown.index(
@@ -137,8 +281,7 @@ class IssueRankingTest(unittest.TestCase):
         )
         scoring_factors_idx = markdown.index("### Scoring Factors")
 
-        self.assertLess(matrix_idx, full_table_idx)
-        self.assertLess(full_table_idx, milestones_idx)
+        self.assertLess(matrix_idx, milestones_idx)
         self.assertLess(milestones_idx, how_ranking_idx)
         self.assertLess(how_ranking_idx, dimensions_idx)
         self.assertLess(dimensions_idx, score_ranges_idx)
@@ -156,12 +299,7 @@ class IssueRankingTest(unittest.TestCase):
         ]
         self.assertEqual(
             issue_bullets,
-            [
-                "- [#101](https://github.com/Public-Environmental-Data-Partners/"
-                "EJAM/issues/101) — Low-cost high-benefit fix",
-                "- [#202](https://github.com/Public-Environmental-Data-Partners/"
-                "EJAM/issues/202) — High-cost low-benefit refactor",
-            ],
+            [],
         )
         self.assertTrue(all("Cost " not in line for line in issue_bullets))
         self.assertTrue(all("milestone" not in line for line in issue_bullets))
@@ -176,8 +314,7 @@ class IssueRankingTest(unittest.TestCase):
         self.assertIn("| v3.2022.2 | 1 |", markdown)
         self.assertIn("| NA | 1 |", markdown)
         self.assertIn(
-            "| # | Issue | Cost | Benefit | Milestone | Priority | Proposed rank | "
-            "Current GitHub labels (key) |",
+            scoring.ISSUE_TABLE_HEADER,
             markdown,
         )
         self.assertNotIn("Previous-run comparison", markdown)
